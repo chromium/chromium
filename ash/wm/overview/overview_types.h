@@ -96,10 +96,10 @@ enum class OverviewEnterExitType {
   // on the trackpad, each window will be put in an "in-between" state, between
   // their current and final state, according to the scroll offset.
   kContinuousAnimationEnterOnScrollUpdate,
-  // Like `kNormal` but this is triggered from the pine service when the login
-  // work is still being completed. Birch uses this to determine what timeout to
-  // use.
-  kPine,
+  // Like `kNormal` but this is triggered from the full restore service when the
+  // login work is still being completed. Birch uses this to determine what
+  // timeout to use.
+  kInformedRestore,
 };
 
 // Overview items have certain properties if their aspect ratio exceeds a

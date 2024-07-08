@@ -36,8 +36,9 @@ enum class ScreenshotOnShutdownStatus {
   kMaxValue = kFailedOnDLP,
 };
 
-// Enumeration of the ways the pine dialog could be closed. Used for histograms.
-enum class ClosePineDialogType {
+// Enumeration of the ways the informed restore dialog could be closed. Used for
+// histograms.
+enum class CloseDialogType {
   kListviewRestoreButton,
   kListviewCancelButton,
   kListviewOther,
@@ -47,25 +48,26 @@ enum class ClosePineDialogType {
   kMaxValue = kScreenshotOther,
 };
 
-void RecordPineDialogClosing(ClosePineDialogType type);
+void RecordDialogClosing(CloseDialogType type);
 
 // Records `status` on taking the screenshot on shutdown.
 void RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus status);
 
-// Records the durations of taking the screenshot, decoding and saving the pine
+// Records the durations of taking the screenshot, decoding and saving the
 // screenshot taken on the last shutdown. Resets the prefs used to store the
 // metrics across shutdowns.
-void RecordPineScreenshotDurations(PrefService* local_state);
+void RecordScreenshotDurations(PrefService* local_state);
 
-// Records whether the pine dialog is shown with screenshot or listview.
+// Records whether the informed restore dialog is shown with screenshot or
+// listview.
 void RecordDialogScreenshotVisibility(bool visible);
 
-// Records the time duration of fetching the pine screenshot from the disk and
+// Records the time duration of fetching the screenshot from the disk and
 // decoding it.
 void RecordScreenshotDecodeDuration(base::TimeDelta duration);
 
-// Records the duration from the pine dialog is shown to the user take an action
-// on it.
+// Records the duration from the time the informed restore dialog is shown to
+// the user take an action on it.
 void RecordTimeToAction(base::TimeDelta duration, bool showing_listview);
 
 // Records the user's action at the onboarding page, `restore` is true if the

@@ -186,10 +186,10 @@ const Desk* GetDeskForContext(aura::Window* context) {
 }
 
 bool ShouldDesksBarBeCreated() {
-  // Never show desk bar in pine session.
+  // Never show desk bar in an informed restore session.
   auto* overview_session = GetOverviewSession();
   if (overview_session && overview_session->enter_exit_overview_type() ==
-                              OverviewEnterExitType::kPine) {
+                              OverviewEnterExitType::kInformedRestore) {
     return false;
   }
 

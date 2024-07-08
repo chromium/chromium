@@ -18,8 +18,8 @@ namespace ash {
 // and tab favicon. Refactoring to eliminate the duplicate after finishing all
 // the functionality.
 //
-// The view holds a row of icons resides at the bottom-left of the pine
-// screenshot preview.
+// The view holds a row of icons resides at the bottom-left of the screenshot
+// preview.
 class ASH_EXPORT InformedRestoreScreenshotIconRowView
     : public views::BoxLayoutView {
   METADATA_HEADER(InformedRestoreScreenshotIconRowView, views::BoxLayoutView)

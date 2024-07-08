@@ -220,7 +220,7 @@ void OverviewSession::Init(
   if (features::IsForestFeatureEnabled()) {
     birch_bar_controller_ = std::make_unique<BirchBarController>(
         /*from_pine_service=*/enter_exit_overview_type_ ==
-        OverviewEnterExitType::kPine);
+        OverviewEnterExitType::kInformedRestore);
   }
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();

@@ -49,8 +49,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   static constexpr int kMaxChipsNum = 4;
 
   enum class State {
-    kLoading,        // The bar is waiting for data on creation.
-    kLoadingInPine,  // The bar is waiting for data on creation in pine.
+    kLoading,                    // The bar is waiting for data on creation.
+    kLoadingForInformedRestore,  // The bar is waiting for data on creation for
+                                 // informed restore.
     kLoadingByUser,  // The bar is waiting for data when enabled by user.
     kReloading,      // The bar is waiting for data when suggestion types are
                      // modified.

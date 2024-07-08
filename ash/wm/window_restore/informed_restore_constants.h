@@ -46,8 +46,7 @@ inline constexpr int kAppImageSize = 64;
 
 // The text color for `InformedRestoreItemView` and
 // `InformedRestoreItemOverflowView`.
-inline constexpr ui::ColorId kPineItemTextColorId =
-    cros_tokens::kCrosSysOnSurface;
+inline constexpr ui::ColorId kItemTextColorId = cros_tokens::kCrosSysOnSurface;
 
 // The background color behind each app displayed in
 // `InformedRestoreItemsContainerView`.
@@ -69,8 +68,9 @@ inline constexpr int kScreenshotIconRowIconSize = 20;
 inline constexpr gfx::Size kScreenshotIconRowImageViewSize(20, 20);
 inline constexpr int kScreenshotFaviconSpacing = 2;
 
-inline constexpr char kSuggestionsNudgeId[] = "PineSuggestionsNudge";
-inline constexpr char kOnboardingToastId[] = "PineOnboardingTabletToast";
+inline constexpr char kSuggestionsNudgeId[] = "InformedRestoreSuggestionsNudge";
+inline constexpr char kOnboardingToastId[] =
+    "InformedRestoreOnboardingTabletToast";
 
 // IDs used for the views that compose the informed restore dialog UI. Use these
 // for easy access to the views during the unit tests. Note that these IDs are

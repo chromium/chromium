@@ -14,7 +14,7 @@ namespace ash {
 
 namespace {
 
-constexpr char kTestUserEmail[] = "testuser@pine";
+constexpr char kTestUserEmail[] = "testuser@informedrestore";
 
 }  // namespace
 

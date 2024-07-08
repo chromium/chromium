@@ -86,15 +86,15 @@ InformedRestoreContentsView::InformedRestoreContentsView() :
   SetBetweenChildSpacing(kContentsChildSpacing);
   SetInsideBorderInsets(kContentsInsets);
 
-  auto* pine_controller = Shell::Get()->informed_restore_controller();
+  auto* controller = Shell::Get()->informed_restore_controller();
   contents_data_updated_subscription_ =
-      pine_controller->RegisterContentsDataUpdateCallback(base::BindRepeating(
-          &InformedRestoreContentsView::UpdateContents,
-          weak_ptr_factory_.GetWeakPtr()));
+      controller->RegisterContentsDataUpdateCallback(
+          base::BindRepeating(&InformedRestoreContentsView::UpdateContents,
+                              weak_ptr_factory_.GetWeakPtr()));
 
   // Update the value of `showing_list_view_` and record it.
   const InformedRestoreContentsData* contents_data =
-      pine_controller->contents_data();
+      controller->contents_data();
   CHECK(contents_data);
   showing_list_view_ = contents_data->image.isNull();
   RecordDialogScreenshotVisibility(!showing_list_view_);
@@ -111,9 +111,8 @@ InformedRestoreContentsView::InformedRestoreContentsView() :
 
 InformedRestoreContentsView::~InformedRestoreContentsView() {
   if (!close_metric_recorded_) {
-    RecordPineDialogClosing(showing_list_view_
-                                ? ClosePineDialogType::kListviewOther
-                                : ClosePineDialogType::kScreenshotOther);
+    RecordDialogClosing(showing_list_view_ ? CloseDialogType::kListviewOther
+                                           : CloseDialogType::kScreenshotOther);
   }
 }
 
@@ -136,7 +135,7 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
   params.bounds = contents_bounds;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
-  params.name = "PineWidget";
+  params.name = "InformedRestoreWidget";
   params.parent = desks_util::GetActiveDeskContainerForRoot(root);
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
@@ -195,9 +194,9 @@ void InformedRestoreContentsView::OnRestoreButtonPressed() {
       RecordTimeToAction(base::TimeTicks::Now() - creation_time_,
                          showing_list_view_);
 
-      RecordPineDialogClosing(
-          showing_list_view_ ? ClosePineDialogType::kListviewRestoreButton
-                             : ClosePineDialogType::kScreenshotRestoreButton);
+      RecordDialogClosing(showing_list_view_
+                              ? CloseDialogType::kListviewRestoreButton
+                              : CloseDialogType::kScreenshotRestoreButton);
       close_metric_recorded_ = true;
 
       // Destroys `this`.
@@ -212,9 +211,9 @@ void InformedRestoreContentsView::OnCancelButtonPressed() {
     if (contents_data->cancel_callback) {
       RecordTimeToAction(base::TimeTicks::Now() - creation_time_,
                          showing_list_view_);
-      RecordPineDialogClosing(
-          showing_list_view_ ? ClosePineDialogType::kListviewCancelButton
-                             : ClosePineDialogType::kScreenshotCancelButton);
+      RecordDialogClosing(showing_list_view_
+                              ? CloseDialogType::kListviewCancelButton
+                              : CloseDialogType::kScreenshotCancelButton);
       close_metric_recorded_ = true;
 
       // Destroys `this`.
@@ -426,8 +425,8 @@ void InformedRestoreContentsView::CreateChildViews() {
   views::AsViewClass<views::BoxLayoutView>(spacer->parent())
       ->SetFlexForView(spacer, 1);
 
-  // The height of the pine dialog is dynamic, depending on the height of the
-  // screenshot. For the screenshot, its width is fixed as
+  // The height of the informed restore dialog is dynamic, depending on the
+  // height of the screenshot. For the screenshot, its width is fixed as
   // `kPreviewContainerWidth` while its height is calculated based on the
   // display's aspect ratio.
   const int screenshot_height = screenshot_size.height();

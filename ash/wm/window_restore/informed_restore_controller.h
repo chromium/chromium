@@ -42,7 +42,7 @@ class ASH_EXPORT InformedRestoreController
   // Starts an overview session with the informed restore contents view if
   // certain conditions are met. Uses fake for testing only data.
   // TODO(hewer): Remove this temporary function.
-  void MaybeStartPineOverviewSessionDevAccelerator();
+  void MaybeStartInformedRestoreSessionDevAccelerator();
 
   // Starts an overview session with the informed restore contents view if
   // certain conditions are met. Triggered by developer accelerator or on login.
@@ -50,11 +50,11 @@ class ASH_EXPORT InformedRestoreController
   // re-entering the informed restore session if no windows have opened for
   // example. It will  be populated with a screenshot if possible and then
   // referenced when an informed restore session is entered.
-  void MaybeStartPineOverviewSession(
+  void MaybeStartInformedRestoreSession(
       std::unique_ptr<InformedRestoreContentsData> contents_data);
 
   // Ends the overview session if it is active and deletes `contents_data_`.
-  void MaybeEndPineOverviewSession();
+  void MaybeEndInformedRestoreSession();
 
   base::CallbackListSubscription RegisterContentsDataUpdateCallback(
       base::RepeatingClosure callback);

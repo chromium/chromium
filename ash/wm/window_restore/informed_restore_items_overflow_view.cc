@@ -139,7 +139,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
   views::Label* remaining_windows_label;
   AddChildView(views::Builder<views::Label>()
                    .CopyAddressTo(&remaining_windows_label)
-                   .SetEnabledColorId(informed_restore::kPineItemTextColorId)
+                   .SetEnabledColorId(informed_restore::kItemTextColorId)
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .SetText(l10n_util::GetPluralStringFUTF16(
                        IDS_ASH_FOREST_WINDOW_OVERFLOW_COUNT,

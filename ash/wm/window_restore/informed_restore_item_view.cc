@@ -86,7 +86,7 @@ InformedRestoreItemView::InformedRestoreItemView(
             .AddChildren(
                 views::Builder<views::Label>()
                     .CopyAddressTo(&title_label_view_)
-                    .SetEnabledColorId(informed_restore::kPineItemTextColorId)
+                    .SetEnabledColorId(informed_restore::kItemTextColorId)
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                     .CustomConfigure(base::BindOnce(
                         [](const base::WeakPtr<InformedRestoreItemView>

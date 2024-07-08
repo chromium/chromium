@@ -175,12 +175,13 @@ void InformedRestoreController::MaybeShowInformedRestoreOnboarding(
   onboarding_widget_->Show();
 }
 
-void InformedRestoreController::MaybeStartPineOverviewSessionDevAccelerator() {
+void InformedRestoreController::
+    MaybeStartInformedRestoreSessionDevAccelerator() {
   auto data = std::make_unique<InformedRestoreContentsData>();
   data->last_session_crashed = false;
   std::pair<base::OnceClosure, base::OnceClosure> split =
       base::SplitOnceCallback(base::BindOnce(
-          &InformedRestoreController::MaybeEndPineOverviewSession,
+          &InformedRestoreController::MaybeEndInformedRestoreSession,
           weak_ptr_factory_.GetWeakPtr()));
   data->restore_callback = std::move(split.first);
   data->cancel_callback = std::move(split.second);
@@ -224,10 +225,10 @@ void InformedRestoreController::MaybeStartPineOverviewSessionDevAccelerator() {
                         GURL("https://www.google.com/")},
       /*tab_count=*/3u, /*lacros_profile_id=*/0);
 
-  MaybeStartPineOverviewSession(std::move(data));
+  MaybeStartInformedRestoreSession(std::move(data));
 }
 
-void InformedRestoreController::MaybeStartPineOverviewSession(
+void InformedRestoreController::MaybeStartInformedRestoreSession(
     std::unique_ptr<InformedRestoreContentsData> contents_data) {
   CHECK(features::IsForestFeatureEnabled());
 
@@ -238,7 +239,7 @@ void InformedRestoreController::MaybeStartPineOverviewSession(
   // TODO(hewer|sammiequon): This function should only be called once in
   // production code when `contents_data_` is null. It can be called multiple
   // times currently via dev accelerator. Remove this block when
-  // `MaybeStartPineOverviewSessionDevAccelerator()` is removed.
+  // `MaybeStartInformedRestoreSessionDevAccelerator()` is removed.
   if (contents_data_) {
     StartPineOverviewSession();
     return;
@@ -258,14 +259,14 @@ void InformedRestoreController::MaybeStartPineOverviewSession(
     return;
   }
 
-  RecordPineScreenshotDurations(Shell::Get()->local_state());
+  RecordScreenshotDurations(Shell::Get()->local_state());
   image_util::DecodeImageFile(
       base::BindOnce(&InformedRestoreController::OnInformedRestoreImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       GetInformedRestoreImagePath(), data_decoder::mojom::ImageCodec::kPng);
 }
 
-void InformedRestoreController::MaybeEndPineOverviewSession() {
+void InformedRestoreController::MaybeEndInformedRestoreSession() {
   contents_data_.reset();
   OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
                                          OverviewEnterExitType::kNormal);
@@ -397,8 +398,9 @@ void InformedRestoreController::StartPineOverviewSession() {
         }));
   }
   // TODO(sammiequon): Add a new start action for this type of overview session.
-  OverviewController::Get()->StartOverview(OverviewStartAction::kAccelerator,
-                                           OverviewEnterExitType::kPine);
+  OverviewController::Get()->StartOverview(
+      OverviewStartAction::kAccelerator,
+      OverviewEnterExitType::kInformedRestore);
 }
 
 void InformedRestoreController::OnOnboardingAcceptPressed(bool restore_on) {

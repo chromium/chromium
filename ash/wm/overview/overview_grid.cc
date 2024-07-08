@@ -547,7 +547,7 @@ bool ShouldShowBirchBar(aura::Window* root_window) {
          !SplitViewController::Get(root_window)->InSplitViewMode();
 }
 
-bool ShouldShowPineDialog(aura::Window* root_window) {
+bool ShouldShowInformedRestoreDialog(aura::Window* root_window) {
   return root_window == Shell::GetPrimaryRootWindow() &&
          features::IsForestFeatureEnabled() &&
          !!Shell::Get()->informed_restore_controller()->contents_data();
@@ -691,7 +691,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
     // Destroy the birch bar widget to clear the related pointers before
     // fade-out animation to avoid dangling ptrs.
     DestroyBirchBarWidget();
-    if (exit_type != OverviewEnterExitType::kPine &&
+    if (exit_type != OverviewEnterExitType::kInformedRestore &&
         exit_type != OverviewEnterExitType::kImmediateExit) {
       FadeOutWidgetFromOverview(
           std::move(birch_bar_widget),
@@ -713,12 +713,12 @@ void OverviewGrid::PrepareForOverview() {
   if (features::IsOakFeatureEnabled() || features::IsForestFeatureEnabled()) {
     scoped_overview_wallpaper_clipper_ =
         std::make_unique<ScopedOverviewWallpaperClipper>(
-            this, enter_exit_type == OverviewEnterExitType::kPine);
+            this, enter_exit_type == OverviewEnterExitType::kInformedRestore);
   }
 
   // TODO(b/326434696): Currently this will return false if there is no restore
   // data in the pine contents data. Show the zero-state dialog.
-  if (ShouldShowPineDialog(root_window_)) {
+  if (ShouldShowInformedRestoreDialog(root_window_)) {
     informed_restore_widget_ =
         InformedRestoreContentsView::Create(GetGridEffectiveBounds());
     informed_restore_widget_->ShowInactive();
@@ -2282,7 +2282,7 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
   // `no_windows_widget_` will show in normal full overview, when there are no
   // items and the saved desk library is not showing.
   if (!no_items || IsShowingSavedDeskLibrary() ||
-      ShouldShowPineDialog(root_window_)) {
+      ShouldShowInformedRestoreDialog(root_window_)) {
     no_windows_widget_.reset();
     return;
   }
@@ -2640,8 +2640,8 @@ void OverviewGrid::MaybeInitBirchBarWidget(bool by_user) {
   if (by_user) {
     loading_state = BirchBarView::State::kLoadingByUser;
   } else if (overview_session_->enter_exit_overview_type() ==
-             OverviewEnterExitType::kPine) {
-    loading_state = BirchBarView::State::kLoadingInPine;
+             OverviewEnterExitType::kInformedRestore) {
+    loading_state = BirchBarView::State::kLoadingForInformedRestore;
   }
 
   // Note that we should set loading state before registering the bar to

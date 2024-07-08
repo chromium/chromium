@@ -55,7 +55,7 @@ TEST_F(InformedRestoreContextMenuModelTest,
   auto contents_data = std::make_unique<InformedRestoreContentsData>();
   contents_data->apps_infos.emplace_back(app_constants::kChromeAppId, "Title",
                                          /*window_id=*/0);
-  Shell::Get()->informed_restore_controller()->MaybeStartPineOverviewSession(
+  Shell::Get()->informed_restore_controller()->MaybeStartInformedRestoreSession(
       std::move(contents_data));
   WaitForOverviewEntered();
 

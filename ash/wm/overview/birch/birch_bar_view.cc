@@ -70,7 +70,7 @@ constexpr base::TimeDelta kFadeInDelayAfterLoadingByUser =
 constexpr base::TimeDelta kFadeInDurationAfterLoading = base::Milliseconds(150);
 constexpr base::TimeDelta kFadeInDurationAfterLoadingByUser =
     base::Milliseconds(200);
-constexpr base::TimeDelta kFadeInDurationAfterLoadingInPine =
+constexpr base::TimeDelta kFadeInDurationAfterLoadingForInformedRestore =
     base::Milliseconds(400);
 constexpr base::TimeDelta kFadeInDurationAfterReloading =
     base::Milliseconds(200);
@@ -101,7 +101,8 @@ using State = BirchBarView::State;
 // Checks if the given state is a loading state.
 bool IsLoadingState(State state) {
   return state == State::kLoading || state == State::kLoadingByUser ||
-         state == State::kLoadingInPine || state == State::kReloading;
+         state == State::kLoadingForInformedRestore ||
+         state == State::kReloading;
 }
 
 #if DCHECK_IS_ON()
@@ -110,8 +111,8 @@ std::ostream& operator<<(std::ostream& stream, State state) {
   switch (state) {
     case State::kLoading:
       return stream << "loading";
-    case State::kLoadingInPine:
-      return stream << "loading in pine";
+    case State::kLoadingForInformedRestore:
+      return stream << "loading for informed restore";
     case State::kLoadingByUser:
       return stream << "loading by user";
     case State::kReloading:
@@ -131,11 +132,11 @@ bool IsValidStateTransition(State current_state, State new_state) {
           {State::kLoading, State::kReloading},
           {State::kLoading, State::kShuttingDown},
           {State::kLoading, State::kNormal},
-          // From loading in pine state to reloading state and other non-loading
-          // states.
-          {State::kLoadingInPine, State::kReloading},
-          {State::kLoadingInPine, State::kShuttingDown},
-          {State::kLoadingInPine, State::kNormal},
+          // From loading for informed restore to reloading state and other
+          // non-loading states.
+          {State::kLoadingForInformedRestore, State::kReloading},
+          {State::kLoadingForInformedRestore, State::kShuttingDown},
+          {State::kLoadingForInformedRestore, State::kNormal},
           // From loading by user state to reloading state and other non-loading
           // states.
           {State::kLoadingByUser, State::kReloading},
@@ -146,7 +147,7 @@ bool IsValidStateTransition(State current_state, State new_state) {
           {State::kReloading, State::kNormal},
           // From normal state to all the other states.
           {State::kNormal, State::kLoading},
-          {State::kNormal, State::kLoadingInPine},
+          {State::kNormal, State::kLoadingForInformedRestore},
           {State::kNormal, State::kLoadingByUser},
           {State::kNormal, State::kReloading},
           {State::kNormal, State::kShuttingDown},
@@ -218,7 +219,7 @@ void BirchBarView::SetState(State state) {
   const State current_state = state_;
   state_ = state;
   switch (state_) {
-    case State::kLoadingInPine:
+    case State::kLoadingForInformedRestore:
       AddLoadingChips();
       break;
     case State::kReloading:
@@ -300,7 +301,7 @@ void BirchBarView::SetupChips(const std::vector<raw_ptr<BirchItem>>& items) {
       break;
     // When loading in pine or reloading, directly perform fading in animation
     // since the bar was filled by chip loaders.
-    case State::kLoadingInPine:
+    case State::kLoadingForInformedRestore:
     case State::kReloading:
       break;
     case State::kShuttingDown:
@@ -518,8 +519,8 @@ void BirchBarView::FadeInChips() {
   base::TimeDelta animation_delay;
   base::TimeDelta animation_duration;
   switch (state_) {
-    case State::kLoadingInPine:
-      animation_duration = kFadeInDurationAfterLoadingInPine;
+    case State::kLoadingForInformedRestore:
+      animation_duration = kFadeInDurationAfterLoadingForInformedRestore;
       break;
     case State::kLoadingByUser:
       animation_delay = kFadeInDelayAfterLoadingByUser;
@@ -563,7 +564,7 @@ void BirchBarView::FadeOutChips() {
       animation_callback =
           base::BindOnce(&BirchBarView::Clear, base::Unretained(this));
       break;
-    case State::kLoadingInPine:
+    case State::kLoadingForInformedRestore:
     case State::kLoadingByUser:
     case State::kLoading:
     case State::kNormal:

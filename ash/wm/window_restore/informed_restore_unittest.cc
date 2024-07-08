@@ -77,8 +77,9 @@ class InformedRestoreTest : public InformedRestoreTestBase {
   // Starts an overview session with an informed restore dialog created from
   // `data`.
   void StartOverviewSession(std::unique_ptr<InformedRestoreContentsData> data) {
-    Shell::Get()->informed_restore_controller()->MaybeStartPineOverviewSession(
-        std::move(data));
+    Shell::Get()
+        ->informed_restore_controller()
+        ->MaybeStartInformedRestoreSession(std::move(data));
     WaitForOverviewEntered();
 
     OverviewSession* overview_session =
@@ -144,7 +145,7 @@ class InformedRestoreTest : public InformedRestoreTestBase {
     base::OnceClosure callback = base::BindLambdaForTesting([]() {
       Shell::Get()
           ->informed_restore_controller()
-          ->MaybeEndPineOverviewSession();
+          ->MaybeEndInformedRestoreSession();
     });
     std::pair<base::OnceClosure, base::OnceClosure> split =
         base::SplitOnceCallback(std::move(callback));
@@ -327,7 +328,7 @@ TEST_F(InformedRestoreTest, NoScreenshotWithDifferentDisplayOrientation) {
       histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
       testing::ElementsAre(base::Bucket(
           ScreenshotOnShutdownStatus::kFailedOnDifferentOrientations, 1)));
-  // The previously saved pine image will not be shown this time and should be
+  // The previously saved image will not be shown this time and should be
   // deleted from the disk as well to avoid stale screenshot next time.
   EXPECT_FALSE(base::PathExists(file_path));
 }
@@ -364,7 +365,7 @@ TEST_F(InformedRestoreTest, ScreenshotIconRowMaxElements) {
   histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, true, 1);
   histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, false, 0);
 
-  controller->MaybeEndPineOverviewSession();
+  controller->MaybeEndInformedRestoreSession();
   // Starts the session again, the dialog should show with listview instead of
   // the screenshot.
   StartOverviewSession(
@@ -573,8 +574,7 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
   EXPECT_THAT(
       histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(base::Bucket(
-          base::to_underlying(ClosePineDialogType::kListviewRestoreButton),
-          1)));
+          base::to_underlying(CloseDialogType::kListviewRestoreButton), 1)));
 
   // Test clicking the cancel button.
   StartOverviewSession(MakeTestAppIds(1));
@@ -583,27 +583,24 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
   LeftClickOn(cancel_button1);
   EXPECT_THAT(
       histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
-      BucketsAre(base::Bucket(base::to_underlying(
-                                  ClosePineDialogType::kListviewRestoreButton),
-                              1),
-                 base::Bucket(base::to_underlying(
-                                  ClosePineDialogType::kListviewCancelButton),
-                              1)));
+      BucketsAre(
+          base::Bucket(
+              base::to_underlying(CloseDialogType::kListviewRestoreButton), 1),
+          base::Bucket(
+              base::to_underlying(CloseDialogType::kListviewCancelButton), 1)));
 
   // Test exiting the informed restore overview session without clicking any
   // buttons.
   StartOverviewSession(MakeTestAppIds(1));
-  Shell::Get()->informed_restore_controller()->MaybeEndPineOverviewSession();
+  Shell::Get()->informed_restore_controller()->MaybeEndInformedRestoreSession();
   EXPECT_THAT(
       histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(
           base::Bucket(
-              base::to_underlying(ClosePineDialogType::kListviewRestoreButton),
-              1),
+              base::to_underlying(CloseDialogType::kListviewRestoreButton), 1),
           base::Bucket(
-              base::to_underlying(ClosePineDialogType::kListviewCancelButton),
-              1),
-          base::Bucket(base::to_underlying(ClosePineDialogType::kListviewOther),
+              base::to_underlying(CloseDialogType::kListviewCancelButton), 1),
+          base::Bucket(base::to_underlying(CloseDialogType::kListviewOther),
                        1)));
 
   // Run the same tests but with the screenshot UI.
@@ -616,8 +613,7 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
   EXPECT_THAT(
       histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(base::Bucket(
-          base::to_underlying(ClosePineDialogType::kScreenshotRestoreButton),
-          1)));
+          base::to_underlying(CloseDialogType::kScreenshotRestoreButton), 1)));
 
   StartOverviewSession(MakeTestAppIdsWithImage(1));
   const views::View* cancel_button2 =
@@ -625,27 +621,25 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
   LeftClickOn(cancel_button2);
   EXPECT_THAT(
       histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
-      BucketsAre(
-          base::Bucket(base::to_underlying(
-                           ClosePineDialogType::kScreenshotRestoreButton),
-                       1),
-          base::Bucket(
-              base::to_underlying(ClosePineDialogType::kScreenshotCancelButton),
-              1)));
+      BucketsAre(base::Bucket(base::to_underlying(
+                                  CloseDialogType::kScreenshotRestoreButton),
+                              1),
+                 base::Bucket(base::to_underlying(
+                                  CloseDialogType::kScreenshotCancelButton),
+                              1)));
 
   StartOverviewSession(MakeTestAppIdsWithImage(1));
-  Shell::Get()->informed_restore_controller()->MaybeEndPineOverviewSession();
+  Shell::Get()->informed_restore_controller()->MaybeEndInformedRestoreSession();
   EXPECT_THAT(
       histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(
-          base::Bucket(base::to_underlying(
-                           ClosePineDialogType::kScreenshotRestoreButton),
-                       1),
           base::Bucket(
-              base::to_underlying(ClosePineDialogType::kScreenshotCancelButton),
+              base::to_underlying(CloseDialogType::kScreenshotRestoreButton),
               1),
           base::Bucket(
-              base::to_underlying(ClosePineDialogType::kScreenshotOther), 1)));
+              base::to_underlying(CloseDialogType::kScreenshotCancelButton), 1),
+          base::Bucket(base::to_underlying(CloseDialogType::kScreenshotOther),
+                       1)));
 }
 
 // Tests that if we exit overview without clicking the restore or cancel
@@ -900,8 +894,8 @@ TEST_F(InformedRestoreTest, FeedbackButtonOnlyOnPrimaryDisplay) {
 
   StartOverviewSession(MakeTestAppIds(1));
 
-  // The primary display should have the pine dialog as well as the feedback
-  // button.
+  // The primary display should have the informed restore dialog as well as the
+  // feedback button.
   OverviewGrid* primary_overview_grid = GetOverviewGridForRoot(root_0);
   ASSERT_TRUE(primary_overview_grid);
   EXPECT_TRUE(
@@ -916,7 +910,7 @@ TEST_F(InformedRestoreTest, FeedbackButtonOnlyOnPrimaryDisplay) {
   EXPECT_FALSE(secondary_overview_grid->feedback_widget());
 }
 
-class PineAppIconTest : public InformedRestoreTest {
+class InformedRestoreAppIconTest : public InformedRestoreTest {
  public:
   void SetUp() override {
     InformedRestoreTest::SetUp();
@@ -947,7 +941,7 @@ class PineAppIconTest : public InformedRestoreTest {
 
 // Tests that `InformedRestoreAppImageView` properly updates the displayed image
 // when the app with the given ID is installed.
-TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
+TEST_F(InformedRestoreAppIconTest, UpdateAfterSessionStarted) {
   // The intended icon for our test app. It should not be shown until the app is
   // "updated".
   gfx::ImageSkia test_icon =

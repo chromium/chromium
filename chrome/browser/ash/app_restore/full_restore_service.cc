@@ -198,7 +198,7 @@ class DelegateImpl : public FullRestoreService::Delegate {
       CHECK(Shell::Get()->informed_restore_controller());
       Shell::Get()
           ->informed_restore_controller()
-          ->MaybeStartPineOverviewSession(std::move(contents_data));
+          ->MaybeStartInformedRestoreSession(std::move(contents_data));
     }
   }
 
@@ -209,7 +209,7 @@ class DelegateImpl : public FullRestoreService::Delegate {
       CHECK(Shell::Get()->informed_restore_controller());
       Shell::Get()
           ->informed_restore_controller()
-          ->MaybeEndPineOverviewSession();
+          ->MaybeEndInformedRestoreSession();
     }
   }
 

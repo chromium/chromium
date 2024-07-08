@@ -17,10 +17,10 @@ class Label;
 
 namespace ash {
 
-// Represents an app that will be shown in the pine widget. Contains the app
-// title and app icon. Optionally contains a couple favicons depending on the
-// app. Or represents the only opened browser window and its favicons inside the
-// screenshot preview.
+// Represents an app that will be shown in the informed restore widget. Contains
+// the app title and app icon. Optionally contains a couple favicons depending
+// on the app. Or represents the only opened browser window and its favicons
+// inside the screenshot preview.
 //
 // TODO(hewer): Add ASCII art.
 class ASH_EXPORT InformedRestoreItemView : public views::BoxLayoutView {

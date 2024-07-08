@@ -253,7 +253,7 @@ void HandleToggleVirtualTrackpad() {
 
 void HandleShowInformedRestore() {
   if (auto* pine_controller = Shell::Get()->informed_restore_controller()) {
-    pine_controller->MaybeStartPineOverviewSessionDevAccelerator();
+    pine_controller->MaybeStartInformedRestoreSessionDevAccelerator();
   }
 }
 
