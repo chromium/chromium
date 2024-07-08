@@ -314,7 +314,10 @@ void ContentWebState::LoadSimulatedRequest(const GURL& url,
                                            NSData* response_data,
                                            NSString* mime_type) {}
 
-void ContentWebState::Stop() {}
+void ContentWebState::Stop() {
+  DCHECK(web_contents_);
+  web_contents_->Stop();
+}
 
 const NavigationManager* ContentWebState::GetNavigationManager() const {
   return navigation_manager_.get();
