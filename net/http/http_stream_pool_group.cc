@@ -19,6 +19,27 @@ bool IsNegotiatedProtocolTextBased(NextProto next_proto) {
   return next_proto == kProtoUnknown || next_proto == kProtoHTTP11;
 }
 
+enum class StreamSocketUsableState {
+  kUsable,
+  kRemoteSideClosed,
+  kDataReceivedUnexpectedly,
+};
+
+StreamSocketUsableState CalculateStreamSocketUsableState(
+    const StreamSocket& socket) {
+  if (socket.WasEverUsed()) {
+    if (socket.IsConnectedAndIdle()) {
+      return StreamSocketUsableState::kUsable;
+    }
+    return socket.IsConnected()
+               ? StreamSocketUsableState::kDataReceivedUnexpectedly
+               : StreamSocketUsableState::kRemoteSideClosed;
+  }
+
+  return socket.IsConnected() ? StreamSocketUsableState::kUsable
+                              : StreamSocketUsableState::kRemoteSideClosed;
+}
+
 }  // namespace
 
 HttpStreamPool::Group::IdleStreamSocket::IdleStreamSocket(
@@ -49,6 +70,43 @@ std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
       this, std::move(socket), generation_);
   return std::make_unique<HttpBasicStream>(std::move(stream_handle),
                                            /*is_for_get_to_http_proxy=*/false);
+}
+
+std::unique_ptr<HttpStream>
+HttpStreamPool::Group::CreateTextBasedStreamFromIdleStreamSocket() {
+  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
+
+  if (idle_stream_sockets_.empty()) {
+    return nullptr;
+  }
+
+  // Iterate through the idle streams from oldtest to newest and try to find a
+  // used idle stream. Prefer the newest used idle stream.
+  auto idle_it = idle_stream_sockets_.end();
+  for (auto it = idle_stream_sockets_.begin();
+       it != idle_stream_sockets_.end();) {
+    CHECK_EQ(CalculateStreamSocketUsableState(*it->stream_socket),
+             StreamSocketUsableState::kUsable);
+    if (it->stream_socket->WasEverUsed()) {
+      idle_it = it;
+    }
+    ++it;
+  }
+
+  if (idle_it == idle_stream_sockets_.end()) {
+    // There are no used idle streams. Pick the oldest (first) idle streams
+    // (FIFO).
+    idle_it = idle_stream_sockets_.begin();
+  }
+
+  CHECK(idle_it != idle_stream_sockets_.end());
+
+  std::unique_ptr<StreamSocket> stream_socket =
+      std::move(idle_it->stream_socket);
+  idle_stream_sockets_.erase(idle_it);
+  pool_->DecrementTotalIdleStreamCount();
+
+  return CreateTextBasedStream(std::move(stream_socket));
 }
 
 void HttpStreamPool::Group::ReleaseStreamSocket(
@@ -95,7 +153,9 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(CleanupMode mode) {
     base::TimeDelta timeout = it->stream_socket->WasEverUsed()
                                   ? kUsedIdleStreamSocketTimeout
                                   : kUnusedIdleStreamSocketTimeout;
-    if (!it->stream_socket->IsConnected()) {
+    StreamSocketUsableState state =
+        CalculateStreamSocketUsableState(*it->stream_socket);
+    if (state != StreamSocketUsableState::kUsable) {
       should_delete = true;
     } else if (now - it->time_became_idle >= timeout) {
       should_delete = true;

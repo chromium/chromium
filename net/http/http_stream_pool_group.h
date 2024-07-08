@@ -49,6 +49,10 @@ class HttpStreamPool::Group {
   std::unique_ptr<HttpStream> CreateTextBasedStream(
       std::unique_ptr<StreamSocket> socket);
 
+  // Creates a text-based HttpStream from an existing idle stream. Returns
+  // nullptr when there is no idle stream.
+  std::unique_ptr<HttpStream> CreateTextBasedStreamFromIdleStreamSocket();
+
   // Releases a StreamSocket that was used to create a text-based HttpStream.
   void ReleaseStreamSocket(std::unique_ptr<StreamSocket> socket,
                            int64_t generation);
