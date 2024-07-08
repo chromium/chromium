@@ -112,15 +112,15 @@ class ChromeBrowserCloudManagementRegisterWatcher
 
   const raw_ptr<ChromeBrowserCloudManagementController> controller_;
 
+  std::optional<bool> register_result_;
+  base::Time visible_start_time_;
+
   base::RunLoop run_loop_;
   std::unique_ptr<EnterpriseStartupDialog> dialog_;
 
   bool is_restart_needed_ = false;
-  std::optional<bool> register_result_;
 
   DialogCreationCallback test_create_dialog_callback_;
-
-  base::Time visible_start_time_;
 };
 
 }  // namespace policy
