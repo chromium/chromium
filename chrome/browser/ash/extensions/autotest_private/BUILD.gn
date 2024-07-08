@@ -1,0 +1,80 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("autotest_private") {
+  sources = [
+    "autotest_private_api.cc",
+    "autotest_private_api.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/tracing",
+    "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/power/ml/smart_dim",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/metrics",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/assistant:lib",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/components/quick_answers/public/cpp",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/constants",
+    "//chromeos/printing",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/ui/base",
+    "//chromeos/ui/frame",
+    "//chromeos/ui/wm",
+    "//components/session_manager/core",
+    "//components/update_client",
+    "//components/user_manager",
+    "//components/variations",
+    "//components/viz/host",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/viz/public/mojom",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/display",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
+    "//ui/ozone",
+    "//ui/snapshot",
+    "//ui/views",
+    "//ui/wm",
+    "//url",
+  ]
+}

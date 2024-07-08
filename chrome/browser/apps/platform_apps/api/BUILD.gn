@@ -88,6 +88,13 @@ source_set("api") {
       "//chrome/browser/ash/remote_apps",
       "//ui/events:event_constants",
     ]
+
+    # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular includes.
+    deps += [ "//chrome/browser/ash/extensions/file_manager" ]
+
+    # TODO(crbug.com/40251079): Remove circular dependencies.
+    allow_circular_includes_from =
+        [ "//chrome/browser/ash/extensions/file_manager" ]
   }
 
   if (use_lld) {

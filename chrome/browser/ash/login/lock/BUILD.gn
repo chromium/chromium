@@ -38,6 +38,8 @@ static_library("lock") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/extensions/autotest_private",
+    "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/extensions",
@@ -63,6 +65,8 @@ static_library("lock") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/extensions/autotest_private",
+    "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/extensions",
   ]
