@@ -137,11 +137,6 @@ ASH_EXPORT SplitViewOverviewSession* GetSplitViewOverviewSession(
 // Returns true if `window` is currently snapped.
 bool IsSnapped(aura::Window* window);
 
-// Returns whether `window`'s snap position is actually in the left or top
-// position based on whether the display is in primary screen orientation.
-// TODO(sophiewen): Consolidate with `IsPhysicallyLeftOrTop(SnapPostiion)`.
-bool IsPhysicallyLeftOrTop(aura::Window* window);
-
 // Returns the length of the window according to the screen orientation.
 ASH_EXPORT int GetWindowLength(aura::Window* window, bool horizontal);
 
@@ -222,14 +217,19 @@ ASH_EXPORT bool IsLayoutHorizontal(const display::Display& display);
 ASH_EXPORT bool IsLayoutPrimary(aura::Window* window);
 ASH_EXPORT bool IsLayoutPrimary(const display::Display& display);
 
-// Returns true if |position| actually signifies a left or top position,
-// according to the return values of |IsLayoutHorizontal| and
-// |IsLayoutPrimary|. Physical position refers to the position of the window
+// Returns true if `position` actually signifies a left or top position,
+// according to the return values of `IsLayoutHorizontal` and
+// `IsLayoutPrimary`. Physical position refers to the position of the window
 // on the display that is held upward.
 ASH_EXPORT bool IsPhysicallyLeftOrTop(SnapPosition position,
                                       aura::Window* window);
 ASH_EXPORT bool IsPhysicallyLeftOrTop(SnapPosition position,
                                       const display::Display& display);
+
+// Returns whether `window`'s snap position is actually in the left or top
+// position based on whether the display is in primary screen orientation, where
+// `window` must be snapped.
+ASH_EXPORT bool IsPhysicallyLeftOrTop(aura::Window* window);
 
 // Returns the maximum value of the `divider_position_`, which is the width of
 // the current display's work area bounds in landscape orientation, or height

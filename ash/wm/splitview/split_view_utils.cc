@@ -414,16 +414,6 @@ bool IsSnapped(aura::Window* window) {
   return window && WindowState::Get(window)->IsSnapped();
 }
 
-bool IsPhysicallyLeftOrTop(aura::Window* window) {
-  chromeos::WindowStateType state_type =
-      WindowState::Get(window)->GetStateType();
-  CHECK(chromeos::IsSnappedWindowStateType(state_type));
-  if (IsLayoutPrimary(window)) {
-    return state_type == chromeos::WindowStateType::kPrimarySnapped;
-  }
-  return state_type == chromeos::WindowStateType::kSecondarySnapped;
-}
-
 void SetWindowTransformDuringResizing(aura::Window* window,
                                       int divider_position) {
   const bool is_primary_window = IsPhysicallyLeftOrTop(window);
@@ -683,6 +673,16 @@ bool IsPhysicallyLeftOrTop(SnapPosition position,
   DCHECK_NE(SnapPosition::kNone, position);
   return position == (IsLayoutPrimary(display) ? SnapPosition::kPrimary
                                                : SnapPosition::kSecondary);
+}
+
+bool IsPhysicallyLeftOrTop(aura::Window* window) {
+  chromeos::WindowStateType state_type =
+      WindowState::Get(window)->GetStateType();
+  CHECK(chromeos::IsSnappedWindowStateType(state_type));
+  if (IsLayoutPrimary(window)) {
+    return state_type == chromeos::WindowStateType::kPrimarySnapped;
+  }
+  return state_type == chromeos::WindowStateType::kSecondarySnapped;
 }
 
 int GetDividerPositionUpperLimit(aura::Window* root_window) {

@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
@@ -159,6 +160,17 @@ void UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
   EXPECT_EQ(
       display::Screen::GetScreen()->GetDisplayNearestWindow(w1).work_area(),
       union_bounds);
+}
+
+void UnionBoundsEqualToWorkAreaBounds(SnapGroup* snap_group) {
+  aura::Window* w1 = snap_group->window1();
+  aura::Window* w2 = snap_group->window2();
+  auto* divider = snap_group->snap_group_divider();
+  if (IsPhysicallyLeftOrTop(w1)) {
+    UnionBoundsEqualToWorkAreaBounds(w1, w2, divider);
+  } else {
+    UnionBoundsEqualToWorkAreaBounds(w2, w1, divider);
+  }
 }
 
 }  // namespace ash

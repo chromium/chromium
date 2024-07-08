@@ -4056,7 +4056,7 @@ TEST_F(SnapGroupDividerTest, DoubleTapDividerBasic) {
       snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
   EXPECT_EQ(w1.get(), snap_group->window2());
   EXPECT_EQ(w2.get(), snap_group->window1());
-  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(snap_group);
 }
 
 // Tests that double-tap on the Snap Group divider handler swaps the windows
@@ -4115,7 +4115,7 @@ TEST_F(SnapGroupDividerTest, DoubleTapDividerToSwapWindowsBounds) {
             snap_group->window2()->GetBoundsInScreen().width());
   EXPECT_EQ(w2_bounds_before_swap.width(),
             snap_group->window1()->GetBoundsInScreen().width());
-  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(snap_group);
 }
 
 // Tests that a double-tap gesture on the divider handler within a Snap Group
@@ -4158,7 +4158,7 @@ TEST_F(SnapGroupDividerTest, DoubleTapDividerWithTransient) {
   EXPECT_EQ(w2.get(), snap_group->window1());
   EXPECT_TRUE(
       wm::HasTransientAncestor(w2_transient.get(), snap_group->window1()));
-  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(snap_group);
 }
 
 // Tests that performing a double-tap gesture during a divider drag operation
@@ -7501,7 +7501,8 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
 
   // A new Snap Group comprising windows `w2` and `w1` will be created.
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w1.get()));
-  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
 }
 
 //  In the Overview, after manually setting up a partial overview by dragging to
@@ -7615,7 +7616,8 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
 
   // A new Snap Group comprising windows `w2` and `w1` will be created.
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w1.get()));
-  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
 }
