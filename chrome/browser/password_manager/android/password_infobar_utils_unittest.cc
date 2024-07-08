@@ -29,14 +29,14 @@ class PasswordInfobarUtilsTest : public testing::Test {
     AccountInfo account_info =
         identity_test_environment_.MakePrimaryAccountAvailable(
             kTestEmail, signin::ConsentLevel::kSignin);
-    sync_service_.SetSignedInWithoutSyncFeature(account_info);
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   }
 
   void SignInWithSync() {
     AccountInfo account_info =
         identity_test_environment_.MakePrimaryAccountAvailable(
             kTestEmail, signin::ConsentLevel::kSync);
-    sync_service_.SetSignedInWithSyncFeatureOn(account_info);
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
   }
 
   syncer::SyncService* sync_service() { return &sync_service_; }

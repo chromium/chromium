@@ -40,14 +40,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   void SignIn(signin::ConsentLevel consent_level) {
     AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
         "foo@gmail.com", consent_level);
-    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
-    // deleted from the codebase. See ConsentLevel::kSync documentation for
-    // details.
-    if (consent_level == signin::ConsentLevel::kSync) {
-      sync_service_.SetSignedInWithSyncFeatureOn(account_info);
-    } else {
-      sync_service_.SetSignedInWithoutSyncFeature(account_info);
-    }
+    sync_service_.SetSignedIn(consent_level, account_info);
     sync_service_.FireStateChanged();
   }
 

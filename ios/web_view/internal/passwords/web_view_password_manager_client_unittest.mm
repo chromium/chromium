@@ -106,7 +106,7 @@ TEST_F(WebViewPasswordManagerClientTest, NoPromptIfNotOptedInToAccountStorage) {
       .WillOnce(Return(false));
 
   // There is a signed-in user, but they have chosen not to enable passwords.
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
@@ -121,7 +121,7 @@ TEST_F(WebViewPasswordManagerClientTest, PromptIfAllConditionsPass) {
   EXPECT_CALL(*password_manager_for_ui, IsBlocklisted())
       .WillOnce(Return(false));
 
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   // The user chose to enable passwords (along with all other types).
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true, syncer::UserSelectableTypeSet());

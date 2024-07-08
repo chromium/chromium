@@ -110,7 +110,7 @@ TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
 
   syncer::TestSyncService sync_service;
   if (p.is_pwd_sync_enabled) {
-    sync_service.SetSignedInWithSyncFeatureOn();
+    sync_service.SetSignedIn(signin::ConsentLevel::kSync);
   } else {
     sync_service.SetSignedOut();
   }

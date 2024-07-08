@@ -102,11 +102,7 @@ class UnifiedConsentServiceTest : public testing::Test {
   void SignIn(signin::ConsentLevel consent_level) {
     CoreAccountInfo account_info = identity_test_environment_.SetPrimaryAccount(
         "testaccount@gmail.com", consent_level);
-    if (consent_level == signin::ConsentLevel::kSync) {
-      sync_service_.SetSignedInWithSyncFeatureOn(account_info);
-    } else {
-      sync_service_.SetSignedInWithoutSyncFeature(account_info);
-    }
+    sync_service_.SetSignedIn(consent_level, account_info);
   }
 
   void SignOut() {

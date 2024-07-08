@@ -374,7 +374,7 @@ TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
   account.email = "foo@gmail.com";
   account.gaia = "gaia";
   account.account_id = CoreAccountId::FromGaiaId("gaia");
-  sync_service_.SetSignedInWithSyncFeatureOn(account);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account);
 
   CreateCredentialProviderService();
 
@@ -404,7 +404,7 @@ TEST_F(CredentialProviderServiceTest, SignedInUserStoredEmail) {
   account.email = "foo@gmail.com";
   account.gaia = "gaia";
   account.account_id = CoreAccountId::FromGaiaId("gaia");
-  sync_service_.SetSignedInWithoutSyncFeature(account);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account);
 
   CreateCredentialProviderService();
 

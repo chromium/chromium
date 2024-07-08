@@ -465,7 +465,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
   // Should be able to register once again when sync is back on.
   test_sync_service_.SetMaxTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_.SetSignedInWithSyncFeatureOn();
+  test_sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   EXPECT_CALL(*fcm_handler_, StartListening()).Times(1);
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(2, sharing_device_registration_->registration_attempts());

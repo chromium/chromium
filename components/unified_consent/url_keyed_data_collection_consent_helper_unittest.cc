@@ -148,7 +148,7 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest,
   EXPECT_TRUE(helper->IsEnabled());
 
   helper->AddObserver(this);
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   EXPECT_FALSE(sync_service_.IsSyncFeatureEnabled());
   EXPECT_TRUE(helper->IsEnabled());
   EXPECT_EQ(0U, state_changed_notifications_.size());

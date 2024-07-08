@@ -20,7 +20,7 @@ class SafeBrowsingSyncObserverImplTest : public PlatformTest {
 
  protected:
   void EnableSync() {
-    sync_service_.SetSignedInWithSyncFeatureOn();
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
     sync_service_.FireStateChanged();
   }
 

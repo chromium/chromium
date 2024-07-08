@@ -210,9 +210,9 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     } else if (!sync_enabled) {
       CHECK(!sync_completed);
       CHECK(!has_foreign_sessions);
-      sync_service_->SetSignedInWithoutSyncFeature();
+      sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
     } else {
-      sync_service_->SetSignedInWithSyncFeatureOn();
+      sync_service_->SetSignedIn(signin::ConsentLevel::kSync);
       if (!sync_completed) {
         sync_service_->GetUserSettings()
             ->ClearInitialSyncFeatureSetupComplete();

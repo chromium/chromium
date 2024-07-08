@@ -311,7 +311,7 @@ TEST_F(TabOrganizationServiceTest, CanStartRequest) {
   // // Not Synced
   sync_service()->SetSignedOut();
   EXPECT_FALSE(service()->CanStartRequest());
-  sync_service()->SetSignedInWithSyncFeatureOn();
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
 
   // Sync Paused
   sync_service()->SetPersistentAuthError();

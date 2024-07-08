@@ -91,11 +91,7 @@ class PrivacyMetricsServiceTest : public testing::Test {
                                                             consent_level);
     }
 
-    if (consent_level == signin::ConsentLevel::kSync) {
-      sync_service_.SetSignedInWithSyncFeatureOn(account_info);
-    } else {
-      sync_service_.SetSignedInWithoutSyncFeature(account_info);
-    }
+    sync_service_.SetSignedIn(consent_level, account_info);
   }
 
   TestingProfile* profile() { return &profile_; }

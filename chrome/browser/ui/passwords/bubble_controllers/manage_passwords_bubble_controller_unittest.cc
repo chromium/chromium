@@ -184,7 +184,7 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnLocalCredentials) {
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
   Init();
-  sync_service()->SetSignedInWithoutSyncFeature();
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
 
@@ -199,7 +199,7 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
       controller()->GetPasswordSyncState(),
       ManagePasswordsBubbleController::SyncState::kActiveWithAccountPasswords);
 
-  sync_service()->SetSignedInWithSyncFeatureOn();
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
   ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),

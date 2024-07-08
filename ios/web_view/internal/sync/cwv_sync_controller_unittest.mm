@@ -72,7 +72,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
              gaiaID:base::SysUTF8ToNSString(account_info.gaia)];
 
   // Preconfigure TestSyncService as if it was enabled in transport mode.
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 
   CWVSyncController* sync_controller = [[CWVSyncController alloc]
       initWithSyncService:&sync_service_
@@ -100,7 +100,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
   CWVWebView.skipAccountStorageCheckEnabled = true;
   AccountInfo account_info =
       identity_test_environment_.MakeAccountAvailable(kTestEmail);
-  sync_service_.SetSignedInWithSyncFeatureOn(account_info);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
   sync_service_.SetPersistentAuthError();
   ASSERT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
       &pref_service_, &sync_service_));
@@ -145,7 +145,7 @@ TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
       initWithSyncService:&sync_service_
           identityManager:identity_test_environment_.identity_manager()
               prefService:&pref_service_];
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   ASSERT_FALSE(sync_service_.GetUserSettings()->IsPassphraseRequired());
   EXPECT_FALSE(sync_controller.passphraseNeeded);
   sync_service_.SetPassphraseRequired();
@@ -157,7 +157,7 @@ TEST_F(CWVSyncControllerTest, TrustedVaultKeysRequired) {
       initWithSyncService:&sync_service_
           identityManager:identity_test_environment_.identity_manager()
               prefService:&pref_service_];
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   ASSERT_FALSE(sync_service_.GetUserSettings()->IsTrustedVaultKeyRequired());
   EXPECT_FALSE(sync_controller.trustedVaultKeysRequired);
   sync_service_.SetTrustedVaultKeyRequired(true);
@@ -191,7 +191,7 @@ TEST_F(CWVSyncControllerTest, DelegateDidStartAndStopSync) {
   OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
   OCMExpect([delegate syncControllerDidStopSync:sync_controller]);
   OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.FireStateChanged();
   sync_service_.SetSignedOut();
   sync_service_.FireStateChanged();

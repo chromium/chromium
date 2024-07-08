@@ -263,11 +263,7 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
 
     signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
 
-    if (consent_level == signin::ConsentLevel::kSync) {
-      GetTestSyncService()->SetSignedInWithSyncFeatureOn(account_info);
-    } else {
-      GetTestSyncService()->SetSignedInWithoutSyncFeature(account_info);
-    }
+    GetTestSyncService()->SetSignedIn(consent_level, account_info);
 
     return account_info;
   }

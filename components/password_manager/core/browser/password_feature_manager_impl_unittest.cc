@@ -70,7 +70,7 @@ TEST_F(PasswordFeatureManagerImplTest,
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  sync_service_.SetSignedInWithoutSyncFeature(account_);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
 
   ASSERT_EQ(
       password_manager::sync_util::GetPasswordSyncState(&sync_service_),
@@ -83,7 +83,7 @@ TEST_F(PasswordFeatureManagerImplTest,
 }
 
 TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfSyncing) {
-  sync_service_.SetSignedInWithSyncFeatureOn(account_);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_);
 
   ASSERT_EQ(
       password_manager::sync_util::GetPasswordSyncState(&sync_service_),
@@ -122,7 +122,7 @@ class PasswordFeatureManagerImplExplicitSigninParamTest
 // generation no longer triggers an optin.
 TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
        GenerationEnabledIfUserEligibleForAccountStorageOptIn) {
-  sync_service_.SetSignedInWithoutSyncFeature(account_);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
   // The user hasn't opted in to account storage yet.
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
@@ -143,7 +143,7 @@ TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
 // When signin is explicit, account storage remains disabled in auth errors.
 TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
        OptedInIfSigninPaused) {
-  sync_service_.SetSignedInWithoutSyncFeature(account_);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
   sync_service_.SetPersistentAuthError();
 
   ASSERT_EQ(sync_service_.GetTransportState(),
@@ -171,7 +171,7 @@ TEST_F(PasswordFeatureManagerImplTest,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
 
-  sync_service_.SetSignedInWithoutSyncFeature(account_);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
 
   ASSERT_EQ(
       password_manager::sync_util::GetPasswordSyncState(&sync_service_),
@@ -191,7 +191,7 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSignedOut) {
 }
 
 TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSyncPaused) {
-  sync_service_.SetSignedInWithSyncFeatureOn(account_);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_);
   sync_service_.SetPersistentAuthError();
 
   ASSERT_EQ(sync_service_.GetTransportState(),
@@ -207,7 +207,7 @@ TEST_F(PasswordFeatureManagerImplTest, ShouldChangeDefaultPasswordStore) {
   base::test::ScopedFeatureList features(
       password_manager::features::kButterOnDesktopFollowup);
 
-  sync_service_.SetSignedInWithoutSyncFeature(account_);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
 
   password_feature_manager_.SetDefaultPasswordStore(
       password_manager::PasswordForm::Store::kProfileStore);
@@ -218,7 +218,7 @@ TEST_F(PasswordFeatureManagerImplTest, ShouldNotChangeDefaultPasswordStore) {
   base::test::ScopedFeatureList features(
       password_manager::features::kButterOnDesktopFollowup);
 
-  sync_service_.SetSignedInWithoutSyncFeature(account_);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
 
   password_feature_manager_.SetDefaultPasswordStore(
       password_manager::PasswordForm::Store::kAccountStore);

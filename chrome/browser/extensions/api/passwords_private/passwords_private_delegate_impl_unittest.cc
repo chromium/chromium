@@ -285,7 +285,7 @@ void SetUpSyncInTransportMode(Profile* profile) {
               [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
                 return std::make_unique<syncer::TestSyncService>();
               })));
-  sync_service->SetSignedInWithoutSyncFeature();
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
   ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
 }
 
@@ -2213,7 +2213,7 @@ TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups_SyncOn) {
-  sync_service()->SetSignedInWithSyncFeatureOn();
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
 
   auto delegate = CreateDelegate();
 

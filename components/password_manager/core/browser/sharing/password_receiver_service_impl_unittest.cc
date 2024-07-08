@@ -150,7 +150,7 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
   void SetUp() override {
     testing::Test::SetUp();
     // Set the user to be syncing passwords.
-    sync_service_.SetSignedInWithSyncFeatureOn();
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   }
 
   void TearDown() override {
@@ -363,7 +363,7 @@ TEST_P(PasswordReceiverServiceImplTest,
   // matter).
   base::test::ScopedFeatureList feature_list(
       syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
-  sync_service().SetSignedInWithoutSyncFeature();
+  sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   pref_service().registry()->RegisterDictionaryPref(
       password_manager::prefs::kAccountStoragePerAccountSettings);
@@ -393,7 +393,7 @@ TEST_P(PasswordReceiverServiceImplTest,
   ASSERT_TRUE(account_password_store().stored_passwords().empty());
 
   // Setup a signed-in user that opted-out from using the account store:
-  sync_service().SetSignedInWithoutSyncFeature();
+  sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   pref_service().registry()->RegisterDictionaryPref(
       password_manager::prefs::kAccountStoragePerAccountSettings);

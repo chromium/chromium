@@ -73,7 +73,7 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 
 void SetupAccountPasswordStore(syncer::TestSyncService* sync_service,
                                PrefService* pref_service) {
-  sync_service->SetSignedInWithoutSyncFeature();
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
   ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
       pref_service, sync_service));
 }

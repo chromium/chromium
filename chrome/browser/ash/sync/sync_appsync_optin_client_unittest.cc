@@ -130,7 +130,7 @@ class SyncAppsyncOptinClientTest : public testing::Test {
     account_info.account_id = CoreAccountId::FromGaiaId(account_id.GetGaiaId());
     account_info.gaia = account_id.GetGaiaId();
     account_info.email = account_id.GetUserEmail();
-    test_sync_service_->SetSignedInWithSyncFeatureOn(account_info);
+    test_sync_service_->SetSignedIn(signin::ConsentLevel::kSync, account_info);
     test_sync_service_->SetStatus(/*has_passphrase=*/false, /*active=*/true);
   }
 

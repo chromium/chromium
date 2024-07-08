@@ -191,7 +191,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleEnabledInTransportMode) {
 
   // Sign in without kSync consent. With this, only Sync-the-transport (not
   // Sync-the-feature) can run.
-  service.SetSignedInWithoutSyncFeature();
+  service.SetSignedIn(signin::ConsentLevel::kSignin);
   ASSERT_FALSE(service.CanSyncFeatureStart());
 
   // Regardless, if the datatype is active, it means uploading data is also

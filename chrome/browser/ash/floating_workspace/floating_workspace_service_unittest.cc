@@ -393,7 +393,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     account_info.email = kTestAccount;
     account_info.gaia = "gaia";
     account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
-    test_sync_service_.SetSignedInWithSyncFeatureOn(account_info);
+    test_sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
 
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -2030,7 +2030,7 @@ class FloatingWorkspaceServiceMultiUserTest
     account_info.email = kTestAccount2;
     account_info.gaia = "gaia2";
     account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
-    test_sync_service()->SetSignedInWithSyncFeatureOn(account_info);
+    test_sync_service()->SetSignedIn(signin::ConsentLevel::kSync, account_info);
     fake_desk_sync_service2_ =
         std::make_unique<desks_storage::FakeDeskSyncService>(
             /*skip_engine_connection=*/true);

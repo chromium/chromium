@@ -80,7 +80,7 @@ SyncStatusLabels SetUpDistinctCase(
     DistinctState case_number) {
   AccountInfo account = test_environment->MakePrimaryAccountAvailable(
       kTestUser, signin::ConsentLevel::kSync);
-  service->SetSignedInWithSyncFeatureOn(account);
+  service->SetSignedIn(signin::ConsentLevel::kSync, account);
 
   switch (case_number) {
     case STATUS_CASE_SETUP_IN_PROGRESS: {
@@ -280,7 +280,7 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
   const AccountInfo primary_account_info =
       environment.MakePrimaryAccountAvailable(kTestUser,
                                               signin::ConsentLevel::kSync);
-  service.SetSignedInWithSyncFeatureOn(primary_account_info);
+  service.SetSignedIn(signin::ConsentLevel::kSync, primary_account_info);
 
   // Setup a secondary account.
   const AccountInfo secondary_account_info =

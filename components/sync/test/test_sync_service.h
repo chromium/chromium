@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
@@ -42,13 +43,13 @@ class TestSyncService : public SyncService {
 
   // High-level setters that configure common scenarios. These will override
   // any previous call to SetAllowedByEnterprisePolicy()
-  // and SetHasUnrecoverableError().
+  // and SetHasUnrecoverableError(). Passing ConsentLevel::kSync will also
+  // mark the first sync-the-feature setup as complete.
   // TODO(crbug.com/350495915): This currently resets the above but not things
   // like SetPassphraseRequired(). It should override all or none.
-  void SetSignedInWithoutSyncFeature();
-  void SetSignedInWithoutSyncFeature(const CoreAccountInfo& account_info);
-  void SetSignedInWithSyncFeatureOn();
-  void SetSignedInWithSyncFeatureOn(const CoreAccountInfo& account_info);
+  void SetSignedIn(signin::ConsentLevel consent_level);
+  void SetSignedIn(signin::ConsentLevel consent_level,
+                   const CoreAccountInfo& account_info);
   void SetSignedOut();
 
   // Mimics the user resetting Sync from the web dashboard. On ChromeOS Ash,

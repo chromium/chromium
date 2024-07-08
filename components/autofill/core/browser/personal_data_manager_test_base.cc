@@ -91,11 +91,10 @@ void PersonalDataManagerTestBase::MakePrimaryAccountAvailable(
         identity_test_env_.MakePrimaryAccountAvailable(email, consent_level);
   }
 #endif
-  if (use_sync_transport_mode) {
-    sync_service_.SetSignedInWithoutSyncFeature(account_info);
-  } else {
-    sync_service_.SetSignedInWithSyncFeatureOn(account_info);
-  }
+  sync_service_.SetSignedIn(use_sync_transport_mode
+                                ? signin::ConsentLevel::kSignin
+                                : signin::ConsentLevel::kSync,
+                            account_info);
 }
 
 std::unique_ptr<PersonalDataManager>

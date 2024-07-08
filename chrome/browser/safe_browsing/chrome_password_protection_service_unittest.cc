@@ -1691,7 +1691,7 @@ class PasswordCheckupWithPhishGuardTest
     sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&CreateTestSyncService)));
-    sync_service_->SetSignedInWithSyncFeatureOn(account);
+    sync_service_->SetSignedIn(signin::ConsentLevel::kSync, account);
     ASSERT_TRUE(sync_service_->IsSyncFeatureEnabled());
     sync_service_->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kPasswords, is_syncing_passwords);

@@ -61,7 +61,7 @@ class EntryPointDisplayReasonTest : public ::testing::Test {
   }
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
-  void SignIn() { sync_service_.SetSignedInWithoutSyncFeature(); }
+  void SignIn() { sync_service_.SetSignedIn(signin::ConsentLevel::kSignin); }
 
  private:
   syncer::TestSyncService sync_service_;

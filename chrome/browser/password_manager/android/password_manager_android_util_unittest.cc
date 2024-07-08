@@ -279,7 +279,7 @@ TEST_F(PasswordManagerAndroidUtilTest,
 TEST_F(PasswordManagerAndroidUtilTest,
        ShouldUseUpmWiringFalseWhenSyncingAndUnenrolled) {
   syncer::TestSyncService sync_service;
-  sync_service.SetSignedInWithSyncFeatureOn();
+  sync_service.SetSignedIn(signin::ConsentLevel::kSync);
   pref_service()->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       true);
@@ -290,7 +290,7 @@ TEST_F(PasswordManagerAndroidUtilTest,
 TEST_F(PasswordManagerAndroidUtilTest,
        ShouldUseUpmWiringTrueWhenSyncingAndSplitStoresDisabled) {
   syncer::TestSyncService sync_service;
-  sync_service.SetSignedInWithSyncFeatureOn();
+  sync_service.SetSignedIn(signin::ConsentLevel::kSync);
 
   EXPECT_TRUE(ShouldUseUpmWiring(&sync_service, pref_service()));
 }
@@ -298,7 +298,7 @@ TEST_F(PasswordManagerAndroidUtilTest,
 TEST_F(PasswordManagerAndroidUtilTest,
        ShouldUseUpmWiringTrueWhenSyncingAndSplitStoresEnabled) {
   syncer::TestSyncService sync_service;
-  sync_service.SetSignedInWithSyncFeatureOn();
+  sync_service.SetSignedIn(signin::ConsentLevel::kSync);
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(kOn));
@@ -309,7 +309,7 @@ TEST_F(PasswordManagerAndroidUtilTest,
 TEST_F(PasswordManagerAndroidUtilTest,
        ShouldUseUpmWiringTrueWhenSignedInWithoutSyncAndSplitStoresDisabled) {
   syncer::TestSyncService sync_service;
-  sync_service.SetSignedInWithoutSyncFeature();
+  sync_service.SetSignedIn(signin::ConsentLevel::kSignin);
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(kOff));
@@ -320,7 +320,7 @@ TEST_F(PasswordManagerAndroidUtilTest,
 TEST_F(PasswordManagerAndroidUtilTest,
        ShouldUseUpmWiringTrueWhenSignedInWithoutSyncAndSplitStoresEnabled) {
   syncer::TestSyncService sync_service;
-  sync_service.SetSignedInWithoutSyncFeature();
+  sync_service.SetSignedIn(signin::ConsentLevel::kSignin);
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(kOn));

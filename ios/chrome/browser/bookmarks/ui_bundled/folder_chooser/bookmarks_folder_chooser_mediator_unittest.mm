@@ -44,7 +44,7 @@ class BookmarksFolderChooserMediatorUnitTest
         fake_identity,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
 
-    sync_service_.SetSignedInWithoutSyncFeature();
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 
     mediator_ = [[BookmarksFolderChooserMediator alloc]
         initWithBookmarkModel:bookmark_model_

@@ -83,7 +83,7 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusEnabledOnStartup) {
   CoreAccountInfo test_info = GetTestAccountInfo();
-  sync_service()->SetSignedInWithSyncFeatureOn(test_info);
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync, test_info);
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
   EXPECT_CALL(*sync_state_changed_cb(), Run);
@@ -135,7 +135,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
 
   CoreAccountInfo test_info = GetTestAccountInfo();
-  sync_service()->SetSignedInWithSyncFeatureOn(test_info);
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync, test_info);
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
   EXPECT_CALL(*sync_state_changed_cb(), Run);
@@ -151,7 +151,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusChangedToEnabledExcludingPasswords) {
   CoreAccountInfo test_info = GetTestAccountInfo();
-  sync_service()->SetSignedInWithSyncFeatureOn(test_info);
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync, test_info);
   sync_service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/true,
                                                       /*types=*/{});
 
@@ -170,7 +170,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusChangedToDisabledAfterStartup) {
   CoreAccountInfo test_info = GetTestAccountInfo();
-  sync_service()->SetSignedInWithSyncFeatureOn(test_info);
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync, test_info);
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
   EXPECT_CALL(*sync_state_changed_cb(), Run);
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());

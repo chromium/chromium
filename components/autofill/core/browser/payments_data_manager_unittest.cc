@@ -1450,7 +1450,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, SwitchServerStorages) {
   ASSERT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 
   // Switch to persistent storage.
-  sync_service_.SetSignedInWithSyncFeatureOn();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   payments_data_manager().OnStateChanged(&sync_service_);
   WaitForOnPaymentsDataChanged();
 
@@ -1471,7 +1471,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, SwitchServerStorages) {
 
   // Switch back to the account storage, and verify that we are back to the
   // original card.
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   payments_data_manager().OnStateChanged(&sync_service_);
   WaitForOnPaymentsDataChanged();
 
@@ -1612,7 +1612,7 @@ TEST_F(PaymentsDataManagerTest, KeepExistingLocalDataOnSignIn) {
   // Sign in.
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSync);
-  sync_service_.SetSignedInWithSyncFeatureOn(account);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account);
   EXPECT_TRUE(
       sync_service_.IsSyncFeatureEnabled() &&
       sync_service_.GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA));
@@ -2603,11 +2603,11 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Set that the user enabled the sync feature. Check that the function now
   // returns false.
-  sync_service_.SetSignedInWithSyncFeatureOn();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Re-disable the sync feature. Check that the function now returns true.
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   EXPECT_TRUE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function now returns false.
@@ -2670,11 +2670,11 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Set that the user enabled the sync feature. Check that the function still
   // returns false.
-  sync_service_.SetSignedInWithSyncFeatureOn();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Re-disable the sync feature. Check that the function still returns false.
-  sync_service_.SetSignedInWithoutSyncFeature();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function still returns false.
@@ -2729,11 +2729,11 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   // Simulate that the user has enabled the sync feature.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // MakePrimaryAccountAvailable is not supported on CrOS.
-  sync_service_.SetSignedInWithSyncFeatureOn();
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
 #else
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "syncuser@example.com", signin::ConsentLevel::kSync);
-  sync_service_.SetSignedInWithSyncFeatureOn(account_info);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
 #endif
 
   // Check that the sync state is |SignedInAndSyncFeature| if the sync feature
@@ -2759,7 +2759,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   CoreAccountInfo active_info =
       identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
-  sync_service_.SetSignedInWithoutSyncFeature(active_info);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, active_info);
 
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -2828,7 +2828,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   ///////////////////////////////////////////////////////////
   identity_test_env_.MakePrimaryAccountAvailable(active_info.email,
                                                  signin::ConsentLevel::kSync);
-  sync_service_.SetSignedInWithSyncFeatureOn(active_info);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, active_info);
   {
     EXPECT_TRUE(sync_service_.IsSyncFeatureEnabled());
 

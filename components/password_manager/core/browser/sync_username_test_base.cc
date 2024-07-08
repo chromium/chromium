@@ -66,11 +66,7 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email,
   } else {
     CoreAccountInfo account =
         identity_test_env_.MakePrimaryAccountAvailable(email, consent_level);
-    if (consent_level == signin::ConsentLevel::kSync) {
-      sync_service_.SetSignedInWithSyncFeatureOn(account);
-    } else {
-      sync_service_.SetSignedInWithoutSyncFeature(account);
-    }
+    sync_service_.SetSignedIn(consent_level, account);
   }
 }
 

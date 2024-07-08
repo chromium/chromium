@@ -266,13 +266,13 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
   void SigninUserWithoutSyncFeature() {
     const CoreAccountInfo account_info = identity_test_env()->SetPrimaryAccount(
         kTestUser, signin::ConsentLevel::kSignin);
-    sync_service_->SetSignedInWithoutSyncFeature(account_info);
+    sync_service_->SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   }
 
   void SigninUserAndTurnSyncFeatureOn() {
     const CoreAccountInfo account_info = identity_test_env()->SetPrimaryAccount(
         kTestUser, signin::ConsentLevel::kSync);
-    sync_service_->SetSignedInWithSyncFeatureOn(account_info);
+    sync_service_->SetSignedIn(signin::ConsentLevel::kSync, account_info);
   }
 
   void CreatePeopleHandler() {

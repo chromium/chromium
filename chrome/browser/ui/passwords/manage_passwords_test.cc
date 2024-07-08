@@ -218,16 +218,14 @@ void ManagePasswordsTest::ConfigurePasswordSync(
       sync_service->SetSignedOut();
       break;
     }
+    case SyncConfiguration::kAccountStorageOnly:
     case SyncConfiguration::kSyncing: {
+      auto consent_level = configuration == SyncConfiguration::kSyncing
+                               ? signin::ConsentLevel::kSync
+                               : signin::ConsentLevel::kSignin;
       AccountInfo info = signin::MakePrimaryAccountAvailable(
-          identity_manager, "test@email.com", signin::ConsentLevel::kSync);
-      sync_service->SetSignedInWithSyncFeatureOn(info);
-      break;
-    }
-    case SyncConfiguration::kAccountStorageOnly: {
-      AccountInfo info = signin::MakePrimaryAccountAvailable(
-          identity_manager, "test@email.com", signin::ConsentLevel::kSignin);
-      sync_service->SetSignedInWithoutSyncFeature(info);
+          identity_manager, "test@email.com", consent_level);
+      sync_service->SetSignedIn(consent_level, info);
       break;
     }
   }

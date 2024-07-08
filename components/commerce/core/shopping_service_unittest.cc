@@ -120,11 +120,9 @@ class ShoppingServiceTest : public ShoppingServiceTestBase,
           syncer::kReplaceSyncPromosWithSignInPromos);
     }
 
-    if (ShouldEnableReplaceSyncPromosWithSignInPromos()) {
-      sync_service_->SetSignedInWithoutSyncFeature();
-    } else {
-      sync_service_->SetSignedInWithSyncFeatureOn();
-    }
+    sync_service_->SetSignedIn(ShouldEnableReplaceSyncPromosWithSignInPromos()
+                                   ? signin::ConsentLevel::kSignin
+                                   : signin::ConsentLevel::kSync);
     sync_service_->SetMaxTransportState(initial_sync_transport_state);
 
     static_cast<bookmarks::TestBookmarkClient*>(bookmark_model_->client())

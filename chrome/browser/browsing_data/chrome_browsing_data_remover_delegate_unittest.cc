@@ -4150,11 +4150,13 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
   }
 
   void OptInToAccountStorage() {
+    sync_service()->SetSignedIn(
 #if BUILDFLAG(IS_ANDROID)
-    sync_service()->SetSignedInWithSyncFeatureOn();
+        signin::ConsentLevel::kSync
 #else
-    sync_service()->SetSignedInWithoutSyncFeature();
+        signin::ConsentLevel::kSignin
 #endif
+    );
     ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
         GetProfile()->GetPrefs(), sync_service()));
   }

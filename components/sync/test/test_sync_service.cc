@@ -44,32 +44,26 @@ CoreAccountInfo GetDefaultAccountInfo() {
 
 TestSyncService::TestSyncService()
     : user_settings_(this), last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {
-  SetSignedInWithSyncFeatureOn();
+  SetSignedIn(signin::ConsentLevel::kSync);
 }
 
 TestSyncService::~TestSyncService() = default;
 
-void TestSyncService::SetSignedInWithoutSyncFeature() {
-  SetSignedInWithoutSyncFeature(GetDefaultAccountInfo());
+void TestSyncService::SetSignedIn(signin::ConsentLevel consent_level) {
+  SetSignedIn(consent_level, GetDefaultAccountInfo());
 }
 
-void TestSyncService::SetSignedInWithoutSyncFeature(
-    const CoreAccountInfo& account_info) {
-  has_sync_consent_ = false;
-  user_settings_.ClearInitialSyncFeatureSetupComplete();
+void TestSyncService::SetSignedIn(signin::ConsentLevel consent_level,
+                                  const CoreAccountInfo& account_info) {
   disable_reasons_ = {};
   account_info_ = account_info;
-}
-
-void TestSyncService::SetSignedInWithSyncFeatureOn() {
-  SetSignedInWithSyncFeatureOn(GetDefaultAccountInfo());
-}
-
-void TestSyncService::SetSignedInWithSyncFeatureOn(
-    const CoreAccountInfo& account_info) {
-  SetSignedInWithoutSyncFeature(account_info);
-  has_sync_consent_ = true;
-  user_settings_.SetInitialSyncFeatureSetupComplete();
+  if (consent_level == signin::ConsentLevel::kSync) {
+    has_sync_consent_ = true;
+    user_settings_.SetInitialSyncFeatureSetupComplete();
+  } else {
+    has_sync_consent_ = false;
+    user_settings_.ClearInitialSyncFeatureSetupComplete();
+  }
 }
 
 void TestSyncService::SetSignedOut() {
@@ -308,7 +302,7 @@ ModelTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync()
 
 void TestSyncService::StopAndClear() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  SetSignedInWithoutSyncFeature();
+  SetSignedIn(signin::ConsentLevel::kSignin);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
