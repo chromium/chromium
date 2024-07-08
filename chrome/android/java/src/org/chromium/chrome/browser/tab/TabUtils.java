@@ -23,12 +23,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
+import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
@@ -235,10 +237,12 @@ public class TabUtils {
                     AutomotiveUtils.getHorizontalAutomotiveToolbarHeightDp(context);
             int verticalAutomotiveToolbarWidthDp =
                     AutomotiveUtils.getVerticalAutomotiveToolbarWidthDp(context);
+            DimensionCompat dimensionCompat = getDimensionCompat(context);
+            float windowWidthDp = getWindowWidthDp(dimensionCompat, context);
+            float windowHeightDp = getWindowHeightExcludingSystemBarsDp(dimensionCompat, context);
             // This should match the aspect ratio of a Tab's content area.
-            return (context.getResources().getConfiguration().screenWidthDp * 1.f
-                            - verticalAutomotiveToolbarWidthDp)
-                    / (context.getResources().getConfiguration().screenHeightDp * 1.f
+            return (windowWidthDp - verticalAutomotiveToolbarWidthDp)
+                    / (windowHeightDp
                             - browserControlsHeightDp
                             - horizontalAutomotiveToolbarHeightDp);
         }
@@ -246,8 +250,26 @@ public class TabUtils {
         return PORTRAIT_THUMBNAIL_ASPECT_RATIO;
     }
 
+    private static float getWindowWidthDp(DimensionCompat compat, Context context) {
+        return compat.getWindowWidth() / context.getResources().getDisplayMetrics().density;
+    }
+
+    private static float getWindowHeightExcludingSystemBarsDp(
+            DimensionCompat compat, Context context) {
+        return (compat.getWindowHeight() - compat.getNavbarHeight() - compat.getStatusbarHeight())
+                / context.getResources().getDisplayMetrics().density;
+    }
+
+    private static DimensionCompat getDimensionCompat(Context context) {
+        // (TODO: crbug.com/351854698) Pass activity context instead.
+        Activity activity = ContextUtils.activityFromContext(context);
+        assert activity != null : "Activity from context should not be null for this class.";
+        return DimensionCompat.create(activity, null);
+    }
+
     /**
      * Derive grid card height based on width, expected thumbnail aspect ratio and margins.
+     *
      * @param cardWidthPx width of the card
      * @param context to derive view margins
      * @param browserControlsStateProvider - For getting browser controls height.

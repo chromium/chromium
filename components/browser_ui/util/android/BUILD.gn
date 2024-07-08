@@ -60,6 +60,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/components/browser_ui/util/BitmapCacheTest.java",
     "java/src/org/chromium/components/browser_ui/util/ComposedBrowserControlsVisibilityDelegateTest.java",
+    "java/src/org/chromium/components/browser_ui/util/DimensionCompatUnitTest.java",
   ]
   deps = [
     ":java",

@@ -20,8 +20,14 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Insets;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 import android.util.Size;
+import android.view.WindowInsets;
+import android.view.WindowMetrics;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -86,6 +92,14 @@ public class TabUtilsUnitTest {
         }
     }
 
+    @Implements(WindowMetrics.class)
+    public static class ShadowWindowMetrics {
+        @Implementation
+        public static WindowInsets getWindowInsets() {
+            return sTestSysBarInsets;
+        }
+    }
+
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Rule
@@ -98,7 +112,10 @@ public class TabUtilsUnitTest {
 
     private static final int TEST_SCREEN_WIDTH = 1000;
     private static final int TEST_SCREEN_HEIGHT = 1000;
-    private static final float TEST_DENSITY = 1.3f;
+    private static final int TEST_NAVIGATION_BAR_HEIGHT = 30;
+
+    private static final int TEST_STATUS_BAR_HEIGHT = 30;
+    private static WindowInsets sTestSysBarInsets;
 
     @Mock WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private Tab mTab;
@@ -160,6 +177,18 @@ public class TabUtilsUnitTest {
                         })
                 .when(mTabNative)
                 .setUserAgent(anyInt());
+        if (VERSION.SDK_INT >= VERSION_CODES.R) {
+            sTestSysBarInsets =
+                    new WindowInsets.Builder()
+                            .setInsets(
+                                    WindowInsets.Type.systemBars(),
+                                    Insets.of(
+                                            0,
+                                            TEST_STATUS_BAR_HEIGHT,
+                                            0,
+                                            TEST_NAVIGATION_BAR_HEIGHT))
+                            .build();
+        }
     }
 
     @After
@@ -303,70 +332,42 @@ public class TabUtilsUnitTest {
     }
 
     @Test
+    @Config(
+            sdk = Build.VERSION_CODES.R,
+            shadows = {ShadowWindowMetrics.class},
+            qualifiers = "w" + TEST_SCREEN_WIDTH + "dp-h" + TEST_SCREEN_HEIGHT + "dp-land")
     public void testGetTabThumbnailAspectRatioWithHorizontalAutomotiveToolbar() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
-
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
                         activity -> {
-                            Activity spyActivity = spy(activity);
-                            doReturn(mResources).when(spyActivity).getResources();
-                            doReturn(mConfiguration).when(mResources).getConfiguration();
-                            doReturn(mDisplayMetrics).when(mResources).getDisplayMetrics();
-                            doReturn(0).when(mBrowserControlsStateProvider).getTopControlsHeight();
-                            mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-                            mConfiguration.screenWidthDp = TEST_SCREEN_WIDTH;
-                            mConfiguration.screenHeightDp = TEST_SCREEN_HEIGHT;
-                            mDisplayMetrics.density = TEST_DENSITY;
                             int horizontalAutomotiveToolbarHeightDp =
                                     AutomotiveUtils.getHorizontalAutomotiveToolbarHeightDp(
-                                            spyActivity);
-                            float expectedAspectRatio =
-                                    (TEST_SCREEN_WIDTH * 1.f)
-                                            / (TEST_SCREEN_HEIGHT
-                                                    - horizontalAutomotiveToolbarHeightDp);
-                            assertEquals(
-                                    "Thumbnail aspect ratio should take into account the horizontal"
-                                            + " automotive toolbar.",
-                                    expectedAspectRatio,
-                                    TabUtils.getTabThumbnailAspectRatio(
-                                            spyActivity, mBrowserControlsStateProvider),
-                                    0.01);
+                                            activity);
+                            callAndVerifyGetTabThumbnailAspectRatio(
+                                    activity, horizontalAutomotiveToolbarHeightDp, 0);
                         });
     }
 
     @Test
+    @Config(
+            sdk = Build.VERSION_CODES.R,
+            shadows = {ShadowWindowMetrics.class},
+            qualifiers = "w" + TEST_SCREEN_WIDTH + "dp-h" + TEST_SCREEN_HEIGHT + "dp-land")
     public void testGetTabThumbnailAspectRatioWithVerticalAutomotiveToolbar() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
         BrowserUiUtilsCachedFlags.getInstance().setVerticalAutomotiveBackButtonToolbarFlag(true);
-
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
                         activity -> {
                             Activity spyActivity = spy(activity);
-                            doReturn(mResources).when(spyActivity).getResources();
-                            doReturn(mConfiguration).when(mResources).getConfiguration();
-                            doReturn(mDisplayMetrics).when(mResources).getDisplayMetrics();
-                            doReturn(0).when(mBrowserControlsStateProvider).getTopControlsHeight();
-                            mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-                            mConfiguration.screenWidthDp = TEST_SCREEN_WIDTH;
-                            mConfiguration.screenHeightDp = TEST_SCREEN_HEIGHT;
-                            mDisplayMetrics.density = TEST_DENSITY;
                             int verticalAutomotiveToolbarWidthDp =
                                     AutomotiveUtils.getVerticalAutomotiveToolbarWidthDp(
                                             spyActivity);
-                            float expectedAspectRatio =
-                                    (TEST_SCREEN_WIDTH * 1.f - verticalAutomotiveToolbarWidthDp)
-                                            / (TEST_SCREEN_HEIGHT);
-                            assertEquals(
-                                    "Thumbnail aspect ratio should take into account the vertical"
-                                            + " automotive toolbar.",
-                                    expectedAspectRatio,
-                                    TabUtils.getTabThumbnailAspectRatio(
-                                            spyActivity, mBrowserControlsStateProvider),
-                                    0.01);
+                            callAndVerifyGetTabThumbnailAspectRatio(
+                                    spyActivity, 0, verticalAutomotiveToolbarWidthDp);
                         });
     }
 
@@ -410,5 +411,23 @@ public class TabUtilsUnitTest {
                 DisplayUtil.getUiDensityForAutomotive(
                         ContextUtils.getApplicationContext(), DisplayMetrics.DENSITY_DEFAULT),
                 bitmap.getDensity());
+    }
+
+    private void callAndVerifyGetTabThumbnailAspectRatio(
+            Activity spyActivity,
+            int horizontalAutomotiveToolbarHeightDp,
+            int verticalAutomotiveToolbarWidthDp) {
+        doReturn(0).when(mBrowserControlsStateProvider).getTopControlsHeight();
+        float expectedAspectRatio =
+                (TEST_SCREEN_WIDTH * 1.f - verticalAutomotiveToolbarWidthDp)
+                        / (TEST_SCREEN_HEIGHT * 1.f
+                                - horizontalAutomotiveToolbarHeightDp
+                                - TEST_STATUS_BAR_HEIGHT
+                                - TEST_NAVIGATION_BAR_HEIGHT);
+        assertEquals(
+                "Thumbnail aspect ratio is not as expected.",
+                expectedAspectRatio,
+                TabUtils.getTabThumbnailAspectRatio(spyActivity, mBrowserControlsStateProvider),
+                0.01);
     }
 }
