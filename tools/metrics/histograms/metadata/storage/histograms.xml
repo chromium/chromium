@@ -443,6 +443,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.Blob.FileReaderLoader.DataPipeNotReadableMojoError"
+    enum="FileReaderLoaderMojoResult" expires_after="2024-12-14">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Recorded when FileReaderLoader.FailureType2 records a data pipe not readable
+    error. This is the specific type of Mojo error.
+  </summary>
+</histogram>
+
 <histogram name="Storage.Blob.FileReaderLoader.FailureType2"
     enum="FileReaderLoaderFailureType" expires_after="2024-12-14">
   <owner>estade@chromium.org</owner>

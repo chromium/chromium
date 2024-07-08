@@ -198,6 +198,9 @@ void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
 void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
   if (result != MOJO_RESULT_OK) {
     if (!received_all_data_) {
+      base::UmaHistogramExactLinear(
+          "Storage.Blob.FileReaderLoader.DataPipeNotReadableMojoError", result,
+          MOJO_RESULT_SHOULD_WAIT + 1);
       Failed(FileErrorCode::kNotReadableErr,
              FailureType::kDataPipeNotReadableWithBytesLeft);
     }
