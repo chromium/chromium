@@ -277,11 +277,11 @@ vars = {
   # screen-ai CIPD packages
   # TODO(b/281483558): Use a tag to download the latest version of screen-ai
   # (e.g. 'version:121.3') and find a way to automate updating //DEPS with it.
-  'screen_ai_linux': 'version:124.4',
-  'screen_ai_macos_amd64': 'version:124.4',
-  'screen_ai_macos_arm64': 'version:124.4',
-  'screen_ai_windows_amd64': 'version:124.4',
-  'screen_ai_windows_386': 'version:124.4',
+  'screen_ai_linux': 'version:124.5',
+  'screen_ai_macos_amd64': 'version:124.5',
+  'screen_ai_macos_arm64': 'version:124.5',
+  'screen_ai_windows_amd64': 'version:124.5',
+  'screen_ai_windows_386': 'version:124.5',
 
   # siso CIPD package version.
   'siso_version': 'git_revision:2771ced2186c49911899699f831f96ceea4812f6',
