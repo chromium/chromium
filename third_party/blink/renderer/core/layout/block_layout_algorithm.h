@@ -69,20 +69,20 @@ struct BlockLineClampData {
 
   bool IsPastClampPoint() const {
     if (data.state == LineClampData::kClampByBfcOffset) {
-      return intrinsic_block_size_when_clamped.has_value();
+      return previous_inflow_position_when_clamped.has_value();
     }
     return data.IsPastClampPoint(LayoutUnit());
   }
 
   bool ShouldHideForPaint() const {
     if (data.state == LineClampData::kClampByBfcOffset) {
-      return intrinsic_block_size_when_clamped.has_value();
+      return previous_inflow_position_when_clamped.has_value();
     }
     return data.ShouldHideForPaint(LayoutUnit());
   }
 
   bool ShouldRelayoutWithNoForcedTruncate() const {
-    if (!intrinsic_block_size_when_clamped.has_value()) {
+    if (!previous_inflow_position_when_clamped.has_value()) {
       return false;
     }
     switch (data.state) {
@@ -91,7 +91,7 @@ struct BlockLineClampData {
       case LineClampData::kClampByBfcOffset:
         return !has_content_after_clamp;
       default:
-        // intrinsic_block_size_when_clamped shouldn't be set.
+        // previous_inflow_position_when_clamped shouldn't be set.
         NOTREACHED_NORETURN();
     }
   }
@@ -120,7 +120,9 @@ struct BlockLineClampData {
       // If there isn't enough space for the first line, the clamp point will be
       // at the start of the line-clamp container.
       if (clamp_bfc_offset <= content_edge) {
-        intrinsic_block_size_when_clamped = content_edge;
+        previous_inflow_position_when_clamped.emplace();
+        previous_inflow_position_when_clamped->logical_block_offset =
+            content_edge;
       } else {
         latest_clampable_offset = content_edge;
       }
@@ -138,22 +140,26 @@ struct BlockLineClampData {
   }
 
   // Returns false if we need to relayout with a different clamp BFC offset.
-  bool UpdateAfterLayout(int lines_until_clamp,
-                         LayoutUnit logical_block_offset) {
+  bool UpdateAfterLayout(
+      int lines_until_clamp,
+      const PreviousInflowPosition& previous_inflow_position) {
     if (data.state == LineClampData::kClampByLines) {
       data.lines_until_clamp = lines_until_clamp;
       if (data.lines_until_clamp <= 0 &&
-          !intrinsic_block_size_when_clamped.has_value()) {
-        intrinsic_block_size_when_clamped = logical_block_offset;
+          !previous_inflow_position_when_clamped.has_value()) {
+        previous_inflow_position_when_clamped = previous_inflow_position;
       }
     }
 
     if (data.state == LineClampData::kClampByBfcOffset) {
+      LayoutUnit logical_block_offset =
+          previous_inflow_position.logical_block_offset;
+
       if (logical_block_offset < data.clamp_bfc_offset) {
         latest_clampable_offset = logical_block_offset;
       } else if (logical_block_offset == data.clamp_bfc_offset) {
-        intrinsic_block_size_when_clamped = logical_block_offset;
-      } else if (!intrinsic_block_size_when_clamped.has_value()) {
+        previous_inflow_position_when_clamped = previous_inflow_position;
+      } else if (!previous_inflow_position_when_clamped.has_value()) {
         return false;
       } else {
         has_content_after_clamp = true;
@@ -169,10 +175,10 @@ struct BlockLineClampData {
 
   bool has_content_after_clamp = false;
 
-  // If set, one of the lines was clamped and this is the intrinsic size of the
-  // block element at the time of the clamp. Can only be set if
-  // data.state == kEnabled.
-  std::optional<LayoutUnit> intrinsic_block_size_when_clamped;
+  // If set, the box was clamped, and this is the previous inflow position after
+  // the last line or box before clamp. Can only be set if
+  // data.state == kClampByLines or data.state == kClampByBfcOffset.
+  std::optional<PreviousInflowPosition> previous_inflow_position_when_clamped;
 };
 
 // A class for general block layout (e.g. a <div> with no special style).

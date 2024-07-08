@@ -527,7 +527,7 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
       return RelayoutAndBreakEarlier(&algorithm_with_break);
     }
     case LayoutResult::kNeedsLineClampRelayout:
-      if (line_clamp_data_.intrinsic_block_size_when_clamped.has_value()) {
+      if (line_clamp_data_.previous_inflow_position_when_clamped.has_value()) {
         return RelayoutIgnoringLineClamp();
       }
       return RelayoutWithLineClampBlockSize();
@@ -595,7 +595,7 @@ NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
 NOINLINE const LayoutResult*
 BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize() {
   DCHECK_EQ(line_clamp_data_.data.state, LineClampData::kClampByBfcOffset);
-  DCHECK(!line_clamp_data_.intrinsic_block_size_when_clamped);
+  DCHECK(!line_clamp_data_.previous_inflow_position_when_clamped);
   LayoutAlgorithmParams params(Node(),
                                container_builder_.InitialFragmentGeometry(),
                                GetConstraintSpace(), GetBreakToken(), nullptr);
@@ -1008,6 +1008,17 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
 const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     PreviousInflowPosition* previous_inflow_position,
     InlineChildLayoutContext* inline_child_layout_context) {
+  // With CSSLineClamp enabled, if we line-clamped inside this box, its size
+  // must be set exactly as if there were no layout boxes after the clamp point.
+  // We therefore use the previous inflow position that we saved at the clamp
+  // point.
+  if (UNLIKELY(
+          RuntimeEnabledFeatures::CSSLineClampEnabled() &&
+          line_clamp_data_.previous_inflow_position_when_clamped.has_value())) {
+    previous_inflow_position =
+        &*line_clamp_data_.previous_inflow_position_when_clamped;
+  }
+
   const auto& constraint_space = GetConstraintSpace();
   LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   MarginStrut end_margin_strut = previous_inflow_position->margin_strut;
@@ -1047,20 +1058,16 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
 
   LayoutUnit block_end_border_padding = BorderScrollbarPadding().block_end;
 
-  // If line clamping occurred, the intrinsic block-size comes from the
-  // intrinsic block-size at the time of the clamp.
-  if (line_clamp_data_.intrinsic_block_size_when_clamped) {
+  // If line clamping occurred, and we're using the legacy behavior, the
+  // intrinsic block-size comes from the intrinsic block-size at the time of the
+  // clamp, without taking margins, clearance, etc. into account.
+  if (!RuntimeEnabledFeatures::CSSLineClampEnabled() &&
+      line_clamp_data_.previous_inflow_position_when_clamped) {
     DCHECK(container_builder_.BfcBlockOffset());
-    if (RuntimeEnabledFeatures::CSSLineClampEnabled() &&
-        constraint_space.IsNewFormattingContext()) {
-      intrinsic_block_size_ = std::max(
-          *line_clamp_data_.intrinsic_block_size_when_clamped,
-          GetExclusionSpace().NonHiddenClearanceOffsetIncludingInitialLetter());
-    } else {
-      intrinsic_block_size_ =
-          *line_clamp_data_.intrinsic_block_size_when_clamped;
-    }
-    intrinsic_block_size_ += block_end_border_padding;
+    intrinsic_block_size_ =
+        line_clamp_data_.previous_inflow_position_when_clamped
+            ->logical_block_offset +
+        block_end_border_padding;
     end_margin_strut = MarginStrut();
   } else if (block_end_border_padding ||
              previous_inflow_position->self_collapsing_child_had_clearance ||
@@ -1073,12 +1080,20 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     // Additionally this fragment produces no end margin strut.
 
     // If the current layout is a new formatting context, we need to encapsulate
-    // all of our floats.
+    // all of our floats, except for those that were hidden because of
+    // line-clamp.
     if (constraint_space.IsNewFormattingContext()) {
-      intrinsic_block_size_ =
-          std::max(intrinsic_block_size_,
-                   GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
-                       EClear::kBoth));
+      LayoutUnit clearance =
+          GetExclusionSpace().NonHiddenClearanceOffsetIncludingInitialLetter();
+#ifdef DCHECK_ALWAYS_ON
+      if (!RuntimeEnabledFeatures::CSSLineClampEnabled() ||
+          !line_clamp_data_.previous_inflow_position_when_clamped) {
+        DCHECK_EQ(clearance,
+                  GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+                      EClear::kBoth));
+      }
+#endif
+      intrinsic_block_size_ = std::max(intrinsic_block_size_, clearance);
     }
 
     if (!container_builder_.BfcBlockOffset()) {
@@ -2407,9 +2422,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   }
 
   // Update |line_clamp_data_| from the LayoutResult, and abort if needed.
-  if (!line_clamp_data_.UpdateAfterLayout(
-          layout_result->LinesUntilClamp(),
-          previous_inflow_position->logical_block_offset)) {
+  if (!line_clamp_data_.UpdateAfterLayout(layout_result->LinesUntilClamp(),
+                                          *previous_inflow_position)) {
     return LayoutResult::kNeedsLineClampRelayout;
   }
 
