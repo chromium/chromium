@@ -71,8 +71,6 @@ void PageImpl::GetManifest(GetManifestCallback callback) {
 }
 
 bool PageImpl::IsPrimary() const {
-  // TODO(crbug.com/40787700): Check for portals as well, once they are migrated
-  // to MPArch.
   if (main_document_->IsFencedFrameRoot())
     return false;
 

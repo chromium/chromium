@@ -99,14 +99,6 @@ bool IsAdAuctionHeadersEligible(
         AdAuctionHeadersIsEligibleOutcomeForMetrics::kInFencedFrame);
     return false;
   }
-  // TODO(crbug.com/40787700): IsPrimary() doesn't actually detect portals yet.
-  // Remove this when it does.
-  if (!initiator_rfh.GetMainFrame()->IsOutermostMainFrame()) {
-    base::UmaHistogramEnumeration(
-        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
-        AdAuctionHeadersIsEligibleOutcomeForMetrics::kNotOutermostMainFrame);
-    return false;
-  }
 
   const blink::PermissionsPolicy* permissions_policy =
       initiator_rfh.permissions_policy();

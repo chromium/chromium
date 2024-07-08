@@ -132,17 +132,6 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
     return;
   }
 
-  // TODO(crbug.com/40787700): IsPrimary() doesn't actually detect portals yet.
-  // Remove this when it does.
-  if (!static_cast<RenderFrameHostImpl*>(
-           request_initiator_frame->GetMainFrame())
-           ->IsOutermostMainFrame()) {
-    RecordFetchRequestResultUma(
-        BrowsingTopicsFetchRequestOrRedirectResult::kFromNonPrimaryPage,
-        is_redirect);
-    return;
-  }
-
   url::Origin origin = url::Origin::Create(url_);
   if (origin.opaque()) {
     RecordFetchRequestResultUma(

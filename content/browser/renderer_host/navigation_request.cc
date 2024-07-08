@@ -903,13 +903,6 @@ TopicsHeaderValueResult GetTopicsHeaderValueForNavigationRequest(
     return {};
   }
 
-  // TODO(crbug.com/40787700): IsPrimary() doesn't actually detect portals yet.
-  // Remove this when it does.
-  if (!static_cast<RenderFrameHostImpl*>(rfh->GetMainFrame())
-           ->IsOutermostMainFrame()) {
-    return {};
-  }
-
   url::Origin origin = url::Origin::Create(url);
   if (origin.opaque()) {
     return {};
