@@ -64,6 +64,7 @@ android_resources("chrome_tabs_client_example_apk_resources") {
     "src/res/layout/remote_view.xml",
     "src/res/raw/amazing_grace.mp3",
     "src/res/values/strings.xml",
+    "src/res/values/themes.xml",
   ]
   android_manifest = "src/AndroidManifest.xml"
   deps = [ "//third_party/android_deps:material_design_java" ]
