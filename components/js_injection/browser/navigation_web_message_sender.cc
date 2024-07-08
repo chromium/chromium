@@ -17,6 +17,22 @@
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
 
+namespace {
+
+base::Value::Dict CreateBaseMessageFromNavigationHandle(
+    content::NavigationHandle* navigation_handle) {
+  return base::Value::Dict()
+      .Set("id", base::NumberToString(navigation_handle->GetNavigationId()))
+      .Set("url", navigation_handle->GetURL().spec())
+      .Set("isSameDocument", navigation_handle->IsSameDocument())
+      .Set("isPageInitiated", navigation_handle->IsRendererInitiated())
+      .Set("isReload",
+           navigation_handle->GetReloadType() != content::ReloadType::NONE)
+      .Set("isHistory", navigation_handle->IsHistory());
+}
+
+}  // namespace
+
 namespace features {
 // Temporarily enable this feature while we work on moving the API to AndroidX.
 // This should be safe as it is very unlikely for apps to accidentally register
@@ -59,6 +75,10 @@ const char16_t
 
 const char NavigationWebMessageSender::kOptedInMessage[] =
     "NAVIGATION_MESSAGE_OPTED_IN";
+const char NavigationWebMessageSender::kNavigationStartedMessage[] =
+    "NAVIGATION_STARTED";
+const char NavigationWebMessageSender::kNavigationRedirectedMessage[] =
+    "NAVIGATION_REDIRECTED";
 const char NavigationWebMessageSender::kNavigationCompletedMessage[] =
     "NAVIGATION_COMPLETED";
 const char NavigationWebMessageSender::kPageLoadEndMessage[] = "PAGE_LOAD_END";
@@ -115,7 +135,12 @@ NavigationWebMessageSender::~NavigationWebMessageSender() {
 
 void NavigationWebMessageSender::DispatchOptInMessage() {
   CHECK(page().IsPrimary());
-  PostMessageWithType(kOptedInMessage);
+
+  base::Value::Dict message_dict =
+      base::Value::Dict()
+          .Set("type", kOptedInMessage)
+          .Set("supports_start_and_redirect", true);
+  PostMessage(std::move(message_dict));
 }
 
 void NavigationWebMessageSender::DidFinishLoad(
@@ -128,26 +153,47 @@ void NavigationWebMessageSender::DidFinishLoad(
   PostMessageWithType(kPageLoadEndMessage);
 }
 
-void NavigationWebMessageSender::DidFinishNavigation(
+bool NavigationWebMessageSender::ShouldSendMessageForNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!page().IsPrimary() || !navigation_handle->IsInPrimaryMainFrame()) {
-    // Only send navigation notifications for primary pages, and only from the
-    // associated NavigationWebMessageSender. Note that since
-    // `IsInPrimaryMainFrame()` can also be true when the navigation didn't
-    // commit / create a new page, it means that the messages for those
-    // navigations will be fired on the sender of the current primary page.
+  // Only send navigation notifications for primary pages, and only from the
+  // associated NavigationWebMessageSender. Note that since
+  // `IsInPrimaryMainFrame()` can also be true when the navigation didn't
+  // commit / create a new page, it means that the messages for those
+  // navigations will be fired on the sender of the current primary page.
+  return page().IsPrimary() && navigation_handle->IsInPrimaryMainFrame();
+}
+
+void NavigationWebMessageSender::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!ShouldSendMessageForNavigation(navigation_handle)) {
     return;
   }
   base::Value::Dict message_dict =
-      base::Value::Dict()
+      CreateBaseMessageFromNavigationHandle(navigation_handle)
+          .Set("type", kNavigationStartedMessage);
+  PostMessage(std::move(message_dict));
+}
+
+void NavigationWebMessageSender::DidRedirectNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!ShouldSendMessageForNavigation(navigation_handle)) {
+    return;
+  }
+  base::Value::Dict message_dict =
+      CreateBaseMessageFromNavigationHandle(navigation_handle)
+          .Set("type", kNavigationRedirectedMessage);
+  PostMessage(std::move(message_dict));
+}
+
+void NavigationWebMessageSender::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!ShouldSendMessageForNavigation(navigation_handle)) {
+    return;
+  }
+  base::Value::Dict message_dict =
+      CreateBaseMessageFromNavigationHandle(navigation_handle)
           .Set("type", kNavigationCompletedMessage)
-          .Set("url", navigation_handle->GetURL().spec())
-          .Set("isSameDocument", navigation_handle->IsSameDocument())
-          .Set("isPageInitiated", navigation_handle->IsRendererInitiated())
           .Set("isErrorPage", navigation_handle->IsErrorPage())
-          .Set("isReload",
-               navigation_handle->GetReloadType() != content::ReloadType::NONE)
-          .Set("isHistory", navigation_handle->IsHistory())
           .Set("committed", navigation_handle->HasCommitted())
           // Some navigations don't have HTTP responses. Default to 200 for
           // those cases.

@@ -63,10 +63,20 @@ class NavigationWebMessageSender
   // created. This indicates to the client that the special navigation listeners
   // are implemented (it might not be available in older versions).
   static const char kOptedInMessage[];
-  // Indicates that a navigation has completed. The message will contain details
-  // like the URL, whether the navigation is same-document or not, etc. This is
-  // dispatched on `DidFinishNavigation()`.
+
+  // The navigation messages will contain details of the navigation like the
+  // URL, whether the navigation is same-document or not, etc.
+  //
+  // Indicates that a navigation has started. This is dispatched on
+  // `DidStartNavigation()`.
+  static const char kNavigationStartedMessage[];
+  // Indicates that a navigation has been redirected. This is dispatched on
+  // `DidStartNavigation()`.
+  static const char kNavigationRedirectedMessage[];
+  // Indicates that a navigation has completed. This is dispatched on
+  // `DidFinishNavigation()`.
   static const char kNavigationCompletedMessage[];
+
   // Indicates that the page has finished loading. This is dispatched on
   // `DidFinishLoad()`.
   static const char kPageLoadEndMessage[];
@@ -107,11 +117,18 @@ class NavigationWebMessageSender
   // content::WebContentsObserver implementations
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidRedirectNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
   void PostMessageWithType(std::string_view type);
   void PostMessage(base::Value::Dict message_dict);
+
+  bool ShouldSendMessageForNavigation(
+      content::NavigationHandle* navigation_handle);
 
   WebMessageHost* GetWebMessageHostForTesting() { return host_.get(); }
 

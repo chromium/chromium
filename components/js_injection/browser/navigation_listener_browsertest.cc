@@ -211,74 +211,109 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
   }
 
   HostToken NavigateToFirstPage() {
-    NavigationWebMessageSender* sender0 =
-        NavigationWebMessageSender::GetForPage(
-            web_contents()->GetPrimaryPage());
-    EXPECT_TRUE(sender0);
-    HostToken host0 =
-        static_cast<FakeWebMessageHost*>(sender0->GetWebMessageHostForTesting())
-            ->token();
-    CheckNavigationMessage(listener().NextMessageForHost(host0),
-                           NavigationWebMessageSender::kOptedInMessage);
+    // Before navigation, an OPTED_IN message is received.
+    HostToken host0 = GetCurrentHostToken();
+    CheckNavigationMessage(host0, NavigationWebMessageSender::kOptedInMessage);
+
+    // Navigate to the first page.
     GURL navigation_url = embedded_test_server()->GetURL("/title1.html");
     EXPECT_TRUE(content::NavigateToURL(shell(), navigation_url));
-    NavigationWebMessageSender* sender = NavigationWebMessageSender::GetForPage(
-        web_contents()->GetPrimaryPage());
-    EXPECT_TRUE(sender);
-    HostToken host =
-        static_cast<FakeWebMessageHost*>(sender->GetWebMessageHostForTesting())
-            ->token();
-    CheckNavigationMessage(listener().NextMessageForHost(host0),
-                           NavigationWebMessageSender::kPageDeletedMessage);
-    CheckNavigationCompletedMessage(listener().NextMessageForHost(host),
-                                    /*url=*/navigation_url,
-                                    /*is_same_document=*/false,
-                                    /*is_page_initiated=*/false,
-                                    /*is_error_page=*/false,
-                                    /*is_reload=*/false,
-                                    /*is_history=*/false,
-                                    /*committed=*/true,
-                                    /*status_code=*/200);
-    CheckNavigationMessage(listener().NextMessageForHost(host),
-                           NavigationWebMessageSender::kPageLoadEndMessage);
-    EXPECT_FALSE(listener().HasNextMessageForHost(host));
+
+    CheckMessagesForNavigation(
+        host0,
+        /*navigation_id=*/1,
+        /*url=*/navigation_url,
+        /*is_same_document=*/false,
+        /*is_page_initiated=*/false,
+        /*is_error_page=*/false,
+        /*is_reload=*/false,
+        /*is_history=*/false,
+        /*committed=*/true,
+        /*status_code=*/200, /*previous_page_deleted=*/true, /*load_end=*/true);
+    EXPECT_FALSE(listener().HasNextMessageForAnyHost());
+
+    HostToken host = GetCurrentHostToken();
+    EXPECT_NE(host0, host);
     return host;
   }
 
-  void CheckNavigationMessage(WebMessage* message, std::string type) {
-    base::Value::Dict expected_dict;
-    expected_dict.Set("type", type);
+  void CheckNavigationMessage(HostToken& host, std::string type) {
+    base::Value::Dict expected_dict = base::Value::Dict().Set("type", type);
+    if (type == NavigationWebMessageSender::kOptedInMessage) {
+      expected_dict.Set("supports_start_and_redirect", true);
+    }
     ASSERT_EQ(
         NavigationWebMessageSender::CreateWebMessage(std::move(expected_dict))
             ->message,
-        message->message);
+        listener().NextMessageForHost(host)->message);
   }
 
-  void CheckNavigationCompletedMessage(WebMessage* message,
-                                       GURL& url,
-                                       bool is_same_document,
-                                       bool is_page_initiated,
-                                       bool is_error_page,
-                                       bool is_reload,
-                                       bool is_history,
-                                       bool committed,
-                                       int status_code) {
-    base::Value::Dict message_dict =
+  void CheckMessagesForNavigation(HostToken& host_before_nav,
+                                  int navigation_id,
+                                  GURL& url,
+                                  bool is_same_document,
+                                  bool is_page_initiated,
+                                  bool is_error_page,
+                                  bool is_reload,
+                                  bool is_history,
+                                  bool committed,
+                                  int status_code,
+                                  bool previous_page_deleted,
+                                  bool load_end) {
+    base::Value::Dict base_message_dict =
         base::Value::Dict()
-            .Set("type",
-                 NavigationWebMessageSender::kNavigationCompletedMessage)
+            .Set("id", base::NumberToString(navigation_id))
             .Set("url", url.spec())
             .Set("isSameDocument", is_same_document)
             .Set("isPageInitiated", is_page_initiated)
-            .Set("isErrorPage", is_error_page)
             .Set("isReload", is_reload)
-            .Set("isHistory", is_history)
-            .Set("committed", committed)
-            .Set("statusCode", status_code);
+            .Set("isHistory", is_history);
+
+    // NAVIGATION_STARTED message.
+    base::Value::Dict start_message(base_message_dict.Clone());
+    start_message.Set("type",
+                      NavigationWebMessageSender::kNavigationStartedMessage);
+    listener().WaitForNextMessageForHost(host_before_nav);
     ASSERT_EQ(
-        NavigationWebMessageSender::CreateWebMessage(std::move(message_dict))
+        NavigationWebMessageSender::CreateWebMessage(std::move(start_message))
             ->message,
-        message->message);
+        listener().NextMessageForHost(host_before_nav)->message);
+
+    // PAGE_DELETED message is dispatched just before the NAVIGATION_COMPLETED
+    // message.
+    if (previous_page_deleted) {
+      CHECK(!is_same_document);
+      CHECK(committed);
+      listener().WaitForNextMessageForHost(host_before_nav);
+      CheckNavigationMessage(host_before_nav,
+                             NavigationWebMessageSender::kPageDeletedMessage);
+    }
+
+    // NAVIGATION_COMPLETED message.
+    base::Value::Dict complete_message =
+        base::Value::Dict()
+            .Set("type",
+                 NavigationWebMessageSender::kNavigationCompletedMessage)
+            .Set("committed", committed)
+            .Set("statusCode", status_code)
+            .Set("isErrorPage", is_error_page);
+    complete_message.Merge(base_message_dict.Clone());
+    HostToken host_after_nav = GetCurrentHostToken();
+    listener().WaitForNextMessageForHost(host_after_nav);
+    ASSERT_EQ(NavigationWebMessageSender::CreateWebMessage(
+                  std::move(complete_message))
+                  ->message,
+              listener().NextMessageForHost(host_after_nav)->message);
+
+    // PAGE_LOAD_END message is dispatched after the NAVIGATION_COMPLETED
+    // message.
+    if (load_end) {
+      CHECK(!is_same_document);
+      CHECK(committed);
+      listener().WaitForNextMessageForHost(host_after_nav);
+      CheckNavigationMessage(host_after_nav,
+                             NavigationWebMessageSender::kPageLoadEndMessage);
+    }
   }
 
  private:
@@ -300,8 +335,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
   // A NavigationWebMessageSender & FakeWebMessageHost is immediately created
   // for the initial empty document.
   HostToken host0 = GetCurrentHostToken();
-  CheckNavigationMessage(listener().NextMessageForHost(host0),
-                         NavigationWebMessageSender::kOptedInMessage);
+  CheckNavigationMessage(host0, NavigationWebMessageSender::kOptedInMessage);
 
   // Navigation #1: navigate to the first page.
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -311,25 +345,22 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
   // A new NavigationWebMessageSender with a new FakeWebMessageHost has been
   // created for the new page.
   HostToken host1 = GetCurrentHostToken();
-
-  // Assert that the initial empty document's page got deleted, because we
-  // committed a new page.
-  CheckNavigationMessage(listener().NextMessageForHost(host0),
-                         NavigationWebMessageSender::kPageDeletedMessage);
+  ASSERT_NE(host0, host1);
 
   // Assert that we got navigation messages for the first navigation.
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host1),
-                                  /*url=*/navigation_url,
-                                  /*is_same_document=*/false,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
-  CheckNavigationMessage(listener().NextMessageForHost(host1),
-                         NavigationWebMessageSender::kPageLoadEndMessage);
-  ASSERT_FALSE(listener().HasNextMessageForHost(host1));
+  CheckMessagesForNavigation(host0,
+                             /*navigation_id=*/1,
+                             /*url=*/navigation_url,
+                             /*is_same_document=*/false,
+                             /*is_page_initiated=*/false,
+                             /*is_error_page=*/false,
+                             /*is_reload=*/false,
+                             /*is_history=*/false,
+                             /*committed=*/true,
+                             /*status_code=*/200,
+                             /*previous_page_deleted=*/true, /*load_end=*/true);
+
+  ASSERT_FALSE(listener().HasNextMessageForAnyHost());
 
   // Navigation #2: Reload the first page.
   content::ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -337,24 +368,21 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
   // A new NavigationWebMessageSender with a new FakeWebMessageHost has been
   // created for the new page.
   HostToken host2 = GetCurrentHostToken();
-
-  // The previous page has been deleted.
-  listener().WaitForNextMessageForHost(host1);
-  CheckNavigationMessage(listener().NextMessageForHost(host1),
-                         NavigationWebMessageSender::kPageDeletedMessage);
+  ASSERT_NE(host1, host2);
 
   // Navigation messages for the reload.
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host2),
-                                  /*url=*/navigation_url,
-                                  /*is_same_document=*/false,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/true,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
-  CheckNavigationMessage(listener().NextMessageForHost(host2),
-                         NavigationWebMessageSender::kPageLoadEndMessage);
+  CheckMessagesForNavigation(host1,
+                             /*navigation_id=*/2,
+                             /*url=*/navigation_url,
+                             /*is_same_document=*/false,
+                             /*is_page_initiated=*/false,
+                             /*is_error_page=*/false,
+                             /*is_reload=*/true,
+                             /*is_history=*/false,
+                             /*committed=*/true,
+                             /*status_code=*/200,
+                             /*previous_page_deleted=*/true, /*load_end=*/true);
+
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
 
   // Navigation #3: Navigate same-document.
@@ -363,28 +391,34 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
 
   // The previous `host2` is reused as the navigation stays on the same page.
   // Also, no PAGE_LOAD_END since the navigation doesn't load a new page.
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host2),
-                                  /*url=*/navigation_url_foo,
-                                  /*is_same_document=*/true,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
+  ASSERT_EQ(host2, GetCurrentHostToken());
+  CheckMessagesForNavigation(
+      host2,
+      /*navigation_id=*/3,
+      /*url=*/navigation_url_foo,
+      /*is_same_document=*/true,
+      /*is_page_initiated=*/false,
+      /*is_error_page=*/false,
+      /*is_reload=*/false,
+      /*is_history=*/false,
+      /*committed=*/true,
+      /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
 
   // Navigation #4: Navigate history same-document.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host2),
-                                  /*url=*/navigation_url,
-                                  /*is_same_document=*/true,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/true,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
+  ASSERT_EQ(host2, GetCurrentHostToken());
+  CheckMessagesForNavigation(
+      host2,
+      /*navigation_id=*/4,
+      /*url=*/navigation_url,
+      /*is_same_document=*/true,
+      /*is_page_initiated=*/false,
+      /*is_error_page=*/false,
+      /*is_reload=*/false,
+      /*is_history=*/true,
+      /*committed=*/true,
+      /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
 
   // Navigation #5: Navigate to error page.
@@ -394,26 +428,20 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
   // A new NavigationWebMessageSender with a new FakeWebMessageHost has been
   // created for the new error page.
   HostToken host3 = GetCurrentHostToken();
-
-  if (IsBackForwardCacheDisabled()) {
-    // The previous page will be deleted, unless it gets into the back/forward
-    // cache.
-    listener().WaitForNextMessageForHost(host2);
-    CheckNavigationMessage(listener().NextMessageForHost(host2),
-                           NavigationWebMessageSender::kPageDeletedMessage);
-  }
-
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host3),
-                                  /*url=*/error_url,
-                                  /*is_same_document=*/false,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/true,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/404);
-  CheckNavigationMessage(listener().NextMessageForHost(host3),
-                         NavigationWebMessageSender::kPageLoadEndMessage);
+  ASSERT_NE(host2, host3);
+  CheckMessagesForNavigation(
+      host2,
+      /*navigation_id=*/5,
+      /*url=*/error_url,
+      /*is_same_document=*/false,
+      /*is_page_initiated=*/false,
+      /*is_error_page=*/true,
+      /*is_reload=*/false,
+      /*is_history=*/false,
+      /*committed=*/true,
+      /*status_code=*/404,
+      /*previous_page_deleted=*/IsBackForwardCacheDisabled(),
+      /*load_end=*/true);
 
   // No further messages.
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
@@ -431,8 +459,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, NoLoadEnd) {
   ASSERT_TRUE(embedded_test_server()->Start());
   SetupNavigationListener();
   HostToken host0 = GetCurrentHostToken();
-  CheckNavigationMessage(listener().NextMessageForHost(host0),
-                         NavigationWebMessageSender::kOptedInMessage);
+  CheckNavigationMessage(host0, NavigationWebMessageSender::kOptedInMessage);
 
   // Navigation #1: navigate to the first page, which has an infinitely loading
   // image.
@@ -459,28 +486,27 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, NoLoadEnd) {
       image_url.spec() + "'/>");
   image_request.WaitForRequest();
 
-  // Wait for the next two navigation messages, after which we know that a new
-  // NavigationWebMessageSender should already be created.
-  listener().WaitForNextMessageForAnyHost();
-  // The first message will indicate that the previous page has been deleted.
-  CheckNavigationMessage(listener().NextMessageForHost(host0),
-                         NavigationWebMessageSender::kPageDeletedMessage);
+  // Wait for the next navigation message for host0, which indicates that the
+  // previous page has been deleted due to the navigation above.
+  listener().WaitForNextMessageForHost(host0);
 
-  // The next messages will be for the navigation above.
   HostToken host = GetCurrentHostToken();
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host),
-                                  /*url=*/url_with_infinite_load,
-                                  /*is_same_document=*/false,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
+  ASSERT_NE(host0, host);
+  CheckMessagesForNavigation(
+      host0,
+      /*navigation_id=*/1,
+      /*url=*/url_with_infinite_load,
+      /*is_same_document=*/false,
+      /*is_page_initiated=*/false,
+      /*is_error_page=*/false,
+      /*is_reload=*/false,
+      /*is_history=*/false,
+      /*committed=*/true,
+      /*status_code=*/200, /*previous_page_deleted=*/true, /*load_end=*/false);
 
   // Assert that there's no PAGE_LOAD_END message and the load event didn't fire
   // in the document.
-  ASSERT_FALSE(listener().HasNextMessageForHost(host));
+  ASSERT_FALSE(listener().HasNextMessageForAnyHost());
   ASSERT_NE("loaded",
             content::EvalJs(web_contents(), "document.title").ExtractString());
 
@@ -491,37 +517,34 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, NoLoadEnd) {
       navigation_url_2, content::Referrer(), ui::PAGE_TRANSITION_TYPED,
       std::string()));
 
-  // The previous page will be deleted, as the document body never fully loaded.
-  listener().WaitForNextMessageForHost(host);
-  CheckNavigationMessage(listener().NextMessageForHost(host),
-                         NavigationWebMessageSender::kPageDeletedMessage);
-
-  // No PAGE_LOAD_END messages for the previous page.
-  ASSERT_FALSE(listener().HasNextMessageForHost(host));
-
   // Wait for the next navigation message, after which we know that a new
-  // NavigationWebMessageSender should already be created.
+  // NavigationWebMessageSender should already be created for navigation #2.
   listener().WaitForNextMessageForAnyHost();
+
+  // Check we get the navigation messages for navigation #2.
+  CheckMessagesForNavigation(host,
+                             /*navigation_id=*/2,
+                             /*url=*/navigation_url_2,
+                             /*is_same_document=*/false,
+                             /*is_page_initiated=*/false,
+                             /*is_error_page=*/false,
+                             /*is_reload=*/false,
+                             /*is_history=*/false,
+                             /*committed=*/true,
+                             /*status_code=*/200,
+                             /*previous_page_deleted=*/true,
+                             /*load_end=*/true);
+
+  // The new page from navigation #2 created a new host.
+  // Note that unlike in other tests, here we get the current host after the
+  // navigation messages check above, since the navigation might not have
+  // committed yet before we get the NAVIGATION_COMPLETED message (which we will
+  // wait for within the above  function).
   HostToken host2 = GetCurrentHostToken();
   ASSERT_NE(host, host2);
 
-  // Assert that we got navigation messages for the second navigation.
-  listener().WaitForNextMessageForHost(host2);
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host2),
-                                  /*url=*/navigation_url_2,
-                                  /*is_same_document=*/false,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
-  // The PAGE_LOAD_END should be for the second page.
-  listener().WaitForNextMessageForHost(host2);
-  CheckNavigationMessage(listener().NextMessageForHost(host2),
-                         NavigationWebMessageSender::kPageLoadEndMessage);
-
-  // No other messages after this.
+  // No other messages after this, including PAGE_LOAD_END message for the
+  // previous page (the page created by navigation #1).
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
 }
 
@@ -551,21 +574,44 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
       navigation_url_2, content::Referrer(), ui::PAGE_TRANSITION_TYPED,
       std::string()));
 
-  // Before the navigation above finishes, do a same-document navigation.
+  // Check that we get the NAVIGATION_STARTED message immediately for the
+  // cross-document navigation.
+  base::Value::Dict cross_doc_base_message_dict =
+      base::Value::Dict()
+          .Set("id", "2")
+          .Set("url", navigation_url_2.spec())
+          .Set("isSameDocument", false)
+          .Set("isPageInitiated", false)
+          .Set("isReload", false)
+          .Set("isHistory", false);
+  base::Value::Dict cross_doc_start_message(
+      cross_doc_base_message_dict.Clone());
+  cross_doc_start_message.Set(
+      "type", NavigationWebMessageSender::kNavigationStartedMessage);
+  listener().WaitForNextMessageForHost(host);
+  ASSERT_EQ(NavigationWebMessageSender::CreateWebMessage(
+                std::move(cross_doc_start_message))
+                ->message,
+            listener().NextMessageForHost(host)->message);
+
+  // Before the cross-document navigation above finishes, do a same-document
+  // navigation.
   ASSERT_TRUE(content::ExecJs(web_contents(), "location.hash = '#foo';"));
   listener().WaitForNextMessageForHost(host);
 
-  // Check that the same-document navigation committed successfully.
+  // Check that the same-document navigation started and committed successfully.
   GURL navigation_url_foo = embedded_test_server()->GetURL("/title1.html#foo");
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host),
-                                  /*url=*/navigation_url_foo,
-                                  /*is_same_document=*/true,
-                                  /*is_page_initiated=*/true,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
+  CheckMessagesForNavigation(
+      host,
+      /*navigation_id=*/3,
+      /*url=*/navigation_url_foo,
+      /*is_same_document=*/true,
+      /*is_page_initiated=*/true,
+      /*is_error_page=*/false,
+      /*is_reload=*/false,
+      /*is_history=*/false,
+      /*committed=*/true,
+      /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
   ASSERT_FALSE(listener().HasNextMessageForHost(host));
 
   // Send the response for the cross-document navigation after the same-document
@@ -579,28 +625,33 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
   request_to_delay.Done();
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
 
-  // A new NavigationWebMessageSender has been created for the new page.
+  // A new NavigationWebMessageSender has been created for the new page created
+  // by the cross-document navigation.
   HostToken host2 = GetCurrentHostToken();
 
   if (IsBackForwardCacheDisabled()) {
     // The previous page will be deleted, unless it gets into the back/forward
     // cache.
     listener().WaitForNextMessageForHost(host);
-    CheckNavigationMessage(listener().NextMessageForHost(host),
+    CheckNavigationMessage(host,
                            NavigationWebMessageSender::kPageDeletedMessage);
   }
 
-  // Check that the cross-document navigation committed successfully.
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host2),
-                                  /*url=*/navigation_url_2,
-                                  /*is_same_document=*/false,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
-  CheckNavigationMessage(listener().NextMessageForHost(host2),
+  // Check that the cross-document navigation finally committed successfully and
+  // we finally get a NAVIGATION_COMPLETED message for it.
+  base::Value::Dict cross_doc_complete_message =
+      base::Value::Dict()
+          .Set("type", NavigationWebMessageSender::kNavigationCompletedMessage)
+          .Set("committed", true)
+          .Set("statusCode", 200)
+          .Set("isErrorPage", false);
+  cross_doc_complete_message.Merge(cross_doc_base_message_dict.Clone());
+  listener().WaitForNextMessageForHost(host2);
+  ASSERT_EQ(NavigationWebMessageSender::CreateWebMessage(
+                std::move(cross_doc_complete_message))
+                ->message,
+            listener().NextMessageForHost(host2)->message);
+  CheckNavigationMessage(host2,
                          NavigationWebMessageSender::kPageLoadEndMessage);
 
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
@@ -645,27 +696,31 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
   // Check that the slow cross-document navigation got canceled, because the new
   // same-document navigation created a new NavigationHandle, deleting the
   // earlier navigation's NavigationHandle.
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host),
-                                  /*url=*/navigation_url_2,
-                                  /*is_same_document=*/false,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/false,
-                                  /*status_code=*/200);
+  CheckMessagesForNavigation(
+      host,
+      /*navigation_id=*/2,
+      /*url=*/navigation_url_2,
+      /*is_same_document=*/false,
+      /*is_page_initiated=*/false,
+      /*is_error_page=*/false,
+      /*is_reload=*/false,
+      /*is_history=*/false,
+      /*committed=*/false,
+      /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
 
   listener().WaitForNextMessageForHost(host);
   // Check that the same-document navigation committed successfully.
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host),
-                                  /*url=*/navigation_url_foo,
-                                  /*is_same_document=*/true,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
+  CheckMessagesForNavigation(host,
+                             /*navigation_id=*/3,
+                             /*url=*/navigation_url_foo,
+                             /*is_same_document=*/true,
+                             /*is_page_initiated=*/false,
+                             /*is_error_page=*/false,
+                             /*is_reload=*/false,
+                             /*is_history=*/false,
+                             /*committed=*/true,
+                             /*status_code=*/200,
+                             /*previous_page_deleted=*/false, false);
 
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
@@ -685,8 +740,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   SetupNavigationListener();
   HostToken host = GetCurrentHostToken();
-  CheckNavigationMessage(listener().NextMessageForHost(host),
-                         NavigationWebMessageSender::kOptedInMessage);
+  CheckNavigationMessage(host, NavigationWebMessageSender::kOptedInMessage);
 
   // Navigate to another page, which will have a slightly delayed response, so
   // that we can start another navigation before this one finishes.
@@ -708,36 +762,37 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
   // Check that the earlier cross-document navigation got canceled, because the
   // new navigation created a new NavigationHandle, deleting the earlier
   // navigation's NavigationHandle.
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host),
-                                  /*url=*/navigation_url_2,
-                                  /*is_same_document=*/false,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/false,
-                                  /*status_code=*/200);
+  CheckMessagesForNavigation(
+      host,
+      /*navigation_id=*/1,
+      /*url=*/navigation_url_2,
+      /*is_same_document=*/false,
+      /*is_page_initiated=*/false,
+      /*is_error_page=*/false,
+      /*is_reload=*/false,
+      /*is_history=*/false,
+      /*committed=*/false,
+      /*status_code=*/200, /*previous_page_deleted=*/false, /*load_end=*/false);
 
   // Wait for the newer navigation to finish.
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // A new NavigationWebMessageSender has been created for the new page.
   HostToken host2 = GetCurrentHostToken();
+  ASSERT_NE(host, host2);
 
   // Check that the newer cross-document navigation committed successfully.
-  CheckNavigationMessage(listener().NextMessageForHost(host),
-                         NavigationWebMessageSender::kPageDeletedMessage);
-  CheckNavigationCompletedMessage(listener().NextMessageForHost(host2),
-                                  /*url=*/navigation_url_3,
-                                  /*is_same_document=*/false,
-                                  /*is_page_initiated=*/false,
-                                  /*is_error_page=*/false,
-                                  /*is_reload=*/false,
-                                  /*is_history=*/false,
-                                  /*committed=*/true,
-                                  /*status_code=*/200);
-  CheckNavigationMessage(listener().NextMessageForHost(host2),
-                         NavigationWebMessageSender::kPageLoadEndMessage);
+  CheckMessagesForNavigation(host,
+                             /*navigation_id=*/2,
+                             /*url=*/navigation_url_3,
+                             /*is_same_document=*/false,
+                             /*is_page_initiated=*/false,
+                             /*is_error_page=*/false,
+                             /*is_reload=*/false,
+                             /*is_history=*/false,
+                             /*committed=*/true,
+                             /*status_code=*/200,
+                             /*previous_page_deleted=*/true, /*load_end=*/true);
 
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
 }
