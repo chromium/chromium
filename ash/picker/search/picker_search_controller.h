@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <string_view>
 #include <vector>
 
@@ -34,7 +33,7 @@ class ASH_EXPORT PickerSearchController {
   PickerSearchController& operator=(const PickerSearchController&) = delete;
   ~PickerSearchController();
 
-  void StartSearch(const std::u16string& query,
+  void StartSearch(std::u16string_view query,
                    std::optional<PickerCategory> category,
                    base::span<const PickerCategory> available_categories,
                    PickerViewDelegate::SearchResultsCallback callback);

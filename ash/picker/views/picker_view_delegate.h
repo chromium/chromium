@@ -52,7 +52,7 @@ class ASH_EXPORT PickerViewDelegate {
   // which may be called multiples times to update the results.
   // If `callback` is called with empty results, then it will never be called
   // again (i.e. all search results have been returned).
-  virtual void StartSearch(const std::u16string& query,
+  virtual void StartSearch(std::u16string_view query,
                            std::optional<PickerCategory> category,
                            SearchResultsCallback callback) = 0;
 

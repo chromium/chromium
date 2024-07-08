@@ -396,7 +396,7 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           .Then(std::move(callback)));
 }
 
-void PickerController::StartSearch(const std::u16string& query,
+void PickerController::StartSearch(std::u16string_view query,
                                    std::optional<PickerCategory> category,
                                    SearchResultsCallback callback) {
   CHECK(search_controller_);

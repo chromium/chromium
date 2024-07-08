@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -67,7 +68,7 @@ const char* SearchSourceToHistogram(PickerSearchSource source) {
 }  // namespace
 
 PickerSearchRequest::PickerSearchRequest(
-    const std::u16string& query,
+    std::u16string_view query,
     std::optional<PickerCategory> category,
     SearchResultsCallback callback,
     DoneCallback done_callback,
@@ -103,7 +104,7 @@ PickerSearchRequest::PickerSearchRequest(
       MarkSearchStarted(source);
     }
     client_->StartCrosSearch(
-        query, category,
+        std::u16string(query), category,
         base::BindRepeating(&PickerSearchRequest::HandleCrosSearchResults,
                             weak_ptr_factory_.GetWeakPtr()));
   }

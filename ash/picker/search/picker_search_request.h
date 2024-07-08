@@ -8,7 +8,7 @@
 #include <array>
 #include <cstddef>
 #include <optional>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -43,7 +43,7 @@ class ASH_EXPORT PickerSearchRequest {
   // `done_closure` is guaranteed to be called strictly after the last call to
   // `callback`.
   explicit PickerSearchRequest(
-      const std::u16string& query,
+      std::u16string_view query,
       std::optional<PickerCategory> category,
       SearchResultsCallback callback,
       DoneCallback done_callback,

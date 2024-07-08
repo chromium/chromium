@@ -56,7 +56,7 @@ PickerSearchController::PickerSearchController(PickerClient* client,
 PickerSearchController::~PickerSearchController() = default;
 
 void PickerSearchController::StartSearch(
-    const std::u16string& query,
+    std::u16string_view query,
     std::optional<PickerCategory> category,
     base::span<const PickerCategory> available_categories,
     PickerViewDelegate::SearchResultsCallback callback) {
