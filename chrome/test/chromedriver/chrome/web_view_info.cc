@@ -41,22 +41,25 @@ Status WebViewInfo::ParseType(const std::string& type_as_string,
       {"browser", WebViewInfo::kBrowser},
       {"external", WebViewInfo::kExternal},
       {"iframe", WebViewInfo::kIFrame},
-      {"other", WebViewInfo::kOther},
       {"page", WebViewInfo::kPage},
       {"service_worker", WebViewInfo::kServiceWorker},
-      {"shared_storage_worklet", WebViewInfo::kSharedStorageWorklet},
       {"shared_worker", WebViewInfo::kSharedWorker},
       {"webview", WebViewInfo::kWebView},
       {"worker", WebViewInfo::kWorker},
   };
 
-  auto it = mapping.find(type_as_string);
-  if (it == mapping.end()) {
-    return Status(kUnknownError,
-                  "DevTools returned unknown type:" + type_as_string);
+  if (type_as_string.empty()) {
+    return Status{kUnknownError,
+                  "DevTools returned empty string as a target type"};
   }
 
-  type = it->second;
+  auto it = mapping.find(type_as_string);
+  if (it == mapping.end()) {
+    type = WebViewInfo::kOther;
+  } else {
+    type = it->second;
+  }
+
   return Status(kOk);
 }
 

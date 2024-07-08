@@ -25,7 +25,7 @@ testing::AssertionResult StatusOk(const Status& status) {
 
 }  // namespace
 
-class ParseGoodTypeTest
+class ParseSupportedTypeTest
     : public testing::TestWithParam<std::pair<std::string, WebViewInfo::Type>> {
  public:
   const std::string& TypeString() const { return GetParam().first; }
@@ -33,7 +33,7 @@ class ParseGoodTypeTest
   WebViewInfo::Type Type() const { return GetParam().second; }
 };
 
-TEST_P(ParseGoodTypeTest, Success) {
+TEST_P(ParseSupportedTypeTest, ParseType) {
   std::string text = TypeString();
   const WebViewInfo::Type expected_type = Type();
   WebViewInfo::Type actual_type;
@@ -43,7 +43,7 @@ TEST_P(ParseGoodTypeTest, Success) {
 
 INSTANTIATE_TEST_SUITE_P(
     WebViewInfo,
-    ParseGoodTypeTest,
+    ParseSupportedTypeTest,
     ::testing::Values(
         std::make_pair("app", WebViewInfo::kApp),
         std::make_pair("background_page", WebViewInfo::kBackgroundPage),
@@ -53,16 +53,29 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair("other", WebViewInfo::kOther),
         std::make_pair("page", WebViewInfo::kPage),
         std::make_pair("service_worker", WebViewInfo::kServiceWorker),
-        std::make_pair("shared_storage_worklet",
-                       WebViewInfo::kSharedStorageWorklet),
         std::make_pair("shared_worker", WebViewInfo::kSharedWorker),
         std::make_pair("webview", WebViewInfo::kWebView),
         std::make_pair("worker", WebViewInfo::kWorker)));
 
-TEST(WebViewInfo, ParseBadTypes) {
+class ParseUnsupportedTypeTest : public testing::TestWithParam<std::string> {
+ public:
+  const std::string& TypeString() const { return GetParam(); }
+};
+
+TEST_P(ParseUnsupportedTypeTest, ParseType) {
   WebViewInfo::Type actual_type;
-  EXPECT_TRUE(StatusCodeIs<kUnknownError>(
-      WebViewInfo::ParseType("unknown", actual_type)));
+  EXPECT_TRUE(StatusOk(WebViewInfo::ParseType(TypeString(), actual_type)));
+  EXPECT_EQ(WebViewInfo::kOther, actual_type);
+}
+
+INSTANTIATE_TEST_SUITE_P(WebViewInfo,
+                         ParseUnsupportedTypeTest,
+                         ::testing::Values("auction_worklet",
+                                           "shared_storage_worklet",
+                                           "unknown"));
+
+TEST(WebViewInfo, ParseEmptyType) {
+  WebViewInfo::Type actual_type;
   EXPECT_TRUE(
       StatusCodeIs<kUnknownError>(WebViewInfo::ParseType("", actual_type)));
 }

@@ -24,7 +24,6 @@ struct WebViewInfo {
     kOther,
     kPage,
     kServiceWorker,
-    kSharedStorageWorklet,
     kSharedWorker,
     kWebView,
     kWorker,
