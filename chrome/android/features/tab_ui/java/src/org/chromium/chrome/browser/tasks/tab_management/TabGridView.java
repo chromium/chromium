@@ -129,7 +129,8 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
         scaleAnimator.start();
     }
 
-    void hideTabGridCardViewForQuickDelete(@QuickDeleteAnimationStatus int status) {
+    void hideTabGridCardViewForQuickDelete(
+            @QuickDeleteAnimationStatus int status, boolean isIncognito) {
         assert mTabActionState != TabActionState.UNSET;
         assert status < QuickDeleteAnimationStatus.NUM_ENTRIES;
 
@@ -146,7 +147,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
             int tabHeight = contentView.getHeight();
             mQuickDeleteAnimationDrawable =
                     QuickDeleteAnimationGradientDrawable.createQuickDeleteFadeAnimationDrawable(
-                            getContext(), tabHeight);
+                            getContext(), tabHeight, isIncognito);
             mQuickDeleteAnimation = mQuickDeleteAnimationDrawable.createFadeAnimator(tabHeight);
 
             mQuickDeleteAnimation.addListener(

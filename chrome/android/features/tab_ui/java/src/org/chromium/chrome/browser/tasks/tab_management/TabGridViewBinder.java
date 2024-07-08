@@ -157,14 +157,10 @@ class TabGridViewBinder {
             ((TabGridView) view)
                     .scaleTabGridCardView(model.get(TabProperties.CARD_ANIMATION_STATUS));
         } else if (TabProperties.IS_INCOGNITO == propertyKey) {
-            updateColor(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
-            updateColorForActionButton(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
+            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
+            boolean isSelected = model.get(TabProperties.IS_SELECTED);
+            updateColor(view, isIncognito, isSelected);
+            updateColorForActionButton(view, isIncognito, isSelected);
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
         } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
@@ -207,7 +203,8 @@ class TabGridViewBinder {
         } else if (TabProperties.QUICK_DELETE_ANIMATION_STATUS == propertyKey) {
             ((TabGridView) view)
                     .hideTabGridCardViewForQuickDelete(
-                            model.get(TabProperties.QUICK_DELETE_ANIMATION_STATUS));
+                            model.get(TabProperties.QUICK_DELETE_ANIMATION_STATUS),
+                            model.get(TabProperties.IS_INCOGNITO));
         } else if (TabProperties.TAB_GROUP_INFO == propertyKey
                 || TabProperties.TAB_ID == propertyKey) {
             @Nullable TabGroupInfo tabGroupInfo = model.get(TabProperties.TAB_GROUP_INFO);
@@ -233,14 +230,10 @@ class TabGridViewBinder {
                     .setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
             ((TabGridView) view).setItem(tabId);
         } else if (TabProperties.IS_INCOGNITO == propertyKey) {
-            updateColor(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
-            updateColorForSelectionToggleButton(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
+            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
+            boolean isSelected = model.get(TabProperties.IS_SELECTED);
+            updateColor(view, isIncognito, isSelected);
+            updateColorForSelectionToggleButton(view, isIncognito, isSelected);
         } else if (TabProperties.TAB_ACTION_STATE == propertyKey) {
             updateColor(
                     view,

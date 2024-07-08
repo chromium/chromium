@@ -87,7 +87,7 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
         View testView = setUpTestView();
         QuickDeleteAnimationGradientDrawable drawable =
                 QuickDeleteAnimationGradientDrawable.createQuickDeleteWipeAnimationDrawable(
-                        mActivity, VIEW_HEIGHT);
+                        mActivity, VIEW_HEIGHT, /* isIncognito= */ false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     testView.setForeground(drawable);
@@ -107,7 +107,7 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
         View testView = setUpTestView();
         QuickDeleteAnimationGradientDrawable drawable =
                 QuickDeleteAnimationGradientDrawable.createQuickDeleteFadeAnimationDrawable(
-                        mActivity, VIEW_HEIGHT);
+                        mActivity, VIEW_HEIGHT, /* isIncognito= */ false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     testView.setForeground(drawable);

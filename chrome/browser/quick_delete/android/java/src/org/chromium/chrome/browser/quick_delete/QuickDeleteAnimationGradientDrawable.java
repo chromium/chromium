@@ -27,13 +27,14 @@ import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
@@ -80,11 +81,16 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
      * @param context The associated {@link Context}.
      * @param tabGridHeight The height of the tab grid. This will be used to determine the height of
      *     the gradient.
+     * @param isIncognito Whether the surface is in incognito mode.
      */
     public static QuickDeleteAnimationGradientDrawable createQuickDeleteWipeAnimationDrawable(
-            @NonNull Context context, int tabGridHeight) {
-        int gradientColor = MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
-        boolean useDarkTheme = GlobalNightModeStateProviderHolder.getInstance().isInNightMode();
+            @NonNull Context context, int tabGridHeight, boolean isIncognito) {
+        int gradientColor =
+                isIncognito
+                        ? ContextCompat.getColor(context, R.color.baseline_primary_80)
+                        : MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
+        boolean useDarkTheme =
+                isIncognito || GlobalNightModeStateProviderHolder.getInstance().isInNightMode();
 
         int h = QUICK_DELETE_GRADIENT_EASING_POINTS_NUM;
         int k =
@@ -114,11 +120,12 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
      * @param context The associated {@link Context}.
      * @param tabHeight The height of the tab in the tab grid. This will be used to determine the
      *     height of the gradient.
+     * @param isIncognito Whether the surface is in incognito mode.
      */
     public static QuickDeleteAnimationGradientDrawable createQuickDeleteFadeAnimationDrawable(
-            @NonNull Context context, int tabHeight) {
+            @NonNull Context context, int tabHeight, boolean isIncognito) {
         // The color of the background behind the tab.
-        int backgroundColor = SemanticColorUtils.getDefaultBgColor(context);
+        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
 
         int[] colors = new int[] {Color.TRANSPARENT, backgroundColor, backgroundColor};
 

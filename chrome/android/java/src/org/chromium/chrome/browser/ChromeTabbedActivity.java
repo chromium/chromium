@@ -210,6 +210,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
+import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
@@ -1414,20 +1415,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private void handleDebugIntent(Intent intent) {
         if (ACTION_CLOSE_TABS.equals(intent.getAction())) {
-            closeAllTabsHidingTabGroups();
+            CloseAllTabsHelper.closeAllTabsHidingTabGroups(getTabModelSelectorSupplier().get());
         } else if (MemoryPressureListener.handleDebugIntent(
                 ChromeTabbedActivity.this, intent.getAction())) {
             // Handled.
         }
-    }
-
-    private void closeAllTabsHidingTabGroups() {
-        var selector = getTabModelSelector();
-        var filterProvider = selector.getTabModelFilterProvider();
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(false))
-                .closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(true))
-                .closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
     }
 
     private void disablePaintPreviewOnRestore() {
@@ -2767,19 +2759,33 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
             // Close both incognito and normal tabs.
+            Runnable closeAllTabsRunnable =
+                    CloseAllTabsHelper.buildCloseAllTabsRunnable(
+                            mHubProvider.getHubManagerSupplier(),
+                            mTabSwitcherSupplier,
+                            mIncognitoTabSwitcherSupplier,
+                            getTabModelSelectorSupplier().get(),
+                            /* isIncognitoOnly= */ false);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier(),
                     getTabModelSelectorSupplier().get(),
-                    this::closeAllTabsHidingTabGroups);
+                    closeAllTabsRunnable);
             RecordUserAction.record("MobileMenuCloseAllTabs");
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
             // Close only incognito tabs
+            Runnable closeAllTabsRunnable =
+                    CloseAllTabsHelper.buildCloseAllTabsRunnable(
+                            mHubProvider.getHubManagerSupplier(),
+                            mTabSwitcherSupplier,
+                            mIncognitoTabSwitcherSupplier,
+                            getTabModelSelectorSupplier().get(),
+                            /* isIncognitoOnly= */ true);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier(),
                     getTabModelSelectorSupplier().get(),
-                    () -> getTabModelSelector().getModel(true).closeAllTabs());
+                    closeAllTabsRunnable);
             RecordUserAction.record("MobileMenuCloseAllIncognitoTabs");
         } else if (id == R.id.focus_url_bar) {
             boolean isUrlBarVisible =
