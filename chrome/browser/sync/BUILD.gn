@@ -64,6 +64,9 @@ source_set("sync") {
     "//components/sync_sessions",
     "//components/translate/core/browser",
     "//content/public/browser",
+
+    # TODO: Use //chrome/browser/ui instead after fixing cyclic dependency.
+    "//components/paint_preview/buildflags",
   ]
   deps = [
     "//chrome/app:branded_strings",
