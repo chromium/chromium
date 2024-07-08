@@ -7045,6 +7045,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "pdf-win-use-font-proxy",
+    "owners": [ "ajgo@chromium.org", "//pdf/OWNERS" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "pdf-xfa-forms",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
     "expiry_milestone": 135

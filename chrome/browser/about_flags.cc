@@ -7373,6 +7373,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPdfInk2Description, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfInk2)},
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(IS_WIN)
+    {"pdf-win-use-font-proxy", flag_descriptions::kWinPdfUseFontProxyName,
+     flag_descriptions::kWinPdfUseFontProxyDescription, kOsWin,
+     FEATURE_VALUE_TYPE(chrome_pdf::features::kWinPdfUseFontProxy)},
+#endif  // BUILDFLAG(IS_WIN)
+
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINTING)

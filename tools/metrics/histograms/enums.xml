@@ -20800,6 +20800,7 @@ from previous Chrome versions.
   <int value="23121136" label="MobileIdentityConsistencyVar:enabled"/>
   <int value="23556595" label="MarkHttpAs:enabled"/>
   <int value="24332306" label="ButtonARCNetworkDiagnostics:disabled"/>
+  <int value="24559850" label="WinPdfUseFontProxy:enabled"/>
   <int value="25864495" label="StarterPackExpansion:disabled"/>
   <int value="26632553"
       label="NtpHistoryClustersModuleUseModelRanking:enabled"/>
@@ -22956,6 +22957,7 @@ from previous Chrome versions.
   <int value="948351976" label="WallpaperWebUI:disabled"/>
   <int value="948521531" label="StylusHandwriting:disabled"/>
   <int value="948682684" label="BorealisDGPU:disabled"/>
+  <int value="948833749" label="WinPdfUseFontProxy:disabled"/>
   <int value="951048852" label="IOSPromoPasswordBubble:enabled"/>
   <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>
   <int value="951133343" label="UseSharedImagesForPepperVideo:disabled"/>
