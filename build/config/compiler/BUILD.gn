@@ -556,7 +556,7 @@ config("compiler") {
     ldflags += [ "-Wl,-z,keep-text-section-prefix" ]
   }
 
-  if (is_clang && !is_nacl && current_os != "zos") {
+  if (is_clang && !is_nacl) {
     cflags += [ "-fcrash-diagnostics-dir=" + clang_diagnostic_dir ]
     if (save_reproducers_on_lld_crash && use_lld) {
       ldflags += [
@@ -679,7 +679,7 @@ config("compiler") {
     }
   }
 
-  if (is_clang && current_os != "zos") {
+  if (is_clang) {
     # C++17 removes trigraph support, but clang still warns that it ignores
     # them when seeing them.  Don't.
     cflags_cc += [ "-Wno-trigraphs" ]
@@ -1599,7 +1599,8 @@ config("compiler_deterministic") {
 }
 
 config("clang_revision") {
-  if (is_clang && clang_base_path == default_clang_base_path) {
+  if (is_clang && clang_base_path == default_clang_base_path &&
+      current_os != "zos") {
     update_args = [
       "--print-revision",
       "--verify-version=$clang_version",
@@ -2742,7 +2743,8 @@ config("symbols") {
     }
 
     # On aix -gdwarf causes linker failures due to thread_local variables.
-    if (!is_nacl && current_os != "aix") {
+    # On zos -gdwarf causes INSUFFICIENT ABOVE THE LINE STORAGE WAS AVAILABLE.
+    if (!is_nacl && current_os != "aix" && current_os != "zos") {
       if (use_dwarf5) {
         cflags += [ "-gdwarf-5" ]
         rustflags += [ "-Zdwarf-version=5" ]
@@ -2831,7 +2833,7 @@ config("symbols") {
     configs += [ "//build/config:compress_debug_sections" ]
   }
 
-  if (is_clang && (!is_nacl || is_nacl_saigo) && current_os != "zos") {
+  if (is_clang && (!is_nacl || is_nacl_saigo)) {
     if (is_apple) {
       # TODO(crbug.com/40117949): Investigate missing debug info on mac.
       # Make sure we don't use constructor homing on mac.
@@ -2915,7 +2917,7 @@ config("minimal_symbols") {
       cflags += [ "-g1" ]
     }
 
-    if (!is_nacl && is_clang && !is_tsan && !is_asan) {
+    if (!is_nacl && is_clang && !is_tsan && !is_asan && current_os != "zos") {
       # See comment for -gdwarf-aranges in config("symbols").
       cflags += [ "-gdwarf-aranges" ]
     }
