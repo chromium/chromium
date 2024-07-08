@@ -650,6 +650,10 @@ void GlanceablesTaskView::
 }
 
 void GlanceablesTaskView::CheckButtonPressed() {
+  if (saving_task_changes_) {
+    return;
+  }
+
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork,
@@ -657,7 +661,10 @@ void GlanceablesTaskView::CheckButtonPressed() {
     return;
   }
 
-  if (saving_task_changes_) {
+  if (task_id_.empty()) {
+    show_error_message_callback_.Run(
+        GlanceablesTasksErrorType::kCantMarkComplete,
+        GlanceablesErrorMessageView::ButtonActionType::kReload);
     return;
   }
 

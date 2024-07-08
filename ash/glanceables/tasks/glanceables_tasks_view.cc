@@ -789,6 +789,9 @@ void GlanceablesTasksView::SaveTask(
     if (title.empty() && view) {
       RecordTaskAdditionResult(TaskModificationResult::kCancelled);
 
+      // Prevent editing the task view when `view` is waiting to be deleted.
+      view->SetCanProcessEventsWithinSubtree(false);
+
       // Removing the task immediately may cause a crash when the task is saved
       // in response to the task title textfield losing focus, as it may result
       // in deleting focused view while the focus manager is handling focus
