@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Demo Mode Free Play Apps"/>
   <int value="2" label="Nudge"/>
   <int value="3" label="Notification"/>
+  <int value="4" label="OOBE Perk Discovery Page"/>
 </enum>
 
 <enum name="CampaignsManagerError">
