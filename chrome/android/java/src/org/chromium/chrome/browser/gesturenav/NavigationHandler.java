@@ -156,7 +156,7 @@ class NavigationHandler implements TouchEventObserver {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
-        // Forward gesture events only for native pages/start surface. Rendered pages receive events
+        // Forward gesture events only for native pages. Rendered pages receive events
         // from SwipeRefreshHandler.
         if (!shouldProcessTouchEvents()) return false;
         return isActive();
@@ -172,7 +172,7 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     private boolean shouldProcessTouchEvents() {
-        return mTab != null && mTab.isNativePage() || mBackActionDelegate.isNavigable();
+        return mTab != null && mTab.isNativePage();
     }
 
     /**
@@ -207,9 +207,8 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     private boolean isValidState() {
-        // We are in a valid state for UI process if the underlying tab is alive, or
-        // start surface is showing.
-        return mTab != null && !mTab.isDestroyed() || mBackActionDelegate.isNavigable();
+        // We are in a valid state for UI process if the underlying tab is alive.
+        return mTab != null && !mTab.isDestroyed();
     }
 
     private boolean shouldTriggerUi(float sX, float dX, float dY) {

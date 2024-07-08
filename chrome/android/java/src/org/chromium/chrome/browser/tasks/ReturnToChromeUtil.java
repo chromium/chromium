@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -579,24 +578,6 @@ public final class ReturnToChromeUtil {
                                 .readInt(
                                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE)
                         == ActiveTabState.NTP);
-    }
-
-    /**
-     * Records a user action that Start surface is showing due to tapping the back button.
-     *
-     * @param from: Where the back navigation is initiated, either "FromTab" or "FromTabSwitcher".
-     */
-    public static void recordBackNavigationToStart(String from) {
-        RecordUserAction.record(SHOWN_FROM_BACK_NAVIGATION_UMA + from);
-    }
-
-    /**
-     * Records the StartSurfaceState when overview page is shown.
-     * @param state: the current StartSurfaceState.
-     */
-    public static void recordStartSurfaceState(@StartSurfaceState int state) {
-        RecordHistogram.recordEnumeratedHistogram(
-                START_SHOW_STATE_UMA, state, StartSurfaceState.NUM_ENTRIES);
     }
 
     /**

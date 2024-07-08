@@ -159,7 +159,6 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.wallet.BoardingPassController;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -286,7 +285,6 @@ public class RootUiCoordinator
     protected final BrowserControlsManager mBrowserControlsManager;
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     protected ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    protected final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     protected final OneshotSupplier<TabSwitcher> mTabSwitcherSupplier;
     protected final OneshotSupplier<TabSwitcher> mIncognitoTabSwitcherSupplier;
     @Nullable protected ManagedMessageDispatcher mMessageDispatcher;
@@ -356,7 +354,6 @@ public class RootUiCoordinator
      * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
-     * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param tabSwitcherSupplier Supplier of the {@link TabSwitcher}.
      * @param incognitoTabSwitcherSupplier Supplier of the incognito {@link TabSwitcher}.
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
@@ -401,7 +398,6 @@ public class RootUiCoordinator
             @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
             @NonNull OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
             @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
@@ -512,7 +508,6 @@ public class RootUiCoordinator
         mLayoutStateProviderOneShotSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
 
-        mStartSurfaceSupplier = startSurfaceSupplier;
         mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mIncognitoTabSwitcherSupplier = incognitoTabSwitcherSupplier;

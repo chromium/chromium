@@ -133,8 +133,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarC
 import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
 import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
-import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
@@ -240,7 +238,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
-     * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param tabSwitcherSupplier Supplier of the {@link TabSwitcher}.
      * @param incognitoTabSwitcherSupplier Supplier of the incognito {@link TabSwitcher}.
      * @param hubManagerSupplier Supplier for the {@link HubManager}.
@@ -290,7 +287,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
             @NonNull OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
             @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
@@ -338,7 +334,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 bookmarkModelSupplier,
                 tabBookmarkerSupplier,
                 tabModelSelectorSupplier,
-                startSurfaceSupplier,
                 tabSwitcherSupplier,
                 incognitoTabSwitcherSupplier,
                 intentMetadataOneshotSupplier,
@@ -598,15 +593,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 () -> mLayoutManager.getActiveLayout().requestUpdate()),
                         mActivityTabProvider,
                         mInsetObserver,
-                        mStartSurfaceSupplier,
                         new BackActionDelegate() {
                             @Override
                             public @ActionType int getBackActionType(Tab tab) {
-                                if (isShowingStartSurfaceHomepage()) return ActionType.EXIT_APP;
-                                if (tab.canGoBack()
-                                        || StartSurfaceUserData.isOpenedFromStart(tab)
-                                        || tab.getLaunchType()
-                                                == TabLaunchType.FROM_START_SURFACE) {
+                                if (tab.canGoBack()) {
                                     return ActionType.NAVIGATE_BACK;
                                 }
                                 if (TabAssociatedApp.isOpenedFromExternalApp(tab)) {
@@ -621,11 +611,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             public void onBackGesture() {
                                 // Back navigation gesture performs what the back button would do.
                                 mActivity.onBackPressed();
-                            }
-
-                            @Override
-                            public boolean isNavigable() {
-                                return isShowingStartSurfaceHomepage();
                             }
                         },
                         () -> mCompositorViewHolderSupplier.get());
@@ -760,10 +745,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mGestureNavLayoutObserver != null) {
             layoutStateProvider.addObserver(mGestureNavLayoutObserver);
         }
-    }
-
-    private boolean isShowingStartSurfaceHomepage() {
-        return mStartSurfaceSupplier.get() != null && mStartSurfaceSupplier.get().isHomepageShown();
     }
 
     // Protected class methods

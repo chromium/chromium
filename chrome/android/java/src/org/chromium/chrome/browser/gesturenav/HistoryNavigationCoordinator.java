@@ -11,14 +11,12 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -57,7 +55,6 @@ public class HistoryNavigationCoordinator
      * @param tabSupplier Activity tab supplier.
      * @param insetObserver View that provides information about the inset and inset capabilities of
      *     the device.
-     * @param startSurfaceSupplier StartSurface supplier.
      * @param backActionDelegate Delegate handling actions for back gesture.
      * @param touchEventProvider {@link TouchEventProvider} object.
      * @return HistoryNavigationCoordinator object or null if not enabled via feature flag.
@@ -69,7 +66,6 @@ public class HistoryNavigationCoordinator
             Runnable requestRunnable,
             ObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
-            OneshotSupplier<StartSurface> startSurfaceSupplier,
             BackActionDelegate backActionDelegate,
             Supplier<TouchEventProvider> touchEventProvider) {
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
@@ -80,7 +76,6 @@ public class HistoryNavigationCoordinator
                 requestRunnable,
                 tabSupplier,
                 insetObserver,
-                startSurfaceSupplier,
                 backActionDelegate,
                 touchEventProvider);
         return coordinator;
@@ -94,7 +89,6 @@ public class HistoryNavigationCoordinator
             Runnable requestRunnable,
             ObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
-            OneshotSupplier<StartSurface> startSurfaceSupplier,
             BackActionDelegate backActionDelegate,
             Supplier<TouchEventProvider> touchEventProvider) {
         mNavigationLayout =
@@ -130,11 +124,6 @@ public class HistoryNavigationCoordinator
                             mTab = tab;
                             updateNavigationHandler();
                         });
-
-        // TODO(jinsukkim): Update NavigationHandler when its homepage is shown rather than
-        //     StartSurface becomes available. The former is the better signal for the update.
-        startSurfaceSupplier.onAvailable(s -> updateNavigationHandler());
-
         // We wouldn't hear about the first tab until the content changed or we switched tabs
         // if tabProvider.get() != null. Do here what we do when tab switching happens.
         // Otherwise, just initialize |mEnabled| in preparation of the initialization of
@@ -210,8 +199,7 @@ public class HistoryNavigationCoordinator
 
         WebContents webContents = mTab != null ? mTab.getWebContents() : null;
 
-        // Also updates NavigationHandler when tab == null (going into TabSwitcher,
-        // or StartSurface homepage is shown).
+        // Also updates NavigationHandler when tab == null (going into TabSwitcher).
         if (mTab == null || webContents != null) {
             if (mNavigationHandler == null) initNavigationHandler();
             mNavigationHandler.setTab(isDetached(mTab) ? null : mTab);

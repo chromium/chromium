@@ -225,10 +225,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -387,9 +384,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
             new OneshotSupplierImpl<>();
 
-    /** Whether the StartSurface is shown when Chrome is launched. */
-    private boolean mOverviewShownOnStart;
-
     // Whether the activity is staring from a resumption. False if the activity is starting from
     // onCreate(), a cold startup.
     private boolean mFromResumption;
@@ -401,15 +395,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
-
-    private final OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier =
-            new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier =
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<TabSwitcher> mIncognitoTabSwitcherSupplier =
             new OneshotSupplierImpl<>();
-    private ObservableSupplierImpl<Tab> mStartSurfaceParentTabSupplier =
-            new ObservableSupplierImpl<>();
     private HubProvider mHubProvider;
     private OneshotSupplierImpl<HubManager> mHubManagerSupplier = new OneshotSupplierImpl<>();
     private Runnable mCleanUpHubOverviewColorObserver;
@@ -792,8 +781,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 TraceEvent.scoped("ChromeTabbedActivity.setupCompositorContentForPhone")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
-            maybeCreateStartSurface(compositorViewHolder, compositorViewHolder);
-
             mLayoutManager =
                     new LayoutManagerChromePhone(
                             compositorViewHolder,
@@ -856,35 +843,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             actionConfirmationManager);
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
-    }
-
-    private void maybeCreateStartSurface(
-            CompositorViewHolder compositorViewHolder, ViewGroup tabSwitcherContainer) {
-        if (!ReturnToChromeUtil.isStartSurfaceEnabled(this)) return;
-
-        StartSurfaceDelegate.createStartSurface(
-                this,
-                mRootUiCoordinator.getBottomSheetController(),
-                mStartSurfaceSupplier,
-                mStartSurfaceParentTabSupplier,
-                hadWarmStart(),
-                getWindowAndroid(),
-                mJankTracker,
-                tabSwitcherContainer,
-                getTabModelSelector(),
-                getBrowserControlsManager(),
-                getSnackbarManager(),
-                getShareDelegateSupplier(),
-                getToolbarManager()::getOmniboxStub,
-                getTabContentManager(),
-                /* chromeActivityNativeDelegate= */ this,
-                getLifecycleDispatcher(),
-                getTabCreatorManagerSupplier().get(),
-                getToolbarManager()::getToolbar,
-                mBackPressManager,
-                mTabModelProfileSupplier,
-                getToolbarManager().getTabStripHeightSupplier(),
-                mModuleRegistrySupplier);
     }
 
     /** Returns the supplier for the {@link HubManager} for testing. */
@@ -1025,7 +983,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         ReturnToChromeUtil.recordClickTabSwitcher(
                 isInOverviewMode(), getTabModelSelector().getCurrentTab());
 
-        showOverview(StartSurfaceState.SHOWING_TABSWITCHER);
+        showOverview();
     }
 
     private void initializeToolbarManager() {
@@ -2074,7 +2032,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mBookmarkModelSupplier,
                 mTabBookmarkerSupplier,
                 getTabModelSelectorSupplier(),
-                mStartSurfaceSupplier,
                 mTabSwitcherSupplier,
                 mIncognitoTabSwitcherSupplier,
                 mHubManagerSupplier,
@@ -2958,9 +2915,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void assertOnLastBackPress() {
-        final boolean isStartSurfaceHomepageShowing =
-                mStartSurfaceSupplier.hasValue() && mStartSurfaceSupplier.get().isHomepageShown();
-        final Tab currentTab = isStartSurfaceHomepageShowing ? null : getActivityTab();
+        final Tab currentTab = getActivityTab();
         var activityTab = getActivityTabProvider().get();
         MinimizeAppAndCloseTabBackPressHandler.assertOnLastBackPress(
                 currentTab,
@@ -3062,11 +3017,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 currentModel.getNextTabIfClosed(
                                         tabToClose.getId(), /* uponExit= */ true);
                         currentModel.closeTab(tabToClose, nextTab, true, false);
-
-                        // If there is no next tab to open, enter overview mode.
-                        if (nextTab == null && !isActivityFinishingOrDestroyed()) {
-                            showOverview(StartSurfaceState.SHOWING_START);
-                        }
                     },
                     CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
         }
@@ -3167,24 +3117,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 .launchUrlFromExternalApp(loadUrlParams, externalAppId, forceNewTab, intent);
     }
 
-    private void showOverview(@StartSurfaceState int state) {
-        showOverview(state, NewTabPageLaunchOrigin.UNKNOWN);
-    }
-
-    // TODO(crbug.com/40144466): After crrev.com/c/2315823, Overview state and Startsurface state
-    // are
-    // two different things, we actual can split this into two methods: showOverview() and
-    // showStartSurface(state). Let's do some auditing and clean up before perform the actual split.
-    private void showOverview(
-            @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin) {
-        assert (state == StartSurfaceState.SHOWING_TABSWITCHER
-                || state == StartSurfaceState.SHOWING_HOMEPAGE
-                || state == StartSurfaceState.SHOWING_PREVIOUS
-                || state == StartSurfaceState.SHOWING_START);
-        if (mStartSurfaceSupplier.get() != null) {
-            mStartSurfaceSupplier.get().setLaunchOrigin(launchOrigin);
-        }
-
+    private void showOverview() {
         if (mLayoutManager == null) return;
 
         if (isInOverviewMode()) {
@@ -3195,42 +3128,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         Tab currentTab = getActivityTab();
         @LayoutType int layoutTypeToShow = LayoutType.TAB_SWITCHER;
-        if (ReturnToChromeUtil.isStartSurfaceEnabled(this)
-                && state != StartSurfaceState.SHOWING_TABSWITCHER
-                && !getTabModelSelector().isIncognitoSelected()) {
-            // The NTP is attempting to show Start Surface after it was turned off previously due to
-            // accessibility state change without a cold restart. If the supplier is null the
-            // browser is in a weird state. Bail out to a normal NTP or last tab. This logic can be
-            // removed once Start Surface with accessibility support is launched.
-            // See crbug.com/1473947.
-            if (mStartSurfaceSupplier.get() == null) {
-                if (getTabModelSelector().getCurrentModel().getCount() == 0) {
-                    getCurrentTabCreator().launchNtp();
-                } else {
-                    mLayoutManager.showLayout(LayoutType.BROWSING, true);
-                }
-                return;
-            }
-
-            layoutTypeToShow = LayoutType.START_SURFACE;
-            if (state == StartSurfaceState.SHOWING_PREVIOUS) {
-                ReturnToChromeUtil.recordBackNavigationToStart("FromTab");
-            } else {
-                // Resets the scroll position when Start is showing not via back operations.
-                mStartSurfaceSupplier.get().resetScrollPosition();
-            }
-        }
-
-        ReturnToChromeUtil.recordStartSurfaceState(state);
 
         // If we don't have a current tab, show the overview mode.
         if (currentTab == null) {
             mLayoutManager.showLayout(layoutTypeToShow, false);
         } else {
-            final int layoutTypeToShowFinal = layoutTypeToShow;
             getCompositorViewHolderSupplier()
                     .get()
-                    .hideKeyboard(() -> mLayoutManager.showLayout(layoutTypeToShowFinal, true));
+                    .hideKeyboard(() -> mLayoutManager.showLayout(layoutTypeToShow, true));
         }
     }
 
@@ -3298,10 +3203,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mAppIndexingUtil != null) {
             mAppIndexingUtil.destroy();
             mAppIndexingUtil = null;
-        }
-
-        if (mStartSurfaceSupplier.get() != null) {
-            mStartSurfaceSupplier.get().destroy();
         }
 
         if (mStartupPaintPreviewHelperSupplier != null) {
@@ -3455,11 +3356,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @VisibleForTesting
     public OneshotSupplier<LayoutStateProvider> getLayoutStateProviderSupplier() {
         return mLayoutStateProviderSupplier;
-    }
-
-    @VisibleForTesting
-    public StartSurface getStartSurface() {
-        return mStartSurfaceSupplier.get();
     }
 
     public OneshotSupplier<TabSwitcher> getTabSwitcherSupplierForTesting() {
@@ -3653,27 +3549,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return (ChromeNextTabPolicySupplier) mNextTabPolicySupplier;
     }
 
-    private void closeTabAfterStartSurfaceLayoutIsShown(Tab currentTab) {
-        // Closing tab should be called after StartSurfaceLayout finishes showing.
-        getLayoutManager()
-                .addObserver(
-                        new LayoutStateProvider.LayoutStateObserver() {
-                            @Override
-                            public void onFinishedShowing(int layoutType) {
-                                assert layoutType == LayoutType.TAB_SWITCHER
-                                        || layoutType == LayoutType.START_SURFACE;
-                                PostTask.postTask(
-                                        TaskTraits.UI_DEFAULT,
-                                        () -> {
-                                            mTabModelSelector
-                                                    .getModel(currentTab.isIncognito())
-                                                    .closeTab(currentTab);
-                                        });
-                                getLayoutManager().removeObserver(this);
-                            }
-                        });
-    }
-
     /** Returns whether to show a NTP as the home surface at startup on tablet in regular mode. */
     private boolean shouldShowNtpHomeSurfaceOnStartup() {
         if (mTabModelSelector.isIncognitoSelected()) return false;
@@ -3722,7 +3597,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     getTabModelSelectorSupplier().get(),
                     (tabModelSelectorReturn) -> {
                         if (!isInOverviewMode()) {
-                            showOverview(StartSurfaceState.SHOWING_TABSWITCHER);
+                            showOverview();
                         }
                         if (mTabSwitcherSupplier.hasValue()) {
                             // TODO(b/332961197): Add the actual invitation id obtained from url
