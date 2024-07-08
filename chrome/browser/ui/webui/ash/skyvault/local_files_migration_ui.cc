@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
@@ -28,14 +29,28 @@ LocalFilesMigrationUI::LocalFilesMigrationUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUILocalFilesMigrationHost);
 
-  // TODO(b/342340599): Pass strings, callbacks etc.
+  // TODO(b/342340599): Pass strings etc.
   webui::SetupWebUIDataSource(
       source, base::make_span(kSkyvaultResources, kSkyvaultResourcesSize),
       IDR_SKYVAULT_LOCAL_FILES_HTML);
+
+  web_ui->RegisterMessageCallback(
+      "startMigration",
+      base::BindRepeating(&LocalFilesMigrationUI::HandleStartMigration,
+                          base::Unretained(this)));
+
   webui::EnableTrustedTypesCSP(source);
 }
 
 LocalFilesMigrationUI::~LocalFilesMigrationUI() = default;
+
+void LocalFilesMigrationUI::HandleStartMigration(
+    const base::Value::List& args) {
+  // Signal to the dialog to run the migration callback.
+  base::Value::List values;
+  values.Append(kStartMigration);
+  CloseDialog(values);
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LocalFilesMigrationUI)
 

@@ -7,27 +7,53 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
 namespace policy::local_user_files {
 
+// The action signaling the user clicked on "Upload now" and migration should
+// start.
+inline constexpr char kStartMigration[] = "start-migration";
+
+using StartMigrationCallback = base::OnceClosure;
+
 // Declares the WebUI-based dialog for local files migration.
 class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
  public:
-  // Shows the dialog with the given `migration_delay`.
-  // `migration_callback` is called if the user chooses to start the migration
-  // immediately.
-  static void Show(base::TimeDelta migration_delay,
-                   base::OnceClosure migration_callback);
+  // Shows the Local Files Migration dialog.
+  //
+  // If a dialog is already open, brings it to the front and returns false.
+  // Otherwise, shows the dialog and returns true.
+  static bool Show(CloudProvider cloud_provider,
+                   base::TimeDelta migration_delay,
+                   StartMigrationCallback migration_callback);
 
-  LocalFilesMigrationDialog();
-  ~LocalFilesMigrationDialog() override;
   LocalFilesMigrationDialog(const LocalFilesMigrationDialog&) = delete;
   LocalFilesMigrationDialog& operator=(const LocalFilesMigrationDialog&) =
       delete;
 
  private:
+  LocalFilesMigrationDialog(CloudProvider cloud_provider,
+                            base::TimeDelta migration_delay,
+                            StartMigrationCallback migration_callback);
+  ~LocalFilesMigrationDialog() override;
+
+  // ash::SystemWebDialogDelegate:
   bool ShouldShowCloseButton() const override;
+
+  // Called when the dialog is closed. If `ret-value` is set to kStartMigration,
+  // the user clicked "Upload now" and uploads should start.
+  void ProcessDialogClosing(const std::string& ret_value);
+
+  // Cloud provider to which files are uploaded.
+  CloudProvider cloud_provider_;
+
+  // The time until automatic migration starts.
+  base::TimeDelta migration_delay_;
+
+  // Called if the user starts migration immediately.
+  StartMigrationCallback migration_callback_;
 };
 
 }  // namespace policy::local_user_files

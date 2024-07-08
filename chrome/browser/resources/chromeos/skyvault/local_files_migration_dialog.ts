@@ -38,7 +38,7 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
   }
 
   private async onUploadNowButtonClicked_() {
-    // TODO(b/342340599): Invoke callback to start the migration.
+    chrome.send('startMigration');
   }
 
   private onDismissButtonClicked_() {

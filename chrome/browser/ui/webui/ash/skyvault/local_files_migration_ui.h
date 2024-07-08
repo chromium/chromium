@@ -38,6 +38,9 @@ class LocalFilesMigrationUI : public ui::WebDialogUI {
  private:
   base::WeakPtrFactory<LocalFilesMigrationUI> weak_factory_{this};
 
+  // Called if the user clicks on "Upload now".
+  void HandleStartMigration(const base::Value::List& args);
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
