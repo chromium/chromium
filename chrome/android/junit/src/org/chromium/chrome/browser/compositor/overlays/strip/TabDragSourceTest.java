@@ -30,7 +30,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.text.format.DateUtils;
 import android.view.DragEvent;
@@ -53,7 +52,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -92,6 +90,7 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link TabDragSource}. */
 @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
+@EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S, shadows = ShadowToast.class)
 public class TabDragSourceTest {
@@ -345,27 +344,6 @@ public class TabDragSourceTest {
         // verify.
         assertFalse(
                 "Tab drag should not start",
-                mSourceInstance.startTabDragAction(
-                        mTabsToolbarView,
-                        mTabBeingDragged,
-                        DRAG_START_POINT,
-                        TAB_POSITION_X,
-                        TAB_WIDTH));
-    }
-
-    @Test
-    @DisableFeatures({
-        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
-        ChromeFeatureList.DRAG_DROP_TAB_TEARING
-    })
-    public void test_startTabDragAction_returnTrueForNonSplitScreenSamsung() {
-        // Set params, add Samsung to allowed manufacturer list.
-        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
-
-        // Verify.
-        assertTrue(
-                "Tab drag should start",
                 mSourceInstance.startTabDragAction(
                         mTabsToolbarView,
                         mTabBeingDragged,

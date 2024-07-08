@@ -15,7 +15,6 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
@@ -54,9 +53,6 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.widget.Toast;
 
-import java.util.Locale;
-import java.util.Set;
-
 /**
  * Manages initiating tab drag and drop and handles the events that are received during drag and
  * drop process. The tab drag and drop is initiated from the active instance of {@link
@@ -64,7 +60,6 @@ import java.util.Set;
  */
 public class TabDragSource implements View.OnDragListener {
     private static final String TAG = "TabDragSource";
-    private static final Set<String> DRAG_NON_SPLIT_MODE_ALLOWLIST = Set.of("samsung");
 
     private final WindowAndroid mWindowAndroid;
     private MultiInstanceManager mMultiInstanceManager;
@@ -137,19 +132,6 @@ public class TabDragSource implements View.OnDragListener {
         }
     }
 
-    private boolean shouldAllowTabDrag() {
-        // TODO (crbug/331980663): Prevent OEM-agnostic single tab drag on Android V+.
-        return ChromeDragDropUtils.shouldAllowTabTearing(mTabModelSelector)
-                || DRAG_NON_SPLIT_MODE_ALLOWLIST.contains(
-                        Build.MANUFACTURER.toLowerCase(Locale.US));
-    }
-
-    // Determine if a tab drag initiated to create a new window is valid.
-    private boolean shouldAllowTabTearing() {
-        return MultiWindowUtils.getInstanceCount() < MultiWindowUtils.getMaxInstances()
-                && ChromeDragDropUtils.shouldAllowTabTearing(mTabModelSelector);
-    }
-
     /**
      * Starts the tab drag action by initiating the process by calling @{link
      * View.startDragAndDrop}.
@@ -177,12 +159,10 @@ public class TabDragSource implements View.OnDragListener {
             return false;
         }
 
-        // Do not allow drag if the tab is the only tab in non-split screen mode on a non-Samsung
-        // device.
-        // @TODO(crbug.com/41493055): Make this configurable via Finch in case we find more OEMs
-        // where this works.
+        // Allow drag in single-window mode if tab tearing is possible.
+        boolean allowTabTearing = ChromeDragDropUtils.shouldAllowTabTearing(mTabModelSelector);
         if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
-                && !shouldAllowTabDrag()) {
+                && !allowTabTearing) {
             return false;
         }
 
@@ -191,10 +171,13 @@ public class TabDragSource implements View.OnDragListener {
         }
 
         // Build shared state with all info.
+        // Update allow flag - used to add ClipData drag event flags for tab tearing only if
+        // instance count is favorable..
+        allowTabTearing &= MultiWindowUtils.getInstanceCount() < MultiWindowUtils.getMaxInstances();
         ChromeDropDataAndroid dropData =
                 new ChromeDropDataAndroid.Builder()
                         .withTab(tabBeingDragged)
-                        .withAllowTabTearing(shouldAllowTabTearing())
+                        .withAllowTabTearing(allowTabTearing)
                         .build();
         updateShadowView(tabBeingDragged, dragSourceView, (int) (tabWidthDp / mPxToDp));
         DragShadowBuilder builder =
@@ -286,7 +269,7 @@ public class TabDragSource implements View.OnDragListener {
                 break;
             case DragEvent.ACTION_DROP:
                 if (didOccurInTabStrip(dragEvent.getY())) {
-                    res = onDrop(dragEvent.getX(), dragEvent);
+                    res = onDrop(dragEvent);
                 } else {
                     DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.IGNORED_TOOLBAR);
                     res = false;
@@ -362,7 +345,7 @@ public class TabDragSource implements View.OnDragListener {
         return true;
     }
 
-    private boolean onDrop(float xPx, DragEvent dropEvent) {
+    private boolean onDrop(DragEvent dropEvent) {
         StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
         int destinationTabId = helper.getTabDropId();
         helper.onUpOrCancel(LayoutManagerImpl.time());

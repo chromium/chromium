@@ -9941,6 +9941,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"drag-drop-tab-tearing", flag_descriptions::kDragDropTabTearingName,
      flag_descriptions::kDragDropTabTearingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDragDropTabTearing)},
+    {"drag-drop-tab-tearing-enable-oem",
+     flag_descriptions::kDragDropTabTearingEnableOEMName,
+     flag_descriptions::kDragDropTabTearingEnableOEMDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDragDropTabTearingEnableOEM)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -217,12 +217,11 @@ public class DragAndDropLauncherActivityTest {
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), sourceActivity);
 
         var draggedTab = TestThreadUtils.runOnUiThreadBlocking(sourceActivity::getActivityTab);
-        int draggedTabId = draggedTab.getId();
         var initialTabCountInSourceActivity =
                 sourceActivity.getTabModelSelector().getTotalTabCount();
 
         // Simulate a tab drag/drop event to launch an intent in a new Chrome instance.
-        Intent intent = createTabDragDropIntent(draggedTabId);
+        Intent intent = createTabDragDropIntent(draggedTab);
         ChromeTabbedActivity newActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
@@ -295,10 +294,10 @@ public class DragAndDropLauncherActivityTest {
                                 mContext, linkUrl, windowId, UrlIntentSource.LINK));
     }
 
-    private Intent createTabDragDropIntent(int tabId) throws ExecutionException {
+    private Intent createTabDragDropIntent(Tab tab) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         DragAndDropLauncherActivity.getTabIntent(
-                                mContext, tabId, MultiWindowUtils.INVALID_INSTANCE_ID));
+                                mContext, tab, MultiWindowUtils.INVALID_INSTANCE_ID));
     }
 }

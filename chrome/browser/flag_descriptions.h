@@ -2506,6 +2506,9 @@ extern const char kDragDropIntoOmniboxDescription[];
 extern const char kDragDropTabTearingName[];
 extern const char kDragDropTabTearingDescription[];
 
+extern const char kDragDropTabTearingEnableOEMName[];
+extern const char kDragDropTabTearingEnableOEMDescription[];
+
 extern const char kDrawCutoutEdgeToEdgeName[];
 extern const char kDrawCutoutEdgeToEdgeDescription[];
 

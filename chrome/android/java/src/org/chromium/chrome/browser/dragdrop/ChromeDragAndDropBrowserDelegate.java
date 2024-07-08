@@ -41,7 +41,6 @@ import java.lang.reflect.Method;
 /** Delegate for browser related functions used by Drag and Drop. */
 public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDelegate {
     private static final String TAG = "DragDrop";
-
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
     @VisibleForTesting static final String PARAM_DROP_IN_CHROME = "DropInChrome";
     private final String[] mSupportedMimeTypes =
@@ -119,10 +118,8 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public ClipData buildClipData(@NonNull DropDataAndroid dropData) {
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
-
         if (chromeDropDataAndroid.hasTab() && chromeDropDataAndroid.allowTabTearing) {
-            Tab tab = chromeDropDataAndroid.tab;
-            ClipData clipData = buildClipDataForTabTearing(tab.getContext(), tab);
+            ClipData clipData = buildClipDataForTabTearing(chromeDropDataAndroid.tab);
             if (clipData != null) return clipData;
         }
 
@@ -135,16 +132,20 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                 new Item(chromeDropDataAndroid.buildTabClipDataText(), intent, null));
     }
 
-    private @Nullable ClipData buildClipDataForTabTearing(Context context, Tab tab) {
+    private @Nullable ClipData buildClipDataForTabTearing(Tab tab) {
         Intent intent =
                 DragAndDropLauncherActivity.getTabIntent(
-                        context, tab.getId(), MultiWindowUtils.INVALID_INSTANCE_ID);
+                        tab.getContext(), tab, MultiWindowUtils.INVALID_INSTANCE_ID);
         if (intent != null) {
             ActivityOptions opts = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setCreatorActivityOptionsBackgroundActivityStartMode(opts);
             PendingIntent pendingIntent =
                     PendingIntent.getActivity(
-                            context, 0, intent, PendingIntent.FLAG_IMMUTABLE, opts.toBundle());
+                            tab.getContext(),
+                            0,
+                            intent,
+                            PendingIntent.FLAG_IMMUTABLE,
+                            opts.toBundle());
             Item item = ClipDataItemBuilder.buildClipDataItemWithPendingIntent(pendingIntent);
             return item == null ? null : new ClipData(null, mSupportedMimeTypes, item);
         }
@@ -164,32 +165,48 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                 | ClipDataItemBuilder.DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG;
     }
 
-    /** Wrapper class over the invocation class. */
-    // TODO(crbug.com/328511660): Replace with OS provided values / APIs when available.
-    static class ClipDataItemBuilder {
+    /**
+     * A class to handle the reflection of android.content.ClipData.ItemBuilder for builds that
+     * don't have the SDK linked. This returns null if reflection fails, or if
+     * |setClipDataForTesting| was called earlier returns the provided value.
+     * TODO(crbug.com/328511660): Replace with OS provided values / APIs when available.
+     */
+    public static class ClipDataItemBuilder {
         static final int DRAG_FLAG_GLOBAL_SAME_APPLICATION = 1 << 12;
         static final int DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG = 1 << 13;
+        private static Item sItemForTesting;
+        private static boolean sAttemptedReflection;
+        private static Class sItemBuilder;
 
         static ClipData.Item buildClipDataItemWithPendingIntent(PendingIntent pendingIntent) {
-            ClipData.Item item;
+            if (sItemForTesting != null) return sItemForTesting;
             try {
-                Class itemBuilder = Class.forName("android.content.ClipData$Item$Builder");
-                Object itemBuilderObj = itemBuilder.newInstance();
+                if (!sAttemptedReflection) {
+                    sItemBuilder = Class.forName("android.content.ClipData$Item$Builder");
+                    sAttemptedReflection = true;
+                }
+                if (sItemBuilder == null) return null;
+                Object itemBuilderObj = sItemBuilder.newInstance();
                 Method method =
-                        itemBuilder.getDeclaredMethod("setIntentSender", IntentSender.class);
+                        sItemBuilder.getDeclaredMethod("setIntentSender", IntentSender.class);
                 Object obj2 = method.invoke(itemBuilderObj, pendingIntent.getIntentSender());
-                Method buildMethod = itemBuilder.getDeclaredMethod("build");
-                item = (Item) buildMethod.invoke(obj2);
-                return item;
+                Method buildMethod = sItemBuilder.getDeclaredMethod("build");
+                return (Item) buildMethod.invoke(obj2);
             } catch (ClassNotFoundException
                     | InstantiationException
                     | NoSuchMethodException
                     | IllegalAccessException e) {
-                Log.e(TAG, e.toString());
+                // Do nothing.
+                Log.d(TAG, e.toString());
             } catch (InvocationTargetException e) {
-                Log.e(TAG, e.getTargetException().toString());
+                // Do nothing.
+                Log.d(TAG, e.getTargetException().toString());
             }
             return null;
+        }
+
+        public static void setClipDataItemForTesting(Item item) {
+            sItemForTesting = item;
         }
     }
 }

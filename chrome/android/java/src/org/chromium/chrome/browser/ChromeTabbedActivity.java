@@ -1586,7 +1586,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (getSavedInstanceState() == null && intent != null) {
                 if (!shouldIgnoreIntent()) {
                     isLaunchingDraggedTab = maybeLaunchDraggedTabInWindow(intent);
-                    isIntentWithEffect = maybeHandleUrlIntent(intent) || isLaunchingDraggedTab;
+                    // If launching tab drag was successful, ignore handling url intent.
+                    isIntentWithEffect = isLaunchingDraggedTab || maybeHandleUrlIntent(intent);
                 }
 
                 if (IntentUtils.isMainIntentFromLauncher(intent)) {
@@ -2010,7 +2011,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private boolean maybeLaunchDraggedTabInWindow(Intent intent) {
-        if (!TabUiFeatureUtilities.isTabTearingEnabled()) return false;
+        if (!TabUiFeatureUtilities.isTabTearingSupported()) return false;
         int draggedTabId =
                 IntentUtils.safeGetIntExtra(
                         intent, IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID);

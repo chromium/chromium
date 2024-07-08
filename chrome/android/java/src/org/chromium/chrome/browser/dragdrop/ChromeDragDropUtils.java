@@ -21,7 +21,8 @@ public class ChromeDragDropUtils {
      *     allowed, {@code false} otherwise.
      */
     public static boolean shouldAllowTabTearing(TabModelSelector tabModelSelector) {
-        if (!TabUiFeatureUtilities.isTabTearingEnabled() || tabModelSelector == null) return false;
+        if (!TabUiFeatureUtilities.isTabTearingSupported() || tabModelSelector == null)
+            return false;
 
         // Allow tearing a tab with an intent of opening a new window, only if it is not the only
         // tab in the window. This is to avoid creating a new window from such a tab.

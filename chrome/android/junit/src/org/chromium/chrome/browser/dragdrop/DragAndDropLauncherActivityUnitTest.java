@@ -5,18 +5,20 @@
 package org.chromium.chrome.browser.dragdrop;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -26,6 +28,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.JUnitTestGURLs;
@@ -36,6 +42,7 @@ import org.chromium.url.JUnitTestGURLs;
 public class DragAndDropLauncherActivityUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ExpectedException exception = ExpectedException.none();
+    @Mock private Profile mProfile;
 
     private Context mContext;
     private String mLinkUrl;
@@ -45,6 +52,7 @@ public class DragAndDropLauncherActivityUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         mContext = ContextUtils.getApplicationContext();
         mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
     }
 
     @Test
@@ -69,7 +77,7 @@ public class DragAndDropLauncherActivityUnitTest {
         assertTrue(
                 "The intent should contain the CATEGORY_BROWSABLE category.",
                 intent.getCategories().contains(Intent.CATEGORY_BROWSABLE));
-        Assert.assertFalse(
+        assertFalse(
                 "Intent should not contain the EXTRA_WINDOW_ID.",
                 intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
     }
@@ -79,7 +87,7 @@ public class DragAndDropLauncherActivityUnitTest {
         Intent intent =
                 DragAndDropLauncherActivity.getLinkLauncherIntent(
                         mContext, mLinkUrl, 3, UrlIntentSource.LINK);
-        Assert.assertTrue(
+        assertTrue(
                 "Intent should contain the EXTRA_WINDOW_ID.",
                 intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
         assertEquals(
@@ -93,16 +101,13 @@ public class DragAndDropLauncherActivityUnitTest {
     }
 
     @Test
-    public void testGetTabLauncherIntent_specificWindowId() {
-        Intent intent =
-                DragAndDropLauncherActivity.getLinkLauncherIntent(
-                        mContext, mLinkUrl, 2, UrlIntentSource.TAB_IN_STRIP);
-        Assert.assertTrue(
-                "Intent should contain the EXTRA_WINDOW_ID.",
-                intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+    public void testGetTabIntent_specificWindowId() {
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
+        int windowId = 2;
+        Intent intent = DragAndDropLauncherActivity.getTabIntent(mContext, tab, windowId);
         assertEquals(
                 "The EXTRA_WINDOW_ID intent extra value should match.",
-                2,
+                windowId,
                 intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertEquals(
                 "The EXTRA_URL_SOURCE intent extra value should match.",
@@ -112,9 +117,10 @@ public class DragAndDropLauncherActivityUnitTest {
 
     @Test
     public void testGetTabIntent_defaultWindowId() {
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
         Intent intent =
                 DragAndDropLauncherActivity.getTabIntent(
-                        mContext, 1, MultiWindowUtils.INVALID_INSTANCE_ID);
+                        mContext, tab, MultiWindowUtils.INVALID_INSTANCE_ID);
         assertEquals(
                 "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
                 DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,
@@ -126,13 +132,24 @@ public class DragAndDropLauncherActivityUnitTest {
                 "The intent class should be DragAndDropLauncherActivity.",
                 DragAndDropLauncherActivity.class.getName(),
                 intent.getComponent().getClassName());
-        Assert.assertFalse(
+        assertTrue(
+                "The intent should contain the CATEGORY_BROWSABLE category.",
+                intent.getCategories().contains(Intent.CATEGORY_BROWSABLE));
+        assertFalse(
                 "Intent should not contain the EXTRA_WINDOW_ID.",
                 intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
         assertEquals(
                 "The EXTRA_URL_SOURCE intent extra value should match.",
                 UrlIntentSource.TAB_IN_STRIP,
                 intent.getIntExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
+        assertEquals(
+                "The EXTRA_DRAGGED_TAB_ID intent extra value should match.",
+                tab.getId(),
+                intent.getIntExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID));
+        assertEquals(
+                "The intent data value should match.",
+                Uri.parse(tab.getUrl().getSpec()),
+                intent.getData());
     }
 
     @Test
@@ -146,7 +163,7 @@ public class DragAndDropLauncherActivityUnitTest {
         intent.setAction(Intent.ACTION_VIEW);
         exception.expect(AssertionError.class);
         exception.expectMessage("The intent action is invalid.");
-        Assert.assertFalse(
+        assertFalse(
                 "The intent action is invalid.", DragAndDropLauncherActivity.isIntentValid(intent));
     }
 
@@ -159,7 +176,7 @@ public class DragAndDropLauncherActivityUnitTest {
                         MultiWindowUtils.INVALID_INSTANCE_ID,
                         UrlIntentSource.LINK);
         DragAndDropLauncherActivity.setIntentCreationTimestampMs(null);
-        Assert.assertFalse(
+        assertFalse(
                 "The intent creation timestamp is missing.",
                 DragAndDropLauncherActivity.isIntentValid(intent));
     }

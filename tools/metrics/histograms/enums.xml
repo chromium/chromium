@@ -24695,6 +24695,7 @@ from previous Chrome versions.
   <int value="1717987538" label="NTPTilesLowerResolutionFavicons:enabled"/>
   <int value="1718341860" label="NTPButton:enabled"/>
   <int value="1718421370" label="SharingHubLinkToggle:enabled"/>
+  <int value="1718774381" label="DragDropTabTearingEnableOEM:enabled"/>
   <int value="1719019077" label="FileSystemProviderCloudFileSystem:disabled"/>
   <int value="1719189460" label="EnablePasswordSelection:disabled"/>
   <int value="1719958026" label="QueryTiles:enabled"/>
@@ -25424,6 +25425,7 @@ from previous Chrome versions.
   <int value="2015300711" label="BorealisLinuxMode:enabled"/>
   <int value="2015335629" label="shelf-hover-previews"/>
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
+  <int value="2017283500" label="DragDropTabTearingEnableOEM:disabled"/>
   <int value="2018206979" label="FilesLocalImageSearch:disabled"/>
   <int value="2018956925" label="UseAAudioDriver:disabled"/>
   <int value="2019319052" label="EnableVariableRefreshRate:disabled"/>

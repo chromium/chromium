@@ -4254,7 +4254,13 @@ const char kDragDropIntoOmniboxDescription[] =
 const char kDragDropTabTearingName[] = "Drag and drop tab tearing";
 const char kDragDropTabTearingDescription[] =
     "Allow drag tab from tab strip to create new instances if the drag is not "
-    "handled. Does not work when #tab-link-drag-drop is disabled.";
+    "handled.";
+
+const char kDragDropTabTearingEnableOEMName[] =
+    "Drag and drop tab tearing enabled based on OEM allowlist";
+const char kDragDropTabTearingEnableOEMDescription[] =
+    "Allow drag tab from tab strip on specific OEMs to create new instances if "
+    "the drag is not handled.";
 
 const char kDrawCutoutEdgeToEdgeName[] = "DrawCutoutEdgeToEdge";
 const char kDrawCutoutEdgeToEdgeDescription[] =

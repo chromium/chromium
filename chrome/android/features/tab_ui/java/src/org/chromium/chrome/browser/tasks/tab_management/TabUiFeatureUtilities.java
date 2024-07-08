@@ -5,15 +5,20 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.os.Build;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.Locale;
+import java.util.Set;
+
 /** A class to handle the state of flags for tab_management. */
 public class TabUiFeatureUtilities {
     private static final String TAG = "TabFeatureUtilities";
+    private static final Set<String> TAB_TEARING_OEM_ALLOWLIST = Set.of("samsung");
 
     // Cached and fixed values.
     private static boolean sTabListEditorLongPressEntryEnabled;
@@ -60,9 +65,15 @@ public class TabUiFeatureUtilities {
     /** Returns whether drag drop from tab strip to create new instance is enabled. */
     // TODO(crbug/328511660): This flag is similar with {@link #isTabDragAsWindowEnabled()}.
     // Consider merge code logic.
-    public static boolean isTabTearingEnabled() {
+    public static boolean isTabTearingSupported() {
         // TODO(crbug/328511660): Add OS version check once available.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-                && !isTabDragAsWindowEnabled();
+        return doesOEMSupportTearing()
+                || (ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
+                        && !isTabDragAsWindowEnabled());
+    }
+
+    private static boolean doesOEMSupportTearing() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
+                && TAB_TEARING_OEM_ALLOWLIST.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
     }
 }
