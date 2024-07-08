@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/i18n/icu_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,6 +29,7 @@ class Environment {
   Environment()
       : should_dump_input_(std::getenv("LPM_DUMP_NATIVE_INPUT") != nullptr) {
     base::CommandLine::Init(0, nullptr);
+    base::i18n::InitializeICU();
     TestTimeouts::Initialize();
   }
 
