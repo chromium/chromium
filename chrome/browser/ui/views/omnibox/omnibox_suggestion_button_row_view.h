@@ -14,6 +14,7 @@
 
 class OmniboxPopupViewViews;
 class OmniboxSuggestionRowButton;
+class OmniboxSuggestionRowChip;
 
 namespace views {
 class Button;
@@ -67,6 +68,8 @@ class OmniboxSuggestionButtonRowView : public views::View {
 
   const raw_ptr<OmniboxPopupViewViews> popup_view_;
   size_t const model_index_;
+
+  raw_ptr<OmniboxSuggestionRowChip> embeddings_chip_ = nullptr;
 
   raw_ptr<OmniboxSuggestionRowButton> keyword_button_ = nullptr;
 

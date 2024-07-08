@@ -76,6 +76,11 @@
   <message name="IDS_OMNIBOX_TAB_SUGGEST_HINT" desc="The button text contents to say that this suggestion will switch to another tab.">
     Switch to this tab
   </message>
+  <if expr="not is_ios and not is_android">
+    <message name="IDS_OMNIBOX_HISTORY_EMBEDDING_HINT" desc="The chip text shown on the omnibox popup suggestions that were generated using history embeddings.">
+      AI Best Match
+    </message>
+  </if>
   <message name="IDS_OMNIBOX_FILE" desc="Text shown in the omnibox to indicate a user is viewing a file.">
     File
   </message>

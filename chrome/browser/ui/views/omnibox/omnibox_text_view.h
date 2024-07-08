@@ -103,10 +103,13 @@ class OmniboxTextView : public views::View {
 
   // Whether to apply deemphasized font instead of primary omnibox font.
   // TODO(orinj): Use a more general ChromeTextContext for flexibility, or
-  // otherwise clean up & unify the different ways of selecting fonts & styles.
+  //   otherwise clean up & unify the different ways of selecting fonts &
+  //   styles.
+  // TODO(manukh): Confirm this is always false and remove.
   bool use_deemphasized_font_ = false;
 
   // Whether to wrap lines if the width is too narrow for the whole string.
+  // TODO(manukh): Confirm this is always false and remove.
   bool wrap_text_lines_ = false;
 
   // The primary data for this class.

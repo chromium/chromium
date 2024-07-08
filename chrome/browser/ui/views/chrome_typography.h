@@ -63,6 +63,9 @@ enum ChromeTextContext {
   //   - Error messages in password manager (manage_passwords_details_view.cc)
   CONTEXT_OMNIBOX_DEEMPHASIZED,
 
+  // Text for suggestion row chips; e.g. the history embeddings chip.
+  CONTEXT_OMNIBOX_POPUP_ROW_CHIP,
+
   // ToolbarButton label
   CONTEXT_TOOLBAR_BUTTON,
 

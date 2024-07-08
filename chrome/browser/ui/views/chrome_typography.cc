@@ -54,38 +54,18 @@ void ApplyCommonFontStyles(int context,
     case CONTEXT_OMNIBOX_PRIMARY:
     case CONTEXT_OMNIBOX_POPUP:
     case CONTEXT_OMNIBOX_SECTION_HEADER:
-    case CONTEXT_OMNIBOX_DEEMPHASIZED: {
+    case CONTEXT_OMNIBOX_DEEMPHASIZED:
+    case CONTEXT_OMNIBOX_POPUP_ROW_CHIP: {
       const bool is_touch_ui = ui::TouchUiController::Get()->touch_ui();
-      const bool use_gm3_text_style =
-          OmniboxFieldTrial::IsGM3TextStyleEnabled();
-
       int desired_font_size = is_touch_ui ? 15 : 14;
-      if (use_gm3_text_style) {
-        desired_font_size = is_touch_ui
-                                ? OmniboxFieldTrial::kFontSizeTouchUI.Get()
-                                : OmniboxFieldTrial::kFontSizeNonTouchUI.Get();
-      }
-
       const int omnibox_primary_delta =
           GetFontSizeDeltaBoundedByAvailableHeight(
               LocationBarView::GetAvailableTextHeight(), desired_font_size);
       details.size_delta = omnibox_primary_delta;
-      if (context == CONTEXT_OMNIBOX_DEEMPHASIZED && !use_gm3_text_style) {
+      if (context == CONTEXT_OMNIBOX_DEEMPHASIZED) {
         --details.size_delta;
-      }
-
-      if (use_gm3_text_style) {
-        if (context == CONTEXT_OMNIBOX_SECTION_HEADER) {
-          --details.size_delta;
-        }
-
-        if (context == CONTEXT_OMNIBOX_PRIMARY ||
-            context == CONTEXT_OMNIBOX_SECTION_HEADER) {
-          details.weight = gfx::Font::Weight::MEDIUM;
-        } else if (context == CONTEXT_OMNIBOX_POPUP ||
-                   context == CONTEXT_OMNIBOX_DEEMPHASIZED) {
-          details.weight = gfx::Font::Weight::NORMAL;
-        }
+      } else if (context == CONTEXT_OMNIBOX_POPUP_ROW_CHIP) {
+        details.size_delta -= 2;
       }
       break;
     }
