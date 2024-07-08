@@ -10,6 +10,7 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 
 class BrowsingDataRemoverObserver;
 
@@ -40,6 +41,11 @@ class BrowsingDataRemover : public KeyedService {
                              base::Time end_time,
                              BrowsingDataRemoveMask mask,
                              base::OnceClosure callback) = 0;
+
+  // Allows the remover to have cached information in order to close tabs as
+  // part of the removal of browsing data.
+  virtual void SetCachedTabsInfo(
+      tabs_closure_util::WebStateIDToTime cached_tabs_info) = 0;
 
   // Adds/removes `observer` from the list of observers notified when data is
   // removed by BrowsingDataRemover.

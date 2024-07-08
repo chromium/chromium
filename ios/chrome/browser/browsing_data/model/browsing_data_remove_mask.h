@@ -27,6 +27,7 @@ enum class BrowsingDataRemoveMask {
   REMOVE_BOOKMARKS = 1 << 13,
   REMOVE_READING_LIST = 1 << 14,
   REMOVE_LAST_USER_ACCOUNT = 1 << 15,
+  CLOSE_TABS = 1 << 16,
 
   // "Site data" includes cookies, appcache, indexed DBs, local storage, webSQL,
   // cache storage, and visited links.
@@ -36,13 +37,16 @@ enum class BrowsingDataRemoveMask {
 
   // Includes all the available remove options. Meant to be used by clients that
   // wish to wipe as much data as possible from a ChromeBrowserState, to make it
-  // look like a new ChromeBrowserState.
+  // look like a new ChromeBrowserState. Does not include closing tabs as tabs
+  // should only be closed by explicit user action.
   REMOVE_ALL = REMOVE_SITE_DATA | REMOVE_CACHE | REMOVE_DOWNLOADS |
                REMOVE_FORM_DATA | REMOVE_HISTORY | REMOVE_PASSWORDS |
                REMOVE_BOOKMARKS | REMOVE_READING_LIST |
                REMOVE_LAST_USER_ACCOUNT,
 
   // Includes all the available remove options that support partial deletion.
+  // Does not include closing tabs as tabs should only be closed by explicit
+  // user action.
   REMOVE_ALL_FOR_TIME_PERIOD = REMOVE_SITE_DATA | REMOVE_CACHE |
                                REMOVE_FORM_DATA | REMOVE_HISTORY |
                                REMOVE_PASSWORDS | REMOVE_LAST_USER_ACCOUNT,

@@ -21,6 +21,8 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
                      base::Time end_time,
                      BrowsingDataRemoveMask remove_mask,
                      base::OnceClosure callback) override;
+  void SetCachedTabsInfo(
+      tabs_closure_util::WebStateIDToTime cached_tabs_info) override;
   BrowsingDataRemoveMask GetLastUsedRemovalMask();
   void SetFailedForTesting();
 

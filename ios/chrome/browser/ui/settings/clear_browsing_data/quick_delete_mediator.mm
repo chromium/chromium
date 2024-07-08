@@ -49,6 +49,11 @@
   // `dispatchPlaceholderSummary`.
   bool _placeholderSummaryWasDispatched;
 
+  // Holds the tabs information used and returned by the `TabsCounter`. Will be
+  // used as part of the removal of browsing data to avoid reading from disk
+  // twice.
+  tabs_closure_util::WebStateIDToTime _cachedTabsInfo;
+
   // Used to get the current sign-in state of the primary account.
   raw_ptr<signin::IdentityManager> _identityManager;
   // Observer for `IdentityManager`.
@@ -128,6 +133,10 @@
     _discoverFeedService->BrowsingHistoryCleared();
   }
 
+  if (_prefs->GetBoolean(browsing_data::prefs::kCloseTabs)) {
+    removeMask |= BrowsingDataRemoveMask::CLOSE_TABS;
+  }
+
   if (_prefs->GetBoolean(browsing_data::prefs::kDeleteCookies)) {
     removeMask |= BrowsingDataRemoveMask::REMOVE_SITE_DATA;
   }
@@ -153,6 +162,7 @@
   browsing_data::TimePeriod timePeriod = static_cast<browsing_data::TimePeriod>(
       _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
 
+  _browsingDataRemover->SetCachedTabsInfo(_cachedTabsInfo);
   _browsingDataRemover->Remove(
       timePeriod, removeMask,
       base::BindOnce(removeBrowsingDidFinishCompletionBlock));
@@ -213,6 +223,9 @@
   _paymentMethodsSummary = nil;
   _suggestionsSummary = nil;
 
+  _cachedTabsInfo.clear();
+  _placeholderSummaryWasDispatched = NO;
+
   for (std::set<std::unique_ptr<BrowsingDataCounterWrapper>>::iterator it =
            _counters.begin();
        it != _counters.end(); ++it) {
@@ -254,8 +267,10 @@
             static_cast<const browsing_data::HistoryCounter::HistoryResult*>(
                 result)];
   } else if (prefName == browsing_data::prefs::kCloseTabs) {
-    _tabsSummary =
-        [self tabsSummary:static_cast<const TabsCounter::TabsResult*>(result)];
+    const TabsCounter::TabsResult* tabsResult =
+        static_cast<const TabsCounter::TabsResult*>(result);
+    _cachedTabsInfo = tabsResult->cached_tabs_info();
+    _tabsSummary = [self tabsSummary:tabsResult];
   } else if (prefName == browsing_data::prefs::kDeletePasswords) {
     _passwordsSummary = [self
         passwordsSummary:static_cast<const browsing_data::PasswordsCounter::

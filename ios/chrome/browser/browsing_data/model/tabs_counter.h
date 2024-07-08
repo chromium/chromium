@@ -23,7 +23,8 @@ class TabsCounter : public browsing_data::BrowsingDataCounter {
    public:
     TabsResult(const TabsCounter* source,
                ResultInt tab_count,
-               ResultInt window_count);
+               ResultInt window_count,
+               tabs_closure_util::WebStateIDToTime cached_tabs_info);
 
     TabsResult(const TabsResult&) = delete;
     TabsResult& operator=(const TabsResult&) = delete;
@@ -32,8 +33,13 @@ class TabsCounter : public browsing_data::BrowsingDataCounter {
 
     int window_count() const { return window_count_; }
 
+    tabs_closure_util::WebStateIDToTime cached_tabs_info() const {
+      return cached_tabs_info_;
+    }
+
    private:
     int window_count_;
+    tabs_closure_util::WebStateIDToTime cached_tabs_info_;
   };
 
   explicit TabsCounter(BrowserList* browser_list,
@@ -69,6 +75,11 @@ class TabsCounter : public browsing_data::BrowsingDataCounter {
   // the timerange and the number of windows that have such tabs.
   int total_tab_count_ = 0;
   int total_window_count_ = 0;
+
+  // Holds the tabs information used for counting the number of tabs with a last
+  // navigation within the timerange. It's returned in `TabsCounter::TabsResult`
+  // to allow reusing this data in the browsing data removal process.
+  tabs_closure_util::WebStateIDToTime cached_tabs_info_;
 
   // This object is sequence affine.
   SEQUENCE_CHECKER(sequence_checker_);

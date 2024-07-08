@@ -145,7 +145,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
         SessionRestorationServiceFactory::GetForBrowserState(
             browser_state_.get()));
     const TabsCounter::TabsResult tabsResult(&tabsCounter, num_tabs,
-                                             /*num_windows=*/0);
+                                             /*num_windows=*/0, {});
     [fake_browsing_data_counter_wrapper_producer_
         triggerUpdateUICallbackForResult:tabsResult];
   }
@@ -289,7 +289,7 @@ TEST_F(QuickDeleteMediatorTest, TestTabsSummary) {
 
   for (const TestCase& test_case : kTestCases) {
     const TabsCounter::TabsResult result(&counter, test_case.num_tabs,
-                                         test_case.num_windows);
+                                         test_case.num_windows, {});
     OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
     [fake_browsing_data_counter_wrapper_producer_
         triggerUpdateUICallbackForResult:result];

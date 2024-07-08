@@ -10,6 +10,8 @@
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state_id.h"
 
+class WebStateList;
+
 namespace tabs_closure_util {
 
 // Map WebStateID to timestamp.
@@ -25,6 +27,14 @@ WebStateIDToTime GetTabsToClose(
     const WebStateIDToTime& tabs_to_last_navigation_time,
     base::Time begin_time,
     base::Time end_time);
+
+// Closes all the WebStates in `browser` that are between `begin_time` and
+// `end_time`. For unrelaized webstates, uses the information in
+// `cached_tabs_to_close`.
+void CloseTabs(WebStateList* web_state_list,
+               base::Time begin_time,
+               base::Time end_time,
+               const WebStateIDToTime& cached_tabs_to_close);
 
 }  // namespace tabs_closure_util
 

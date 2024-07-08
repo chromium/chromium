@@ -454,6 +454,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
 // Tests that tabs are shown as a possible type to be deleted on the browsing
 // data row when tabs are selected as a data type for deletion.
+// It also tests that the tabs do not get closed when the deletion
+// of tabs is not selected. It also tests that the tabs get closed when the
+// deletion of tabs is selected.
 - (void)testTabsForDeletion {
   // Set pref to close tabs.
   [ChromeEarlGrey setBoolValue:true
@@ -478,12 +481,23 @@ void ExpectClearBrowsingDataNavigationHistograms(
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 1))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the tab has not been closed.
+  [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
 }
 
 // Tests that tabs are shown as a possible type to be deleted on the browsing
 // data row when tabs are selected as a data type for deletion. The number of
 // tabs should include tabs in all windows, not just the ones where quick delete
-// is triggered from.
+// is triggered from. It also tests that the tabs in both windows get closed
+// when the deletion of tabs is selected.
 - (void)testTabsForDeletionInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
@@ -507,7 +521,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
 
   // In the first window, open quick delete and check that the browsing data row
-  // and the tabs substring are presented.
+  // and the browsing tabs substring are presented.
   [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
                                                         WindowWithNumber(0)];
   [self openQuickDeleteFromThreeDotMenu];
@@ -518,6 +532,22 @@ void ExpectClearBrowsingDataNavigationHistograms(
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 2))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the tabs have been closed in both windows.
+  [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+  [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
 }
 
 // Tests that the number of tabs are not shown on the browsing data row when
@@ -547,6 +577,16 @@ void ExpectClearBrowsingDataNavigationHistograms(
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 1))]
       assertWithMatcher:grey_nil()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the tab has not been closed.
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1, @"Tabs were closed.");
 }
 
 // Tests that cookies are shown as a possible type to be deleted on the browsing

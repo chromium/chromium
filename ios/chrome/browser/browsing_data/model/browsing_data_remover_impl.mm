@@ -55,6 +55,9 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_remover_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_tmpl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -79,7 +82,6 @@
 #import "net/url_request/url_request_context.h"
 #import "net/url_request/url_request_context_getter.h"
 #import "url/gurl.h"
-
 namespace {
 
 // A helper enum to report the deletion of cookies and/or cache. Do not
@@ -259,6 +261,12 @@ void BrowsingDataRemoverImpl::Remove(browsing_data::TimePeriod time_period,
       IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES) ||
       !IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_VISITED_LINKS));
 
+  // Closing tabs should only be available through user action which is only
+  // possible in non off the record.
+  DCHECK(!IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) ||
+         (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) &&
+          !browser_state_->IsOffTheRecord()));
+
   browsing_data::RecordDeletionForPeriod(time_period);
   removal_queue_.emplace(browsing_data::CalculateBeginDeleteTime(time_period),
                          browsing_data::CalculateEndDeleteTime(time_period),
@@ -297,6 +305,17 @@ void BrowsingDataRemoverImpl::RemoveInRange(base::Time start_time,
       IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES) ||
       !IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_VISITED_LINKS));
 
+  // Closing tabs should only be available through user action which is only
+  // possible in non off the record.
+  DCHECK(!IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) ||
+         (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) &&
+          !browser_state_->IsOffTheRecord()));
+
+  // Closing tabs can only be performed if the tabs cache has been set.
+  CHECK(!IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) ||
+        (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) &&
+         cached_tabs_info_initialized_));
+
   // browsing_data::RecordDeletionForPeriod(time_period);
   removal_queue_.emplace(start_time, end_time, mask, std::move(callback));
 
@@ -307,6 +326,12 @@ void BrowsingDataRemoverImpl::RemoveInRange(base::Time start_time,
     SetRemoving(true);
     RunNextTask();
   }
+}
+
+void BrowsingDataRemoverImpl::SetCachedTabsInfo(
+    tabs_closure_util::WebStateIDToTime cached_tabs_info) {
+  cached_tabs_info_ = cached_tabs_info;
+  cached_tabs_info_initialized_ = true;
 }
 
 void BrowsingDataRemoverImpl::RunNextTask() {
@@ -666,6 +691,18 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     FontSizeTabHelper::ClearUserZoomPrefs(browser_state_->GetPrefs());
   }
 
+  // Close tabs.
+  if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS)) {
+    BrowserList* browser_list =
+        BrowserListFactory::GetForBrowserState(browser_state_);
+    for (Browser* browser : browser_list->AllRegularBrowsers()) {
+      current_task_runner->PostTask(
+          FROM_HERE, base::BindOnce(&tabs_closure_util::CloseTabs,
+                                    browser->GetWebStateList(), delete_begin,
+                                    delete_end, cached_tabs_info_));
+    }
+  }
+
   // Always wipe accumulated network related data (TransportSecurityState and
   // HttpServerPropertiesManager data).
   browser_state_->ClearNetworkingHistorySince(
@@ -788,6 +825,7 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
 
   if (removal_queue_.empty()) {
     SetRemoving(false);
+    cached_tabs_info_initialized_ = false;
     return;
   }
 

@@ -62,14 +62,14 @@ void TabsCounter::OnLoadDataFromStorageResult(
   // `pending_tasks_count_`.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/341107836): Cache the tabs info in order to reuse the data
-  // when actually closing the tabs.
-  int tab_count = tabs_closure_util::GetTabsToClose(result, GetPeriodStart(),
-                                                    GetPeriodEnd())
-                      .size();
+  tabs_closure_util::WebStateIDToTime tabs_to_close =
+      tabs_closure_util::GetTabsToClose(result, GetPeriodStart(),
+                                        GetPeriodEnd());
+  int tab_count = tabs_to_close.size();
   if (tab_count > 0) {
     total_tab_count_ += tab_count;
     total_window_count_++;
+    cached_tabs_info_.merge(tabs_to_close);
   }
 
   // Check if all tasks have returned. If not, return early.
@@ -88,7 +88,7 @@ void TabsCounter::ReportTabsResult() {
   CHECK_GE(total_window_count_, 0);
 
   auto tabs_result = std::make_unique<TabsCounter::TabsResult>(
-      this, total_tab_count_, total_window_count_);
+      this, total_tab_count_, total_window_count_, cached_tabs_info_);
   ReportResult(std::move(tabs_result));
   ResetCounts();
 }
@@ -98,13 +98,18 @@ void TabsCounter::ResetCounts() {
   total_tab_count_ = 0;
   total_window_count_ = 0;
   pending_tasks_count_ = 0;
+  cached_tabs_info_.clear();
 }
 
 // TabsCounter::TabsResult -----------------------------------------
 
-TabsCounter::TabsResult::TabsResult(const TabsCounter* source,
-                                    ResultInt tab_count,
-                                    ResultInt window_count)
-    : FinishedResult(source, tab_count), window_count_(window_count) {}
+TabsCounter::TabsResult::TabsResult(
+    const TabsCounter* source,
+    ResultInt tab_count,
+    ResultInt window_count,
+    tabs_closure_util::WebStateIDToTime cached_tabs_info)
+    : FinishedResult(source, tab_count),
+      window_count_(window_count),
+      cached_tabs_info_(cached_tabs_info) {}
 
 TabsCounter::TabsResult::~TabsResult() = default;
