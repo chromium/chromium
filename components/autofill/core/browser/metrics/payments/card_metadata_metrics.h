@@ -60,8 +60,14 @@ struct CardMetadataLoggingContext {
   CardMetadataLoggingContext& operator=(const CardMetadataLoggingContext&);
   ~CardMetadataLoggingContext();
 
-  // Returns if the `issuer_id` has a displayed credit card benefit.
-  bool HasBenefitForInstrumentId(int64_t instrument_id);
+  // Returns if any shown suggestion's card has a benefit available.
+  bool DidShowCardWithBenefitAvailable() const;
+
+  // Returns if the selected suggestion's card has a benefit available.
+  bool SelectedCardHasBenefitAvailable() const;
+
+  // Returns if the selected suggestion's card has card metadata shown.
+  bool SelectedCardHasMetadataAvailable() const;
 
   // Updates `selected_card_has_metadata_available` and
   // `selected_issuer_or_network_to_metadata_availability` with the
@@ -88,9 +94,6 @@ struct CardMetadataLoggingContext {
   // available.
   base::flat_set<int64_t> instruments_with_metadata_available;
 
-  // Keeps record on if the selected card had metadata available.
-  bool selected_card_has_metadata_available = false;
-
   // Keeps record of the selected card's issuer and network and if the card had
   // metadata available. If there is no selected card,
   // `selected_issuer_or_network_to_metadata_availability` has no value.
@@ -102,10 +105,11 @@ struct CardMetadataLoggingContext {
   base::flat_map<int64_t, std::string>
       instrument_ids_to_issuer_ids_with_benefits_available;
 
-  // Keeps record of the issuer of a selected card suggestion that had a benefit
-  // available to show. Empty if the selected card suggestion did not include a
-  // benefit.
-  std::string selected_issuer_id_with_benefit_available;
+  // Keeps record of the issuer of a selected card suggestion.
+  std::string selected_issuer_id;
+
+  // Keeps record of the selected card instrument id for later events logging.
+  int64_t selected_card_instrument_id;
 };
 
 // Get histogram suffix based on given card issuer id or network.
@@ -141,6 +145,13 @@ void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled);
 
 void LogBenefitFormEventToIssuerHistogram(const std::string& issuer_id,
                                           FormEvent event);
+
+// Log the given `event` for every issuer with card with benefits available
+// shown.
+void LogBenefitFormEventForAllIssuersWithBenefitAvailable(
+    const base::flat_map<int64_t, std::string>&
+        instrument_ids_to_issuer_ids_with_benefits_available,
+    FormEvent event);
 
 }  // namespace autofill::autofill_metrics
 

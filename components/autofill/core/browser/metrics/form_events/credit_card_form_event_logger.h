@@ -193,10 +193,6 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the most recent card that was filled as an Autofill suggestion
   // was a masked server card. False for all other card types.
   bool latest_filled_card_was_masked_server_card_ = false;
-  // If true, the most recent card that was filled as an Autofill suggestion
-  // was a masked server card with a benefit available. False for all other
-  // cards.
-  bool latest_filled_card_was_card_with_benefit_available_ = false;
   std::vector<Suggestion> suggestions_;
   bool has_eligible_offer_ = false;
   bool card_selected_has_offer_ = false;
