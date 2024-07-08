@@ -399,8 +399,8 @@ class WebTransportTest : public testing::TestWithParam<std::string_view> {
 
   std::unique_ptr<NetworkContext> network_context_;
 
-  std::unique_ptr<net::QuicSimpleServer> http_server_;
   quic::test::QuicTestBackend backend_;
+  std::unique_ptr<net::QuicSimpleServer> http_server_;
 };
 
 TEST_F(WebTransportTest, ConnectSuccessfully) {
