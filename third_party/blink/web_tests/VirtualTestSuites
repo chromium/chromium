@@ -162,7 +162,9 @@
     "platforms": ["Linux", "Mac"],
     "bases": ["compositing",
               "paint",
-              "scrollbars"],
+              "scrollbars",
+              "external/wpt/acid/acid2/reftest.html",
+              "fast/scroll-behavior"],
     "args": ["--enable-features=RasterInducingScroll"],
     "owners": ["wangxianzhu@chromium.org"],
     "expires": "Sep 30, 2024"

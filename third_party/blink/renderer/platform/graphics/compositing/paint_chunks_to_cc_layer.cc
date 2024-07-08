@@ -861,10 +861,6 @@ void ConversionContext<Result>::EndTransform() {
   if (!previous_transform_)
     return;
 
-  // When we are emitting DrawScrollingContentsOp, previous_transform_ and
-  // current_transform_ should be always in the same scroll translation.
-  // See SwitchToTransform().
-  DCHECK(!ComputeScrollTranslationAction(*previous_transform_));
   result_.StartPaint();
   push<cc::RestoreOp>();
   result_.EndPaintOfPairedEnd();
@@ -919,6 +915,22 @@ ConversionContext<cc::DisplayItemList>::ComputeScrollTranslationAction(
   const auto& target_scroll_translation =
       target_transform.NearestScrollTranslationNode();
   if (&target_scroll_translation == current_scroll_translation_) {
+    return {};
+  }
+
+  const auto& chunk_scroll_translation = chunk_to_layer_mapper_.ChunkState()
+                                             .Transform()
+                                             .NearestScrollTranslationNode();
+  // In most real-world cases, target_scroll_translation equals
+  // chunk_scroll_translation. In less common cases, chunk_scroll_translation
+  // is deeper than target_scroll_translation (e.g. when a chunk enters
+  // multiple levels of scrolling states). In very rare case for a
+  // non-composited fixed-attachment background, target_scroll_translation of
+  // the background clip is deeper than chunk_scroll_translation, and we
+  // should emit a transform operation for the clip to avoid infinite loop of
+  // starting (by the transform of the clip) and ending (by the chunk
+  // transform) empty DrawScrollingContentsOps.
+  if (!target_scroll_translation.IsAncestorOf(chunk_scroll_translation)) {
     return {};
   }
 

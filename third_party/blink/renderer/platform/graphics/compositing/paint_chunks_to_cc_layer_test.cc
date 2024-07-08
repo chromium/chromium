@@ -1269,7 +1269,7 @@ TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
 TEST_P(PaintChunksToCcLayerTest,
        ScrollingContentsIntoDisplayItemListStartingFromNestedState) {
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
-    return;
+    GTEST_SKIP();
   }
 
   auto scroll_state = CreateScrollTranslationState(
@@ -1347,7 +1347,7 @@ TEST_P(PaintChunksToCcLayerTest,
 TEST_P(PaintChunksToCcLayerTest,
        ScrollingContentsInterlacingNonScrollingIntoDisplayItemList) {
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
-    return;
+    GTEST_SKIP();
   }
 
   auto scroll_state = CreateScrollTranslationState(
@@ -1446,7 +1446,7 @@ TEST_P(PaintChunksToCcLayerTest,
 
 TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
-    return;
+    GTEST_SKIP();
   }
 
   auto scroll_state1 = CreateScrollTranslationState(
@@ -1539,7 +1539,7 @@ TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {
 TEST_P(PaintChunksToCcLayerTest,
        NestedScrollingContentsIntoDisplayItemListStartingFromNestedState) {
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
-    return;
+    GTEST_SKIP();
   }
 
   auto scroll_state1 = CreateScrollTranslationState(
@@ -1619,6 +1619,85 @@ TEST_P(PaintChunksToCcLayerTest,
                   PaintOpIs<cc::RestoreOp>(),         // </effect_under_scroll>
                   PaintOpIs<cc::RestoreOp>()));       // </clip_under_scroll>
                                                  // </transform_under_scroll>
+}
+
+// This tests the following situation with prefer-compositing-to-lcd-text
+// enabled:
+// <iframe style="width: 300px; height: 300px" srcdoc='
+//   <style>body { overflow: hidden }</style>
+//   ...
+//   <div id="bg" style="width: 50px; height: 500px; background-image: ...;
+//                       background-attachment: fixed"></div>
+//   </div>
+//   ...
+//   <script>window.scrollTo(0, 10);</script>
+// '></iframe>
+// The painter creates a kFixedAttachmentBackground display item whose clip
+// state is the background clip which is in the scrolling contents space and
+// transform is in the border box space of the frame. The fixed-attachment
+// background is not composited because the scroll is not composited.
+TEST_P(PaintChunksToCcLayerTest, NonCompositedFixedAttachmentBackground) {
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    GTEST_SKIP();
+  }
+
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState::Root(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200));
+  auto background_clip =
+      CreateClip(scroll_state.Clip(), scroll_state.Transform(),
+                 FloatRoundedRect(0.f, 0.f, 10.f, 10.f));
+
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(scroll_state.GetPropertyTreeState());
+  // The fixed-attachment background.
+  chunks.AddChunk(t0(), *background_clip, e0());
+  chunks.AddChunk(scroll_state.GetPropertyTreeState());
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  EXPECT_THAT(
+      cc_list->paint_op_buffer(),
+      ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                  PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(5, 5, 20, 30), SkClipOp::kIntersect,
+                      /*antialias=*/true),  // <overflow-clip>
+                  PaintOpIs<cc::DrawScrollingContentsOp>(),
+                  PaintOpIs<cc::SaveOp>(), PaintOpEq<cc::TranslateOp>(-50, -60),
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(0, 0, 10, 10), SkClipOp::kIntersect,
+                      /*antialias=*/true),  // <background-clip>
+                  PaintOpIs<cc::SaveOp>(), PaintOpEq<cc::TranslateOp>(50, 60),
+                  PaintOpIs<cc::DrawRecordOp>(),  // chunk 2: fixed bg
+                  PaintOpIs<cc::RestoreOp>(),
+                  PaintOpIs<cc::RestoreOp>(),  // </background-clip>
+                  PaintOpIs<cc::DrawScrollingContentsOp>(),
+                  PaintOpIs<cc::RestoreOp>()));  // </overflow-clip>
+  EXPECT_EQ(
+      gfx::Rect(5, 5, 20, 30),
+      cc_list->raster_inducing_scrolls()
+          .at(scroll_state.Transform().ScrollNode()->GetCompositorElementId())
+          .visual_rect);
+  const auto& scrolling_contents_op1 =
+      static_cast<const cc::DrawScrollingContentsOp&>(
+          cc_list->paint_op_buffer().GetOpAtForTesting(3));
+  ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+            scrolling_contents_op1.GetType());
+  EXPECT_THAT(scrolling_contents_op1.display_item_list->paint_op_buffer(),
+              ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 1
+                          PaintOpIs<cc::SaveOp>(), PaintOpIs<cc::ClipRectOp>(),
+                          PaintOpIs<cc::RestoreOp>()));
+  const auto& scrolling_contents_op2 =
+      static_cast<const cc::DrawScrollingContentsOp&>(
+          cc_list->paint_op_buffer().GetOpAtForTesting(12));
+  ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+            scrolling_contents_op2.GetType());
+  EXPECT_THAT(scrolling_contents_op2.display_item_list->paint_op_buffer(),
+              ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 3
 }
 
 TEST_P(PaintChunksToCcLayerTest,
