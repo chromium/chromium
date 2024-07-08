@@ -287,6 +287,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.TabPlaybackStoppedReason"
+    enum="PlaybackStoppedReason" expires_after="2024-12-08">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Android only. Records reason for stopping a tab playback. Note that this
+    doesn't include stopping the voice preview playbacks.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.TapToSeekTime" units="ms" expires_after="2024-12-15">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>

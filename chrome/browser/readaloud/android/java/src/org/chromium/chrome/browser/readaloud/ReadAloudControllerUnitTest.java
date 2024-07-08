@@ -1062,7 +1062,8 @@ public class ReadAloudControllerUnitTest {
         requestAndStartPlayback();
 
         // Stop playback
-        mController.maybeStopPlayback(mTab);
+        mController.maybeStopPlayback(
+                mTab, ReadAloudMetrics.ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
         verify(mPlayback).release();
 
         reset(mPlayerCoordinator);
@@ -1140,7 +1141,8 @@ public class ReadAloudControllerUnitTest {
         verify(mHighlighter).initializeJs(eq(mTab), eq(mMetadata), any(Highlighter.Config.class));
 
         // stopping playback should clear highlighting.
-        mController.maybeStopPlayback(mTab);
+        mController.maybeStopPlayback(
+                mTab, ReadAloudMetrics.ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
 
         verify(mHighlighter).clearHighlights(eq(mGlobalRenderFrameHostId), eq(mTab));
     }
@@ -1489,7 +1491,8 @@ public class ReadAloudControllerUnitTest {
         assertEquals(2, mFakeTranslateBridge.getObserverCount());
 
         // stopping playback should unregister the listener that stops playback
-        mController.maybeStopPlayback(mTab);
+        mController.maybeStopPlayback(
+                mTab, ReadAloudMetrics.ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
         assertEquals(1, mFakeTranslateBridge.getObserverCount());
     }
 
@@ -1503,7 +1506,8 @@ public class ReadAloudControllerUnitTest {
 
         assertEquals(1, mFakeTranslateBridge.getObserverCount());
 
-        mController.maybeStopPlayback(mTab);
+        mController.maybeStopPlayback(
+                mTab, ReadAloudMetrics.ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
         assertEquals(1, mFakeTranslateBridge.getObserverCount());
     }
 
@@ -1710,7 +1714,8 @@ public class ReadAloudControllerUnitTest {
         verify(mPlayback).play();
 
         // request to stop any playback
-        mController.maybeStopPlayback(null);
+        mController.maybeStopPlayback(
+                null, ReadAloudMetrics.ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
         verify(mPlayback).release();
         verify(mPlayerCoordinator).dismissPlayers();
     }
@@ -2437,7 +2442,8 @@ public class ReadAloudControllerUnitTest {
                         false);
         assertTrue(mController.isPlayingCurrentTab());
         // back to null after stopping playback
-        mController.maybeStopPlayback(mTab);
+        mController.maybeStopPlayback(
+                mTab, ReadAloudMetrics.ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
         assertFalse(mController.isPlayingCurrentTab());
     }
 
@@ -2610,6 +2616,20 @@ public class ReadAloudControllerUnitTest {
         mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
 
         verify(readabilityObserver, never()).run();
+    }
+
+    @Test
+    public void testReasonForStoppingPlaybackLogged() {
+        final String histogramName = ReadAloudMetrics.REASON_FOR_STOPPING_PLAYBACK;
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, ReadAloudMetrics.ReasonForStoppingPlayback.MANUAL_CLOSE);
+        requestAndStartPlayback();
+
+        mController.maybeStopPlayback(
+                mTab, ReadAloudMetrics.ReasonForStoppingPlayback.MANUAL_CLOSE);
+
+        histogram.assertExpected();
     }
 
     private void requestAndStartPlayback() {
