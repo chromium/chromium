@@ -417,6 +417,15 @@ TEST_P(AuthSessionAuthenticatorTest, CompleteLoginRegularExisting) {
               PreparePersistentVault(WithFirstAuthSessionId(), _))
       .WillOnce(ReplyWith(PreparePersistentVaultReply()));
 
+  user_data_auth::ListAuthFactorsReply reply;
+  auto* factor = reply.add_configured_auth_factors();
+  factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+  factor->set_label(kCryptohomeGaiaKeyLabel);
+  reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+  reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+  EXPECT_CALL(userdataauth(), ListAuthFactors(WithAccountId(), _))
+      .WillOnce(ReplyWith(reply));
+
   // Act.
   authenticator().CompleteLogin(/*ephemeral=*/false, std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();

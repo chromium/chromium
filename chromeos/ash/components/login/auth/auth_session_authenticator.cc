@@ -342,12 +342,7 @@ void AuthSessionAuthenticator::DoCompleteLogin(
         // If Local passwords are enabled, password setup would
         // happen later in OOBE flow.
       }
-    }       // challenge-response
-    // In addition to factors suitable for authentication, fetch a set of
-    // supported factor types for new users.
-    steps.push_back(
-        base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
-                       auth_factor_editor_->AsWeakPtr()));
+    }  // challenge-response
   } else {  // existing user
     if (!challenge_response_auth) {
       // Password-based login
@@ -390,6 +385,10 @@ void AuthSessionAuthenticator::DoCompleteLogin(
                          weak_factory_.GetWeakPtr()));
     }
   }
+  // In addition to factors suitable for authentication, fetch a set of
+  // supported factor for users.
+  steps.push_back(base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
+                                 auth_factor_editor_->AsWeakPtr()));
   AuthSuccessCallback success_callback = base::BindOnce(
       &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
 
@@ -1013,11 +1012,11 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
     return true;
   }
 
-      // We need the default case here so that it is possible to add new
-      // CryptohomeErrorCode, because CryptohomeErrorCode is defined in another
-      // repo.
-      // However, we should seek to handle all CryptohomeErrorCode and not let
-      // any of them hit the default block.
+  // We need the default case here so that it is possible to add new
+  // CryptohomeErrorCode, because CryptohomeErrorCode is defined in another
+  // repo.
+  // However, we should seek to handle all CryptohomeErrorCode and not let
+  // any of them hit the default block.
   NOTREACHED_IN_MIGRATION()
       << "Unhandled CryptohomeError in ProcessCryptohomeError"
          ": "
