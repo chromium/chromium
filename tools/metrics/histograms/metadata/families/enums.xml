@@ -353,14 +353,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Enable attempt failed"/>
 </enum>
 
+<!-- LINT.IfChange(SupervisedUserExtensionInstallDialog) -->
+
 <enum name="SupervisedUserExtensionInstallDialog">
   <summary>
     Tracks the actions of a supervised user on the Extension Install Dialog.
   </summary>
   <int value="0" label="Opened"/>
-  <int value="1" label="Asked Parent"/>
+  <int value="1" label="Asked Parent (Deprecated)"/>
   <int value="2" label="Child Canceled"/>
+  <int value="3" label="Child Accepted"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:ExtensionInstallDialogState) -->
 
 <!-- LINT.IfChange(SupervisedUserExtensionParentApprovalEntryPoint) -->
 

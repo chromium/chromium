@@ -109,7 +109,7 @@ ExtensionInstallDialogViewTestSupervised::CreateAndShowPrompt(
   return delegate_view;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, AskAParent) {
+IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, ChildAccepts) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, AskAParent) {
                    SupervisedUserExtensionsMetricsRecorder::
                        kExtensionInstallDialogOpenedActionName));
 
-  // Supervised user presses "Ask a parent".
+  // Supervised user presses the "Accept" button.
   ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
   ExtensionInstallDialogView* delegate_view =
       CreateAndShowPrompt(&helper, install_prompt.GetPromptForTesting());
@@ -150,14 +150,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, AskAParent) {
       SupervisedUserExtensionsMetricsRecorder::
           kExtensionInstallDialogHistogramName,
       SupervisedUserExtensionsMetricsRecorder::ExtensionInstallDialogState::
-          kAskedParent,
+          kChildAccepted,
       1);
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kExtensionInstallDialogHistogramName,
                                     2);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
-                       kExtensionInstallDialogAskedParentActionName));
+                       kExtensionInstallDialogChildAcceptedActionName));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised,

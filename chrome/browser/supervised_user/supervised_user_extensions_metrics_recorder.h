@@ -43,22 +43,28 @@ class SupervisedUserExtensionsMetricsRecorder
   // These enum values represent the state of the Extension Install Dialog for
   // installing and enabling extensions for supervised users.
   // These values are logged to UMA. Entries should not be renumbered and
-  // numeric values should never be reused. Please keep in sync with
-  // "SupervisedUserExtensionInstallDialog" in
-  // src/tools/metrics/histograms/enums.xml.
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ExtensionInstallDialogState)
   enum class ExtensionInstallDialogState {
     // Recorded when the extension install dialog opens.
     kOpened = 0,
     // Recorded when the child clicks "Ask a parent".
-    kAskedParent = 1,
+    // Deprecated, the Extension install dialog does not display this button
+    // anymore.
+    // It was used in ChromeOS v1 extension installation flow.
+    kAskedParentDeprecated = 1,
     // Recorded when the child cancels the extension installation.
     kChildCanceled = 2,
-    // Add future entries above this comment, in sync with
-    // "SupervisedUserExtensionInstallDialog" in
-    // src/tools/metrics/histograms/enums.xml.
-    // Update kMaxValue to the last value.
-    kMaxValue = kChildCanceled
+    // Recorded when the child proceeds with the extension installation dialog.
+    // Under the Skip parent approval move, the `Accept` action is the
+    // installation of the extension without parent intervention.
+    kChildAccepted = 3,
+    // Add future entries above this comment, updating kMaxValue to the last
+    // value.
+    kMaxValue = kChildAccepted
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserExtensionInstallDialog)
 
   // These enum values represent the state of the Parent Permission Dialog for
   // installing and enabling extensions for supervised users.
@@ -136,6 +142,8 @@ class SupervisedUserExtensionsMetricsRecorder
 
   // UMA metrics for adding to or removing from the set of approved extension
   // ids in the kSupervisedUserApprovedExtensions synced pref.
+  // They should be kept in sync with entries on
+  // tools/metrics/actions/actions.xml.
   static const char kExtensionsHistogramName[];
   static const char kApprovalGrantedActionName[];
   static const char kPermissionsIncreaseGrantedActionName[];
@@ -146,9 +154,8 @@ class SupervisedUserExtensionsMetricsRecorder
   // UMA metrics for the Extension Install Dialog.
   static const char kExtensionInstallDialogHistogramName[];
   static const char kExtensionInstallDialogOpenedActionName[];
-  static const char kExtensionInstallDialogAskedParentActionName[];
   static const char kExtensionInstallDialogChildCanceledActionName[];
-
+  static const char kExtensionInstallDialogChildAcceptedActionName[];
   // UMA metrics for the Parent Permission Dialog.
   static const char kParentPermissionDialogHistogramName[];
   static const char kParentPermissionDialogOpenedActionName[];

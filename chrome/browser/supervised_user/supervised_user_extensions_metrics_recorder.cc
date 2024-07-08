@@ -6,7 +6,10 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/common/features.h"
 
 // static
 const char SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName[] =
@@ -34,11 +37,13 @@ const char SupervisedUserExtensionsMetricsRecorder::
     kExtensionInstallDialogOpenedActionName[] =
         "SupervisedUsers_Extensions_ExtensionInstallDialog_Opened";
 const char SupervisedUserExtensionsMetricsRecorder::
-    kExtensionInstallDialogAskedParentActionName[] =
-        "SupervisedUsers_Extensions_ExtensionInstallDialog_AskedParent";
-const char SupervisedUserExtensionsMetricsRecorder::
     kExtensionInstallDialogChildCanceledActionName[] =
         "SupervisedUsers_Extensions_ExtensionInstallDialog_ChildCanceled";
+const char SupervisedUserExtensionsMetricsRecorder::
+    kExtensionInstallDialogChildAcceptedActionName[] =
+        "SupervisedUsers_Extensions_ExtensionInstallDialog_"
+        "ChildAccepted";
+
 // Parent Permission Dialog.
 const char SupervisedUserExtensionsMetricsRecorder::
     kParentPermissionDialogHistogramName[] =
@@ -82,7 +87,7 @@ void SupervisedUserExtensionsMetricsRecorder::OnDialogOpened() {
 
 void SupervisedUserExtensionsMetricsRecorder::OnDialogAccepted() {
   RecordExtensionInstallDialogUmaMetrics(
-      ExtensionInstallDialogState::kAskedParent);
+      ExtensionInstallDialogState::kChildAccepted);
 }
 
 void SupervisedUserExtensionsMetricsRecorder::OnDialogCanceled() {
@@ -129,13 +134,15 @@ void SupervisedUserExtensionsMetricsRecorder::
       base::RecordAction(
           base::UserMetricsAction(kExtensionInstallDialogOpenedActionName));
       break;
-    case ExtensionInstallDialogState::kAskedParent:
-      base::RecordAction(base::UserMetricsAction(
-          kExtensionInstallDialogAskedParentActionName));
-      break;
+    case ExtensionInstallDialogState::kAskedParentDeprecated:
+      NOTREACHED_NORETURN();
     case ExtensionInstallDialogState::kChildCanceled:
       base::RecordAction(base::UserMetricsAction(
           kExtensionInstallDialogChildCanceledActionName));
+      break;
+    case ExtensionInstallDialogState::kChildAccepted:
+      base::RecordAction(base::UserMetricsAction(
+          kExtensionInstallDialogChildAcceptedActionName));
       break;
   }
 }

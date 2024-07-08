@@ -491,6 +491,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
 // Tests install for a child when parent permission is granted.
 IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        ParentPermissionGranted) {
+  base::UserActionTester user_action_tester;
   WebstoreInstallListener listener;
   auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
   set_next_dialog_action(NextDialogAction::kAccept);
@@ -505,13 +506,26 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
           .SetID(kTestAppId)
           .SetVersion(kTestAppVersion)
           .Build();
-  ASSERT_TRUE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
+  EXPECT_TRUE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   SupervisedUserExtensionsMetricsRecorder::
+                       kParentPermissionDialogOpenedActionName));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   SupervisedUserExtensionsMetricsRecorder::
+                       kParentPermissionDialogParentApprovedActionName));
+  EXPECT_EQ(
+      1,
+      user_action_tester.GetActionCount(
+          SupervisedUserExtensionsMetricsRecorder::kApprovalGrantedActionName));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 // Tests no install occurs for a child when the parent permission
 // dialog is canceled.
 IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        ParentPermissionCanceled) {
+  base::UserActionTester user_action_tester;
   WebstoreInstallListener listener;
   set_next_dialog_action(NextDialogAction::kCancel);
   auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
@@ -527,7 +541,20 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
           .SetID(kTestAppId)
           .SetVersion(kTestAppVersion)
           .Build();
-  ASSERT_FALSE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
+  EXPECT_FALSE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
+// On the default configuration only the Parent approval dialog is used for
+// extension installations.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   SupervisedUserExtensionsMetricsRecorder::
+                       kParentPermissionDialogOpenedActionName));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   SupervisedUserExtensionsMetricsRecorder::
+                       kParentPermissionDialogParentCanceledActionName));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   SupervisedUserExtensionsMetricsRecorder::
+                       kExtensionInstallDialogChildCanceledActionName));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 // Tests that no parent permission is required for a child to install a theme.
@@ -604,6 +631,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
 // via the "Permissions" toggle, the parent approval is required.
 IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        InstallSuccessfulWhenExtensionsToggleOn) {
+  base::UserActionTester user_action_tester;
   WebstoreInstallListener listener;
   auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
 
@@ -624,7 +652,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
   ASSERT_TRUE(listener.received_success());
   ASSERT_EQ(kTestAppId, listener.id());
 
-  ASSERT_EQ(GetParam() == SupervisedUserExtensionManagedBySwitch::kPermissions,
+  EXPECT_EQ(GetParam() == SupervisedUserExtensionManagedBySwitch::kPermissions,
             parent_permission_dialog_appeared_);
 
   scoped_refptr<const Extension> extension =
@@ -632,7 +660,33 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
           .SetID(kTestAppId)
           .SetVersion(kTestAppVersion)
           .Build();
-  ASSERT_TRUE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
+  EXPECT_TRUE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  int parent_approval_dialog_count =
+      GetParam() == SupervisedUserExtensionManagedBySwitch::kExtensions ? 0 : 1;
+  // Parent Approval dialog metrics (when managed by Permissions toggle):
+  EXPECT_EQ(parent_approval_dialog_count,
+            user_action_tester.GetActionCount(
+                SupervisedUserExtensionsMetricsRecorder::
+                    kParentPermissionDialogOpenedActionName));
+  EXPECT_EQ(
+      parent_approval_dialog_count,
+      user_action_tester.GetActionCount(
+          SupervisedUserExtensionsMetricsRecorder::kApprovalGrantedActionName));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+  // Extension Installation dialog metrics (when managed by Extensions toggle):
+  int extension_install_dialog_count =
+      GetParam() == SupervisedUserExtensionManagedBySwitch::kExtensions ? 1 : 0;
+  EXPECT_EQ(extension_install_dialog_count,
+            user_action_tester.GetActionCount(
+                SupervisedUserExtensionsMetricsRecorder::
+                    kExtensionInstallDialogOpenedActionName));
+  EXPECT_EQ(extension_install_dialog_count,
+            user_action_tester.GetActionCount(
+                SupervisedUserExtensionsMetricsRecorder::
+                    kApprovalGrantedByDefaultName));
 }
 
 INSTANTIATE_TEST_SUITE_P(
