@@ -178,11 +178,13 @@ std::u16string GetNoResultsFoundDescription(PickerCategory category) {
     case PickerCategory::kLocalFiles:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_NO_RESULTS_FOR_LOCAL_FILES_LABEL_TEXT);
+    case PickerCategory::kDatesTimes:
+    case PickerCategory::kUnitsMaths:
+      // TODO: b/345303965 - Add finalized strings for dates and maths.
+      return l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT);
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
     case PickerCategory::kExpressions:
-    case PickerCategory::kDatesTimes:
-    case PickerCategory::kUnitsMaths:
       NOTREACHED_NORETURN();
   }
 }
