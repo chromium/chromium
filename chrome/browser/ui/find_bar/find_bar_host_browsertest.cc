@@ -1054,12 +1054,19 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindMovesWhenObscuring) {
   bool fully_visible = false;
   int ordinal = 0;
 
-  // Make sure it is open.
-  EXPECT_TRUE(GetFindBarWindowInfo(&start_position, &fully_visible));
-  EXPECT_TRUE(fully_visible);
-
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Make a query so the Lens entrypoint disappears. If not, the start position,
+  // will be off since the Lens entrypoint will disappear on the first query,
+  // and the start_position vs position will be comparing the position of the
+  // find bar with vs without the Lens entrypoint.
+  // Make sure it is open.
+  FindInPageASCII(web_contents, "a", kFwd, kIgnoreCase, &ordinal);
+
+  // Make sure it is open and store starting position.
+  EXPECT_TRUE(GetFindBarWindowInfo(&start_position, &fully_visible));
+  EXPECT_TRUE(fully_visible);
 
   int moved_x_coord = FindInPageTillBoxMoves(web_contents, start_position.x(),
                                              "Chromium", kMoveIterations);

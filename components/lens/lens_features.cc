@@ -125,7 +125,7 @@ const base::FeatureParam<bool> kUseLensOverlayForVideoFrameSearch{
     &kLensOverlay, "use-for-video-frame-search", true};
 
 const base::FeatureParam<bool> kIsFindInPageEntryPointEnabled{
-    &kLensOverlay, "find-in-page-entry-point", false};
+    &kLensOverlay, "find-in-page-entry-point", true};
 
 const base::FeatureParam<bool> kIsOmniboxEntryPointEnabled{
     &kLensOverlay, "omnibox-entry-point", true};
