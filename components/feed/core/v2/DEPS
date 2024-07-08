@@ -6,6 +6,7 @@ include_rules = [
   "+components/search_engines",
   "+components/supervised_user",
   "+components/sync_preferences",
+  "+ui/base/l10n/l10n_util.h",
  ]
 
 specific_include_rules = {

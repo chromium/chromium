@@ -173,6 +173,7 @@ if (use_blink) {
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/zlib/google:compression_utils",
+      "//ui/base:base",
     ]
 
     public_deps = [
