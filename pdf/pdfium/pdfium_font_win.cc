@@ -13,9 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
-#include "base/debug/alias.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -95,16 +92,6 @@ class SkiaFontMapper {
       return id;
     }
 
-    // TODO(crbug.com/344643689) Gather failure information during transition.
-    static bool is_first_missing_face = true;
-    if (is_first_missing_face) {
-      is_first_missing_face = false;
-      base::debug::Alias(&charset);
-      DEBUG_ALIAS_FOR_CSTR(aliased_face, face, 32);
-      SCOPED_CRASH_KEY_NUMBER("crbug.com/344643689", "charset", charset);
-      SCOPED_CRASH_KEY_STRING32("crbug.com/344643689", "face", face);
-      base::debug::DumpWithoutCrashing();
-    }
     LOG(WARNING) << "Failed to lookup face `" << base::HexEncode(face)
                  << "` for charset " << charset << ", weight " << weight;
     return nullptr;
