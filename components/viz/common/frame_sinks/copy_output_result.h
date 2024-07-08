@@ -30,10 +30,10 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   enum class Format : uint8_t {
     // A normal bitmap. When the results are returned in system memory, the
     // AsSkBitmap() will return a bitmap in "N32Premul" form. When the results
-    // are returned in a texture,  it will be an GL_RGBA texture referred to by
-    // a gpu::Mailbox. Client code can optionally take ownership of the texture
-    // (via a call to |TakeTextureOwnership()|) if it is needed beyond the
-    // lifetime of the CopyOutputResult.
+    // are returned in a texture, it will be a SharedImageFormat::kRGBA_8888
+    // texture referred to by a gpu::Mailbox. Client code can optionally take
+    // ownership of the texture (via a call to `TakeTextureOwnership()`) if it
+    // is needed beyond the lifetime of the CopyOutputResult.
     RGBA,
     // I420 format planes. This is intended to be used internally within the VIZ
     // component to support video capture. When requesting this format, results
@@ -109,9 +109,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // Even when the returned pointer is non-null, the object that it points to
   // can be default-constructed (the resulting mailboxes can be empty) in the
   // case of a failed reply, in which case IsEmpty() would report true.
-  // NOTE: The SharedImages referenced by these mailboxes are read-only from the
-  // client's POV (e.g., they cannot be written via the raster or GLES2
-  // interface).
+  // NOTE: The shared image referenced by the mailbox are read-only and only
+  // accessible by raster interface (from the client's POV).
   struct VIZ_COMMON_EXPORT TextureResult {
     gpu::Mailbox mailbox;
     gfx::ColorSpace color_space;
