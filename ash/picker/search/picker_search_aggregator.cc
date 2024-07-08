@@ -127,8 +127,22 @@ void PickerSearchAggregator::PublishBurnInResults() {
   std::vector<PickerSearchResultsSection> sections;
   base::flat_set<PickerSectionType> published_types;
 
+  // TODO: b/351224614 - Replace this with a new PickerSectionType::kBestMatch.
   for (PickerSectionType type : {
            PickerSectionType::kSuggestions,
+           PickerSectionType::kCategories,
+           PickerSectionType::kEditorWrite,
+           PickerSectionType::kEditorRewrite,
+       }) {
+    if (auto it = results_.find(type);
+        it != results_.end() && !it->second.results.empty()) {
+      sections.emplace_back(type, std::move(it->second.results),
+                            /*has_more=*/false);
+      published_types.insert(type);
+    }
+  }
+
+  for (PickerSectionType type : {
            PickerSectionType::kLinks,
            PickerSectionType::kFiles,
            PickerSectionType::kDriveFiles,
@@ -143,10 +157,6 @@ void PickerSearchAggregator::PublishBurnInResults() {
   }
 
   for (PickerSectionType type : {
-           PickerSectionType::kSuggestions,
-           PickerSectionType::kCategories,
-           PickerSectionType::kEditorWrite,
-           PickerSectionType::kEditorRewrite,
            PickerSectionType::kLinks,
            PickerSectionType::kFiles,
            PickerSectionType::kDriveFiles,
@@ -173,6 +183,8 @@ void PickerSearchAggregator::HandleSearchSourceResultsImpl(
   const PickerSectionType section_type = SectionTypeFromSearchSource(source);
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
+  // TODO: b/351224614 - This should include all the section types that do not
+  // have a title.
   if (section_type == PickerSectionType::kSuggestions) {
     // Suggested results cannot have more results, since it's not a proper
     // category.

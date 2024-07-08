@@ -597,15 +597,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(
-          AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kFiles),
-                Property(
-                    "results", &PickerSearchResultsSection::results,
-                    ElementsAre(Property(
-                        "data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::LocalFileData>(Field(
-                            "title", &PickerSearchResult::LocalFileData::title,
-                            u"local")))))),
           AllOf(
               Property("type", &PickerSearchResultsSection::type,
                        PickerSectionType::kSuggestions),
@@ -625,6 +616,15 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
                                  u"write")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kFiles),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(Property(
+                        "data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::LocalFileData>(Field(
+                            "title", &PickerSearchResult::LocalFileData::title,
+                            u"local")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLinks),
                 Property("results", &PickerSearchResultsSection::results,
@@ -680,15 +680,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                &PickerSearchResult::ClipboardData::display_text,
                                u"clipboard")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kFiles),
-                Property(
-                    "results", &PickerSearchResultsSection::results,
-                    ElementsAre(Property(
-                        "data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::LocalFileData>(Field(
-                            "title", &PickerSearchResult::LocalFileData::title,
-                            u"local")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kEditorWrite),
                 Property("results", &PickerSearchResultsSection::results,
                          ElementsAre(Property(
@@ -697,6 +688,15 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
                                  u"write")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kFiles),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(Property(
+                        "data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::LocalFileData>(Field(
+                            "title", &PickerSearchResult::LocalFileData::title,
+                            u"local")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLinks),
                 Property("results", &PickerSearchResultsSection::results,
