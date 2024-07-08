@@ -12,6 +12,7 @@ component_files = [
   "cra/cra-menu.ts",
   "cra/cra-menu-item.ts",
   "cra/cra-tooltip.ts",
+  "delete-recording-dialog.ts",
   "genai-placeholder.ts",
   "mic-selection-menu.ts",
   "onboarding-dialog.ts",

@@ -55,6 +55,15 @@ You can turn this off at anytime in Settings.
   <message desc="Button to go next in the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_NEXT_BUTTON">
     Next
   </message>
+  <message desc="Label of the menu item to delete the recording in playback page." name="IDS_RECORDER_PLAYBACK_MENU_DELETE_OPTION">
+    Delete
+  </message>
+  <message desc="Label of the menu item to export the recording in playback page." name="IDS_RECORDER_PLAYBACK_MENU_EXPORT_OPTION">
+    Export
+  </message>
+  <message desc="Label of the menu item to show recording details in playback page." name="IDS_RECORDER_PLAYBACK_MENU_SHOW_DETAIL_OPTION">
+    More details
+  </message>
   <message desc="Header of the recording list." name="IDS_RECORDER_RECORDING_LIST_HEADER">
     My Recordings
   </message>

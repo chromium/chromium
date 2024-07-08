@@ -9,6 +9,7 @@ import '../components/cra/cra-icon-button.js';
 import '../components/cra/cra-image.js';
 import '../components/cra/cra-menu.js';
 import '../components/cra/cra-menu-item.js';
+import '../components/delete-recording-dialog.js';
 import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
 import '../components/transcription-view.js';
@@ -25,6 +26,7 @@ import {
 
 import {CraDialog} from '../components/cra/cra-dialog.js';
 import {CraMenu} from '../components/cra/cra-menu.js';
+import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {i18n, replacePlaceholderWithHtml} from '../core/i18n.js';
 import {
   usePlatformHandler,
@@ -279,10 +281,6 @@ export class RecordPage extends ReactiveLitElement {
       }
     }
 
-    #delete-dialog {
-      width: 368px;
-    }
-
     #exit-dialog div[slot="actions"] cra-button:first-child {
       align-self: flex-start;
 
@@ -320,6 +318,8 @@ export class RecordPage extends ReactiveLitElement {
   private transcriptionEnableDispose: Dispose|null = null;
 
   private readonly menu = createRef<CraMenu>();
+
+  private readonly deleteDialog = createRef<DeleteRecordingDialog>();
 
   private async startRecording() {
     if (this.recordingSession.value !== null) {
@@ -462,14 +462,6 @@ export class RecordPage extends ReactiveLitElement {
     }
   }
 
-  private get deleteDialog(): CraDialog|null {
-    const el = this.shadowRoot?.querySelector('#delete-dialog') ?? null;
-    if (el === null) {
-      return null;
-    }
-    return assertInstanceof(el, CraDialog);
-  }
-
   private get exitDialog(): CraDialog|null {
     const el = this.shadowRoot?.querySelector('#exit-dialog') ?? null;
     if (el === null) {
@@ -479,7 +471,7 @@ export class RecordPage extends ReactiveLitElement {
   }
 
   private onDeleteButtonClick() {
-    this.deleteDialog?.show();
+    this.deleteDialog.value?.show();
   }
 
   private async deleteRecording() {
@@ -649,27 +641,6 @@ export class RecordPage extends ReactiveLitElement {
     </cra-dialog>`;
   }
 
-  private closeDeleteDialog() {
-    this.deleteDialog?.close();
-  }
-
-  private renderDeleteRecordingDialog() {
-    return html`<cra-dialog id="delete-dialog">
-      <div slot="headline">${i18n.recordDeleteDialogHeader}</div>
-      <div slot="actions">
-        <cra-button
-          .label=${i18n.recordDeleteDialogCancelButton}
-          button-style="secondary"
-          @click=${this.closeDeleteDialog}
-        ></cra-button>
-        <cra-button
-          .label=${i18n.recordDeleteDialogDeleteButton}
-          @click=${this.deleteRecording}
-        ></cra-button>
-      </div>
-    </cra-dialog>`;
-  }
-
   private renderMenu() {
     const transcriptionMenuItem = html`
       <cra-menu-item
@@ -755,7 +726,12 @@ export class RecordPage extends ReactiveLitElement {
           </secondary-button>
         </div>
       </div>
-      ${this.renderDeleteRecordingDialog()} ${this.renderExitRecordingDialog()}
+      <delete-recording-dialog
+        @delete=${this.deleteRecording}
+        ${ref(this.deleteDialog)}
+      >
+      </delete-recording-dialog>
+      ${this.renderExitRecordingDialog()}
     `;
   }
 }

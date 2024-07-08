@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cros_components/menu/menu_separator.js';
 import 'chrome://resources/cros_components/slider/slider.js';
 import 'chrome://resources/mwc/@material/web/icon/icon.js';
 import 'chrome://resources/mwc/@material/web/iconbutton/icon-button.js';
 import '../components/audio-waveform.js';
 import '../components/cra/cra-image.js';
+import '../components/cra/cra-menu.js';
+import '../components/cra/cra-menu-item.js';
+import '../components/delete-recording-dialog.js';
 import '../components/recording-title.js';
 import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
@@ -18,12 +22,16 @@ import {
 } from 'chrome://resources/cros_components/slider/slider.js';
 import {
   classMap,
+  createRef,
   css,
   html,
   nothing,
   PropertyDeclarations,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {CraMenu} from '../components/cra/cra-menu.js';
+import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {i18n} from '../core/i18n.js';
 import {
   AnimationFrameController,
@@ -254,6 +262,10 @@ export class PlaybackPage extends ReactiveLitElement {
       grid-column: span 2;
       padding: 0 12px;
     }
+
+    cra-menu {
+      --cros-menu-width: 200px;
+    }
   `;
 
   static override properties: PropertyDeclarations = {
@@ -271,6 +283,10 @@ export class PlaybackPage extends ReactiveLitElement {
   private readonly audioPlaying = signal(false);
 
   private readonly audio = new Audio();
+
+  private readonly menu = createRef<CraMenu>();
+
+  private readonly deleteRecordingDialog = createRef<DeleteRecordingDialog>();
 
   private readonly recordingDataManager = useRecordingDataManager();
 
@@ -446,6 +462,78 @@ export class PlaybackPage extends ReactiveLitElement {
     this.audio.currentTime -= 10;
   }
 
+  private onDeleteClick() {
+    this.deleteRecordingDialog.value?.show();
+  }
+
+  private deleteRecording() {
+    if (this.recordingId !== null) {
+      this.recordingDataManager.remove(this.recordingId);
+      navigateTo('/');
+    }
+  }
+
+  private renderMenu() {
+    // TODO: b/344789992 - Implements show detail.
+    // TODO: b/344784478 - Implements export.
+    return html`
+      <cra-menu ${ref(this.menu)} anchor="show-menu">
+        <cra-menu-item
+          headline=${i18n.playbackMenuExportOption}
+        ></cra-menu-item>
+        <cra-menu-item
+          headline=${i18n.playbackMenuShowDetailOption}
+        ></cra-menu-item>
+        <cros-menu-separator></cros-menu-separator>
+        <cra-menu-item
+          headline=${i18n.playbackMenuDeleteOption}
+          @cros-menu-item-triggered=${this.onDeleteClick}
+        ></cra-menu-item>
+      </cra-menu>
+      <delete-recording-dialog
+        ${ref(this.deleteRecordingDialog)}
+        @delete=${this.deleteRecording}
+      >
+      </delete-recording-dialog>
+    `;
+  }
+
+  private renderHeader() {
+    const transcriptionToggleButton =
+      this.textTokens.value === null ? nothing : html`
+            <cra-icon-button
+              buttonstyle="toggle"
+              @click=${this.toggleTranscription}
+            >
+              <cra-icon slot="icon" name="notes"></cra-icon>
+              <cra-icon slot="selectedIcon" name="notes"></cra-icon>
+            </cra-icon-button>
+          `;
+    const showMenu = () => {
+      this.menu.value?.show();
+    };
+
+    return html`
+      <div id="header" class="sheet">
+        <cra-icon-button buttonstyle="floating" href="/">
+          <cra-icon slot="icon" name="arrow_back"></cra-icon>
+        </cra-icon-button>
+        <recording-title .recordingMetadata=${this.recordingMetadata.value}>
+        </recording-title>
+        ${transcriptionToggleButton}
+        <cra-icon-button
+          buttonstyle="floating"
+          id="show-menu"
+          @click=${showMenu}
+        >
+          <!-- TODO: b/336963138 - Implements more menu -->
+          <cra-icon slot="icon" name="more_vertical"></cra-icon>
+        </cra-icon-button>
+      </div>
+      ${this.renderMenu()}
+    `;
+  }
+
   private renderAudioTimeline() {
     if (this.recordingMetadata.value === null) {
       return nothing;
@@ -481,46 +569,14 @@ export class PlaybackPage extends ReactiveLitElement {
     const mainSectionClasses = {
       'show-transcription': this.showTranscription.value,
     };
-
-    const transcriptionToggleButton =
-      this.textTokens.value === null ? nothing : html`
-            <cra-icon-button
-              buttonstyle="toggle"
-              @click=${this.toggleTranscription}
-            >
-              <cra-icon slot="icon" name="notes"></cra-icon>
-              <cra-icon slot="selectedIcon" name="notes"></cra-icon>
-            </cra-icon-button>
-          `;
-    // TODO(pihsun): Custom playback controls.
     return html`
       <div id="main-area">
-        <div id="header" class="sheet">
-          <!--
-            TODO(pihsun): Use href="/" once cros-component is updated to pass
-            href through.
-          -->
-          <cra-icon-button
-            buttonstyle="floating"
-            @click=${() => navigateTo('/')}
-          >
-            <!-- TODO: b/336963138 - Implements back button -->
-            <cra-icon slot="icon" name="arrow_back"></cra-icon>
-          </cra-icon-button>
-          <recording-title .recordingMetadata=${this.recordingMetadata.value}>
-          </recording-title>
-          ${transcriptionToggleButton}
-          <cra-icon-button buttonstyle="floating">
-            <!-- TODO: b/336963138 - Implements more menu -->
-            <cra-icon slot="icon" name="more_vertical"></cra-icon>
-          </cra-icon-button>
-        </div>
+        ${this.renderHeader()}
         <div id="middle" class=${classMap(mainSectionClasses)}>
           <div id="audio-waveform-container" class="sheet">
             ${this.renderAudioWaveform()}
           </div>
           <div id="transcription-container" class="sheet">
-            <!-- TODO: b/336963138 - Implements summarization -->
             ${this.renderTranscription()}
           </div>
         </div>
