@@ -480,9 +480,7 @@ NSString* const kDomain2 = @"domain2.com";
   NSString* managedAccountEmail = base::SysUTF8ToNSString(
       base::StrCat({"enterprise@", policy::SignatureProvider::kTestDomain1}));
   FakeSystemIdentity* fakeManagedIdentity =
-      [FakeSystemIdentity identityWithEmail:managedAccountEmail
-                                     gaiaID:@"exampleManagedID"
-                                       name:@"Fake Managed"];
+      [FakeSystemIdentity identityWithEmail:managedAccountEmail];
   [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
 
   // Open the menu and click on the item.
@@ -510,9 +508,7 @@ NSString* const kDomain2 = @"domain2.com";
   NSString* managedAccountEmail = base::SysUTF8ToNSString(
       base::StrCat({"enterprise@", policy::SignatureProvider::kTestDomain1}));
   FakeSystemIdentity* fakeManagedIdentity =
-      [FakeSystemIdentity identityWithEmail:managedAccountEmail
-                                     gaiaID:@"exampleManagedID"
-                                       name:@"Fake Managed"];
+      [FakeSystemIdentity identityWithEmail:managedAccountEmail];
   [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
 
   // Open the menu and click on the item.
@@ -592,9 +588,7 @@ NSString* const kDomain2 = @"domain2.com";
   NSString* managedAccountEmail =
       [@"enterprise@" stringByAppendingString:kDomain1];
   FakeSystemIdentity* fakeManagedIdentity =
-      [FakeSystemIdentity identityWithEmail:managedAccountEmail
-                                     gaiaID:@"exampleManagedID"
-                                       name:@"Fake Managed"];
+      [FakeSystemIdentity identityWithEmail:managedAccountEmail];
   [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
 
   // Open the management page and check if the content is expected.
@@ -636,9 +630,7 @@ NSString* const kDomain2 = @"domain2.com";
   NSString* managedAccountEmail =
       [@"enterprise@" stringByAppendingString:kDomain2];
   FakeSystemIdentity* fakeManagedIdentity =
-      [FakeSystemIdentity identityWithEmail:managedAccountEmail
-                                     gaiaID:@"exampleManagedID"
-                                       name:@"Fake Managed"];
+      [FakeSystemIdentity identityWithEmail:managedAccountEmail];
   [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
 
   // Open the management page and check if the content is expected.
@@ -682,9 +674,7 @@ NSString* const kDomain2 = @"domain2.com";
   NSString* managedAccountEmail =
       [@"enterprise@" stringByAppendingString:kDomain1];
   FakeSystemIdentity* fakeManagedIdentity =
-      [FakeSystemIdentity identityWithEmail:managedAccountEmail
-                                     gaiaID:@"exampleManagedID"
-                                       name:@"Fake Managed"];
+      [FakeSystemIdentity identityWithEmail:managedAccountEmail];
   [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
 
   // Open the management page and check if the content is expected.

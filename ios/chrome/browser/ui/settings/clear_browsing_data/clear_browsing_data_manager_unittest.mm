@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
@@ -94,10 +95,11 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
         browser_state_.get());
     template_url_service_->Load();
 
-    FakeSystemIdentityManager* system_identity_manager =
+    FakeSystemIdentityManager* fake_system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
-    system_identity_manager->AddIdentities(@[ @"foo" ]);
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    fake_system_identity_manager->AddIdentity(fake_identity);
 
     model_ = [[TableViewModel alloc] init];
     remover_ = std::make_unique<FakeBrowsingDataRemover>();

@@ -111,10 +111,7 @@ TEST_F(SigninUtilTest, ClearPreRestoreIdentity) {
 }
 
 TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetch) {
-  FakeSystemIdentity* identity =
-      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                     gaiaID:@"foo1ID"
-                                       name:@"Fake Foo 1"];
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
 
   AccountCapabilitiesTestMutator* mutator =
@@ -133,15 +130,9 @@ TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetch) {
 }
 
 TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetchMultipleIdentities) {
-  FakeSystemIdentity* identity1 =
-      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                     gaiaID:@"foo1ID"
-                                       name:@"Fake Foo 1"];
+  FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity1);
-  FakeSystemIdentity* identity2 =
-      [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
-                                     gaiaID:@"foo2ID"
-                                       name:@"Fake Foo 2"];
+  FakeSystemIdentity* identity2 = [FakeSystemIdentity fakeIdentity2];
   fake_system_identity_manager()->AddIdentity(identity2);
 
   AccountCapabilitiesTestMutator* mutator1 =

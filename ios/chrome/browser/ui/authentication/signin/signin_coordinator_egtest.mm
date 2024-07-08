@@ -631,11 +631,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // available yet.
 // TODO(crbug.com/331928746): Test flaky.
 - (void)FLAKY_testAccessiblityStringForSignedInUserWithoutName {
-  NSString* email = @"test@test.com";
-  NSString* gaiaID = @"gaiaID";
   // Sign in to Chrome.
-  FakeSystemIdentity* fakeIdentity =
-      [FakeSystemIdentity identityWithEmail:email gaiaID:gaiaID name:nil];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Select the identity disc particle with the correct accessibility string.

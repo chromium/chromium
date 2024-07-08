@@ -137,15 +137,12 @@ class AccountsTableViewControllerTest
 
 // Tests that a valid identity is added to the model.
 TEST_F(AccountsTableViewControllerTest, AddChromeIdentity) {
-  FakeSystemIdentity* identity =
-      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                     gaiaID:@"foo1ID"
-                                       name:@"Fake Foo 1"];
-  fake_system_identity_manager()->AddIdentity(identity);
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulates a credential reload.
   authentication_service()->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
@@ -158,20 +155,14 @@ TEST_F(AccountsTableViewControllerTest, AddChromeIdentity) {
 
 // Tests that an invalid identity is not added to the model.
 TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
-  FakeSystemIdentity* identity1 =
-      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                     gaiaID:@"foo1ID"
-                                       name:@"Fake Foo 1"];
-  FakeSystemIdentity* identity2 =
-      [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
-                                     gaiaID:@"foo2ID"
-                                       name:@"Fake Foo 2"];
-  fake_system_identity_manager()->AddIdentity(identity1);
-  fake_system_identity_manager()->AddIdentity(identity2);
+  FakeSystemIdentity* fake_identity1 = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(fake_identity1);
+  FakeSystemIdentity* fake_identity2 = [FakeSystemIdentity fakeIdentity2];
+  fake_system_identity_manager()->AddIdentity(fake_identity2);
 
   // Simulates a credential reload.
   authentication_service()->SignIn(
-      identity1, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      fake_identity1, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
@@ -186,7 +177,7 @@ TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
   {
     base::RunLoop run_loop;
     fake_system_identity_manager()->ForgetIdentity(
-        identity2, base::IgnoreArgs<NSError*>(run_loop.QuitClosure()));
+        fake_identity2, base::IgnoreArgs<NSError*>(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -199,24 +190,18 @@ TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
 // Tests that no passphrase error is exposed in the account table view (since
 // it's exposed one level up).
 TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseError) {
-  const std::string email = "foo@gmail.com";
-  const std::string gaia_id = "fooID";
-
-  FakeSystemIdentity* identity =
-      [FakeSystemIdentity identityWithEmail:base::SysUTF8ToNSString(email)
-                                     gaiaID:base::SysUTF8ToNSString(gaia_id)
-                                       name:@"Fake Foo"];
-  fake_system_identity_manager()->AddIdentity(identity);
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulate a credential reload.
   authentication_service()->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
   CoreAccountInfo account;
-  account.email = email;
-  account.gaia = gaia_id;
+  account.email = base::SysNSStringToUTF8(fake_identity.userEmail);
+  account.gaia = base::SysNSStringToUTF8(fake_identity.gaiaID);
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSignin, account);
   test_sync_service()->GetUserSettings()->SetPassphraseRequired();
@@ -231,24 +216,18 @@ TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseError) {
 // error when there is no error.
 TEST_F(AccountsTableViewControllerTest,
        DontHoldPassphraseErrorWhenEligibleNoError) {
-  const std::string email = "foo@gmail.com";
-  const std::string gaia_id = "fooID";
-
-  FakeSystemIdentity* identity =
-      [FakeSystemIdentity identityWithEmail:base::SysUTF8ToNSString(email)
-                                     gaiaID:base::SysUTF8ToNSString(gaia_id)
-                                       name:@"Fake Foo"];
-  fake_system_identity_manager()->AddIdentity(identity);
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulate a credential reload.
   authentication_service()->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
   CoreAccountInfo account;
-  account.email = email;
-  account.gaia = gaia_id;
+  account.email = base::SysNSStringToUTF8(fake_identity.userEmail);
+  account.gaia = base::SysNSStringToUTF8(fake_identity.gaiaID);
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSync, account);
   ASSERT_FALSE(test_sync_service()->GetUserSettings()->IsPassphraseRequired());

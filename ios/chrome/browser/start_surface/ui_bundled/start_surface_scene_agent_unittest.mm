@@ -413,10 +413,7 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
       kPrefetchSystemCapabilitiesOnAppStartup);
 
   // Set up fake identity with account capabilities.
-  FakeSystemIdentity* identity =
-      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                     gaiaID:@"foo1ID"
-                                       name:@"Fake Foo 1"];
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
 
   AccountCapabilitiesTestMutator* mutator =
@@ -456,10 +453,7 @@ TEST_F(StartSurfaceSceneAgentTest, DisablePrefetchCapabilitiesOnAppStart) {
       kPrefetchSystemCapabilitiesOnAppStartup);
 
   // Set up fake identity with account capabilities.
-  FakeSystemIdentity* identity =
-      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                     gaiaID:@"foo1ID"
-                                       name:@"Fake Foo 1"];
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
 
   AccountCapabilitiesTestMutator* mutator =

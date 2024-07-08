@@ -279,10 +279,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   ConsistencyPromoSigninMediator* mediator =
       BuildConsistencyPromoSigninMediator(
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
-  FakeSystemIdentity* new_identity =
-      [FakeSystemIdentity identityWithEmail:@"foo3@gmail.com"
-                                     gaiaID:@"foo1ID3"
-                                       name:@"Fake Foo 3"];
+  FakeSystemIdentity* new_identity = [FakeSystemIdentity fakeIdentity1];
   GetSystemIdentityManager()->AddIdentity(new_identity);
   [mediator systemIdentityAdded:new_identity];
 

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/policy/model/reporting/profile_report_generator_ios.h"
-#import "components/enterprise/browser/reporting/report_type.h"
 
 #import <Foundation/Foundation.h>
 
@@ -12,6 +11,7 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
+#import "components/enterprise/browser/reporting/report_type.h"
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -41,7 +42,6 @@ namespace enterprise_reporting {
 namespace {
 
 const base::FilePath kProfilePath = base::FilePath("/fake/profile/default");
-const std::string kAccount = "fake_account";
 
 }  // namespace
 
@@ -97,16 +97,15 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
                     base::Value(true), nullptr);
   }
 
-  void SignIn() {
-    FakeSystemIdentityManager* system_identity_manager =
+  FakeSystemIdentity* SignIn() {
+    FakeSystemIdentityManager* fake_system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
-    system_identity_manager->AddIdentities(
-        @[ base::SysUTF8ToNSString(kAccount) ]);
-    id<SystemIdentity> identity =
-        account_manager_service_->GetDefaultIdentity();
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    fake_system_identity_manager->AddIdentity(fake_identity);
     authentication_service_->SignIn(
-        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+        fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    return fake_identity;
   }
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
@@ -161,12 +160,13 @@ TEST_F(ProfileReportGeneratorIOSTest, UnsignedInProfile) {
 }
 
 TEST_F(ProfileReportGeneratorIOSTest, SignedInProfile) {
-  SignIn();
+  FakeSystemIdentity* fake_identity = SignIn();
   auto report = GenerateReport();
   ASSERT_TRUE(report);
   EXPECT_TRUE(report->has_chrome_signed_in_user());
-  EXPECT_EQ(kAccount + "@gmail.com", report->chrome_signed_in_user().email());
-  EXPECT_EQ(kAccount + "ID",
+  EXPECT_EQ(base::SysNSStringToUTF8(fake_identity.userEmail),
+            report->chrome_signed_in_user().email());
+  EXPECT_EQ(base::SysNSStringToUTF8(fake_identity.gaiaID),
             report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 

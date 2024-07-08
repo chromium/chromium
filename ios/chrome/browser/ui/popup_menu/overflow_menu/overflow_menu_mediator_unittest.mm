@@ -644,7 +644,9 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
       {});
 
   // Add managed account to sign in with.
-  fake_system_identity_manager()->AddManagedIdentities(@[ @"managedfoo" ]);
+  FakeSystemIdentity* fake_system_identity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  fake_system_identity_manager()->AddIdentity(fake_system_identity);
 
   // Emulate signing in with managed account.
   AuthenticationService* authentication_service =

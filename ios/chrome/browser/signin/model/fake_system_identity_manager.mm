@@ -105,23 +105,6 @@ void FakeSystemIdentityManager::AddIdentityWithCapabilities(
   FireIdentityListChanged(/*notify_user*/ false);
 }
 
-void FakeSystemIdentityManager::AddIdentities(NSArray<NSString*>* names) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (NSString* name in names) {
-    [storage_ addIdentity:[FakeSystemIdentity identityWithName:name
-                                                        domain:@"gmail.com"]];
-  }
-}
-
-void FakeSystemIdentityManager::AddManagedIdentities(
-    NSArray<NSString*>* names) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (NSString* name in names) {
-    [storage_ addIdentity:[FakeSystemIdentity identityWithName:name
-                                                        domain:@"google.com"]];
-  }
-}
-
 void FakeSystemIdentityManager::ForgetIdentityFromOtherApplication(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

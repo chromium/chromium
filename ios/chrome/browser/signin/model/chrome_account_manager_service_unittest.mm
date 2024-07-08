@@ -19,21 +19,13 @@
 
 namespace {
 FakeSystemIdentity* identity1 =
-    [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                   gaiaID:@"foo1ID"
-                                     name:@"Fake Foo 1"];
+    [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"];
 FakeSystemIdentity* identity2 =
-    [FakeSystemIdentity identityWithEmail:@"foo2@google.com"
-                                   gaiaID:@"foo2ID"
-                                     name:@"Fake Foo 2"];
+    [FakeSystemIdentity identityWithEmail:@"foo2@google.com"];
 FakeSystemIdentity* identity3 =
-    [FakeSystemIdentity identityWithEmail:@"foo3@chromium.com"
-                                   gaiaID:@"foo3ID"
-                                     name:@"Fake Foo 3"];
+    [FakeSystemIdentity identityWithEmail:@"foo3@chromium.com"];
 FakeSystemIdentity* identity4 =
-    [FakeSystemIdentity identityWithEmail:@"foo4@chromium.com"
-                                   gaiaID:@"foo4ID"
-                                     name:@"Fake Foo 4"];
+    [FakeSystemIdentity identityWithEmail:@"foo4@chromium.com"];
 }  // namespace
 
 class ChromeAccountManagerServiceTest : public PlatformTest {

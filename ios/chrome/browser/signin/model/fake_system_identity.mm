@@ -12,10 +12,11 @@ NSString* const kCoderUserEmailKey = @"UserEmail";
 NSString* const kCoderGaiaIDKey = @"GaiaID";
 NSString* const kCoderUserFullNameKey = @"UserFullName";
 NSString* const kCoderUserGivenNameKey = @"UserGivenName";
-NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
 }  // namespace
 
-@implementation FakeSystemIdentity
+@implementation FakeSystemIdentity {
+  NSString* _gaiaID;
+}
 
 + (std::string)encodeIdentitiesToBase64:
     (NSArray<FakeSystemIdentity*>*)identities {
@@ -44,71 +45,45 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
 }
 
 + (instancetype)fakeIdentity1 {
-  return [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                        gaiaID:@"foo1ID"
-                                          name:@"Fake Foo 1"];
+  return [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"];
 }
 
 + (instancetype)fakeIdentity2 {
-  return [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
-                                        gaiaID:@"foo2ID"
-                                          name:@"Fake Foo 2"];
+  return [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"];
 }
 
 + (instancetype)fakeIdentity3 {
-  return [FakeSystemIdentity identityWithEmail:@"foo3@gmail.com"
-                                        gaiaID:@"foo3ID"
-                                          name:@"Fake Foo 3"];
+  return [FakeSystemIdentity identityWithEmail:@"foo3@gmail.com"];
+}
+
++ (instancetype)fakeIdentity4 {
+  return [FakeSystemIdentity identityWithEmail:@"foo4@gmail.com"];
 }
 
 + (instancetype)fakeManagedIdentity {
-  return [FakeSystemIdentity identityWithEmail:@"foo@google.com"
-                                        gaiaID:@"fooManagedID"
-                                          name:@"Fake Managed"];
+  return [FakeSystemIdentity identityWithEmail:@"foo@google.com"];
 }
 
-+ (instancetype)identityWithEmail:(NSString*)email
-                           gaiaID:(NSString*)gaiaID
-                             name:(NSString*)name {
-  return [[FakeSystemIdentity alloc] initWithEmail:email
-                                            gaiaID:gaiaID
-                                              name:name];
++ (instancetype)identityWithEmail:(NSString*)email {
+  // GaiaID cannot look like an email address.
+  NSString* withoutAtSign = [email stringByReplacingOccurrencesOfString:@"@"
+                                                             withString:@"_"];
+  NSString* gaiaID = [NSString stringWithFormat:@"%@_GAIAID", withoutAtSign];
+  return [[FakeSystemIdentity alloc] initWithEmail:email gaiaID:gaiaID];
 }
 
-+ (instancetype)identityWithName:(NSString*)name domain:(NSString*)domain {
-  DCHECK(name.length);
-  DCHECK(domain.length);
-
-  NSString* gaiaID = nil;
-  NSString* email = [NSString stringWithFormat:@"%@@%@", name, domain];
-  if ([domain isEqualToString:@"gmail.com"]) {
-    // Consumer domain, use "%(name)ID" as Gaia ID.
-    gaiaID = [NSString stringWithFormat:@"%@ID", name];
-  } else if ([domain isEqualToString:@"google.com"]) {
-    // Managed domain, use "%(name)ManagedID" as Gaia ID.
-    gaiaID = [NSString stringWithFormat:@"%@ManagedID", name];
-  } else {
-    // Other domain, include the domain in the Gaia ID, replacing "." with "-".
-    gaiaID = [NSString
-        stringWithFormat:@"%@-%@-ID", name,
-                         [domain stringByReplacingOccurrencesOfString:@"."
-                                                           withString:@"-"]];
-  }
-
-  return [[FakeSystemIdentity alloc] initWithEmail:email
-                                            gaiaID:gaiaID
-                                              name:name];
++ (instancetype)identityWithEmail:(NSString*)email gaiaID:(NSString*)gaiaID {
+  return [[FakeSystemIdentity alloc] initWithEmail:email gaiaID:gaiaID];
 }
 
-- (instancetype)initWithEmail:(NSString*)email
-                       gaiaID:(NSString*)gaiaID
-                         name:(NSString*)name {
+- (instancetype)initWithEmail:(NSString*)email gaiaID:(NSString*)gaiaID {
   if ((self = [super init])) {
+    _gaiaID = gaiaID;
     _userEmail = [email copy];
-    _gaiaID = [gaiaID copy];
-    _userFullName = [name copy];
-    _userGivenName = [name copy];
-    _hashedGaiaID = [NSString stringWithFormat:@"%@_hashID", name];
+    NSArray* split = [email componentsSeparatedByString:@"@"];
+    DCHECK_EQ(split.count, 2ul);
+    _userFullName = split[0];
+    _userGivenName = split[0];
   }
   return self;
 }
@@ -134,12 +109,21 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   return [_userEmail isEqualToString:other.userEmail] &&
          [_gaiaID isEqualToString:other.gaiaID] &&
          [_userFullName isEqualToString:other.userFullName] &&
-         [_userGivenName isEqualToString:other.userGivenName] &&
-         [_hashedGaiaID isEqualToString:other.hashedGaiaID];
+         [_userGivenName isEqualToString:other.userGivenName];
 }
 
 - (NSUInteger)hash {
   return _gaiaID.hash;
+}
+
+#pragma mark - Properties
+
+- (NSString*)gaiaID {
+  return _gaiaID;
+}
+
+- (NSString*)hashedGaiaID {
+  return [NSString stringWithFormat:@"%@_hash", _gaiaID];
 }
 
 #pragma mark - NSSecureCoding
@@ -149,7 +133,6 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   [coder encodeObject:_gaiaID forKey:kCoderGaiaIDKey];
   [coder encodeObject:_userFullName forKey:kCoderUserFullNameKey];
   [coder encodeObject:_userGivenName forKey:kCoderUserGivenNameKey];
-  [coder encodeObject:_hashedGaiaID forKey:kCoderHashedGaiaIDKey];
 }
 
 - (id)initWithCoder:(NSCoder*)coder {
@@ -162,21 +145,21 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
                                         forKey:kCoderUserFullNameKey];
     _userGivenName = [coder decodeObjectOfClass:[NSString class]
                                          forKey:kCoderUserGivenNameKey];
-    _hashedGaiaID = [coder decodeObjectOfClass:[NSString class]
-                                        forKey:kCoderHashedGaiaIDKey];
   }
   return self;
 }
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+#pragma mark - Debug
 
 - (NSString*)description {
   return [NSString stringWithFormat:@"<%@: %p, GaiaID: \"%@\", name: \"%@\", "
                                     @"email: \"%@\">",
                                     self.class.description, self, self.gaiaID,
                                     self.userFullName, self.userEmail];
-}
-
-+ (BOOL)supportsSecureCoding {
-  return YES;
 }
 
 @end

@@ -153,9 +153,7 @@ BOOL gUsingUnknownCapabilities;
   _lastStartAuthActivityUserEmail = userEmail;
   if (userEmail.length) {
     [FakeSystemIdentityInteractionManager
-                    setIdentity:[FakeSystemIdentity identityWithEmail:userEmail
-                                                               gaiaID:@"gaia"
-                                                                 name:@"name"]
+                    setIdentity:[FakeSystemIdentity identityWithEmail:userEmail]
         withUnknownCapabilities:NO];
   }
   _signinCompletion = completion;

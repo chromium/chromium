@@ -52,13 +52,6 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       id<SystemIdentity> identity,
       NSDictionary<NSString*, NSNumber*>* capabilities);
 
-  // Adds fake identities given their names. Ignore the identities that are
-  // already added.
-  void AddIdentities(NSArray<NSString*>* names);
-
-  // Adds fake managed identities given their names.
-  void AddManagedIdentities(NSArray<NSString*>* names);
-
   // Simulates `identity` removed from another application.
   void ForgetIdentityFromOtherApplication(id<SystemIdentity> identity);
 

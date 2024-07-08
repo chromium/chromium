@@ -66,10 +66,7 @@ class IdentityChooserCoordinatorTest : public PlatformTest {
 
 TEST_F(IdentityChooserCoordinatorTest, testValidIdentity) {
   // Set up a fake identity on device.
-  FakeSystemIdentity* identity =
-      [FakeSystemIdentity identityWithEmail:@"janedoe@gmail.com"
-                                     gaiaID:@"1"
-                                       name:@"Jane Doe"];
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   AddIdentity(identity);
 
   [coordinator_ start];
@@ -82,7 +79,7 @@ TEST_F(IdentityChooserCoordinatorTest, testValidIdentity) {
   // User selects a valid account.
   [GetViewControllerDelegate()
       identityChooserViewController:presented_view_controller
-        didSelectIdentityWithGaiaID:@"1"];
+        didSelectIdentityWithGaiaID:identity.gaiaID];
   EXPECT_NSEQ(identity, coordinator_.selectedIdentity);
   [coordinator_ stop];
 }
