@@ -30,9 +30,7 @@ constexpr int kTouchpadSwipeLengthForDeskChange = 420;
 // should exclude the preview border's insets.
 constexpr int kDeskBarNonPreviewAllocatedHeight = 48;
 
-// The height of the desks bar in expanded state with the oak feature enabled.
-// Calculated by adding 16dp to `kDeskBarNonPreviewAllocatedHeight`.
-constexpr int kExpandedDeskBarHeightWithOak =
+inline constexpr int kExpandedDeskBarHeight =
     kDeskBarNonPreviewAllocatedHeight + 16;
 
 // This is the desk bar height for zero state.

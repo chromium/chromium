@@ -296,8 +296,7 @@ gfx::Rect GetGridBoundsInScreen(
     const bool show_home_launcher =
         hotseat_state == HotseatState::kShownHomeLauncher;
 
-    const bool oak_enabled =
-        features::IsOakFeatureEnabled() || features::IsForestFeatureEnabled();
+    const bool forest_enabled = features::IsForestFeatureEnabled();
 
     // Use the default hotseat size here to avoid the possible re-layout
     // due to the update in HotseatWidget::is_forced_dense_.
@@ -306,9 +305,9 @@ gfx::Rect GetGridBoundsInScreen(
             /*density=*/HotseatDensity::kNormal) +
         ShelfConfig::Get()->hotseat_bottom_padding();
 
-    if (!oak_enabled && hotseat_extended) {
+    if (!forest_enabled && hotseat_extended) {
       bounds.Inset(gfx::Insets::TLBR(0, 0, hotseat_bottom_inset, 0));
-    } else if (oak_enabled && show_home_launcher) {
+    } else if (forest_enabled && show_home_launcher) {
       bounds.Inset(gfx::Insets::TLBR(
           0, 0, hotseat_bottom_inset - ShelfConfig::Get()->in_app_shelf_size(),
           0));
@@ -316,7 +315,7 @@ gfx::Rect GetGridBoundsInScreen(
   }
 
   // Clamp the bounds of the overview grid such that it doesn't go below 1/3 of
-  // the work area length
+  // the work area length.
   const bool horizontal = IsLayoutHorizontal(target_root);
   const int min_length =
       (horizontal ? work_area.width() : work_area.height()) / 3;

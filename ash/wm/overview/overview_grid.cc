@@ -710,7 +710,7 @@ void OverviewGrid::PrepareForOverview() {
   OverviewEnterExitType enter_exit_type =
       overview_session_->enter_exit_overview_type();
 
-  if (features::IsOakFeatureEnabled() || features::IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     scoped_overview_wallpaper_clipper_ =
         std::make_unique<ScopedOverviewWallpaperClipper>(
             this, enter_exit_type == OverviewEnterExitType::kInformedRestore);
@@ -1724,7 +1724,7 @@ gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
 }
 
 gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
-  if (!features::IsOakFeatureEnabled() && !features::IsForestFeatureEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     return gfx::Insets();
   }
 
@@ -1755,11 +1755,10 @@ gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
 }
 
 gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
-  const bool oak_enabled =
-      features::IsOakFeatureEnabled() || features::IsForestFeatureEnabled();
+  const bool forest_enabled = features::IsForestFeatureEnabled();
 
   // Use compact paddings for partial overview.
-  if (oak_enabled &&
+  if (forest_enabled &&
       SplitViewController::Get(root_window_)->InSplitViewMode()) {
     return gfx::Insets::VH(kCompactPaddingForEffectiveBounds, 0);
   }
@@ -1776,11 +1775,11 @@ gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
       desks_bar_view_ || desks_util::ShouldDesksBarBeCreated();
 
   const int no_desk_bar_padding =
-      oak_enabled ? kSpaciousPaddingForEffectiveBounds : 0;
+      forest_enabled ? kSpaciousPaddingForEffectiveBounds : 0;
   vertical_paddings.set_top(has_desk_bar ? GetDesksBarHeight()
                                          : no_desk_bar_padding);
 
-  if (!oak_enabled) {
+  if (!forest_enabled) {
     return vertical_paddings;
   }
 
@@ -3102,7 +3101,7 @@ bool OverviewGrid::FitWindowRectsInBounds(
 void OverviewGrid::MaybeCenterOverviewItems(
     const base::flat_set<OverviewItemBase*>& ignored_items,
     std::vector<gfx::RectF>& out_window_rects) {
-  if (!features::IsOakFeatureEnabled() && !features::IsForestFeatureEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     return;
   }
 
