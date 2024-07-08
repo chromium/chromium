@@ -731,11 +731,18 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
 
 const gpu::Mailbox& CanvasResourceSharedImage::GetMailbox(
     MailboxSyncMode sync_mode) {
+  return GetClientSharedImage(sync_mode)->mailbox();
+}
+
+scoped_refptr<gpu::ClientSharedImage>
+CanvasResourceSharedImage::GetClientSharedImage(MailboxSyncMode sync_mode) {
+  CHECK(client_shared_image());
+
   if (!is_cross_thread()) {
     owning_thread_data().mailbox_sync_mode = sync_mode;
   }
 
-  return client_shared_image()->mailbox();
+  return client_shared_image();
 }
 
 GLenum CanvasResourceSharedImage::TextureTarget() const {
@@ -1038,9 +1045,14 @@ void CanvasResourceSwapChain::TearDown() {
 
 const gpu::Mailbox& CanvasResourceSwapChain::GetMailbox(
     MailboxSyncMode sync_mode) {
+  auto client_shared_image = GetClientSharedImage(sync_mode);
+  return client_shared_image ? client_shared_image->mailbox() : empty_mailbox_;
+}
+
+scoped_refptr<gpu::ClientSharedImage>
+CanvasResourceSwapChain::GetClientSharedImage(MailboxSyncMode sync_mode) {
   DCHECK_EQ(sync_mode, kVerifiedSyncToken);
-  return (front_buffer_shared_image_) ? front_buffer_shared_image_->mailbox()
-                                      : empty_mailbox_;
+  return front_buffer_shared_image_;
 }
 
 bool CanvasResourceSwapChain::HasGpuMailbox() const {

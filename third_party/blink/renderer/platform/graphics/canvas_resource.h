@@ -144,6 +144,22 @@ class PLATFORM_EXPORT CanvasResource
   // NOTE: Valid to call only if SupportsAcceleratedCompositing() is true.
   virtual const gpu::Mailbox& GetMailbox(MailboxSyncMode) = 0;
 
+  // Whether this resource uses ClientSharedImage.
+  // TODO(crbug.com/351275962): Remove this method once
+  // CanvasResourceSharedBitmap holds ClientSharedImage and
+  // ExternalCanvasResource either holds ClientSharedImage or is removed.
+  virtual bool UsesClientSharedImage() { return false; }
+
+  // The ClientSharedImage containing information on the SharedImage (if any)
+  // attached to the resource.
+  // The sync mode indicates how the sync token for the resource should be
+  // prepared.
+  // NOTE: Valid to call only if UsesClientSharedImage() is true.
+  virtual scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage(
+      MailboxSyncMode) {
+    NOTREACHED_NORETURN();
+  }
+
   // A CanvasResource is not thread-safe and does not allow concurrent usage
   // from multiple threads. But it maybe used from any thread. It remains bound
   // to the current thread until Transfer is called. Note that while the
@@ -369,6 +385,9 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool IsLost() const { return owning_thread_data().is_lost; }
   void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image);
   const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
+  bool UsesClientSharedImage() override { return true; }
+  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage(
+      MailboxSyncMode) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     const std::string& parent_path,
                     size_t bytes_per_pixel) const;
@@ -573,6 +592,9 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
 
   void PresentSwapChain();
   const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
+  bool UsesClientSharedImage() override { return true; }
+  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage(
+      MailboxSyncMode) override;
 
  private:
   void TearDown() override;
