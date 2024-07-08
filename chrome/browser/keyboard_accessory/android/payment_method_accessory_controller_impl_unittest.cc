@@ -99,6 +99,7 @@ class PaymentMethodAccessoryControllerTest
     PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
         &autofill_manager(), &autofill_driver());
+    controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
     data_manager_.SetPrefService(profile()->GetPrefs());
     data_manager_.SetSyncServiceForTest(&sync_service_);
   }
@@ -163,15 +164,12 @@ class PaymentMethodAccessoryControllerTest
 TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
   CreditCard card = test::GetCreditCard();
   data_manager_.payments_data_manager().AddCreditCard(card);
-  AccessorySheetData result(AccessoryTabType::CREDIT_CARDS, std::u16string());
-
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
-      .WillOnce(SaveArg<0>(&result));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(result, controller()->GetSheetData());
-  EXPECT_EQ(result,
+  EXPECT_EQ(controller()->GetSheetData(),
             PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
                 .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
@@ -190,17 +188,14 @@ TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
 TEST_F(PaymentMethodAccessoryControllerTest, PreventsFillingInsecureContexts) {
   CreditCard card = test::GetCreditCard();
   data_manager_.payments_data_manager().AddCreditCard(card);
-  AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                            std::u16string());
   SetFormOrigin(GURL("http://insecure.http-site.com"));
 
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
-      .WillOnce(SaveArg<0>(&result));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(result, controller()->GetSheetData());
-  EXPECT_EQ(result,
+  EXPECT_EQ(controller()->GetSheetData(),
             PaymentMethodAccessorySheetDataBuilder()
                 .SetWarning(l10n_util::GetStringUTF16(
                     IDS_AUTOFILL_WARNING_INSECURE_CONNECTION))
@@ -261,10 +256,6 @@ class PaymentMethodAccessoryControllerCardUnmaskTest
 };
 
 TEST_P(PaymentMethodAccessoryControllerCardUnmaskTest, CardUnmask) {
-  // TODO(crbug.com/40165275): Move this into setup once controllers don't push
-  // updated sheets proactively anymore.
-  controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
-
   CreditCard card = GetCreditCard();
   data_manager_.payments_data_manager().AddCreditCard(card);
   EXPECT_CALL(filling_source_observer_,
@@ -312,18 +303,14 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   std::u16string cvc = u"123";
   autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(card,
                                                                         cvc);
-  AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                            std::u16string());
-
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
-      .WillOnce(SaveArg<0>(&result));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(result, controller()->GetSheetData());
   // Verify that the only the obfuscated last four and no cvc is added to the
   // accessory sheet data.
-  EXPECT_EQ(result,
+  EXPECT_EQ(controller()->GetSheetData(),
             PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
                 .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
@@ -350,22 +337,19 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   std::u16string cvc = u"123";
   autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(
       unmasked_card, cvc);
-  AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                            std::u16string());
 
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
-      .WillOnce(SaveArg<0>(&result));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
   std::u16string card_number_for_display = unmasked_card.FullDigitsForDisplay();
   std::u16string card_number_for_fill =
       unmasked_card.GetRawInfo(CREDIT_CARD_NUMBER);
-  EXPECT_EQ(result, controller()->GetSheetData());
   // Verify that the unmasked virtual card is at the top followed by the masked
   // card.
   EXPECT_EQ(
-      result,
+      controller()->GetSheetData(),
       PaymentMethodAccessorySheetDataBuilder()
           .AddUserInfo(kVisaCard)
           .AppendField(/*display_text=*/card_number_for_display,
@@ -402,20 +386,17 @@ TEST_F(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   data_manager_.payments_data_manager().AddCreditCard(masked_card);
 
-  AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                            std::u16string());
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
-      .WillOnce(SaveArg<0>(&result));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
   std::u16string virtual_card_label =
       u"Virtual card " +
       masked_card.ObfuscatedNumberWithVisibleLastFourDigits();
-  EXPECT_EQ(result, controller()->GetSheetData());
   // Verify that a virtual card is inserted before the actual masked card.
   EXPECT_EQ(
-      result,
+      controller()->GetSheetData(),
       PaymentMethodAccessorySheetDataBuilder()
           .AddUserInfo(kMasterCard)
           .AppendField(virtual_card_label, /*text_to_fill*/ std::u16string(),
@@ -453,22 +434,20 @@ TEST_F(PaymentMethodAccessoryControllerTest,
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   data_manager_.payments_data_manager().AddCreditCard(masked_card);
 
-  AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                            std::u16string());
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
-      .WillOnce(SaveArg<0>(&result));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(result, controller()->GetSheetData());
-
+  std::optional<AccessorySheetData> result = controller()->GetSheetData();
+  EXPECT_TRUE(result.has_value());
   // Verify both the virtual card and the masked server card are in the
   // suggestions.
-  EXPECT_EQ(result.user_info_list().size(), 2u);
+  EXPECT_EQ(result->user_info_list().size(), 2u);
   // Verify card art is not shown for the virtual card.
-  EXPECT_EQ(result.user_info_list()[0].icon_url(), GURL());
+  EXPECT_EQ(result->user_info_list()[0].icon_url(), GURL());
   // Verify card art is not shown for the masked server card.
-  EXPECT_EQ(result.user_info_list()[1].icon_url(), GURL());
+  EXPECT_EQ(result->user_info_list()[1].icon_url(), GURL());
 }
 
 TEST_F(
@@ -485,22 +464,21 @@ TEST_F(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   data_manager_.payments_data_manager().AddCreditCard(masked_card);
 
-  AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                            std::u16string());
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
-      .WillOnce(SaveArg<0>(&result));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(result, controller()->GetSheetData());
-
+  std::optional<AccessorySheetData> result = controller()->GetSheetData();
+  ASSERT_TRUE(result);
   // Verify both the virtual card and the masked server card are in the
   // suggestions.
-  EXPECT_EQ(result.user_info_list().size(), 2u);
+  EXPECT_EQ(result->user_info_list().size(), 2u);
   // Verify the the Capital One virtual card icon is shown for the virtual card.
-  EXPECT_EQ(result.user_info_list()[0].icon_url(), GURL(kCapitalOneCardArtUrl));
+  EXPECT_EQ(result->user_info_list()[0].icon_url(),
+            GURL(kCapitalOneCardArtUrl));
   // Verify card art is not shown for the masked server card.
-  EXPECT_EQ(result.user_info_list()[1].icon_url(), GURL());
+  EXPECT_EQ(result->user_info_list()[1].icon_url(), GURL());
 }
 
 // Tests that promo codes are shown.
@@ -528,14 +506,13 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
 
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
-      .WillOnce(SaveArg<0>(&result));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(result, controller()->GetSheetData());
   // Only valid promo code should appear in the AccessorySheet.
-  EXPECT_EQ(result,
+  EXPECT_EQ(controller()->GetSheetData(),
             PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
                 .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
@@ -566,17 +543,13 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   std::string guid =
       data_manager_.test_payments_data_manager().AddAsLocalIban(iban);
 
-  AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                            std::u16string());
-
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
-      .WillOnce(SaveArg<0>(&result));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(result, controller()->GetSheetData());
   // IBANs should appear in the AccessorySheet.
-  EXPECT_EQ(result,
+  EXPECT_EQ(controller()->GetSheetData(),
             PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
                 .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
@@ -595,8 +568,6 @@ TEST_F(PaymentMethodAccessoryControllerTest,
 }
 
 TEST_F(PaymentMethodAccessoryControllerTest, FetchLocalIban) {
-  controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
-
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
   std::string guid =
@@ -627,8 +598,6 @@ TEST_F(PaymentMethodAccessoryControllerTest, FetchLocalIban) {
 }
 
 TEST_F(PaymentMethodAccessoryControllerTest, FetchServerIban) {
-  controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
-
   Iban iban = test::GetServerIban();
   data_manager_.test_payments_data_manager().AddServerIban(iban);
   EXPECT_CALL(filling_source_observer_,

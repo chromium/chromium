@@ -473,7 +473,7 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
     sheet_provides_value = true;
   }
 
-  DCHECK(source_observer_);
+  CHECK(source_observer_);
   // The all passwords sheet could cover this but if it's still loading, use
   // this data as the next closest proxy to minimize delayed updates UI.
   sheet_provides_value |=

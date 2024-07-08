@@ -160,20 +160,12 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
             Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
     personal_data_manager_->AddObserver(this);
   }
-  if (source_observer_) {
-    source_observer_.Run(
-        this,
-        IsFillingSourceAvailable(personal_data_manager_ &&
+  CHECK(source_observer_);
+  source_observer_.Run(this, IsFillingSourceAvailable(
+                                 personal_data_manager_ &&
                                  !personal_data_manager_->address_data_manager()
                                       .GetProfilesToSuggest()
                                       .empty()));
-  } else {
-    // TODO(crbug.com/40165275): Remove once filling controller pulls this
-    // information instead of waiting to get it pushed.
-    std::optional<AccessorySheetData> data = GetSheetData();
-    DCHECK(data.has_value());
-    GetManualFillingController()->RefreshSuggestions(std::move(data).value());
-  }
 }
 
 base::WeakPtr<AddressAccessoryController>

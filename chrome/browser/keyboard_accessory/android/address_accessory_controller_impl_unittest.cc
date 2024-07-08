@@ -78,6 +78,7 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
     AddressAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_manual_filling_controller_.AsWeakPtr());
+    controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
   }
 
   void TearDown() override {
@@ -100,6 +101,15 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
       filling_source_observer_;
 };
 
+TEST_F(AddressAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(false)));
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(controller()->GetSheetData(),
+            AddressAccessorySheetDataBuilder(addresses_empty_str()).Build());
+}
+
 TEST_F(AddressAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
   AddressAccessoryControllerImpl* initial_controller =
       AddressAccessoryControllerImpl::FromWebContents(web_contents());
@@ -112,7 +122,6 @@ TEST_F(AddressAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
 TEST_F(AddressAccessoryControllerTest, ProvidesNoSheetBeforeInitialRefresh) {
   AutofillProfile canadian = test::GetFullValidProfileForCanada();
   personal_data_manager()->address_data_manager().AddProfile(canadian);
-  controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
 
   EXPECT_FALSE(controller()->GetSheetData().has_value());
 
@@ -127,15 +136,12 @@ TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
   AutofillProfile canadian = test::GetFullValidProfileForCanada();
   personal_data_manager()->address_data_manager().AddProfile(canadian);
 
-  AccessorySheetData result(AccessoryTabType::PASSWORDS, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions(_))
-      .WillOnce(SaveArg<0>(&result));
-
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(result, controller()->GetSheetData());
   EXPECT_EQ(
-      result,
+      controller()->GetSheetData(),
       AddressAccessorySheetDataBuilder(std::u16string())
           .AddUserInfo()
           .AppendSimpleField(canadian.GetRawInfo(FieldType::NAME_FULL))
@@ -153,35 +159,21 @@ TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
           .Build());
 }
 
-TEST_F(AddressAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
-  AccessorySheetData result(AccessoryTabType::PASSWORDS, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions(_))
-      .WillOnce(SaveArg<0>(&result));
-
-  controller()->RefreshSuggestions();
-
-  EXPECT_EQ(result, controller()->GetSheetData());
-  EXPECT_EQ(result,
-            AddressAccessorySheetDataBuilder(addresses_empty_str()).Build());
-}
-
 TEST_F(AddressAccessoryControllerTest, TriggersRefreshWhenDataChanges) {
-  AccessorySheetData result(AccessoryTabType::PASSWORDS, std::u16string());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions(_))
-      .WillRepeatedly(SaveArg<0>(&result));
-
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(false)));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   // A refresh without data stores an empty sheet and registers an observer.
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(result, controller()->GetSheetData());
-  EXPECT_EQ(result,
+  EXPECT_EQ(controller()->GetSheetData(),
             AddressAccessorySheetDataBuilder(addresses_empty_str()).Build());
 
   // When new data is added, a refresh is automatically triggered.
   AutofillProfile email = test::GetIncompleteProfile2();
   personal_data_manager()->address_data_manager().AddProfile(email);
-  EXPECT_EQ(result, controller()->GetSheetData());
-  EXPECT_EQ(result,
+  EXPECT_EQ(controller()->GetSheetData(),
             AddressAccessorySheetDataBuilder(std::u16string())
                 .AddUserInfo()
                 /*name full:*/

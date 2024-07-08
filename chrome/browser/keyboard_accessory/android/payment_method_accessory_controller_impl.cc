@@ -296,18 +296,11 @@ PaymentMethodAccessoryController* PaymentMethodAccessoryController::GetIfExistin
 void PaymentMethodAccessoryControllerImpl::RefreshSuggestions() {
   TRACE_EVENT0("passwords",
                "PaymentMethodAccessoryControllerImpl::RefreshSuggestions");
-  if (source_observer_) {
-    source_observer_.Run(
-        this, IsFillingSourceAvailable(!GetAllCreditCards().empty() ||
-                                       !GetPromoCodeOffers().empty() ||
-                                       !GetIbans().empty()));
-  } else {
-    // TODO(crbug.com/40165275): Remove once filling controller pulls this
-    // information instead of waiting to get it pushed.
-    std::optional<AccessorySheetData> data = GetSheetData();
-    DCHECK(data.has_value());
-    GetManualFillingController()->RefreshSuggestions(std::move(data.value()));
-  }
+  CHECK(source_observer_);
+  source_observer_.Run(this,
+                       IsFillingSourceAvailable(!GetAllCreditCards().empty() ||
+                                                !GetPromoCodeOffers().empty() ||
+                                                !GetIbans().empty()));
 }
 
 base::WeakPtr<PaymentMethodAccessoryController>

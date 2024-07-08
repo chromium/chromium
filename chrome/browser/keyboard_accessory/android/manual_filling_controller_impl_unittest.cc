@@ -144,13 +144,6 @@ TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
                                          /*has_suggestions=*/false);
 }
 
-TEST_F(ManualFillingControllerTest, ShowsFallbacksOutsideUsernameInV2) {
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
-
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
-  controller()->RefreshSuggestions(populate_sheet(AccessoryTabType::PASSWORDS));
-}
-
 TEST_F(ManualFillingControllerTest,
        ShowsAccessoryForPasswordsTriggeredByObserver) {
   // TODO(crbug.com/40165275): Because the data isn't cached, test that only one

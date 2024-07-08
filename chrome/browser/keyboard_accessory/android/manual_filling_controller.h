@@ -71,15 +71,6 @@ class ManualFillingController {
   // Methods called by type-specific controllers.
   // --------------------------------------------
 
-  // Depending on the type of the given |accessory_sheet_data|, this updates a
-  // accessory sheet. Controllers to handle touch events are determined by the
-  // type of the sheet.
-  // TODO(crbug.com/40165275): Deprecated by querying data on demand and use
-  // AccessoryController::RegisterFillingSourceObserver to get this signal
-  // timely.
-  virtual void RefreshSuggestions(
-      const autofill::AccessorySheetData& accessory_sheet_data) = 0;
-
   // Notifies that the focused field changed which allows the controller to
   // update the UI visibility.
   virtual void NotifyFocusedInputChanged(
