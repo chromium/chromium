@@ -94,7 +94,7 @@ class WebTestBuilders(builders.Builders):
                 'V8 Blink Linux Debug',
                 'V8 Blink Linux Future',
                 'V8 Blink Mac',
-                'V8 Blink Win'
+                'V8 Blink Win',
                 # These do use the Chromium recipe, but are in the "build"
                 # bucket instead of the "ci" bucket, which breaks some
                 # assumptions we have.
