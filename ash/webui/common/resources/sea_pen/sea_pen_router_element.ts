@@ -15,6 +15,7 @@ import './sea_pen_introduction_dialog_element.js';
 import './sea_pen_toast_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QUERY, Query} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
@@ -22,6 +23,7 @@ import {cleanUpSeaPenQueryStates, closeSeaPenIntroductionDialog, getShouldShowSe
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logSeaPenVisited} from './sea_pen_metrics_logger.js';
+import {SeaPenObserver} from './sea_pen_observer.js';
 import {getTemplate} from './sea_pen_router_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SeaPenTemplateQueryElement} from './sea_pen_template_query_element.js';
@@ -89,6 +91,7 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     this.updateFromStore();
     this.fetchIntroductionDialogStatus();
     logSeaPenVisited();
+    afterNextRender(this, () => SeaPenObserver.initSeaPenObserverIfNeeded());
   }
 
   override disconnectedCallback() {

@@ -5,13 +5,17 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
+#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
@@ -83,6 +87,48 @@ void PersonalizationAppSeaPenProviderImpl::BindInterface(
   CHECK(::ash::features::IsSeaPenEnabled());
   CHECK(manta::features::IsMantaServiceEnabled());
   PersonalizationAppSeaPenProviderBase::BindInterface(std::move(receiver));
+}
+
+void PersonalizationAppSeaPenProviderImpl::OnWallpaperChanged() {
+  const auto* wallpaper_controller = WallpaperController::Get();
+  CHECK(wallpaper_controller);
+
+  const AccountId account_id = GetAccountId(profile_);
+
+  // Can occur during multi user session if both users open
+  // chrome://personalization and change wallpaper.
+  if (wallpaper_controller->CurrentAccountId() != account_id) {
+    DVLOG(1) << "Skip updating SeaPen wallpaper for non matching AccountId";
+    return;
+  }
+
+  std::optional<ash::WallpaperInfo> info =
+      WallpaperController::Get()->GetWallpaperInfoForAccountId(account_id);
+
+  if (!info) {
+    LOG(WARNING)
+        << "No wallpaper info for active user. This should only happen in "
+           "tests.";
+    sea_pen_observer_remote_->OnSelectedSeaPenImageChanged(std::nullopt);
+    return;
+  }
+
+  if (info->type != WallpaperType::kSeaPen) {
+    sea_pen_observer_remote_->OnSelectedSeaPenImageChanged(std::nullopt);
+    return;
+  }
+
+  const base::FilePath path(info->location);
+  const std::optional<uint32_t> id = GetIdFromFileName(path);
+  sea_pen_observer_remote_->OnSelectedSeaPenImageChanged(id);
+}
+
+void PersonalizationAppSeaPenProviderImpl::SetSeaPenObserverInternal() {
+  if (!wallpaper_controller_observer_.IsObserving()) {
+    wallpaper_controller_observer_.Observe(WallpaperController::Get());
+  }
+  // Call it once to send the first wallpaper.
+  OnWallpaperChanged();
 }
 
 void PersonalizationAppSeaPenProviderImpl::SelectRecentSeaPenImageInternal(

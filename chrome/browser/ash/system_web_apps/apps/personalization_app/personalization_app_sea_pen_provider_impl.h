@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -19,7 +21,8 @@ namespace ash::personalization_app {
 // Sends/receives images via WallpaperController to set as ChromeOS system
 // wallpaper.
 class PersonalizationAppSeaPenProviderImpl
-    : public PersonalizationAppSeaPenProviderBase {
+    : public PersonalizationAppSeaPenProviderBase,
+      public WallpaperControllerObserver {
  public:
   explicit PersonalizationAppSeaPenProviderImpl(
       content::WebUI* web_ui,
@@ -43,8 +46,13 @@ class PersonalizationAppSeaPenProviderImpl
       uint32_t id,
       DeleteRecentSeaPenImageCallback callback) override;
 
+  // WallpaperControllerObserver:
+  void OnWallpaperChanged() override;
+
  private:
   // ::ash::personalization_app::PersonalizationAppSeaPenProviderBase:
+  void SetSeaPenObserverInternal() override;
+
   void SelectRecentSeaPenImageInternal(
       uint32_t id,
       SelectRecentSeaPenImageCallback callback) override;
@@ -65,6 +73,9 @@ class PersonalizationAppSeaPenProviderImpl
       const SeaPenImage& sea_pen_image,
       const mojom::SeaPenQueryPtr& query,
       base::OnceCallback<void(bool success)> callback) override;
+
+  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+      wallpaper_controller_observer_{this};
 
   base::WeakPtrFactory<PersonalizationAppSeaPenProviderImpl> weak_ptr_factory_{
       this};

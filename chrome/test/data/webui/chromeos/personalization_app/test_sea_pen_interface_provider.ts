@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
-import {MantaStatusCode, RecentSeaPenImageInfo, RecentSeaPenThumbnailData, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode, RecentSeaPenImageInfo, RecentSeaPenThumbnailData, SeaPenFeedbackMetadata, SeaPenObserverInterface, SeaPenObserverRemote, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {isSeaPenImageId} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
@@ -12,6 +12,8 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestSeaPenProvider extends TestBrowserProxy implements
     SeaPenProviderInterface {
+  seaPenObserverRemote: SeaPenObserverInterface|null = null;
+
   thumbnails: SeaPenThumbnail[] = [
     {
       id: 1,
@@ -96,6 +98,7 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'setSeaPenObserver',
       'getSeaPenThumbnails',
       'selectSeaPenThumbnail',
       'selectRecentSeaPenImage',
@@ -105,6 +108,11 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       'shouldShowSeaPenIntroductionDialog',
       'handleSeaPenIntroductionDialogClosed',
     ]);
+  }
+
+  setSeaPenObserver(observer: SeaPenObserverRemote) {
+    this.methodCalled('setSeaPenObserver', observer);
+    this.seaPenObserverRemote = observer;
   }
 
   getSeaPenThumbnails(query: SeaPenQuery) {

@@ -123,6 +123,8 @@ static_library("test_support") {
     "personalization_app_mocha_test_base.h",
     "test_personalization_app_webui_provider.cc",
     "test_personalization_app_webui_provider.h",
+    "test_sea_pen_observer.cc",
+    "test_sea_pen_observer.h",
   ]
 
   public_deps = [
@@ -216,6 +218,7 @@ source_set("unit_tests") {
 
   deps = [
     ":personalization_app",
+    ":test_support",
     "//ash",
     "//ash:test_support",
     "//ash/constants",

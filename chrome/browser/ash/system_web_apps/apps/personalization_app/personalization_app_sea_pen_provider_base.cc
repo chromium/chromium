@@ -33,6 +33,7 @@
 #include "components/manta/features.h"
 #include "components/manta/manta_status.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -72,6 +73,14 @@ bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
 
 bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPenTextInput() {
   return ::ash::personalization_app::IsEligibleForSeaPenTextInput(profile_);
+}
+
+void PersonalizationAppSeaPenProviderBase::SetSeaPenObserver(
+    mojo::PendingRemote<mojom::SeaPenObserver> observer) {
+  // May already be bound if user refreshes page.
+  sea_pen_observer_remote_.reset();
+  sea_pen_observer_remote_.Bind(std::move(observer));
+  SetSeaPenObserverInternal();
 }
 
 void PersonalizationAppSeaPenProviderBase::GetSeaPenThumbnails(

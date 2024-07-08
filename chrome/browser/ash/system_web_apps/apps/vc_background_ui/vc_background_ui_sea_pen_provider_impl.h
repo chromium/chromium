@@ -9,7 +9,10 @@
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+#include "media/capture/video/chromeos/mojom/effects_pipeline.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash::vc_background_ui {
@@ -17,7 +20,8 @@ namespace ash::vc_background_ui {
 // Implementation of a SeaPenProvider for VC Background WebUI. Sends/receives
 // images via CameraEffectsController to set video chat background.
 class VcBackgroundUISeaPenProviderImpl
-    : public personalization_app::PersonalizationAppSeaPenProviderBase {
+    : public personalization_app::PersonalizationAppSeaPenProviderBase,
+      public media::CameraEffectObserver {
  public:
   explicit VcBackgroundUISeaPenProviderImpl(
       content::WebUI* web_ui,
@@ -41,8 +45,14 @@ class VcBackgroundUISeaPenProviderImpl
       uint32_t id,
       DeleteRecentSeaPenImageCallback callback) override;
 
+  // media::CameraEffectsObserver:
+  void OnCameraEffectChanged(
+      const cros::mojom::EffectsConfigPtr& new_effects) override;
+
  private:
   // ::ash::personalization_app::PersonalizationAppSeaPenProviderBase:
+  void SetSeaPenObserverInternal() override;
+
   void SelectRecentSeaPenImageInternal(
       uint32_t id,
       SelectRecentSeaPenImageCallback callback) override;
@@ -63,6 +73,10 @@ class VcBackgroundUISeaPenProviderImpl
       const SeaPenImage& sea_pen_image,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       base::OnceCallback<void(bool success)> callback) override;
+
+  base::ScopedObservation<media::CameraHalDispatcherImpl,
+                          media::CameraEffectObserver>
+      scoped_camera_effect_observation_{this};
 };
 
 }  // namespace ash::vc_background_ui

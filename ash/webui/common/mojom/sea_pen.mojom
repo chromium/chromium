@@ -110,11 +110,23 @@ enum MantaStatusCode {
   kMax = kPerUserQuotaExceeded,
 };
 
+// An interface to provide SeaPen updates to the renderer process, e.g. when the
+// browser process has changed wallpaper.
+interface SeaPenObserver {
+  // Called to update the renderer process when the active SeaPen image has
+  // changed. Called with null when SeaPen image is unset/removed, e.g. a
+  // different type of wallpaper has been set.
+  OnSelectedSeaPenImageChanged(uint32? id);
+};
+
 // Provides APIs to get thumbnails and full size images. Uses APIs in
 // `manta.proto` to send requests to a google owned server.
 // Implemented in the browser process, and called by the ChromeOS
 // Personalization App (chrome://personalization) in a renderer process.
 interface SeaPenProvider {
+
+    // Binds a listener to start receiving updates on SeaPen status changes.
+    SetSeaPenObserver(pending_remote<SeaPenObserver> observer);
 
     // Given a user text input, return a set of matching thumbnails.
     // `thumbnails` will be null in case of an unrecoverable error, such as

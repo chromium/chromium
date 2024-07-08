@@ -13,8 +13,7 @@ import {withMinimumDelay} from './transition.js';
 export async function selectRecentSeaPenImage(
     id: SeaPenImageId, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
-  const originalCurrentSelected = store.data.currentSelected;
-  if (id === originalCurrentSelected) {
+  if (id === store.data.currentSelected) {
     // Return if the just selected image is already the current image.
     return;
   }
@@ -32,10 +31,10 @@ export async function selectRecentSeaPenImage(
   if (!success) {
     console.warn('Error setting image');
   }
-  if (store.data.loading.setImage === 0) {
-    // Mark the image as applied or revert back to the old one.
+  if (!success) {
+    // Revert back to the old one.
     store.dispatch(seaPenAction.setSelectedRecentSeaPenImageAction(
-        success ? id : originalCurrentSelected));
+        store.data.currentSelected));
   }
   store.endBatchUpdate();
 
@@ -78,8 +77,6 @@ export async function getSeaPenThumbnails(
 export async function selectSeaPenThumbnail(
     thumbnail: SeaPenThumbnail, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
-  const originalCurrentSelected = store.data.currentSelected;
-
   let promise: ReturnType<SeaPenProviderInterface['selectSeaPenThumbnail']>;
   if (isPersonalizationApp()) {
     promise = withMinimumDelay(provider.selectSeaPenThumbnail(thumbnail.id));
@@ -98,12 +95,10 @@ export async function selectSeaPenThumbnail(
   store.dispatch(
       seaPenAction.endSelectSeaPenThumbnailAction(thumbnail, success));
 
-  if (store.data.loading.setImage === 0) {
-    // If the user has not already clicked on another thumbnail, treat this
-    // thumbnail as set.
-    // TODO(b/321252838) improve this with an async observer for VC Background.
+  if (!success) {
+    // Revert back to the original one.
     store.dispatch(seaPenAction.setSelectedRecentSeaPenImageAction(
-        success ? thumbnail.id : originalCurrentSelected));
+        store.data.currentSelected));
   }
   store.endBatchUpdate();
   // Re-fetches the recent SeaPen image if setting SeaPen thumbnail

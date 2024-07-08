@@ -16,6 +16,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/test_sea_pen_observer.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
+#include "media/capture/video/chromeos/mojom/effects_pipeline.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -106,9 +109,15 @@ class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
     }
   }
 
+  void SetSeaPenObserver() {
+    sea_pen_provider_remote_->SetSeaPenObserver(
+        sea_pen_observer_.GetPendingRemote());
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::TestWebUI web_ui_;
+  personalization_app::TestSeaPenObserver sea_pen_observer_;
   mojo::Remote<ash::personalization_app::mojom::SeaPenProvider>
       sea_pen_provider_remote_;
   std::unique_ptr<VcBackgroundUISeaPenProviderImpl> sea_pen_provider_;
@@ -119,7 +128,7 @@ class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Get all background images.
   base::RunLoop run_loop;
-  sea_pen_provider_->GetRecentSeaPenImageIds(
+  sea_pen_provider_remote_->GetRecentSeaPenImageIds(
       base::BindLambdaForTesting([&](const std::vector<uint32_t>& ids) {
         EXPECT_EQ(existing_image_ids_, ids);
         run_loop.Quit();
@@ -128,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
 
   // Select an image as background.
   base::RunLoop run_loop2;
-  sea_pen_provider_->SelectRecentSeaPenImage(
+  sea_pen_provider_remote_->SelectRecentSeaPenImage(
       existing_image_ids_[0],
       base::BindLambdaForTesting([&](bool call_succeeded) {
         EXPECT_TRUE(call_succeeded);
@@ -138,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
 
   // Get the content of the image.
   base::RunLoop run_loop3;
-  sea_pen_provider_->GetRecentSeaPenImageThumbnail(
+  sea_pen_provider_remote_->GetRecentSeaPenImageThumbnail(
       existing_image_ids_[0],
       base::BindLambdaForTesting(
           [&](personalization_app::mojom::RecentSeaPenThumbnailDataPtr
@@ -151,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
 
   // Delete an existing image should return true.
   base::RunLoop run_loop4;
-  sea_pen_provider_->DeleteRecentSeaPenImage(
+  sea_pen_provider_remote_->DeleteRecentSeaPenImage(
       existing_image_ids_[1],
       base::BindLambdaForTesting([&](bool call_succeeded) {
         EXPECT_TRUE(call_succeeded);
@@ -163,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
 
   // Select an deleted image should return false.
   base::RunLoop run_loop5;
-  sea_pen_provider_->SelectRecentSeaPenImage(
+  sea_pen_provider_remote_->SelectRecentSeaPenImage(
       existing_image_ids_[1],
       base::BindLambdaForTesting([&](bool call_succeeded) {
         EXPECT_FALSE(call_succeeded);
@@ -173,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   run_loop5.Run();
   // Get content of an deleted image should return nullptr.
   base::RunLoop run_loop6;
-  sea_pen_provider_->GetRecentSeaPenImageThumbnail(
+  sea_pen_provider_remote_->GetRecentSeaPenImageThumbnail(
       existing_image_ids_[1],
       base::BindLambdaForTesting(
           [&](personalization_app::mojom::RecentSeaPenThumbnailDataPtr
@@ -182,6 +191,43 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
             run_loop6.Quit();
           }));
   run_loop6.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, ObserverTests) {
+  SetSeaPenObserver();
+  ASSERT_FALSE(sea_pen_observer_.GetCurrentId().has_value());
+  ASSERT_EQ(1u, sea_pen_observer_.id_updated_count());
+
+  {
+    // Initialize the valid image ids.
+    base::test::TestFuture<const std::vector<uint32_t>&>
+        sea_pen_recent_image_ids_future;
+    sea_pen_provider_remote_->GetRecentSeaPenImageIds(
+        sea_pen_recent_image_ids_future.GetCallback());
+    ASSERT_EQ(existing_image_ids_, sea_pen_recent_image_ids_future.Get());
+  }
+
+  {
+    base::test::TestFuture<std::optional<uint32_t>> sea_pen_observer_callback;
+    sea_pen_observer_.SetCallback(sea_pen_observer_callback.GetCallback());
+
+    base::test::TestFuture<bool> sea_pen_select_future;
+    sea_pen_provider_->SelectRecentSeaPenImage(
+        existing_image_ids_[1], sea_pen_select_future.GetCallback());
+    ASSERT_TRUE(sea_pen_select_future.Get());
+
+    // Simulate the camera system updating the effect.
+    auto effects_config = cros::mojom::EffectsConfig::New();
+    effects_config->effect = cros::mojom::CameraEffect::kBackgroundReplace;
+    effects_config->replace_enabled = true;
+    effects_config->background_filepath =
+        base::FilePath(base::NumberToString(existing_image_ids_[1]))
+            .AddExtension(".jpg");
+    sea_pen_provider_->OnCameraEffectChanged(effects_config);
+
+    EXPECT_EQ(existing_image_ids_[1], sea_pen_observer_callback.Get().value());
+    EXPECT_EQ(2u, sea_pen_observer_.id_updated_count());
+  }
 }
 
 }  // namespace

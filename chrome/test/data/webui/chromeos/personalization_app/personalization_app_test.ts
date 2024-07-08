@@ -881,6 +881,50 @@ suite('sea pen', () => {
     }
   });
 
+  test('observer sets new image id', async () => {
+    const seaPenRouter = await getSeaPenRouter();
+    const seaPenTemplateQuery = await getSeaPenTemplateQuery(6);
+    {
+      // Creates images.
+      assertTrue(!!seaPenTemplateQuery, 'Characters template should show up');
+      seaPenTemplateQuery.shadowRoot?.getElementById('inspire')!.click();
+    }
+
+    const seaPenImages = await waitUntil(
+        () => seaPenRouter.shadowRoot?.querySelector<SeaPenImagesElement>(
+            'sea-pen-images'),
+        'waiting for sea-pen-images');
+
+    {
+      // Selects an image.
+      const thumbnailsToClick = await waitUntil(
+          () => Array.from(seaPenImages!.shadowRoot!.querySelectorAll<
+                           WallpaperGridItemElement>(
+              `wallpaper-grid-item[aria-disabled='false'][data-sea-pen-image]`)),
+          'waiting for thumbnails load');
+      assertTrue(!!thumbnailsToClick, 'thumbnails should show up');
+
+      thumbnailsToClick[0]!.click();
+      assertTrue(
+          thumbnailsToClick[0]?.getAttribute('aria-selected') === 'true',
+          'thumbnail should be selected');
+    }
+
+    {
+      // Wait for the observer to update the app.
+      const store = seaPenImages.getStore();
+      assertTrue(store.data.loading.currentSelected);
+      assertEquals(null, store.data.currentSelected);
+
+      const newCurrentSelected = await waitUntil(
+          () => store.data.currentSelected,
+          'failed waiting for SeaPen currentSelected');
+      assertEquals(
+          1, newCurrentSelected,
+          'current selected set to clicked thumbnail id');
+    }
+  });
+
   test('create more template generated recent image', async () => {
     loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
     const seaPenRouter = await getSeaPenRouter();

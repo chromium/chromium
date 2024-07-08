@@ -17,7 +17,9 @@
 #include "base/values.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace content {
@@ -60,6 +62,9 @@ class PersonalizationAppSeaPenProviderBase
   bool IsEligibleForSeaPenTextInput() override;
 
   // ::ash::personalization_app::mojom::SeaPenProvider:
+  void SetSeaPenObserver(
+      mojo::PendingRemote<mojom::SeaPenObserver> observer) override;
+
   void GetSeaPenThumbnails(mojom::SeaPenQueryPtr query,
                            GetSeaPenThumbnailsCallback callback) override;
 
@@ -87,6 +92,8 @@ class PersonalizationAppSeaPenProviderBase
   wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 
  protected:
+  virtual void SetSeaPenObserverInternal() = 0;
+
   virtual void SelectRecentSeaPenImageInternal(
       uint32_t id,
       SelectRecentSeaPenImageCallback callback) = 0;
@@ -109,6 +116,9 @@ class PersonalizationAppSeaPenProviderBase
       base::OnceCallback<void(bool success)> callback) = 0;
 
   manta::proto::FeatureName feature_name_;
+
+  // Provides updates to WebUI about SeaPen changes in browser process.
+  mojo::Remote<mojom::SeaPenObserver> sea_pen_observer_remote_;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
