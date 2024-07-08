@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
@@ -346,6 +347,9 @@ void IsolatedSVGDocumentHostInitializer::MaybePrepareIsolatedSVGDocumentHost() {
 
 std::pair<SVGImageChromeClient*, IsolatedSVGDocumentHost*>
 IsolatedSVGDocumentHostInitializer::Create() {
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(
+      "Blink.SVGImage.IsolatedSVGDocumentHostCreationTime");
+
   // SVG will be shared via MemoryCache (which is renderer process
   // global cache) across multiple AgentSchedulingGroups. That's
   // why we can't use an existing AgentSchedulingGroup for now. If

@@ -4389,6 +4389,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.SVGImage.IsolatedSVGDocumentHostCreationTime"
+    units="microseconds" expires_after="2024-12-05">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The amount of time to run IsolatedSVGDocumentHostInitializer::Create() that
+    creates IsolatedSVGDocumentHost, AgentGroupScheduler, and
+    SVGImageChromeClient. Recorded each time
+    IsolatedSVGDocumentHostInitializer::Create() runs.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.UpdateViewportIntersection.UpdateTime"
     units="microseconds" expires_after="2024-12-08">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
