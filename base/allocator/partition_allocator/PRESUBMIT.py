@@ -13,6 +13,16 @@ PRESUBMIT_VERSION = '2.0.0'
 # chromium repository. PRESUBMIT.py is executed from chromium.
 _PARTITION_ALLOC_BASE_PATH = 'base/allocator/partition_allocator/src/'
 
+
+# Filter for C/C++ files.
+def c_cpp_files(file):
+    return file.LocalPath().endswith(('.h', '.hpp', '.c', '.cc', '.cpp'))
+
+# Filter for GN files.
+def gn_files(file):
+    return file.LocalPath().endswith(('.gn', '.gni'))
+
+
 # This is adapted from Chromium's PRESUBMIT.py. The differences are:
 # - Base path: It is relative to the partition_alloc's source directory instead
 #              of chromium.
@@ -99,22 +109,18 @@ def CheckForIncludeGuards(input_api, output_api):
 # overrides the default build settings and forward the dependencies to
 # partition_alloc.
 def CheckNoExternalImportInGn(input_api, output_api):
-    def gn_files(file):
-        return file.LocalPath().endswith('.gn') or \
-               file.LocalPath().endswith('.gni')
-
     # Match and capture <path> from import("<path>").
     import_re = input_api.re.compile(r'^ *import\("([^"]+)"\)')
 
     errors = []
     for f in input_api.AffectedSourceFiles(gn_files):
-        for line_number, line in enumerate(input_api.ReadFile(f).splitlines()):
+        for line_number, line in f.ChangedContents():
             match = import_re.search(line)
             if not match:
                 continue
             import_path = match.group(1)
             if import_path.startswith('//build_overrides/'):
-                continue;
+                continue
             if not import_path.startswith('//'):
                 continue;
             # Allow //testing, but only within `build_with_chromium`.
@@ -124,3 +130,86 @@ def CheckNoExternalImportInGn(input_api, output_api):
                 '%s:%d\nPartitionAlloc disallow external import: %s' %
                 (f.LocalPath(), line_number + 1, import_path)))
     return errors;
+
+# partition_alloc still supports C++17, because Skia still uses C++17.
+def CheckCpp17CompatibleHeaders(input_api, output_api):
+    CPP_20_HEADERS = [
+        "barrier",
+        "bit",
+        "compare",
+        "format",
+        "numbers",
+        "ranges",
+        "semaphore",
+        "source_location",
+        "span",
+        "stop_token",
+        "syncstream",
+        "version",
+    ]
+
+    CPP_23_HEADERS = [
+        "expected",
+        "flat_map",
+        "flat_set",
+        "generator",
+        "mdspan",
+        "print",
+        "spanstream",
+        "stacktrace",
+        "stdatomic.h",
+        "stdfloat",
+    ]
+
+    errors = []
+    for f in input_api.AffectedSourceFiles(c_cpp_files):
+        # for line_number, line in f.ChangedContents():
+        for line_number, line in enumerate(f.NewContents()):
+            for header in CPP_20_HEADERS:
+                if not "#include <%s>" % header in line:
+                    continue
+                errors.append(
+                    output_api.PresubmitError(
+                        '%s:%d\nPartitionAlloc disallows C++20 headers: <%s>'
+                        % (f.LocalPath(), line_number + 1, header)))
+            for header in CPP_23_HEADERS:
+                if not "#include <%s>" % header in line:
+                    continue
+                errors.append(
+                    output_api.PresubmitError(
+                        '%s:%d\nPartitionAlloc disallows C++23 headers: <%s>'
+                        % (f.LocalPath(), line_number + 1, header)))
+    return errors
+
+def CheckCpp17CompatibleKeywords(input_api, output_api):
+    CPP_20_KEYWORDS = [
+        "concept",
+        "consteval",
+        "constinit",
+        "co_await",
+        "co_return",
+        "co_yield",
+        "requires",
+    ]
+    # Note: C++23 doesn't introduce new keywords.
+
+    errors = []
+    for f in input_api.AffectedSourceFiles(c_cpp_files):
+        for line_number, line in f.ChangedContents():
+            for keyword in CPP_20_KEYWORDS:
+                if not keyword in line:
+                    continue
+                # Skip if part of a comment
+                if '//' in line and line.index('//') < line.index(keyword):
+                    continue
+
+                # Make sure there are word separators around the keyword:
+                regex = r'\b%s\b' % keyword
+                if not input_api.re.search(regex, line):
+                    continue
+
+                errors.append(
+                    output_api.PresubmitError(
+                        '%s:%d\nPartitionAlloc disallows C++20 keywords: %s'
+                        % (f.LocalPath(), line_number + 1, keyword)))
+    return errors
