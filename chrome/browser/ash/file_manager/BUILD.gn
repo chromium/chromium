@@ -141,8 +141,10 @@ static_library("file_manager") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/file_manager/virtual_tasks",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/core",
@@ -194,6 +196,8 @@ static_library("file_manager") {
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/smb_client",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/fileapi",
   ]
 }
 

@@ -64,7 +64,7 @@ static_library("fileapi") {
     "//ash/components/arc",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/dbus/virtual_file_provider",
@@ -77,7 +77,7 @@ static_library("fileapi") {
     "//url",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/file_manager" ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/fileapi" ]
 }
 
 source_set("unit_tests") {

@@ -6,19 +6,19 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-static_library("fileapi") {
+static_library("test_support") {
+  testonly = true
+
   sources = [
-    "smbfs_async_file_util.cc",
-    "smbfs_async_file_util.h",
-    "smbfs_file_system_backend_delegate.cc",
-    "smbfs_file_system_backend_delegate.h",
+    "fake_recent_source.cc",
+    "recent_file_matcher.h",
   ]
+
+  public_deps = [ "//testing/gtest" ]
 
   deps = [
     "//base",
     "//chrome/browser/ash/fileapi",
-    "//chrome/browser/ash/smb_client",
-    "//content/public/browser",
-    "//storage/browser",
+    "//net",
   ]
 }

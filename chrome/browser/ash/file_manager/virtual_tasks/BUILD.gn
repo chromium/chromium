@@ -20,6 +20,7 @@ static_library("virtual_tasks") {
   deps = [
     "//ash/webui/file_manager:constants",
     "//base",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//content/public/browser",
