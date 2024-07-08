@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/data_batch.h"
@@ -31,19 +32,6 @@ using SettingSpecifics = sync_pb::PlusAddressSettingSpecifics;
 using ::testing::_;
 using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
-
-// Matchers for `SettingSpecifics` args with given name and values.
-MATCHER_P2(HasBoolSetting, name, value, "") {
-  return arg.name() == name && arg.has_bool_value() &&
-         arg.bool_value() == value;
-}
-MATCHER_P2(HasStringSetting, name, value, "") {
-  return arg.name() == name && arg.has_string_value() &&
-         arg.string_value() == value;
-}
-MATCHER_P2(HasIntSetting, name, value, "") {
-  return arg.name() == name && arg.has_int_value() && arg.int_value() == value;
-}
 
 syncer::EntityData EntityFromSpecifics(const SettingSpecifics& specifics) {
   syncer::EntityData entity;

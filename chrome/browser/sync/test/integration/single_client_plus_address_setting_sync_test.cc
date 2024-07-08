@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -11,6 +10,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
@@ -28,7 +28,9 @@ namespace {
 constexpr char kIsEnabledSettingName[] = "plus_address.is_enabled";
 
 using plus_addresses::CreateSettingSpecifics;
+using plus_addresses::HasBoolSetting;
 using plus_addresses::PlusAddressSettingService;
+using testing::Property;
 
 // Waits until `PlusAddressSettingService::GetIsPlusAddressesEnabled()` has the
 // `expected_state`.
@@ -55,24 +57,31 @@ class PlusAddressEnabledChecker : public SingleClientStatusChangeChecker {
   const bool expected_state_;
 };
 
-// Waits until the fake server's PlusAddressSettingSpecifics contain specifics
-// with a given name.
+// Waits until the fake server's PlusAddressSettingSpecifics contain matching
+// specifics.
 class FakeServerSpecificsChecker
     : public fake_server::FakeServerMatchStatusChecker {
  public:
-  explicit FakeServerSpecificsChecker(const std::string& name) : name_(name) {}
+  explicit FakeServerSpecificsChecker(
+      const testing::Matcher<sync_pb::PlusAddressSettingSpecifics> matcher)
+      : matcher_(matcher) {}
 
   // SingleClientStatusChangeChecker:
-  bool IsExitConditionSatisfied(std::ostream*) override {
-    return base::ranges::any_of(
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    testing::StringMatchResultListener listener;
+    bool matches = testing::ExplainMatchResult(
+        testing::Contains(
+            Property(&sync_pb::SyncEntity::specifics,
+                     Property(&sync_pb::EntitySpecifics::plus_address_setting,
+                              matcher_))),
         fake_server()->GetSyncEntitiesByModelType(syncer::PLUS_ADDRESS_SETTING),
-        [&](const sync_pb::SyncEntity& entity) {
-          return name_ == entity.specifics().plus_address_setting().name();
-        });
+        &listener);
+    *os << listener.str();
+    return matches;
   }
 
  private:
-  const std::string name_;
+  const testing::Matcher<sync_pb::PlusAddressSettingSpecifics> matcher_;
 };
 
 // PLUS_ADDRESS_SETTING is supposed to behave the same in and outside of
@@ -196,8 +205,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
   ASSERT_FALSE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
   GetPlusAddressSettingService()->SetHasAcceptedNotice();
   EXPECT_TRUE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
-  EXPECT_TRUE(
-      FakeServerSpecificsChecker("plus_address.has_accepted_notice").Wait());
+  EXPECT_TRUE(FakeServerSpecificsChecker(
+                  HasBoolSetting("plus_address.has_accepted_notice", true))
+                  .Wait());
 }
 
 // ChromeOS does not support signing out of the primary account.

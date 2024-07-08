@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
+#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
@@ -21,12 +22,6 @@ namespace plus_addresses {
 namespace {
 
 using ::testing::Return;
-
-// Since protos lack an equality operator, this matcher tests whether given
-// `PlusAddressSettingSpecifics` match the arg.
-MATCHER_P(EqualsSetting, setting, "") {
-  return arg.SerializeAsString() == setting.SerializeAsString();
-}
 
 class TestPlusAddressSettingSyncBridge : public PlusAddressSettingSyncBridge {
  public:
@@ -78,8 +73,8 @@ TEST_F(PlusAddressSettingServiceImplTest, GetValue) {
 }
 
 TEST_F(PlusAddressSettingServiceImplTest, SetValue) {
-  EXPECT_CALL(bridge(), WriteSetting(EqualsSetting(CreateSettingSpecifics(
-                            "plus_address.has_accepted_notice", true))));
+  EXPECT_CALL(bridge(), WriteSetting(HasBoolSetting(
+                            "plus_address.has_accepted_notice", true)));
   service().SetHasAcceptedNotice();
 }
 

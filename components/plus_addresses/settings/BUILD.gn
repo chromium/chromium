@@ -24,6 +24,7 @@ static_library("test_support") {
   sources = [
     "mock_plus_address_setting_service.cc",
     "mock_plus_address_setting_service.h",
+    "plus_address_setting_sync_test_util.h",
   ]
   public_deps = [
     "//base",
