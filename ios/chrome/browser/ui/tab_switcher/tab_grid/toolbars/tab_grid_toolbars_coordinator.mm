@@ -68,12 +68,11 @@
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  if (!tracker->ShouldTriggerHelpUI(
+  if (!tracker->WouldTriggerHelpUI(
           feature_engagement::kIPHiOSSavedTabGroupClosed)) {
     return;
   }
 
-  [self.topToolbar highlightLastPageControl];
   NSString* IPHTitle =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_SAVED_TAB_GROUPS);
   __weak __typeof(self) weakSelf = self;
@@ -96,6 +95,14 @@
   CGPoint anchorPoint = CGPointMake(CGRectGetMidX(lastSegmentFrame),
                                     CGRectGetMaxY(lastSegmentFrame));
 
+  if (![presenter canPresentInView:self.baseViewController.view
+                       anchorPoint:anchorPoint] ||
+      !tracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHiOSSavedTabGroupClosed)) {
+    return;
+  }
+
+  [self.topToolbar highlightLastPageControl];
   [presenter presentInViewController:self.baseViewController
                          anchorPoint:anchorPoint];
 }
