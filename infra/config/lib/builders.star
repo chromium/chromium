@@ -33,6 +33,7 @@ load("./gn_args.star", "register_gn_args")
 load("./bootstrap.star", "register_bootstrap")
 load("./builder_config.star", "register_builder_config")
 load("./builder_health_indicators.star", "register_health_spec")
+load("./nodes.star", "nodes")
 load("./recipe_experiments.star", "register_recipe_experiments_ref")
 load("./sheriff_rotations.star", "register_gardener_builder")
 load("./description_exceptions.star", "exempted_from_description_builders")
@@ -383,6 +384,12 @@ defaults = args.defaults(
     triggered_by = args.COMPUTE,
     contact_team_email = None,
 )
+
+# This node won't actually be accessed, but creating it for builders that have
+# builder_group set will enforce that there can't be builders with the same name
+# in different buckets that use the same builder group since lucicfg will check
+# that there aren't two graphs with the same ID
+_BUILDER_GROUP_ID_NODE = nodes.create_unscoped_node_type("builder-group-id")
 
 def builder(
         *,
@@ -951,6 +958,11 @@ def builder(
     # settings and the branch selector
     if builder == None:
         return None
+
+    # Define a node to ensure there's only one builder using the
+    # (builder_group, builder)
+    if builder_group != None:
+        _BUILDER_GROUP_ID_NODE.add("{}:{}".format(builder_group, name))
 
     register_gardener_builder(bucket, name, gardener_rotations)
 
