@@ -33,6 +33,18 @@ constexpr base::TimeDelta kDefaultEscRepeatWindow = base::Seconds(1);
 // trigger the exit instructions to be shown again.
 constexpr int kEscRepeatCountToTriggerUiReshow = 3;
 
+// Check whether `event` is a kRawKeyDown type and doesn't have non-stateful
+// modifiers (i.e. shift, ctrl etc.).
+bool IsUnmodifiedEscKeyDownEvent(const input::NativeWebKeyboardEvent& event) {
+  if (event.GetType() != input::NativeWebKeyboardEvent::Type::kRawKeyDown) {
+    return false;
+  }
+  if (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 KeyboardLockController::KeyboardLockController(ExclusiveAccessManager* manager)
@@ -133,10 +145,7 @@ bool KeyboardLockController::HandleKeyEvent(
     // enough to trigger an exit
     hold_timer_.Stop();
     ReShowExitBubbleIfNeeded();
-  } else if (event.GetType() ==
-                 input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
-             !hold_timer_.IsRunning() &&
-             event.GetModifiers() == blink::WebInputEvent::kNoModifiers) {
+  } else if (IsUnmodifiedEscKeyDownEvent(event) && !hold_timer_.IsRunning()) {
     // Seeing a key down event on Esc when the hold timer is stopped starts
     // the timer. When the timer fires, the callback will trigger an exit from
     // fullscreen/pointerlock/keyboardlock.
