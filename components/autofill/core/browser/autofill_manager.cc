@@ -106,13 +106,19 @@ std::vector<FormGlobalId> GetFormGlobalIds(base::span<const FormData> forms) {
 // if not found.
 AutofillField* FindAutofillFillField(const FormStructure& form,
                                      const FormFieldData& field) {
-  for (const auto& f : form) {
-    if (field.global_id() == f->global_id())
-      return f.get();
+  auto it = base::ranges::find_if(
+      form, [&field](const std::unique_ptr<AutofillField>& candidate_field) {
+        return field.global_id() == candidate_field->global_id();
+      });
+  if (it != form.end()) {
+    return it->get();
   }
-  for (const auto& cur_field : form) {
-    if (cur_field->SameFieldAs(field)) {
-      return cur_field.get();
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillFindCachedFieldsByIdOnly)) {
+    for (const std::unique_ptr<AutofillField>& candidate_field : form) {
+      if (candidate_field->SameFieldAs(field)) {
+        return candidate_field.get();
+      }
     }
   }
   return nullptr;

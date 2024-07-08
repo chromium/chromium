@@ -1990,15 +1990,15 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {
 TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
+  FormFieldData& firstname_field = test_api(form).field(0);
+  ASSERT_EQ(firstname_field.name(), u"firstname");
+  firstname_field.set_value(u"E");
   FormsSeen({form});
 
-  FormFieldData& field = test_api(form).field(0);
-  field = CreateTestFormField("First Name", "firstname", "E",
-                              FormControlType::kInputText);
-  GetAutofillSuggestions(form, field);
+  GetAutofillSuggestions(form, firstname_field);
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
-      field.global_id(),
+      firstname_field.global_id(),
       {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        CreateSeparator(), CreateManageAddressesSuggestion()});
@@ -2008,6 +2008,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
 // is already autofilled, and that we merge identical values.
 TEST_P(SuggestionMatchingTest,
        GetProfileSuggestions_AlreadyAutofilledMergeValues) {
+  personal_data().test_address_data_manager().ClearProfiles();
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -2042,12 +2043,11 @@ TEST_P(SuggestionMatchingTest,
   profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy", "en-US");
   personal_data().address_data_manager().AddProfile(profile3);
 
-  FormFieldData& field = test_api(form).field(2);
-  field = CreateTestFormField("Last Name", "lastname", "G",
-                              FormControlType::kInputText);
-  GetAutofillSuggestions(form, field);
+  FormFieldData& lastname_field = test_api(form).field(2);
+  ASSERT_EQ(lastname_field.name(), u"lastname");
+  GetAutofillSuggestions(form, lastname_field);
   external_delegate()->CheckSuggestions(
-      field.global_id(),
+      lastname_field.global_id(),
       {Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon,
@@ -2061,22 +2061,22 @@ TEST_P(SuggestionMatchingTest,
        GetProfileSuggestions_AlreadyAutofilledNoLabels) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
-  FormsSeen({form});
-
+  FormFieldData& firstname_field = test_api(form).field(0);
+  ASSERT_EQ(firstname_field.name(), u"firstname");
   // First name is already autofilled which will make the section appear as
   // "already autofilled".
-  test_api(form).field(0).set_is_autofilled(true);
+  firstname_field.set_is_autofilled(true);
+  firstname_field.set_value(u"E");
+  FormsSeen({form});
 
-  FormFieldData& field = test_api(form).field(0);
-  field = CreateTestFormField("First Name", "firstname", "E",
-                              FormControlType::kInputText);
-  GetAutofillSuggestions(form, field);
+  GetAutofillSuggestions(form, firstname_field);
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
-      field.global_id(),
+      firstname_field.global_id(),
       {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       CreateSeparator(), CreateManageAddressesSuggestion()});
+       CreateSeparator(), CreateUndoOrClearFormSuggestion(),
+       CreateManageAddressesSuggestion()});
 }
 
 // Test that we return no suggestions when the form has no relevant fields.
@@ -2602,18 +2602,19 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Set up our form data.
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormFieldData& cc_number_field = test_api(form).field(1);
+  ASSERT_EQ(cc_number_field.name(), u"cardnumber");
+  cc_number_field.set_value(u"78");
   FormsSeen({form});
 
-  FormFieldData& field = test_api(form).field(1);
-  field = CreateTestFormField("Card Number", "cardnumber", "78",
-                              FormControlType::kInputText);
-  GetAutofillSuggestions(form, field);
+  GetAutofillSuggestions(form, cc_number_field);
 
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
-      field.global_id(), {GetCardSuggestion(kVisaCard), CreateSeparator(),
-                          CreateManageCreditCardsSuggestion(
-                              /*with_gpay_logo=*/false)});
+      cc_number_field.global_id(),
+      {GetCardSuggestion(kVisaCard), CreateSeparator(),
+       CreateManageCreditCardsSuggestion(
+           /*with_gpay_logo=*/false)});
 }
 
 // Test that we return credit card profile suggestions when the selected form
@@ -3096,17 +3097,18 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
                   SuggestionType::kAddressEntry),
        CreateSeparator(), CreateManageAddressesSuggestion()});
 
-  FormFieldData& field = test_api(form).field(first_credit_card_field + 1);
-  field = CreateTestFormField("Card Number", "cardnumber", "",
-                              FormControlType::kInputText);
-  GetAutofillSuggestions(form, field);
+  FormFieldData& cc_number_field =
+      test_api(form).field(first_credit_card_field + 1);
+  ASSERT_EQ(cc_number_field.name(), u"cardnumber");
+  GetAutofillSuggestions(form, cc_number_field);
 
   // Test that we sent the credit card suggestions to the external delegate.
   external_delegate()->CheckSuggestions(
-      field.global_id(), {GetCardSuggestion(kVisaCard),
-                          GetCardSuggestion(kMasterCard), CreateSeparator(),
-                          CreateManageCreditCardsSuggestion(
-                              /*with_gpay_logo=*/false)});
+      cc_number_field.global_id(),
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       CreateSeparator(),
+       CreateManageCreditCardsSuggestion(
+           /*with_gpay_logo=*/false)});
 }
 
 // Test that for non-https forms with both address and credit card fields, we
@@ -3126,14 +3128,14 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   // Verify that suggestions are returned.
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 
-  FormFieldData& field = test_api(form).field(first_credit_card_field + 1);
-  field = CreateTestFormField("Card Number", "cardnumber", "",
-                              FormControlType::kInputText);
-  GetAutofillSuggestions(form, field);
+  FormFieldData& cc_number_field =
+      test_api(form).field(first_credit_card_field + 1);
+  ASSERT_EQ(cc_number_field.name(), u"cardnumber");
+  GetAutofillSuggestions(form, cc_number_field);
 
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
-      field.global_id(),
+      cc_number_field.global_id(),
       {Suggestion(
           l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
           "", Suggestion::Icon::kNoIcon,
@@ -3141,8 +3143,8 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
 
   // Clear the test credit cards and try again -- we shouldn't return a warning.
   personal_data().test_payments_data_manager().ClearCreditCards();
-  GetAutofillSuggestions(form, field);
-  external_delegate()->CheckNoSuggestions(field.global_id());
+  GetAutofillSuggestions(form, cc_number_field);
+  external_delegate()->CheckNoSuggestions(cc_number_field.global_id());
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -4948,18 +4950,17 @@ TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_SomeWhenAutofillEmpty) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
+  FormFieldData& email_field = test_api(form).field(-1);
+  ASSERT_EQ(email_field.name(), u"email");
+  // No suggestions match "donkey".
+  email_field.set_value(u"donkey");
   FormsSeen({form});
-
-  // No suggestions matching "donkey".
-  FormFieldData& field = test_api(form).field(-1);
-  field = CreateTestFormField("Email", "email", "donkey",
-                              FormControlType::kInputEmail);
 
   // Single field form fill manager is called for suggestions because Autofill
   // is empty.
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions);
 
-  GetAutofillSuggestions(form, field);
+  GetAutofillSuggestions(form, email_field);
 }
 
 // Test that when Autofill is disabled and the field is a credit card name
@@ -5032,20 +5033,19 @@ TEST_F(
     SingleFieldFormFillSuggestions_NoneWhenAutofillEmptyAndSingleFieldFormFillConditionsNotMet) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
+  FormFieldData& email_field = test_api(form).field(-1);
+  ASSERT_EQ(email_field.name(), u"email");
+  // No suggestions match "donkey".
+  email_field.set_value(u"donkey");
+  email_field.set_should_autocomplete(false);
   FormsSeen({form});
 
-  // No suggestions matching "donkey".
-  FormFieldData& field = test_api(form).field(-1);
-  field = CreateTestFormField("Email", "email", "donkey",
-                              FormControlType::kInputEmail);
-  field.set_should_autocomplete(false);
-
   // Autocomplete is set to off, so suggestions should not get returned from
-  // single_field_form_fill_router()|.
+  // single_field_form_fill_router().
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
 
-  GetAutofillSuggestions(form, field);
+  GetAutofillSuggestions(form, email_field);
 
   // Single field form fill was not triggered, so go through the normal autofill
   // flow.

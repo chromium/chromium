@@ -354,6 +354,12 @@ BASE_FEATURE(kAutofillDontUpdateLastQueriedElementOnFill,
              "AutofillDontUpdateLastQueriedElementOnFill",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Killswitch for not trying to find a cached AutofillField from a FormFieldData
+// by using FormFieldData::SameFieldAs, but only by comparing FieldGlobalIds.
+BASE_FEATURE(kAutofillFindCachedFieldsByIdOnly,
+             "AutofillFindCachedFieldsByIdOnly",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Implements a model that suppresses suggestions after N times the user ignores
 // the popup (i.e. doesn't select a suggestion from the popup).
 // N depends on the parametrization of the feature.
