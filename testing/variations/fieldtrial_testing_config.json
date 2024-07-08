@@ -7417,7 +7417,7 @@
                     "name": "Enabled_DefaultOn",
                     "params": {
                         "link_capturing_guardrail_storage_duration": "60",
-                        "on_by_default": "true"
+                        "link_capturing_state": "on_by_default"
                     },
                     "enable_features": [
                         "DesktopPWAsLinkCapturing"
@@ -7427,7 +7427,7 @@
                     "name": "Enabled_DefaultOff",
                     "params": {
                         "link_capturing_guardrail_storage_duration": "60",
-                        "on_by_default": "false"
+                        "link_capturing_state": "off_by_default"
                     },
                     "enable_features": [
                         "DesktopPWAsLinkCapturing"

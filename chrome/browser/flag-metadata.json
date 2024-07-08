@@ -4113,7 +4113,7 @@
   {
     "name": "enable-user-link-capturing-pwa",
     "owners": [ "dibyapal@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 129
+    "expiry_milestone": 131
   },
   {
     "name": "enable-user-link-capturing-scope-extensions-pwa",

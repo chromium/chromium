@@ -17,7 +17,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #endif
 
 namespace apps::test {
@@ -29,12 +28,15 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
   CHECK(!override_captures_by_default || !override_captures_by_default.value());
   return {{::apps::features::kLinkCapturingUiUpdate, {}}};
 #else
+  // TODO(crbug.com/351775835): Integrate testing for all enum states of
+  // `LinkCapturingState`.
+  bool should_override_by_default = override_captures_by_default.value_or(
+      ::features::kLinkCapturingDefaultState.default_value ==
+      ::features::LinkCapturingState::kDefaultOn);
   return {{::features::kDesktopPWAsLinkCapturing,
-           {{::features::kLinksCapturedByDefault.name,
-             std::string(override_captures_by_default.value_or(
-                             ::features::kLinksCapturedByDefault.default_value)
-                             ? "true"
-                             : "false")}}}};
+           {{::features::kLinkCapturingDefaultState.name,
+             std::string(should_override_by_default ? "on_by_default"
+                                                    : "off_by_default")}}}};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX() {

@@ -166,12 +166,18 @@ BASE_DECLARE_FEATURE(kDesktopPWAsFlashAppNameInsteadOfOrigin);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDesktopPWAsIconHealthChecks);
 
-// Enables user link capturing on non-CrOS desktop platforms.
+// Enables user link capturing on all desktop platforms.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDesktopPWAsLinkCapturing);
+enum class LinkCapturingState {
+  kDefaultOn = 0,
+  kDefaultOff = 1,
+  kReimplDefaultOn = 2,
+  kReimplDefaultOff = 3
+};
 // If links should be captured by apps by default.
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kLinksCapturedByDefault;
+extern const base::FeatureParam<LinkCapturingState> kLinkCapturingDefaultState;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDesktopPWAsLinkCapturingWithScopeExtensions);

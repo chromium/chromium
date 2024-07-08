@@ -78,6 +78,13 @@ bool WebAppSourceSupported(const WebApp& web_app) {
   return true;
 }
 
+bool IsLinkCapturingDisabledByDefaultBasedOnFlagState() {
+  return features::kLinkCapturingDefaultState.Get() ==
+             features::LinkCapturingState::kDefaultOff ||
+         features::kLinkCapturingDefaultState.Get() ==
+             features::LinkCapturingState::kReimplDefaultOff;
+}
+
 }  // namespace
 
 WebAppRegistrar::WebAppRegistrar(Profile* profile) : profile_(profile) {}
@@ -1111,7 +1118,7 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
   CHECK(web_app);
   switch (web_app->user_link_capturing_preference()) {
     case proto::LinkCapturingUserPreference::LINK_CAPTURING_PREFERENCE_DEFAULT:
-      if (!features::kLinksCapturedByDefault.Get()) {
+      if (IsLinkCapturingDisabledByDefaultBasedOnFlagState()) {
         return false;
       }
       break;

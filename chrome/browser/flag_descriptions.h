@@ -1945,6 +1945,9 @@ extern const char kSiteInstanceGroupsForDataUrlsDescription[];
     BUILDFLAG(IS_CHROMEOS)
 extern const char kSiteSearchSettingsPolicyName[];
 extern const char kSiteSearchSettingsPolicyDescription[];
+
+extern const char kDesktopPWAsUserLinkCapturingName[];
+extern const char kDesktopPWAsUserLinkCapturingDescription[];
 #endif
 
 extern const char kSkiaRendererName[];
@@ -4875,9 +4878,6 @@ extern const char kUnoDesktopDescription[];
 
 extern const char kExplicitBrowserSigninUIOnDesktopName[];
 extern const char kExplicitBrowserSigninUIOnDesktopDescription[];
-
-extern const char kDesktopPWAsUserLinkCapturingName[];
-extern const char kDesktopPWAsUserLinkCapturingDescription[];
 
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[];
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[];

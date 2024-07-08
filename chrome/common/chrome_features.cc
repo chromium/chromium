@@ -303,8 +303,15 @@ BASE_FEATURE(kDesktopPWAsIconHealthChecks,
 BASE_FEATURE(kDesktopPWAsLinkCapturing,
              "DesktopPWAsLinkCapturing",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kLinksCapturedByDefault{
-    &kDesktopPWAsLinkCapturing, "on_by_default", true};
+const base::FeatureParam<LinkCapturingState>::Option kLinkCapturingParams[] = {
+    {LinkCapturingState::kDefaultOn, "on_by_default"},
+    {LinkCapturingState::kDefaultOff, "off_by_default"},
+    {LinkCapturingState::kReimplDefaultOn, "reimpl_default_on"},
+    {LinkCapturingState::kReimplDefaultOff, "reimpl_default_off"}};
+
+const base::FeatureParam<LinkCapturingState> kLinkCapturingDefaultState{
+    &kDesktopPWAsLinkCapturing, "link_capturing_state",
+    LinkCapturingState::kDefaultOn, &kLinkCapturingParams};
 
 const base::FeatureParam<int> kLinkCapturingIPHGuardrailStorageDuration{
     &kDesktopPWAsLinkCapturing, "link_capturing_guardrail_storage_duration",

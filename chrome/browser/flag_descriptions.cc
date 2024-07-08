@@ -3347,6 +3347,11 @@ const char kSiteInstanceGroupsForDataUrlsDescription[] =
 const char kSiteSearchSettingsPolicyName[] = "Enable SiteSearchSettings policy";
 const char kSiteSearchSettingsPolicyDescription[] =
     "Allow site search engines to be defined by the SiteSearchSettings policy.";
+
+const char kDesktopPWAsUserLinkCapturingName[] = "Desktop PWA Link Capturing";
+const char kDesktopPWAsUserLinkCapturingDescription[] =
+    "Enables opening links from Chrome in an installed PWA. Currently under "
+    "reimplementation.";
 #endif
 
 const char kIsolateOriginsName[] = "Isolate additional origins";
@@ -8333,10 +8338,6 @@ const char kExplicitBrowserSigninUIOnDesktopName[] =
 const char kExplicitBrowserSigninUIOnDesktopDescription[] =
     "Enables the UNO model on Desktop. Used for the launch of the UNO model on "
     "Desktop, as well as for the later phases of the experiment.";
-
-const char kDesktopPWAsUserLinkCapturingName[] = "Desktop PWA Link Capturing";
-const char kDesktopPWAsUserLinkCapturingDescription[] =
-    "Enables opening links from Chrome in an installed PWA";
 
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[] =
     "Desktop PWA Link Capturing with Scope Extensions";

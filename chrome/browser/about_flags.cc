@@ -1308,6 +1308,7 @@ const FeatureEntry::FeatureVariation kHistoryEmbeddingsVariations[] = {
     {"with AtKeywordAcceleration", kHistoryEmbeddingsAtKeywordAcceleration,
      std::size(kHistoryEmbeddingsAtKeywordAcceleration), nullptr},
 };
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -3824,18 +3825,30 @@ const flags_ui::FeatureEntry::FeatureVariation
          std::size(kParcelTrackingTestDataOutForDelivery), nullptr},
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
 const flags_ui::FeatureEntry::FeatureParam
     kDesktopPWAsLinkCapturingDefaultOn[] = {{"on_by_default", "true"}};
 const flags_ui::FeatureEntry::FeatureParam
-    kDesktopPWAsLinkCapturingDefaultOff[] = {{"on_by_default", "false"}};
+    kDesktopPWAsLinkCapturingDefaultOff[] = {{"off_by_default", "false"}};
+const flags_ui::FeatureEntry::FeatureParam
+    kDesktopPWAsLinkCapturingReimplDefaultOn[] = {
+        {"reimpl_default_on", "true"}};
+const flags_ui::FeatureEntry::FeatureParam
+    kDesktopPWAsLinkCapturingReimplDefaultOff[] = {
+        {"reimpl_default_off", "false"}};
 const flags_ui::FeatureEntry::FeatureVariation
     kDesktopPWAsLinkCapturingVariations[] = {
         {"On by default", kDesktopPWAsLinkCapturingDefaultOn,
          std::size(kDesktopPWAsLinkCapturingDefaultOn), nullptr},
         {"Off by default", kDesktopPWAsLinkCapturingDefaultOff,
-         std::size(kDesktopPWAsLinkCapturingDefaultOff), nullptr}};
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+         std::size(kDesktopPWAsLinkCapturingDefaultOff), nullptr},
+        {"(Reimpl) On by default", kDesktopPWAsLinkCapturingReimplDefaultOn,
+         std::size(kDesktopPWAsLinkCapturingReimplDefaultOn), nullptr},
+        {"(Reimpl) Off by default", kDesktopPWAsLinkCapturingReimplDefaultOff,
+         std::size(kDesktopPWAsLinkCapturingReimplDefaultOff), nullptr}};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::Choice kAccountBookmarksAndReadingListBehindOptInChoices[] =
@@ -10924,14 +10937,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(profile_management::features::
                             kEnableGenericOidcAuthProfileManagement)},
-
-    {"enable-user-link-capturing-pwa",
-     flag_descriptions::kDesktopPWAsUserLinkCapturingName,
-     flag_descriptions::kDesktopPWAsUserLinkCapturingDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDesktopPWAsLinkCapturing,
-                                    kDesktopPWAsLinkCapturingVariations,
-                                    "DesktopPWAsLinkCapturing")},
     {"enable-user-link-capturing-scope-extensions-pwa",
      flag_descriptions::kDesktopPWAsUserLinkCapturingScopeExtensionsName,
      flag_descriptions::kDesktopPWAsUserLinkCapturingScopeExtensionsDescription,
@@ -10946,6 +10951,18 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(syncer::kSyncEnableContactInfoDataTypeInTransportMode)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"enable-user-link-capturing-pwa",
+     flag_descriptions::kDesktopPWAsUserLinkCapturingName,
+     flag_descriptions::kDesktopPWAsUserLinkCapturingDescription,
+     kOsLinux | kOsMac | kOsWin | kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDesktopPWAsLinkCapturing,
+                                    kDesktopPWAsLinkCapturingVariations,
+                                    "DesktopPWAsLinkCapturing")},
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     {"forgot-password-form-support",
      flag_descriptions::kForgotPasswordFormSupportName,
