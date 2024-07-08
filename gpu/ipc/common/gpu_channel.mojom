@@ -141,7 +141,7 @@ interface GpuChannel {
   // contains a single 64 bit atomic integer used as a flushed message id.
   // The number is read from renderers and updated from the
   // gpu process on FlushDeferredRequests.
-  [Sync] GetSharedMemoryForFlushId() =>
+  [Sync, NoInterrupt] GetSharedMemoryForFlushId() =>
     (mojo_base.mojom.ReadOnlySharedMemoryRegion? version_buffer);
 
   // Tells the GPU process to create a new command buffer. A corresponding
