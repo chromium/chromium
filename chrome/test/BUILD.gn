@@ -259,13 +259,6 @@ static_library("test_support") {
     deps += [ "//chrome/browser/themes" ]
   }
 
-  if (is_chromeos) {
-    sources += [
-      "../browser/certificate_provider/test_certificate_provider_extension_mixin.cc",
-      "../browser/certificate_provider/test_certificate_provider_extension_mixin.h",
-    ]
-  }
-
   if (is_chromeos && is_chromeos_device) {
     sources += [
       "base/chromeos/crosier/chromeos_integration_test_mixin.cc",
@@ -4572,6 +4565,8 @@ if (!is_android) {
         "../browser/ash/crostini/crostini_browser_test_util.cc",
         "../browser/ash/crostini/crostini_browser_test_util.h",
         "../browser/ash/crostini/crostini_browsertest.cc",
+        "../browser/ash/dbus/cryptohome_key_delegate_service_provider_browsertest.cc",
+        "../browser/ash/dbus/proxy_resolution_service_provider_browsertest.cc",
         "../browser/ash/file_system_provider/cloud_file_system_browsertest.cc",
         "../browser/ash/login/accessibility_browsertest.cc",
         "../browser/ash/login/ash_hud_login_browsertest.cc",
