@@ -854,8 +854,16 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
 // Tests that prerender fails as well if the prefetch response that prerender
 // uses fails.
+// TODO(crbug.com/351753962): Fix flakiness and re-enable.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NavigationFailsAfterPrefetchServedTheResponse \
+  DISABLED_NavigationFailsAfterPrefetchServedTheResponse
+#else
+#define MAYBE_NavigationFailsAfterPrefetchServedTheResponse \
+  NavigationFailsAfterPrefetchServedTheResponse
+#endif
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       NavigationFailsAfterPrefetchServedTheResponse) {
+                       MAYBE_NavigationFailsAfterPrefetchServedTheResponse) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
