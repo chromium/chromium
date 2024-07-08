@@ -443,6 +443,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["css3/filters",
               "external/wpt/css/css-paint-api/hidpi",
+              "external/wpt/css/cssom-view/Element-currentCSSZoom.html",
               "external/wpt/element-timing",
               "external/wpt/css/filter-effects",
               "external/wpt/css/css-grid/animation",

@@ -1787,7 +1787,8 @@ double Element::currentCSSZoom() {
   GetDocument().UpdateStyleAndLayoutTreeForElement(
       this, DocumentUpdateReason::kComputedStyle);
   if (const auto* layout_object = GetLayoutObject()) {
-    return layout_object->StyleRef().EffectiveZoom();
+    return layout_object->StyleRef().EffectiveZoom() /
+           GetDocument().GetStyleEngine().GetStyleResolver().InitialZoom();
   }
   return 1.0;
 }
