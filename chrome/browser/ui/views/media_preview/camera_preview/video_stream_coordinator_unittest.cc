@@ -130,4 +130,50 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   histogram_tester_.ExpectUniqueSample(
       "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration",
       /*bucket_min_value=*/750, 1);
+  histogram_tester_.ExpectTotalCount(
+      "MediaPreviews.UI.Preview.Permissions.Video.TimeToActionWithoutPreview",
+      0);
+}
+
+TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
+  mojo::Remote<video_capture::mojom::VideoSource> video_source;
+  video_source_receiver_.Bind(video_source.BindNewPipeAndPassReceiver());
+  coordinator_->ConnectToDevice(GetVideoCaptureDeviceInfo(),
+                                std::move(video_source));
+
+  coordinator_->GetVideoStreamView()->SetPreferredSize(gfx::Size{250, 180});
+  coordinator_->GetVideoStreamView()->SizeToPreferredSize();
+
+  EXPECT_TRUE(fake_video_source_.WaitForCreatePushSubscription());
+  EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionActivated());
+
+  base::RunLoop().RunUntilIdle();
+  task_environment()->AdvanceClock(base::Milliseconds(130));
+
+  coordinator_->Stop();
+  EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
+
+  histogram_tester_.ExpectTotalCount(
+      "MediaPreviews.UI.Preview.Permissions.Video.Delay", 0);
+
+  // The selected pixel height is 720, so it will be logged in the 675 bucket.
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Permissions.Camera.PixelHeight",
+      /*bucket_min_value=*/675, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.ExpectedFPS",
+      /*bucket_min_value=*/30, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "MediaPreviews.UI.Preview.Permissions.Video.ActualFPS", 0);
+  histogram_tester_.ExpectTotalCount(
+      "MediaPreviews.UI.Preview.Permissions.Video.RenderedPercent", 0);
+
+  coordinator_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration",
+      /*bucket_min_value=*/0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.TimeToActionWithoutPreview",
+      /*bucket_min_value=*/125, 1);
 }

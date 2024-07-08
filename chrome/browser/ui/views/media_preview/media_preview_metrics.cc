@@ -177,6 +177,15 @@ void RecordTotalVisiblePreviewDuration(const Context& context,
       ->Add(delta.InMilliseconds());
 }
 
+void RecordTimeToActionWithoutPreview(const Context& context,
+                                      const base::TimeDelta& delta) {
+  CHECK_EQ(context.preview_type, PreviewType::kCamera);
+  std::string metric_name =
+      StrCat({kUiPrefix, kPreview, GetUiLocationString(context.ui_location),
+              ".Video.TimeToActionWithoutPreview"});
+  GetPreviewDelayTimeHistogram(metric_name)->Add(delta.InMilliseconds());
+}
+
 void RecordPreviewDelayTime(const Context& context,
                             const base::TimeDelta& delta) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);
