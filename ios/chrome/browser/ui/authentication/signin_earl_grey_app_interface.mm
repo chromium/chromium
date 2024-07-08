@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
@@ -151,6 +152,10 @@
   syncService->SetSyncFeatureRequested();
   syncService->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+}
+
++ (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {
+  chrome_test_util::SignInWithoutSync(identity);
 }
 
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {

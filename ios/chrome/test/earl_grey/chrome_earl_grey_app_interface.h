@@ -15,7 +15,6 @@
 #import "third_party/metrics_proto/user_demographics.pb.h"
 
 @class ElementSelector;
-@class FakeSystemIdentity;
 
 @interface JavaScriptExecutionResult : NSObject
 @property(readonly, nonatomic) BOOL success;
@@ -349,9 +348,6 @@
 + (NSString*)displayTitleForURL:(NSString*)URL;
 
 #pragma mark - Sync Utilities (EG2)
-
-// Signs in with `identity` without sync consent.
-+ (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
 
 // Waits for sync engine to be initialized or not. It doesn't necessarily mean
 // that data types are configured and ready to use. See

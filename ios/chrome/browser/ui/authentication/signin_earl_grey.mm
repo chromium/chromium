@@ -77,6 +77,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                               consent:signin::ConsentLevel::kSync];
 }
 
+- (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [SigninEarlGreyAppInterface
+      signInWithoutHistorySyncWithFakeIdentity:identity];
+}
+
 - (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:identity];
 }

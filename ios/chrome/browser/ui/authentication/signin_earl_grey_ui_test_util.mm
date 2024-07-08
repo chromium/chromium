@@ -101,7 +101,7 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   // TODO(crbug.com/335592853): There's no good reason why the with-history vs
   // without-history flows should be completely different, unify them.
   if (!enableHistorySync) {
-    [ChromeEarlGrey signInWithoutSyncWithIdentity:fakeIdentity];
+    [SigninEarlGrey signInWithoutHistorySyncWithFakeIdentity:fakeIdentity];
     CloseManagedAccountDialogIfAny(fakeIdentity);
     ConditionBlock condition = ^bool {
       return [[SigninEarlGrey primaryAccountGaiaID]

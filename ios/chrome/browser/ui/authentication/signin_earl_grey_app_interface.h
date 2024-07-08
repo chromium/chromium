@@ -73,6 +73,9 @@ enum class UserSelectableType;
 // kMigrateSyncingUserToSignedIn).
 + (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity;
 
+// Signs in with `identity` without history sync consent.
++ (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity;
+
 // Triggers the reauth dialog. This is done by sending ShowSigninCommand to
 // SceneController, without any UI interaction to open the dialog.
 // TODO(crbug.com/40916763): To be consistent, this method should be renamed to

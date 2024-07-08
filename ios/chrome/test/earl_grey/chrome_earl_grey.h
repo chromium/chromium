@@ -223,9 +223,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Forces every request to fail in a way that simulates a network failure.
 - (void)disconnectFakeSyncServerNetwork;
 
-// Signs in with `identity` without sync consent.
-- (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
-
 // Injects user demographics into the fake sync server. `rawBirthYear` is the
 // true birth year, pre-noise, and the gender corresponds to the proto enum
 // UserDemographicsProto::Gender.

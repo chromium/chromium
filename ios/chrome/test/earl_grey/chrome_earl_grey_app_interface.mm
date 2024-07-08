@@ -56,7 +56,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
@@ -921,10 +920,6 @@ NSString* SerializedValue(const base::Value* value) {
 + (void)deleteAutofillProfileFromFakeSyncServerWithGUID:(NSString*)GUID {
   chrome_test_util::DeleteAutofillProfileFromFakeSyncServer(
       base::SysNSStringToUTF8(GUID));
-}
-
-+ (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity {
-  chrome_test_util::SignInWithoutSync(identity);
 }
 
 + (NSError*)waitForSyncEngineInitialized:(BOOL)isInitialized

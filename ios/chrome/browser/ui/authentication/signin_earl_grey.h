@@ -87,6 +87,9 @@ class GURL;
 // kMigrateSyncingUserToSignedIn).
 - (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity;
 
+// Signs in with `identity` without history sync consent.
+- (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity;
+
 // Triggers the web sign-in consistency dialog. This is done by calling
 // directly the current SceneController.
 // `url` that triggered the web sign-in/consistency dialog.

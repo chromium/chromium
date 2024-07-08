@@ -853,10 +853,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
 }
 
-- (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity {
-  [ChromeEarlGreyAppInterface signInWithoutSyncWithIdentity:identity];
-}
-
 - (void)
     addUserDemographicsToSyncServerWithBirthYear:(int)rawBirthYear
                                           gender:
