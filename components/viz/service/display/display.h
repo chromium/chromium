@@ -193,6 +193,9 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void SetNeedsOneBeginFrame();
 
   void SetSupportedFrameIntervals(base::flat_set<base::TimeDelta> intervals);
+
+  void SetHwSupportForMultipleRefreshRates(bool support);
+
   void PreserveChildSurfaceControls();
 
   base::ScopedClosureRunner GetCacheBackBufferCb();

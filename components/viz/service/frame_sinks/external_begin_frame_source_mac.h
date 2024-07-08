@@ -27,6 +27,8 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
       public ExternalBeginFrameSourceClient,
       public DelayBasedTimeSourceClient {
  public:
+  using MultipleHWRefreshRatesCallback = base::RepeatingCallback<void(bool)>;
+
   ExternalBeginFrameSourceMac(uint32_t restart_id,
                               int64_t display_id,
                               OutputSurface* output_surface);
@@ -60,6 +62,9 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   // When the frame rate changes, VSyncParameters should be updated.
   void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) override;
+
+  void SetMultipleHWRefreshRatesCallback(
+      MultipleHWRefreshRatesCallback callback);
 
  private:
   void CreateDelayBasedTimeSourceIfNeeded();
@@ -98,6 +103,18 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 
   const raw_ptr<OutputSurface, DanglingUntriaged> output_surface_;
   UpdateVSyncParametersCallback update_vsync_params_callback_;
+
+  MultipleHWRefreshRatesCallback multiple_hw_refresh_rates_callback_;
+
+  // When true, CADisplayLink can take any preferred refresh rate set by
+  // FrameRateDecider as is. No supported_interval list is provided to
+  // FrameRateDecider. No preferred refresh rate is adjusted.
+  bool hw_takes_any_refresh_rate_ = false;
+
+  // Screen refresh interval caps.
+  base::TimeDelta min_refresh_interval_;
+  base::TimeDelta max_refresh_interval_;
+  base::TimeDelta granularity_;
 
   base::WeakPtrFactory<ExternalBeginFrameSourceMac> weak_ptr_factory_{this};
 };

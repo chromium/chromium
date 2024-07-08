@@ -89,6 +89,8 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
   // SurfaceObserver implementation.
   void OnSurfaceWillBeDrawn(Surface* surface) override;
 
+  void SetHwSupportForMultipleRefreshRates(bool support);
+
  private:
   void StartAggregation();
   void EndAggregation();
@@ -98,6 +100,8 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
       const std::vector<base::TimeDelta>& fixed_interval_frame_sink_intervals)
       const;
 
+  // If true, the refresh rate can be changed. It's either supported by HW
+  // directly or by simulation in BeginFrameSource..
   bool multiple_refresh_rates_supported() const;
 
   bool inside_surface_aggregation_ = false;
@@ -124,7 +128,7 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
   // whether it's single or multiple videos or whether the frame rate is
   // supported in the |supported_intervals_| list. There might not be a list at
   // all.
-  const bool hw_support_for_multiple_refresh_rates_;
+  bool hw_support_for_multiple_refresh_rates_;
 
   // For SetPreferredFrameInterval(), Display calls root_compositor_frame_sink
   // SetPreferredFrameInterval(). If |output_surface_supports_set_frame_rate_|

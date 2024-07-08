@@ -136,6 +136,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
     return external_begin_frame_source_.get();
   }
 
+  void SetHwSupportForMultipleRefreshRates(bool support);
+
  private:
   class StandaloneBeginFrameObserver;
 

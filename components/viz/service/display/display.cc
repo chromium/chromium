@@ -1320,6 +1320,10 @@ void Display::SetSupportedFrameIntervals(
   frame_rate_decider_->SetSupportedFrameIntervals(std::move(intervals));
 }
 
+void Display::SetHwSupportForMultipleRefreshRates(bool support) {
+  frame_rate_decider_->SetHwSupportForMultipleRefreshRates(support);
+}
+
 base::ScopedClosureRunner Display::GetCacheBackBufferCb() {
   return output_surface_->GetCacheBackBufferCb();
 }

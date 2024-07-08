@@ -257,6 +257,14 @@ RootCompositorFrameSinkImpl::Create(
         base::BindRepeating(
             &RootCompositorFrameSinkImpl::SetDisplayVSyncParameters,
             base::Unretained(impl.get())));
+
+    if (features::IsCVDisplayLinkBeginFrameSourceEnabled()) {
+      static_cast<ExternalBeginFrameSourceMac*>(
+          impl->external_begin_frame_source())
+          ->SetMultipleHWRefreshRatesCallback(base::BindRepeating(
+              &RootCompositorFrameSinkImpl::SetHwSupportForMultipleRefreshRates,
+              base::Unretained(impl.get())));
+    }
   } else if (impl->synthetic_begin_frame_source_) {
     impl->synthetic_begin_frame_source_->SetUpdateVSyncParametersCallback(
         base::BindRepeating(
@@ -621,6 +629,11 @@ void RootCompositorFrameSinkImpl::DisplayWillDrawAndSwap(
 
 base::ScopedClosureRunner RootCompositorFrameSinkImpl::GetCacheBackBufferCb() {
   return display_->GetCacheBackBufferCb();
+}
+
+void RootCompositorFrameSinkImpl::SetHwSupportForMultipleRefreshRates(
+    bool support) {
+  display_->SetHwSupportForMultipleRefreshRates(support);
 }
 
 void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(

@@ -235,6 +235,9 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   // will be rounded to the nearest refresh rate that is a factor of the maximum
   // rate of the device.
   can_set_preferred_frame_rate = true;
+#elif BUILDFLAG(IS_MAC)
+  can_set_preferred_frame_rate = all_frame_sinks_have_same_interval &&
+                                 hw_support_for_multiple_refresh_rates_;
 #else
   // If only one frame sink is being updated and its frame rate can be directly
   // forwarded to the system, then prefer that over choosing one of the refresh
@@ -247,9 +250,10 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
     return;
   }
 
-  // If we don't have an explicit preference from the active frame sinks, then
-  // we use a 0 value for preferred frame interval to let the framework pick the
-  // ideal refresh rate.
+  // Iterate through |supported_intervals_| to pick a frame rate that is closed
+  // to min_frame_sink_interval. If we don't have an explicit preference from
+  // the active frame sinks, then we use a 0 value for preferred frame interval
+  // to let the framework pick the ideal refresh rate.
   base::TimeDelta new_preferred_interval = UnspecifiedFrameInterval();
   if (*min_frame_sink_interval != BeginFrameArgs::MinInterval()) {
     base::TimeDelta min_delta = base::TimeDelta::Max();
@@ -353,10 +357,18 @@ bool FrameRateDecider::multiple_refresh_rates_supported() const {
   // rate is supported via OutputSurface::SetFrameRate, which is not applicable
   // to iOS.
   return true;
+#elif BUILDFLAG(IS_MAC)
+  // In some Mac monitor/screen doesn't announce supported intervals.
+  return supported_intervals_.size() > 1u ||
+         hw_support_for_multiple_refresh_rates_;
 #else
   return output_surface_supports_set_frame_rate_ ||
          supported_intervals_.size() > 1u;
 #endif
+}
+
+void FrameRateDecider::SetHwSupportForMultipleRefreshRates(bool support) {
+  hw_support_for_multiple_refresh_rates_ = support;
 }
 
 }  // namespace viz

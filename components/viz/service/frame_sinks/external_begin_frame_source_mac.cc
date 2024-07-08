@@ -30,6 +30,12 @@ BASE_FEATURE(kForceMacVSyncTimerForDebugging,
              "ForceMacVSyncTimerForDebugging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow CADisplayLink to handle refresh rate within the range based on the app
+// work load.
+BASE_FEATURE(kUseRefreshRateRange,
+             "UseRefreshRateRange",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "DisplayLinkResult" in src/tools/metrics/histograms/enums.xml.
@@ -120,6 +126,26 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
                        << "::SetVSyncDisplayID: " << display_id_
                        << ", refresh_period_: " << nominal_refresh_period_;
 
+    display_link_mac_->GetRefreshIntervalRange(
+        min_refresh_interval_, max_refresh_interval_, granularity_);
+
+    // Call multiple_hw_refresh_rates_callback_ to notify FrameRateDecider
+    // whether the supported refresh rate list will be provided. If the screen
+    // refresh rate granularity is very small ( <= 1 ms or 0 ms), or if
+    // CVDisplayLink refresh rate range will be used, there will not be a list.
+    hw_takes_any_refresh_rate_ =
+        granularity_ <= base::Milliseconds(1) ||
+        (base::FeatureList::IsEnabled(kUseRefreshRateRange) &&
+         (min_refresh_interval_ != max_refresh_interval_));
+
+    DCHECK(!hw_takes_any_refresh_rate_ || multiple_hw_refresh_rates_callback_);
+    if (multiple_hw_refresh_rates_callback_) {
+      multiple_hw_refresh_rates_callback_.Run(hw_takes_any_refresh_rate_);
+      // After setting hw_support_for_multiple_refresh_rates_, the supported
+      // interval list should be updated. The callback below
+      // update_vsync_params_callback_ will do it.
+    }
+
     if (update_vsync_params_callback_) {
       update_vsync_params_callback_.Run(display_link_mac_->GetCurrentTime(),
                                         nominal_refresh_period_);
@@ -135,6 +161,11 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
 
     DLOG(ERROR) << "Fail to create DisplayLinkMac with DisplayID: "
                 << display_id_ << ". Switch to DelayBasedTimeSource.";
+
+    hw_takes_any_refresh_rate_ = false;
+    if (multiple_hw_refresh_rates_callback_) {
+      multiple_hw_refresh_rates_callback_.Run(false);
+    }
   }
 
   if (needs_begin_frames_) {
@@ -346,17 +377,26 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
     return;
   }
 
-  // If supported, set the preferred interval directly to DisplayLink.
-  // No skipping VSyncs is needed.
-  if (display_link_mac_->IsPreferredIntervalSupported()) {
-    display_link_mac_->SetPreferredInterval(interval);
+  // For the monitor with multitple refresh rates and CVDisplayLink
+  // SetPreferredInterval is supported. Just set the preferred interval without
+  // skipping VSyncs.
+  if (min_refresh_interval_ != max_refresh_interval_) {
+    if (base::FeatureList::IsEnabled(kUseRefreshRateRange)) {
+      // Request a dynamic refrate rate with a range.
+      display_link_mac_->SetPreferredIntervalRange(
+          min_refresh_interval_, max_refresh_interval_, interval);
+    } else {
+      // Request a fixed refresh rate.
+      display_link_mac_->SetPreferredInterval(interval);
+    }
     nominal_refresh_period_ = interval;
     vsync_subsampling_factor_ = 1;
     vsyncs_to_skip_ = 0;
     return;
   }
 
-  // Cap the refresh interval if it's out of the supported range.
+  // Here is for the monitor with a fixed refresh rate.
+  // Cap the preferred refresh interval if it's out of the range.
   base::TimeDelta adjusted_interval = interval;
   if (interval < nominal_refresh_period_) {
     adjusted_interval = nominal_refresh_period_;
@@ -391,6 +431,11 @@ void ExternalBeginFrameSourceMac::SetUpdateVSyncParametersCallback(
   update_vsync_params_callback_ = callback;
 }
 
+void ExternalBeginFrameSourceMac::SetMultipleHWRefreshRatesCallback(
+    MultipleHWRefreshRatesCallback callback) {
+  multiple_hw_refresh_rates_callback_ = callback;
+}
+
 base::flat_set<base::TimeDelta>
 ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
     base::TimeDelta current_interval) {
@@ -405,30 +450,31 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
 
   base::flat_set<base::TimeDelta> supported_intervals;
 
-  // Check if preferred interval is supported.
-  if (display_link_mac_ && display_link_mac_->IsPreferredIntervalSupported()) {
-    base::TimeDelta min_interval;
-    base::TimeDelta max_interval;
-    base::TimeDelta granularity;
-    display_link_mac_->GetRefreshIntervalRange(min_interval, max_interval,
-                                               granularity);
+  // When CAdisplayLink will take any preferred refresh rate, return an empty
+  // supported_intervals list.
+  if (display_link_mac_ && hw_takes_any_refresh_rate_) {
+    return supported_intervals;
+  }
 
-    // TODO: Support (granularity == 0) in the FrameRateDecider.
-    CHECK(!granularity.is_zero());
-    // |max_interval| might not be the same as (|min_interval| +
-    // n*|granularity|), so add |max_interval| separately after the loop.
-    auto upper_bound = max_interval - granularity / 2;
-    for (base::TimeDelta interval = min_interval; interval < upper_bound;
-         interval += granularity) {
+  // Check if we can set various preferred intervals within the range.
+  if (display_link_mac_ && min_refresh_interval_ != max_refresh_interval_) {
+    // |max_refresh_interval_| might not be the same as
+    // (|min_refresh_interval_| + n*|granularity_|), so add
+    // |max_refresh_interval_| separately after the loop.
+    CHECK(!granularity_.is_zero()) << "|hw_takes_any_refresh_rate_| should be "
+                                      "true if |granularity_| is zero";
+    auto upper_bound = max_refresh_interval_ - granularity_ / 2;
+    for (base::TimeDelta interval = min_refresh_interval_;
+         interval < upper_bound; interval += granularity_) {
       supported_intervals.insert(interval);
     }
-    supported_intervals.insert(max_interval);
+    supported_intervals.insert(max_refresh_interval_);
 
     return supported_intervals;
   }
 
-  // It can only support the fixed refresh intervals. Now try to implement 2^n
-  // refresh rates by skipping VSyncs.
+  // Can only do fixed refresh rates. Now try to implement 2^n refresh
+  // rates by skipping VSyncs.
   nominal_refresh_period_ = GetMaximumRefreshFrameInterval();
   base::TimeDelta interval = nominal_refresh_period_;
   while (interval <= kMaxSupportedFrameInterval) {

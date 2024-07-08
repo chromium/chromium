@@ -128,11 +128,9 @@ class DisplayLinkMacSharedState {
                                base::TimeDelta& max_interval,
                                base::TimeDelta& granularity) const;
 
-  void SetPreferredInterval(base::TimeDelta interval);
   void SetPreferredIntervalRange(base::TimeDelta min_interval,
                                  base::TimeDelta max_interval,
                                  base::TimeDelta preferred_interval);
-  bool IsPreferredIntervalSupported();
 
   base::TimeTicks GetCurrentTime() const;
 
@@ -396,11 +394,6 @@ void DisplayLinkMacSharedState::GetRefreshIntervalRange(
   }
 }
 
-void DisplayLinkMacSharedState::SetPreferredInterval(base::TimeDelta interval) {
-  if (ca_display_link_wrapper_) {
-    ca_display_link_wrapper_->SetPreferredInterval(interval);
-  }
-}
 void DisplayLinkMacSharedState::SetPreferredIntervalRange(
     base::TimeDelta min_interval,
     base::TimeDelta max_interval,
@@ -408,14 +401,6 @@ void DisplayLinkMacSharedState::SetPreferredIntervalRange(
   if (ca_display_link_wrapper_) {
     ca_display_link_wrapper_->SetPreferredIntervalRange(
         min_interval, max_interval, preferred_interval);
-  }
-}
-
-bool DisplayLinkMacSharedState::IsPreferredIntervalSupported() {
-  if (ca_display_link_wrapper_) {
-    return ca_display_link_wrapper_->IsPreferredIntervalSupported();
-  } else {
-    return false;
   }
 }
 
@@ -549,7 +534,7 @@ void DisplayLinkMac::GetRefreshIntervalRange(
 }
 
 void DisplayLinkMac::SetPreferredInterval(base::TimeDelta interval) {
-  return shared_state_->SetPreferredInterval(interval);
+  return SetPreferredIntervalRange(interval, interval, interval);
 }
 
 void DisplayLinkMac::SetPreferredIntervalRange(
@@ -558,10 +543,6 @@ void DisplayLinkMac::SetPreferredIntervalRange(
     base::TimeDelta preferred_interval) {
   return shared_state_->SetPreferredIntervalRange(min_interval, max_interval,
                                                   preferred_interval);
-}
-
-bool DisplayLinkMac::IsPreferredIntervalSupported() {
-  return shared_state_->IsPreferredIntervalSupported();
 }
 
 base::TimeTicks DisplayLinkMac::GetCurrentTime() const {

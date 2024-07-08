@@ -12,6 +12,8 @@
 #include "ui/display/mac/display_link_mac.h"
 
 namespace {
+// Implement HW VSync with CADisplayLink. If CADisplayLink is not available or
+// fails, it fallbacks to CVDisplayLink.
 BASE_FEATURE(kCADisplayLink,
              "CADisplayLink",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -178,25 +180,20 @@ void CADisplayLinkWrapper::GetRefreshIntervalRange(
   }
 }
 
-void CADisplayLinkWrapper::SetPreferredInterval(
-    base::TimeDelta preferred_interval) {
-  // The |preferred_interval| must be a supported interval if a fixed refresh
-  // rate is requested, otherwise CVDisplayLink terminates app due to uncaught
-  // exception 'NSInvalidArgumentException', reason: 'invalid range'.
-  auto interval = AdjustedToSupportedInterval(preferred_interval);
-  SetPreferredIntervalRange(interval, interval, interval);
-}
-
 void CADisplayLinkWrapper::SetPreferredIntervalRange(
     base::TimeDelta min_interval,
     base::TimeDelta max_interval,
     base::TimeDelta preferred_interval) {
   if (@available(macos 14.0, *)) {
-    // Sanity check.
-    if (max_interval < min_interval || preferred_interval > max_interval ||
-        preferred_interval < min_interval) {
-      // Do nothing if the range is out of order.
-      return;
+    // Sanity check for the order.
+    DCHECK(preferred_interval <= max_interval &&
+           preferred_interval >= min_interval);
+
+    // The |preferred_interval| must be a supported interval if a fixed refresh
+    // rate is requested, otherwise CVDisplayLink terminates app due to uncaught
+    // exception 'NSInvalidArgumentException', reason: 'invalid range'.
+    if (min_interval == max_interval && min_interval == preferred_interval) {
+      preferred_interval = AdjustedToSupportedInterval(preferred_interval);
     }
 
     base::TimeDelta ns_screen_min_interval =
@@ -237,14 +234,6 @@ void CADisplayLinkWrapper::SetPreferredIntervalRange(
                                        .maximum = max_refresh_rate,
                                        .preferred = preferred_refresh_rate}];
   }
-}
-
-bool CADisplayLinkWrapper::IsPreferredIntervalSupported() {
-  if (@available(macos 12.0, *)) {
-    return (objc_state_->ns_screen.minimumRefreshInterval !=
-            objc_state_->ns_screen.maximumRefreshInterval);
-  }
-  return false;
 }
 
 void CADisplayLinkWrapper::Step() {
