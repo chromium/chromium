@@ -56,11 +56,18 @@ struct ScopedFILECloser {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 namespace subtle {
 
+#if !defined(COMPONENT_BUILD)
 // Enables or disables enforcement of FD ownership as tracked by ScopedFD
 // objects. Enforcement is disabled by default since it proves unwieldy in some
 // test environments, but tracking is always done. It's best to enable this as
 // early as possible in a process's lifetime.
+//
+// This function is not available in component builds, as the close()
+// interceptor used by the implementation is unreliable when compiled into
+// a shared library (b/342530259). If FD ownership needs to be tested or
+// enforced, it should be done on a non-component build instead.
 void BASE_EXPORT EnableFDOwnershipEnforcement(bool enabled);
+#endif  // !defined(COMPONENT_BUILD)
 
 // Resets ownership state of all FDs. The only permissible use of this API is
 // in a forked child process between the fork() and a subsequent exec() call.
@@ -81,7 +88,7 @@ void BASE_EXPORT EnableFDOwnershipEnforcement(bool enabled);
 void BASE_EXPORT ResetFDOwnership();
 
 }  // namespace subtle
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 // -----------------------------------------------------------------------------
 
