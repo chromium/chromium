@@ -394,12 +394,8 @@ function getSubmittedFormTopLevelData(form) {
   // Include the submission timestamp information.
   const getSubmissionTimestamp = () => {
     // Find the substring "timestamp: 123456789";
-    const timestampSection = form.textContent.match(/timestamp:\s[0-9]+/);
-    if (!timestampSection) {
-      return 'Not found';
-    }
-    // Retrieves only the actual timestamp value.
-    return timestampSection[0].split('timestamp: ')[1];
+    const timestampSection = form.textContent.match(/timestamp: ([0-9]+)/);
+    return timestampSection ? timestampSection[1] : 'Not found';
   };
 
   return {timestamp: getSubmissionTimestamp(), ...formTopLevelData};
