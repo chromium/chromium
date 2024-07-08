@@ -1258,8 +1258,6 @@ static_library("ash") {
     "profiles/signin_profile_handler.h",
     "report_controller_initializer.cc",
     "report_controller_initializer.h",
-    "scalable_iph/scalable_iph_delegate_impl.cc",
-    "scalable_iph/scalable_iph_delegate_impl.h",
     "scanning/chrome_scanning_app_delegate.cc",
     "scanning/chrome_scanning_app_delegate.h",
     "scanning/lorgnette_notification_controller.cc",
@@ -1491,6 +1489,7 @@ static_library("ash") {
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/ash/smb_client/fileapi",
+    "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/ash/sharesheet",
     "//chrome/browser/ash/shimless_rma",
     "//chrome/browser/ash/sparky",
@@ -2143,6 +2142,7 @@ static_library("ash") {
     "//chrome/browser/ash/printing/print_preview",
     "//chrome/browser/ash/quick_pair",
     "//chrome/browser/ash/release_notes",
+    "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/ash/sharesheet",
     "//chrome/browser/ash/shimless_rma",
@@ -2762,6 +2762,9 @@ static_library("test_support") {
 
     # TODO(b/335293584): Remove and depend on c/b/a/login/ui test support in c/b/a/plugin_vm:test_support.
     "//chrome/browser/ash/plugin_vm:test_support",
+
+    # TODO(b/335293584, b/335294101): Remove and depend on c/b/a/login/ui and c/b/a/settings/ test support in c/b/a/scalable_iph:test_support.
+    "//chrome/browser/ash/scalable_iph:test_support",
   ]
 
   public_deps = [
@@ -2881,6 +2884,8 @@ static_library("test_support") {
     "//chrome/browser/ash/printing/history:print_job_info_proto",
     "//chrome/browser/ash/printing/oauth2",
     "//chrome/browser/ash/printing/oauth2:test_support",
+    "//chrome/browser/ash/scalable_iph",
+    "//chrome/browser/ash/scalable_iph:test_support",
     "//chrome/browser/ash/secure_channel:test_support",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/extensions",
@@ -4113,6 +4118,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/os_feedback:browser_tests",
     "//chrome/browser/ash/platform_keys:browser_tests",
     "//chrome/browser/ash/privacy_hub:browser_tests",
+    "//chrome/browser/ash/scalable_iph:browser_tests",
     "//chrome/browser/ash/system_logs:browser_tests",
     "//chrome/browser/ash/system_web_apps:browser_tests",
     "//chrome/browser/ash/video_conference:browser_tests",
