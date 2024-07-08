@@ -327,9 +327,9 @@ class LocalStorageImpl::StorageAreaHolder final
  private:
   raw_ptr<LocalStorageImpl> context_;
   blink::StorageKey storage_key_;
-  StorageAreaImpl area_;
   bool has_bindings_ = false;
   bool has_written_access_meta_data_ = false;
+  StorageAreaImpl area_;
 };
 
 LocalStorageImpl::LocalStorageImpl(
