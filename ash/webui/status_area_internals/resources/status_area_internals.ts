@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import './privacy_indicator_app_manager.js';
 
@@ -83,6 +84,12 @@ export class StatusAreaInternalsElement extends PolymerElement {
 
     const toggled = e.detail;
     pageHandler.setIsInUserChildSession(toggled);
+  }
+
+  onHmrConsentStatusReset(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    pageHandler.resetHmrConsentStatus();
   }
 }
 

@@ -40,11 +40,11 @@ class StatusAreaInternalsHandler
   void ToggleVideoConferenceTray(bool visible) override;
   void ToggleProjectorTray(bool visible) override;
   void SetIsInUserChildSession(bool in_child_session) override;
-
   void TriggerPrivacyIndicators(const std::string& app_id,
                                 const std::string& app_name,
                                 bool is_camera_used,
                                 bool is_microphone_used) override;
+  void ResetHmrConsentStatus() override;
 
  private:
   friend class StatusAreaInternalsHandlerTest;

@@ -23,6 +23,7 @@
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -126,6 +127,11 @@ void StatusAreaInternalsHandler::SetIsInUserChildSession(
     bool in_child_session) {
   scoped_fake_model_->fake_model()->set_is_in_user_child_session(
       in_child_session);
+}
+
+void StatusAreaInternalsHandler::ResetHmrConsentStatus() {
+  chromeos::MagicBoostState::Get()->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kUnset);
 }
 
 }  // namespace ash

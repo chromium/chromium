@@ -38,12 +38,38 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
+
+namespace {
+
+// A class that mocks `MagicBoostStateAsh` to use in tests.
+class TestMagicBoostState : public chromeos::MagicBoostState {
+ public:
+  TestMagicBoostState() = default;
+
+  TestMagicBoostState(const TestMagicBoostState&) = delete;
+  TestMagicBoostState& operator=(const TestMagicBoostState&) = delete;
+
+  ~TestMagicBoostState() override = default;
+
+  // chromeos::MagicBoostState:
+  void AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus consent_status) override {
+    UpdateHMRConsentStatus(consent_status);
+  }
+
+  int32_t AsyncIncrementHMRConsentWindowDismissCount() override { return 0; }
+  void AsyncWriteHMREnabled(bool enabled) override {}
+  void DisableOrcaFeature() override {}
+};
+
+}  // namespace
 
 class StatusAreaInternalsHandlerTest : public AshTestBase {
  public:
@@ -220,6 +246,25 @@ TEST_F(StatusAreaInternalsHandlerTest, SetIsInUserChildSession) {
                    ->header_for_testing()
                    ->GetSupervisedButtonForTest()
                    ->GetVisible());
+}
+
+TEST_F(StatusAreaInternalsHandlerTest, ResetHmrConsentStatus) {
+  TestMagicBoostState test_magic_boost_state;
+
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
+  ASSERT_TRUE(magic_boost_state);
+
+  magic_boost_state->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kApproved);
+  ASSERT_EQ(chromeos::HMRConsentStatus::kApproved,
+            magic_boost_state->hmr_consent_status());
+
+  // `ResetHmrConsentStatus()` should reset the consent status appropriately.
+  handler_remote()->ResetHmrConsentStatus();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(chromeos::HMRConsentStatus::kUnset,
+            magic_boost_state->hmr_consent_status());
 }
 
 }  // namespace ash

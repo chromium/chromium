@@ -35,4 +35,8 @@ interface PageHandler {
   // Triggers the privacy indicators in the status area.
   TriggerPrivacyIndicators(string app_id, string app_name, bool is_camera_used,
     bool is_microphone_used);
+
+  // Resets Help Me Write consent status.
+  // Used to validate the Help Me Write's opt-in flow.
+  ResetHmrConsentStatus();
 };
