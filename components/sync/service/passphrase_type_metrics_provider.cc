@@ -70,22 +70,28 @@ PassphraseTypeForMetrics GetPassphraseTypeForAllProfiles(
 }  // namespace
 
 PassphraseTypeMetricsProvider::PassphraseTypeMetricsProvider(
+    bool use_cached_passphrase_type,
     const GetAllSyncServicesCallback& get_all_sync_services_callback)
-    : get_all_sync_services_callback_(get_all_sync_services_callback) {}
+    : use_cached_passphrase_type_(use_cached_passphrase_type),
+      get_all_sync_services_callback_(get_all_sync_services_callback) {}
 
 PassphraseTypeMetricsProvider::~PassphraseTypeMetricsProvider() = default;
 
 bool PassphraseTypeMetricsProvider::ProvideHistograms() {
+  const std::vector<const SyncService*>& sync_services =
+      get_all_sync_services_callback_.Run();
+  if (sync_services.empty() && use_cached_passphrase_type_) {
+    // Record later rather than record kUnknown.
+    return false;
+  }
+
   // TODO(crbug.com/347711860): Remove Sync.PassphraseType2 on 06/2025 once
-  // Sync.PassphraseType3 has been available for a year.
+  // Sync.PassphraseType4 has been available for a year.
   base::UmaHistogramEnumeration(
-      "Sync.PassphraseType2",
-      GetPassphraseTypeForAllProfiles(get_all_sync_services_callback_.Run(),
-                                      /*wait_transport_active=*/true));
-  base::UmaHistogramEnumeration(
-      "Sync.PassphraseType3",
-      GetPassphraseTypeForAllProfiles(get_all_sync_services_callback_.Run(),
-                                      /*wait_transport_active=*/false));
+      use_cached_passphrase_type_ ? "Sync.PassphraseType4"
+                                  : "Sync.PassphraseType2",
+      GetPassphraseTypeForAllProfiles(sync_services,
+                                      !use_cached_passphrase_type_));
   return true;
 }
 

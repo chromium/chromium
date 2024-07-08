@@ -1197,7 +1197,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
-    TODO(crbug.com/347711860): Remove this on 06/2025, once Sync.PassphraseType3
+    TODO(crbug.com/347711860): Remove this on 06/2025, once Sync.PassphraseType4
     has been available for a year. That one relies on a pref that caches the
     passphrase type and thus can record the correct value before sync engine
     initialization.
@@ -1207,7 +1207,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.PassphraseType3" enum="PassphraseTypeForMetrics"
+<histogram name="Sync.PassphraseType4" enum="PassphraseTypeForMetrics"
     expires_after="never">
 <!-- expires-never: important for UMA filtering. -->
 
@@ -1216,7 +1216,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Sync passphrase type collected at each metrics upload. The implementation
     relies on the kSyncCachedPassphraseType pref, and thus can record the
-    correct value before sync engine initialization.
+    correct value before sync engine initialization. Recorded only after profile
+    initialization.
   </summary>
 </histogram>
 
