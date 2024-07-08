@@ -137,7 +137,7 @@ class EnterpriseCompanionApp {
         network::SharedURLLoaderFactory::Create(
             std::move(pending_url_loader_factory));
 
-    VLOG(1) << "Launching Chrome Enterprise Companion";
+    VLOG(1) << "Launching Chrome Enterprise Companion App";
     stub_ =
         CreateEnterpriseCompanionServiceStub(CreateEnterpriseCompanionService(
             CreateDMClient(

@@ -42,18 +42,18 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("enterprise_companion_event_logging",
                                         R"(
         semantics {
-          sender: "Chrome Enterprise Companion"
+          sender: "Chrome Enterprise Companion App"
           description:
-            "Service logging for the Chrome Enterprise Companion"
+            "Service logging for the Chrome Enterprise Companion App"
           trigger: "Periodic tasks."
-          data: "Metrics about the Chrome Enterprise Companion."
+          data: "Metrics about the Chrome Enterprise Companion App."
           destination: GOOGLE_OWNED_SERVICE
         }
         policy {
           cookies_allowed: NO
           setting:
             "This feature cannot be disabled other than by uninstalling the "
-            "Chrome Enterprise Companion."
+            "Chrome Enterprise Companion App."
         })");
 
 // An individual event logger. Events are locally batched and flushed to the

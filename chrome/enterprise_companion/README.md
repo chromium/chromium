@@ -1,10 +1,10 @@
-# Chrome Enterprise Companion
+# Chrome Enterprise Companion App
 
-Chrome Enterprise Companion (CEC) is an elevated daemon for MacOS and Windows
-that handles the enterprise device management features which are not feasible to
-implement in browser.
+Chrome Enterprise Companion App (CECA) is an elevated daemon for MacOS and
+Windows that handles the enterprise device management features which are not
+feasible to implement in browser.
 
-The mission of CEC is to empower development of client-side enterprise features
+The mission of CECA is to empower development of client-side enterprise features
 and reduce complexity by decoupling enterprise functionality from the updater
 client.
 
@@ -12,7 +12,7 @@ client.
 
 ### Event Logging
 
-CEC collects service-related data and transmits that to a remote logging service
+CECA collects service-related data and transmits that to a remote logging service
 via the EventLogger interface. The collected data is represented by the proto
 files in //chrome/enterprise_companion/proto.
 

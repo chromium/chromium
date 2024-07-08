@@ -15,7 +15,7 @@ namespace enterprise_companion {
 
 class EventLoggerManager;
 
-// The core of the enterprise companion. All functions and callbacks must be
+// The core of the Enterprise Companion App. All functions and callbacks must be
 // called on the same sequence.
 class EnterpriseCompanionService {
  public:

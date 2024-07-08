@@ -7,7 +7,7 @@
 
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
-// Utilities useful to clients of Chrome Enterprise Companion.
+// Utilities useful to clients of Chrome Enterprise Companion App.
 
 namespace enterprise_companion {
 
