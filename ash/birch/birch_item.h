@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
@@ -392,9 +393,9 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
 // media.
 class ASH_EXPORT BirchLostMediaItem : public BirchItem {
  public:
-  BirchLostMediaItem(const std::u16string& source_title,
+  BirchLostMediaItem(const GURL& source_url,
                      const std::u16string& media_title,
-                     ui::ImageModel icon_image,
+                     bool is_video_conference_tab,
                      base::RepeatingClosure activation_callback);
   BirchLostMediaItem(BirchLostMediaItem&&);
   BirchLostMediaItem(const BirchLostMediaItem&);
@@ -409,15 +410,16 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
-  const std::u16string& source_title() const { return source_title_; }
+  const GURL& source_url() const { return source_url_; }
   const std::u16string& media_title() const { return media_title_; }
+  bool is_video_conference_tab() const { return is_video_conference_tab_; }
 
  private:
-  static std::u16string GetSubtitle(const std::u16string& media_title);
+  static std::u16string GetSubtitle(bool is_video_conference_tab);
 
-  std::u16string source_title_;
+  GURL source_url_;
   std::u16string media_title_;
-  ui::ImageModel icon_image_;
+  bool is_video_conference_tab_;
   base::RepeatingClosure activation_callback_;
 };
 

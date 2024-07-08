@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_UI_ASH_BIRCH_BIRCH_LOST_MEDIA_PROVIDER_H_
 #define CHROME_BROWSER_UI_ASH_BIRCH_BIRCH_LOST_MEDIA_PROVIDER_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "components/favicon_base/favicon_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,9 +24,13 @@ class Profile;
 
 namespace ash {
 
+class VideoConferenceTrayController;
+
 // Manages fetching tabs that are playing media by subscribing to
 // MediaControllerObserver. This provider will return the most recent last
-// active tab the user was on if there are multiple tabs playing media.
+// active tab the user was on if there are multiple tabs playing media. When the
+// `BirchVideoConferenceSuggestions` flag is turned on, the provider will also
+// return active video conference tabs.
 class ASH_EXPORT BirchLostMediaProvider
     : public BirchDataProvider,
       public media_session::mojom::MediaControllerObserver {
@@ -50,24 +59,29 @@ class ASH_EXPORT BirchLostMediaProvider
  private:
   friend class BirchKeyedServiceTest;
 
-  // A struct to help with BirchLostMediaItem creation.
-  struct TempMediaItem {
-    std::u16string source_title;
-    std::u16string media_title;
-    TempMediaItem(const std::u16string& source_title,
-                  const std::u16string& media_title)
-        : source_title(source_title), media_title(media_title) {}
-  };
+  // This callback executes once video conference app data is available from the
+  // `video_conference_controller_`, and passes vc app data to the birch model.
+  void OnVideoConferencingDataAvailable(
+      VideoConferenceManagerAsh::MediaApps media_apps);
 
-  void OnFavIconDataAvailable(
-      const TempMediaItem& temp_item,
-      const favicon_base::FaviconImageResult& image_result);
+  // Passes media apps data that is observed from MediaSessionMetaDataChanged()
+  // to the birch model.
+  void SetMediaAppsFromMediaController();
 
-  void OnItemPressed();
+  // Handles activation events by either returning to a specific video
+  // conference session or calling `Raise()` on the media controller to activate
+  // the correct media tab. A valid `vc_id` is required to return to the vc
+  // session; otherwise, we can infer that the item is a media tab.
+  void OnItemPressed(std::optional<base::UnguessableToken> vc_id);
 
-  void set_media_controller_for_testing(
-      mojo::Remote<media_session::mojom::MediaController> controller) {
-    media_controller_remote_ = std::move(controller);
+  void set_fake_media_controller_for_testing(
+      mojo::Remote<media_session::mojom::MediaController> fake_controller) {
+    media_controller_remote_ = std::move(fake_controller);
+  }
+
+  void set_fake_video_conference_controller_for_testing(
+      VideoConferenceTrayController* fake_controller) {
+    video_conference_controller_ = fake_controller;
   }
 
   // The media controller that is responsible for executing media actions.
@@ -82,7 +96,11 @@ class ASH_EXPORT BirchLostMediaProvider
 
   // The origin source of the media item. This will assist in the creation of a
   // complete GURL source on birch item creation.
-  std::u16string source_title_;
+  std::u16string source_url_;
+
+  // `VideoConferenceTrayController` used to get active video conference
+  // session.
+  raw_ptr<VideoConferenceTrayController> video_conference_controller_;
 
   // Used for loading favicons.
   base::CancelableTaskTracker cancelable_task_tracker_;

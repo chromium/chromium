@@ -834,15 +834,16 @@ std::u16string BirchSelfShareItem::GetSubtitle(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BirchLostMediaItem::BirchLostMediaItem(const std::u16string& source_title,
-                                       const std::u16string& media_title,
-                                       ui::ImageModel icon_image,
-                                       base::RepeatingClosure callback)
-    : BirchItem(media_title, GetSubtitle(source_title)),
-      source_title_(source_title),
+BirchLostMediaItem::BirchLostMediaItem(
+    const GURL& source_url,
+    const std::u16string& media_title,
+    const bool is_video_conference_tab,
+    base::RepeatingClosure activation_callback)
+    : BirchItem(media_title, GetSubtitle(is_video_conference_tab)),
+      source_url_(source_url),
       media_title_(media_title),
-      icon_image_(icon_image),
-      activation_callback_(std::move(callback)) {}
+      is_video_conference_tab_(is_video_conference_tab),
+      activation_callback_(std::move(activation_callback)) {}
 
 BirchLostMediaItem::BirchLostMediaItem(BirchLostMediaItem&&) = default;
 
@@ -863,16 +864,18 @@ BirchItemType BirchLostMediaItem::GetType() const {
 std::string BirchLostMediaItem::ToString() const {
   std::stringstream ss;
   ss << "Lost Media item: {ranking: " << ranking()
-     << ", Source Title: " << source_title_ << ", Media Title: " << media_title_
-     << "}";
+     << ", Source Url: " << source_url_ << ", Media Title: " << media_title_
+     << ", Is Video Conference Tab: " << is_video_conference_tab_ << "}";
   return ss.str();
 }
 
 void BirchLostMediaItem::PerformAction() {
+  // This needs to be called before running `activation_callback_` because
+  // running the callback may cause the item to be deleted.
+  RecordActionMetrics();
   if (activation_callback_) {
     activation_callback_.Run();
   }
-  RecordActionMetrics();
 }
 
 void BirchLostMediaItem::PerformSecondaryAction() {
@@ -880,14 +883,14 @@ void BirchLostMediaItem::PerformSecondaryAction() {
 }
 
 void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(icon_image_, /*success=*/true);
+  GetFaviconImage(source_url_, std::move(callback));
 }
 
 // static
-std::u16string BirchLostMediaItem::GetSubtitle(
-    const std::u16string& source_title) {
+std::u16string BirchLostMediaItem::GetSubtitle(bool is_video_conference_tab) {
   // TODO(b/340347606): Add strings to ash_strings.grd.
-  return u"Currently playing media • ";
+  return (is_video_conference_tab ? u"Ongoing · Switch to tab"
+                                  : u"Playing · Switch to tab");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

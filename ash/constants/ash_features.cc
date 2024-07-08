@@ -3012,6 +3012,12 @@ BASE_FEATURE(kVcBackgroundReplace,
              "VCBackgroundReplace",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the birch model provides lost video conference tab
+// suggestions.
+BASE_FEATURE(kBirchVideoConferenceSuggestions,
+             "BirchVideoConferenceSuggestions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to resize thumbnail in VcBackgroundApp.
 BASE_FEATURE(kVcResizeThumbnail,
              "VcResizeThumbnail",
@@ -4655,6 +4661,10 @@ bool IsUpstreamTrustedReportsFirmwareEnabled() {
 
 bool IsVideoConferenceEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementVideoConference);
+}
+
+bool IsBirchVideoConferenceSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(kBirchVideoConferenceSuggestions);
 }
 
 bool IsStopAllScreenShareEnabled() {

@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
@@ -195,7 +196,7 @@ class TestLostMediaProvider : public BirchDataProvider {
   // BirchDataProvider:
   void RequestBirchDataFetch() override {
     std::vector<BirchLostMediaItem> items;
-    items.emplace_back(u"source title", u"media title", ui::ImageModel(),
+    items.emplace_back(GURL("https://www.source.com"), u"media title", false,
                        base::BindRepeating(&TestLostMediaProvider::OnActivation,
                                            weak_factory_.GetWeakPtr()));
     Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));

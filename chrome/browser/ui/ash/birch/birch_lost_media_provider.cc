@@ -6,12 +6,20 @@
 
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/system/video_conference/video_conference_common.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "components/favicon/core/favicon_service.h"
 #include "services/media_session/public/cpp/media_session_service.h"
+#include "ui/base/models/image_model.h"
 
 namespace ash {
 
@@ -35,6 +43,9 @@ BirchLostMediaProvider::BirchLostMediaProvider(Profile* profile)
     media_controller_remote_->AddObserver(
         media_observer_receiver_.BindNewPipeAndPassRemote());
   }
+  if (features::IsBirchVideoConferenceSuggestionsEnabled()) {
+    video_conference_controller_ = VideoConferenceTrayController::Get();
+  }
 }
 
 BirchLostMediaProvider::~BirchLostMediaProvider() = default;
@@ -45,56 +56,75 @@ void BirchLostMediaProvider::MediaSessionMetadataChanged(
       metadata.value_or(media_session::MediaMetadata());
   if (pending_metadata.has_value()) {
     media_title_ = pending_metadata->title;
-    source_title_ = pending_metadata->source_title;
+    source_url_ = pending_metadata->source_title;
   }
 }
 
 void BirchLostMediaProvider::RequestBirchDataFetch() {
-  if (!media_controller_remote_.is_bound()) {
-    Shell::Get()->birch_model()->SetLostMediaItems({});
+  if (video_conference_controller_) {
+    video_conference_controller_->GetMediaApps(base::BindOnce(
+        &BirchLostMediaProvider::OnVideoConferencingDataAvailable,
+        weak_factory_.GetWeakPtr()));
     return;
   }
 
-  favicon::FaviconService* favicon_service =
-      FaviconServiceFactory::GetForProfile(profile_,
-                                           ServiceAccessType::EXPLICIT_ACCESS);
-  if (!favicon_service) {
-    return;
-  }
-
-  if (media_title_.empty() || source_title_.empty()) {
-    Shell::Get()->birch_model()->SetLostMediaItems({});
-    return;
-  }
-
-  TempMediaItem temp_item(source_title_, media_title_);
-  // source title doesn't contain necessary prefix to make it a valid URL so we
-  // must append to it.
-  const GURL website_url = GURL(u"https://www." + source_title_);
-  favicon_service->GetFaviconImageForPageURL(
-      website_url,
-      base::BindOnce(&BirchLostMediaProvider::OnFavIconDataAvailable,
-                     weak_factory_.GetWeakPtr(), temp_item),
-      &cancelable_task_tracker_);
+  // If `video_conference_controller_` doesn't exist, then
+  // skip setting vc apps and call to set media apps instead.
+  SetMediaAppsFromMediaController();
 }
 
-void BirchLostMediaProvider::OnFavIconDataAvailable(
-    const TempMediaItem& temp_item,
-    const favicon_base::FaviconImageResult& image_result) {
+void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
+    VideoConferenceManagerAsh::MediaApps apps) {
   std::vector<BirchLostMediaItem> items;
+  // If video conference apps exist, return the most recently active app data to
+  // the birch model.
+  if (!apps.empty()) {
+    items.emplace_back(
+        /*source_url=*/apps[0]->url.value_or(GURL()),
+        /*media_title=*/apps[0]->title,
+        /*is_video_conference_tab=*/true,
+        /*activation_callback=*/
+        base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
+                            weak_factory_.GetWeakPtr(), apps[0]->id));
+    Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));
+    return;
+  }
 
-  items.emplace_back(temp_item.source_title, temp_item.media_title,
-                     (image_result.image.IsEmpty()
-                          ? ui::ImageModel()
-                          : ui::ImageModel::FromImage(image_result.image)),
-                     base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
-                                         weak_factory_.GetWeakPtr()));
+  // If video conference apps doesn't exist, then call to set media apps.
+  SetMediaAppsFromMediaController();
+}
 
+void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
+  // Returns early if no media controller is bound or if pertinent media app
+  // details are missing.
+  if (!media_controller_remote_.is_bound() || media_title_.empty() ||
+      source_url_.empty()) {
+    Shell::Get()->birch_model()->SetLostMediaItems({});
+    return;
+  }
+
+  std::vector<BirchLostMediaItem> items;
+  // `source_url_` doesn't contain necessary prefix to make it a valid GURL so
+  // we must append a prefix to it.
+  items.emplace_back(
+      /*source_url=*/GURL(u"https://www." + source_url_),
+      /*media_title=*/media_title_,
+      /*is_video_conference_tab=*/false,
+      /*activation_callback=*/
+      base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
+                          weak_factory_.GetWeakPtr(), std::nullopt));
   Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));
 }
 
-void BirchLostMediaProvider::OnItemPressed() {
-  media_controller_remote_->Raise();
+void BirchLostMediaProvider::OnItemPressed(
+    std::optional<base::UnguessableToken> vc_id) {
+  if (vc_id.has_value()) {
+    if (video_conference_controller_) {
+      video_conference_controller_->ReturnToApp(vc_id.value());
+    }
+  } else {
+    media_controller_remote_->Raise();
+  }
 }
 
 void BirchLostMediaProvider::MediaSessionActionsChanged(

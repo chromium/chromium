@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/unguessable_token.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -192,7 +193,9 @@ class BirchModelTest : public AshTestBase {
   BirchModelTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather}, {});
+        {features::kForestFeature, features::kBirchWeather,
+         features::kBirchVideoConferenceSuggestions},
+        {});
   }
 
   void SetUp() override {
@@ -295,6 +298,8 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
+  model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
 
   // Adding file items sets all data as fresh, notifying consumers.
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
@@ -562,8 +567,8 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
-  lost_media_item_list.emplace_back(u"source title", u"media title",
-                                    ui::ImageModel(), base::DoNothing());
+  lost_media_item_list.emplace_back(GURL("https://www.source.com/"),
+                                    u"media title", false, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
   ASSERT_TRUE(model->IsDataFresh());
@@ -1091,8 +1096,8 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
-  lost_media_item_list.emplace_back(u"source title", u"media title",
-                                    ui::ImageModel(), base::DoNothing());
+  lost_media_item_list.emplace_back(GURL("https://www.source.com/"),
+                                    u"media title", false, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
   EXPECT_TRUE(model->IsDataFresh());

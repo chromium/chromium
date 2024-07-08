@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -338,7 +339,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {features::kForestFeature,
-         ash::features::kReleaseNotesNotificationAllChannels},
+         ash::features::kReleaseNotesNotificationAllChannels,
+         ash::features::kBirchVideoConferenceSuggestions},
         {});
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -374,10 +376,14 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
     // Inject the test media controller into the media controls view.
     media_controller_ = std::make_unique<TestMediaController>();
-    auto* lost_media_provider = static_cast<BirchLostMediaProvider*>(
-        birch_keyed_service()->GetLostMediaProvider());
-    lost_media_provider->set_media_controller_for_testing(
+
+    GetLostMediaProvider()->set_fake_media_controller_for_testing(
         media_controller_->CreateMediaControllerRemote());
+
+    vc_controller_ = std::make_unique<FakeVideoConferenceTrayController>();
+
+    GetLostMediaProvider()->set_fake_video_conference_controller_for_testing(
+        vc_controller_.get());
   }
 
   void SetSessionServiceToReturnOpenTabsDelegate(bool return_delegate) {
@@ -387,6 +393,10 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    GetLostMediaProvider()->set_fake_video_conference_controller_for_testing(
+        nullptr);
+    vc_controller_.reset();
+    media_controller_.reset();
     send_tab_to_self_model_ = nullptr;
     mount_point_.reset();
     birch_keyed_service_ = nullptr;
@@ -436,17 +446,24 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     metadata.source_title = u"testtube.com-1";
     metadata.title = u"title-1";
 
-    auto* lost_media_provider = static_cast<BirchLostMediaProvider*>(
-        birch_keyed_service()->GetLostMediaProvider());
-    lost_media_provider->MediaSessionMetadataChanged(metadata);
+    GetLostMediaProvider()->MediaSessionMetadataChanged(metadata);
   }
 
   void SimulateMediaMetadataEnd() {
     media_session::MediaMetadata metadata;
+    GetLostMediaProvider()->MediaSessionMetadataChanged(metadata);
+  }
 
-    auto* lost_media_provider = static_cast<BirchLostMediaProvider*>(
-        birch_keyed_service()->GetLostMediaProvider());
-    lost_media_provider->MediaSessionMetadataChanged(metadata);
+  void ClearMediaApps() { vc_controller_->ClearMediaApps(); }
+
+  void AddMediaApp() {
+    vc_controller_->AddMediaApp(
+        crosapi::mojom::VideoConferenceMediaAppInfo::New(
+            /*id=*/base::UnguessableToken::Create(),
+            /*last_activity_time=*/base::Time::Now(),
+            /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+            /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
+            /*url=*/GURL("https://meet.google.com/0")));
   }
 
   void ClearReleaseNotesSurfacesTimesLeftToShowPref() {
@@ -472,6 +489,11 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     return ash_test_helper()->test_session_controller_client();
   }
 
+  BirchLostMediaProvider* GetLostMediaProvider() {
+    return static_cast<BirchLostMediaProvider*>(
+        birch_keyed_service()->GetLostMediaProvider());
+  }
+
   MockFileSuggestKeyedService* file_suggest_service() {
     return file_suggest_service_;
   }
@@ -488,6 +510,10 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   TestMediaController* media_controller() const {
     return media_controller_.get();
+  }
+
+  FakeVideoConferenceTrayController* vc_controller() const {
+    return vc_controller_.get();
   }
 
   syncer::TestSyncService* sync_service() { return sync_service_; }
@@ -544,6 +570,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<TestMediaController> media_controller_;
 
+  std::unique_ptr<FakeVideoConferenceTrayController> vc_controller_;
+
   MockOpenTabsUIDelegate open_tabs_delegate_;
 
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage_;
@@ -555,11 +583,11 @@ TEST_F(BirchKeyedServiceTest, HasDataProviders) {
   WaitUntilFileSuggestServiceReady(
       ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           GetProfile()));
-
   EXPECT_TRUE(birch_keyed_service()->GetCalendarProvider());
   EXPECT_TRUE(birch_keyed_service()->GetFileSuggestProvider());
   EXPECT_TRUE(birch_keyed_service()->GetRecentTabsProvider());
   EXPECT_TRUE(birch_keyed_service()->GetSelfShareProvider());
+  EXPECT_TRUE(birch_keyed_service()->GetLostMediaProvider());
 }
 
 TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {
@@ -792,6 +820,7 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
   BirchModel* model = Shell::Get()->birch_model();
   BirchDataProvider* lost_media_provider =
       birch_keyed_service()->GetLostMediaProvider();
+  ClearMediaApps();
 
   EXPECT_EQ(model->GetLostMediaItemsForTest().size(), 0u);
 
@@ -805,23 +834,60 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
 
   auto& lost_media_items = model->GetLostMediaItemsForTest();
   EXPECT_EQ(lost_media_items.size(), 1u);
-  EXPECT_EQ(lost_media_items[0].source_title(), u"testtube.com-1");
+  EXPECT_EQ(lost_media_items[0].source_url(),
+            GURL("https://www.testtube.com-1"));
   EXPECT_EQ(lost_media_items[0].title(), u"title-1");
+  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
 
-  // Item should still show after activation.
+  // Media item should still show after activation.
   lost_media_items[0].PerformAction();
   lost_media_items = model->GetLostMediaItemsForTest();
   lost_media_provider->RequestBirchDataFetch();
   EXPECT_EQ(lost_media_items.size(), 1u);
-  EXPECT_EQ(lost_media_items[0].source_title(), u"testtube.com-1");
+  EXPECT_EQ(lost_media_items[0].source_url(),
+            GURL("https://www.testtube.com-1"));
   EXPECT_EQ(lost_media_items[0].title(), u"title-1");
+  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
 
-  // There should be no items if metadata does not have a valid `source_title`
+  // There should be no items if metadata does not have a valid `source_url`
   // or `title`.
   SimulateMediaMetadataEnd();
   lost_media_provider->RequestBirchDataFetch();
   lost_media_items = model->GetLostMediaItemsForTest();
-  EXPECT_EQ(lost_media_items.size(), 0u);
+  ASSERT_EQ(lost_media_items.size(), 0u);
+
+  // There should be one video conference item if there is both vc and
+  // media items available.
+  SimulateMediaMetadataInit();
+  AddMediaApp();
+  lost_media_provider->RequestBirchDataFetch();
+  model->SetCalendarItems(std::vector<BirchCalendarItem>());
+  model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+
+  lost_media_items = model->GetLostMediaItemsForTest();
+  ASSERT_EQ(lost_media_items.size(), 1u);
+  EXPECT_EQ(lost_media_items[0].source_url(),
+            GURL("https://meet.google.com/0"));
+  EXPECT_EQ(lost_media_items[0].title(), u"Google Meet");
+  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), true);
+
+  // VC item still should show after activation.
+  lost_media_items[0].PerformAction();
+  lost_media_items = model->GetLostMediaItemsForTest();
+  lost_media_provider->RequestBirchDataFetch();
+  model->SetCalendarItems(std::vector<BirchCalendarItem>());
+  model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  ASSERT_EQ(lost_media_items.size(), 1u);
+  EXPECT_EQ(lost_media_items[0].source_url(),
+            GURL("https://meet.google.com/0"));
+  EXPECT_EQ(lost_media_items[0].title(), u"Google Meet");
+  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), true);
 }
 
 TEST_F(BirchKeyedServiceTest, NoTabSuggestionsWithDisabledChromeSyncPref) {

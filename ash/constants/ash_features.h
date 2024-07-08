@@ -76,6 +76,8 @@ BASE_DECLARE_FEATURE(kAutozoomNudgeSessionReset);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBatterySaver);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBirchWeather);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBirchWeatherV2);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kBirchVideoConferenceSuggestions);
 enum BatterySaverNotificationBehavior { kBSMAutoEnable, kBSMOptIn };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<BatterySaverNotificationBehavior>
@@ -1042,6 +1044,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAudioSelectionImprovementEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBackgroundBlurEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAvailable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAlwaysOn();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBirchVideoConferenceSuggestionsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBirchWeatherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBirchWeatherV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothQualityReportEnabled();
