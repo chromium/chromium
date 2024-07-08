@@ -87,9 +87,6 @@
       <if expr="is_macosx">
       <structure type="lottie" name="SCREEN_SHARING_TOGGLE_ANIMATION_JSON" file="screen_sharing/toggle_animation.json" compress="gzip" />
       </if>
-
-       <!-- Mahi -->
-      <structure type="lottie" name="IDR_MAGIC_BOOST_DISCLAIMER_IMAGE" file="chromeos/mahi/magic_boost_disclaimer_image.json" compress="gzip" />
     </structures>
   </release>
 </grit>
