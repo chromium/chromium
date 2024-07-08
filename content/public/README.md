@@ -64,9 +64,6 @@ e.g. `//content/browser`, `//content/renderer` etc...
   higher level.
 - We avoid single-method delegate interfaces, and in those case we use
   callbacks.
-- The `const` identifier can be added to simple getter APIs implemented by
-  content. Don't add `const` to interfaces implemented by the embedder, where
-  we can't make assumptions about what the embedder needs to implement it.
 - Observer interfaces (i.e. `WebContentsObserver`, `RenderFrameObserver`)
   should only have void methods. This is because otherwise the order that
   observers are registered would matter, and we don't want that.
