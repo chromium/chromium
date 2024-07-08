@@ -99,14 +99,14 @@ class SiteDataReaderTest : public ::testing::Test {
   // in test cases that don't care about this.
   ::testing::NiceMock<testing::MockSiteDataImplOnDestroyDelegate> delegate_;
 
+  testing::NoopSiteDataStore data_store_;
+
   // The SiteDataImpl object used in these tests.
   scoped_refptr<internal::SiteDataImpl> test_impl_;
 
   // A SiteDataReader object associated with the origin used
   // to create this object.
   std::unique_ptr<SiteDataReader> reader_;
-
-  testing::NoopSiteDataStore data_store_;
 };
 
 TEST_F(SiteDataReaderTest, TestAccessors) {
