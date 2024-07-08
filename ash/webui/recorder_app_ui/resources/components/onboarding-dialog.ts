@@ -4,7 +4,6 @@
 
 import '../components/cra/cra-button.js';
 import '../components/cra/cra-image.js';
-import '../components/cra/cra-pagination.js';
 
 import {
   css,
@@ -76,16 +75,15 @@ export class OnboardingDialog extends ReactiveLitElement {
       white-space: pre-wrap;
     }
 
-    #actions {
-      display: flex;
-      flex-flow: row;
-      justify-content: space-between;
-    }
-
     #buttons {
       display: flex;
       flex-flow: row;
       gap: 8px;
+      justify-content: right;
+
+      & > .left {
+        margin-right: auto;
+      }
     }
   `;
 
@@ -122,6 +120,10 @@ export class OnboardingDialog extends ReactiveLitElement {
     }
   }
 
+  private close() {
+    this.dispatchEvent(new Event('close'));
+  }
+
   private renderDialog(
     imageName: string,
     header: string,
@@ -141,11 +143,7 @@ export class OnboardingDialog extends ReactiveLitElement {
       <div id="content">
         <div id="header">${header}</div>
         <div id="description">${description}</div>
-        <div id="actions">
-          <cra-pagination dots="3" .selected=${this.step.value}>
-          </cra-pagination>
-          <div id="buttons">${buttons}</div>
-        </div>
+        <div id="buttons">${buttons}</div>
       </div>
     </div>`;
   }
@@ -178,8 +176,11 @@ export class OnboardingDialog extends ReactiveLitElement {
           this.platformHandler.installSoda();
           this.step.value = 2;
         };
-        const cancelTranscription = () => {
-          this.step.value = 2;
+        const disableTranscription = () => {
+          settings.mutate((s) => {
+            s.transcriptionEnabled = TranscriptionEnableState.DISABLED_FIRST;
+          });
+          this.close();
         };
         return this.renderDialog(
           'onboarding_transcription',
@@ -187,9 +188,15 @@ export class OnboardingDialog extends ReactiveLitElement {
           i18n.onboardingDialogTranscriptionDescription,
           html`
             <cra-button
+              .label=${i18n.onboardingDialogTranscriptionDeferButton}
+              class="left"
+              button-style="secondary"
+              @click=${this.close}
+            ></cra-button>
+            <cra-button
               .label=${i18n.onboardingDialogTranscriptionCancelButton}
               button-style="secondary"
-              @click=${cancelTranscription}
+              @click=${disableTranscription}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionTurnOnButton}
@@ -200,22 +207,25 @@ export class OnboardingDialog extends ReactiveLitElement {
       }
       case 2: {
         // TODO: b/344785475 - Implement speaker ID enable/disable logic.
-        const nextStep = () => {
-          this.dispatchEvent(new Event('close'));
-        };
         return this.renderDialog(
           'onboarding_speaker_id',
           i18n.onboardingDialogSpeakerIdHeader,
           i18n.onboardingDialogSpeakerIdDescription,
           html`
             <cra-button
+              .label=${i18n.onboardingDialogSpeakerIdDeferButton}
+              class="left"
+              button-style="secondary"
+              @click=${this.close}
+            ></cra-button>
+            <cra-button
               .label=${i18n.onboardingDialogSpeakerIdDisallowButton}
               button-style="secondary"
-              @click=${nextStep}
+              @click=${this.close}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogSpeakerIdAllowButton}
-              @click=${nextStep}
+              @click=${this.close}
             ></cra-button>
           `,
         );

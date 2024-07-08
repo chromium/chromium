@@ -17,19 +17,25 @@
   <message desc="Button to enable speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_ALLOW_BUTTON">
     Allow
   </message>
+  <message desc="Button to defer enabling speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DEFER_BUTTON">
+    Maybe later
+  </message>
   <message desc="Description of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION">
     When you allow this, Recorder will process your audio recordings using advanced audio analysis.
 
 You can turn this off at anytime in Settings.
   </message>
-  <message desc="Button to not enable speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DISALLOW_BUTTON">
+  <message desc="Button to disable speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DISALLOW_BUTTON">
     Don’t allow
   </message>
   <message desc="Header of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_HEADER">
     Allow Recorder to identify speakers?
   </message>
-  <message desc="Button to not enable transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_CANCEL_BUTTON">
+  <message desc="Button to disable transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_CANCEL_BUTTON">
     Cancel
+  </message>
+  <message desc="Button to defer enabling transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DEFER_BUTTON">
+    Maybe later
   </message>
   <message desc="Description of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DESCRIPTION">
     Recorder can create transcriptions for recordings with speech. Download the transcription model (up to 100MB) to get these transcriptions.
