@@ -5831,13 +5831,9 @@ void GLES2DecoderImpl::InvalidateFramebufferImpl(
       dirty = true;
       break;
     case kFramebufferInvalidate:
-      if (gl_version_info().IsLowerThanGL(4, 3)) {
-        // no-op since the function isn't supported.
-      } else {
-        api()->glInvalidateFramebufferFn(target, validated_count,
-                                         translated_attachments.data());
-        dirty = true;
-      }
+      api()->glInvalidateFramebufferFn(target, validated_count,
+                                       translated_attachments.data());
+      dirty = true;
       break;
     case kFramebufferInvalidateSub:
       // Make it an no-op because we don't have a mechanism to mark partial
@@ -10887,17 +10883,6 @@ void GLES2DecoderImpl::GetTexParameterImpl(
   }
   Texture* texture = texture_ref->texture();
   switch (pname) {
-    case GL_TEXTURE_IMMUTABLE_LEVELS:
-      if (gl_version_info().IsLowerThanGL(4, 2)) {
-        GLint levels = texture->GetImmutableLevels();
-        if (fparams) {
-          fparams[0] = static_cast<GLfloat>(levels);
-        } else {
-          iparams[0] = levels;
-        }
-        return;
-      }
-      break;
     case GL_TEXTURE_BASE_LEVEL:
       // Use shadowed value in case it's clamped; also because older MacOSX
       // stores the value on int16_t (see https://crbug.com/610153).

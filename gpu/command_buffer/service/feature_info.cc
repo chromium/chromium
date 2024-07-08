@@ -1257,9 +1257,7 @@ void FeatureInfo::InitializeFeatures() {
     }
     feature_flags_.occlusion_query_boolean = true;
     feature_flags_.use_arb_occlusion_query2_for_occlusion_query_boolean =
-        !have_ext_occlusion_query_boolean &&
-        (have_arb_occlusion_query2 || (gl_version_info_->IsAtLeastGL(3, 3) &&
-                                       gl_version_info_->IsLowerThanGL(4, 3)));
+        !have_ext_occlusion_query_boolean && have_arb_occlusion_query2;
     feature_flags_.use_arb_occlusion_query_for_occlusion_query_boolean =
         !have_ext_occlusion_query_boolean && have_arb_occlusion_query &&
         !have_arb_occlusion_query2;

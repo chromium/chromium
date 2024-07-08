@@ -26,11 +26,6 @@ struct GL_EXPORT GLVersionInfo {
                       (major_version == major && minor_version >= minor));
   }
 
-  bool IsLowerThanGL(unsigned major, unsigned minor) const {
-    return !is_es && (major_version < major ||
-                      (major_version == major && minor_version < minor));
-  }
-
   bool IsAtLeastGLES(unsigned major, unsigned minor) const {
     return is_es && (major_version > major ||
                      (major_version == major && minor_version >= minor));
