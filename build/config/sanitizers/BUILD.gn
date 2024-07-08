@@ -16,10 +16,14 @@ if (is_ios) {
 
 # libfuzzer can't cope with shared objects being unloaded, which sometimes
 # occurs for large fuzzers that involve our graphics stack. Shim out dlclose
-# so that this doesn't occur. At the moment we've only implemented this on Linux
-# since that's the only platform we use these large fuzzers - in the future
-# we could choose to do the same on Windows.
-use_dlcloseshim = use_libfuzzer && is_linux
+# so that this doesn't occur.
+#
+# dlclose() is defined by POSIX, making `is_posix` a tempting condition to use.
+# However the linker does not necessarily support `-wrap` on all POSIX
+# platforms, hence the restriction to Linux and ChromeOS. We might eventually
+# want to disable shared library unloading on all platforms, but we have not
+# noticed a need for it as the known-affected large fuzzers only run on Linux.
+use_dlcloseshim = use_libfuzzer && (is_linux || is_chromeos)
 
 # Contains the dependencies needed for sanitizers to link into executables and
 # shared_libraries.
