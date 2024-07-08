@@ -32,14 +32,8 @@ const char kHtmlFile[] = "/context_menu.html";
 @implementation ContextMenuTestCase
 
 // Tests context menu appears on a regular link.
-// TODO(crbug.com/40896394): Test is flaky on iPad simulator. Re-enable the
-// test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testContextMenu FLAKY_testContextMenu
-#else
-#define MAYBE_testContextMenu testContextMenu
-#endif
-- (void)MAYBE_testContextMenu {
+// TODO(crbug.com/40896396): Test is flaky. Re-enable the test.
+- (void)DISABLED_testContextMenu {
   const char linkID[] = "normal-link";
   NSString* const linkText = @"normal-link-text";
   const GURL pageURL = self.testServer->GetURL(kHtmlFile);
@@ -67,7 +61,8 @@ const char kHtmlFile[] = "/context_menu.html";
 
 // Tests context menu on element that has WebkitTouchCallout set to none from an
 // ancestor and overridden.
-- (void)testContextMenuWebkitTouchCalloutOverride {
+// TODO(crbug.com/40896396): Test is flaky. Re-enable the test.
+- (void)DISABLED_testContextMenuWebkitTouchCalloutOverride {
   const char linkID[] = "no-webkit-link";
   NSString* const linkText = @"no-webkit-link-text";
   const GURL pageURL = self.testServer->GetURL(kHtmlFile);
