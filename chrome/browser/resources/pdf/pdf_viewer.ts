@@ -1120,27 +1120,19 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // Always send requests of type ORIGINAL to the plugin controller, not the
     // ink controller. The ink controller always saves the edited document.
     // TODO(dstockwell): Report an error to user if this fails.
-    let result: {fileName: string, dataToSave: ArrayBuffer}|null = null;
     assert(this.currentController);
-    // <if expr="enable_pdf_ink2">
-    const shouldSaveWithPluginController = this.pdfInk2Enabled_;
-    // </if>
-    // <if expr="not enable_pdf_ink2">
-    const shouldSaveWithPluginController =
-        requestType !== SaveRequestType.ORIGINAL || !this.annotationMode_;
-    // </if>
-    if (shouldSaveWithPluginController) {
-      result = await this.currentController.save(requestType);
-    } else {
-      // <if expr="enable_ink">
+
+    // <if expr="enable_ink">
+    if (this.annotationMode_ && requestType === SaveRequestType.ORIGINAL) {
       // Request type original in annotation mode --> need to exit annotation
       // mode before saving. See https://crbug.com/919364.
       await this.exitAnnotationMode_();
       assert(!this.annotationMode_);
-      result = await this.currentController.save(SaveRequestType.ORIGINAL);
-      // </if>
     }
-    if (result == null) {
+    // </if>
+
+    const result = await this.currentController.save(requestType);
+    if (result === null) {
       // The content controller handled the save internally.
       return;
     }
