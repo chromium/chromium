@@ -191,20 +191,17 @@ class CrostiniExportImport : public KeyedService,
                            TestImportFailArchitecture);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportFailSpace);
 
-  OperationData* NewOperationData(ExportImportType type,
-                                  guest_os::GuestId id,
-                                  OnceTrackerFactory cb);
-  OperationData* NewOperationData(ExportImportType type, guest_os::GuestId id);
-  OperationData* NewOperationData(ExportImportType type);
+  void FillOperationData(ExportImportType type,
+                         guest_os::GuestId id,
+                         OnceTrackerFactory cb);
+  void FillOperationData(ExportImportType type, guest_os::GuestId id);
+  void FillOperationData(ExportImportType type);
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
-  void Start(OperationData* params,
-             base::FilePath path,
+  void Start(base::FilePath path,
              bool create_new_container,
              CrostiniManager::CrostiniResultCallback callback);
 
@@ -260,8 +257,7 @@ class CrostiniExportImport : public KeyedService,
                         CrostiniManager::CrostiniResultCallback callback,
                         CrostiniResult result);
 
-  void OpenFileDialog(OperationData* params,
-                      content::WebContents* web_contents);
+  void OpenFileDialog(content::WebContents* web_contents);
 
   std::string GetUniqueNotificationId();
 
@@ -275,10 +271,7 @@ class CrostiniExportImport : public KeyedService,
   raw_ptr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
   TrackerMap status_trackers_;
-  // |operation_data_storage_| persists the data required to complete an
-  // operation while the file selection dialog is open/operation is in progress.
-  std::unordered_map<OperationData*, std::unique_ptr<OperationData>>
-      operation_data_storage_;
+  std::unique_ptr<OperationData> operation_data_;
   // Trackers must have unique-per-profile identifiers.
   // A non-static member on a profile-keyed-service will suffice.
   int next_status_tracker_id_ = 0;

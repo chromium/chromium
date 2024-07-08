@@ -111,21 +111,16 @@ CrostiniExportImport::OperationData::OperationData(
 
 CrostiniExportImport::OperationData::~OperationData() = default;
 
-CrostiniExportImport::OperationData* CrostiniExportImport::NewOperationData(
-    ExportImportType type,
-    guest_os::GuestId container_id,
-    OnceTrackerFactory factory) {
-  auto operation_data = std::make_unique<OperationData>(
+void CrostiniExportImport::FillOperationData(ExportImportType type,
+                                             guest_os::GuestId container_id,
+                                             OnceTrackerFactory factory) {
+  CHECK(!operation_data_);
+  operation_data_ = std::make_unique<OperationData>(
       type, std::move(container_id), std::move(factory));
-  OperationData* operation_data_ptr = operation_data.get();
-  // |operation_data_storage_| takes ownership.
-  operation_data_storage_[operation_data_ptr] = std::move(operation_data);
-  return operation_data_ptr;
 }
 
-CrostiniExportImport::OperationData* CrostiniExportImport::NewOperationData(
-    ExportImportType type,
-    guest_os::GuestId container_id) {
+void CrostiniExportImport::FillOperationData(ExportImportType type,
+                                             guest_os::GuestId container_id) {
   OnceTrackerFactory factory = base::BindOnce(
       [](Profile* profile, guest_os::GuestId container_id,
          std::string notification_id, ExportImportType type,
@@ -136,44 +131,39 @@ CrostiniExportImport::OperationData* CrostiniExportImport::NewOperationData(
             std::move(container_id));
       },
       profile_, container_id, GetUniqueNotificationId());
-  return NewOperationData(type, std::move(container_id), std::move(factory));
+  FillOperationData(type, std::move(container_id), std::move(factory));
 }
 
-CrostiniExportImport::OperationData* CrostiniExportImport::NewOperationData(
-    ExportImportType type) {
-  return NewOperationData(type, DefaultContainerId());
+void CrostiniExportImport::FillOperationData(ExportImportType type) {
+  FillOperationData(type, DefaultContainerId());
 }
 
 void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
                                            content::WebContents* web_contents) {
-  OpenFileDialog(
-      NewOperationData(ExportImportType::EXPORT, std::move(container_id)),
-      web_contents);
+  FillOperationData(ExportImportType::EXPORT, std::move(container_id));
+  OpenFileDialog(web_contents);
 }
 
 void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
                                            content::WebContents* web_contents) {
-  OpenFileDialog(
-      NewOperationData(ExportImportType::IMPORT, std::move(container_id)),
-      web_contents);
+  FillOperationData(ExportImportType::IMPORT, std::move(container_id));
+  OpenFileDialog(web_contents);
 }
 
 void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
                                            content::WebContents* web_contents,
                                            OnceTrackerFactory tracker_factory) {
-  OpenFileDialog(
-      NewOperationData(ExportImportType::EXPORT, std::move(container_id),
-                       std::move(tracker_factory)),
-      web_contents);
+  FillOperationData(ExportImportType::EXPORT, std::move(container_id),
+                    std::move(tracker_factory));
+  OpenFileDialog(web_contents);
 }
 
 void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
                                            content::WebContents* web_contents,
                                            OnceTrackerFactory tracker_factory) {
-  OpenFileDialog(
-      NewOperationData(ExportImportType::IMPORT, std::move(container_id),
-                       std::move(tracker_factory)),
-      web_contents);
+  FillOperationData(ExportImportType::IMPORT, std::move(container_id),
+                    std::move(tracker_factory));
+  OpenFileDialog(web_contents);
 }
 
 base::FilePath CrostiniExportImport::GetDefaultBackupPath() const {
@@ -182,8 +172,7 @@ base::FilePath CrostiniExportImport::GetDefaultBackupPath() const {
           base::Time::Now(), "'chromeos-linux-'yyyy-MM-dd'.tini'"));
 }
 
-void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
-                                          content::WebContents* web_contents) {
+void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
   if (!crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile_)) {
     return;
   }
@@ -192,6 +181,8 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
     return;
   }
 
+  CHECK(operation_data_);
+
   ui::SelectFileDialog::Type file_selector_mode;
   unsigned title = 0;
   base::FilePath default_path;
@@ -199,7 +190,7 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
       {FILE_PATH_LITERAL("tini"), FILE_PATH_LITERAL("tar.gz"),
        FILE_PATH_LITERAL("tgz")}};
 
-  switch (operation_data->type) {
+  switch (operation_data_->type) {
     case ExportImportType::EXPORT:
       file_selector_mode = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
       title = IDS_SETTINGS_CROSTINI_EXPORT;
@@ -217,28 +208,24 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
   select_folder_dialog_->SelectFile(
       file_selector_mode, l10n_util::GetStringUTF16(title), default_path,
       &file_types, 0, base::FilePath::StringType(),
-      web_contents->GetTopLevelNativeWindow(),
-      static_cast<void*>(operation_data));
+      web_contents->GetTopLevelNativeWindow(), nullptr);
 }
 
 void CrostiniExportImport::FileSelected(const ui::SelectedFileInfo& file,
-                                        int index,
-                                        void* params) {
-  Start(static_cast<OperationData*>(params), file.path(),
-        /* create_new_container= */ false, base::DoNothing());
+                                        int index) {
+  Start(file.path(), /* create_new_container= */ false, base::DoNothing());
   select_folder_dialog_.reset();
 }
 
-void CrostiniExportImport::FileSelectionCanceled(void* params) {
-  auto* operation_data = static_cast<OperationData*>(params);
-  if (operation_data->tracker_factory) {
+void CrostiniExportImport::FileSelectionCanceled() {
+  if (operation_data_->tracker_factory) {
     // Create the status tracker so we can let it know the operation was
     // canceled.
-    auto status_tracker = std::move(operation_data->tracker_factory)
-                              .Run(operation_data->type, base::FilePath());
+    auto status_tracker = std::move(operation_data_->tracker_factory)
+                              .Run(operation_data_->type, base::FilePath());
     status_tracker->SetStatusCancelled();
   }
-  operation_data_storage_.erase(operation_data);
+  operation_data_.reset();
   select_folder_dialog_.reset();
 }
 
@@ -246,8 +233,8 @@ void CrostiniExportImport::ExportContainer(
     guest_os::GuestId container_id,
     base::FilePath path,
     CrostiniManager::CrostiniResultCallback callback) {
-  Start(NewOperationData(ExportImportType::EXPORT, std::move(container_id)),
-        path, /* create_new_container= */ false, std::move(callback));
+  FillOperationData(ExportImportType::EXPORT, std::move(container_id));
+  Start(path, /* create_new_container= */ false, std::move(callback));
 }
 
 void CrostiniExportImport::ImportContainer(
@@ -261,43 +248,39 @@ void CrostiniExportImport::ImportContainer(
                   "non-existent container: "
                << container_id;
   }
-  Start(NewOperationData(ExportImportType::IMPORT, std::move(container_id)),
-        path, /* create_new_container= */ false, std::move(callback));
+  FillOperationData(ExportImportType::IMPORT, std::move(container_id));
+  Start(path, /* create_new_container= */ false, std::move(callback));
 }
 
 void CrostiniExportImport::CreateContainerFromImport(
     guest_os::GuestId container_id,
     base::FilePath path,
     CrostiniManager::CrostiniResultCallback callback) {
-  Start(NewOperationData(ExportImportType::IMPORT, std::move(container_id)),
-        path, /* create_new_container= */ true, std::move(callback));
+  FillOperationData(ExportImportType::IMPORT, std::move(container_id));
+  Start(path, /* create_new_container= */ true, std::move(callback));
 }
 
 void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
                                            base::FilePath path,
                                            OnceTrackerFactory tracker_factory) {
-  Start(NewOperationData(ExportImportType::EXPORT, std::move(container_id),
-                         std::move(tracker_factory)),
-        path, /* create_new_container= */ false, base::DoNothing());
+  FillOperationData(ExportImportType::EXPORT, std::move(container_id),
+                    std::move(tracker_factory));
+  Start(path, /* create_new_container= */ false, base::DoNothing());
 }
 
 void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
                                            base::FilePath path,
                                            OnceTrackerFactory tracker_factory) {
-  Start(NewOperationData(ExportImportType::IMPORT, std::move(container_id),
-                         std::move(tracker_factory)),
-        path, /* create_new_container= */ false, base::DoNothing());
+  FillOperationData(ExportImportType::IMPORT, std::move(container_id),
+                    std::move(tracker_factory));
+  Start(path, /* create_new_container= */ false, base::DoNothing());
 }
 
 void CrostiniExportImport::Start(
-    OperationData* operation_data,
     base::FilePath path,
     bool create_new_container,
     CrostiniManager::CrostiniResultCallback callback) {
-  std::unique_ptr<OperationData> operation_data_storage(
-      std::move(operation_data_storage_[operation_data]));
-  operation_data_storage_.erase(operation_data);
-
+  auto operation_data = std::move(operation_data_);
   if (!crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile_)) {
     return std::move(callback).Run(CrostiniResult::NOT_ALLOWED);
   }
@@ -306,7 +289,7 @@ void CrostiniExportImport::Start(
                             .Run(operation_data->type, path);
   status_tracker->SetStatusRunning(0);
 
-  auto it = status_trackers_.find(operation_data->container_id);
+  auto it = status_trackers_.find(operation_data_->container_id);
   if (it != status_trackers_.end()) {
     // There is already an operation in progress. Ensure the existing
     // status_tracker is (re)displayed so the user knows why this new concurrent

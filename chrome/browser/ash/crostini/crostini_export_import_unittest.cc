@@ -221,9 +221,8 @@ TEST_F(CrostiniExportImportTest, TestNotAllowed) {
 }
 
 TEST_F(CrostiniExportImportTest, TestExportSuccess) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
+  crostini_export_import_->FillOperationData(ExportImportType::EXPORT);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_seneschal_client_->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -322,10 +321,9 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
 }
 
 TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::EXPORT,
-                                                custom_container_id_));
+  crostini_export_import_->FillOperationData(ExportImportType::EXPORT,
+                                             custom_container_id_);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_seneschal_client_->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -404,9 +402,8 @@ TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
 }
 
 TEST_F(CrostiniExportImportTest, TestExportFail) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
+  crostini_export_import_->FillOperationData(ExportImportType::EXPORT);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
@@ -443,10 +440,9 @@ TEST_F(CrostiniExportImportTest, TestExportFail) {
 }
 
 TEST_F(CrostiniExportImportTest, TestExportCancelled) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::EXPORT,
-                                                custom_container_id_));
+  crostini_export_import_->FillOperationData(ExportImportType::EXPORT,
+                                             custom_container_id_);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(custom_container_id_);
@@ -515,9 +511,8 @@ TEST_F(CrostiniExportImportTest, TestExportCancelled) {
 }
 
 TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
+  crostini_export_import_->FillOperationData(ExportImportType::EXPORT);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
@@ -565,9 +560,8 @@ TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
 }
 
 TEST_F(CrostiniExportImportTest, TestImportSuccess) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
+  crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_seneschal_client_->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -653,10 +647,9 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
 }
 
 TEST_F(CrostiniExportImportTest, TestImportCustomVmContainerSuccess) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::IMPORT,
-                                                custom_container_id_));
+  crostini_export_import_->FillOperationData(ExportImportType::IMPORT,
+                                             custom_container_id_);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_seneschal_client_->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -725,9 +718,8 @@ TEST_F(CrostiniExportImportTest, TestImportCustomVmContainerSuccess) {
 }
 
 TEST_F(CrostiniExportImportTest, TestImportFail) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
+  crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
@@ -760,9 +752,8 @@ TEST_F(CrostiniExportImportTest, TestImportFail) {
 }
 
 TEST_F(CrostiniExportImportTest, TestImportCancelled) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
+  crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
@@ -823,9 +814,8 @@ TEST_F(CrostiniExportImportTest, TestImportCancelled) {
 }
 
 TEST_F(CrostiniExportImportTest, TestImportDoneBeforeCancelled) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
+  crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
@@ -872,9 +862,8 @@ TEST_F(CrostiniExportImportTest, TestImportDoneBeforeCancelled) {
 }
 
 TEST_F(CrostiniExportImportTest, TestImportFailArchitecture) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
+  crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
@@ -912,9 +901,8 @@ TEST_F(CrostiniExportImportTest, TestImportFailArchitecture) {
 }
 
 TEST_F(CrostiniExportImportTest, TestImportFailSpace) {
-  crostini_export_import_->FileSelected(
-      ui::SelectedFileInfo(tarball_), 0,
-      crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
+  crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
