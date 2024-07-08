@@ -91,7 +91,7 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
-              "location": "android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive/cipd",
               "revision": "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC"
             }
           ],
@@ -134,7 +134,7 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
-              "location": "android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive/cipd",
               "revision": "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC"
             }
           ],

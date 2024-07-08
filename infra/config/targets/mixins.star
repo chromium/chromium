@@ -1695,7 +1695,7 @@ targets.mixin(
         cipd_packages = [
             targets.cipd_package(
                 package = "chromium/android_webview/tools/cts_archive",
-                location = "android_webview/tools/cts_archive",
+                location = "android_webview/tools/cts_archive/cipd",
                 revision = "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC",
             ),
         ],

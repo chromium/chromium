@@ -11,6 +11,7 @@ import contextlib
 import json
 import logging
 import os
+import os.path
 import shutil
 import subprocess
 import sys
@@ -47,7 +48,9 @@ _DEFAULT_CTS_GCS_PATH_FILE = os.path.join(os.path.dirname(__file__),
                                           'cts_config',
                                           'webview_cts_gcs_path.json')
 _DEFAULT_CTS_ARCHIVE_DIR = os.path.join(os.path.dirname(__file__),
-                                        'cts_archive')
+                                        'cts_archive', 'cipd')
+# TODO(crbug/349652927): Remove this once all bots are using the new path.
+_OLD_CTS_ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), 'cts_archive')
 _DEFAULT_TRADEFED_AAPT_PATH = ANDROID_SDK_TOOLS
 _DEFAULT_TRADEFED_ADB_PATH = os.path.join(ANDROID_SDK_ROOT, 'platform-tools')
 
@@ -275,6 +278,11 @@ def ExtractCTSZip(args, arch, cts_release):
     delete_cts_dir = True
 
   cts_zip_path = os.path.join(args.cts_archive_dir, relative_cts_zip_path)
+  if (not os.path.exists(cts_zip_path)
+      and args.cts_archive_dir == os.path.realpath(_DEFAULT_CTS_ARCHIVE_DIR)):
+    # Check the fallback location
+    cts_zip_path = os.path.join(os.path.realpath(_OLD_CTS_ARCHIVE_DIR),
+                                relative_cts_zip_path)
   local_cts_dir = os.path.join(
       base_cts_dir, GetCtsInfo(args.cts_gcs_path, arch, cts_release,
                                'unzip_dir'))
