@@ -672,6 +672,7 @@ fn test_fixup() {
         quote! { match m { _ => ({}) - 1 } },
         quote! { if let _ = (a && b) && c {} },
         quote! { if let _ = (S {}) {} },
+        quote! { break ('a: loop { break 'a 1 } + 1) },
     ] {
         let original: Expr = syn::parse2(tokens).unwrap();
 

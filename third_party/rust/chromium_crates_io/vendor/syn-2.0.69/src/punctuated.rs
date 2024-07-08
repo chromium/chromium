@@ -92,6 +92,29 @@ impl<T, P> Punctuated<T, P> {
         self.iter_mut().next_back()
     }
 
+    /// Borrows the element at the given index.
+    pub fn get(&mut self, index: usize) -> Option<&T> {
+        if let Some((value, _punct)) = self.inner.get(index) {
+            Some(value)
+        } else if index == self.inner.len() {
+            self.last.as_deref()
+        } else {
+            None
+        }
+    }
+
+    /// Mutably borrows the element at the given index.
+    pub fn get_mut(&mut self, index: usize) -> Option<&mut T> {
+        let inner_len = self.inner.len();
+        if let Some((value, _punct)) = self.inner.get_mut(index) {
+            Some(value)
+        } else if index == inner_len {
+            self.last.as_deref_mut()
+        } else {
+            None
+        }
+    }
+
     /// Returns an iterator over borrowed syntax tree nodes of type `&T`.
     pub fn iter(&self) -> Iter<T> {
         Iter {

@@ -3180,7 +3180,7 @@ pub(crate) mod printing {
         outer_attrs_to_tokens(&e.attrs, tokens);
         print_subexpression(
             &e.base,
-            Precedence::of(&e.base) < Precedence::Postfix,
+            Precedence::of(&e.base) < Precedence::Unambiguous,
             tokens,
             fixup.leftmost_subexpression_with_dot(),
         );
@@ -3286,8 +3286,15 @@ pub(crate) mod printing {
         outer_attrs_to_tokens(&e.attrs, tokens);
         e.break_token.to_tokens(tokens);
         e.label.to_tokens(tokens);
-        if let Some(expr) = &e.expr {
-            print_expr(expr, tokens, fixup.subsequent_subexpression());
+        if let Some(value) = &e.expr {
+            print_subexpression(
+                value,
+                // Parenthesize `break 'inner: loop { break 'inner 1 } + 1`
+                //                     ^---------------------------------^
+                e.label.is_none() && classify::expr_leading_label(value),
+                tokens,
+                fixup.subsequent_subexpression(),
+            );
         }
     }
 
@@ -3313,7 +3320,7 @@ pub(crate) mod printing {
         let precedence = if let Expr::Field(_) = &*e.func {
             Precedence::Any
         } else {
-            Precedence::Postfix
+            Precedence::Unambiguous
         };
         print_subexpression(
             &e.func,
@@ -3424,7 +3431,7 @@ pub(crate) mod printing {
         outer_attrs_to_tokens(&e.attrs, tokens);
         print_subexpression(
             &e.base,
-            Precedence::of(&e.base) < Precedence::Postfix,
+            Precedence::of(&e.base) < Precedence::Unambiguous,
             tokens,
             #[cfg(feature = "full")]
             fixup.leftmost_subexpression_with_dot(),
@@ -3519,7 +3526,7 @@ pub(crate) mod printing {
         outer_attrs_to_tokens(&e.attrs, tokens);
         print_subexpression(
             &e.expr,
-            Precedence::of(&e.expr) < Precedence::Postfix,
+            Precedence::of(&e.expr) < Precedence::Unambiguous,
             tokens,
             #[cfg(feature = "full")]
             fixup.leftmost_subexpression(),
@@ -3635,7 +3642,7 @@ pub(crate) mod printing {
         outer_attrs_to_tokens(&e.attrs, tokens);
         print_subexpression(
             &e.receiver,
-            Precedence::of(&e.receiver) < Precedence::Postfix,
+            Precedence::of(&e.receiver) < Precedence::Unambiguous,
             tokens,
             #[cfg(feature = "full")]
             fixup.leftmost_subexpression_with_dot(),
@@ -3785,7 +3792,7 @@ pub(crate) mod printing {
         outer_attrs_to_tokens(&e.attrs, tokens);
         print_subexpression(
             &e.expr,
-            Precedence::of(&e.expr) < Precedence::Postfix,
+            Precedence::of(&e.expr) < Precedence::Unambiguous,
             tokens,
             fixup.leftmost_subexpression_with_dot(),
         );
