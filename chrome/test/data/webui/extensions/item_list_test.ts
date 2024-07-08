@@ -322,13 +322,22 @@ suite('ExtensionItemListTest', function() {
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', false);
 
-    // Panel is visible for experiment on stage 2 (disable with re-enable) and
-    // has at least one extension affected by the MV2 deprecation.
-    itemList.push('extensions', createExtensionInfo({
-                    name: 'Extension G',
-                    id: 'g'.repeat(32),
-                    isAffectedByMV2Deprecation: true,
-                  }));
+    // Panel is hidden for experiment on stage 2 (disable with re-enable)
+    // when extension is affected by the MV2 deprecation but it's not disabled
+    // due to unsupported manifest version.
+    // Note: This can happen when the user chose to re-enable a MV2 disabled
+    // extension.
+    itemList.set('extensions.0.isAffectedByMV2Deprecation', true);
+    itemList.set(
+        'extensions.0.disableReasons.unsupportedManifestVersion', false);
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', false);
+
+    // Panel is visible for experiment on stage 2 (disable with re-enable)
+    // when extension is affected by the MV2 deprecation and extension is
+    // disabled due to unsupported manifest version.
+    itemList.set(
+        'extensions.0.disableReasons.unsupportedManifestVersion', true);
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', true);
     const mv2DeprecationPanel =
@@ -337,12 +346,11 @@ suite('ExtensionItemListTest', function() {
     assertEquals(1, mv2DeprecationPanel.extensions.length);
 
     // Panel is visible for experiment on stage 2 (disable with re-enable) and
-    // has multiple extensions affected by the MV2 deprecation.
-    itemList.push('extensions', createExtensionInfo({
-                    name: 'Extension H',
-                    id: 'h'.repeat(32),
-                    isAffectedByMV2Deprecation: true,
-                  }));
+    // has multiple extensions affected by the MV2 deprecation that are disabled
+    // due to unsupported manifest version.
+    itemList.set('extensions.1.isAffectedByMV2Deprecation', true);
+    itemList.set(
+        'extensions.1.disableReasons.unsupportedManifestVersion', true);
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', true);
     assertEquals(2, mv2DeprecationPanel.extensions.length);

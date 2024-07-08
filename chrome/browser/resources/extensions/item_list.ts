@@ -10,7 +10,6 @@ import './review_panel.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -214,20 +213,18 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   private computeMv2DeprecatedExtensions_():
       chrome.developerPrivate.ExtensionInfo[] {
     return this.extensions.filter((extension) => {
-      if (!extension.isAffectedByMV2Deprecation) {
-        return false;
-      }
-
       switch (this.mv2ExperimentStage_) {
         case Mv2ExperimentStage.NONE:
-          assertNotReached();
+          return false;
         case Mv2ExperimentStage.WARNING:
-          return !extension.didAcknowledgeMV2DeprecationWarning;
+          return extension.isAffectedByMV2Deprecation &&
+              !extension.didAcknowledgeMV2DeprecationWarning;
         case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
           // TODO(crbug.com/339061151): Verify extension has not been dismissed
           // for Mv2ExperimentStage.DISABLE_WITH_REENABLE, once that
           // functionality is added.
-          return true;
+          return extension.isAffectedByMV2Deprecation &&
+              extension.disableReasons.unsupportedManifestVersion;
       }
     });
   }
