@@ -540,8 +540,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
               authenticationService:AuthenticationServiceFactory::
                                         GetForBrowserState(chromeBrowserState)
                     identityManager:IdentityManagerFactory::GetForBrowserState(
-                                        chromeBrowserState)
-                         localState:GetApplicationContext()->GetLocalState()]];
+                                        chromeBrowserState)]];
 
   if (IsDockingPromoEnabled()) {
     switch (DockingPromoExperimentTypeEnabled()) {

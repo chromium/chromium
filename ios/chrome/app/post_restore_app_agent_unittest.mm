@@ -44,11 +44,10 @@ class PostRestoreAppAgentTest : public PlatformTest {
   explicit PostRestoreAppAgentTest() { CreateAppAgent(); }
 
   void CreateAppAgent() {
-    app_agent_ =
-        [[PostRestoreAppAgent alloc] initWithPromosManager:CreatePromosManager()
-                                     authenticationService:CreateAuthService()
-                                           identityManager:GetIdentityManager()
-                                                localState:local_state_.Get()];
+    app_agent_ = [[PostRestoreAppAgent alloc]
+        initWithPromosManager:CreatePromosManager()
+        authenticationService:CreateAuthService()
+              identityManager:GetIdentityManager()];
     mockAppState_ = OCMClassMock([AppState class]);
     [app_agent_ setAppState:mockAppState_];
   }

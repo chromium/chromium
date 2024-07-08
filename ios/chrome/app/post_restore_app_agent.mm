@@ -10,6 +10,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
@@ -31,10 +32,6 @@
 // Local state is used to retrieve and/or clear the pre-restore identity.
 @property(nonatomic, assign) PrefService* localState;
 
-// Returns whether or not a post restore sign-in promo should be registered
-// with the PromosManager.
-@property(readonly) BOOL shouldRegisterPromo;
-
 @end
 
 @implementation PostRestoreAppAgent {
@@ -45,11 +42,10 @@
 
 #pragma mark - Initializers
 
-- (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                authenticationService:
-                    (AuthenticationService*)authenticationService
-                      identityManager:(signin::IdentityManager*)identityManager
-                           localState:(PrefService*)localState {
+- (instancetype)
+    initWithPromosManager:(PromosManager*)promosManager
+    authenticationService:(AuthenticationService*)authenticationService
+          identityManager:(signin::IdentityManager*)identityManager {
   DCHECK(authenticationService);
   DCHECK(identityManager);
 
@@ -58,7 +54,7 @@
     _promosManager = promosManager;
     _authenticationService = authenticationService;
     _identityManager = identityManager;
-    _localState = localState;
+    _localState = GetApplicationContext()->GetLocalState();
   }
   return self;
 }
@@ -117,28 +113,18 @@
   [self shutdown];
 }
 
-#pragma mark - internal
-
-// Returns whether or not a post restore sign-in promo should be registered
-// with the PromosManager.
-- (BOOL)shouldRegisterPromo {
-  return _hasAccountInfo && _promosManager;
-}
+#pragma mark - Private
 
 // Register the promo with the PromosManager, if the conditions are met,
 // otherwise deregister the promo.
 - (void)maybeRegisterPromo {
-  if (!self.shouldRegisterPromo) {
-    if (_promosManager) {
-      [self deregisterPromos];
-    }
-    if (_hasAccountInfo) {
-      ClearPreRestoreIdentity(_localState);
-    }
-    return;
+  if (_promosManager && _hasAccountInfo) {
+    [self registerPromo];
+  } else if (_promosManager) {
+    [self deregisterPromos];
+  } else if (_hasAccountInfo) {
+    ClearPreRestoreIdentity(_localState);
   }
-
-  [self registerPromo];
 }
 
 // Registers the promo with the PromosManager.
