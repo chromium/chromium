@@ -1827,16 +1827,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.DiscoverySession.Stop.Outcome"
-    enum="BluetoothDiscoveryOutcomes" expires_after="2021-03-01">
-  <owner>reillyg@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Records the outcome of calls to BluetoothDiscoverySession::Stop. Used to
-    prioritize efforts to fix failures of this function.
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.Linux.ConnectToService.Bonded.FailureReason"
     enum="BluetoothDeviceConnectToServiceFailureReason"
     expires_after="2024-12-01">
