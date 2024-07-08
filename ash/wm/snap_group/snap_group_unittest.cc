@@ -86,7 +86,9 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/multi_window_resize_controller.h"
+#include "ash/wm/workspace/phantom_window_controller.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
+#include "ash/wm/workspace/workspace_window_resizer.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/check_op.h"
 #include "base/run_loop.h"
@@ -3480,6 +3482,97 @@ TEST_F(SnapGroupTest, ReSnapToOppositeSnapRatio) {
   EXPECT_EQ(
       std::round(GetWorkAreaBounds().width() * chromeos::kDefaultSnapRatio),
       w1->GetBoundsInScreen().width());
+}
+
+// -----------------------------------------------------------------------------
+// SnapGroupPhantomBoundsTest:
+
+using SnapGroupPhantomBoundsTest = SnapGroupTest;
+
+// Tests that the snap phantom bounds are updated correctly after snap to
+// replace. Regression test for http://b/349892846.
+// TODO(b/349892846): Move this to be with
+// `SnapGroupWorkspaceWindowResizerTest`. Currently here for easier snap group
+// window creation.
+TEST_F(SnapGroupPhantomBoundsTest, SnapPhantomBoundsAfterSnapToReplace) {
+  // Create app windows with big enough bounds, since if the bounds are too
+  // small the drag point might conflict with the size button and not start a
+  // drag on the caption bar.
+  const gfx::Rect work_area(GetWorkAreaBounds());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(work_area));
+  std::unique_ptr<aura::Window> w2(CreateAppWindow(work_area));
+  std::unique_ptr<aura::Window> w3(CreateAppWindow(work_area));
+
+  // Create a snap group with non-default snap ratio.
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kTwoThirdSnapRatio);
+  ClickOverviewItem(GetEventGenerator(), w2.get());
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  ASSERT_NEAR(chromeos::kTwoThirdSnapRatio,
+              *WindowState::Get(w1.get())->snap_ratio(), 0.01);
+  ASSERT_NEAR(chromeos::kOneThirdSnapRatio,
+              *WindowState::Get(w2.get())->snap_ratio(), 0.01);
+
+  // Create a 3rd window and drag to snap over `w2` to show the phantom bounds.
+  auto* event_generator = GetEventGenerator();
+  wm::ActivateWindow(w3.get());
+  event_generator->MoveMouseTo(GetDragPoint(w3.get()));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(work_area.right_center());
+  ASSERT_TRUE(WindowState::Get(w3.get())->is_dragged());
+  auto* snap_phantom_window_controller =
+      WorkspaceWindowResizer::GetInstanceForTest()
+          ->snap_phantom_window_controller_.get();
+  ASSERT_TRUE(snap_phantom_window_controller);
+  EXPECT_TRUE(w2->GetBoundsInScreen().ApproximatelyEqual(
+      snap_phantom_window_controller->GetTargetWindowBounds(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+
+  // Release the drag to snap to replace `w2` in the group.
+  event_generator->ReleaseLeftButton();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w3.get()));
+  EXPECT_TRUE(w3->GetBoundsInScreen().ApproximatelyEqual(
+      w2->GetBoundsInScreen(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+  EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
+              *WindowState::Get(w3.get())->snap_ratio(), 0.01);
+
+  // Drag to break `w3` from the group.
+  event_generator->DragMouseTo(work_area.CenterPoint());
+  ASSERT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w3.get()));
+
+  // Activate `w2` to stack it on top of `w3` so it can auto-group with `w1` to
+  // simulate the bug.
+  wm::ActivateWindow(w2.get());
+  ASSERT_TRUE(window_util::IsStackedBelow(w3.get(), w2.get()));
+
+  // Drag to snap `w1` to the opposite side of `w2`.
+  wm::ActivateWindow(w1.get());
+  event_generator->MoveMouseTo(GetDragPoint(w1.get()));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(work_area.origin());
+  ASSERT_TRUE(WindowState::Get(w1.get())->is_dragged());
+  snap_phantom_window_controller = WorkspaceWindowResizer::GetInstanceForTest()
+                                       ->snap_phantom_window_controller_.get();
+  ASSERT_TRUE(snap_phantom_window_controller);
+  gfx::Rect expected_bounds(work_area);
+  expected_bounds.Subtract(w2->GetBoundsInScreen());
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      snap_phantom_window_controller->GetTargetWindowBounds(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+
+  // Release the drag. Test `w1` snaps at `expected_bounds` and auto-groups with
+  // `w2`.
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      w1->GetBoundsInScreen(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_NEAR(chromeos::kTwoThirdSnapRatio,
+              *WindowState::Get(w1.get())->snap_ratio(), 0.01);
+  EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
+              *WindowState::Get(w2.get())->snap_ratio(), 0.01);
 }
 
 // -----------------------------------------------------------------------------

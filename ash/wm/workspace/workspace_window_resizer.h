@@ -56,6 +56,9 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
  private:
   friend class WorkspaceWindowResizerTest;
+  // TODO(b/349892846): Consider adding a test API.
+  FRIEND_TEST_ALL_PREFIXES(SnapGroupPhantomBoundsTest,
+                           SnapPhantomBoundsAfterSnapToReplace);
   FRIEND_TEST_ALL_PREFIXES(HapticsUtilTest, HapticFeedbackForNormalWindowSnap);
 
   WorkspaceWindowResizer(

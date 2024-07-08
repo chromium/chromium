@@ -581,10 +581,13 @@ void WindowState::OnWMEvent(const WMEvent* event) {
 
   // The current snap ratio may be different from the requested snap ratio, if
   // the window has a minimum size requirement.
-  // A snap event may cause nested bounds events, during which we don't need to
-  // force update the snap ratio. We'll respect the snap ratio requested by the
-  // snap event.
-  if (!is_handling_snap_event_ && event->IsBoundsEvent()) {
+  // Update snap ratio except for the following cases:
+  // 1. We are currently handling a top-level snap event, during which we should
+  // respect the snap event ratio;
+  // 2. The workspace window resizer is about to start a drag to unsnap, but the
+  // state type has not been updated yet; see `WorkspaceWindowResizer::Drag()`.
+  if (!is_handling_snap_event_ && can_update_snap_ratio_ &&
+      event->IsBoundsEvent()) {
     UpdateSnapRatio();
   }
 }

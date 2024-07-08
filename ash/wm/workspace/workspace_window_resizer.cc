@@ -727,13 +727,19 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
   if (!attached_windows_.empty()) {
     LayoutAttachedWindows(&bounds);
   }
-  if (bounds != GetTarget()->bounds()) {
+  if (aura::Window* window = GetTarget(); bounds != window->bounds()) {
     // SetBounds needs to be called to update the layout which affects where the
     // phantom window is drawn. Keep track if the window was destroyed during
     // the drag and quit early if so.
     base::WeakPtr<WorkspaceWindowResizer> resizer(
         weak_ptr_factory_.GetWeakPtr());
+    // If a window is snapped, then starts drag to unsnap, at this point its
+    // state type hasn't been updated yet. Suppress from force updating the snap
+    // ratio which would be using the restore or normal bounds.
+    auto* window_state = WindowState::Get(window);
+    window_state->set_can_update_snap_ratio(false);
     SetBoundsDuringResize(bounds);
+    window_state->set_can_update_snap_ratio(true);
     if (!resizer) {
       return;
     }

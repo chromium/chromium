@@ -595,14 +595,14 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
 
   // Snap window to primary position (left).
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
-  gfx::Rect expected =
+  const gfx::Rect expected_snapped_bounds =
       gfx::Rect(kWorkAreaBounds.x(), kWorkAreaBounds.y(),
                 kWorkAreaBounds.width() / 2, kWorkAreaBounds.height());
   // Wait for the snapped animation to complete and test that the window bound
   // is primary-snapped and the snap width ratio is updated.
   window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
                                        base::Seconds(1));
-  EXPECT_EQ(expected, window->GetBoundsInScreen());
+  EXPECT_EQ(expected_snapped_bounds, window->GetBoundsInScreen());
   EXPECT_EQ(chromeos::kDefaultSnapRatio, *window_state->snap_ratio());
 
   // Drag the window to unsnap but do not release.
@@ -612,10 +612,15 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
   generator->MoveMouseBy(5, 0);
   // While dragged, the window size should restore to its normal bound.
   EXPECT_EQ(window_normal_size, window->bounds().size());
-  EXPECT_EQ(1.0f, *window_state->snap_ratio());
+  // Note at this point the window will still have snapped state but appear
+  // visually unsnapped so it will still have the previous snap ratio.
+  EXPECT_NE(expected_snapped_bounds.size(), window_normal_size);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 
   // Continue dragging the window and snap it back to the same position.
   generator->MoveMouseBy(-405, 0);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   generator->ReleaseLeftButton();
 
   // The snapped ratio should be correct regardless of whether the animation
