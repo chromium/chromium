@@ -16,7 +16,12 @@ export {
   SessionRemote,
   StreamingResponderCallbackRouter,
 } from '../../mojom/on_device_model.mojom-webui.js';
-export {PageHandler} from '../../mojom/recorder_app.mojom-webui.js';
+export {
+  PageHandler,
+  type SodaState,
+  SodaStateMonitorReceiver,
+  SodaStateType,
+} from '../../mojom/recorder_app.mojom-webui.js';
 export {
   type SodaClientInterface,
   SodaClientReceiver,

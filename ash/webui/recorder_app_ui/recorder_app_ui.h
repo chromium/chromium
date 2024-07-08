@@ -17,6 +17,7 @@
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
 #include "components/soda/soda_installer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -43,7 +44,6 @@ class RecorderAppUI : public ui::MojoWebUIController,
                       public recorder_app::mojom::PageHandler,
                       public speech::SodaInstaller::Observer {
  public:
-  using SodaInstalledCallback = base::OnceCallback<void(bool)>;
   explicit RecorderAppUI(content::WebUI* web_ui,
                          std::unique_ptr<RecorderAppUIDelegate> delegate);
   ~RecorderAppUI() override;
@@ -68,6 +68,7 @@ class RecorderAppUI : public ui::MojoWebUIController,
       mojo::PendingRemote<chromeos::machine_learning::mojom::SodaClient>;
   using SodaRecognizerMojoReceiver =
       mojo::PendingReceiver<chromeos::machine_learning::mojom::SodaRecognizer>;
+  using SodaState = recorder_app::mojom::SodaState;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 
@@ -75,10 +76,7 @@ class RecorderAppUI : public ui::MojoWebUIController,
 
   mojo::Remote<MachineLearningService>& GetMlService();
 
-  void LoadSpeechRecognizerImpl(SodaClientMojoRemote soda_client,
-                                SodaRecognizerMojoReceiver soda_recognizer,
-                                LoadSpeechRecognizerCallback callback,
-                                bool result);
+  void UpdateSodaState(SodaState state);
 
   // recorder_app::mojom::PageHandler:
   void LoadModel(
@@ -90,6 +88,12 @@ class RecorderAppUI : public ui::MojoWebUIController,
                             SodaRecognizerMojoReceiver soda_recognizer,
                             LoadSpeechRecognizerCallback callback) override;
 
+  void InstallSoda(InstallSodaCallback callback) override;
+
+  void AddSodaMonitor(
+      ::mojo::PendingRemote<recorder_app::mojom::SodaStateMonitor> monitor,
+      AddSodaMonitorCallback callback) override;
+
   // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;
 
@@ -99,13 +103,15 @@ class RecorderAppUI : public ui::MojoWebUIController,
   void OnSodaProgress(speech::LanguageCode language_code,
                       int progress) override;
 
-  std::vector<SodaInstalledCallback> soda_installed_callbacks_;
-
   mojo::Remote<MachineLearningService> ml_service_;
 
   std::unique_ptr<RecorderAppUIDelegate> delegate_;
 
   mojo::ReceiverSet<recorder_app::mojom::PageHandler> page_receivers_;
+
+  mojo::RemoteSet<recorder_app::mojom::SodaStateMonitor> soda_monitors_;
+
+  SodaState soda_state_;
 
   mojo::Remote<OnDeviceModelService> on_device_model_service_;
 

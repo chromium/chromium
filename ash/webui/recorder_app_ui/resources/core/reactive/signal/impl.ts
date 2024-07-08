@@ -239,6 +239,8 @@ export class ComputedImpl<T> extends Signal<T> implements Parent, Child {
 // to be cancelled explicitly with .dispose() when not in used.
 const allEffects = new Set<Effect>();
 
+export type EffectCallback = (options: {dispose: () => void}) => void;
+
 export class Effect implements Child {
   static batchedEffect = new Set<Effect>();
 
@@ -248,8 +250,14 @@ export class Effect implements Child {
 
   private state = DirtyState.CLEAN;
 
+  dispose = (): void => {
+    allEffects.delete(this);
+    this.state = DirtyState.DISPOSED;
+    this.disconnect();
+  };
+
   // TODO(pihsun): Have some test to ensure that there's no effect leaked.
-  constructor(private readonly callback: () => void) {
+  constructor(private readonly callback: EffectCallback) {
     // TODO(pihsun): Warning when allEffects is growing / have too many items?
     allEffects.add(this);
     this.execute();
@@ -285,9 +293,12 @@ export class Effect implements Child {
     const oldComputing = currentComputing;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     currentComputing = this;
-    this.callback();
+    this.callback({dispose: this.dispose});
     currentComputing = oldComputing;
-    this.state = DirtyState.CLEAN;
+    // The effect might have been disposed in it's callback.
+    if (this.state !== DirtyState.DISPOSED) {
+      this.state = DirtyState.CLEAN;
+    }
   }
 
   maybeExecute(): void {
@@ -315,13 +326,11 @@ export class Effect implements Child {
   }
 
   addParent(parent: Parent): void {
+    assert(
+      this.state !== DirtyState.DISPOSED,
+      'addParent called after the effect had been disposed',
+    );
     this.parents.add(parent);
-  }
-
-  dispose(): void {
-    allEffects.delete(this);
-    this.state = DirtyState.DISPOSED;
-    this.disconnect();
   }
 
   static processBatchedEffect(): void {

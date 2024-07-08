@@ -8,6 +8,43 @@ import "chromeos/services/machine_learning/public/mojom/soda.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 
+// The state of the SODA installation.
+enum SodaStateType {
+  // SODA isn't available on this platform.
+  kUnavailable,
+
+  // SODA is available but either the library or the language pack aren't
+  // installed yet.
+  kNotInstalled,
+
+  // SODA is currently downloading and installing.
+  kInstalling,
+
+  // SODA is installed and ready to be used.
+  kInstalled,
+
+  // There is an error while trying to install SODA.
+  kError,
+};
+
+// The state of the SODA installation, including download progress.
+struct SodaState {
+  // Current state of SODA installation.
+  SodaStateType type;
+
+  // The install progress. Only available when the state is `kInstalling`.
+  // Progress is the weighted average of the combined download percentage of
+  // the SODA binary and the language pack, in a range of [0, 100].
+  uint8? progress;
+};
+
+// Interface for listening to SODA installation state.
+interface SodaStateMonitor {
+  // Update when SODA state is changed.
+  Update(SodaState state);
+};
+
+
 // Primary interface for the chrome://recorder-app WebUI.
 interface PageHandler {
   // Binds a new OnDeviceModel interface if possible using model from DLC
@@ -17,8 +54,17 @@ interface PageHandler {
       pending_receiver<on_device_model.mojom.OnDeviceModel> model)
       => (on_device_model.mojom.LoadModelResult result);
 
+  // Adds a new monitor for SODA state change.
+  AddSodaMonitor(pending_remote<SodaStateMonitor> monitor) => (SodaState state);
+
+  // Requests installation for SODA.
+  InstallSoda() => ();
+
   // Loads speech recognizer with the given SodaClient and SodaRecognizer
-  // interface.
+  // interface. Returns false when there's error loading the speech recognizer.
+  //
+  // SODA should be installed before calling this, otherwise false will be
+  // returned.
   //
   // The return is a boolean instead of
   // chromeos.machine_learning.mojom.LoadModelResult, to avoid exposing

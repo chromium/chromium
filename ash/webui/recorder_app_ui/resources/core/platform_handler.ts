@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ReadonlySignal} from './reactive/signal.js';
 import {SodaEvent} from './soda/types.js';
 import {Observer, Unsubscribe} from './utils/observer_list.js';
 
@@ -10,6 +11,19 @@ export enum ModelId {
   GEMINI_XXS_IT_BASE = 'ee7c31c2-18e5-405a-b54e-f2607130a15d',
   SUMMARY = '73caa678-45cb-4007-abb9-f04e431376da',
 }
+
+// prettier-ignore
+export type SodaState = {
+  kind: 'error'|'installed'|'notInstalled'|'unavailable',
+}|{
+  kind: 'installing',
+
+  /**
+   * A number between 0 to 100 indicating the progress of the download / install
+   * of SODA.
+   */
+  progress: number,
+};
 
 export interface Model {
   /**
@@ -74,12 +88,24 @@ export abstract class PlatformHandler {
    * Initializes the platform handler.
    * This should only be called once when the app starts.
    */
-  abstract init(): void;
+  abstract init(): Promise<void>;
 
   /**
    * Loads the ML model by the given UUID.
    */
   abstract loadModel(uuid: string): Promise<Model>;
+
+  /**
+   * Requests installation of SODA library and language pack.
+   *
+   * Installation state and error will be reported through the `sodaState`.
+   */
+  abstract installSoda(): void;
+
+  /**
+   * The SODA installation state.
+   */
+  abstract readonly sodaState: ReadonlySignal<SodaState>;
 
   /**
    * Creates a new soda session for transcription.

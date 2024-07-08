@@ -313,6 +313,10 @@ export class RecordPage extends ReactiveLitElement {
       settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED,
   );
 
+  private readonly transcriptionAvailable = computed(
+    () => this.platformHandler.sodaState.value.kind !== 'unavailable',
+  );
+
   private transcriptionEnableDispose: Dispose|null = null;
 
   private readonly menu = createRef<CraMenu>();
@@ -342,7 +346,12 @@ export class RecordPage extends ReactiveLitElement {
       }
       return;
     }
-    await session.start(this.transcriptionEnabled.value);
+
+    // Don't enable SODA if it's unavailable. All UI to enable transcription
+    // are gated behind transcriptionAvailable.
+    await session.start(
+      this.transcriptionEnabled.value && this.transcriptionAvailable.value,
+    );
     this.transcriptionEnableDispose = effect(() => {
       // TODO(pihsun): This is a bit fragile now since this relies on the
       // startNewSodaSession and stopSodaSession both calls AsyncJobQueue,
@@ -351,7 +360,8 @@ export class RecordPage extends ReactiveLitElement {
       // here, add either watch() to manually specify dependencies for effect,
       // or add untrack() to specify region that dependencies shouldn't be
       // tracked.
-      if (this.transcriptionEnabled.value) {
+      if (this.transcriptionEnabled.value &&
+          this.transcriptionAvailable.value) {
         session.startNewSodaSession();
       } else {
         session.stopSodaSession();
@@ -661,6 +671,15 @@ export class RecordPage extends ReactiveLitElement {
   }
 
   private renderMenu() {
+    const transcriptionMenuItem = html`
+      <cra-menu-item
+        headline=${i18n.recordMenuToggleTranscriptionOption}
+        itemEnd="switch"
+        .switchSelected=${this.transcriptionEnabled.value}
+        @cros-menu-item-triggered=${this.toggleTranscriptionEnabled}
+      >
+      </cra-menu-item>
+    `;
     return html`
       <cra-menu ${ref(this.menu)} anchor="show-menu">
         <cra-menu-item
@@ -668,13 +687,7 @@ export class RecordPage extends ReactiveLitElement {
           @cros-menu-item-triggered=${this.onDeleteButtonClick}
         >
         </cra-menu-item>
-        <cra-menu-item
-          headline=${i18n.recordMenuToggleTranscriptionOption}
-          itemEnd="switch"
-          .switchSelected=${this.transcriptionEnabled.value}
-          @cros-menu-item-triggered=${this.toggleTranscriptionEnabled}
-        >
-        </cra-menu-item>
+        ${this.transcriptionAvailable.value ? transcriptionMenuItem : nothing}
       </cra-menu>
     `;
   }
@@ -683,19 +696,23 @@ export class RecordPage extends ReactiveLitElement {
     const showMenu = () => {
       this.menu.value?.show();
     };
+    const toggleTranscriptionButton = html`
+      <cra-icon-button
+        buttonstyle="toggle"
+        @click=${this.toggleTranscriptionShown}
+      >
+        <cra-icon slot="icon" name="notes"></cra-icon>
+        <cra-icon slot="selectedIcon" name="notes"></cra-icon>
+      </cra-icon-button>
+    `;
     return html`
       <div id="header" class="sheet">
         <cra-icon-button buttonstyle="floating" @click=${this.onBackClick}>
           <cra-icon slot="icon" name="arrow_back"></cra-icon>
         </cra-icon-button>
         <span id="title">${this.recordingTitle}</span>
-        <cra-icon-button
-          buttonstyle="toggle"
-          @click=${this.toggleTranscriptionShown}
-        >
-          <cra-icon slot="icon" name="notes"></cra-icon>
-          <cra-icon slot="selectedIcon" name="notes"></cra-icon>
-        </cra-icon-button>
+        ${
+      this.transcriptionAvailable.value ? toggleTranscriptionButton : nothing}
         <cra-icon-button
           buttonstyle="floating"
           @click=${showMenu}

@@ -24,6 +24,17 @@ export function assert(
 }
 
 /**
+ * Call this from places in the code that should never be reached.
+ *
+ * This code should only be hit in the case of serious programmer error.
+ *
+ * @param optMessage A message to show when this is hit.
+ */
+export function assertNotReached(optMessage = 'Unreachable code hit'): never {
+  assert(false, optMessage);
+}
+
+/**
  * Throw an exception on unexpected values.
  *
  * This can be used along with type narrowing to ensure at compile time that all

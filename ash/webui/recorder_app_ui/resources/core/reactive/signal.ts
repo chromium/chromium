@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComputedImpl, Effect, SignalImpl} from './signal/impl.js';
+import {
+  ComputedImpl,
+  Effect,
+  EffectCallback,
+  SignalImpl,
+} from './signal/impl.js';
 import {Computed, Dispose, Signal} from './signal/types.js';
 
 export type * from './signal/types.js';
@@ -43,7 +48,7 @@ export function computed<T>(
  * TODO(pihsun): Pass callback to register cleanup functions on effect
  * re-trigger to the callback.
  */
-export function effect(callback: () => void): Dispose {
+export function effect(callback: EffectCallback): Dispose {
   const effect = new Effect(callback);
   return () => {
     effect.dispose();

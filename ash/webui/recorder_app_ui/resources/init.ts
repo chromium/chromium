@@ -14,6 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize core.
   await init(platformHandler);
   // Initialize platform.
-  platformHandler.init();
+  await platformHandler.init();
   document.body.appendChild(new RecorderApp());
 });

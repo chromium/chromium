@@ -155,4 +155,11 @@ export class AsyncJobQueue {
     this.clearInternal();
     return this.flush();
   }
+
+  /**
+   * Returns whether there's any pending job in the queue.
+   */
+  hasPendingJob(): boolean {
+    return this.pendingJobs.length > 0;
+  }
 }

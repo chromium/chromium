@@ -11,12 +11,8 @@ type I18nArgType = number|string;
 
 /**
  * Helper for defining a localized string with arguments.
- *
- * This is only expected to be used in this file, and is currently exported
- * only to avoid unused function error.
- * TODO(pihsun): Remove "export" when there's user.
  */
-export function withArgs<Args extends I18nArgType[]>(): Args {
+function withArgs<Args extends I18nArgType[]>(): Args {
   // This is only used as a type level info.
   return forceCast<Args>(null);
 }
@@ -65,6 +61,8 @@ const noArgStrings = [
   'settingsOptionsKeepScreenOnLabel',
   'settingsOptionsSpeakerIdDescription',
   'settingsOptionsSpeakerIdLabel',
+  'settingsOptionsTranscriptionDownloadButton',
+  'settingsOptionsTranscriptionDownloadingButton',
   'settingsOptionsTranscriptionLabel',
   'settingsSectionGeneralHeader',
   'settingsSectionTranscriptionSummaryHeader',
@@ -83,6 +81,7 @@ const withArgsStrings = {
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
   // then `i18n.fooBar(1, '2')` works.
+  settingsOptionsTranscriptionDownloadingProgressLabel: withArgs<[number]>(),
 } satisfies Record<string, I18nArgType[]>;
 type WithArgsStrings = typeof withArgsStrings;
 

@@ -136,6 +136,15 @@ You can turn this off at anytime in Settings.
   <message desc="Label of the speaker ID toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_ID_LABEL">
     Allow speaker identification
   </message>
+  <message desc="Button when transcription model is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_BUTTON">
+    Downloading…
+  </message>
+  <message desc="Label of the transcription when transcription is downloading in settings" name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_PROGRESS_LABEL">
+    <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
+  </message>
+  <message desc="Button to download transcription model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOAD_BUTTON">
+    Download
+  </message>
   <message desc="Label of the transcription toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LABEL">
     Audio transcription
   </message>

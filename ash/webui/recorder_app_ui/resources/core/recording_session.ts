@@ -8,9 +8,14 @@ import {
   SAMPLES_PER_SLICE,
 } from './audio_constants.js';
 import {PlatformHandler, SodaSession} from './platform_handler.js';
-import {computed, signal} from './reactive/signal.js';
+import {computed, effect, signal} from './reactive/signal.js';
 import {SodaEventTransformer, TextToken} from './soda/soda.js';
-import {assertExhaustive, assertExists} from './utils/assert.js';
+import {
+  assert,
+  assertExhaustive,
+  assertExists,
+  assertNotReached,
+} from './utils/assert.js';
 import {AsyncJobInfo, AsyncJobQueue} from './utils/async_job_queue.js';
 import {Unsubscribe} from './utils/observer_list.js';
 import {clamp} from './utils/utils.js';
@@ -158,6 +163,41 @@ export class RecordingSession {
     console.error(event);
   }
 
+  private async ensureSodaInstalled(): Promise<void> {
+    const sodaState = this.platformHandler.sodaState;
+    assert(
+      sodaState.value.kind !== 'unavailable',
+      `Trying to install SODA when it's unavailable`,
+    );
+    if (sodaState.value.kind === 'installed') {
+      return;
+    }
+    this.platformHandler.installSoda();
+    await new Promise<void>((resolve, reject) => {
+      effect(({dispose}) => {
+        switch (sodaState.value.kind) {
+          case 'error':
+            dispose();
+            reject(new Error('Install SODA failed'));
+            break;
+          case 'installed':
+            dispose();
+            resolve();
+            break;
+          case 'notInstalled':
+          case 'installing':
+            break;
+          case 'unavailable':
+            return assertNotReached(
+              `Trying to install SODA when it's unavailable`,
+            );
+          default:
+            assertExhaustive(sodaState.value);
+        }
+      });
+    });
+  }
+
   startNewSodaSession(): AsyncJobInfo {
     return this.sodaEnableQueue.push(async () => {
       if (this.currentSodaSession !== null) {
@@ -166,6 +206,12 @@ export class RecordingSession {
       if (this.textTokens.value === null) {
         this.textTokens.value = [];
       }
+      await this.ensureSodaInstalled();
+      // Abort current running job if there's a new enable/disable request.
+      if (this.sodaEnableQueue.hasPendingJob()) {
+        return;
+      }
+
       const session = await this.platformHandler.newSodaSession();
       const unsubscribe = session.subscribeEvent((ev) => {
         this.sodaEventTransformer.addEvent(

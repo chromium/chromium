@@ -96,7 +96,18 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
       std::string("media-src 'self' blob:;"));
 
   if (speech::IsOnDeviceSpeechRecognitionSupported()) {
+    auto* soda_installer = speech::SodaInstaller::GetInstance();
     speech::SodaInstaller::GetInstance()->AddObserver(this);
+    if (soda_installer->IsSodaInstalled(kLanguageCode)) {
+      soda_state_ = {recorder_app::mojom::SodaStateType::kInstalled,
+                     std::nullopt};
+    } else {
+      soda_state_ = {recorder_app::mojom::SodaStateType::kNotInstalled,
+                     std::nullopt};
+    }
+  } else {
+    soda_state_ = {recorder_app::mojom::SodaStateType::kUnavailable,
+                   std::nullopt};
   }
 }
 
@@ -151,25 +162,96 @@ RecorderAppUI::GetMlService() {
   return ml_service_;
 }
 
-void RecorderAppUI::LoadSpeechRecognizerImpl(
+void RecorderAppUI::AddSodaMonitor(
+    ::mojo::PendingRemote<recorder_app::mojom::SodaStateMonitor> monitor,
+    AddSodaMonitorCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  soda_monitors_.Add(std::move(monitor));
+  std::move(callback).Run(soda_state_.Clone());
+}
+
+void RecorderAppUI::InstallSoda(InstallSodaCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (speech::IsOnDeviceSpeechRecognitionSupported()) {
+    auto state = soda_state_.type;
+    if (state == recorder_app::mojom::SodaStateType::kNotInstalled ||
+        state == recorder_app::mojom::SodaStateType::kError) {
+      // Update SODA state to installing so the UI will show downloading
+      // immediately, since the DLC download might start later.
+      UpdateSodaState({recorder_app::mojom::SodaStateType::kInstalling, 0});
+      delegate_->InstallSoda(kLanguageCode);
+    }
+  }
+  std::move(callback).Run();
+}
+
+void RecorderAppUI::UpdateSodaState(recorder_app::mojom::SodaState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  soda_state_ = state;
+  for (auto& monitor : soda_monitors_) {
+    monitor->Update(soda_state_.Clone());
+  }
+}
+
+void RecorderAppUI::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (language_code != kLanguageCode) {
+    return;
+  }
+
+  LOG(ERROR) << "Failed to install Soda library DLC with error "
+             << SodaInstallerErrorCodeToString(error_code);
+  UpdateSodaState({recorder_app::mojom::SodaStateType::kError, std::nullopt});
+}
+
+void RecorderAppUI::OnSodaProgress(speech::LanguageCode language_code,
+                                   int progress) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (language_code != kLanguageCode) {
+    return;
+  }
+
+  UpdateSodaState({recorder_app::mojom::SodaStateType::kInstalling, progress});
+}
+
+void RecorderAppUI::OnSodaInstalled(speech::LanguageCode language_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (language_code != kLanguageCode) {
+    return;
+  }
+
+  UpdateSodaState(
+      {recorder_app::mojom::SodaStateType::kInstalled, std::nullopt});
+}
+
+void RecorderAppUI::LoadSpeechRecognizer(
     mojo::PendingRemote<chromeos::machine_learning::mojom::SodaClient>
         soda_client,
     mojo::PendingReceiver<chromeos::machine_learning::mojom::SodaRecognizer>
         soda_recognizer,
-    LoadSpeechRecognizerCallback callback,
-    bool result) {
+    LoadSpeechRecognizerCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!result) {
+  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
+    // TODO(pihsun): Returns different error when soda is not available.
     std::move(callback).Run(false);
     return;
   }
 
-  auto soda_library_path =
-      speech::SodaInstaller::GetInstance()->GetSodaBinaryPath();
+  auto* soda_installer = speech::SodaInstaller::GetInstance();
+  if (!soda_installer->IsSodaInstalled(kLanguageCode)) {
+    // TODO(pihsun): Returns different error when soda is not installed.
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto soda_library_path = soda_installer->GetSodaBinaryPath();
   auto soda_language_path =
-      speech::SodaInstaller::GetInstance()->GetLanguagePath(
-          speech::GetLanguageName(kLanguageCode));
+      soda_installer->GetLanguagePath(speech::GetLanguageName(kLanguageCode));
   CHECK(!soda_library_path.empty());
   CHECK(!soda_language_path.empty());
 
@@ -194,69 +276,6 @@ void RecorderAppUI::LoadSpeechRecognizerImpl(
             }
           },
           std::move(callback)));
-}
-
-void RecorderAppUI::OnSodaInstallError(
-    speech::LanguageCode language_code,
-    speech::SodaInstaller::ErrorCode error_code) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (language_code != kLanguageCode) {
-    return;
-  }
-  // TODO(pihsun): Handle error.
-  LOG(ERROR) << "Failed to install Soda library DLC with error "
-             << SodaInstallerErrorCodeToString(error_code);
-  for (auto& callback : soda_installed_callbacks_) {
-    std::move(callback).Run(false);
-  }
-  soda_installed_callbacks_.clear();
-}
-
-void RecorderAppUI::OnSodaProgress(speech::LanguageCode language_code,
-                                   int progress) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (language_code != kLanguageCode) {
-    return;
-  }
-  // TODO(pihsun): Return the progress to frontend.
-}
-
-void RecorderAppUI::OnSodaInstalled(speech::LanguageCode language_code) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (language_code != kLanguageCode) {
-    return;
-  }
-  for (auto& callback : soda_installed_callbacks_) {
-    std::move(callback).Run(true);
-  }
-  soda_installed_callbacks_.clear();
-}
-
-void RecorderAppUI::LoadSpeechRecognizer(
-    mojo::PendingRemote<chromeos::machine_learning::mojom::SodaClient>
-        soda_client,
-    mojo::PendingReceiver<chromeos::machine_learning::mojom::SodaRecognizer>
-        soda_recognizer,
-    LoadSpeechRecognizerCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
-    // TODO(pihsun): Returns different error when soda is not available.
-    std::move(callback).Run(false);
-    return;
-  }
-  auto* soda_installer = speech::SodaInstaller::GetInstance();
-
-  if (soda_installer->IsSodaInstalled(kLanguageCode)) {
-    LoadSpeechRecognizerImpl(std::move(soda_client), std::move(soda_recognizer),
-                             std::move(callback), true);
-    return;
-  }
-
-  soda_installed_callbacks_.push_back(base::BindOnce(
-      &RecorderAppUI::LoadSpeechRecognizerImpl, weak_ptr_factory_.GetWeakPtr(),
-      std::move(soda_client), std::move(soda_recognizer), std::move(callback)));
-
-  delegate_->InstallSoda(kLanguageCode);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(RecorderAppUI)

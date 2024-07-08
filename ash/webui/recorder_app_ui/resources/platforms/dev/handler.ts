@@ -20,7 +20,9 @@ import {
   Model,
   PlatformHandler as PlatformHandlerBase,
   SodaSession,
+  SodaState,
 } from '../../core/platform_handler.js';
+import {signal} from '../../core/reactive/signal.js';
 import {SodaEvent, TimeDelta} from '../../core/soda/types.js';
 import {
   assert,
@@ -235,12 +237,37 @@ function substituteI18nString(label: string, ...args: Array<number|string>):
 }
 
 export class PlatformHandler extends PlatformHandlerBase {
-  override init(): void {
+  readonly sodaState = signal<SodaState>({kind: 'notInstalled'});
+
+  override async init(): Promise<void> {
     settingsInit();
   }
 
   override async loadModel(_uuid: string): Promise<Model> {
     return new ModelDev();
+  }
+
+  override installSoda(): void {
+    console.log('SODA installation requested');
+    if (this.sodaState.value.kind === 'notInstalled') {
+      this.sodaState.value = {kind: 'installing', progress: 0};
+      // Simulate the loading of SODA model.
+      // Not awaiting the async block should be fine since this is only for
+      // dev, and no two async block of this will run at the same time.
+      void (async () => {
+        let progress = 0;
+        while (true) {
+          await sleep(200);
+          // 4% per 200 ms -> simulate 5 seconds for the whole installation.
+          progress += 4;
+          if (progress >= 100) {
+            this.sodaState.value = {kind: 'installed'};
+            return;
+          }
+          this.sodaState.value = {kind: 'installing', progress};
+        }
+      })();
+    }
   }
 
   override async newSodaSession(): Promise<SodaSession> {

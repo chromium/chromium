@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/switch/switch.js';
+import 'chrome://resources/mwc/@material/web/progress/circular-progress.js';
+import './cra/cra-button.js';
 import './cra/cra-dialog.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
@@ -11,12 +13,17 @@ import './settings-row.js';
 import {
   Switch as CrosSwitch,
 } from 'chrome://resources/cros_components/switch/switch.js';
-import {css, html} from 'chrome://resources/mwc/lit/index.js';
+import {css, html, nothing} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
+import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings, TranscriptionEnableState} from '../core/state/settings.js';
-import {assertInstanceof} from '../core/utils/assert.js';
+import {
+  assertExhaustive,
+  assertInstanceof,
+  assertNotReached,
+} from '../core/utils/assert.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
 
@@ -95,7 +102,29 @@ export class SettingsMenu extends ReactiveLitElement {
         overflow: hidden;
       }
     }
+
+    settings-row cra-button md-circular-progress {
+      --md-circular-progress-active-indicator-color: var(--cros-sys-disabled);
+
+      /*
+       * This has a lower precedence than the size override in cros-button,
+       * but still need to be set to have correct line width.
+       */
+      --md-circular-progress-size: 24px;
+
+      /*
+       * This is to override the size setting for slotted element in
+       * cros-button. On figma the circular progress have 2px padding, but
+       * md-circular-progres has a non-configurable 4px padding. Setting a
+       * negative margin so the extra padding doesn't expand the button size.
+       */
+      height: 24px;
+      margin: -2px;
+      width: 24px;
+    }
   `;
+
+  private readonly platformHandler = usePlatformHandler();
 
   private get dialog(): CraDialog|null {
     return this.shadowRoot?.querySelector('cra-dialog') ?? null;
@@ -119,9 +148,121 @@ export class SettingsMenu extends ReactiveLitElement {
     });
   }
 
+  private onInstallSodaClick() {
+    // TODO: b/344784638 - Show consent window on first enable.
+    settings.mutate((s) => {
+      s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
+    });
+    this.platformHandler.installSoda();
+  }
+
+  private get transcriptionEnabled() {
+    return (
+      settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED
+    );
+  }
+
+  private renderTranscriptionDetailSettings() {
+    if (!this.transcriptionEnabled ||
+        this.platformHandler.sodaState.value.kind === 'notInstalled') {
+      return nothing;
+    }
+    return html`
+      <settings-row>
+        <span slot="label">${i18n.settingsOptionsSpeakerIdLabel}</span>
+        <span slot="description">
+          ${i18n.settingsOptionsSpeakerIdDescription}
+        </span>
+        <cros-switch slot="action"></cros-switch>
+      </settings-row>
+    `;
+  }
+
+  private renderTranscriptionDescriptionAndAction() {
+    const sodaState = this.platformHandler.sodaState.value;
+    if (sodaState.kind === 'notInstalled') {
+      // Shows the "download" button when SODA is not installed, even if it's
+      // already enabled by user. This shouldn't happen in normal case, but
+      // might happen if DLC is cleared manually by any mean.
+      return html`
+        <cra-button
+          slot="action"
+          .label=${i18n.settingsOptionsTranscriptionDownloadButton}
+          @click=${this.onInstallSodaClick}
+        ></cra-button>
+      `;
+    }
+
+    const transcriptionToggle = html`
+      <cros-switch
+        slot="action"
+        .selected=${this.transcriptionEnabled}
+        @change=${this.onTranscriptionToggle}
+      >
+      </cros-switch>
+    `;
+    if (!this.transcriptionEnabled) {
+      return transcriptionToggle;
+    }
+
+    switch (sodaState.kind) {
+      case 'unavailable':
+        return assertNotReached(
+          'SODA unavailable but the setting is rendered.',
+        );
+      case 'error':
+        // TODO: b/344784638 - Render error state.
+        return nothing;
+      case 'installing': {
+        const progressLabel =
+          i18n.settingsOptionsTranscriptionDownloadingProgressLabel(
+            sodaState.progress,
+          );
+        return html`
+          <span slot="description">${progressLabel}</span>
+          <cra-button
+            slot="action"
+            .label=${i18n.settingsOptionsTranscriptionDownloadingButton}
+            disabled
+          >
+            <md-circular-progress indeterminate slot="leading-icon">
+            </md-circular-progress>
+          </cra-button>
+        `;
+      }
+      case 'installed':
+        return transcriptionToggle;
+      default:
+        assertExhaustive(sodaState.kind);
+    }
+  }
+
+  private renderTranscriptionSection() {
+    if (this.platformHandler.sodaState.value.kind === 'unavailable') {
+      return nothing;
+    }
+    return html`
+      <div class="section">
+        <div class="title">
+          ${i18n.settingsSectionTranscriptionSummaryHeader}
+        </div>
+        <div class="body">
+          <settings-row>
+            <span slot="label">
+              ${i18n.settingsOptionsTranscriptionLabel}
+            </span>
+            ${this.renderTranscriptionDescriptionAndAction()}
+          </settings-row>
+          ${this.renderTranscriptionDetailSettings()}
+          <!--
+            TODO: b/336963138 - Add transcription language and summary.
+          -->
+        </div>
+      </div>
+    `;
+  }
+
   override render(): RenderResult {
-    const transcriptionEnabled =
-      settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED;
     // TODO: b/336963138 - Implement actual functionality of all settings.
     return html`<cra-dialog>
       <div slot="content">
@@ -141,9 +282,9 @@ export class SettingsMenu extends ReactiveLitElement {
             <div class="title">${i18n.settingsSectionGeneralHeader}</div>
             <div class="body">
               <settings-row>
-                <span slot="label"
-                  >${i18n.settingsOptionsDoNotDisturbLabel}</span
-                >
+                <span slot="label">
+                  ${i18n.settingsOptionsDoNotDisturbLabel}
+                </span>
                 <span slot="description">
                   ${i18n.settingsOptionsDoNotDisturbDescription}
                 </span>
@@ -157,34 +298,7 @@ export class SettingsMenu extends ReactiveLitElement {
               </settings-row>
             </div>
           </div>
-          <div class="section">
-            <div class="title">
-              ${i18n.settingsSectionTranscriptionSummaryHeader}
-            </div>
-            <div class="body">
-              <settings-row>
-                <span slot="label">${i18n.settingsOptionsSpeakerIdLabel}</span>
-                <span slot="description">
-                  ${i18n.settingsOptionsSpeakerIdDescription}
-                </span>
-                <cros-switch slot="action"></cros-switch>
-              </settings-row>
-              <settings-row>
-                <span slot="label">
-                  ${i18n.settingsOptionsTranscriptionLabel}
-                </span>
-                <cros-switch
-                  slot="action"
-                  .selected=${transcriptionEnabled}
-                  @change=${this.onTranscriptionToggle}
-                >
-                </cros-switch>
-              </settings-row>
-              <!--
-                TODO: b/336963138 - Add transcription language and summary.
-              -->
-            </div>
-          </div>
+          ${this.renderTranscriptionSection()}
         </div>
       </div>
     </cra-dialog>`;

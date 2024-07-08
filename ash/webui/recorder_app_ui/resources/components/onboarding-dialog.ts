@@ -14,6 +14,7 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
+import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {settings, TranscriptionEnableState} from '../core/state/settings.js';
@@ -102,6 +103,8 @@ export class OnboardingDialog extends ReactiveLitElement {
    */
   step = signal<0|1|2>(0);
 
+  private readonly platformHandler = usePlatformHandler();
+
   get dialog(): HTMLDivElement {
     return assertInstanceof(
       this.shadowRoot?.getElementById('dialog'),
@@ -172,7 +175,7 @@ export class OnboardingDialog extends ReactiveLitElement {
           settings.mutate((s) => {
             s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
           });
-          // TODO(pihsun): Really call backend to start downloading SODA model.
+          this.platformHandler.installSoda();
           this.step.value = 2;
         };
         const cancelTranscription = () => {
