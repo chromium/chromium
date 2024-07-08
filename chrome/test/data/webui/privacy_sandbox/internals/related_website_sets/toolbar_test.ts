@@ -8,17 +8,17 @@ import type {RelatedWebsiteSetsToolbarElement} from 'chrome://privacy-sandbox-in
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-suite('ToolbarTest', function() {
+suite('ToolbarTest', () => {
   let toolbar: RelatedWebsiteSetsToolbarElement;
 
-  setup(function() {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toolbar = document.createElement('related-website-sets-toolbar');
     document.body.appendChild(toolbar);
   });
 
   // TODO(crgbug.com/348573599): Add search bar input functionality test
-  test('check layout', function() {
+  test('check layout', () => {
     assertTrue(isVisible(toolbar));
   });
 });

@@ -9,5 +9,6 @@
  * #css_wrapper_metadata_end */
 
 html {
+  --side-bar-width: 300px;
   --toolbar-height: 56px;
 }

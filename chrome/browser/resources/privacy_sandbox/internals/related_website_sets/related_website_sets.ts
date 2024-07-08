@@ -4,5 +4,6 @@
 
 import './app.js';
 
-export {RelatedWebsiteSetsSidebarElement} from './sidebar.js';
-export {RelatedWebsiteSetsToolbarElement} from './toolbar.js';
+export type {RelatedWebsiteSetsAppElement} from './app.js';
+export type {RelatedWebsiteSetsSidebarElement} from './sidebar.js';
+export type {RelatedWebsiteSetsToolbarElement} from './toolbar.js';

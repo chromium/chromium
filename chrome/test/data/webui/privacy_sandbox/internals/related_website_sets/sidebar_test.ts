@@ -8,16 +8,16 @@ import type {RelatedWebsiteSetsSidebarElement} from 'chrome://privacy-sandbox-in
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-suite('SideBarTest', function() {
+suite('SideBarTest', () => {
   let sidebar: RelatedWebsiteSetsSidebarElement;
 
-  setup(function() {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     sidebar = document.createElement('related-website-sets-sidebar');
     document.body.appendChild(sidebar);
   });
 
-  test('check layout', function() {
+  test('check layout', () => {
     assertTrue(isVisible(sidebar));
     const renderedLinks = sidebar.shadowRoot!.querySelectorAll('a');
     assertEquals(1, renderedLinks.length);

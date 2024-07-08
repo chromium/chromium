@@ -24,6 +24,11 @@ class RelatedWebsiteSetsTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(RelatedWebsiteSetsTest, App) {
+  RunTest("privacy_sandbox/internals/related_website_sets/app_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(RelatedWebsiteSetsTest, Toolbar) {
   RunTest("privacy_sandbox/internals/related_website_sets/toolbar_test.js",
           "mocha.run()");

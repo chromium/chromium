@@ -6,7 +6,6 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_ripple/cr_ripple.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
-import '//resources/cr_elements/icons_lit.html.js';
 
 import type {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -52,6 +51,10 @@ export class RelatedWebsiteSetsSidebarElement extends CrLitElement {
       path: 'chrome://settings',
     },
   ];
+
+  getMenuItemsForTesting(): MenuItem[] {
+    return this.menuItems_;
+  }
 }
 
 declare global {
