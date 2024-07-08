@@ -61,6 +61,13 @@ class FakeKeyboardBrightnessControlDelegate
     }
   }
 
+  void OnReceiveHasAmbientLightSensor(std::optional<bool> has_sensor) {
+    if (has_sensor.has_value()) {
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Device.HasAmbientLightSensor", has_sensor.value());
+    }
+  }
+
  private:
   double keyboard_brightness_ = 0;
 };
@@ -218,6 +225,14 @@ TEST_F(KeyboardBrightnessControllerTest, RecordHasKeyboardBrightness) {
   histogram_tester_->ExpectTotalCount("ChromeOS.Keyboard.HasBacklight", 0);
   delegate_->OnReceiveHasKeyboardBacklight(std::optional<bool>(true));
   histogram_tester_->ExpectTotalCount("ChromeOS.Keyboard.HasBacklight", 1);
+}
+
+TEST_F(KeyboardBrightnessControllerTest, RecordHasAmbientLightSensor) {
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Device.HasAmbientLightSensor", 0);
+  delegate_->OnReceiveHasAmbientLightSensor(std::optional<bool>(true));
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Device.HasAmbientLightSensor", 1);
 }
 
 TEST_F(KeyboardBrightnessControllerTest, SetKeyboardAmbientLightSensorEnabled) {

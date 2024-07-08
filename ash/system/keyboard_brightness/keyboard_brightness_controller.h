@@ -80,6 +80,7 @@ class ASH_EXPORT KeyboardBrightnessController
   void RestoreKeyboardAmbientLightSensorSettingOnFirstLogin();
 
   void OnReceiveHasKeyboardBacklight(std::optional<bool> has_backlight);
+  void OnReceiveHasAmbientLightSensor(std::optional<bool> has_sensor);
   void OnReceiveKeyboardBrightnessAfterLogin(
       std::optional<double> keyboard_brightness);
 

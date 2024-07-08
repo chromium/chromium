@@ -32,9 +32,15 @@ KeyboardBrightnessController::KeyboardBrightnessController(
       chromeos::PowerManagerClient::Get();
   DCHECK(power_manager_client);
   power_manager_client->AddObserver(this);
+
   // Record whether the keyboard has a backlight for metric collection.
   power_manager_client->HasKeyboardBacklight(base::BindOnce(
       &KeyboardBrightnessController::OnReceiveHasKeyboardBacklight,
+      weak_ptr_factory_.GetWeakPtr()));
+
+  // Record whether the device has a ambient light sensor for metric collection.
+  power_manager_client->HasAmbientLightSensor(base::BindOnce(
+      &KeyboardBrightnessController::OnReceiveHasAmbientLightSensor,
       weak_ptr_factory_.GetWeakPtr()));
 
   // Add LoginScreenController observer.
@@ -292,6 +298,18 @@ void KeyboardBrightnessController::OnReceiveHasKeyboardBacklight(
   }
   LOG(ERROR) << "KeyboardBrightnessController: Failed to get the keyboard "
                 "backlight status";
+}
+
+void KeyboardBrightnessController::OnReceiveHasAmbientLightSensor(
+    std::optional<bool> has_sensor) {
+  if (!has_sensor.has_value()) {
+    LOG(ERROR)
+        << "KeyboardBrightnessController: Failed to get the ambient light "
+           "sensor status";
+    return;
+  }
+  base::UmaHistogramBoolean("ChromeOS.Keyboard.HasAmbientLightSensor",
+                            has_sensor.value());
 }
 
 void KeyboardBrightnessController::OnReceiveKeyboardBrightnessAfterLogin(

@@ -3157,6 +3157,18 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Device.HasAmbientLightSensor" enum="Boolean"
+    expires_after="2025-03-29">
+  <owner>longbowei@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records whether the device has a ambient light sensor. This state is
+    determined once per login, and the metric is also recorded only once per
+    login.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Device.Keyboard.AutoRepeatDelay.{State}"
     units="ms" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
