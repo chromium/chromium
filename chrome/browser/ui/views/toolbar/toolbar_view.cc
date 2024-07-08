@@ -466,6 +466,11 @@ void ToolbarView::Init() {
        browser_->profile()->GetOTRProfileID().IsCaptivePortal());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   show_avatar_toolbar_button = !chromeos::IsManagedGuestSession();
+#else
+  // DevTools profiles are OffTheRecord, so hide it there.
+  show_avatar_toolbar_button = browser_->profile()->IsIncognitoProfile() ||
+                               browser_->profile()->IsGuestSession() ||
+                               browser_->profile()->IsRegularProfile();
 #endif
   avatar_->SetVisible(show_avatar_toolbar_button);
 
