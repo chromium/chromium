@@ -83,7 +83,7 @@ class AndroidxDeviceAuthenticatorControllerImpl implements DeviceAuthenticatorCo
                             @Override
                             public void onAuthenticationError(
                                     int errorCode, @NonNull CharSequence errString) {
-                                if (errorCode == BiometricPrompt.ERROR_CANCELED) {
+                                if (errorCode == BiometricPrompt.ERROR_USER_CANCELED) {
                                     onAuthenticationCompleted(DeviceAuthUIResult.CANCELED_BY_USER);
                                     return;
                                 }
