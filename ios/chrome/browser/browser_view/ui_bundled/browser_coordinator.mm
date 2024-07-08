@@ -3722,13 +3722,11 @@ enum class ToolbarKind {
 
   [_quickDeleteCoordinator stop];
 
-  QuickDeleteCoordinator* quickDeleteCoordinator =
-      [[QuickDeleteCoordinator alloc]
-          initWithBaseViewController:top_view_controller::
-                                         TopPresentedViewControllerFrom(
-                                             self.viewController)
-                             browser:self.browser];
-  _quickDeleteCoordinator = quickDeleteCoordinator;
+  _quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
+      initWithBaseViewController:top_view_controller::
+                                     TopPresentedViewControllerFrom(
+                                         self.viewController)
+                         browser:self.browser];
   [_quickDeleteCoordinator start];
 }
 

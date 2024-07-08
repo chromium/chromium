@@ -155,13 +155,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self.presentationHandler dismissQuickDelete];
 }
 
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [self.presentationHandler dismissQuickDelete];
-}
-
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView

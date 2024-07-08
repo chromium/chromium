@@ -23,7 +23,8 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_view_controller.h"
 
-@interface QuickDeleteCoordinator () <QuickDeletePresentationCommands>
+@interface QuickDeleteCoordinator () <QuickDeletePresentationCommands,
+                                      UIAdaptivePresentationControllerDelegate>
 @end
 
 @implementation QuickDeleteCoordinator {
@@ -62,6 +63,7 @@
 
   _viewController.presentationHandler = self;
   _viewController.mutator = _mediator;
+  _viewController.presentationController.delegate = self;
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -70,16 +72,7 @@
 
 - (void)stop {
   [_viewController dismissViewControllerAnimated:YES completion:nil];
-  _viewController.presentationHandler = nil;
-  _viewController.mutator = nil;
-  _viewController = nil;
-
-  _mediator.consumer = nil;
-  [_mediator disconnect];
-  _mediator = nil;
-
-  [_browsingDataCoordinator stop];
-  _browsingDataCoordinator = nil;
+  [self disconnect];
 }
 
 #pragma mark - QuickDeletePresentationCommands
@@ -116,6 +109,31 @@
                              browser:self.browser];
   _browsingDataCoordinator = browsingDataCoordinator;
   [_browsingDataCoordinator start];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self disconnect];
+  [self dismissQuickDelete];
+}
+
+#pragma mark - Private
+
+// Disconnects all instances.
+- (void)disconnect {
+  _viewController.presentationHandler = nil;
+  _viewController.mutator = nil;
+  _viewController.presentationController.delegate = nil;
+  _viewController = nil;
+
+  _mediator.consumer = nil;
+  [_mediator disconnect];
+  _mediator = nil;
+
+  [_browsingDataCoordinator stop];
+  _browsingDataCoordinator = nil;
 }
 
 @end
