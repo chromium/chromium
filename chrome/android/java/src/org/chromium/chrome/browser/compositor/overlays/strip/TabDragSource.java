@@ -365,6 +365,9 @@ public class TabDragSource implements View.OnDragListener {
             return false;
         }
         boolean tabDraggedBelongToCurrentModel = doesBelongToCurrentModel(tabBeingDragged);
+
+        // TODO(crbug.com/350811736): The last tab in tab group can be ungrouped through
+        //  re-parenting, we might want to record user action of TabRemovedFromGroup here.
         if (!tabDraggedBelongToCurrentModel) {
             mMultiInstanceManager.moveTabToWindow(
                     getActivity(),
