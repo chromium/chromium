@@ -230,7 +230,7 @@ class GPU_EXPORT TaskGraph {
     const Task* FindReleaseTask(const SyncToken& sync_token) const
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
-    RAW_PTR_EXCLUSION TaskGraph* const task_graph_ = nullptr;
+    const raw_ptr<TaskGraph> task_graph_ = nullptr;
     const scoped_refptr<SyncPointOrderData> order_data_;
     const SequenceId sequence_id_;
 
