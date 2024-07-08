@@ -128,3 +128,33 @@ iron-icon[icon^='personalization-shared-illo:'] {
   animation-name: fade-in;
   animation-timing-function: linear;
 }
+
+#searchButtons {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  margin-block: 24px;
+  position: relative;
+  width: 100%;
+}
+
+#searchButtons cr-button {
+  margin: 0 4px;
+  padding-inline-end: 16px;
+}
+
+#inspireMeAnimation {
+  height: 20px;
+  width: 20px;
+}
+
+#inspire:not(:hover) #inspireMeAnimation,
+#inspire:hover #inspireIcon {
+  display: none;
+}
+
+#inspire:hover #inspireMeAnimation,
+#inspire:not(:hover) #inspireIcon {
+  display: block;
+}

@@ -25,21 +25,6 @@
     width: 100%;
   }
 
-  #searchButtons {
-    align-items: center;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    margin-block: 24px;
-    position: relative;
-    width: 100%;
-  }
-
-  #searchButtons cr-button {
-    margin: 0 4px;
-    padding-inline-end: 16px;
-  }
-
   #searchButtons #promptingGuide {
     left: 0;
     position: absolute;
@@ -84,6 +69,22 @@
             target="_blank">
           Prompting guide
         </a>
+        <cr-button
+            id="inspire"
+            on-click="onClickInspire_"
+            on-mouseleave="stopInspireIconAnimation_"
+            on-mouseenter="startInspireIconAnimation_">
+          <cros-lottie-renderer
+              id="inspireMeAnimation"
+              slot="prefix-icon"
+              asset-url="chrome://resources/ash/common/sea_pen/lightbulb_icon.json"
+              loop
+              dynamic
+              aria-hidden>
+          </cros-lottie-renderer>
+          <iron-icon id="inspireIcon" icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
+          <p>[[i18n('seaPenInspireMeButton')]]</p>
+        </cr-button>
         <cr-button
             id="searchButton"
             class="action-button"

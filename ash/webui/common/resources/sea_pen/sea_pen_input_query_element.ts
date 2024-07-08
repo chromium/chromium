@@ -16,15 +16,17 @@ import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_suggestions_element.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
 import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QUERY} from './constants.js';
+import {QUERY, SEA_PEN_SAMPLES} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {getSeaPenThumbnails} from './sea_pen_controller.js';
@@ -124,6 +126,11 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         new ResizeObserver(() => this.animateContainerHeight());
 
     beforeNextRender(this, () => {
+      const inspireMeAnimation = this.getInspireMeAnimationElement_();
+      if (inspireMeAnimation) {
+        inspireMeAnimation.autoplay = false;
+      }
+
       this.innerContainerOriginalHeight_ = this.$.innerContainer.scrollHeight;
       this.$.innerContainer.style.height =
           `${this.innerContainerOriginalHeight_}px`;
@@ -153,6 +160,24 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         suggestionsContainer ? suggestionsContainer.scrollHeight : 0;
     this.$.innerContainer.style.height =
         `${this.innerContainerOriginalHeight_ + suggestionsContainerHeight}px`;
+  }
+
+  private getInspireMeAnimationElement_(): LottieRenderer|null|undefined {
+    return this.shadowRoot?.querySelector<LottieRenderer>(
+        '#inspireMeAnimation');
+  }
+
+  private startInspireIconAnimation_() {
+    this.getInspireMeAnimationElement_()?.play();
+  }
+
+  private stopInspireIconAnimation_() {
+    this.getInspireMeAnimationElement_()?.stop();
+  }
+
+  private onClickInspire_() {
+    const index = Math.floor(Math.random() * SEA_PEN_SAMPLES.length);
+    this.textValue_ = SEA_PEN_SAMPLES[index].prompt;
   }
 
   private onSeaPenQueryChanged_(seaPenQuery: SeaPenQuery|null) {

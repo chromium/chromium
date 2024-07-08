@@ -275,4 +275,20 @@ suite('SeaPenInputQueryElementTest', function() {
         `${textValue}, ${seaPenSuggestionButton.innerText}`, inputElement.value,
         'suggestion text should be added at the end of the text input');
   });
+
+  test('inspires me', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    const inspireButton =
+        seaPenInputQueryElement.shadowRoot!.getElementById('inspire');
+    assertTrue(!!inspireButton);
+    inspireButton!.click();
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+            '#queryInput');
+    assertTrue(!!inputElement?.value, 'input should show text');
+  });
 });
