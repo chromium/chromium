@@ -5,6 +5,8 @@
 #include "gin/public/cppgc.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
+#include "gin/gin_features.h"
 #include "gin/public/v8_platform.h"
 #include "v8/include/cppgc/platform.h"
 
@@ -17,11 +19,28 @@ int g_init_count = 0;
 }  // namespace
 
 void InitializeCppgcFromV8Platform() {
-  DCHECK_GE(g_init_count, 0);
-  if (g_init_count++ > 0)
-    return;
+  static constexpr size_t kRegularCageSize =
+      static_cast<size_t>(4) * 1024 * 1024 * 1024;
+  static constexpr size_t kLargerCageSize =
+      static_cast<size_t>(16) * 1024 * 1024 * 1024;
 
-  cppgc::InitializeProcess(gin::V8Platform::Get()->GetPageAllocator());
+  DCHECK_GE(g_init_count, 0);
+  if (g_init_count++ > 0) {
+    return;
+  }
+
+  size_t desired_cage_size = kRegularCageSize;
+  auto overridden_state = base::FeatureList::GetStateIfOverridden(
+      features::kV8CppGCEnableLargerCage);
+  if (overridden_state.has_value()) {
+    if (overridden_state.value()) {
+      desired_cage_size = kLargerCageSize;
+    } else {
+    }
+  }
+
+  cppgc::InitializeProcess(gin::V8Platform::Get()->GetPageAllocator(),
+                           desired_cage_size);
 }
 
 void MaybeShutdownCppgc() {
