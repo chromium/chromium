@@ -12,6 +12,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
@@ -166,6 +167,26 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
   ASSERT_TRUE(WaitForPlusAddressEnabledState(true));
   InjectSpecificsToServer(
       plus_addresses::CreateSettingSpecifics(kIsEnabledSettingName, false));
+  EXPECT_TRUE(WaitForPlusAddressEnabledState(false));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
+                       IncrementalUpdate_Remove) {
+  InjectSpecificsToServer(
+      plus_addresses::CreateSettingSpecifics(kIsEnabledSettingName, true));
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(WaitForPlusAddressEnabledState(true));
+  // Simulate removing the `kIsEnabledSettingName` setting on the server.
+  const std::string client_tag_hash =
+      syncer::ClientTagHash::FromUnhashed(syncer::PLUS_ADDRESS_SETTING,
+                                          kIsEnabledSettingName)
+          .value();
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentTombstoneEntity::PersistentTombstoneEntity::CreateNew(
+          syncer::LoopbackServerEntity::CreateId(syncer::PLUS_ADDRESS_SETTING,
+                                                 client_tag_hash),
+          client_tag_hash));
+  // Non-existing settings behave as if they have their default value.
   EXPECT_TRUE(WaitForPlusAddressEnabledState(false));
 }
 
