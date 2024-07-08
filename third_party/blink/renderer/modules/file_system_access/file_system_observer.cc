@@ -174,9 +174,6 @@ void FileSystemObserver::unobserve(FileSystemHandle* handle) {
   // which observer (if any) corresponds to `handle` without hopping to the
   // browser to validate `handle`.
   host_remote_->Unobserve(handle->Transfer());
-  // TODO(https://crbug.com/321980469): Remove observation corresponding to
-  // `handle` from the FileSystemObservationCollection. As part of this, we
-  // should also remove this observer if it has no more observations.
 }
 
 void FileSystemObserver::disconnect() {
