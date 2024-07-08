@@ -87,32 +87,54 @@ PrivacySandboxNoticeStorage::ReadNoticeData(PrefService* pref_service,
   if (pref_data.empty()) {
     return std::nullopt;
   }
-
   // Populate notice data values.
   std::optional<PrivacySandboxNoticeData> notice_data =
       PrivacySandboxNoticeData();
-  notice_data->schema_version = *pref_data.FindIntByDottedPath(
+
+  // Schema version.
+  std::optional<int> schema_version = pref_data.FindIntByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxSchemaVersion));
-  notice_data->notice_action_taken_time =
-      *base::ValueToTime(pref_data.FindByDottedPath(
+  if (schema_version.has_value()) {
+    notice_data->schema_version = *schema_version;
+  }
+
+  // Notice action taken time.
+  std::optional<base::Time> notice_action_taken_time =
+      base::ValueToTime(pref_data.FindByDottedPath(
           CreatePrefPath(notice, kPrivacySandboxNoticeActionTakenTime)));
-  notice_data->notice_first_shown =
-      *base::ValueToTime(pref_data.FindByDottedPath(
+  if (notice_action_taken_time.has_value()) {
+    notice_data->notice_action_taken_time = *notice_action_taken_time;
+  }
+
+  // Notice first shown.
+  std::optional<base::Time> notice_first_shown =
+      base::ValueToTime(pref_data.FindByDottedPath(
           CreatePrefPath(notice, kPrivacySandboxNoticeFirstShown)));
-  notice_data->notice_last_shown =
-      *base::ValueToTime(pref_data.FindByDottedPath(
+  if (notice_first_shown.has_value()) {
+    notice_data->notice_first_shown = *notice_first_shown;
+  }
+
+  // Notice last shown.
+  std::optional<base::Time> notice_last_shown =
+      base::ValueToTime(pref_data.FindByDottedPath(
           CreatePrefPath(notice, kPrivacySandboxNoticeLastShown)));
-  notice_data->notice_shown_duration =
-      *base::ValueToTimeDelta(pref_data.FindByDottedPath(
+  if (notice_last_shown.has_value()) {
+    notice_data->notice_last_shown = *notice_last_shown;
+  }
+
+  // Notice shown duration.
+  std::optional<base::TimeDelta> notice_shown_duration =
+      base::ValueToTimeDelta(pref_data.FindByDottedPath(
           CreatePrefPath(notice, kPrivacySandboxNoticeShownDuration)));
+  if (notice_shown_duration.has_value()) {
+    notice_data->notice_shown_duration = *notice_shown_duration;
+  }
 
   // Enum handling.
   std::optional<int> notice_action_taken = pref_data.FindIntByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxNoticeActionTaken));
-  if (!notice_action_taken || *notice_action_taken < 0 ||
-      *notice_action_taken > static_cast<int>(NoticeActionTaken::kMaxValue)) {
-    notice_data->notice_action_taken = NoticeActionTaken::kNotSet;
-  } else {
+  if (notice_action_taken && *notice_action_taken > 0 &&
+      *notice_action_taken <= static_cast<int>(NoticeActionTaken::kMaxValue)) {
     notice_data->notice_action_taken =
         static_cast<NoticeActionTaken>(*notice_action_taken);
   }

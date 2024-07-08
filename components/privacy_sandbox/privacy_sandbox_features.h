@@ -329,6 +329,10 @@ enum class TrackingProtectionSurveyAnchor {
   kFullExperience = 2,
   kMaxValue = kFullExperience,
 };
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel);
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

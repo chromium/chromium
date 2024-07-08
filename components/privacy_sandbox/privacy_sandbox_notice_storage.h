@@ -20,23 +20,25 @@ namespace privacy_sandbox {
 enum class NoticeActionTaken {
   // No Ack action set.
   kNotSet = 0,
-  // Action taken some other way.
-  kOther = 1,
   // ACK'ed the notice using 'GotIt' or some other form of acknowledgement.
-  kAck = 2,
+  kAck = 1,
+  // Action taken clicking the 'x' button, closing the browser etc.
+  kClosed = 2,
+  // Action taken clicking the learn more button.
+  kLearnMore = 3,
   // Opted in/Consented to the notice using 'Turn it on' or some other form of
   // explicit consent.
-  kOptIn = 3,
+  kOptIn = 4,
   // Action taken to dismiss or opt out of the notice using 'No Thanks' or some
   // other form of dismissal.
-  kOptOut = 4,
+  kOptOut = 5,
+  // Action taken some other way.
+  kOther = 6,
   // Action taken clicking the settings button.
-  kSettings = 5,
-  // Action taken clicking the learn more button.
-  kLearnMore = 6,
-  // Action taken clicking the 'x' button, closing the browser etc.
-  kClosed = 7,
-  kMaxValue = kClosed,
+  kSettings = 7,
+  // Action taken unknown as it was recorded pre-migration.
+  kUnknownActionPreMigration = 8,
+  kMaxValue = kUnknownActionPreMigration,
 };
 
 // Stores information about profile interactions on a notice.
@@ -60,6 +62,9 @@ struct PrivacySandboxNoticeData {
 
 class PrivacySandboxNoticeStorage {
  public:
+  PrivacySandboxNoticeStorage() = default;
+  ~PrivacySandboxNoticeStorage() = default;
+
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   std::optional<PrivacySandboxNoticeData> ReadNoticeData(
@@ -83,12 +88,6 @@ class PrivacySandboxNoticeStorage {
   PrivacySandboxNoticeStorage(const PrivacySandboxNoticeStorage&) = delete;
   PrivacySandboxNoticeStorage& operator=(const PrivacySandboxNoticeStorage&) =
       delete;
-
- private:
-  friend class PrivacySandboxNoticeStorageTestPeer;  // For testing.
-  friend base::NoDestructor<PrivacySandboxNoticeStorage>;
-  PrivacySandboxNoticeStorage() = default;
-  ~PrivacySandboxNoticeStorage() = default;
 };
 
 }  // namespace privacy_sandbox

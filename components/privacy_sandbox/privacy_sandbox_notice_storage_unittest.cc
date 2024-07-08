@@ -13,14 +13,6 @@
 
 namespace privacy_sandbox {
 
-class PrivacySandboxNoticeStorageTestPeer {
- public:
-  static PrivacySandboxNoticeStorage* GetPrivacySandboxNoticeStorageInstance() {
-    static base::NoDestructor<PrivacySandboxNoticeStorage> instance;
-    return instance.get();
-  }
-};
-
 namespace {
 
 class PrivacySandboxNoticeStorageTest : public testing::Test {
@@ -28,6 +20,7 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   PrivacySandboxNoticeStorageTest()
       : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
+    notice_storage_ = std::make_unique<PrivacySandboxNoticeStorage>();
   }
 
   PrivacySandboxNoticeData NoticeTestData() {
@@ -43,8 +36,7 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   }
 
   PrivacySandboxNoticeStorage* notice_storage() {
-    return PrivacySandboxNoticeStorageTestPeer::
-        GetPrivacySandboxNoticeStorageInstance();
+    return notice_storage_.get();
   }
 
   // Sets notice related prefs.
@@ -78,6 +70,7 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_env_;
   TestingPrefServiceSimple prefs_;
+  std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
 };
 
 TEST_F(PrivacySandboxNoticeStorageTest, NoticePathNotFound) {

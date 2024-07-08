@@ -279,4 +279,8 @@ const base::FeatureParam<bool>
         &kPrivacySandboxLocalNoticeConfirmation, "default-to-os-country",
         false};
 
+BASE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel,
+             "PrivacySandboxMigratePrefsToNoticeConsentDataModel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace privacy_sandbox

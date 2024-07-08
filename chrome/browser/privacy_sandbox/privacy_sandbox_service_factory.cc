@@ -58,6 +58,7 @@ PrivacySandboxService* PrivacySandboxServiceFactory::GetForProfile(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
+// LINT.IfChange(PrivacySandboxService)
 PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
     : ProfileKeyedServiceFactory(
           "PrivacySandboxService",
@@ -85,6 +86,7 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
   // eligibility.
   DependsOn(tpcd::experiment::EligibilityServiceFactory::GetInstance());
 }
+// LINT.ThenChange(/chrome/browser/privacy_sandbox/privacy_sandbox_notice_service_factory.cc:PrivacySandboxNoticeService)
 
 std::unique_ptr<KeyedService>
 PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(

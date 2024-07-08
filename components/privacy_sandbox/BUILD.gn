@@ -11,6 +11,7 @@ static_library("privacy_sandbox_prefs") {
   ]
 
   deps = [
+    ":privacy_sandbox_notice_storage",
     ":tracking_protection_prefs",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
