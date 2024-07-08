@@ -13,6 +13,11 @@
 
 using FirstRunDialogControllerTest = CocoaTest;
 
+FirstRunDialogViewController* MakeTestController(BOOL stats) {
+  return [[FirstRunDialogViewController alloc]
+      initWithStatsCheckboxInitiallyChecked:stats];
+}
+
 NSView* FindBrowserButton(NSView* view) {
   for (NSView* subview : [view subviews]) {
     if (![subview isKindOfClass:[NSButton class]]) {
@@ -27,22 +32,19 @@ NSView* FindBrowserButton(NSView* view) {
 }
 
 TEST(FirstRunDialogControllerTest, SetStatsDefault) {
-  FirstRunDialogViewController* controller =
-      [[FirstRunDialogViewController alloc] init];
+  FirstRunDialogViewController* controller = MakeTestController(YES);
   [controller view];  // Make sure view is actually loaded.
   EXPECT_TRUE([controller isStatsReportingEnabled]);
 }
 
 TEST(FirstRunDialogControllerTest, MakeDefaultBrowserDefault) {
-  FirstRunDialogViewController* controller =
-      [[FirstRunDialogViewController alloc] init];
+  FirstRunDialogViewController* controller = MakeTestController(YES);
   [controller view];
   EXPECT_TRUE([controller isMakeDefaultBrowserEnabled]);
 }
 
 TEST(FirstRunDialogControllerTest, ShowBrowser) {
-  FirstRunDialogViewController* controller =
-      [[FirstRunDialogViewController alloc] init];
+  FirstRunDialogViewController* controller = MakeTestController(YES);
   NSView* checkbox = FindBrowserButton([controller view]);
   EXPECT_FALSE(checkbox.hidden);
 }
@@ -51,14 +53,12 @@ TEST(FirstRunDialogControllerTest, LayoutWithLongStrings) {
   // It's necessary to call |view| on the controller before mangling the
   // strings, since otherwise the controller will lazily construct its view,
   // which might happen after the call to |set_mangle_localized_strings|.
-  FirstRunDialogViewController* defaultController =
-      [[FirstRunDialogViewController alloc] init];
+  FirstRunDialogViewController* defaultController = MakeTestController(YES);
   NSView* defaultView = [defaultController view];
 
   ui::ResourceBundle::GetSharedInstance().set_mangle_localized_strings_for_test(
       true);
-  FirstRunDialogViewController* longController =
-      [[FirstRunDialogViewController alloc] init];
+  FirstRunDialogViewController* longController = MakeTestController(YES);
   NSView* longView = [longController view];
 
   // Ensure that the mangled strings actually do change the height!
