@@ -172,7 +172,8 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   UploadedUIResource uploaded_resource;
   auto* sii = context_provider_->SharedImageInterface();
   constexpr gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  gpu::SharedImageUsageSet shared_image_usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   uploaded_resource.shared_image = sii->CreateSharedImage(
       {format, resource_bitmap.GetSize(), color_space, shared_image_usage,
        "SlimCompositorUIResource"},
