@@ -13,7 +13,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -62,8 +62,8 @@ class AutofillMlPredictionModelHandler
 
  private:
   // Encodes the `form` into the `ModelInput` representation understood by the
-  // `AutofillModelExecutor`. This is done by vectorizing the labels of the
-  // form's fields using the `vectorizer_`.
+  // `AutofillModelExecutor`. This is done by encoding the labels of the
+  // form's fields using the `encoder_`.
   AutofillModelExecutor::ModelInput VectorizeForm(
       const FormStructure& form) const;
 
@@ -81,7 +81,7 @@ class AutofillMlPredictionModelHandler
   struct ModelState {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
-    AutofillModelVectorizer vectorizer;
+    AutofillModelEncoder encoder;
   };
   // Initialized once the model was loaded and successfully initialized using
   // the model's metadata.

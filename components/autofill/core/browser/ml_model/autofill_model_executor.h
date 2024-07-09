@@ -8,7 +8,7 @@
 #include <optional>
 #include <vector>
 
-#include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
 #include "components/optimization_guide/core/base_model_executor.h"
 
 namespace autofill {
@@ -25,14 +25,14 @@ class AutofillModelExecutor
     : public optimization_guide::BaseModelExecutor<
           std::array<std::vector<float>, kModelExecutorMaxNumberOfFields>,
           const std::vector<
-              std::array<AutofillModelVectorizer::TokenId,
-                         AutofillModelVectorizer::kOutputSequenceLength>>&> {
+              std::array<AutofillModelEncoder::TokenId,
+                         AutofillModelEncoder::kOutputSequenceLength>>&> {
  public:
-  // A vectorized representation of the form's labels. Each element of the
-  // vector corresponds to a vectorized label. See `AutofillModelVectorizer`,
+  // An encoded representation of the form's labels. Each element of the
+  // vector corresponds to an encoded label. See `AutofillModelEncoder`,
   using ModelInput =
-      std::vector<std::array<AutofillModelVectorizer::TokenId,
-                             AutofillModelVectorizer::kOutputSequenceLength>>;
+      std::vector<std::array<AutofillModelEncoder::TokenId,
+                             AutofillModelEncoder::kOutputSequenceLength>>;
 
   // The model always returns predictions for `kModelExecutorMaxNumberOfFields`.
   // If the queried form was smaller, the last

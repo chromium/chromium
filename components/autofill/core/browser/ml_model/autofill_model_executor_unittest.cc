@@ -24,7 +24,7 @@ namespace {
 using ModelExecutor =
     optimization_guide::ModelExecutor<AutofillModelExecutor::ModelOutput,
                                       const AutofillModelExecutor::ModelInput&>;
-using TokenId = AutofillModelVectorizer::TokenId;
+using TokenId = AutofillModelEncoder::TokenId;
 
 class AutofillModelExecutorTest : public testing::Test {
  public:

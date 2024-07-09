@@ -13,7 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 
@@ -39,27 +39,27 @@ bool AutofillModelExecutor::Preprocess(
     CHECK_EQ(input_tensors[0]->dims->data[1],
              static_cast<int>(kModelExecutorMaxNumberOfFields));
     CHECK_EQ(input_tensors[0]->dims->data[2],
-             static_cast<int>(AutofillModelVectorizer::kOutputSequenceLength));
+             static_cast<int>(AutofillModelEncoder::kOutputSequenceLength));
     // Initialize with vectors having the first element = 1 which is what the
     // model expects for empty fields.
     std::vector<float> empty_field(
-        AutofillModelVectorizer::kOutputSequenceLength);
+        AutofillModelEncoder::kOutputSequenceLength);
     empty_field[0] = 1;
-    std::vector<std::vector<float>> vectorized_input(
+    std::vector<std::vector<float>> encoded_input(
         kModelExecutorMaxNumberOfFields, empty_field);
 
     for (size_t i = 0; i < fields_count; ++i) {
-      base::ranges::transform(input[i], vectorized_input[i].begin(),
-                              [](AutofillModelVectorizer::TokenId token_id) {
+      base::ranges::transform(input[i], encoded_input[i].begin(),
+                              [](AutofillModelEncoder::TokenId token_id) {
                                 return token_id.value();
                               });
     }
     // Populate tensors with the vectorized field labels.
     for (size_t i = 0; i < kModelExecutorMaxNumberOfFields; ++i) {
       base::ranges::copy(
-          vectorized_input[i],
+          encoded_input[i],
           tflite::GetTensorData<float>(input_tensors[0]) +
-              i * AutofillModelVectorizer::kOutputSequenceLength);
+              i * AutofillModelEncoder::kOutputSequenceLength);
     }
   }
   // `input_tensors[1]` is a 2D vector of boolean values. The first dimension

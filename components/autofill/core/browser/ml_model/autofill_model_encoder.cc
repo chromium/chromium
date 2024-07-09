@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
 
 #include <stddef.h>
 #include <string>
@@ -18,19 +18,19 @@ namespace autofill {
 
 namespace {
 
-constexpr AutofillModelVectorizer::TokenId kUnknownTokenId =
-    AutofillModelVectorizer::TokenId(1);
+constexpr AutofillModelEncoder::TokenId kUnknownTokenId =
+    AutofillModelEncoder::TokenId(1);
 
 }  // namespace
 
-AutofillModelVectorizer::AutofillModelVectorizer(
+AutofillModelEncoder::AutofillModelEncoder(
     const google::protobuf::RepeatedPtrField<std::string>& tokens) {
-  std::vector<std::pair<std::u16string, AutofillModelVectorizer::TokenId>>
+  std::vector<std::pair<std::u16string, AutofillModelEncoder::TokenId>>
       entries = {
           // Index 0 is reserved for padding to `kOutputSequenceLength`.
           // For example, a label "first name" is encoded as [?, ?, 0] if the
           // output sequence length is 3.
-          {u"", AutofillModelVectorizer::TokenId(0)},
+          {u"", AutofillModelEncoder::TokenId(0)},
           // Index 1 is reserved for words not in the dictionary.
           {u"", kUnknownTokenId},
       };
@@ -38,17 +38,17 @@ AutofillModelVectorizer::AutofillModelVectorizer(
   size_t i = 2;
   for (const std::string& token : tokens) {
     entries.emplace_back(base::UTF8ToUTF16(token),
-                         AutofillModelVectorizer::TokenId(i++));
+                         AutofillModelEncoder::TokenId(i++));
   }
   token_to_id_ = base::flat_map<std::u16string, TokenId>(std::move(entries));
 }
 
-AutofillModelVectorizer::AutofillModelVectorizer() = default;
-AutofillModelVectorizer::AutofillModelVectorizer(
-    const AutofillModelVectorizer&) = default;
-AutofillModelVectorizer::~AutofillModelVectorizer() = default;
+AutofillModelEncoder::AutofillModelEncoder() = default;
+AutofillModelEncoder::AutofillModelEncoder(
+    const AutofillModelEncoder&) = default;
+AutofillModelEncoder::~AutofillModelEncoder() = default;
 
-AutofillModelVectorizer::TokenId AutofillModelVectorizer::TokenToId(
+AutofillModelEncoder::TokenId AutofillModelEncoder::TokenToId(
     std::u16string_view token) const {
   auto match = token_to_id_.find(token);
   if (match == token_to_id_.end()) {
@@ -57,9 +57,9 @@ AutofillModelVectorizer::TokenId AutofillModelVectorizer::TokenToId(
   return match->second;
 }
 
-std::array<AutofillModelVectorizer::TokenId,
-           AutofillModelVectorizer::kOutputSequenceLength>
-AutofillModelVectorizer::Vectorize(std::u16string_view input) const {
+std::array<AutofillModelEncoder::TokenId,
+           AutofillModelEncoder::kOutputSequenceLength>
+AutofillModelEncoder::Vectorize(std::u16string_view input) const {
   std::u16string standardized_input = base::ToLowerASCII(input);
   base::RemoveChars(standardized_input, kSpecialChars, &standardized_input);
   std::vector<std::u16string> split_string =
