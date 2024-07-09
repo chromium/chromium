@@ -153,3 +153,6 @@ if (target_environment == "device" && ios_enable_code_signing) {
 # This variable corresponds to the test bundle identifier.
 shared_bundle_id_for_test_apps =
     "$ios_app_bundle_id_prefix.chrome.unittests.dev"
+
+_sdk_root = rebase_path(ios_sdk_path, root_build_dir)
+ios_sdk_logs = [ "ios_sdk_path=${_sdk_root}" ]

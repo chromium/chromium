@@ -38,35 +38,17 @@ def __filegroups(ctx):
     # which is not complex enough to handle C preprocessor tricks
     # and need system include dirs when using deps log of -MMD.
     # need to add new entries when new version is used.
-    # TODO: b/323091468 - get sysroot, ios_sdk_path from gn
-    fg[ctx.fs.canonpath("./sdk/xcode_links/MacOSX14.2.sdk") + ":headers"] = {
-        "type": "glob",
-        "includes": sdk_includes,
-    }
-    fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator17.2.sdk") + ":headers"] = {
-        "type": "glob",
-        "includes": sdk_includes,
-    }
-
-    # https://b.corp.google.com/issues/332652041#comment2
-    fg[ctx.fs.canonpath("./sdk/xcode_links/MacOSX14.4.sdk") + ":headers"] = {
-        "type": "glob",
-        "includes": sdk_includes,
-    }
-    fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator17.4.sdk") + ":headers"] = {
-        "type": "glob",
-        "includes": sdk_includes,
-    }
-
-    # https://chromium-review.googlesource.com/c/chromium/src/+/5568662
-    fg[ctx.fs.canonpath("./sdk/xcode_links/MacOSX14.5.sdk") + ":headers"] = {
-        "type": "glob",
-        "includes": sdk_includes,
-    }
-    fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator17.5.sdk") + ":headers"] = {
-        "type": "glob",
-        "includes": sdk_includes,
-    }
+    gn_logs_data = gn_logs.read(ctx)
+    if gn_logs_data.get("mac_sdk_path"):
+        fg[ctx.fs.canonpath("./" + gn_logs_data.get("mac_sdk_path")) + ":headers"] = {
+            "type": "glob",
+            "includes": sdk_includes,
+        }
+    if gn_logs_data.get("ios_sdk_path"):
+        fg[ctx.fs.canonpath("./" + gn_logs_data.get("ios_sdk_path")) + ":headers"] = {
+            "type": "glob",
+            "includes": sdk_includes,
+        }
 
     fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator.platform/Developer/Library/Frameworks") + ":headers"] = {
         "type": "glob",
