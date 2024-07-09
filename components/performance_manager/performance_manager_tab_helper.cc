@@ -516,16 +516,6 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
                      embedding_type));
 }
 
-void PerformanceManagerTabHelper::InnerWebContentsDetached(
-    content::WebContents* inner_web_contents) {
-  auto* helper = FromWebContents(inner_web_contents);
-  DCHECK(helper);
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType,
-                     base::Unretained(helper->page_node_.get())));
-}
-
 void PerformanceManagerTabHelper::WebContentsDestroyed() {
   // Remember the contents, as TearDown clears observer.
   auto* contents = web_contents();

@@ -247,12 +247,6 @@ class CONTENT_EXPORT BrowsingContextState
       FrameTreeNode* frame_tree_node,
       const blink::RemoteFrameToken& frame_token);
 
-  // Called on an inner WebContents that's being detached from its outer
-  // WebContents. This will delete the proxy in the
-  // |outer_contents_site_instance_group|.
-  void DeleteOuterDelegateProxy(
-      SiteInstanceGroup* outer_contents_site_instance_group);
-
   // Deletes any proxy hosts associated with this node. Used during destruction
   // of WebContentsImpl.
   void ResetProxyHosts();

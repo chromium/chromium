@@ -211,10 +211,6 @@ class MockWebContentsObserver : public WebContentsObserver {
                bool is_full_page),
               (override));
   MOCK_METHOD(void,
-              InnerWebContentsDetached,
-              (WebContents* inner_web_contents),
-              (override));
-  MOCK_METHOD(void,
               DidCloneToNewWebContents,
               (WebContents* old_web_contents, WebContents* new_web_contents),
               (override));

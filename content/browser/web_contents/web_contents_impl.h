@@ -1377,9 +1377,6 @@ class CONTENT_EXPORT WebContentsImpl
   // guarantee that |inner_web_contents| has been added to the WebContents tree.
   void InnerWebContentsCreated(WebContents* inner_web_contents);
 
-  // Detaches this WebContents from its outer WebContents.
-  std::unique_ptr<WebContents> DetachFromOuterWebContents();
-
   // Reattaches this inner WebContents to its outer WebContents.
   virtual void ReattachToOuterWebContentsFrame();
 
@@ -1606,15 +1603,6 @@ class CONTENT_EXPORT WebContentsImpl
     // WebContents.
     void AttachInnerWebContents(std::unique_ptr<WebContents> inner_web_contents,
                                 RenderFrameHostImpl* render_frame_host);
-
-    // Disconnects the current WebContents from its outer WebContents, and
-    // returns ownership to the caller. This is used when activating a portal,
-    // which causes the WebContents to transition from an inner WebContents to
-    // an outer WebContents.
-    // TODO(lfg): Activating a nested portal currently replaces the outermost
-    // WebContents with the portal. We should allow replacing only the inner
-    // WebContents with the nested portal.
-    std::unique_ptr<WebContents> DisconnectFromOuterWebContents();
 
     WebContentsImpl* outer_web_contents() const { return outer_web_contents_; }
     int outer_contents_frame_tree_node_id() const {

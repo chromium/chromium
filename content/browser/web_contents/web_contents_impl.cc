@@ -916,18 +916,6 @@ WebContentsImpl::WebContentsTreeNode::WebContentsTreeNode(
 
 WebContentsImpl::WebContentsTreeNode::~WebContentsTreeNode() = default;
 
-std::unique_ptr<WebContents>
-WebContentsImpl::WebContentsTreeNode::DisconnectFromOuterWebContents() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsTreeNode::DisconnectFromOuterWebContents");
-  std::unique_ptr<WebContents> inner_contents =
-      outer_web_contents_->node_.DetachInnerWebContents(current_web_contents_);
-  OuterContentsFrameTreeNode()->RemoveObserver(this);
-  outer_contents_frame_tree_node_id_ = FrameTreeNode::kFrameTreeNodeInvalidId;
-  outer_web_contents_ = nullptr;
-  return inner_contents;
-}
-
 void WebContentsImpl::WebContentsTreeNode::AttachInnerWebContents(
     std::unique_ptr<WebContents> inner_web_contents,
     RenderFrameHostImpl* render_frame_host) {
@@ -3022,66 +3010,6 @@ void WebContentsImpl::AttachInnerWebContents(
   // Make sure that the inner web contents and its outer delegate get properly
   // linked via the embedding token now that inner web contents are attached.
   inner_main_frame->PropagateEmbeddingTokenToParentFrame();
-}
-
-std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::DetachFromOuterWebContents");
-  auto* outer_web_contents = GetOuterWebContents();
-  DCHECK(outer_web_contents);
-  GetPrimaryMainFrame()
-      ->GetParentOrOuterDocumentOrEmbedder()
-      ->set_inner_tree_main_frame_tree_node_id(
-          FrameTreeNode::kFrameTreeNodeInvalidId);
-
-  RecursivelyUnregisterRenderWidgetHostViews();
-
-  // Each RenderViewHost has a RenderWidgetHost which can have a
-  // RenderWidgetHostView,  and it needs to be re-created with the appropriate
-  // platform view. It is important to re-create all child views, not only the
-  // current one, since the view can be swapped due to a cross-origin
-  // navigation.
-  std::set<RenderViewHostImpl*> render_view_hosts;
-  primary_frame_tree_.ForEachRenderViewHost([&render_view_hosts](
-                                                RenderViewHostImpl* rvh) {
-    if (rvh->GetWidget() && rvh->GetWidget()->GetView()) {
-      DCHECK(rvh->GetWidget()->GetView()->IsRenderWidgetHostViewChildFrame());
-      render_view_hosts.insert(rvh);
-    }
-  });
-
-  for (auto* render_view_host : render_view_hosts) {
-    render_view_host->GetWidget()->GetView()->Destroy();
-  }
-
-  GetRenderManager()
-      ->current_frame_host()
-      ->browsing_context_state()
-      ->DeleteOuterDelegateProxy(node_.OuterContentsFrameTreeNode()
-                                     ->current_frame_host()
-                                     ->GetSiteInstance()
-                                     ->group());
-  view_ = CreateWebContentsView(
-      this, GetContentClient()->browser()->GetWebContentsViewDelegate(this),
-      &render_view_host_delegate_view_);
-  view_->CreateView(gfx::NativeView());
-  std::unique_ptr<WebContents> web_contents =
-      node_.DisconnectFromOuterWebContents();
-  DCHECK_EQ(web_contents.get(), this);
-  node_.SetFocusedFrameTree(&GetPrimaryFrameTree());
-
-  for (auto* render_view_host : render_view_hosts) {
-    CreateRenderWidgetHostViewForRenderManager(render_view_host);
-  }
-
-  RecursivelyRegisterRenderWidgetHostViews();
-  GetPrimaryMainFrame()->UpdateAXTreeData();
-
-  // Invoke on the *outer* web contents observers for symmetry.
-  outer_web_contents->observers_.NotifyObservers(
-      &WebContentsObserver::InnerWebContentsDetached, this);
-
-  return web_contents;
 }
 
 void WebContentsImpl::RecursivelyRegisterRenderWidgetHostViews() {

@@ -169,13 +169,6 @@ RenderFrameProxyHost* BrowsingContextState::CreateOuterDelegateProxy(
                                     frame_token);
 }
 
-void BrowsingContextState::DeleteOuterDelegateProxy(
-    SiteInstanceGroup* outer_contents_site_instance_group) {
-  DeleteRenderFrameProxyHost(
-      outer_contents_site_instance_group,
-      BrowsingContextState::ProxyAccessMode::kAllowOuterDelegate);
-}
-
 size_t BrowsingContextState::GetProxyCount() {
   return proxy_hosts_.size();
 }
