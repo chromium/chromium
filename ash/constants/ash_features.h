@@ -420,8 +420,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGlanceablesV2);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesTimeManagementClassroomStudentView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kGlanceablesTimeManagementClassroomStudentData);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesTimeManagementTasksView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesTimeManagementTasksViewAssignedTasks);
@@ -1184,8 +1182,6 @@ bool IsGrowthCampaignsTriggerByBrowserEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesTimeManagementClassroomStudentViewEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsGlanceablesTimeManagementClassroomStudentDataEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesTimeManagementTasksViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

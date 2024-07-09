@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <numeric>
-#include <vector>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -14,10 +13,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
-#include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -248,10 +245,8 @@ void GlanceableTrayBubbleView::InitializeContents() {
 
   auto* const classroom_client =
       Shell::Get()->glanceables_controller()->GetClassroomClient();
-  const bool is_classroom_enabled_via_flags =
-      features::IsGlanceablesTimeManagementClassroomStudentDataEnabled() ||
-      features::IsGlanceablesTimeManagementClassroomStudentViewEnabled();
-  if (should_show_non_calendar_glanceables && is_classroom_enabled_via_flags &&
+  if (should_show_non_calendar_glanceables &&
+      features::IsGlanceablesTimeManagementClassroomStudentViewEnabled() &&
       classroom_client && !classroom_client->IsDisabledByAdmin()) {
     CHECK(!classroom_bubble_student_view_);
     classroom_client->IsStudentRoleActive(base::BindOnce(
@@ -341,33 +336,23 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
     return;
   }
 
-  if (features::IsGlanceablesTimeManagementClassroomStudentViewEnabled()) {
-    // Adds classroom bubble before `calendar_view_`.
-    MaybeCreateTimeManagementContainer();
-    classroom_bubble_student_view_ =
-        time_management_container_view_->AddChildView(
-            std::make_unique<GlanceablesClassroomStudentView>());
-    time_management_view_observation_.AddObservation(
-        classroom_bubble_student_view_);
-    // If `tasks_bubble_view_` exists, collapse either `tasks_bubble_view_` or
-    // `classroom_bubble_student_view_` according to the prefs.
-    if (tasks_bubble_view_) {
-      UpdateChildBubblesInitialExpandState();
-    }
-
-    UpdateTimeManagementContainerLayout();
-    UpdateBubble();
-
-    AdjustChildrenFocusOrder();
-  } else if (features::
-                 IsGlanceablesTimeManagementClassroomStudentDataEnabled()) {
-    Shell::Get()
-        ->glanceables_controller()
-        ->GetClassroomClient()
-        ->GetStudentAssignmentsWithApproachingDueDate(base::BindOnce(
-            &GlanceableTrayBubbleView::OnPotentialStudentAssignmentsLoaded,
-            weak_ptr_factory_.GetWeakPtr()));
+  // Adds classroom bubble before `calendar_view_`.
+  MaybeCreateTimeManagementContainer();
+  classroom_bubble_student_view_ =
+      time_management_container_view_->AddChildView(
+          std::make_unique<GlanceablesClassroomStudentView>());
+  time_management_view_observation_.AddObservation(
+      classroom_bubble_student_view_);
+  // If `tasks_bubble_view_` exists, collapse either `tasks_bubble_view_` or
+  // `classroom_bubble_student_view_` according to the prefs.
+  if (tasks_bubble_view_) {
+    UpdateChildBubblesInitialExpandState();
   }
+
+  UpdateTimeManagementContainerLayout();
+  UpdateBubble();
+
+  AdjustChildrenFocusOrder();
 }
 
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
@@ -443,16 +428,6 @@ void GlanceableTrayBubbleView::MaybeCreateTimeManagementContainer() {
         AddChildViewAt(std::make_unique<TimeManagementContainer>(), 0);
     box_layout()->SetFlexForView(time_management_container_view_, 1);
   }
-}
-
-void GlanceableTrayBubbleView::OnPotentialStudentAssignmentsLoaded(
-    bool success,
-    std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments)
-    const {
-  auto* const controller = Shell::Get()->glanceables_controller();
-  RecordClassromInitialLoadTime(
-      /*first_occurrence=*/controller->bubble_shown_count() == 1,
-      base::TimeTicks::Now() - controller->last_bubble_show_time());
 }
 
 void GlanceableTrayBubbleView::UpdateTimeManagementContainerLayout() {

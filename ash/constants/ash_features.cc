@@ -1281,11 +1281,6 @@ BASE_FEATURE(kGlanceablesTimeManagementClassroomStudentView,
              "GlanceablesTimeManagementClassroomStudentView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Classroom API, data-only integration.
-BASE_FEATURE(kGlanceablesTimeManagementClassroomStudentData,
-             "GlanceablesTimeManagementClassroomStudentData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Tasks Glanceable on time management surface.
 BASE_FEATURE(kGlanceablesTimeManagementTasksView,
              "GlanceablesTimeManagementTasksView",
@@ -3825,11 +3820,6 @@ bool AreGlanceablesV2Enabled() {
 bool IsGlanceablesTimeManagementClassroomStudentViewEnabled() {
   return base::FeatureList::IsEnabled(
       kGlanceablesTimeManagementClassroomStudentView);
-}
-
-bool IsGlanceablesTimeManagementClassroomStudentDataEnabled() {
-  return base::FeatureList::IsEnabled(
-      kGlanceablesTimeManagementClassroomStudentData);
 }
 
 bool IsGlanceablesTimeManagementTasksViewEnabled() {
