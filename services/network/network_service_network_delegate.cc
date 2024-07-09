@@ -4,6 +4,7 @@
 
 #include "services/network/network_service_network_delegate.h"
 
+#include <optional>
 #include <string>
 
 #include "base/debug/dump_without_crashing.h"
@@ -18,10 +19,12 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/url_request/clear_site_data.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request.h"
 #include "services/network/cookie_manager.h"
+#include "services/network/cookie_settings.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/network_service_proxy_delegate.h"
@@ -184,6 +187,21 @@ void NetworkServiceNetworkDelegate::OnPACScriptError(
     return;
 
   proxy_error_client_->OnPACScriptError(line_number, base::UTF16ToUTF8(error));
+}
+
+std::optional<net::cookie_util::StorageAccessStatus>
+NetworkServiceNetworkDelegate::OnGetStorageAccessStatus(
+    const net::URLRequest& request) const {
+  const std::optional<url::Origin>& top_frame_origin =
+      request.isolation_info().IsEmpty()
+          ? std::nullopt
+          : request.isolation_info().top_frame_origin();
+
+  return network_context_->cookie_manager()
+      ->cookie_settings()
+      .GetStorageAccessStatus(request.url(), request.site_for_cookies(),
+                              top_frame_origin,
+                              request.cookie_setting_overrides());
 }
 
 bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(

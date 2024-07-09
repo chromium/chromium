@@ -84,6 +84,9 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
       const net::FirstPartySetMetadata& first_party_set_metadata,
       CookieInclusionStatus* inclusion_status) override;
 
+  std::optional<cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
+      const URLRequest& request) const override;
+
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const URLRequest& request) const override;
 

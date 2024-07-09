@@ -135,6 +135,12 @@ bool NetworkDelegate::CanSetCookie(
                         inclusion_status);
 }
 
+std::optional<cookie_util::StorageAccessStatus>
+NetworkDelegate::GetStorageAccessStatus(const URLRequest& request) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return OnGetStorageAccessStatus(request);
+}
+
 NetworkDelegate::PrivacySetting NetworkDelegate::ForcePrivacyMode(
     const URLRequest& request) const {
   TRACE_EVENT0(NetTracingCategory(), "NetworkDelegate::ForcePrivacyMode");

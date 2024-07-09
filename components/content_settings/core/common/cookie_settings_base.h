@@ -12,6 +12,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
@@ -324,6 +326,16 @@ class CookieSettingsBase {
   // instances behave consistently.
   static void SetStorageAccessAPIGrantsUnpartitionedStorageForTesting(
       bool grants);
+
+  // Returns an indication of whether the context given by `url`,
+  // `top_frame_origin`, and `site_for_cookies` has storage access,
+  // given a particular set of `overrides`. Returns nullopt for same-site
+  // requests.
+  std::optional<net::cookie_util::StorageAccessStatus> GetStorageAccessStatus(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const std::optional<url::Origin>& top_frame_origin,
+      net::CookieSettingOverrides overrides) const;
 
  protected:
   // Returns the URL to be considered "first-party" for the given request. If

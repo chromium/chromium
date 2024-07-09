@@ -318,6 +318,18 @@ void RecordSTSHistograms(net::SSLUpgradeDecision upgrade_decision,
       GetMetricForSSLUpgradeDecision(upgrade_decision, is_secure));
 }
 
+char const* GetSecFetchStorageAccessHeaderValue(
+    net::cookie_util::StorageAccessStatus storage_access_status) {
+  switch (storage_access_status) {
+    case net::cookie_util::StorageAccessStatus::kInactive:
+      return "inactive";
+    case net::cookie_util::StorageAccessStatus::kActive:
+      return "active";
+    case net::cookie_util::StorageAccessStatus::kNone:
+      return "none";
+  }
+}
+
 }  // namespace
 
 namespace net {
@@ -434,7 +446,6 @@ void URLRequestHttpJob::Start() {
       request()->has_storage_access() && request_initiator_site().has_value() &&
           IsSameSiteIgnoringWebSocketProtocol(request_initiator_site().value(),
                                               request()->url()));
-
   CookieStore* cookie_store = request()->context()->cookie_store();
   const CookieAccessDelegate* delegate =
       cookie_store ? cookie_store->cookie_access_delegate() : nullptr;
@@ -452,6 +463,34 @@ void URLRequestHttpJob::Start() {
   if (maybe_metadata.has_value()) {
     auto [metadata, match_info] = std::move(maybe_metadata).value();
     OnGotFirstPartySetMetadata(std::move(metadata), std::move(match_info));
+  }
+}
+
+namespace {
+
+bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
+  return privacy_mode == PRIVACY_MODE_ENABLED ||
+         privacy_mode == PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
+}
+
+}  // namespace
+
+void URLRequestHttpJob::MaybeSetSecFetchStorageAccessHeader() {
+  if (!base::FeatureList::IsEnabled(features::kStorageAccessHeaders)) {
+    return;
+  }
+  // Avoid attaching the header in cases where the Cookie header is not included
+  // in the request.
+  if (!ShouldAddCookieHeader() ||
+      ShouldBlockAllCookies(request_info_.privacy_mode)) {
+    return;
+  }
+  std::optional<cookie_util::StorageAccessStatus> storage_access_status =
+      request_->network_delegate()->GetStorageAccessStatus(*request_);
+  if (storage_access_status) {
+    request_info_.extra_headers.SetHeader(
+        HttpRequestHeaders::kSecFetchStorageAccess,
+        GetSecFetchStorageAccessHeaderValue(storage_access_status.value()));
   }
 }
 
@@ -756,6 +795,7 @@ void URLRequestHttpJob::AddExtraHeaders() {
           accept_language);
     }
   }
+  MaybeSetSecFetchStorageAccessHeader();
 }
 
 void URLRequestHttpJob::AddCookieHeaderAndStart() {
@@ -788,15 +828,6 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
       base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
                      weak_factory_.GetWeakPtr(), options));
 }
-
-namespace {
-
-bool ShouldBlockAllCookies(const PrivacyMode& privacy_mode) {
-  return privacy_mode == PRIVACY_MODE_ENABLED ||
-         privacy_mode == PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
-}
-
-}  // namespace
 
 void URLRequestHttpJob::SetCookieHeaderAndStart(
     const CookieOptions& options,

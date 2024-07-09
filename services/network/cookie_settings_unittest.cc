@@ -4,6 +4,7 @@
 
 #include "services/network/cookie_settings.h"
 
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/test/task_environment.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "net/base/features.h"
@@ -2122,6 +2122,58 @@ TEST_F(CookieSettingsTest,
                   net::MatchesCookieWithName("__Host-partitioned"),
                   MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
   EXPECT_THAT(excluded_cookies, IsEmpty());
+}
+
+TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
+  CookieSettings settings;
+  GURL url = GURL(kURL);
+  url::Origin top_frame_origin = url::Origin::Create(GURL(kOtherURL));
+  settings.set_block_third_party_cookies(true);
+
+  EXPECT_EQ(settings.GetStorageAccessStatus(
+                url, net::SiteForCookies::FromUrl(url),
+                url::Origin::Create(url), net::CookieSettingOverrides()),
+            std::nullopt);
+
+  EXPECT_EQ(
+      settings.GetStorageAccessStatus(
+          url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
+          net::CookieSettingOverrides(
+              {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+      std::nullopt);
+
+  EXPECT_EQ(settings.GetStorageAccessStatus(url, net::SiteForCookies(),
+                                            top_frame_origin,
+                                            net::CookieSettingOverrides()),
+            net::cookie_util::StorageAccessStatus::kNone);
+
+  EXPECT_EQ(settings.GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+            net::cookie_util::StorageAccessStatus::kNone);
+
+  settings.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
+      {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
+
+  EXPECT_EQ(settings.GetStorageAccessStatus(url, net::SiteForCookies(),
+                                            top_frame_origin,
+                                            net::CookieSettingOverrides()),
+            net::cookie_util::StorageAccessStatus::kInactive);
+
+  EXPECT_EQ(settings.GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+            net::cookie_util::StorageAccessStatus::kActive);
+
+  EXPECT_EQ(settings.GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(
+                    {net::CookieSettingOverride::
+                         kStorageAccessGrantEligibleViaHeader})),
+            net::cookie_util::StorageAccessStatus::kActive);
 }
 
 // NOTE: These tests will fail if their FINAL name is of length greater than 256

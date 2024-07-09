@@ -56,6 +56,20 @@ enum class StorageAccessResult {
   kMaxValue = ACCESS_ALLOWED_SCHEME,
 };
 
+// This enum's values correspond to the values of the HTTP request header
+// `Sec-Fetch-Storage-Access`, which is applied to cross-site requests.
+enum class StorageAccessStatus {
+  // Applies to context that does not have unpartitioned cookie access, and does
+  // not have the `storage-access` permission.
+  kNone = 0,
+  // Applies to context that has `storage-access` permission, but has not opted
+  // into using it; the context also does not have unpartitioned cookie access
+  // through some other means.
+  kInactive = 1,
+  // Applies to context that has unpartitioned cookie access.
+  kActive = 2
+};
+
 // Helper to fire telemetry indicating if a given request for storage was
 // allowed or not by the provided |result|.
 NET_EXPORT void FireStorageAccessHistogram(StorageAccessResult result);

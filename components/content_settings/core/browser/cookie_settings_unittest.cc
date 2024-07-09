@@ -2067,6 +2067,75 @@ TEST_P(CookieSettingsTest, LegacyCookieAccessAllowDomainWildcardPattern) {
   }
 }
 
+TEST_P(CookieSettingsTest, GetStorageAccessStatus) {
+  GURL url = kFirstPartySite;
+  url::Origin top_frame_origin = url::Origin::Create(kAllowedSite);
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+
+  EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
+                url, net::SiteForCookies::FromUrl(url),
+                url::Origin::Create(url), net::CookieSettingOverrides()),
+            std::nullopt);
+
+  EXPECT_EQ(
+      cookie_settings_->GetStorageAccessStatus(
+          url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
+          net::CookieSettingOverrides(
+              {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+      std::nullopt);
+
+  EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides()),
+// We expect kActive when running the following in IOS due to the behavior of
+// `CookieSettings::ShouldBlockThirdPartyCookiesInternal()`.
+#if BUILDFLAG(IS_IOS)
+            net::cookie_util::StorageAccessStatus::kActive
+#else
+            net::cookie_util::StorageAccessStatus::kNone
+#endif
+  );
+
+  EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+#if BUILDFLAG(IS_IOS)
+            net::cookie_util::StorageAccessStatus::kActive
+#else
+            net::cookie_util::StorageAccessStatus::kNone
+#endif
+  );
+
+  settings_map_->SetContentSettingDefaultScope(
+      url, kAllowedSite, ContentSettingsType::STORAGE_ACCESS,
+      CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides()),
+#if BUILDFLAG(IS_IOS)
+            net::cookie_util::StorageAccessStatus::kActive
+#else
+            net::cookie_util::StorageAccessStatus::kInactive
+#endif
+  );
+
+  EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+            net::cookie_util::StorageAccessStatus::kActive);
+
+  EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(
+                    {net::CookieSettingOverride::
+                         kStorageAccessGrantEligibleViaHeader})),
+            net::cookie_util::StorageAccessStatus::kActive);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,

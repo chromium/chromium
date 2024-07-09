@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
+#include "net/url_request/url_request.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/network_context.h"
 
@@ -70,6 +71,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
                    bool started,
                    int net_error) override;
   void OnPACScriptError(int line_number, const std::u16string& error) override;
+  std::optional<net::cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
+      const net::URLRequest& request) const override;
   bool OnAnnotateAndMoveUserBlockedCookies(
       const net::URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,

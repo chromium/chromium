@@ -261,6 +261,10 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
         [&](const net::test_server::HttpRequest& request) {
           return HandleRetryRequest(retry_path_fetch_count_, request);
         }));
+    https_server_.RegisterRequestMonitor(base::BindLambdaForTesting(
+        [&](const net::test_server::HttpRequest& request) {
+          most_recent_request_headers_ = request.headers;
+        }));
     ASSERT_TRUE(https_server_.Start());
 
     // All the sites used during these tests should have a cookie.
@@ -524,12 +528,17 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
         GetPrimaryMainFrame());
   }
 
+  net::test_server::HttpRequest::HeaderMap MostRecentRequestHeaders() {
+    return most_recent_request_headers_;
+  }
+
   int retry_path_fetch_count_ = 0;
 
  private:
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList features_;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
+  net::test_server::HttpRequest::HeaderMap most_recent_request_headers_;
 };
 
 // Test fixture for core Storage Access API functionality, guaranteed by spec.
@@ -2968,6 +2977,79 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   NavigateFrameTo(GetURL(kHostB, "/set-header?Activate-Storage-Access: load"));
   // Permission was never granted, so we don't have storage access.
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RequestHeadersFirstParty) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(GetURL(kHostA));
+  EXPECT_THAT(MostRecentRequestHeaders(),
+              testing::Not(testing::Contains(testing::Key(
+                  net::HttpRequestHeaders::kSecFetchStorageAccess))));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RequestHeadersCookiesBlocked) {
+  BlockAllCookiesOnHost(kHostB);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(GetURL(kHostB));
+  EXPECT_THAT(MostRecentRequestHeaders(),
+              testing::Not(testing::Contains(testing::Key(
+                  net::HttpRequestHeaders::kSecFetchStorageAccess))));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, RequestHeadersNone) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(GetURL(kHostB));
+  EXPECT_THAT(MostRecentRequestHeaders(),
+              testing::Contains(Pair(
+                  net::HttpRequestHeaders::kSecFetchStorageAccess, "none")));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RequestHeadersInactive) {
+  SetBlockThirdPartyCookies(true);
+  EnsureUserInteractionOn(kHostB);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  // Header will be 'none' first time we navigate to `kHostB` since the
+  // permission grant does not exist yet.
+  NavigateFrameTo(GetURL(kHostB));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  // Subsequent navigation should be `inactive`.
+  NavigateFrameTo(GetURL(kHostB));
+
+  EXPECT_THAT(
+      MostRecentRequestHeaders(),
+      testing::Contains(
+          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive")));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RequestHeaderRetryToActive) {
+  SetBlockThirdPartyCookies(true);
+  EnsureUserInteractionOn(kHostB);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  // Header will be 'none' first time we navigate to `kHostB` since the
+  // permission grant does not exist yet.
+  NavigateFrameTo(GetURL(kHostB));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  // Next navigation would be inactive, but with the `kRetryPath` we end up
+  // opting into `storage-access`, making it `active`.
+  NavigateFrameTo(GetURL(kHostB, kRetryPath));
+  EXPECT_THAT(MostRecentRequestHeaders(),
+              testing::Contains(Pair(
+                  net::HttpRequestHeaders::kSecFetchStorageAccess, "active")));
 }
 
 class StorageAccessHeadersWithThirdPartyCookiesBrowserTest

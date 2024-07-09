@@ -4,8 +4,11 @@
 
 #include "net/base/network_delegate_impl.h"
 
+#include <optional>
+
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 
 namespace net {
 
@@ -65,6 +68,11 @@ bool NetworkDelegateImpl::OnCanSetCookie(
     const net::FirstPartySetMetadata& first_party_set_metadata,
     CookieInclusionStatus* inclusion_status) {
   return true;
+}
+
+std::optional<cookie_util::StorageAccessStatus>
+NetworkDelegateImpl::OnGetStorageAccessStatus(const URLRequest& request) const {
+  return std::nullopt;
 }
 
 NetworkDelegate::PrivacySetting NetworkDelegateImpl::OnForcePrivacyMode(

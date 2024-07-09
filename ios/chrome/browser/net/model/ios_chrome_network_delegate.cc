@@ -108,6 +108,18 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
       request.cookie_setting_overrides());
 }
 
+// This implementation is currently never called in practice due to Bling not
+// using `//net` code for web navigation (unless `use_blink = true` which is
+// experimental).
+std::optional<net::cookie_util::StorageAccessStatus>
+IOSChromeNetworkDelegate::OnGetStorageAccessStatus(
+    const net::URLRequest& request) const {
+  return cookie_settings_->GetStorageAccessStatus(
+      request.url(), request.site_for_cookies(),
+      request.isolation_info().top_frame_origin(),
+      request.cookie_setting_overrides());
+}
+
 net::NetworkDelegate::PrivacySetting
 IOSChromeNetworkDelegate::OnForcePrivacyMode(
     const net::URLRequest& request) const {
