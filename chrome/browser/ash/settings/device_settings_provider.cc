@@ -14,7 +14,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -57,7 +57,7 @@ namespace ash {
 namespace {
 
 // List of settings handled by the DeviceSettingsProvider.
-const char* const kKnownSettings[] = {
+constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kAccountsPrefAllowGuest,
     kAccountsPrefAllowNewUser,
     kAccountsPrefFamilyLinkAccountsAllowed,
@@ -186,7 +186,7 @@ const char* const kKnownSettings[] = {
     kVirtualMachinesAllowed,
     kDeviceReportXDREvents,
     kDeviceReportNetworkEvents,
-};
+});
 
 constexpr char InvalidCombinationsOfAllowedUsersPoliciesHistogram[] =
     "Login.InvalidCombinationsOfAllowedUsersPolicies";
@@ -1378,7 +1378,7 @@ DeviceSettingsProvider::~DeviceSettingsProvider() {
 
 // static
 bool DeviceSettingsProvider::IsDeviceSetting(std::string_view name) {
-  return base::Contains(kKnownSettings, name);
+  return kKnownSettings.contains(name);
 }
 
 // static

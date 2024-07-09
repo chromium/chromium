@@ -19,7 +19,6 @@ component("settings") {
   sources = [
     "cros_settings.cc",
     "cros_settings.h",
-    "cros_settings_names.cc",
     "cros_settings_names.h",
     "cros_settings_provider.cc",
     "cros_settings_provider.h",
