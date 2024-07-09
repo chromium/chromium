@@ -454,6 +454,10 @@ RunAttributionInteropSimulation(
   attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
       scoped_max_event_level_epsilon(run.config.max_event_level_epsilon);
 
+  attribution_reporting::ScopedMaxTriggerStateCardinalityForTesting
+      scoped_max_trigger_state_cardinality(
+          run.config.max_trigger_state_cardinality);
+
   // Prerequisites for using an environment with mock time.
   BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);

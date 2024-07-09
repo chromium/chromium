@@ -417,8 +417,6 @@ void RunRandomFakeReportsTest(const TriggerSpecs& specs,
         internal::DoRandomizedResponseWithCache(
             specs,
             /*epsilon=*/0, map,
-            /*max_trigger_state_cardinality=*/
-            std::numeric_limits<uint32_t>::max(),
             /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
     ASSERT_TRUE(response.response().has_value());
     auto [it, _] =
@@ -627,8 +625,6 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
         internal::DoRandomizedResponseWithCache(
             kSpecs,
             /*epsilon=*/0, map,
-            /*max_trigger_state_cardinality=*/
-            std::numeric_limits<uint32_t>::max(),
             /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
     response = response_data.response();
   } while (!response.has_value() || response->empty());
@@ -636,22 +632,11 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
   ASSERT_EQ(uint64_t{123u}, response->front().trigger_data);
 }
 
-TEST(PrivacyMathTest, RandomizedResponse_StateLimited) {
-  auto cardinality_response = DoRandomizedResponse(
-      TriggerSpecs(), /*epsilon=*/0,
-      /*max_trigger_state_cardinality=*/0u,
-      /*max_channel_capacity=*/std::numeric_limits<double>::infinity());
-
-  EXPECT_THAT(
-      cardinality_response,
-      base::test::ErrorIs(
-          RandomizedResponseError::kExceedsTriggerStateCardinalityLimit));
-
+TEST(PrivacyMathTest, RandomizedResponse_ExceedsChannelCapacity) {
   auto channel_capacity_response = DoRandomizedResponse(
       TriggerSpecs(SourceType::kNavigation, EventReportWindows(),
                    /*max_reports=*/MaxEventLevelReports(1)),
       /*epsilon=*/1,
-      /*max_trigger_state_cardinality=*/std::numeric_limits<uint32_t>::max(),
       /*max_channel_capacity=*/0);
 
   EXPECT_THAT(channel_capacity_response,
@@ -694,8 +679,6 @@ TEST(PrivacyMathTest, UnaryChannel) {
         DoRandomizedResponse(
             test_case.trigger_specs,
             /*epsilon=*/0,
-            /*max_trigger_state_cardinality=*/
-            std::numeric_limits<uint32_t>::max(),
             /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
   }
 }

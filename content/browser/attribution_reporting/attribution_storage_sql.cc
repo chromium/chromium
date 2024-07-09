@@ -688,7 +688,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
               kExceedsTriggerStateCardinalityLimit:
             return make_result(
                 StoreSourceResult::ExceedsMaxTriggerStateCardinality(
-                    delegate_->GetMaxTriggerStateCardinality()));
+                    attribution_reporting::MaxTriggerStateCardinality()));
         }
       });
   DCHECK(attribution_reporting::IsValid(randomized_response_data.response(),

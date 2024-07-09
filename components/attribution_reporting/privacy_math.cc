@@ -33,6 +33,10 @@
 
 namespace attribution_reporting {
 
+// Controls the max number of report states allowed for a given source
+// registration.
+uint32_t g_max_trigger_state_cardinality = std::numeric_limits<uint32_t>::max();
+
 namespace {
 
 // Although the theoretical maximum number of trigger states exceeds 32 bits,
@@ -209,7 +213,8 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStatesCached(
             internal::GetNumberOfStarsAndBarsSequences(
                 /*num_stars=*/max_reports,
                 /*num_bars=*/specs.size() * num_windows);
-        num_sequences.IsValid()) {
+        num_sequences.IsValid() &&
+        num_sequences.ValueOrDie() <= g_max_trigger_state_cardinality) {
       return num_sequences.ValueOrDie();
     } else {
       return base::unexpected(
@@ -219,7 +224,8 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStatesCached(
 
   base::CheckedNumeric<uint32_t> num_states =
       GetNumStatesRecursive(it, max_reports, num_windows, max_reports, map);
-  if (!num_states.IsValid()) {
+  if (!num_states.IsValid() ||
+      num_states.ValueOrDie() > g_max_trigger_state_cardinality) {
     return base::unexpected(
         RandomizedResponseError::kExceedsTriggerStateCardinalityLimit);
   }
@@ -250,6 +256,10 @@ RandomizedResponseData::RandomizedResponseData(RandomizedResponseData&&) =
 RandomizedResponseData& RandomizedResponseData::operator=(
     RandomizedResponseData&&) = default;
 
+uint32_t MaxTriggerStateCardinality() {
+  return g_max_trigger_state_cardinality;
+}
+
 bool GenerateWithRate(double r) {
   DCHECK_GE(r, 0);
   DCHECK_LE(r, 1);
@@ -273,11 +283,10 @@ base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponse(
     const TriggerSpecs& specs,
     double epsilon,
-    base::StrictNumeric<uint32_t> max_trigger_state_cardinality,
     double max_channel_capacity) {
   internal::StateMap map;
-  return internal::DoRandomizedResponseWithCache(
-      specs, epsilon, map, max_trigger_state_cardinality, max_channel_capacity);
+  return internal::DoRandomizedResponseWithCache(specs, epsilon, map,
+                                                 max_channel_capacity);
 }
 
 bool IsValid(const RandomizedResponse& response, const TriggerSpecs& specs) {
@@ -570,10 +579,9 @@ DoRandomizedResponseWithCache(
     const TriggerSpecs& specs,
     double epsilon,
     StateMap& map,
-    base::StrictNumeric<uint32_t> max_trigger_state_cardinality,
     double max_channel_capacity) {
   ASSIGN_OR_RETURN(uint32_t num_states, GetNumStatesCached(specs, map));
-  if (num_states > max_trigger_state_cardinality) {
+  if (num_states > g_max_trigger_state_cardinality) {
     return base::unexpected(
         RandomizedResponseError::kExceedsTriggerStateCardinalityLimit);
   }
@@ -607,5 +615,18 @@ DoRandomizedResponseWithCache(
 }
 
 }  // namespace internal
+
+ScopedMaxTriggerStateCardinalityForTesting::
+    ScopedMaxTriggerStateCardinalityForTesting(
+        uint32_t max_trigger_state_cardinality)
+    : previous_(g_max_trigger_state_cardinality) {
+  CHECK_GT(max_trigger_state_cardinality, 0u);
+  g_max_trigger_state_cardinality = max_trigger_state_cardinality;
+}
+
+ScopedMaxTriggerStateCardinalityForTesting::
+    ~ScopedMaxTriggerStateCardinalityForTesting() {
+  g_max_trigger_state_cardinality = previous_;
+}
 
 }  // namespace attribution_reporting

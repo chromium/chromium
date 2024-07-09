@@ -80,7 +80,6 @@ TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
     auto result = DoRandomizedResponse(
         specs,
         /*epsilon=*/0,
-        /*max_trigger_state_cardinality=*/std::numeric_limits<uint32_t>::max(),
         /*max_channel_capacity=*/std::numeric_limits<double>::infinity());
 
     ::benchmark::DoNotOptimize(result);

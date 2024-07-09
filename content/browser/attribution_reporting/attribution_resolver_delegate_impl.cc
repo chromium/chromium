@@ -159,8 +159,7 @@ AttributionResolverDelegateImpl::GetRandomizedResponseRate(
     attribution_reporting::EventLevelEpsilon epsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto num_states = GetNumStates(trigger_specs);
-  if (!num_states.has_value() ||
-      *num_states > config_.event_level_limit.max_trigger_state_cardinality) {
+  if (!num_states.has_value()) {
     return std::nullopt;
   }
   return attribution_reporting::GetRandomizedResponseRate(*num_states, epsilon);
@@ -176,7 +175,6 @@ AttributionResolverDelegateImpl::GetRandomizedResponse(
   ASSIGN_OR_RETURN(auto response,
                    attribution_reporting::DoRandomizedResponse(
                        trigger_specs, epsilon,
-                       config_.event_level_limit.max_trigger_state_cardinality,
                        GetMaxChannelCapacity(source_type)));
 
   switch (noise_mode_) {

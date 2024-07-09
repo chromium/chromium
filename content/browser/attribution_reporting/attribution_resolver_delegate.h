@@ -19,7 +19,6 @@
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace attribution_reporting {
 class EventLevelEpsilon;
@@ -96,10 +95,6 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // Returns the max number of info gain in bits for a source given its
   // SourceType.
   double GetMaxChannelCapacity(attribution_reporting::mojom::SourceType) const;
-
-  // Returns the max number of report states allowed for any source
-  // registration.
-  absl::uint128 GetMaxTriggerStateCardinality() const;
 
   // Returns the maximum frequency at which to delete expired sources.
   // Must be positive.

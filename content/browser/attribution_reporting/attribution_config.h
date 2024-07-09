@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <limits>
-
 #include "base/time/time.h"
 #include "components/attribution_reporting/constants.h"
 #include "content/common/content_export.h"
@@ -76,11 +74,6 @@ struct CONTENT_EXPORT AttributionConfig {
     // a single a source.
     double max_navigation_info_gain = 11.5;
     double max_event_info_gain = 6.5;
-
-    // Controls the max number of report states allowed for a given source
-    // registration.
-    uint32_t max_trigger_state_cardinality =
-        std::numeric_limits<uint32_t>::max();
 
     friend bool operator==(const EventLevelLimit&,
                            const EventLevelLimit&) = default;

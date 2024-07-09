@@ -211,8 +211,7 @@ class AttributionInteropParser {
                 config.event_level_limit.max_event_info_gain, required);
 
     ParseUInt32(dict, "max_trigger_state_cardinality",
-                config.event_level_limit.max_trigger_state_cardinality,
-                required);
+                interop_config.max_trigger_state_cardinality, required);
 
     int rate_limit_time_window_in_days;
     if (ParseInt(dict, "rate_limit_time_window_in_days",

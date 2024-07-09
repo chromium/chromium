@@ -93,8 +93,9 @@ base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponse(
     const TriggerSpecs& specs,
     double epsilon,
-    base::StrictNumeric<uint32_t> max_trigger_state_cardinality,
     double max_channel_capacity);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING) uint32_t MaxTriggerStateCardinality();
 
 // Exposed for testing purposes.
 namespace internal {
@@ -189,10 +190,30 @@ DoRandomizedResponseWithCache(
     const TriggerSpecs& specs,
     double epsilon,
     StateMap& map,
-    base::StrictNumeric<uint32_t> max_trigger_state_cardinality,
     double max_channel_capacity);
 
 }  // namespace internal
+
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+    ScopedMaxTriggerStateCardinalityForTesting {
+ public:
+  explicit ScopedMaxTriggerStateCardinalityForTesting(uint32_t);
+
+  ~ScopedMaxTriggerStateCardinalityForTesting();
+
+  ScopedMaxTriggerStateCardinalityForTesting(
+      const ScopedMaxTriggerStateCardinalityForTesting&) = delete;
+  ScopedMaxTriggerStateCardinalityForTesting& operator=(
+      const ScopedMaxTriggerStateCardinalityForTesting&) = delete;
+
+  ScopedMaxTriggerStateCardinalityForTesting(
+      ScopedMaxTriggerStateCardinalityForTesting&&) = delete;
+  ScopedMaxTriggerStateCardinalityForTesting& operator=(
+      ScopedMaxTriggerStateCardinalityForTesting&&) = delete;
+
+ private:
+  uint32_t previous_;
+};
 
 }  // namespace attribution_reporting
 
