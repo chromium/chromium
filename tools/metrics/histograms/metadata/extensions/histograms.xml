@@ -4737,7 +4737,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ServiceWorkerBackground.WorkerUnregistrationState{UnregistrationType}"
-    enum="Boolean" expires_after="2024-12-15">
+    enum="Boolean" expires_after="2025-01-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4753,6 +4753,9 @@ of interesting buckets, such as "internal + external".
     {UnregistrationType}
   </summary>
   <token key="UnregistrationType">
+    <variant name=""
+        summary="This metric is emitted in the #1 (update) and #2 (deactivate
+                 extension) scenarios."/>
     <variant name="_AddExtension"
         summary="This metric is only emitted in the #1 (update) scenario."/>
     <variant name="_DeactivateExtension"
