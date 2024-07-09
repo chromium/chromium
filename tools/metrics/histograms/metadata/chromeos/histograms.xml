@@ -2265,6 +2265,17 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Keyboard.Startup.AmbientLightSensorEnabled"
+    enum="BooleanEnabled" expires_after="2025-03-01">
+  <owner>longbowei@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the status of the keyboard ambient light sensor at startup. Fires
+    when the device boots up and the login screen is displayed.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.KeyPermissionsManager.Migration"
     enum="KeyPermissionsManagerMigrationStatus" expires_after="2024-09-01">
   <owner>omorsi@google.com</owner>

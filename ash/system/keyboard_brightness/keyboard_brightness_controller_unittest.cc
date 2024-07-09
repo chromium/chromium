@@ -839,4 +839,28 @@ TEST_F(KeyboardBrightnessControllerTest, SetKeyboardBrightness_Cause) {
           SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP);
 }
 
+TEST_F(KeyboardBrightnessControllerTest,
+       RecordStartupKeyboardAmbientLightSensorStatus) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableKeyboardBacklightControlInSettings);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager_client()->set_has_ambient_light_sensor(true);
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Keyboard.Startup.AmbientLightSensorEnabled", 0);
+  // Log in.
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  LoginScreenFocusAccount(account_id);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Keyboard.Startup.AmbientLightSensorEnabled", true, 1);
+
+  // Log in again, expect no extra metric is emitted.
+  ClearLogin();
+  LoginScreenFocusAccount(account_id);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Keyboard.Startup.AmbientLightSensorEnabled", 1);
+}
+
 }  // namespace ash

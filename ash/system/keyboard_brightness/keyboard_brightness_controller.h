@@ -96,6 +96,13 @@ class ASH_EXPORT KeyboardBrightnessController
   // for a user's first login.
   bool has_keyboard_ambient_light_sensor_been_restored_for_new_user_ = false;
 
+  // True if the keyboard ambient light sensor status has already been recorded
+  // at login screen.
+  bool has_keyboard_ambient_light_sensor_status_been_recorded_ = false;
+
+  // True if the keyboard has an ambient light sensor.
+  bool has_sensor_ = false;
+
   // This PrefChangeRegistrar is used to check when the synced profile pref for
   // the keyboard ambient light sensor value has finished syncing.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

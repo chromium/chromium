@@ -243,7 +243,6 @@ void KeyboardBrightnessController::HandleSetKeyboardAmbientLightSensorEnabled(
       enabled);
 }
 
-// TODO(longbowei): Handle restoring the keyboard brightness percent.
 void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
     const AccountId& account_id) {
   // Get the user's stored preference for whether the keyboard ambient light
@@ -270,6 +269,14 @@ void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
 
   HandleSetKeyboardAmbientLightSensorEnabled(
       keyboard_ambient_light_sensor_enabled_for_account);
+
+  // Record the keyboard ambient light sensor status at login.
+  if (has_sensor_ && !has_keyboard_ambient_light_sensor_status_been_recorded_) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Keyboard.Startup.AmbientLightSensorEnabled",
+        keyboard_ambient_light_sensor_enabled_for_account);
+    has_keyboard_ambient_light_sensor_status_been_recorded_ = true;
+  }
 }
 
 void KeyboardBrightnessController::
@@ -308,6 +315,7 @@ void KeyboardBrightnessController::OnReceiveHasAmbientLightSensor(
            "sensor status";
     return;
   }
+  has_sensor_ = has_sensor.value();
   base::UmaHistogramBoolean("ChromeOS.Keyboard.HasAmbientLightSensor",
                             has_sensor.value());
 }
