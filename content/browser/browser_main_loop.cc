@@ -120,6 +120,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -144,6 +145,7 @@
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/network_change_notifier.h"
+#include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_config_service.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -670,6 +672,15 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:HighResTimerManager");
     hi_res_timer_manager_ =
         std::make_unique<base::HighResolutionTimerManager>();
+  }
+  {
+    TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:NetLog");
+    if (content::IsOutOfProcessNetworkService()) {
+      // Initialize NetLog source IDs to use an alternate starting value for
+      // the browser process. This needs to be done early in process startup
+      // before any NetLogSource objects might get created.
+      net::NetLog::Get()->InitializeSourceIdPartition();
+    }
   }
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:NetworkChangeNotifier");

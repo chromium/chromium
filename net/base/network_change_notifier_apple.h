@@ -22,6 +22,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_config_watcher_apple.h"
 #include "net/base/network_interfaces.h"
+#include "net/log/net_log_with_source.h"
 
 namespace net {
 
@@ -116,6 +117,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierApple
   base::RepeatingCallback<std::string(SCDynamicStoreRef)>
       get_ipv6_primary_interface_name_callback_;
 #endif  // BUILDFLAG(IS_MAC)
+  NetLogWithSource net_log_;
 };
 
 }  // namespace net
