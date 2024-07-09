@@ -137,7 +137,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   const Referrer& GetReferrer() override;
   void SetVirtualURL(const GURL& url) override;
   const GURL& GetVirtualURL() override;
-  void SetTitle(const std::u16string& title) override;
+  void SetTitle(std::u16string title) override;
   const std::u16string& GetTitle() override;
   void SetAppTitle(const std::u16string& app_title) override;
   const std::u16string& GetAppTitle() override;

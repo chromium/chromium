@@ -7705,7 +7705,7 @@ bool WebContentsImpl::UpdateTitleForEntryImpl(NavigationEntryImpl* entry,
     return false;  // Nothing changed, don't bother.
   }
 
-  entry->SetTitle(final_title);
+  entry->SetTitle(std::move(final_title));
   return true;
 }
 

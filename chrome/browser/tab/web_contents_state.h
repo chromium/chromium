@@ -135,7 +135,7 @@ class WebContentsState {
 
   // Creates a single navigation entry in a serilized form.
   static base::Pickle CreateSingleNavigationStateAsPickle(
-      const std::u16string& title,
+      std::u16string title,
       const GURL& url,
       content::Referrer referrer,
       url::Origin initiator_origin,

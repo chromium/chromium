@@ -629,7 +629,7 @@ WebContentsState::CreateSingleNavigationStateAsByteBuffer(
 }
 
 base::Pickle WebContentsState::CreateSingleNavigationStateAsPickle(
-    const std::u16string& title,
+    std::u16string title,
     const GURL& url,
     content::Referrer referrer,
     url::Origin initiator_origin,
@@ -642,7 +642,7 @@ base::Pickle WebContentsState::CreateSingleNavigationStateAsPickle(
           /* is_renderer_initiated= */ true,
           /* extra_headers= */ "", ProfileManager::GetActiveUserProfile(),
           /* blob_url_loader_factory=*/nullptr);
-  navigation_entry->SetTitle(title);
+  navigation_entry->SetTitle(std::move(title));
 
   std::vector<sessions::SerializedNavigationEntry> serialized =
       SerializeNavigations({navigation_entry.get()});

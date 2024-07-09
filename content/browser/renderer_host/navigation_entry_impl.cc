@@ -520,8 +520,8 @@ const GURL& NavigationEntryImpl::GetVirtualURL() {
   return virtual_url_.is_empty() ? GetURL() : virtual_url_;
 }
 
-void NavigationEntryImpl::SetTitle(const std::u16string& title) {
-  title_ = title;
+void NavigationEntryImpl::SetTitle(std::u16string title) {
+  title_ = std::move(title);
   cached_display_title_.clear();
 }
 

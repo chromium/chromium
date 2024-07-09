@@ -464,7 +464,7 @@ void TabAndroid::SetActiveNavigationEntryTitleForUrl(
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();
   if (entry && url == entry->GetVirtualURL().spec())
-    entry->SetTitle(title);
+    entry->SetTitle(std::move(title));
 }
 
 void TabAndroid::LoadOriginalImage(JNIEnv* env) {

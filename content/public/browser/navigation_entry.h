@@ -107,7 +107,7 @@ class NavigationEntry : public base::SupportsUserData {
   // observers when the visible title changes. Only call
   // NavigationEntry::SetTitle() below directly when this entry is known not to
   // be visible.
-  virtual void SetTitle(const std::u16string& title) = 0;
+  virtual void SetTitle(std::u16string title) = 0;
   virtual const std::u16string& GetTitle() = 0;
 
   // The app title as set by the page. This will be empty if there is no app

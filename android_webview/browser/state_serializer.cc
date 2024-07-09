@@ -245,7 +245,7 @@ bool RestoreNavigationEntryFromPickle(
     std::u16string title;
     if (!iterator->ReadString16(&title))
       return false;
-    entry->SetTitle(title);
+    entry->SetTitle(std::move(title));
   }
 
   {
