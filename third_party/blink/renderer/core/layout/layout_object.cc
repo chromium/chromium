@@ -1384,7 +1384,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   // A box which doesn't establish a new formating context can pass a whole
   // bunch of state (floats, margins) to an arbitrary sibling, causing that
   // sibling to position/size differently.
-  if (!box->CreatesNewFormattingContext()) {
+  if (!fragment.IsFormattingContextRoot()) {
     return false;
   }
 
