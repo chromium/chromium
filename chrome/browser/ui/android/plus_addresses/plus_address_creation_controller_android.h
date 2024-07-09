@@ -10,14 +10,17 @@
 
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
 
 namespace plus_addresses {
+
+class PlusAddressService;
+class PlusAddressSettingService;
 
 // A (hopefully) temporary Android-specific implementation of
 // `PlusAddressCreationController`. The hope is to converge this back to a
@@ -61,6 +64,17 @@ class PlusAddressCreationControllerAndroid
   // and closes the dialog. Otherwise shows an error message on the dialog.
   void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
 
+  // Records the time between `modal_shown_time_` and now as modal shown
+  // duration and clear `modal_shown_time_`.
+  void RecordModalShownDuration(
+      metrics::PlusAddressModalCompletionStatus status);
+
+  // Returns whether the onboarding screen with the notice should be shown.
+  bool ShouldShowNotice() const;
+
+  PlusAddressService* GetPlusAddressService();
+  PlusAddressSettingService* GetPlusAddressSettingService();
+
   base::WeakPtr<PlusAddressCreationControllerAndroid> GetWeakPtr();
 
   std::unique_ptr<PlusAddressCreationViewAndroid> view_;
@@ -70,11 +84,6 @@ class PlusAddressCreationControllerAndroid
   // This is set by OnPlusAddressReserved and cleared when it's confirmed or
   // when the dialog is closed or cancelled.
   std::optional<PlusProfile> plus_profile_;
-
-  // Record the time between `modal_shown_time_` and now as modal shown duration
-  // and clear `modal_shown_time_`.
-  void RecordModalShownDuration(
-      metrics::PlusAddressModalCompletionStatus status);
 
   // This is set on `OfferCreation`.
   std::optional<base::TimeTicks> modal_shown_time_;

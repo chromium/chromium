@@ -222,9 +222,9 @@ bool PlusAddressCreationControllerDesktop::ShouldShowNotice() const {
       const_cast<PlusAddressCreationControllerDesktop*>(this)
           ->GetPlusAddressSettingService();
 
-  // TODO: crbug.com/350660518 - query the setting service.
-  return setting_service && base::FeatureList::IsEnabled(
-                                features::kPlusAddressUserOnboardingEnabled);
+  return setting_service && !setting_service->GetHasAcceptedNotice() &&
+         base::FeatureList::IsEnabled(
+             features::kPlusAddressUserOnboardingEnabled);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PlusAddressCreationControllerDesktop);

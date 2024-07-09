@@ -48,8 +48,10 @@ namespace {
 
 using PlusAddressModalCompletionStatus =
     metrics::PlusAddressModalCompletionStatus;
+using ::testing::Return;
 
 constexpr char kFakeEmailAddress[] = "alice@email.example";
+constexpr char16_t kFakeEmailAddressU16[] = u"alice@email.example";
 constexpr char kFakeManagementUrl[] = "https://manage.example/";
 constexpr char kFakeOauthScope[] = "https://foo.example";
 constexpr char kFakeErrorReportUrl[] = "https://error-link.example/";
@@ -700,6 +702,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
       base::Unretained(this)));
   embedded_test_server()->StartAcceptingConnections();
 
+  ON_CALL(setting_service(), GetHasAcceptedNotice).WillByDefault(Return(false));
   EXPECT_CALL(setting_service(), SetHasAcceptedNotice).Times(0);
 
   RunTestSequence(
@@ -735,6 +738,46 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
                                       /*canceled=*/1));
 }
 
+// Tests that the notice is not shown if it has already been accepted.
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
+                       NoticePreviouslyAccepted) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
+      base::Unretained(this)));
+  embedded_test_server()->StartAcceptingConnections();
+
+  ON_CALL(setting_service(), GetHasAcceptedNotice).WillByDefault(Return(true));
+  EXPECT_CALL(setting_service(), SetHasAcceptedNotice).Times(0);
+
+  RunTestSequence(
+      ShowModal(),
+      InAnyContext(WaitForViewProperty(
+          PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
+          views::View, Enabled, true)),
+      InSameContext(Steps(
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
+              &views::Label::GetText, kFakePlusAddressU16),
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressTitleElementId,
+              &views::StyledLabel::GetText,
+              l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_TITLE)),
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressDescriptionTextElementId,
+              &views::StyledLabel::GetText,
+              l10n_util::GetStringFUTF16(IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
+                                         kFakeEmailAddressU16)),
+          EnsureNotPresent(
+              PlusAddressCreationView::kPlusAddressNoticeElementId),
+          PressButton(
+              PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
+          WaitForHide(
+              PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
+      FlushEvents(),
+      CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
+                                      /*canceled=*/0));
+}
+
 // Tests showing and accepting the creation dialog for a user that has not yet
 // accepted the notice.
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
@@ -744,6 +787,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
       base::Unretained(this)));
   embedded_test_server()->StartAcceptingConnections();
 
+  ON_CALL(setting_service(), GetHasAcceptedNotice).WillByDefault(Return(false));
   EXPECT_CALL(setting_service(), SetHasAcceptedNotice);
 
   RunTestSequence(
@@ -772,6 +816,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
       &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
       base::Unretained(this)));
   embedded_test_server()->StartAcceptingConnections();
+
+  ON_CALL(setting_service(), GetHasAcceptedNotice).WillByDefault(Return(false));
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabElementId);
   RunTestSequence(

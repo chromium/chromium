@@ -59,12 +59,10 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
   if (!suppress_ui_for_testing_) {
     view_ = std::make_unique<PlusAddressCreationViewAndroid>(GetWeakPtr(),
                                                              &GetWebContents());
-    // TODO: crbug.com/347022597 - Only trigger if
-    // `PlusAddressSettingService::GetHasAcceptedNotice()` is `false`.
     view_->ShowInit(
         maybe_email.value(),
         plus_address_service->IsRefreshingSupported(relevant_origin_),
-        /*has_accepted_notice=*/true);
+        /*has_accepted_notice=*/!ShouldShowNotice());
   }
   plus_address_service->ReservePlusAddress(
       relevant_origin_,
@@ -74,9 +72,7 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
 }
 
 void PlusAddressCreationControllerAndroid::OnRefreshClicked() {
-  PlusAddressService* plus_address_service =
-      PlusAddressServiceFactory::GetForBrowserContext(
-          GetWebContents().GetBrowserContext());
+  PlusAddressService* plus_address_service = GetPlusAddressService();
   if (!plus_address_service) {
     return;
   }
@@ -90,23 +86,11 @@ void PlusAddressCreationControllerAndroid::OnRefreshClicked() {
 void PlusAddressCreationControllerAndroid::OnConfirmed() {
   CHECK(plus_profile_.has_value());
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalConfirmed);
-  PlusAddressSettingService* service =
-      PlusAddressSettingServiceFactory::GetForBrowserContext(
-          GetWebContents().GetBrowserContext());
-  // TODO: crbug.com/347022597 - Only trigger if
-  // `PlusAddressSettingService::GetHasAcceptedNotice()` is `false`.
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressUserOnboardingEnabled)) {
-    service->SetHasAcceptedNotice();
-  }
   if (plus_profile_->is_confirmed) {
     OnPlusAddressConfirmed(plus_profile_.value());
     return;
   }
-  PlusAddressService* plus_address_service =
-      PlusAddressServiceFactory::GetForBrowserContext(
-          GetWebContents().GetBrowserContext());
-  if (plus_address_service) {
+  if (PlusAddressService* plus_address_service = GetPlusAddressService()) {
     // Note: this call may fail if this modal is confirmed on the same
     // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(
@@ -151,10 +135,8 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
   // prior to service response, `view_` will be null.
   if (view_) {
     view_->ShowReserveResult(maybe_plus_profile);
-    PlusAddressService* plus_address_service =
-        PlusAddressServiceFactory::GetForBrowserContext(
-            GetWebContents().GetBrowserContext());
-    if (!plus_address_service->IsRefreshingSupported(relevant_origin_)) {
+    if (PlusAddressService* service = GetPlusAddressService();
+        service && !service->IsRefreshingSupported(relevant_origin_)) {
       view_->HideRefreshButton();
     }
   }
@@ -169,18 +151,22 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
 
 void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
-  // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
-  // prior to service response, `view_` will be null.
-  if (view_) {
-    view_->ShowConfirmResult(maybe_plus_profile);
-  }
   if (maybe_plus_profile.has_value()) {
+    if (ShouldShowNotice()) {
+      GetPlusAddressSettingService()->SetHasAcceptedNotice();
+    }
     std::move(callback_).Run(maybe_plus_profile->plus_address);
     RecordModalShownDuration(
         metrics::PlusAddressModalCompletionStatus::kModalConfirmed);
   } else {
     modal_error_status_ =
         metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
+  }
+
+  // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
+  // prior to service response, `view_` will be null.
+  if (view_) {
+    view_->ShowConfirmResult(maybe_plus_profile);
   }
 }
 
@@ -193,6 +179,29 @@ void PlusAddressCreationControllerAndroid::RecordModalShownDuration(
     modal_shown_time_.reset();
     reserve_response_count_ = 0;
   }
+}
+
+bool PlusAddressCreationControllerAndroid::ShouldShowNotice() const {
+  // `this` is never created as a `const` member - therefore the cast is safe.
+  const PlusAddressSettingService* setting_service =
+      const_cast<PlusAddressCreationControllerAndroid*>(this)
+          ->GetPlusAddressSettingService();
+
+  return setting_service && !setting_service->GetHasAcceptedNotice() &&
+         base::FeatureList::IsEnabled(
+             features::kPlusAddressUserOnboardingEnabled);
+}
+
+PlusAddressService*
+PlusAddressCreationControllerAndroid::GetPlusAddressService() {
+  return PlusAddressServiceFactory::GetForBrowserContext(
+      GetWebContents().GetBrowserContext());
+}
+
+PlusAddressSettingService*
+PlusAddressCreationControllerAndroid::GetPlusAddressSettingService() {
+  return PlusAddressSettingServiceFactory::GetForBrowserContext(
+      GetWebContents().GetBrowserContext());
 }
 
 base::WeakPtr<PlusAddressCreationControllerAndroid>
