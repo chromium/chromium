@@ -58,6 +58,8 @@ constexpr int kFinalStatusCrossSiteNavigationInMainFrameNavigation = 64;
 
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using ukm::builders::Preloading_Attempt;
+static const auto kMockElapsedTime =
+    base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
 
 class PrerenderBrowserTest : public PlatformBrowserTest {
  public:
@@ -119,6 +121,8 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  // Disable sampling of UKM preloading logs.
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 // An end-to-end test of prerendering and activating.
@@ -776,6 +780,104 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
     }
   }
   EXPECT_TRUE(witness_new_tab_page_ukm);
+}
+
+// This test verifies that a NTP mouse hover trigger followed a NTP mouse down
+// trigger can be activated normally.
+IN_PROC_BROWSER_TEST_P(
+    PrerenderNewTabPageBrowserTest,
+    PrerenderTriggeredByNewTabPageMouseDownAfterHoverAndActivate) {
+  base::HistogramTester histogram_tester;
+  // This test only verifies the scenario where a mouse hover triggers
+  // followed by a mouse down trigger.
+  if (GetParam() != chrome_preloading_predictor::kPointerDownOnNewTabPage) {
+    return;
+  }
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(chrome::kChromeUINewTabURL)));
+  GURL prerender_url = GetUrl("/simple.html");
+
+  PrerenderManager::CreateForWebContents(GetActiveWebContents());
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(GetActiveWebContents());
+  // Start a mouse hover New Tab Page first.
+  base::WeakPtr<content::PrerenderHandle> handle1 =
+      prerender_manager->StartPrerenderNewTabPage(
+          prerender_url, chrome_preloading_predictor::kMouseHoverOnNewTabPage);
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url);
+  // Then start a mouse down New Tab Page for the same page.
+  base::WeakPtr<content::PrerenderHandle> handle2 =
+      prerender_manager->StartPrerenderNewTabPage(prerender_url, GetParam());
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url);
+
+  // The both attempts should return the same non-null handle.
+  EXPECT_TRUE(handle1 && handle2);
+  EXPECT_EQ(handle1.get(), handle2.get());
+
+  // Activate.
+  content::TestActivationManager activation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  SimulateNewTabNavigation(prerender_url);
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_NewTabPage",
+      kFinalStatusActivated, 1);
+  histogram_tester.ExpectTotalCount(
+      "NewTabPage.PrerenderNavigationToActivation", 1);
+
+  auto entries =
+      test_ukm_recorder()->GetMergedEntriesByName("PrerenderPageLoad");
+  ukm::SourceId ukm_source_id;
+  bool witness_new_tab_page_ukm = false;
+  for (auto& kv : entries) {
+    const ukm::mojom::UkmEntry* entry = kv.second.get();
+    const ukm::UkmSource* source =
+        test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
+    if (!source) {
+      continue;
+    }
+    EXPECT_TRUE(source->url().is_valid());
+    if (source->url() == prerender_url) {
+      ukm_source_id = entry->source_id;
+      test_ukm_recorder()->ExpectEntryMetric(
+          entry,
+          ukm::builders::PrerenderPageLoad::kNavigation_InitiatorLocationName,
+          static_cast<int>(page_load_metrics::NavigationHandleUserData::
+                               InitiatorLocation::kNewTabPage));
+      witness_new_tab_page_ukm = true;
+    }
+  }
+  EXPECT_TRUE(witness_new_tab_page_ukm);
+
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      mouse_hover_attempt_entry_builder =
+          std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+              chrome_preloading_predictor::kMouseHoverOnNewTabPage);
+
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {mouse_hover_attempt_entry_builder->BuildEntry(
+           ukm_source_id, content::PreloadingType::kPrerender,
+           content::PreloadingEligibility::kEligible,
+           content::PreloadingHoldbackStatus::kAllowed,
+           content::PreloadingTriggeringOutcome::kSuccess,
+           content::PreloadingFailureReason::kUnspecified,
+           /*accurate=*/true,
+           /*ready_time=*/kMockElapsedTime),
+       attempt_entry_builder().BuildEntry(
+           ukm_source_id, content::PreloadingType::kPrerender,
+           content::PreloadingEligibility::kEligible,
+           content::PreloadingHoldbackStatus::kAllowed,
+           content::PreloadingTriggeringOutcome::kDuplicate,
+           content::PreloadingFailureReason::kUnspecified,
+           /*accurate=*/true,
+           /*ready_time=*/std::nullopt)});
 }
 
 // Verify that NewTabPage prerender rejects non https url.
