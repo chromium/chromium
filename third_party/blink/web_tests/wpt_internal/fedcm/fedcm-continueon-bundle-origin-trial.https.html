@@ -18,7 +18,7 @@ generate_token.py https://web-platform.test:8444/ FedCmContinueOnBundle --expire
 import {fedcm_test,
         alt_request_options_with_mediation_required,
         select_manifest,
-        fedcm_get_and_select_first_account} from '/credential-management/support/fedcm-helper.sub.js';
+        fedcm_get_and_select_first_account} from '/fedcm/support/fedcm-helper.sub.js';
 
 promise_test(async t => {
   assert_true("resolve" in IdentityProvider);

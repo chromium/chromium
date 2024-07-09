@@ -2552,7 +2552,7 @@ crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-
 
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/626703 external/wpt/css/css-ui/outline-auto-width-001.html [ Failure ]
-crbug.com/626703 virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Failure ]
+crbug.com/626703 virtual/fedcm-login-status/external/wpt/fedcm/fedcm-login-status/confirm-idp-login.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-003.html [ Failure ]
@@ -2595,7 +2595,7 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/351876774 [ Win11-arm64 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/access-reporting-post-message.https.html [ Timeout ]
-crbug.com/351904556 [ Win11-arm64 ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-disclosure-text-shown.https.html [ Timeout ]
+crbug.com/351904556 [ Win11-arm64 ] virtual/fedcm-authz/external/wpt/fedcm/fedcm-authz/fedcm-disclosure-text-shown.https.html [ Timeout ]
 [ Win11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/disable-untrusted-network.https.html [ Timeout ]
 crbug.com/351703751 [ Win11-arm64 ] external/wpt/WebCryptoAPI/derive_bits_keys/cfrg_curves_bits.https.any.html [ Failure Timeout ]
 crbug.com/350770678 [ Mac11-arm64 ] external/wpt/css/css-writing-modes/forms/select-multiple-options-visual-order.html [ Timeout ]
@@ -2687,7 +2687,7 @@ crbug.com/338457111 [ Win11-arm64 ] external/wpt/fs/FileSystemFileHandle-move.ht
 crbug.com/338457112 [ Mac12 ] external/wpt/workers/Worker-terminate-forever-during-evaluation.html [ Timeout ]
 crbug.com/338457112 [ Win11-arm64 ] external/wpt/workers/Worker-terminate-forever-during-evaluation.html [ Timeout ]
 crbug.com/338513292 [ Win11-arm64 ] external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-displayed.tentative.html [ Failure ]
-crbug.com/338513293 [ Win11-arm64 ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
+crbug.com/338513293 [ Win11-arm64 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
 crbug.com/338513292 [ Win11-arm64 ] virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-displayed.tentative.html [ Failure ]
 crbug.com/338437452 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-type-only.html [ Timeout ]
 crbug.com/338350366 [ Win11-arm64 ] external/wpt/preload/delaying-onload-link-preload-after-discovery.html [ Timeout ]
@@ -2779,7 +2779,7 @@ crbug.com/626703 [ Linux ] external/wpt/css/css-grid/grid-fragmentation-between-
 crbug.com/626703 [ Mac ] external/wpt/css/css-grid/grid-fragmentation-between-rows-001-print.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-values/viewport-units-scrollbars-auto-vhw-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-values/viewport-units-scrollbars-scroll-vhw-001.html [ Failure ]
-crbug.com/626703 [ Win11-arm64 ] virtual/fedcm-button-and-other-account/external/wpt/credential-management/fedcm-button-and-other-account/fedcm-use-other-account-button-flow.tentative.https.html [ Timeout ]
+crbug.com/626703 [ Win11-arm64 ] virtual/fedcm-button-and-other-account/external/wpt/fedcm/fedcm-button-and-other-account/fedcm-use-other-account-button-flow.tentative.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribution-disabled.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/embedder-context.tentative.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-005.html [ Failure ]
@@ -6130,21 +6130,21 @@ crbug.com/1462796 [ Win ] virtual/keepalive-in-browser-migration/external/wpt/fe
 
 crbug.com/1431228 media/video-delay-load-event.html [ Failure Pass ]
 
-crbug.com/1466721 external/wpt/credential-management/fedcm-userinfo.https.html [ Pass Timeout ]
+crbug.com/1466721 external/wpt/fedcm/fedcm-userinfo.https.html [ Pass Timeout ]
 
-crbug.com/1472353 external/wpt/credential-management/fedcm-context.https.html [ Pass Timeout ]
+crbug.com/1472353 external/wpt/fedcm/fedcm-context.https.html [ Pass Timeout ]
 
-crbug.com/40284123 external/wpt/credential-management/fedcm-identity-assertion-nocors.https.html [ Failure ]
+crbug.com/40284123 external/wpt/fedcm/fedcm-identity-assertion-nocors.https.html [ Failure ]
 
-crbug.com/1404951 [ Win ] external/wpt/credential-management/fedcm-nonce-is-optional.https.html [ Pass Timeout ]
+crbug.com/1404951 [ Win ] external/wpt/fedcm/fedcm-nonce-is-optional.https.html [ Pass Timeout ]
 
-crbug.com/1480054 [ Win ] external/wpt/credential-management/fedcm-loginhint.https.html [ Pass Timeout ]
+crbug.com/1480054 [ Win ] external/wpt/fedcm/fedcm-loginhint.https.html [ Pass Timeout ]
 
-crbug.com/328129675 virtual/fedcm-button-and-other-account/external/wpt/credential-management/fedcm-button-and-other-account/fedcm-button-mode-priority.tentative.https.html [ Pass Timeout ]
+crbug.com/328129675 virtual/fedcm-button-and-other-account/external/wpt/fedcm/fedcm-button-and-other-account/fedcm-button-mode-priority.tentative.https.html [ Pass Timeout ]
 
 # We skip these tests in the base test suite in NeverFixTests, but we do want
 # to run them in the virtual test suite.
-crbug.com/1373766 virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/* [ Pass ]
+crbug.com/1373766 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/* [ Pass ]
 
 # WebAssembly ESM integration is not yet implemented.
 crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Crash Failure Pass Timeout ]
@@ -6653,8 +6653,8 @@ crbug.com/1464614 [ Win11-arm64 ] css2.1/t1202-counters-04-b.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] custom-elements/form-validation-bubble-appearance.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] fast/forms/file/file-appearance-bidi-filenames.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] fast/ruby/nested-ruby.html [ Failure ]
-crbug.com/1464614 [ Win11-arm64 ] external/wpt/credential-management/fedcm-disconnect-errors.https.html [ Failure Pass Timeout ] # Flaky
-crbug.com/1464614 [ Win11-arm64 ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/cross-origin-status.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] external/wpt/fedcm/fedcm-disconnect-errors.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] virtual/fedcm-login-status/external/wpt/fedcm/fedcm-login-status/cross-origin-status.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/deep-copy-config.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain2.sub.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/pna-permission/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Failure Pass Timeout ] # Flaky
@@ -6790,8 +6790,8 @@ crbug.com/1455263 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-fram
 crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-behavior.tentative.html [ Failure Pass Timeout ]
 
 # Gardener 2023-11-17
-crbug.com/1503108 [ Mac ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
-crbug.com/1503108 [ Win ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/1503108 [ Mac ] external/wpt/fedcm/fedcm-disconnect.sub.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/1503108 [ Win ] external/wpt/fedcm/fedcm-disconnect.sub.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1503051 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
 crbug.com/1503051 [ Mac11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
 crbug.com/1503051 [ Mac12-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
@@ -6883,8 +6883,8 @@ crbug.com/1505556 [ Mac ] http/tests/inspector-protocol/bfcache/report-back-forw
 crbug.com/1521140 [ Mac ] inspector-protocol/timeline/render-blocking-style.js [ Failure Pass ]
 
 # Gardener: 2024-02-05
-crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-domainhint.https.html [ Pass Timeout ]
-crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-error-basic.https.html [ Pass Timeout ]
+crbug.com/323699772 [ Win ] external/wpt/fedcm/fedcm-domainhint.https.html [ Pass Timeout ]
+crbug.com/323699772 [ Win ] external/wpt/fedcm/fedcm-error-basic.https.html [ Pass Timeout ]
 crbug.com/41496645 [ Linux ] external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-008.html [ Failure Pass ]
 crbug.com/41490297 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Failure Pass ]
 
@@ -6912,10 +6912,10 @@ crbug.com/40263840 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-opener-set.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/325602826 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-metadata.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326065719 [ Win11-arm64 ] http/tests/xmlhttprequest/simple-cross-origin-progress-events.html [ Failure Pass Timeout ] # Flaky
-crbug.com/326065568 [ Win11-arm64 ] external/wpt/credential-management/fedcm-disconnect-iframe.sub.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326065568 [ Win11-arm64 ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326065727 [ Win11-arm64 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission-worker.https.window.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326065972 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ] # Flaky
-crbug.com/326067001 [ Win11-arm64 ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-userinfo-after-resolve.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326067001 [ Win11-arm64 ] virtual/fedcm-authz/external/wpt/fedcm/fedcm-authz/fedcm-userinfo-after-resolve.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326067598 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/set-automatic-beacon.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326066872 [ Win11-arm64 ] virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?prefetch=true [ Failure Pass Timeout ] # Flaky
 crbug.com/40943541 [ Win11-arm64 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Failure Pass Timeout ] # Flaky
@@ -7212,7 +7212,7 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Debug Mac14 ] http/tests/webfont/font-display-intervention.html [ Failure Pass ]
 [ Debug Mac14 ] media/controls/closed-captions-dynamic-update.html [ Failure Pass ]
 [ Debug Mac14 ] scrollbars/scrollbar-iframe-click-does-not-blur-content.html [ Failure Pass ]
-[ Debug Mac14 ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Failure Pass Timeout ]
+[ Debug Mac14 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Failure Pass Timeout ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/disallowed-navigations-dangling-markup-urn.https.html [ Failure Pass ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?13-last [ Failure Pass ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?8-8 [ Failure ]

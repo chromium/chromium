@@ -29,7 +29,7 @@ fedcm_test(async t => {
   assert_equals(cred.token, "token");
 
   const iframe_in_idp_scope = `${alt_manifest_origin}/\
-credential-management/support/fedcm/userinfo-iframe.html`;
+fedcm/support/fedcm/userinfo-iframe.html`;
   const message = await createIframeWithPermissionPolicyAndWaitForMessage(t, iframe_in_idp_scope);
   assert_equals(message.result, "Pass");
   assert_equals(message.numAccounts, 1);
@@ -54,7 +54,7 @@ fedcm_test(async t => {
 
   try {
    const manifest_path = `${alt_manifest_origin}/\
-credential-management/support/fedcm/manifest.py`;
+fedcm/support/fedcm/manifest.py`;
     const user_info = await IdentityProvider.getUserInfo({
       configURL: manifest_path,
       // Approved client

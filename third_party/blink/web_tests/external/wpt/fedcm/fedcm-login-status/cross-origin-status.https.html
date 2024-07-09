@@ -18,7 +18,7 @@ import {fedcm_test,
         open_and_wait_for_popup,
         mark_signed_out} from '../support/fedcm-helper.sub.js';
 
-const path = '/credential-management/support/'
+const path = '/fedcm/support/'
 const url_prefix = alt_manifest_origin + path;
 const same_site_url_prefix = same_site_manifest_origin + path;
 
@@ -76,7 +76,7 @@ fedcm_test(async t => {
 
 fedcm_test(async t => {
   await mark_signed_out(alt_manifest_origin);
-  await open_and_wait_for_popup(alt_manifest_origin, "/credential-management/support/fencedframe-mark-signedin.html");
+  await open_and_wait_for_popup(alt_manifest_origin, "/fedcm/support/fencedframe-mark-signedin.html");
 
   const config = alt_request_options_with_mediation_required();
   const result = navigator.credentials.get(config);

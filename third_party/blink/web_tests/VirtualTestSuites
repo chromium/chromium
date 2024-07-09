@@ -2042,7 +2042,7 @@
   {
     "prefix": "fedcm-authz",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/credential-management/fedcm-authz/"],
+    "bases": ["external/wpt/fedcm/fedcm-authz/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmAuthz"],
     "owners": ["cbiesinger@chromium.org", "goto@chromium.org"],
@@ -2051,7 +2051,7 @@
   {
     "prefix": "fedcm-login-status",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/credential-management/fedcm-login-status/"],
+    "bases": ["external/wpt/fedcm/fedcm-login-status/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmIdpSigninStatusEnabled",
              "--enable-features=FencedFramesDefaultMode"],
@@ -2061,7 +2061,7 @@
   {
     "prefix": "fedcm-same-site-none",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/credential-management/fedcm-same-site-none/"],
+    "bases": ["external/wpt/fedcm/fedcm-same-site-none/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmSameSiteNone"],
     "owners": ["cbiesinger@chromium.org", "npm@chromium.org"],
@@ -2070,7 +2070,7 @@
   {
     "prefix": "fedcm-button-and-other-account",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/credential-management/fedcm-button-and-other-account/"],
+    "bases": ["external/wpt/fedcm/fedcm-button-and-other-account/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmUseOtherAccount,FedCmButtonMode"],
     "owners": ["cbiesinger@chromium.org", "yigu@chromium.org"],
@@ -2080,7 +2080,7 @@
     "prefix": "fedcm-multi-idp",
     "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/credential-management/fedcm-multi-idp/"],
+    "bases": ["external/wpt/fedcm/fedcm-multi-idp/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmMultipleIdentityProviders"],
     "expires": "May 1, 2025"
@@ -2088,7 +2088,7 @@
   {
     "prefix": "fedcm-register",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/credential-management/fedcm-register/"],
+    "bases": ["external/wpt/fedcm/fedcm-register/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmIdPregistration,FedCmMultipleIdentityProviders"],
     "owners": ["cbiesinger@chromium.org", "goto@chromium.org"],

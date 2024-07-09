@@ -33,14 +33,14 @@ fedcm_test(async t => {
 
 fedcm_test(async t => {
   const message = await createIframeAndWaitForMessage(t,
-      'https://{{hosts[alt][]}}:{{ports[https][0]}}/credential-management/support/fedcm/disconnect-iframe.html?skip_get');
+      'https://{{hosts[alt][]}}:{{ports[https][0]}}/fedcm/support/fedcm/disconnect-iframe.html?skip_get');
   assert_equals(message.result, "Failed disconnect");
   assert_equals(message.errorType, "NotAllowedError");
 }, 'Cross-origin iframe fails disconnect() without explicit identity-credentials-get');
 
 fedcm_test(async t => {
   const message = await createIframeAndWaitForMessage(t,
-      'https://{{hosts[alt][]}}:{{ports[https][0]}}/credential-management/support/fedcm/disconnect-iframe.html',
+      'https://{{hosts[alt][]}}:{{ports[https][0]}}/fedcm/support/fedcm/disconnect-iframe.html',
       /*allow=*/true);
   assert_equals(message.result, "Pass");
 }, 'Cross-origin iframe can disconnect with explicit identity-credentials-get');

@@ -25,11 +25,10 @@ export function open_and_wait_for_popup(origin, path) {
 // Set the identity provider cookie.
 export function set_fedcm_cookie(host) {
   if (host == undefined) {
-    document.cookie = 'cookie=1; SameSite=None; Path=/credential-management/support; Secure';
     document.cookie = 'cookie=1; SameSite=None; Path=/fedcm/support; Secure';
     return Promise.resolve();
   } else {
-    return open_and_wait_for_popup(host, '/credential-management/support/set_cookie');
+    return open_and_wait_for_popup(host, '/fedcm/support/set_cookie');
   }
 }
 
@@ -39,11 +38,11 @@ export function set_alt_fedcm_cookie() {
 }
 
 export function mark_signed_in(origin = manifest_origin) {
-  return open_and_wait_for_popup(origin, '/credential-management/support/mark_signedin');
+  return open_and_wait_for_popup(origin, '/fedcm/support/mark_signedin');
 }
 
 export function mark_signed_out(origin = manifest_origin) {
-  return open_and_wait_for_popup(origin, '/credential-management/support/mark_signedout');
+  return open_and_wait_for_popup(origin, '/fedcm/support/mark_signedout');
 }
 
 // Returns FedCM CredentialRequestOptions for which navigator.credentials.get()

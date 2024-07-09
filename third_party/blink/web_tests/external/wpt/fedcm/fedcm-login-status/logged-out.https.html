@@ -39,7 +39,7 @@ fedcm_test(async t => {
   await mark_signed_out(alt_manifest_origin);
 
   const iframe_in_idp_scope = `${alt_manifest_origin}/\
-credential-management/support/fedcm/userinfo-iframe.html`;
+fedcm/support/fedcm/userinfo-iframe.html`;
   const message = await createIframeWithPermissionPolicyAndWaitForMessage(t, iframe_in_idp_scope);
   assert_equals(message.result, "Fail");
 

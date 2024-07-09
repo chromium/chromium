@@ -12,7 +12,7 @@
 <script type="module">
 import {fedcm_test,
         request_options_with_mediation_required,
-        fedcm_get_and_select_first_account} from '/credential-management/support/fedcm-helper.sub.js';
+        fedcm_get_and_select_first_account} from '/fedcm/support/fedcm-helper.sub.js';
 
 fedcm_test(async t => {
   const options = request_options_with_mediation_required("../../../wpt_internal/fedcm/resources/manifest_caching.py");

@@ -20,7 +20,7 @@ import {fedcm_test,
         manifest_origin,
         default_manifest_path,
         fedcm_select_account_promise,
-        alt_manifest_origin} from '/credential-management/support/fedcm-helper.sub.js';
+        alt_manifest_origin} from '/fedcm/support/fedcm-helper.sub.js';
 
 fedcm_test(async t => {
   const cred = await fedcm_get_and_select_first_account(t, request_options_with_two_idps());
