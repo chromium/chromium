@@ -803,7 +803,6 @@ experimental domain Audits
 
   type GenericIssueErrorType extends string
     enum
-      CrossOriginPortalPostMessageError
       FormLabelForNameError
       FormDuplicateIdForInputError
       FormInputWithNoLabelError
@@ -9331,7 +9330,6 @@ domain Page
       Printing
       WebDatabase
       PictureInPicture
-      Portal
       SpeechRecognizer
       IdleManager
       PaymentManager
@@ -10839,7 +10837,7 @@ domain Target
       experimental optional Page.FrameId openerFrameId
       experimental optional Browser.BrowserContextID browserContextId
       # Provides additional details for specific target types. For example, for
-      # the type of "page", this may be set to "portal" or "prerender".
+      # the type of "page", this may be set to "prerender".
       experimental optional string subtype
 
   # A filter used by target query/discovery/auto-attach operations.

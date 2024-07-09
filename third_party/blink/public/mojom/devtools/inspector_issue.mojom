@@ -293,7 +293,6 @@ struct CookieDeprecationMetadataIssueDetails {
 };
 
 enum GenericIssueErrorType {
-  kCrossOriginPortalPostMessageError,
   kFormLabelForNameError,
   kFormDuplicateIdForInputError,
   kFormInputWithNoLabelError,

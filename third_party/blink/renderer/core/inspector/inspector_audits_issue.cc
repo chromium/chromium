@@ -95,10 +95,6 @@ protocol::Audits::GenericIssueErrorType
 AuditsIssue::GenericIssueErrorTypeToProtocol(
     mojom::blink::GenericIssueErrorType error_type) {
   switch (error_type) {
-    case mojom::blink::GenericIssueErrorType::
-        kCrossOriginPortalPostMessageError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          CrossOriginPortalPostMessageError;
     case mojom::blink::GenericIssueErrorType::kFormLabelForNameError:
       return protocol::Audits::GenericIssueErrorTypeEnum::FormLabelForNameError;
     case mojom::blink::GenericIssueErrorType::kFormDuplicateIdForInputError:
