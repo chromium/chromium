@@ -30,8 +30,7 @@ FakeCompositorTimingHistory::FakeCompositorTimingHistory(
     bool using_synchronous_renderer_compositor,
     std::unique_ptr<RenderingStatsInstrumentation>
         rendering_stats_instrumentation)
-    : CompositorTimingHistory(using_synchronous_renderer_compositor,
-                              CompositorTimingHistory::NULL_UMA,
+    : CompositorTimingHistory(CompositorTimingHistory::NULL_UMA,
                               rendering_stats_instrumentation.get()),
       rendering_stats_instrumentation_owned_(
           std::move(rendering_stats_instrumentation)) {}
@@ -44,7 +43,6 @@ void FakeCompositorTimingHistory::SetAllEstimatesTo(base::TimeDelta duration) {
   begin_main_frame_start_to_ready_to_commit_duration_ = duration;
   commit_duration_ = duration;
   commit_to_ready_to_activate_duration_ = duration;
-  prepare_tiles_duration_ = duration;
   activate_duration_ = duration;
   draw_duration_ = duration;
 }
@@ -74,11 +72,6 @@ void FakeCompositorTimingHistory::SetCommitDurationEstimate(
 void FakeCompositorTimingHistory::SetCommitToReadyToActivateDurationEstimate(
     base::TimeDelta duration) {
   commit_to_ready_to_activate_duration_ = duration;
-}
-
-void FakeCompositorTimingHistory::SetPrepareTilesDurationEstimate(
-    base::TimeDelta duration) {
-  prepare_tiles_duration_ = duration;
 }
 
 void FakeCompositorTimingHistory::SetActivateDurationEstimate(
@@ -120,11 +113,6 @@ base::TimeDelta FakeCompositorTimingHistory::CommitDurationEstimate() const {
 base::TimeDelta
 FakeCompositorTimingHistory::CommitToReadyToActivateDurationEstimate() const {
   return commit_to_ready_to_activate_duration_;
-}
-
-base::TimeDelta FakeCompositorTimingHistory::PrepareTilesDurationEstimate()
-    const {
-  return prepare_tiles_duration_;
 }
 
 base::TimeDelta FakeCompositorTimingHistory::ActivateDurationEstimate() const {

@@ -202,11 +202,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // In the PrepareTiles step, compositor thread divides the layers into tiles
   // to reduce cost of raster large layers. Then, each tile is rastered by a
   // dedicated thread.
-  // |WillPrepareTiles| is called before PrepareTiles step to have the scheduler
-  // track when PrepareTiles starts.
-  void WillPrepareTiles();
-  // |DidPrepareTiles| is called after PrepareTiles step to have the scheduler
-  // track how long PrepareTiles takes.
   void DidPrepareTiles();
 
   // |DidPresentCompositorFrame| is called when the renderer receives

@@ -45,7 +45,6 @@ class FakeCompositorTimingHistory : public CompositorTimingHistory {
       base::TimeDelta duration);
   void SetCommitToReadyToActivateDurationEstimate(base::TimeDelta duration);
   void SetCommitDurationEstimate(base::TimeDelta duration);
-  void SetPrepareTilesDurationEstimate(base::TimeDelta duration);
   void SetActivateDurationEstimate(base::TimeDelta duration);
   void SetDrawDurationEstimate(base::TimeDelta duration);
   void SetBeginMainFrameSentTime(base::TimeTicks time);
@@ -57,7 +56,6 @@ class FakeCompositorTimingHistory : public CompositorTimingHistory {
       const override;
   base::TimeDelta CommitDurationEstimate() const override;
   base::TimeDelta CommitToReadyToActivateDurationEstimate() const override;
-  base::TimeDelta PrepareTilesDurationEstimate() const override;
   base::TimeDelta ActivateDurationEstimate() const override;
   base::TimeDelta DrawDurationEstimate() const override;
 
@@ -74,7 +72,6 @@ class FakeCompositorTimingHistory : public CompositorTimingHistory {
   base::TimeDelta begin_main_frame_start_to_ready_to_commit_duration_;
   base::TimeDelta commit_duration_;
   base::TimeDelta commit_to_ready_to_activate_duration_;
-  base::TimeDelta prepare_tiles_duration_;
   base::TimeDelta activate_duration_;
   base::TimeDelta draw_duration_;
 };

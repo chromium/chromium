@@ -248,12 +248,7 @@ void Scheduler::BeginMainFrameAborted(CommitEarlyOutReason reason) {
   ProcessScheduledActions();
 }
 
-void Scheduler::WillPrepareTiles() {
-  compositor_timing_history_->WillPrepareTiles();
-}
-
 void Scheduler::DidPrepareTiles() {
-  compositor_timing_history_->DidPrepareTiles();
   state_machine_.DidPrepareTiles();
 }
 

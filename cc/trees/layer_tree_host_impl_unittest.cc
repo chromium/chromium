@@ -257,7 +257,6 @@ class LayerTreeHostImplTestBase : public testing::Test,
     host_impl_->active_tree()->SetLocalSurfaceIdFromParent(viz::LocalSurfaceId(
         1, base::UnguessableToken::CreateForTesting(2u, 3u)));
   }
-  void WillPrepareTiles() override {}
   void DidPrepareTiles() override { did_prepare_tiles_ = true; }
   void DidCompletePageScaleAnimationOnImplThread() override {
     did_complete_page_scale_animation_ = true;

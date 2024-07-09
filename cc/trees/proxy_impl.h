@@ -125,7 +125,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void PostDelayedAnimationTaskOnImplThread(base::OnceClosure task,
                                             base::TimeDelta delay) override;
   void DidActivateSyncTree() override;
-  void WillPrepareTiles() override;
   void DidPrepareTiles() override;
   void DidCompletePageScaleAnimationOnImplThread() override;
   void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,

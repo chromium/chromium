@@ -60,12 +60,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHudDisplayForPerformanceMetrics);
 // render surface's owning effect.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfaceCommonAncestorClip);
 
-// When enabled, CompositorTimingHistory will directly record the timing history
-// that is used to calculate main thread timing estimates, and use the
-// percentile of sum of different stages instead of the sum of percentiles.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kDurationEstimatesInCompositorTimingHistory);
-
 // When enabled, Fluent scrollbars will paint the scrollbar's track and button
 // using nine-patch scaling.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kFluentScrollbarUsesNinePatchTrack);

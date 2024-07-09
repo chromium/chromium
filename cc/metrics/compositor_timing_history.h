@@ -34,7 +34,6 @@ class CC_EXPORT CompositorTimingHistory {
   class UMAReporter;
 
   CompositorTimingHistory(
-      bool using_synchronous_renderer_compositor,
       UMACategory uma_category,
       RenderingStatsInstrumentation* rendering_stats_instrumentation);
   CompositorTimingHistory(const CompositorTimingHistory&) = delete;
@@ -51,7 +50,6 @@ class CC_EXPORT CompositorTimingHistory {
       const;
   virtual base::TimeDelta CommitDurationEstimate() const;
   virtual base::TimeDelta CommitToReadyToActivateDurationEstimate() const;
-  virtual base::TimeDelta PrepareTilesDurationEstimate() const;
   virtual base::TimeDelta ActivateDurationEstimate() const;
   virtual base::TimeDelta DrawDurationEstimate() const;
 
@@ -71,8 +69,6 @@ class CC_EXPORT CompositorTimingHistory {
   void NotifyReadyToCommit();
   void WillCommit();
   void DidCommit();
-  void WillPrepareTiles();
-  void DidPrepareTiles();
   void ReadyToActivate();
   void WillActivate();
   void DidActivate();
@@ -95,7 +91,6 @@ class CC_EXPORT CompositorTimingHistory {
 
   virtual base::TimeTicks Now() const;
 
-  bool using_synchronous_renderer_compositor_;
   bool enabled_;
 
   // Used to calculate frame rates of Main and Impl threads.
@@ -111,21 +106,8 @@ class CC_EXPORT CompositorTimingHistory {
       begin_main_frame_start_to_ready_to_commit_duration_history_;
   RollingTimeDeltaHistory commit_duration_history_;
   RollingTimeDeltaHistory commit_to_ready_to_activate_duration_history_;
-  RollingTimeDeltaHistory prepare_tiles_duration_history_;
   RollingTimeDeltaHistory activate_duration_history_;
   RollingTimeDeltaHistory draw_duration_history_;
-
-  // Used for duration estimates when enabled. Without this feature, compositor
-  // timing history collects timing history of each stage and use sum of
-  // percentile for duration estimates. With this feature, we use percentile of
-  // sum instead.
-  bool duration_estimates_enabled_;
-  RollingTimeDeltaHistory bmf_start_to_ready_to_commit_critical_history_;
-  double bmf_start_to_ready_to_commit_critical_percentile_;
-  RollingTimeDeltaHistory bmf_start_to_ready_to_commit_not_critical_history_;
-  double bmf_start_to_ready_to_commit_not_critical_percentile_;
-  RollingTimeDeltaHistory bmf_queue_to_activate_critical_history_;
-  double bmf_queue_to_activate_critical_percentile_;
 
   // The time between when BMF was posted to the main thread task queue, and the
   // timestamp taken on the main thread when the BMF started running.
@@ -146,7 +128,6 @@ class CC_EXPORT CompositorTimingHistory {
   base::TimeTicks commit_start_time_;
   base::TimeTicks pending_tree_creation_time_;
   base::TimeTicks pending_tree_ready_to_activate_time_;
-  base::TimeTicks prepare_tiles_start_time_;
   base::TimeTicks activate_start_time_;
   base::TimeTicks draw_start_time_;
 

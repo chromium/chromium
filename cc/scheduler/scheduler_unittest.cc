@@ -220,7 +220,6 @@ class FakeSchedulerClient : public SchedulerClient,
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);
     PushAction("ScheduledActionPrepareTiles");
-    scheduler_->WillPrepareTiles();
     scheduler_->DidPrepareTiles();
   }
   void ScheduledActionInvalidateLayerTreeFrameSink(bool needs_redraw) override {
@@ -1215,7 +1214,6 @@ TEST_F(SchedulerTest, PrepareTilesOncePerFrame) {
   EXPECT_TRUE(client_->IsInsideBeginImplFrame());
 
   EXPECT_TRUE(scheduler_->PrepareTilesPending());
-  scheduler_->WillPrepareTiles();
   scheduler_->DidPrepareTiles();  // An explicit PrepareTiles.
   EXPECT_FALSE(scheduler_->PrepareTilesPending());
 
@@ -1249,7 +1247,6 @@ TEST_F(SchedulerTest, PrepareTilesOncePerFrame) {
 
   // If we get another DidPrepareTiles within the same frame, we should
   // not PrepareTiles on the next frame.
-  scheduler_->WillPrepareTiles();
   scheduler_->DidPrepareTiles();  // An explicit PrepareTiles.
   scheduler_->SetNeedsPrepareTiles();
   scheduler_->SetNeedsRedraw();
@@ -1272,7 +1269,6 @@ TEST_F(SchedulerTest, PrepareTilesOncePerFrame) {
   // frame. This verifies we don't alternate calling PrepareTiles once and
   // twice.
   EXPECT_TRUE(scheduler_->PrepareTilesPending());
-  scheduler_->WillPrepareTiles();
   scheduler_->DidPrepareTiles();  // An explicit PrepareTiles.
   EXPECT_FALSE(scheduler_->PrepareTilesPending());
   scheduler_->SetNeedsPrepareTiles();
@@ -1335,7 +1331,6 @@ TEST_F(SchedulerTest, DidPrepareTilesPreventsPrepareTilesForOneFrame) {
   // We don't want to hinder scheduled prepare tiles for more than one frame
   // even if we call unscheduled prepare tiles many times.
   for (int i = 0; i < 10; i++) {
-    scheduler_->WillPrepareTiles();
     scheduler_->DidPrepareTiles();
   }
 

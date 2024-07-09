@@ -122,7 +122,6 @@ ProxyImpl::ProxyImpl(
 
   std::unique_ptr<CompositorTimingHistory> compositor_timing_history(
       new CompositorTimingHistory(
-          scheduler_settings.using_synchronous_renderer_compositor,
           CompositorTimingHistory::RENDERER_UMA,
           rendering_stats_instrumentation));
   scheduler_ = std::make_unique<Scheduler>(
@@ -580,11 +579,6 @@ void ProxyImpl::DidActivateSyncTree() {
                          TRACE_EVENT_SCOPE_THREAD);
     activation_completion_event_ = nullptr;
   }
-}
-
-void ProxyImpl::WillPrepareTiles() {
-  DCHECK(IsImplThread());
-  scheduler_->WillPrepareTiles();
 }
 
 void ProxyImpl::DidPrepareTiles() {

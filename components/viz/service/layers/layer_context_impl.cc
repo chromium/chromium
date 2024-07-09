@@ -401,8 +401,6 @@ void LayerContextImpl::PostDelayedAnimationTaskOnImplThread(
 
 void LayerContextImpl::DidActivateSyncTree() {}
 
-void LayerContextImpl::WillPrepareTiles() {}
-
 void LayerContextImpl::DidPrepareTiles() {}
 
 void LayerContextImpl::DidCompletePageScaleAnimationOnImplThread() {}
