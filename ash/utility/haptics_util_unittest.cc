@@ -23,7 +23,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ash/wm/workspace/workspace_window_resizer.h"
+#include "ash/wm/workspace/workspace_window_resizer_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
@@ -111,10 +111,11 @@ TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
     event_generator->set_current_screen_location(start);
     event_generator->PressLeftButton();
     event_generator->MoveMouseTo(test_case.first);
-    WorkspaceWindowResizer* workspace_resizer =
-        WorkspaceWindowResizer::GetInstanceForTest();
-    if (workspace_resizer->dwell_countdown_timer_.IsRunning())
-      workspace_resizer->dwell_countdown_timer_.FireNow();
+    auto& dwell_countdown_timer =
+        WorkspaceWindowResizerTestApi().GetDwellCountdownTimer();
+    if (dwell_countdown_timer.IsRunning()) {
+      dwell_countdown_timer.FireNow();
+    }
     EXPECT_EQ((int)i + 1, input_controller->GetSentHapticCount(
                               HapticTouchpadEffect::kSnap,
                               HapticTouchpadEffectStrength::kMedium));

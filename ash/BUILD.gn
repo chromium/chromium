@@ -5118,6 +5118,8 @@ static_library("test_support") {
     "wm/window_restore/informed_restore_test_api.h",
     "wm/window_restore/informed_restore_test_base.cc",
     "wm/window_restore/informed_restore_test_base.h",
+    "wm/workspace/workspace_window_resizer_test_api.cc",
+    "wm/workspace/workspace_window_resizer_test_api.h",
     "wm/workspace_controller_test_api.cc",
     "wm/workspace_controller_test_api.h",
   ]
