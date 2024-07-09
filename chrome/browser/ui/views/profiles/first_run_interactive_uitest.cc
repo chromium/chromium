@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
     SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
         SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
     EXPECT_FALSE(
-        search_engine_choice_dialog_service->IsShowingDialog(browser()));
+        search_engine_choice_dialog_service->IsShowingDialog(*browser()));
   }
 
   EXPECT_TRUE(proceed_future.Get());

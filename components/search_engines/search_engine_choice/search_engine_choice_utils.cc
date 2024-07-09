@@ -193,6 +193,12 @@ void RecordChoiceScreenProfileInitCondition(
       kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
 }
 
+void RecordChoiceScreenNavigationCondition(
+    SearchEngineChoiceScreenConditions condition) {
+  base::UmaHistogramEnumeration(
+      kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
+}
+
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
   base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
                                 event);

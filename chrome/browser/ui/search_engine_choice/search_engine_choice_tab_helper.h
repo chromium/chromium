@@ -28,6 +28,13 @@ class SearchEngineChoiceTabHelper
       delete;
   ~SearchEngineChoiceTabHelper() override;
 
+  // Static method that tells us if the helper is needed. This is to be
+  // checked before creating the helper so we don't unnecessarily create one
+  // for every `WebContents`.
+  // TODO(crbug.com/347223092): Improve this approximative check, that
+  // currently only depends on feature flags.
+  static bool IsHelperNeeded();
+
  private:
   friend class content::WebContentsUserData<SearchEngineChoiceTabHelper>;
 

@@ -63,6 +63,15 @@ void ShowSearchEngineChoiceDialog(
 
   auto dialogView = std::make_unique<SearchEngineChoiceDialogView>(
       &browser, boundary_dimensions_for_test, zoom_factor_for_test);
+
+  SearchEngineChoiceDialogService* dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(browser.profile());
+  if (!dialog_service->RegisterDialog(browser,
+                                      dialogView->GetCloseViewClosure())) {
+    // The dialog was rejected. Abort, don't show anything.
+    return;
+  }
+
   dialogView->Initialize();
   delegate->SetContentsView(std::move(dialogView));
 
@@ -102,14 +111,6 @@ SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(
 SearchEngineChoiceDialogView::~SearchEngineChoiceDialogView() = default;
 
 void SearchEngineChoiceDialogView::Initialize() {
-  auto* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(
-          browser_->profile());
-  search_engine_choice_dialog_service->NotifyDialogOpened(
-      browser_, /*close_dialog_callback=*/base::BindOnce(
-          &SearchEngineChoiceDialogView::CloseView,
-          weak_ptr_factory_.GetWeakPtr()));
-
   web_view_->LoadInitialURL(GURL(chrome::kChromeUISearchEngineChoiceURL));
 
   double zoom_factor = zoom_factor_for_test_.value_or(1.);
@@ -182,8 +183,15 @@ void SearchEngineChoiceDialogView::ShowNativeView() {
   web_view_->RequestFocus();
 }
 
+base::OnceClosure SearchEngineChoiceDialogView::GetCloseViewClosure() {
+  return base::BindOnce(&SearchEngineChoiceDialogView::CloseView,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
 void SearchEngineChoiceDialogView::CloseView() {
-  GetWidget()->Close();
+  if (auto* widget = GetWidget()) {
+    widget->Close();
+  }
 }
 
 BEGIN_METADATA(SearchEngineChoiceDialogView)

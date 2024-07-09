@@ -38,6 +38,7 @@ extern const char kSearchEngineChoiceUnexpectedIdHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SearchEngineChoiceScreenConditions)
 enum class SearchEngineChoiceScreenConditions {
   // The user has a custom search engine set.
   kHasCustomSearchEngine = 0,
@@ -73,9 +74,13 @@ enum class SearchEngineChoiceScreenConditions {
   // The user is eligible, the app could have presented a dialog but the
   // application was started via an external intent and the dialog skipped.
   kAppStartedByExternalIntent = 15,
+  // The browser attempting to show the choice screen in a dialog is already
+  // showing a choice screen.
+  kAlreadyBeingShown = 16,
 
-  kMaxValue = kAppStartedByExternalIntent,
+  kMaxValue = kAlreadyBeingShown,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScreenConditions)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -253,6 +258,10 @@ bool IsEeaChoiceCountry(int country_id);
 // Records the specified choice screen condition at profile initialization.
 void RecordChoiceScreenProfileInitCondition(
     SearchEngineChoiceScreenConditions event);
+
+// Records the specified choice screen condition for relevant navigations.
+void RecordChoiceScreenNavigationCondition(
+    SearchEngineChoiceScreenConditions condition);
 
 // Records the specified choice screen event.
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);

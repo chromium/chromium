@@ -31202,6 +31202,8 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="No reprompt: no reprompt parameter set"/>
 </enum>
 
+<!-- LINT.IfChange(SearchEngineChoiceScreenConditions) -->
+
 <enum name="SearchEngineChoiceScreenConditions">
   <int value="0" label="Has custom search engine set"/>
   <int value="1" label="Has search provider override"/>
@@ -31220,7 +31222,10 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="Does not have Google as the default search engine"/>
   <int value="15"
       label="Choice Screen dialog skipped as app stared by external intent"/>
+  <int value="16" label="Dialog is already shown in the same browser"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_utils.h:SearchEngineChoiceScreenConditions) -->
 
 <!-- LINT.IfChange(SearchEngineChoiceScreenEvents) -->
 

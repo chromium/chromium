@@ -77,10 +77,10 @@ class MockSearchEngineChoiceDialogService
             *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
                 profile),
             *TemplateURLServiceFactory::GetForProfile(profile)) {
-    ON_CALL(*this, NotifyDialogOpened)
-        .WillByDefault([this](Browser* browser, base::OnceClosure callback) {
+    ON_CALL(*this, RegisterDialog)
+        .WillByDefault([this](Browser& browser, base::OnceClosure callback) {
           number_of_browsers_with_dialogs_open_++;
-          SearchEngineChoiceDialogService::NotifyDialogOpened(
+          return SearchEngineChoiceDialogService::RegisterDialog(
               browser, std::move(callback));
         });
 
@@ -110,10 +110,7 @@ class MockSearchEngineChoiceDialogService
     return number_of_browsers_with_dialogs_open_;
   }
 
-  MOCK_METHOD(void,
-              NotifyDialogOpened,
-              (Browser*, base::OnceClosure),
-              (override));
+  MOCK_METHOD(bool, RegisterDialog, (Browser&, base::OnceClosure), (override));
   MOCK_METHOD(void, NotifyChoiceMade, (int, EntryPoint), (override));
 
  private:
@@ -297,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
   // Make sure that the dialog gets opened only once and the display is
   // recorded.
-  EXPECT_CALL(*service, NotifyDialogOpened(_, _)).Times(1);
+  EXPECT_CALL(*service, RegisterDialog(_, _)).Times(1);
   CheckChoiceScreenWasDisplayedRecordedOnce();
 
   QuitAndRestoreBrowser(browser());
@@ -317,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest, BackgroundTab) {
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           browser()->profile()));
   ASSERT_TRUE(service);
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
+  EXPECT_FALSE(service->IsShowingDialog(*browser()));
 
   // Load an eligible tab in the background, the dialog does not open.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -325,14 +322,14 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest, BackgroundTab) {
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
+  EXPECT_FALSE(service->IsShowingDialog(*browser()));
 
   // Switch to the eligible tab after it's loaded, the dialog opens.
   browser()->tab_strip_model()->ActivateTabAt(1);
   ASSERT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       GURL(chrome::kChromeUINewTabPageURL));
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
+  EXPECT_TRUE(service->IsShowingDialog(*browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
@@ -347,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
 
   // Make sure that we have 2 dialogs open, one for each browser.
-  EXPECT_CALL(*service, NotifyDialogOpened(_, _)).Times(2);
+  EXPECT_CALL(*service, RegisterDialog(_, _)).Times(2);
   // Make sure that the display was recorded only once.
   CheckChoiceScreenWasDisplayedRecordedOnce();
 
@@ -377,13 +374,13 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // Check that both browsers are in the set.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_EQ(service->GetNumberOfBrowsersWithDialogsOpen(), 2u);
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
-  EXPECT_TRUE(service->IsShowingDialog(new_browser));
+  EXPECT_TRUE(service->IsShowingDialog(*browser()));
+  EXPECT_TRUE(service->IsShowingDialog(*new_browser));
 
   // Check that the open browser remains alone in the set.
   CloseBrowserSynchronously(new_browser);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
+  EXPECT_TRUE(service->IsShowingDialog(*browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
@@ -411,10 +408,10 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   first_profile_service->NotifyChoiceMade(
       /*prepopulate_id=*/1, EntryPoint::kDialog);
   CheckDefaultWasSetRecorded();
-  EXPECT_FALSE(
-      first_profile_service->IsShowingDialog(first_browser_with_first_profile));
   EXPECT_FALSE(first_profile_service->IsShowingDialog(
-      second_browser_with_first_profile));
+      *first_browser_with_first_profile));
+  EXPECT_FALSE(first_profile_service->IsShowingDialog(
+      *second_browser_with_first_profile));
   EXPECT_EQ(first_profile_service->GetNumberOfBrowsersWithDialogsOpen(), 0u);
 }
 
@@ -447,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_TRUE(
-      first_profile_service->IsShowingDialog(browser_with_first_profile));
+      first_profile_service->IsShowingDialog(*browser_with_first_profile));
   CheckChoiceScreenWasDisplayedRecordedOnce();
 
   // So far, no dialog check should have been failed based on a profile having
@@ -461,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // Open a browser with the second profile, it should open a dialog too.
   Browser* browser_with_second_profile = CreateBrowser(second_profile);
   EXPECT_TRUE(
-      second_profile_service->IsShowingDialog(browser_with_second_profile));
+      second_profile_service->IsShowingDialog(*browser_with_second_profile));
 
   // An additional success record should have been made.
   histogram_tester().ExpectBucketCount(
@@ -490,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
+  EXPECT_TRUE(service->IsShowingDialog(*browser()));
   CheckNavigationConditionRecorded(
       search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 
@@ -527,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
+  EXPECT_FALSE(service->IsShowingDialog(*browser()));
 
   CheckNavigationConditionRecorded(
       search_engines::SearchEngineChoiceScreenConditions::
@@ -556,7 +553,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  EXPECT_FALSE(search_engine_choice_dialog_service->IsShowingDialog(browser()));
+  EXPECT_FALSE(
+      search_engine_choice_dialog_service->IsShowingDialog(*browser()));
 
   CheckNavigationConditionRecorded(
       search_engines::SearchEngineChoiceScreenConditions::kExtensionControlled,
@@ -574,13 +572,13 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
   // PWA browsers should not show the dialog.
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
-  EXPECT_FALSE(service->IsShowingDialog(app_browser));
+  EXPECT_FALSE(service->IsShowingDialog(*app_browser));
 
   // The same URL in the regular browser shows the dialog.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), start_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
+  EXPECT_TRUE(service->IsShowingDialog(*browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
@@ -617,13 +615,13 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Dialog shown over normal browser.
-  EXPECT_TRUE(search_engine_choice_dialog_service->IsShowingDialog(browser()));
+  EXPECT_TRUE(search_engine_choice_dialog_service->IsShowingDialog(*browser()));
   // Dialog not shown over browser of type `TYPE_APP_POPUP`.
   EXPECT_FALSE(
-      search_engine_choice_dialog_service->IsShowingDialog(app_popup_browser));
+      search_engine_choice_dialog_service->IsShowingDialog(*app_popup_browser));
   // Dialog not shown over browser of type `TYPE_APP`
   EXPECT_FALSE(
-      search_engine_choice_dialog_service->IsShowingDialog(app_browser));
+      search_engine_choice_dialog_service->IsShowingDialog(*app_browser));
 
   CheckNavigationConditionRecorded(
       search_engines::SearchEngineChoiceScreenConditions::
@@ -644,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
+  EXPECT_TRUE(service->IsShowingDialog(*browser()));
 
   const TemplateURL* default_search_engine =
       template_url_service->GetDefaultSearchProvider();
@@ -654,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_NE(default_search_engine_id, kBingId);
   // Set the pref and simulate a dialog closing event.
   service->NotifyChoiceMade(kBingId, EntryPoint::kDialog);
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
+  EXPECT_FALSE(service->IsShowingDialog(*browser()));
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_BING, 1);
@@ -672,13 +670,13 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           first_guest_session->profile()));
 
-  EXPECT_TRUE(first_service->IsShowingDialog(first_guest_session));
+  EXPECT_TRUE(first_service->IsShowingDialog(*first_guest_session));
 
   // Complete the choice for the first guest profile.
   first_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::bing.id,
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
-  EXPECT_FALSE(first_service->IsShowingDialog(first_guest_session));
+  EXPECT_FALSE(first_service->IsShowingDialog(*first_guest_session));
 
   CloseBrowserSynchronously(first_guest_session);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
@@ -690,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 
   // The second guest profile still needs to choose again
-  EXPECT_TRUE(second_service->IsShowingDialog(second_guest_session));
+  EXPECT_TRUE(second_service->IsShowingDialog(*second_guest_session));
 }
 #endif
 
@@ -706,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   Profile* profile = browser()->profile();
   auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
+  EXPECT_FALSE(service->IsShowingDialog(*browser()));
   CheckNavigationConditionRecorded(
       search_engines::SearchEngineChoiceScreenConditions::
           kBrowserWindowTooSmall,
@@ -768,7 +766,8 @@ IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, PRE_Reprompt) {
   auto* service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(service);
-  EXPECT_TRUE(service->CanShowDialog(*browser()));
+  EXPECT_EQ(service->ComputeDialogConditions(*browser()),
+            search_engines::SearchEngineChoiceScreenConditions::kEligible);
 
   // Navigate to a URL. The first load happened while the dialog was
   // force-disabled for testing.
@@ -776,7 +775,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, PRE_Reprompt) {
       browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
+  EXPECT_TRUE(service->IsShowingDialog(*browser()));
 
   // Make a choice by grabbing the ID for one of the search engines in the
   // displayed list.
@@ -814,9 +813,9 @@ IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, Reprompt) {
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   if (skip_for_3p() && !select_google_in_pre()) {
-    EXPECT_FALSE(service->IsShowingDialog(browser()));
+    EXPECT_FALSE(service->IsShowingDialog(*browser()));
   } else {
-    EXPECT_TRUE(service->IsShowingDialog(browser()));
+    EXPECT_TRUE(service->IsShowingDialog(*browser()));
   }
 }
 

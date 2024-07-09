@@ -19,11 +19,13 @@
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/web_modal/test_web_contents_modal_dialog_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -78,6 +80,39 @@ const TestParam kTestParams[] = {
 };
 #endif
 
+// Custom test browser window to provide a parent view to a modal dialog.
+class ResizableDialogTestBrowserWindow : public DialogTestBrowserWindow {
+ public:
+  ResizableDialogTestBrowserWindow() = default;
+  ResizableDialogTestBrowserWindow(const ResizableDialogTestBrowserWindow&) =
+      delete;
+  ResizableDialogTestBrowserWindow& operator=(
+      const ResizableDialogTestBrowserWindow&) = delete;
+  ~ResizableDialogTestBrowserWindow() override = default;
+
+  // DialogTestBrowserWindow overrides
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+      override {
+    return GetTestWebContentsModalDialogHost();
+  }
+
+  web_modal::TestWebContentsModalDialogHost*
+  GetTestWebContentsModalDialogHost() {
+    if (!dialog_host_) {
+      dialog_host_ =
+          std::make_unique<web_modal::TestWebContentsModalDialogHost>(nullptr);
+
+      // Absurdly large size to ensure we don't run into "too small" issues.
+      dialog_host_->set_max_dialog_size(gfx::Size(5000, 5000));
+    }
+
+    return dialog_host_.get();
+  }
+
+ private:
+  std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
+};
+
 }  // namespace
 
 class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
@@ -112,7 +147,7 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
     // Dialog eligibility checks require a `WebContentsModalDialogHost`.
-    return std::make_unique<DialogTestBrowserWindow>();
+    return std::make_unique<ResizableDialogTestBrowserWindow>();
   }
 
   SearchEngineChoiceDialogService* GetSearchEngineChoiceDialogService(
@@ -230,27 +265,28 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyMoreButtonClicked) {
       1);
 }
 
-TEST_F(SearchEngineChoiceDialogServiceTest, CanShowDialog) {
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       ComputeDialogConditions_SmallBrowser) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       GetSearchEngineChoiceDialogService();
   ASSERT_TRUE(search_engine_choice_dialog_service);
 
-  // The `DialogTestBrowserWindow` reports a {0,0} size window.
-  EXPECT_FALSE(search_engine_choice_dialog_service->CanShowDialog(*browser()));
-  histogram_tester().ExpectUniqueSample(
-      search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+  static_cast<ResizableDialogTestBrowserWindow*>(browser()->window())
+      ->GetTestWebContentsModalDialogHost()
+      ->set_max_dialog_size(gfx::Size(1, 1));
+  EXPECT_EQ(
+      search_engine_choice_dialog_service->ComputeDialogConditions(*browser()),
       search_engines::SearchEngineChoiceScreenConditions::
-          kBrowserWindowTooSmall,
-      1);
+          kBrowserWindowTooSmall);
 }
 
-TEST_F(SearchEngineChoiceDialogServiceTest, NotifyDialogOpened) {
+TEST_F(SearchEngineChoiceDialogServiceTest, RegisterDialog) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       GetSearchEngineChoiceDialogService();
   ASSERT_TRUE(search_engine_choice_dialog_service);
 
-  search_engine_choice_dialog_service->NotifyDialogOpened(browser(),
-                                                          base::DoNothing());
+  search_engine_choice_dialog_service->RegisterDialog(*browser(),
+                                                      base::DoNothing());
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed,
@@ -317,7 +353,9 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
   SetUserSelectedDefaultSearchProvider(
       TemplateURLServiceFactory::GetForProfile(profile()),
       /*created_by_policy=*/true);
-  EXPECT_FALSE(search_engine_choice_dialog_service->CanShowDialog(*browser()));
+  EXPECT_EQ(
+      search_engine_choice_dialog_service->ComputeDialogConditions(*browser()),
+      search_engines::SearchEngineChoiceScreenConditions::kControlledByPolicy);
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest, DoNotCreateServiceIfPolicyIsSet) {

@@ -31,6 +31,11 @@ class SearchEngineChoiceDialogView : public views::View {
   // Initialize SearchEngineChoiceDialogView's web_view_ element.
   void Initialize();
 
+  // Returns a closure that can be executed to close the view (see
+  // `SearchEngineChoiceDialogView::CloseView()`). Uses a weak pointer
+  // internally, so it can be called after the view has been destroyed.
+  base::OnceClosure GetCloseViewClosure();
+
  private:
   // Show the dialog widget.
   void ShowNativeView();

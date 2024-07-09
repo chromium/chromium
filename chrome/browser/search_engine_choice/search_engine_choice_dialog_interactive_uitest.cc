@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
       search_engines::SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed,
       1);
 
-  EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
+  EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(*browser()));
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
   const TemplateURL* default_search_engine =
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
+  EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(*browser()));
 
   // We expect that the value was recorded at least once because more than one
   // navigation could happen in the background.
