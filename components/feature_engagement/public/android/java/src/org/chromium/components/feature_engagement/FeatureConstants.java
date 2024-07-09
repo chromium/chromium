@@ -327,6 +327,11 @@ public @interface FeatureConstants {
     /** An IPH feature to inform users that a price drop has occurred in any of their open tabs */
     String PRICE_DROP_NTP_FEATURE = "IPH_PriceDropNTP";
 
-    /** An IPH feature to inform users that tabs from another synced device can be restored on FRE. */
+    /**
+     * An IPH feature to inform users that tabs from another synced device can be restored on FRE.
+     */
     String RESTORE_TABS_ON_FRE_FEATURE = "IPH_RestoreTabsOnFRE";
+
+    /** An IPH feature to inform users about the gesture navigation in RTL mode. */
+    String IPH_RTL_GESTURE_NAVIGATION = "IPH_RtlGestureNavigation";
 }

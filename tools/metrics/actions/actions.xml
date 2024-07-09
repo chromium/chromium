@@ -43783,6 +43783,8 @@ should be able to be added at any place in this file.
   <suffix name="RequestDesktopSiteWindowSetting"
       label="For the RequestDesktopSiteWindowSetting feature."/>
   <suffix name="RestoreTabsOnFRE" label="For the RestoreTabsOnFRE feature."/>
+  <suffix name="RtlGestureNavigation"
+      label="For the gesture navigation in RTL mode."/>
   <suffix name="ScalableIphGaming"
       label="For a variant of Scalable Iph feature."/>
   <suffix name="ScalableIphHelpAppBasedEight"
