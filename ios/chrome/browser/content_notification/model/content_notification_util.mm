@@ -62,7 +62,7 @@ int GetFeedActivityLevel(PrefService* pref_service) {
 
 // Return true if the user installed Chrome less than 4 weeks.
 bool IsNewUser() {
-  return !IsFirstRunRecent(base::Days(28));
+  return IsFirstRunRecent(base::Days(28));
 }
 
 // Return a dictionary that stores values that impact user enrollment
