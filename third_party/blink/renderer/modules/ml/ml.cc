@@ -133,6 +133,9 @@ void ML::EnsureWebNNServiceConnection() {
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       webnn_context_provider_.BindNewPipeAndPassReceiver(
           GetExecutionContext()->GetTaskRunner(TaskType::kMachineLearning)));
+  // Bind should always succeed because ml.idl is gated on the same feature flag
+  // as `WebNNContextProvider`.
+  CHECK(webnn_context_provider_.is_bound());
   webnn_context_provider_.set_disconnect_handler(WTF::BindOnce(
       &ML::OnWebNNServiceConnectionError, WrapWeakPersistent(this)));
 }
