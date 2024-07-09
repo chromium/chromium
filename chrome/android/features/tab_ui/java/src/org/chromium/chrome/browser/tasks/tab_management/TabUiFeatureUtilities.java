@@ -63,16 +63,15 @@ public class TabUiFeatureUtilities {
     }
 
     /** Returns whether drag drop from tab strip to create new instance is enabled. */
-    // TODO(crbug/328511660): This flag is similar with {@link #isTabDragAsWindowEnabled()}.
-    // Consider merge code logic.
-    public static boolean isTabTearingSupported() {
+    public static boolean isTabDragToCreateInstanceSupported() {
         // TODO(crbug/328511660): Add OS version check once available.
-        return doesOEMSupportTearing()
+        return doesOEMSupportDragToCreateInstance()
                 || (ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
                         && !isTabDragAsWindowEnabled());
     }
 
-    private static boolean doesOEMSupportTearing() {
+    /** Returns whether device OEM is allow-listed for tab tearing */
+    public static boolean doesOEMSupportDragToCreateInstance() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
                 && TAB_TEARING_OEM_ALLOWLIST.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
     }

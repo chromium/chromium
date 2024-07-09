@@ -10,13 +10,13 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 /** */
 public class ChromeDropDataAndroid extends DropDataAndroid {
     public final Tab tab;
-    public final boolean allowTabTearing;
+    public final boolean allowTabDragToCreateInstance;
 
     /** Not generated from java */
     ChromeDropDataAndroid(Builder builder) {
         super(null, null, null, null, null);
         tab = builder.mTab;
-        allowTabTearing = builder.mAllowTabTearing;
+        allowTabDragToCreateInstance = builder.mAllowTabDragToCreateInstance;
     }
 
     public boolean hasTab() {
@@ -39,7 +39,7 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
     /** Builder for @{@link ChromeDropDataAndroid} instance. */
     public static class Builder {
         private Tab mTab;
-        private boolean mAllowTabTearing;
+        private boolean mAllowTabDragToCreateInstance;
 
         /**
          * @param tab to be set in clip data.
@@ -51,11 +51,12 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
         }
 
         /**
-         * @param allowTabTearing Whether tab tearing should be allowed.
+         * @param allowDragToCreateInstance Whether tab drag to create new instance should be
+         *     allowed.
          * @return {@link ChromeDropDataAndroid.Builder} instance.
          */
-        public Builder withAllowTabTearing(boolean allowTabTearing) {
-            mAllowTabTearing = allowTabTearing;
+        public Builder withAllowDragToCreateInstance(boolean allowDragToCreateInstance) {
+            mAllowTabDragToCreateInstance = allowDragToCreateInstance;
             return this;
         }
 

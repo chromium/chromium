@@ -1957,7 +1957,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private boolean maybeLaunchDraggedTabInWindow(Intent intent) {
-        if (!TabUiFeatureUtilities.isTabTearingSupported()) return false;
+        if (!TabUiFeatureUtilities.isTabDragToCreateInstanceSupported()) return false;
         int draggedTabId =
                 IntentUtils.safeGetIntExtra(
                         intent, IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID);

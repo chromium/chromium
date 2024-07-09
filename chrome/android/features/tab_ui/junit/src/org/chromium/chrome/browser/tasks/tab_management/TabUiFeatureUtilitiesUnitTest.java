@@ -78,22 +78,22 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabTearing_withAllowlistedOEM_FFDisabled() {
+    public void testTabDragToCreateInstance_withAllowlistedOEM_FFDisabled() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
-        assertTrue(TabUiFeatureUtilities.isTabTearingSupported());
+        assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabTearing_withNonAllowlistedOEM_FFEnabled() {
+    public void testTabDragToCreateInstance_withNonAllowlistedOEM_FFEnabled() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "other");
-        assertTrue(TabUiFeatureUtilities.isTabTearingSupported());
+        assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabTearing_withNonAllowlistedOEM_FFDisabled() {
+    public void testTabDragToCreateInstance_withNonAllowlistedOEM_FFDisabled() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "other");
-        assertFalse(TabUiFeatureUtilities.isTabTearingSupported());
+        assertFalse(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 }

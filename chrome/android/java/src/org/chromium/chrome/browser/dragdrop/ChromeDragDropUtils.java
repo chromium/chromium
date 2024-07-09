@@ -9,31 +9,16 @@ import android.text.format.DateUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 /** Utility class for Chrome drag and drop implementations. */
 public class ChromeDragDropUtils {
     private static final int MAX_TAB_TEARING_FAILURE_COUNT_PER_DAY = 10;
 
     /**
-     * @return {@code true} if tab tearing with the intent of opening a new window should be
-     *     allowed, {@code false} otherwise.
-     */
-    public static boolean shouldAllowTabTearing(TabModelSelector tabModelSelector) {
-        if (!TabUiFeatureUtilities.isTabTearingSupported() || tabModelSelector == null)
-            return false;
-
-        // Allow tearing a tab with an intent of opening a new window, only if it is not the only
-        // tab in the window. This is to avoid creating a new window from such a tab.
-        return tabModelSelector.getTotalTabCount() > 1;
-    }
-
-    /**
      * Records linear histogram Android.DragDrop.Tab.MaxInstanceFailureCount and saves related
      * SharedPreferences values.
      */
-    public static void recordTabTearingFailureCount() {
+    public static void recordTabDragToCreateInstanceFailureCount() {
         var prefs = ChromeSharedPreferences.getInstance();
         // Check the failure count in a day for every unhandled dragged tab drop when max instances
         // are open.

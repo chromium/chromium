@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -118,18 +119,15 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public ClipData buildClipData(@NonNull DropDataAndroid dropData) {
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
-        if (chromeDropDataAndroid.hasTab() && chromeDropDataAndroid.allowTabTearing) {
+        if (chromeDropDataAndroid.hasTab() && chromeDropDataAndroid.allowTabDragToCreateInstance) {
             ClipData clipData = buildClipDataForTabTearing(chromeDropDataAndroid.tab);
             if (clipData != null) return clipData;
         }
-
-        Intent intent =
-                createUrlIntent(
-                        chromeDropDataAndroid.tab.getUrl().getSpec(), UrlIntentSource.TAB_IN_STRIP);
-        return new ClipData(
-                null,
-                mSupportedMimeTypes,
-                new Item(chromeDropDataAndroid.buildTabClipDataText(), intent, null));
+        String text =
+                chromeDropDataAndroid.hasTab()
+                        ? chromeDropDataAndroid.buildTabClipDataText()
+                        : dropData.text;
+        return new ClipData(null, mSupportedMimeTypes, new Item(text));
     }
 
     private @Nullable ClipData buildClipDataForTabTearing(Tab tab) {
@@ -147,7 +145,9 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                             PendingIntent.FLAG_IMMUTABLE,
                             opts.toBundle());
             Item item = ClipDataItemBuilder.buildClipDataItemWithPendingIntent(pendingIntent);
-            return item == null ? null : new ClipData(null, mSupportedMimeTypes, item);
+            return item == null
+                    ? new ClipData(null, mSupportedMimeTypes, new Item(intent))
+                    : new ClipData(null, mSupportedMimeTypes, item);
         }
         return null;
     }
@@ -156,10 +156,9 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public int buildFlags(int originalFlag, DropDataAndroid dropData) {
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropData = (ChromeDropDataAndroid) dropData;
-        if (!chromeDropData.hasTab() || !chromeDropData.allowTabTearing) {
+        if (!chromeDropData.hasTab() || !chromeDropData.allowTabDragToCreateInstance) {
             return originalFlag;
         }
-
         return originalFlag
                 | ClipDataItemBuilder.DRAG_FLAG_GLOBAL_SAME_APPLICATION
                 | ClipDataItemBuilder.DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG;
@@ -175,11 +174,12 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         static final int DRAG_FLAG_GLOBAL_SAME_APPLICATION = 1 << 12;
         static final int DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG = 1 << 13;
         private static Item sItemForTesting;
+        private static boolean sDefinedItemForTesting;
         private static boolean sAttemptedReflection;
         private static Class sItemBuilder;
 
         static ClipData.Item buildClipDataItemWithPendingIntent(PendingIntent pendingIntent) {
-            if (sItemForTesting != null) return sItemForTesting;
+            if (sDefinedItemForTesting) return sItemForTesting;
             try {
                 if (!sAttemptedReflection) {
                     sItemBuilder = Class.forName("android.content.ClipData$Item$Builder");
@@ -207,6 +207,12 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
 
         public static void setClipDataItemForTesting(Item item) {
             sItemForTesting = item;
+            sDefinedItemForTesting = true;
+            ResettersForTesting.register(
+                    () -> {
+                        sDefinedItemForTesting = false;
+                        sItemForTesting = null;
+                    });
         }
     }
 }

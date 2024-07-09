@@ -150,19 +150,19 @@ public class TabDragSource implements View.OnDragListener {
             @NonNull PointF startPoint,
             float tabPositionX,
             float tabWidthDp) {
-        // Return false when FF is disabled or another drag in progress.
+        // Return false when another drag in progress.
         if (DragDropGlobalState.hasValue()) {
             return false;
         }
-        // Do not allow move for last tab when homepage enabled and is set to a custom url.
-        if (MultiWindowUtils.getInstance().hasAtMostOneTabWithHomepageEnabled(mTabModelSelector)) {
+
+        // Block drag for last tab in single-window mode if feature is not supported.
+        if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
+                && !shouldAllowTabDragToCreateInstance()) {
             return false;
         }
 
-        // Allow drag in single-window mode if tab tearing is possible.
-        boolean allowTabTearing = ChromeDragDropUtils.shouldAllowTabTearing(mTabModelSelector);
-        if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
-                && !allowTabTearing) {
+        // Block drag for last tab when homepage enabled and is set to a custom url.
+        if (MultiWindowUtils.getInstance().hasAtMostOneTabWithHomepageEnabled(mTabModelSelector)) {
             return false;
         }
 
@@ -170,14 +170,18 @@ public class TabDragSource implements View.OnDragListener {
             Log.w(TAG, "Attempting to start drag before clearing state from prior drag");
         }
 
+        /** Allow drag to create new instance based on feature checks / current instance count. */
+        boolean allowDragToCreateInstance =
+                shouldAllowTabDragToCreateInstance()
+                        && (TabUiFeatureUtilities.doesOEMSupportDragToCreateInstance()
+                                || MultiWindowUtils.getInstanceCount()
+                                        < MultiWindowUtils.getMaxInstances());
+
         // Build shared state with all info.
-        // Update allow flag - used to add ClipData drag event flags for tab tearing only if
-        // instance count is favorable..
-        allowTabTearing &= MultiWindowUtils.getInstanceCount() < MultiWindowUtils.getMaxInstances();
         ChromeDropDataAndroid dropData =
                 new ChromeDropDataAndroid.Builder()
                         .withTab(tabBeingDragged)
-                        .withAllowTabTearing(allowTabTearing)
+                        .withAllowDragToCreateInstance(allowDragToCreateInstance)
                         .build();
         updateShadowView(tabBeingDragged, dragSourceView, (int) (tabWidthDp / mPxToDp));
         DragShadowBuilder builder =
@@ -445,7 +449,7 @@ public class TabDragSource implements View.OnDragListener {
                             R.string.max_number_of_windows,
                             Toast.LENGTH_LONG)
                     .show();
-            ChromeDragDropUtils.recordTabTearingFailureCount();
+            ChromeDragDropUtils.recordTabDragToCreateInstanceFailureCount();
             DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.IGNORED_MAX_INSTANCES);
         }
 
@@ -709,6 +713,15 @@ public class TabDragSource implements View.OnDragListener {
                 (topLeftLocationOfToolbarView[1] - topLeftLocationOfDecorView[1])
                         + positionInView.y / mPxToDp;
         return new PointF(positionXOnScreen, positionYOnScreen);
+    }
+
+    private boolean shouldAllowTabDragToCreateInstance() {
+        return hasMultipleTabs(mTabModelSelector)
+                && TabUiFeatureUtilities.isTabDragToCreateInstanceSupported();
+    }
+
+    private boolean hasMultipleTabs(TabModelSelector tabModelSelector) {
+        return tabModelSelector != null && tabModelSelector.getTotalTabCount() > 1;
     }
 
     View getShadowViewForTesting() {

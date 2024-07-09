@@ -180,7 +180,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 "The browser clip data is not as expected",
                 dropData.buildTabClipDataText(),
                 data.getItemAt(0).getText());
-        assertNotNull("The clip data should have intent set.", data.getItemAt(0).getIntent());
+        assertNull("The clip data should not have intent set.", data.getItemAt(0).getIntent());
         assertTrue(
                 "The clip data should contain chrome/tab mimetype.",
                 data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB));
@@ -196,24 +196,13 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
-    public void testBuildClipDataForTabTearing() {
-        MultiWindowTestUtils.enableMultiInstance();
-        var tab = MockTab.createAndInitialize(1, mProfile);
-        var dropData = createTabDropData(1, true);
-        var item =
-                new Item(
-                        DragAndDropLauncherActivity.getTabIntent(
-                                mApplicationContext, tab, MultiWindowUtils.INVALID_INSTANCE_ID));
-        ChromeDragAndDropBrowserDelegate.ClipDataItemBuilder.setClipDataItemForTesting(item);
+    public void testBuildClipDataForTabDragWithItemFromBuilder() {
+        testBuildClipDataForTabDragToCreateNewInstance(true);
+    }
 
-        var data = mDelegate.buildClipData(dropData);
-        assertNotNull("The clip data should have an intent set.", data.getItemAt(0).getIntent());
-        assertEquals(
-                "Tab id extra is incorrect.",
-                tab.getId(),
-                data.getItemAt(0)
-                        .getIntent()
-                        .getIntExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID));
+    @Test
+    public void testBuildClipDataForTabDragWithNullItemFromBuilder() {
+        testBuildClipDataForTabDragToCreateNewInstance(false);
     }
 
     @Test
@@ -226,7 +215,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
-    public void testBuildFlags_dropDataHasTabAndTabTearingNotAllowed() {
+    public void testBuildFlags_dropDataHasTabAndTabDragToCreateInstanceNotAllowed() {
         MultiWindowTestUtils.enableMultiInstance();
         int originalFlag = 0;
         var dropData = createTabDropData(1, false);
@@ -235,7 +224,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
-    public void testBuildFlags_dropDataHasTabAndTabTearingAllowed() {
+    public void testBuildFlags_dropDataHasTabAndTabDragToCreateInstanceAllowed() {
         MultiWindowTestUtils.enableMultiInstance();
         int originalFlag = 0;
         var dropData = createTabDropData(1, true);
@@ -254,11 +243,36 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                         != 0);
     }
 
-    private ChromeDropDataAndroid createTabDropData(int tabId, boolean allowTabTearing) {
+    private ChromeDropDataAndroid createTabDropData(
+            int tabId, boolean allowDragToCreateNewInstance) {
         Tab tab = MockTab.createAndInitialize(tabId, mProfile);
         return new ChromeDropDataAndroid.Builder()
                 .withTab(tab)
-                .withAllowTabTearing(allowTabTearing)
+                .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
                 .build();
+    }
+
+    private void testBuildClipDataForTabDragToCreateNewInstance(boolean withItem) {
+        MultiWindowTestUtils.enableMultiInstance();
+        var tab = MockTab.createAndInitialize(1, mProfile);
+        var dropData = createTabDropData(1, true);
+        var item =
+                withItem
+                        ? new Item(
+                                DragAndDropLauncherActivity.getTabIntent(
+                                        mApplicationContext,
+                                        tab,
+                                        MultiWindowUtils.INVALID_INSTANCE_ID))
+                        : null;
+        ChromeDragAndDropBrowserDelegate.ClipDataItemBuilder.setClipDataItemForTesting(item);
+
+        var data = mDelegate.buildClipData(dropData);
+        assertNotNull("The clip data should have an intent set.", data.getItemAt(0).getIntent());
+        assertEquals(
+                "Tab id extra is incorrect.",
+                tab.getId(),
+                data.getItemAt(0)
+                        .getIntent()
+                        .getIntExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID));
     }
 }
