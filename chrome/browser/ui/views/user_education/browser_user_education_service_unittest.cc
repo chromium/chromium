@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 
+#include <iterator>
+#include <string>
+#include <vector>
+
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_variants_reader.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/feature_configurations.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/tutorial_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,4 +96,90 @@ TEST(BrowserUserEducationServiceTest, CheckTutorialHistograms) {
       << "\nconfigured in browser_user_education_service.cc but no "
          "corresponding variants were added to TutorialID variants in "
          "//tools/metrics/histograms/metadata/user_education/histograms.xml";
+}
+
+TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
+  static const char* const kAllowedConfigurations[] = {
+      // To be triaged:
+      //
+      // (These are listed because they were present prior to this test being
+      // written; in the future as many as possible should be eliminated, and
+      // the rest moved down to the "explicitly allowed" list below.)
+      //
+      // DO NOT ADD ENTRIES TO THIS LIST, EVER.
+      "IPH_BatterySaverMode",
+      "IPH_CompanionSidePanel",
+      "IPH_ComposeMSBBSettingsFeature",
+      "IPH_DesktopSharedHighlighting",
+      "IPH_DesktopCustomizeChrome",
+      "IPH_DesktopCustomizeChromeRefresh",
+      "IPH_DesktopNewTabPageModulesCustomize",
+      "IPH_DiscardRing",
+      "IPH_ExperimentalAIPromo",
+      "IPH_ExplicitBrowserSigninPreferenceRemembered",
+      "IPH_ExtensionsMenu",
+      "IPH_ExtensionsRequestAccessButton",
+      "IPH_GMCCastStartStop",
+      "IPH_GMCLocalMediaCasting",
+      "IPH_HighEfficiencyMode",
+      "IPH_PasswordsAccountStorage",
+      "IPH_PasswordsManagementBubbleAfterSave",
+      "IPH_PasswordsManagementBubbleDuringSignin",
+      "IPH_PasswordsWebAppProfileSwitch",
+      "IPH_PasswordManagerShortcut",
+      "IPH_PasswordSharingFeature",
+      "IPH_PowerBookmarksSidePanel",
+      "IPH_ReadingListInSidePanel",
+      "IPH_ReadingModeSidePanel",
+      "IPH_SidePanelGenericMenuFeature",
+      "IPH_SidePanelGenericPinnableFeature",
+      "IPH_SignoutWebIntercept",
+      "IPH_TabOrganizationSuccess",
+      "IPH_TrackingProtectionOnboarding",
+      "IPH_TrackingProtectionReminder",
+      "IPH_ProfileSwitch",
+      "IPH_PriceTrackingInSidePanel",
+      "IPH_BackNavigationMenu",
+      "IPH_AutofillCreditCardBenefit",
+      "IPH_AutofillExternalAccountProfileSuggestion",
+      "IPH_AutofillManualFallback",
+      "IPH_AutofillVirtualCardCVCSuggestion",
+      "IPH_AutofillVirtualCardSuggestion",
+      "IPH_CookieControls",
+      "IPH_DesktopPWAsLinkCapturingLaunch",
+
+      // Explicitly allowed:
+      //
+      // (These have been cleared by Frizzle Team as requiring their own
+      // specific configuration.)
+      //
+      // DO NOT ADD ENTRIES TO THIS LIST WITHOUT APPROVAL FROM
+      // components/user_education/OWNERS
+  };
+
+  std::vector<std::string> invalid_configs;
+
+  user_education::FeaturePromoRegistry registry;
+  MaybeRegisterChromeFeaturePromos(registry);
+  const auto& iph_specifications = registry.feature_data();
+  for (const auto& [feature, spec] : iph_specifications) {
+    const auto result = feature_engagement::GetClientSideFeatureConfig(feature);
+    if (result) {
+      if (std::end(kAllowedConfigurations) ==
+          std::find(std::begin(kAllowedConfigurations),
+                    std::end(kAllowedConfigurations),
+                    std::string(feature->name))) {
+        invalid_configs.emplace_back(feature->name);
+      }
+    }
+  }
+
+  ASSERT_TRUE(invalid_configs.empty())
+      << "Disallowed desktop Chrome entries in feature_configurations.cc:\n"
+      << base::JoinString(invalid_configs, "\n")
+      << "\nPlease note that configurations are automatically generated for"
+         " Desktop IPH. In nearly all cases, this auto-configuration (plus"
+         " additional configuration options in FeaturePromoSpecification)"
+         " should be sufficient, and adding to feature_configurations.cc"
+         " should be avoided.";
 }
