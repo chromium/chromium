@@ -1125,10 +1125,12 @@ void V4L2VideoDecodeAccelerator::Enqueue() {
   DCHECK(decoder_thread_.task_runner()->BelongsToCurrentThread());
   DCHECK_NE(decoder_state_, kUninitialized);
 
+  if (IsDestroyPending()) {
+    return;
+  }
+
   // There's no reason why this class should attempt to enqueue buffers while
-  // it's in the process of destruction or while it's in the process of a
-  // resolution change.
-  CHECK(!IsDestroyPending());
+  // it's in the process of a resolution change.
   CHECK_NE(decoder_state_, kChangingResolution);
 
   DCHECK(input_queue_);
