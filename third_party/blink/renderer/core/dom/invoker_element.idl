@@ -4,6 +4,6 @@
 
 [RuntimeEnabled=HTMLInvokeTargetAttribute]
 interface mixin InvokerElement {
-  [CEReactions,Reflect=invoketarget] attribute Element? invokeTargetElement;
-  [CEReactions,Reflect=invokeaction] attribute DOMString invokeAction;
+  [CEReactions,Reflect=commandfor] attribute Element? commandForElement;
+  [CEReactions,Reflect=command] attribute DOMString command;
 };

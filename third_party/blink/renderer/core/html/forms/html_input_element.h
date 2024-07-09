@@ -387,8 +387,9 @@ class CORE_EXPORT HTMLInputElement
 
   ShadowRoot* EnsureShadowSubtree();
 
-  bool IsValidInvokeAction(HTMLElement& invoker, InvokeAction action) override;
-  bool HandleInvokeInternal(HTMLElement& invoker, InvokeAction action) override;
+  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool HandleCommandInternal(HTMLElement& invoker,
+                             CommandEventType command) override;
 
   void SetFocused(bool is_focused, mojom::blink::FocusType) override;
 

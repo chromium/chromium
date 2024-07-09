@@ -2018,10 +2018,10 @@ const HTMLElement* NearestTargetPopoverForInvoker(
         if (!form_element) {
           return nullptr;
         }
-        auto* invoke_target_element = form_element->invokeTargetElement();
+        auto* target_element = form_element->commandForElement();
 
-        return invoke_target_element
-                   ? DynamicTo<HTMLElement>(invoke_target_element)
+        return target_element
+                   ? DynamicTo<HTMLElement>(target_element)
                    : form_element->popoverTargetElement().popover.Get();
       });
 }
@@ -2365,29 +2365,29 @@ bool HTMLElement::DispatchFocusEvent(
                                      source_capabilities);
 }
 
-bool HTMLElement::IsValidInvokeAction(HTMLElement& invoker,
-                                      InvokeAction action) {
-  return Element::IsValidInvokeAction(invoker, action) ||
-         action == InvokeAction::kTogglePopover ||
-         action == InvokeAction::kHidePopover ||
-         action == InvokeAction::kShowPopover ||
+bool HTMLElement::IsValidCommand(HTMLElement& invoker,
+                                 CommandEventType command) {
+  return Element::IsValidCommand(invoker, command) ||
+         command == CommandEventType::kTogglePopover ||
+         command == CommandEventType::kHidePopover ||
+         command == CommandEventType::kShowPopover ||
          (RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled() &&
-          (action == InvokeAction::kToggleFullscreen ||
-           action == InvokeAction::kRequestFullscreen ||
-           action == InvokeAction::kExitFullscreen));
+          (command == CommandEventType::kToggleFullscreen ||
+           command == CommandEventType::kRequestFullscreen ||
+           command == CommandEventType::kExitFullscreen));
 }
 
-bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
-                                       InvokeAction action) {
-  CHECK(IsValidInvokeAction(invoker, action));
+bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
+                                        CommandEventType command) {
+  CHECK(IsValidCommand(invoker, command));
 
-  if (Element::HandleInvokeInternal(invoker, action)) {
+  if (Element::HandleCommandInternal(invoker, command)) {
     return true;
   }
 
-  bool is_fullscreen_action = action == InvokeAction::kToggleFullscreen ||
-                              action == InvokeAction::kRequestFullscreen ||
-                              action == InvokeAction::kExitFullscreen;
+  bool is_fullscreen_action = command == CommandEventType::kToggleFullscreen ||
+                              command == CommandEventType::kRequestFullscreen ||
+                              command == CommandEventType::kExitFullscreen;
 
   if (PopoverType() == PopoverValueType::kNone && !is_fullscreen_action) {
     return false;
@@ -2411,16 +2411,14 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
       IsPopoverReady(PopoverTriggerAction::kShow,
                      /*exception_state=*/nullptr,
                      /*include_event_handler_text=*/true, &document) &&
-      (action == InvokeAction::kAuto ||
-       action == InvokeAction::kTogglePopover ||
-       action == InvokeAction::kShowPopover);
+      (command == CommandEventType::kTogglePopover ||
+       command == CommandEventType::kShowPopover);
   bool can_hide =
       IsPopoverReady(PopoverTriggerAction::kHide,
                      /*exception_state=*/nullptr,
                      /*include_event_handler_text=*/true, &document) &&
-      (action == InvokeAction::kAuto ||
-       action == InvokeAction::kTogglePopover ||
-       action == InvokeAction::kHidePopover);
+      (command == CommandEventType::kTogglePopover ||
+       command == CommandEventType::kHidePopover);
   if (can_hide) {
     HidePopoverInternal(
         HidePopoverFocusBehavior::kFocusPreviousElement,
@@ -2429,11 +2427,11 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
     return true;
   } else if (can_show) {
     // TODO(crbug.com/1121840)
-    // HandleInvokeInternal is called for both `popovertarget` and
-    // `invoketarget`. `popovertarget` has one small additional behavior
+    // HandleCommandInternal is called for both `popovertarget` and
+    // `commandfor`. `popovertarget` has one small additional behavior
     // though; a `<selectlist>` can have a `popovertarget` button. The behavior
-    // for `<selectlist>` for `invoketarget` should be handled in
-    // `HTMLSelectListElement::HandleInvokeInternal`, but the `popovertarget`
+    // for `<selectlist>` for `commandfor` should be handled in
+    // `HTMLSelectListElement::HandleCommandInternal`, but the `popovertarget`
     // logic follows a slightly different path, and so for now lives here.
     // The logic checks to see if the invoker was a popovertarget invoker that
     // is intending to invoke a selectlist element, and opens the ListBox in
@@ -2461,7 +2459,7 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
 
   LocalFrame* frame = document.GetFrame();
 
-  if (action == InvokeAction::kToggleFullscreen) {
+  if (command == CommandEventType::kToggleFullscreen) {
     if (Fullscreen::IsFullscreenElement(*this)) {
       Fullscreen::ExitFullscreen(document);
       return true;
@@ -2474,7 +2472,7 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
                         mojom::ConsoleMessageLevel::kWarning, message);
       return false;
     }
-  } else if (action == InvokeAction::kRequestFullscreen) {
+  } else if (command == CommandEventType::kRequestFullscreen) {
     if (Fullscreen::IsFullscreenElement(*this)) {
       return true;
     }
@@ -2487,7 +2485,7 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
                         mojom::ConsoleMessageLevel::kWarning, message);
       return false;
     }
-  } else if (action == InvokeAction::kExitFullscreen) {
+  } else if (command == CommandEventType::kExitFullscreen) {
     if (Fullscreen::IsFullscreenElement(*this)) {
       Fullscreen::ExitFullscreen(document);
     }

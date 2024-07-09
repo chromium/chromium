@@ -1442,29 +1442,31 @@ LocalFrame* HTMLMediaElement::LocalFrameForPlayer() {
                           : GetDocument().GetFrame();
 }
 
-bool HTMLMediaElement::IsValidInvokeAction(HTMLElement& invoker,
-                                           InvokeAction action) {
+bool HTMLMediaElement::IsValidCommand(HTMLElement& invoker,
+                                      CommandEventType command) {
   if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
-    return HTMLElement::IsValidInvokeAction(invoker, action);
+    return HTMLElement::IsValidCommand(invoker, command);
   }
 
-  return HTMLElement::IsValidInvokeAction(invoker, action) ||
-         action == InvokeAction::kPlaypause || action == InvokeAction::kPause ||
-         action == InvokeAction::kPlay || action == InvokeAction::kToggleMuted;
+  return HTMLElement::IsValidCommand(invoker, command) ||
+         command == CommandEventType::kPlaypause ||
+         command == CommandEventType::kPause ||
+         command == CommandEventType::kPlay ||
+         command == CommandEventType::kToggleMuted;
 }
 
-bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
-                                            InvokeAction action) {
-  CHECK(IsValidInvokeAction(invoker, action));
+bool HTMLMediaElement::HandleCommandInternal(HTMLElement& invoker,
+                                             CommandEventType command) {
+  CHECK(IsValidCommand(invoker, command));
 
-  if (HTMLElement::HandleInvokeInternal(invoker, action)) {
+  if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
   }
 
   Document& document = GetDocument();
   LocalFrame* frame = document.GetFrame();
 
-  if (action == InvokeAction::kPlaypause) {
+  if (command == CommandEventType::kPlaypause) {
     if (paused_) {
       if (LocalFrame::HasTransientUserActivation(frame)) {
         Play();
@@ -1480,12 +1482,12 @@ bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
       pause();
       return true;
     }
-  } else if (action == InvokeAction::kPause) {
+  } else if (command == CommandEventType::kPause) {
     if (!paused_) {
       pause();
     }
     return true;
-  } else if (action == InvokeAction::kPlay) {
+  } else if (command == CommandEventType::kPlay) {
     if (paused_) {
       if (LocalFrame::HasTransientUserActivation(frame)) {
         Play();
@@ -1498,7 +1500,7 @@ bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
       }
     }
     return true;
-  } else if (action == InvokeAction::kToggleMuted) {
+  } else if (command == CommandEventType::kToggleMuted) {
     // No user activation check as `setMuted` already handles the autoplay
     // policy check.
     setMuted(!muted_);

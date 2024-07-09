@@ -189,15 +189,13 @@ enum class NamedItemType {
   kNameOrIdWithName,
 };
 
-enum class InvokeAction {
+enum class CommandEventType {
   // Action is neither custom, nor built-in (effectively invalid)
   kNone,
 
   // Custom actions include a `-`.
   kCustom,
 
-  // The "auto" state (empty string or missing)
-  kAuto,
   // Popover
   kTogglePopover,
   kHidePopover,
@@ -980,13 +978,15 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       Element* new_focused_element,
       InputDeviceCapabilities* source_capabilities = nullptr);
 
-  // This allows customization of how Invokes are handled, per element.
+  // This allows customization of how Invoker Commands are handled, per element.
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
-  virtual bool IsValidInvokeAction(HTMLElement& invoker, InvokeAction action) {
-    return action == InvokeAction::kAuto;
+  virtual bool IsValidCommand(HTMLElement& invoker, CommandEventType command) {
+    return false;
   }
-  virtual bool HandleInvokeInternal(HTMLElement& invoker, InvokeAction action) {
-    CHECK(action != InvokeAction::kCustom && action != InvokeAction::kNone);
+  virtual bool HandleCommandInternal(HTMLElement& invoker,
+                                     CommandEventType command) {
+    CHECK(command != CommandEventType::kCustom &&
+          command != CommandEventType::kNone);
     return false;
   }
 

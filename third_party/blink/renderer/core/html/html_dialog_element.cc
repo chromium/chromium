@@ -195,17 +195,18 @@ void HTMLDialogElement::close(const String& return_value,
   }
 }
 
-bool HTMLDialogElement::IsValidInvokeAction(HTMLElement& invoker,
-                                            InvokeAction action) {
-  return HTMLElement::IsValidInvokeAction(invoker, action) ||
-         action == InvokeAction::kShowModal || action == InvokeAction::kClose;
+bool HTMLDialogElement::IsValidCommand(HTMLElement& invoker,
+                                       CommandEventType command) {
+  return HTMLElement::IsValidCommand(invoker, command) ||
+         command == CommandEventType::kShowModal ||
+         command == CommandEventType::kClose;
 }
 
-bool HTMLDialogElement::HandleInvokeInternal(HTMLElement& invoker,
-                                             InvokeAction action) {
-  CHECK(IsValidInvokeAction(invoker, action));
+bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
+                                              CommandEventType command) {
+  CHECK(IsValidCommand(invoker, command));
 
-  if (HTMLElement::HandleInvokeInternal(invoker, action)) {
+  if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
   }
 
@@ -219,28 +220,27 @@ bool HTMLDialogElement::HandleInvokeInternal(HTMLElement& invoker,
   }
 
   bool open = FastHasAttribute(html_names::kOpenAttr);
-  bool canShow = isConnected() && !open;
-  bool actionMayClose =
-      action == InvokeAction::kAuto || action == InvokeAction::kClose;
-  bool actionMayShowModal =
-      action == InvokeAction::kAuto || action == InvokeAction::kShowModal;
 
-  if (open && actionMayClose) {
-    close();
-    return true;
-  } else if (canShow && actionMayShowModal) {
-    showModal(ASSERT_NO_EXCEPTION);
-    return true;
-  } else if (!open && actionMayClose) {
-    AddConsoleMessage(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "A closing invokeaction attempted to close an already closed Dialog");
-  } else if (open && actionMayShowModal) {
-    AddConsoleMessage(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "An invokeaction attempted to open an already open Dialog as modal");
+  if (command == CommandEventType::kClose) {
+    if (open) {
+      close();
+      return true;
+    } else {
+      AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "A closing invokeaction attempted to close an already closed Dialog");
+    }
+  } else if (command == CommandEventType::kShowModal) {
+    if (isConnected() && !open) {
+      showModal(ASSERT_NO_EXCEPTION);
+      return true;
+    } else {
+      AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "An invokeaction attempted to open an already open Dialog as modal");
+    }
   }
 
   return false;

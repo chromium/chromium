@@ -205,8 +205,9 @@ class CORE_EXPORT HTMLSelectElement final
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
-  bool IsValidInvokeAction(HTMLElement& invoker, InvokeAction action) override;
-  bool HandleInvokeInternal(HTMLElement& invoker, InvokeAction action) override;
+  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool HandleCommandInternal(HTMLElement& invoker,
+                             CommandEventType command) override;
 
   // SlottedButton returns the first child <button> in the light dom tree. If
   // this select is in a state where the <button> can't be rendered, such as a

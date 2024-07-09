@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
-#include "third_party/blink/renderer/core/events/invoke_event.h"
+#include "third_party/blink/renderer/core/events/command_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -393,7 +393,7 @@ HTMLFormControlElement::popoverTargetElement() {
   return PopoverTargetElement{.popover = target_popover, .action = action};
 }
 
-Element* HTMLFormControlElement::invokeTargetElement() {
+Element* HTMLFormControlElement::commandForElement() {
   if (!IsInTreeScope() || IsDisabledFormControl() ||
       (Form() && IsSuccessfulSubmitButton())) {
     return nullptr;
@@ -403,7 +403,7 @@ Element* HTMLFormControlElement::invokeTargetElement() {
     return nullptr;
   }
 
-  return GetElementAttribute(html_names::kInvoketargetAttr);
+  return GetElementAttribute(html_names::kCommandforAttr);
 }
 
 Element* HTMLFormControlElement::interestTargetElement() {
@@ -437,10 +437,10 @@ void HTMLFormControlElement::setPopoverTargetAction(const AtomicString& value) {
   setAttribute(html_names::kPopovertargetactionAttr, value);
 }
 
-AtomicString HTMLFormControlElement::invokeAction() const {
+AtomicString HTMLFormControlElement::command() const {
   DCHECK(RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled());
   const AtomicString& attribute_value =
-      FastGetAttribute(html_names::kInvokeactionAttr);
+      FastGetAttribute(html_names::kCommandAttr);
   if (attribute_value && !attribute_value.IsNull() &&
       !attribute_value.empty()) {
     return attribute_value;
@@ -448,90 +448,90 @@ AtomicString HTMLFormControlElement::invokeAction() const {
   return g_empty_atom;
 }
 
-InvokeAction HTMLFormControlElement::GetInvokeAction() const {
-  auto action = invokeAction();
+CommandEventType HTMLFormControlElement::GetCommandEventType() const {
+  auto action = command();
   if (action.empty()) {
-    return InvokeAction::kAuto;
+    return CommandEventType::kNone;
   }
 
   // Custom Invoke Action
   if (action.Contains('-')) {
-    return InvokeAction::kCustom;
+    return CommandEventType::kCustom;
   }
 
   // Popover Cases
   if (EqualIgnoringASCIICase(action, keywords::kTogglePopover)) {
-    return InvokeAction::kTogglePopover;
+    return CommandEventType::kTogglePopover;
   }
   if (EqualIgnoringASCIICase(action, keywords::kShowPopover)) {
-    return InvokeAction::kShowPopover;
+    return CommandEventType::kShowPopover;
   }
   if (EqualIgnoringASCIICase(action, keywords::kHidePopover)) {
-    return InvokeAction::kHidePopover;
+    return CommandEventType::kHidePopover;
   }
 
   // Dialog Cases
   if (EqualIgnoringASCIICase(action, keywords::kClose)) {
-    return InvokeAction::kClose;
+    return CommandEventType::kClose;
   }
   if (EqualIgnoringASCIICase(action, keywords::kShowModal)) {
-    return InvokeAction::kShowModal;
+    return CommandEventType::kShowModal;
   }
 
   // V2 InvokeActions Go Below this
 
   if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
-    return InvokeAction::kNone;
+    return CommandEventType::kNone;
   }
 
   // Input/Select Cases
   if (EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
-    return InvokeAction::kShowPicker;
+    return CommandEventType::kShowPicker;
   }
 
   // Number Input Cases
   if (EqualIgnoringASCIICase(action, keywords::kStepUp)) {
-    return InvokeAction::kStepUp;
+    return CommandEventType::kStepUp;
   }
   if (EqualIgnoringASCIICase(action, keywords::kStepDown)) {
-    return InvokeAction::kStepDown;
+    return CommandEventType::kStepDown;
   }
 
   // Fullscreen Cases
   if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
-    return InvokeAction::kToggleFullscreen;
+    return CommandEventType::kToggleFullscreen;
   }
   if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
-    return InvokeAction::kRequestFullscreen;
+    return CommandEventType::kRequestFullscreen;
   }
   if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
-    return InvokeAction::kExitFullscreen;
+    return CommandEventType::kExitFullscreen;
   }
 
   // Details cases
   if (EqualIgnoringASCIICase(action, keywords::kToggle)) {
-    return InvokeAction::kToggle;
+    return CommandEventType::kToggle;
   }
   if (EqualIgnoringASCIICase(action, keywords::kOpen)) {
-    return InvokeAction::kOpen;
+    return CommandEventType::kOpen;
   }
-  // InvokeAction::kClose handled above in Dialog
+  // CommandEventType::kClose handled above in Dialog
 
   // Media cases
   if (EqualIgnoringASCIICase(action, keywords::kPlaypause)) {
-    return InvokeAction::kPlaypause;
+    return CommandEventType::kPlaypause;
   }
   if (EqualIgnoringASCIICase(action, keywords::kPause)) {
-    return InvokeAction::kPause;
+    return CommandEventType::kPause;
   }
   if (EqualIgnoringASCIICase(action, keywords::kPlay)) {
-    return InvokeAction::kPlay;
+    return CommandEventType::kPlay;
   }
   if (EqualIgnoringASCIICase(action, keywords::kToggleMuted)) {
-    return InvokeAction::kToggleMuted;
+    return CommandEventType::kToggleMuted;
   }
 
-  return InvokeAction::kNone;
+  return CommandEventType::kNone;
 }
 
 AtomicString HTMLFormControlElement::interestAction() const {
@@ -550,75 +550,74 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
   // buttons.
   if (event.type() == event_type_names::kDOMActivate && IsInTreeScope() &&
       !IsDisabledFormControl() && (!Form() || !IsSuccessfulSubmitButton())) {
-    auto* invokee = invokeTargetElement();
+    auto* command_target = commandForElement();
     auto popover = popoverTargetElement();
 
     // invoketarget & popovertarget shouldn't be combined, so warn.
-    if (invokee && popover.popover) {
+    if (command_target && popover.popover) {
       AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "popovertarget is ignored on elements with invoketarget set.");
     }
 
-    // Buttons with an invoketarget will dispatch an InvokeEvent on the Invoker,
-    // and run HandleInvokeInternal to perform default logic.
-    if (invokee) {
-      auto action = GetInvokeAction();
-      bool is_valid_builtin = invokee->IsValidInvokeAction(*this, action);
+    // Buttons with an invoketarget will dispatch an CommandEvent on the
+    // Invoker, and run HandleCommandInternal to perform default logic.
+    if (command_target) {
+      auto action = GetCommandEventType();
+      bool is_valid_builtin = command_target->IsValidCommand(*this, action);
       bool should_dispatch =
-          is_valid_builtin || action == InvokeAction::kCustom;
+          is_valid_builtin || action == CommandEventType::kCustom;
       if (should_dispatch) {
-        Event* invokeEvent = InvokeEvent::Create(event_type_names::kInvoke,
-                                                 invokeAction(), this);
-        invokee->DispatchEvent(*invokeEvent);
-        if (is_valid_builtin && !invokeEvent->defaultPrevented()) {
-          invokee->HandleInvokeInternal(*this, action);
+        Event* commandEvent =
+            CommandEvent::Create(event_type_names::kCommand, command(), this);
+        command_target->DispatchEvent(*commandEvent);
+        if (is_valid_builtin && !commandEvent->defaultPrevented()) {
+          command_target->HandleCommandInternal(*this, action);
         }
       }
 
     } else if (popover.popover) {
       // Buttons with a popovertarget will invoke popovers, which is the same
-      // logic as an invoketarget with an appropriate invokeaction (e.g.
-      // togglePopover), sans the `InvokeEvent` dispatch. Calling
-      // `HandleInvokeInternal()` does not dispatch the event but can handle the
-      // popover triggering logic. `popovertargetaction` must also be mapped
-      // to the equivalent `invokeaction` string:
-      //  popovertargetaction=auto -> invokeaction=auto
-      //  popovertargetaction=toggle -> invokeaction=togglePopover
-      //  popovertargetaction=show -> invokeaction=showPopover
-      //  popovertargetaction=hide -> invokeaction=hidePopover
-      // We must check to ensure the action is one of the avilable popover
+      // logic as an invoketarget with an appropriate command (e.g.
+      // togglePopover), sans the `CommandEvent` dispatch. Calling
+      // `HandleCommandInternal()` does not dispatch the event but can handle
+      // the popover triggering logic. `popovertargetaction` must also be mapped
+      // to the equivalent `command` string:
+      //  popovertargetaction=toggle -> command=togglePopover
+      //  popovertargetaction=show -> command=showPopover
+      //  popovertargetaction=hide -> command=hidePopover
+      // We must check to ensure the action is one of the available popover
       // invoker actions so that popovertargetaction cannot be set to something
       // like showModal.
-      CHECK(!invokee);
+      CHECK(!command_target);
       auto trigger_support = SupportsPopoverTriggering();
       CHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
       CHECK_NE(popover.action, PopoverTriggerAction::kNone);
-      InvokeAction action;
+      CommandEventType action;
 
       switch (popover.action) {
         case PopoverTriggerAction::kToggle:
-          action = InvokeAction::kTogglePopover;
+          action = CommandEventType::kTogglePopover;
           break;
         case PopoverTriggerAction::kShow:
-          action = InvokeAction::kShowPopover;
+          action = CommandEventType::kShowPopover;
           break;
         case PopoverTriggerAction::kHide:
-          action = InvokeAction::kHidePopover;
+          action = CommandEventType::kHidePopover;
           break;
         case PopoverTriggerAction::kHover:
           CHECK(RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled());
-          action = InvokeAction::kShowPopover;
+          action = CommandEventType::kShowPopover;
           break;
         case PopoverTriggerAction::kNone:
-          action = InvokeAction::kNone;
+          action = CommandEventType::kNone;
           NOTREACHED_IN_MIGRATION();
           break;
       }
 
-      CHECK(popover.popover->IsValidInvokeAction(*this, action));
-      popover.popover->HandleInvokeInternal(*this, action);
+      CHECK(popover.popover->IsValidCommand(*this, action));
+      popover.popover->HandleCommandInternal(*this, action);
     }
   }
   HTMLElement::DefaultEventHandler(event);
@@ -633,7 +632,7 @@ void HTMLFormControlElement::HandlePopoverInvokerHovered(bool hovered) {
   if (!IsInTreeScope()) {
     return;
   }
-  if (invokeTargetElement() ||
+  if (commandForElement() ||
       (RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled() &&
        interestTargetElement())) {
     return;

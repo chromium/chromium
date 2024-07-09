@@ -1490,6 +1490,11 @@ interface CloseWatcher : EventTarget
     method requestClose
     setter oncancel
     setter onclose
+interface CommandEvent : Event
+    attribute @@toStringTag
+    getter command
+    getter invoker
+    method constructor
 interface Comment : CharacterData
     attribute @@toStringTag
     method constructor
@@ -3749,6 +3754,8 @@ interface HTMLBodyElement : HTMLElement
     setter vLink
 interface HTMLButtonElement : HTMLElement
     attribute @@toStringTag
+    getter command
+    getter commandForElement
     getter disabled
     getter form
     getter formAction
@@ -3758,8 +3765,6 @@ interface HTMLButtonElement : HTMLElement
     getter formTarget
     getter interestAction
     getter interestTargetElement
-    getter invokeAction
-    getter invokeTargetElement
     getter labels
     getter name
     getter popoverTargetAction
@@ -3773,6 +3778,8 @@ interface HTMLButtonElement : HTMLElement
     method constructor
     method reportValidity
     method setCustomValidity
+    setter command
+    setter commandForElement
     setter disabled
     setter formAction
     setter formEnctype
@@ -3781,8 +3788,6 @@ interface HTMLButtonElement : HTMLElement
     setter formTarget
     setter interestAction
     setter interestTargetElement
-    setter invokeAction
-    setter invokeTargetElement
     setter name
     setter popoverTargetAction
     setter popoverTargetElement
@@ -4439,6 +4444,8 @@ interface HTMLInputElement : HTMLElement
     getter alt
     getter autocomplete
     getter checked
+    getter command
+    getter commandForElement
     getter defaultChecked
     getter defaultValue
     getter dirName
@@ -4455,8 +4462,6 @@ interface HTMLInputElement : HTMLElement
     getter indeterminate
     getter interestAction
     getter interestTargetElement
-    getter invokeAction
-    getter invokeTargetElement
     getter labels
     getter list
     getter max
@@ -4503,6 +4508,8 @@ interface HTMLInputElement : HTMLElement
     setter alt
     setter autocomplete
     setter checked
+    setter command
+    setter commandForElement
     setter defaultChecked
     setter defaultValue
     setter dirName
@@ -4518,8 +4525,6 @@ interface HTMLInputElement : HTMLElement
     setter indeterminate
     setter interestAction
     setter interestTargetElement
-    setter invokeAction
-    setter invokeTargetElement
     setter max
     setter maxLength
     setter min
@@ -5706,11 +5711,6 @@ interface IntersectionObserverEntry
     getter rootBounds
     getter target
     getter time
-    method constructor
-interface InvokeEvent : Event
-    attribute @@toStringTag
-    getter action
-    getter invoker
     method constructor
 interface Keyboard
     attribute @@toStringTag

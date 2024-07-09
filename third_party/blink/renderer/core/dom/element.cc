@@ -417,7 +417,7 @@ bool IsElementReflectionAttribute(const QualifiedName& name) {
   if (name == html_names::kAnchorAttr) {
     return true;
   }
-  if (name == html_names::kInvoketargetAttr) {
+  if (name == html_names::kCommandforAttr) {
     return true;
   }
   if (name == html_names::kInteresttargetAttr) {

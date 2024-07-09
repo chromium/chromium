@@ -509,6 +509,8 @@ html element br
     property clear
 html element button
     property checkValidity
+    property command
+    property commandForElement
     property disabled
     property form
     property formAction
@@ -518,8 +520,6 @@ html element button
     property formTarget
     property interestAction
     property interestTargetElement
-    property invokeAction
-    property invokeTargetElement
     property labels
     property name
     property popoverTargetAction
@@ -759,6 +759,8 @@ html element input
     property autocomplete
     property checkValidity
     property checked
+    property command
+    property commandForElement
     property defaultChecked
     property defaultValue
     property dirName
@@ -775,8 +777,6 @@ html element input
     property indeterminate
     property interestAction
     property interestTargetElement
-    property invokeAction
-    property invokeTargetElement
     property labels
     property list
     property max

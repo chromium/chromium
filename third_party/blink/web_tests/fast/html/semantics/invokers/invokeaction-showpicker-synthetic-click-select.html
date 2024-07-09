@@ -9,7 +9,7 @@
 <select id="invokee">
   <option>1</option>
 </select>
-<button id="invokerbutton" invoketarget="invokee" invokeaction="showPicker"></button>
+<button id="invokerbutton" commandfor="invokee" command="showPicker"></button>
 </body>
 <script>
 promise_test(async (t) => {
