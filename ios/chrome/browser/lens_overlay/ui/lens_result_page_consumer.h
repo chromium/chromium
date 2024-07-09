@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_RESULT_PAGE_CONSUMER_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_RESULT_PAGE_CONSUMER_H_
 
+#import <UIKit/UIKit.h>
+
 /// Consumer of the lens result page.
 @protocol LensResultPageConsumer
 

@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/functional/bind.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
@@ -16,6 +17,8 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_delegate.h"
+#import "ios/web/public/web_state_delegate_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -31,7 +34,8 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 
 }  // namespace
 
-@interface LensResultPageMediator () <CRWWebStatePolicyDecider>
+@interface LensResultPageMediator () <CRWWebStateDelegate,
+                                      CRWWebStatePolicyDecider>
 
 @end
 
@@ -44,6 +48,8 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   std::unique_ptr<web::WebStatePolicyDeciderBridge> _policyDeciderBridge;
   /// Whether the browser is off the record.
   BOOL _isIncognito;
+  /// Web state delegate.
+  std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegateBridge;
 }
 
 - (instancetype)
@@ -53,10 +59,10 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   self = [super init];
   if (self) {
     _webState = web::WebState::Create(params);
-    // TODO(crbug.com/349100642): Create a custom WebStateDelegate to present a
-    // custom context menu.
     _browserWebStateDelegate = browserWebStateDelegate;
-    _webState->SetDelegate(_browserWebStateDelegate);
+    _webStateDelegateBridge =
+        std::make_unique<web::WebStateDelegateBridge>(self);
+    _webState->SetDelegate(_webStateDelegateBridge.get());
     AttachTabHelpers(_webState.get(), NO);
     _policyDeciderBridge = std::make_unique<web::WebStatePolicyDeciderBridge>(
         _webState.get(), self);
@@ -75,6 +81,7 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 - (void)disconnect {
   _policyDeciderBridge.reset();
   _webState.reset();
+  _webStateDelegateBridge.reset();
 }
 
 #pragma mark - LensOverlayResultConsumer
@@ -105,6 +112,75 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
+}
+
+#pragma mark - CRWWebStateDelegate
+
+- (void)webState:(web::WebState*)webState
+    contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
+                    completionHandler:(void (^)(UIContextMenuConfiguration*))
+                                          completionHandler {
+  completionHandler(nil);
+  // TODO(crbug.com/349100642): Add context menu configuration.
+}
+
+- (void)webState:(web::WebState*)webState
+    contextMenuWillCommitWithAnimator:
+        (id<UIContextMenuInteractionCommitAnimating>)animator {
+}
+
+- (UIView*)webViewContainerForWebState:(web::WebState*)webState {
+  if (CGRectIsEmpty(self.webViewContainer.frame)) {
+    return nil;
+  }
+  return self.webViewContainer;
+}
+
+- (void)closeWebState:(web::WebState*)webState {
+  // This should not happen in the result page.
+  NOTREACHED(kLensOverlayNotFatalUntil);
+}
+
+#pragma mark CRWWebStateDelegate with _browserWebStateDelegate
+
+- (web::WebState*)webState:(web::WebState*)webState
+    createNewWebStateForURL:(const GURL&)URL
+                  openerURL:(const GURL&)openerURL
+            initiatedByUser:(BOOL)initiatedByUser {
+  return _browserWebStateDelegate->CreateNewWebState(webState, URL, openerURL,
+                                                     initiatedByUser);
+}
+
+- (web::WebState*)webState:(web::WebState*)webState
+         openURLWithParams:(const web::WebState::OpenURLParams&)params {
+  return _browserWebStateDelegate->OpenURLFromWebState(webState, params);
+}
+
+- (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
+    (web::WebState*)webState {
+  return _browserWebStateDelegate->GetJavaScriptDialogPresenter(webState);
+}
+
+- (void)webState:(web::WebState*)webState
+    handlePermissions:(NSArray<NSNumber*>*)permissions
+      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler {
+  _browserWebStateDelegate->HandlePermissionsDecisionRequest(
+      webState, permissions, decisionHandler);
+}
+
+- (void)webState:(web::WebState*)webState
+    didRequestHTTPAuthForProtectionSpace:(NSURLProtectionSpace*)protectionSpace
+                      proposedCredential:(NSURLCredential*)proposedCredential
+                       completionHandler:(void (^)(NSString* username,
+                                                   NSString* password))handler {
+  _browserWebStateDelegate->OnAuthRequired(
+      webState, protectionSpace, proposedCredential, base::BindOnce(handler));
+}
+
+// This API can be used to show custom input views in the web view.
+- (id<CRWResponderInputView>)webStateInputViewProvider:
+    (web::WebState*)webState {
+  return _browserWebStateDelegate->GetResponderInputView(webState);
 }
 
 @end

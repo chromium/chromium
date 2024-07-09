@@ -21,6 +21,9 @@
 /// Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
+/// Container for the web view.
+@property(nonatomic, weak) UIView* webViewContainer;
+
 - (instancetype)
      initWithWebStateParams:(const web::WebState::CreateParams&)params
     browserWebStateDelegate:(web::WebStateDelegate*)browserWebStateDelegate

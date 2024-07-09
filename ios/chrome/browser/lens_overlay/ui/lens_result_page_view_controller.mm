@@ -40,8 +40,6 @@ const CGFloat kWebContainerTopPadding = 8;
 @end
 
 @implementation LensResultPageViewController {
-  /// Container for the web view.
-  UIView* _webViewContainer;
   /// Back button.
   UIButton* _backButton;
   /// Container for the omnibox.
@@ -63,10 +61,10 @@ const CGFloat kWebContainerTopPadding = 8;
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
-  CHECK(_webViewContainer, kLensOverlayNotFatalUntil);
+  CHECK(self.webViewContainer, kLensOverlayNotFatalUntil);
   // Webview container.
-  _webViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_webViewContainer];
+  self.webViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:self.webViewContainer];
 
   // Back Button.
   _backButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -122,7 +120,7 @@ const CGFloat kWebContainerTopPadding = 8;
                        constant:kWebContainerTopPadding],
   ]];
   AddSameConstraintsToSides(
-      _webViewContainer, self.view,
+      self.webViewContainer, self.view,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
 }
 
@@ -133,18 +131,18 @@ const CGFloat kWebContainerTopPadding = 8;
     return;
   }
 
-  if (_webView.superview == _webViewContainer) {
+  if (_webView.superview == self.webViewContainer) {
     [_webView removeFromSuperview];
   }
   _webView = webView;
 
   _webView.translatesAutoresizingMaskIntoConstraints = NO;
-  if (!_webView || !_webViewContainer) {
+  if (!_webView || !self.webViewContainer) {
     return;
   }
 
-  [_webViewContainer addSubview:_webView];
-  AddSameConstraints(_webView, _webViewContainer);
+  [self.webViewContainer addSubview:_webView];
+  AddSameConstraints(_webView, self.webViewContainer);
 }
 
 #pragma mark - Private

@@ -214,6 +214,7 @@
   _resultViewController = [[LensResultPageViewController alloc] init];
 
   _resultMediator.consumer = _resultViewController;
+  _resultMediator.webViewContainer = _resultViewController.webViewContainer;
 
   UISheetPresentationController* sheet =
       _resultViewController.sheetPresentationController;
