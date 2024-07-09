@@ -123,9 +123,6 @@ def CheckNoExternalImportInGn(input_api, output_api):
                 continue
             if not import_path.startswith('//'):
                 continue;
-            # Allow //testing, but only within `build_with_chromium`.
-            if import_path.startswith('//testing'):
-                continue;
             errors.append(output_api.PresubmitError(
                 '%s:%d\nPartitionAlloc disallow external import: %s' %
                 (f.LocalPath(), line_number + 1, import_path)))

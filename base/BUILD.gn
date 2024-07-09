@@ -170,12 +170,6 @@ if (is_fuchsia) {
   }
 }
 
-if (enable_pkeys && is_debug) {
-  config("no_stack_protector") {
-    cflags = [ "-fno-stack-protector" ]
-  }
-}
-
 buildflag_header("ios_cronet_buildflags") {
   header = "ios_cronet_buildflags.h"
   header_dir = "base/message_loop"
@@ -3576,7 +3570,6 @@ test("base_unittests") {
     ":path_service_unittest",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
-    "//base/allocator/partition_allocator/src/partition_alloc:unittests",
     "//base/numerics:unittests",
     "//base/test:native_library_test_utils",
     "//base/test:proto_test_support",
@@ -3596,6 +3589,16 @@ test("base_unittests") {
     # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
     "allocator/partition_allocator/src/partition_alloc:test_support",
   ]
+
+  # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
+  #
+  # Note: This requires checking `build_with_chromium` because partition_alloc
+  # do not provide ":unittests" when built outside of chromium.
+  # "//base" is a dependency of WebRTC where `build_with_chromium` is false.
+  # TODO(42223878): Remove standalone WebRTC dependency on //base.
+  if (build_with_chromium) {
+    deps += [ "allocator/partition_allocator/src/partition_alloc:unittests" ]
+  }
 
   data_deps = [
     "//base/test:immediate_crash_test_helper",
@@ -3925,32 +3928,6 @@ test("base_unittests") {
     if (use_blink) {
       sources += [ "files/file_path_watcher_unittest.cc" ]
     }
-
-    if ((is_android || is_linux) && target_cpu == "arm64") {
-      cflags = [
-        "-Xclang",
-        "-target-feature",
-        "-Xclang",
-        "+mte",
-      ]
-    }
-
-    if (enable_pkeys && is_debug && !is_component_build) {
-      # This test requires RELRO, which is not enabled in component builds.
-      # Also, require a debug build, since we only disable stack protectors in
-      # debug builds in PartitionAlloc (see below why it's needed).
-      # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
-      sources += [ "allocator/partition_allocator/src/partition_alloc/thread_isolation/pkey_unittest.cc" ]
-
-      # We want to test the pkey code without access to memory that is not
-      # pkey-tagged. This will allow us to catch unintended memory accesses
-      # that could break our security assumptions. The stack protector reads a
-      # value from the TLS which won't be pkey-tagged, hence disabling it for
-      # the test.
-      configs += [ ":no_stack_protector" ]
-    }
-
-    deps += [ "allocator/partition_allocator/src/partition_alloc:test_support" ]
   }
 
   if (is_mac) {
