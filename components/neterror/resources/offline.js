@@ -438,6 +438,11 @@ Runner.prototype = {
     document.querySelector('.' + Runner.classes.ICON).style.visibility =
         'hidden';
 
+    if (this.isArcadeMode()) {
+      document.title =
+          document.title + ' - ' + getA11yString(A11Y_STRINGS.ariaLabel);
+    }
+
     this.adjustDimensions();
     this.setSpeed();
 
@@ -445,7 +450,9 @@ Runner.prototype = {
     this.containerEl = document.createElement('div');
     this.containerEl.setAttribute('role', IS_MOBILE ? 'button' : 'application');
     this.containerEl.setAttribute('tabindex', '0');
-    this.containerEl.setAttribute('title', ariaLabel);
+    this.containerEl.setAttribute(
+        'title', getA11yString(A11Y_STRINGS.description));
+    this.containerEl.setAttribute('aria-label', ariaLabel);
 
     this.containerEl.className = Runner.classes.CONTAINER;
 
@@ -484,8 +491,6 @@ Runner.prototype = {
     } else {
       this.containerEl.appendChild(this.a11yStatusEl);
     }
-
-    announcePhrase(getA11yString(A11Y_STRINGS.description));
 
     this.generatedSoundFx = new GeneratedSoundFx();
 
@@ -638,7 +643,6 @@ Runner.prototype = {
     this.containerEl.style.webkitAnimation = '';
     this.playCount++;
     this.generatedSoundFx.background();
-    announcePhrase(getA11yString(A11Y_STRINGS.started));
 
     if (Runner.audioCues) {
       this.containerEl.setAttribute('title', getA11yString(A11Y_STRINGS.jump));
