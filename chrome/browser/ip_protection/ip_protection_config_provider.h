@@ -168,6 +168,15 @@ class IpProtectionConfigProvider
       base::expected<ip_protection::GetProxyConfigResponse, std::string>
           response);
 
+  // Returns true if the GetProxyConfigResponse contains an error or is invalid.
+  // In order for a response to be valid, the following must be true:
+  //    1. !response.has_value()
+  //    2. If a response has a value and the proxy chain is NOT empty, the
+  //       GeoHint must be present.
+  bool IsProxyConfigResponseError(
+      const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
+          response);
+
   // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
   // request a blind-signed auth token for use at the IP Protection proxies.
   void FetchBlindSignedToken(

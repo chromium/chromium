@@ -891,6 +891,19 @@ struct URLLoaderFactoryParams {
   bool require_cross_site_request_for_cookies = false;
 };
 
+// A GeoHint represents a course location of a user. Values are based on
+// RFC 8805 geolocation.
+struct GeoHint {
+  // Country code of the geo. Example: "US".
+  string country_code;
+
+  // ISO region of the geo. Example: "US-CA".
+  string iso_region;
+
+  // City name of the geo. Example: "MOUNTAIN VIEW".
+  string city_name;
+};
+
 // A blind-signed auth token, suitable for use with IP protection proxies.
 struct BlindSignedAuthToken {
   // The token value, for inclusion in a header.
@@ -898,6 +911,9 @@ struct BlindSignedAuthToken {
 
   // The expiration time of this token.
   mojo_base.mojom.Time expiration;
+
+  // The GeoHint which specifies the coarse geolocation of the token.
+  GeoHint geo_hint;
 };
 
 // The proxy layer to fetch batches of tokens for.
@@ -925,7 +941,7 @@ interface IpProtectionConfigGetter {
   //
   // This method will return an up-to-date list, possibly fetching that list
   // remotely before returning it.
-  GetProxyList() => (array<ProxyChain>? proxy_list);
+  GetProxyList() => (array<ProxyChain>? proxy_list, GeoHint? geo_hint);
 };
 
 // Access to the IP Protection ProxyDelegate in the network service process.

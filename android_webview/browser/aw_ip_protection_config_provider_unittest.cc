@@ -111,7 +111,8 @@ class MockIpProtectionProxyConfigRetriever
 class AwIpProtectionConfigProviderTest : public testing::Test {
  protected:
   AwIpProtectionConfigProviderTest()
-      : expiration_time_(base::Time::Now() + base::Hours(1)) {}
+      : expiration_time_(base::Time::Now() + base::Hours(1)),
+        geo_hint_(network::mojom::GeoHint::New("US", "US-AL", "ALABASTER")) {}
 
   void SetUp() override {
     getter_ = std::make_unique<AwIpProtectionConfigProvider>(
@@ -157,11 +158,15 @@ class AwIpProtectionConfigProviderTest : public testing::Test {
       tokens_future_;
 
  protected:
-  base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&>
+  base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
+                         network::mojom::GeoHintPtr>
       proxy_list_future_;
 
   // A convenient expiration time for fake tokens, in the future.
   base::Time expiration_time_;
+
+  // A convenient geo hint for fake tokens.
+  network::mojom::GeoHintPtr geo_hint_;
 
   base::HistogramTester histogram_tester_;
 
@@ -185,9 +190,9 @@ TEST_F(AwIpProtectionConfigProviderTest, Success) {
 
   bsa_->tokens_ = {
       IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
-          "single-use-1", expiration_time_),
+          "single-use-1", expiration_time_, *geo_hint_),
       IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
-          "single-use-2", expiration_time_)};
+          "single-use-2", expiration_time_, *geo_hint_)};
 
   TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyB);
 
@@ -199,10 +204,10 @@ TEST_F(AwIpProtectionConfigProviderTest, Success) {
   std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
   expected.push_back(IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
-                             "single-use-1", expiration_time_));
+                             "single-use-1", expiration_time_, *geo_hint_));
   expected.push_back(IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
-                             "single-use-2", expiration_time_));
+                             "single-use-2", expiration_time_, *geo_hint_));
 
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
@@ -235,13 +240,79 @@ TEST_F(AwIpProtectionConfigProviderTest, MalformedTokens) {
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kEnableIpProtectionProxy);
 
-  bsa_->tokens_ = {{"invalid-token-proto-data", absl::Now() + absl::Hours(1)}};
+  auto geo_hint = anonymous_tokens::GeoHint{
+      .geo_hint = "US,US-CA,MOUNTAIN VIEW",
+      .country_code = "US",
+      .region = "US-CA",
+      .city = "MOUNTAIN VIEW",
+  };
+
+  bsa_->tokens_ = {
+      {"invalid-token-proto-data", absl::Now() + absl::Hours(1), geo_hint}};
 
   TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called_);
   EXPECT_EQ(bsa_->num_tokens_, 1);
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyB);
+  EXPECT_EQ(bsa_->oauth_token_, std::nullopt);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionConfigProviderHelper::kTransientBackoff);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensResultHistogram,
+      AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
+  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
+}
+
+// BSA gets tokens.
+TEST_F(AwIpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+  auto geo_hint_country = network::mojom::GeoHint::New();
+  geo_hint_country->country_code = "US";
+  bsa_->tokens_ = {
+      IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+          "single-use-1", expiration_time_, *geo_hint_country),
+      IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+          "single-use-2", expiration_time_, *geo_hint_country)};
+
+  TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyB);
+
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->oauth_token_, std::nullopt);
+  EXPECT_EQ(bsa_->num_tokens_, 2);
+  EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyB);
+
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
+  expected.push_back(
+      IpProtectionConfigProviderHelper::
+          CreateMockBlindSignedAuthTokenForTesting(
+              "single-use-1", expiration_time_, *geo_hint_country));
+  expected.push_back(
+      IpProtectionConfigProviderHelper::
+          CreateMockBlindSignedAuthTokenForTesting(
+              "single-use-2", expiration_time_, *geo_hint_country));
+
+  ExpectTryGetAuthTokensResult(std::move(expected));
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensResultHistogram,
+      AwIpProtectionTryGetAuthTokensResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 1);
+}
+
+// BSA returns no tokens.
+TEST_F(AwIpProtectionConfigProviderTest, TokenHasMissingGeoHint) {
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+  bsa_->tokens_ = {
+      IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+          "single-use-1", expiration_time_, *network::mojom::GeoHint::New())};
+
+  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->num_tokens_, 1);
+  EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token_, std::nullopt);
   ExpectTryGetAuthTokensResultFailed(
       IpProtectionConfigProviderHelper::kTransientBackoff);
@@ -339,6 +410,11 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyChains) {
   chain->set_proxy_a("proxy2");
   chain->set_proxy_b("proxy2b");
   chain->set_chain_id(2);
+
+  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
       std::make_unique<BlindSignMessageAndroidImpl>(), bsa_.get());
@@ -350,8 +426,15 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyChains) {
           {"proxy1", "proxy1b"}, 1),
       IpProtectionConfigProviderHelper::MakeChainForTesting(
           {"proxy2", "proxy2b"}, 2)};
-  EXPECT_THAT(proxy_list_future_.Get(),
-              testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
+
+  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
+  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
 }
 
 TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
@@ -369,6 +452,11 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
   chain->set_proxy_a("proxy3:0");
   chain->set_proxy_b("proxy4:443");
   chain->set_chain_id(3);
+
+  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
       std::make_unique<BlindSignMessageAndroidImpl>(), bsa_.get());
@@ -389,8 +477,15 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxy4", "443")},
       3));
-  EXPECT_THAT(proxy_list_future_.Get(),
-              testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
+
+  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
+  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
 }
 
 TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
@@ -404,6 +499,11 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
   chain = response.add_proxy_chain();
   chain->set_proxy_a("valid");
   chain->set_proxy_b("valid");
+
+  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
       std::make_unique<BlindSignMessageAndroidImpl>(), bsa_.get());
@@ -413,8 +513,15 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
   std::vector<net::ProxyChain> exp_proxy_list = {
       IpProtectionConfigProviderHelper::MakeChainForTesting(
           {"valid", "valid"})};
-  EXPECT_THAT(proxy_list_future_.Get(),
-              testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
+
+  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
+  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
 }
 
 TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyInvalidChainId) {
@@ -426,6 +533,11 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyInvalidChainId) {
   chain->set_proxy_a("proxya");
   chain->set_proxy_b("proxyb");
   chain->set_chain_id(999);
+
+  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
       std::make_unique<BlindSignMessageAndroidImpl>(), bsa_.get());
@@ -436,8 +548,15 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyInvalidChainId) {
   std::vector<net::ProxyChain> exp_proxy_list = {
       IpProtectionConfigProviderHelper::MakeChainForTesting(
           {"proxya", "proxyb"}, net::ProxyChain::kDefaultIpProtectionChainId)};
-  EXPECT_THAT(proxy_list_future_.Get(),
-              testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
+
+  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
+  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
 }
 
 TEST_F(AwIpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
@@ -455,8 +574,8 @@ TEST_F(AwIpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
           {net::features::kIpPrivacyProxyBHostnameOverride.name,
            "proxyBOverride"},
       });
-  std::vector<std::vector<std::string>> proxy_list = {{"proxyA1", "proxyB1"},
-                                                      {"proxyA2", "proxyB2"}};
+  std::vector<std::vector<std::string>> response_proxy_list = {
+      {"proxyA1", "proxyB1"}, {"proxyA2", "proxyB2"}};
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxyA1");
@@ -464,20 +583,36 @@ TEST_F(AwIpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   chain = response.add_proxy_chain();
   chain->set_proxy_a("proxyA2");
   chain->set_proxy_b("proxyB2");
+
+  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
       std::make_unique<BlindSignMessageAndroidImpl>(), bsa_.get());
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  EXPECT_THAT(
-      proxy_list_future_.Get(),
-      testing::Optional(testing::ElementsAreArray(proxy_override_list)));
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(),
+              testing::ElementsAreArray(proxy_override_list));
+
+  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
+  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
 }
 
 TEST_F(AwIpProtectionConfigProviderTest, GetProxyListFailure) {
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  EXPECT_EQ(proxy_list_future_.Get(), std::nullopt);
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+  EXPECT_EQ(proxy_list, std::nullopt);
+  EXPECT_TRUE(geo_hint.is_null());
 }
 
 TEST_F(AwIpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
@@ -489,6 +624,11 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
   chain->set_proxy_a("proxy1");
   chain->set_proxy_b("proxy1b");
   chain->set_chain_id(1);
+
+  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
       std::make_unique<BlindSignMessageAndroidImpl>(), bsa_.get());
@@ -496,7 +636,90 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
   getter_->GetProxyList(proxy_list_future_.GetCallback());
 
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  EXPECT_EQ(proxy_list_future_.Get(), std::nullopt);
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  EXPECT_EQ(proxy_list, std::nullopt);
+  EXPECT_TRUE(geo_hint.is_null());
+}
+
+TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyCountryLevelGeo) {
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  ip_protection::GetProxyConfigResponse response;
+  auto* chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxy1");
+  chain->set_proxy_b("proxy1b");
+  chain->set_chain_id(1);
+  chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxy2");
+  chain->set_proxy_b("proxy2b");
+  chain->set_chain_id(2);
+
+  // Geo is only country level.
+  response.mutable_geo_hint()->set_country_code("US");
+
+  getter_->SetUpForTesting(
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
+      std::make_unique<BlindSignMessageAndroidImpl>(), bsa_.get());
+
+  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+  std::vector<net::ProxyChain> exp_proxy_list = {
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxy1", "proxy1b"}, 1),
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxy2", "proxy2b"}, 2)};
+
+  // Country level geo only.
+  auto exp_geo_hint = network::mojom::GeoHint::New("US", "", "");
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
+
+  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
+  EXPECT_TRUE(geo_hint->Equals(*exp_geo_hint));
+}
+
+TEST_F(AwIpProtectionConfigProviderTest, GetProxyListProxyGeoMissingFailure) {
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  // The error case in this situation should be a valid response with a missing
+  // geo hint and non-empty proxy chain vector.
+  ip_protection::GetProxyConfigResponse response;
+  auto* chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxy1");
+  chain->set_proxy_b("proxy1b");
+  chain->set_chain_id(1);
+  chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxy2");
+  chain->set_proxy_b("proxy2b");
+  chain->set_chain_id(2);
+
+  getter_->SetUpForTesting(
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
+      std::make_unique<BlindSignMessageAndroidImpl>(), bsa_.get());
+
+  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+  std::vector<net::ProxyChain> exp_proxy_list = {
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxy1", "proxy1b"}, 1),
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxy2", "proxy2b"}, 2)};
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  // A failure means both of these values will be null.
+  EXPECT_EQ(proxy_list, std::nullopt);
+  EXPECT_TRUE(geo_hint.is_null());
 }
 
 }  // namespace android_webview

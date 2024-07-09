@@ -30,6 +30,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManager {
   // if `IsProxyListAvailable()` returned true.
   virtual const std::vector<net::ProxyChain>& ProxyList() = 0;
 
+  // Return the `GeoId` string which is the geo for which the current list is
+  // valid.
+
+  // This is a formatted version of the `network::mojom::GeoHint`. It consists
+  // of a concatenation of the country region, iso region, and city name
+  // (separated by commas). If there are fields missing, they are omitted, and
+  // there is no trailing comma. String can be empty if a successful request
+  // fetching proxy lists has not occurred.
+  virtual const std::string& GeoId() = 0;
+
   // Request a refresh of the proxy list. Call this when it's likely that the
   // proxy list is out of date.
   virtual void RequestRefreshProxyList() = 0;

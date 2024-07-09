@@ -58,11 +58,13 @@ class IpProtectionConfigGetterInterceptor
   IpProtectionConfigGetterInterceptor(IpProtectionConfigProvider* getter,
                                       std::string token,
                                       base::Time expiration,
+                                      network::mojom::GeoHint geo_hint,
                                       bool should_intercept = true)
       : getter_(getter),
         receiver_id_(getter_->receiver_id_for_testing()),
         token_(std::move(token)),
         expiration_(expiration),
+        geo_hint_(geo_hint),
         should_intercept_(should_intercept) {
     auto* old_impl =
         getter_->receivers_for_testing().SwapImplForTesting(receiver_id_, this);
@@ -85,8 +87,11 @@ class IpProtectionConfigGetterInterceptor
     if (should_intercept_) {
       std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
       for (uint32_t i = 0; i < batch_size; i++) {
-        auto token =
-            network::mojom::BlindSignedAuthToken::New(token_, expiration_);
+        auto token = network::mojom::BlindSignedAuthToken::New();
+        token->token = token_;
+        token->expiration = expiration_;
+        token->geo_hint = geo_hint_.Clone();
+
         tokens.push_back(std::move(token));
       }
       std::move(callback).Run(std::move(tokens), base::Time());
@@ -100,6 +105,8 @@ class IpProtectionConfigGetterInterceptor
 
   base::Time expiration() const { return expiration_; }
 
+  network::mojom::GeoHint geo_hint() const { return geo_hint_; }
+
   void EnableInterception() { should_intercept_ = true; }
   void DisableInterception() { should_intercept_ = false; }
 
@@ -112,6 +119,7 @@ class IpProtectionConfigGetterInterceptor
   mojo::ReceiverId receiver_id_;
   std::string token_;
   base::Time expiration_;
+  network::mojom::GeoHint geo_hint_;
   bool should_intercept_;
 };
 
@@ -123,8 +131,7 @@ class IpProtectionConfigProviderBrowserTest : public PlatformBrowserTest {
   IpProtectionConfigProviderBrowserTest()
       : profile_selections_(IpProtectionConfigProviderFactory::GetInstance(),
                             IpProtectionConfigProviderFactory::
-                                CreateProfileSelectionsForTesting()) {
-  }
+                                CreateProfileSelectionsForTesting()) {}
 
   void TearDownOnMainThread() override {
     PlatformBrowserTest::TearDownOnMainThread();
@@ -140,9 +147,10 @@ class IpProtectionConfigProviderBrowserTest : public PlatformBrowserTest {
 
     std::string token = "best_token_ever";
     base::Time expiration = base::Time::Now() + base::Seconds(12345);
+    auto geo_hint = network::mojom::GeoHint::New("US", "US-AL", "ALABASTER");
     main_profile_auth_token_getter_interceptor_ =
         std::make_unique<IpProtectionConfigGetterInterceptor>(
-            provider, token, expiration, /*should_intercept=*/false);
+            provider, token, expiration, *geo_hint, /*should_intercept=*/false);
 
     network::mojom::NetworkContext* main_profile_network_context =
         GetProfile()->GetDefaultStoragePartition()->GetNetworkContext();
@@ -160,7 +168,7 @@ class IpProtectionConfigProviderBrowserTest : public PlatformBrowserTest {
 
     incognito_profile_auth_token_getter_interceptor_ =
         std::make_unique<IpProtectionConfigGetterInterceptor>(
-            provider, token, expiration, /*should_intercept=*/false);
+            provider, token, expiration, *geo_hint, /*should_intercept=*/false);
   }
 
   void EnableInterception() {
@@ -214,10 +222,11 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
 
   std::string token = "best_token_ever";
   base::Time expiration = base::Time::Now() + base::Seconds(12345);
+  auto geo_hint = network::mojom::GeoHint::New("US", "US-AL", "ALABASTER");
   ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
   auto auth_token_getter_interceptor_ =
-      std::make_unique<IpProtectionConfigGetterInterceptor>(getter, token,
-                                                            expiration);
+      std::make_unique<IpProtectionConfigGetterInterceptor>(
+          getter, token, expiration, *geo_hint);
 
   // To test that the Network Service can successfully request tokens, use the
   // test method on NetworkContext that will have it request tokens and then
@@ -243,8 +252,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   // incognito mode network context's `mojo::Receiver()`.
   ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
   auto incognito_auth_token_getter_interceptor_ =
-      std::make_unique<IpProtectionConfigGetterInterceptor>(getter, token,
-                                                            expiration);
+      std::make_unique<IpProtectionConfigGetterInterceptor>(
+          getter, token, expiration, *geo_hint);
 
   // Verify that we can get tokens from the incognito mode profile.
   future.Clear();

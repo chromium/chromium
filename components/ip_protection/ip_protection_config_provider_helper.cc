@@ -83,13 +83,35 @@ IpProtectionConfigProviderHelper::GetProxyListFromProxyConfigResponse(
 }
 
 // static
+network::mojom::GeoHintPtr
+IpProtectionConfigProviderHelper::GetGeoHintFromProxyConfigResponse(
+    const ip_protection::GetProxyConfigResponse& response) {
+  if (!response.has_geo_hint()) {
+    return nullptr;  // No GeoHint available in the response.
+  }
+
+  const auto& response_geo_hint = response.geo_hint();
+
+  return network::mojom::GeoHint::New(response_geo_hint.country_code(),
+                                      response_geo_hint.iso_region(),
+                                      response_geo_hint.city_name());
+}
+
+// static
 network::mojom::BlindSignedAuthTokenPtr
 IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
     const quiche::BlindSignToken& bsa_token) {
+  // If a GeoHint's country code is empty, the token is invalid. Return a
+  // nullptr.
+  if (bsa_token.geo_hint.country_code.empty()) {
+    return nullptr;
+  }
+
+  // Set expiration of BlindSignedAuthToken.
   base::Time expiration =
       base::Time::FromTimeT(absl::ToTimeT(bsa_token.expiration));
 
-  // What the network service will receive as a "token" is the fully constructed
+  // Set token of BlindSignedAuth Token to be the fully constructed
   // authorization header value.
   std::string token_header_value = "";
   privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
@@ -99,8 +121,14 @@ IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
                       "\", extensions=\"",
                       privacy_pass_token_data.encoded_extensions(), "\""});
   }
+
+  // Set GeoHint on BlindSignedAuthToken.
+  auto geo_hint = network::mojom::GeoHint::New(bsa_token.geo_hint.country_code,
+                                               bsa_token.geo_hint.region,
+                                               bsa_token.geo_hint.city);
+
   return network::mojom::BlindSignedAuthToken::New(
-      std::move(token_header_value), expiration);
+      std::move(token_header_value), expiration, std::move(geo_hint));
 }
 
 // static
@@ -125,12 +153,24 @@ IpProtectionConfigProviderHelper::CreatePrivacyPassTokenForTesting(
 quiche::BlindSignToken
 IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
     std::string token_value,
-    base::Time expiration) {
+    base::Time expiration,
+    const network::mojom::GeoHint& geo_hint) {
   privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
       CreatePrivacyPassTokenForTesting(std::move(token_value));
   quiche::BlindSignToken blind_sign_token;
   blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
   blind_sign_token.expiration = absl::FromTimeT(expiration.ToTimeT());
+
+  // GeoHints must contain a country level coarseness. If finer levels of
+  // granularity are omitted, the GeoHint.geo_hint will contain trailing commas.
+  blind_sign_token.geo_hint = anonymous_tokens::GeoHint{
+      .geo_hint = geo_hint.country_code + "," + geo_hint.iso_region + "," +
+                  geo_hint.city_name,
+      .country_code = geo_hint.country_code,
+      .region = geo_hint.iso_region,
+      .city = geo_hint.city_name,
+  };
+
   return blind_sign_token;
 }
 
@@ -148,8 +188,9 @@ net::ProxyChain IpProtectionConfigProviderHelper::MakeChainForTesting(
 network::mojom::BlindSignedAuthTokenPtr
 IpProtectionConfigProviderHelper::CreateMockBlindSignedAuthTokenForTesting(
     std::string token_value,
-    base::Time expiration) {
+    base::Time expiration,
+    const network::mojom::GeoHint& geo_hint) {
   quiche::BlindSignToken blind_sign_token =
-      CreateBlindSignTokenForTesting(token_value, expiration);
+      CreateBlindSignTokenForTesting(token_value, expiration, geo_hint);
   return CreateBlindSignedAuthToken(std::move(blind_sign_token));
 }

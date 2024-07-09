@@ -56,6 +56,8 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
     return *proxy_list_;
   }
 
+  const std::string& GeoId() override { return geo_id_; }
+
   void RequestRefreshProxyList() override {
     if (on_force_refresh_proxy_list_) {
       std::move(on_force_refresh_proxy_list_).Run();
@@ -74,6 +76,7 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
 
  private:
   std::optional<std::vector<net::ProxyChain>> proxy_list_;
+  std::string geo_id_;
   base::OnceClosure on_force_refresh_proxy_list_;
 };
 

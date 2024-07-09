@@ -153,7 +153,8 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
     std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
     for (int i = 0; i < count; i++) {
       tokens.emplace_back(network::mojom::BlindSignedAuthToken::New(
-          base::StringPrintf("token-%d", i), expiration));
+          base::StringPrintf("token-%d", i), expiration,
+          network::mojom::GeoHint::New("US", "US-AL", "ALABASTER")));
     }
     return tokens;
   }
@@ -324,7 +325,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, SkipExpiredTokens) {
   std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens =
       TokenBatch(10, kPastExpiration);
   tokens.emplace_back(network::mojom::BlindSignedAuthToken::New(
-      "good-token", kFutureExpiration));
+      "good-token", kFutureExpiration,
+      network::mojom::GeoHint::New("US", "US-AL", "ALABASTER")));
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, std::move(tokens));
   CallTryGetAuthTokensAndWait(network::mojom::IpProtectionProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
@@ -576,13 +578,16 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillAfterExpiration) {
   base::Time expiration2 = base::Time::Now() + base::Minutes(15);
   base::Time expiration3 = base::Time::Now() + base::Minutes(20);
   for (int i = 0; i < expected_batch_size_ - 2; i++) {
-    tokens.emplace_back(
-        network::mojom::BlindSignedAuthToken::New("exp2", expiration2));
+    tokens.emplace_back(network::mojom::BlindSignedAuthToken::New(
+        "exp2", expiration2,
+        network::mojom::GeoHint::New("US", "US-AL", "ALABASTER")));
   }
-  tokens.emplace_back(
-      network::mojom::BlindSignedAuthToken::New("exp3", expiration3));
-  tokens.emplace_back(
-      network::mojom::BlindSignedAuthToken::New("exp1", expiration1));
+  tokens.emplace_back(network::mojom::BlindSignedAuthToken::New(
+      "exp3", expiration3,
+      network::mojom::GeoHint::New("US", "US-AL", "ALABASTER")));
+  tokens.emplace_back(network::mojom::BlindSignedAuthToken::New(
+      "exp1", expiration1,
+      network::mojom::GeoHint::New("US", "US-AL", "ALABASTER")));
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, std::move(tokens));
   ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
   WaitForTryGetAuthTokensCompletion(

@@ -109,7 +109,8 @@ void AwIpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
 
   // If IP Protection is disabled then don't attempt to get a proxy list.
   if (!IsIpProtectionEnabled()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(/*proxy_chains=*/std::nullopt,
+                            /*geo_hint=*/nullptr);
     return;
   }
 
@@ -128,17 +129,36 @@ void AwIpProtectionConfigProvider::OnGetProxyConfigCompleted(
     GetProxyListCallback callback,
     base::expected<ip_protection::GetProxyConfigResponse, std::string>
         response) {
-  if (!response.has_value()) {
+  if (AwIpProtectionConfigProvider::IsProxyConfigResponseError(response)) {
     VLOG(2) << "AwIpProtectionConfigProvider::GetProxyList failed: "
             << response.error();
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(/*array<ProxyChain>?=*/std::nullopt,
+                            /*GeoHint?=*/nullptr);
     return;
   }
 
   std::vector<net::ProxyChain> proxy_list =
       IpProtectionConfigProviderHelper::GetProxyListFromProxyConfigResponse(
           response.value());
-  std::move(callback).Run(std::move(proxy_list));
+  network::mojom::GeoHintPtr geo_hint =
+      IpProtectionConfigProviderHelper::GetGeoHintFromProxyConfigResponse(
+          response.value());
+  std::move(callback).Run(std::move(proxy_list), std::move(geo_hint));
+}
+
+bool AwIpProtectionConfigProvider::IsProxyConfigResponseError(
+    const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
+        response) {
+  if (!response.has_value()) {
+    return true;
+  }
+
+  // Returns true for an error when a geo hint is missing but is required b/c
+  // the proxy chain is NOT empty.
+  const ip_protection::GetProxyConfigResponse& config_response =
+      response.value();
+  return !config_response.has_geo_hint() &&
+         !config_response.proxy_chain().empty();
 }
 
 void AwIpProtectionConfigProvider::TryGetAuthTokens(
@@ -232,7 +252,7 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   for (const quiche::BlindSignToken& token : tokens.value()) {
     network::mojom::BlindSignedAuthTokenPtr converted_token =
         IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(token);
-    if (converted_token->token.empty()) {
+    if (converted_token.is_null() || converted_token->token.empty()) {
       VLOG(2) << "AwIpProtectionConfigProvider::"
                  "OnFetchBlindSignedTokenCompleted failed to convert "
                  "`quiche::BlindSignAuth` token to a "

@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/proxy_chain.h"
+#include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +29,11 @@ constexpr char kProxyListRefreshTimeHistogram[] =
     "NetworkService.IpProtection.ProxyListRefreshTime";
 
 }  // namespace
+
+struct GetProxyListCall {
+  std::optional<std::vector<net::ProxyChain>> proxy_chains;
+  std::string geo_id;
+};
 
 class MockIpProtectionConfigGetter
     : public network::mojom::IpProtectionConfigGetter {
@@ -51,13 +57,14 @@ class MockIpProtectionConfigGetter
 
   // Register an expectation of a call to `GetIpProtectionProxyList()`,
   // returning the given proxy list manager.
-  void ExpectGetProxyListCall(std::vector<net::ProxyChain> proxy_list) {
-    expected_get_proxy_list_calls_.push_back(std::move(proxy_list));
+  void ExpectGetProxyListCall(const GetProxyListCall& expected_call) {
+    expected_get_proxy_list_calls_.push_back(expected_call);
   }
 
   // Register an expectation of a call to `GetProxyList()`, returning nullopt.
   void ExpectGetProxyListCallFailure() {
-    expected_get_proxy_list_calls_.push_back(std::nullopt);
+    GetProxyListCall failure_call{.proxy_chains = std::nullopt};
+    expected_get_proxy_list_calls_.push_back(failure_call);
   }
 
   // True if all expected `TryGetAuthTokens` calls have occurred.
@@ -77,14 +84,17 @@ class MockIpProtectionConfigGetter
   void GetProxyList(GetProxyListCallback callback) override {
     ASSERT_FALSE(expected_get_proxy_list_calls_.empty())
         << "Unexpected call to GetProxyList";
-    auto& exp = expected_get_proxy_list_calls_.front();
-    std::move(callback).Run(std::move(exp));
+    auto& expected_call = expected_get_proxy_list_calls_.front();
+
+    std::move(callback).Run(
+        expected_call.proxy_chains,
+        network::GetGeoHintFromGeoIdForTesting(expected_call.geo_id));
+
     expected_get_proxy_list_calls_.pop_front();
   }
 
  protected:
-  std::deque<std::optional<std::vector<net::ProxyChain>>>
-      expected_get_proxy_list_calls_;
+  std::deque<GetProxyListCall> expected_get_proxy_list_calls_;
 };
 
 class IpProtectionProxyListManagerImplTest : public testing::Test {
@@ -134,42 +144,54 @@ class IpProtectionProxyListManagerImplTest : public testing::Test {
 
 // The manager gets the proxy list on startup and once again on schedule.
 TEST_F(IpProtectionProxyListManagerImplTest, ProxyListOnStartup) {
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"a-proxy"})};
-  mock_.ExpectGetProxyListCall(exp_proxy_list);
+  GetProxyListCall expected_call{
+      .proxy_chains = std::vector{MakeChain({"a-proxy"})},
+      .geo_id = "US,US-AL,ALABASTER"};
+  mock_.ExpectGetProxyListCall(expected_call);
   ipp_proxy_list_->EnableProxyListRefreshingForTesting();
   WaitForProxyListRefresh();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), exp_proxy_list);
+  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
+  EXPECT_EQ(ipp_proxy_list_->GeoId(), expected_call.geo_id);
 
   base::Time start = base::Time::Now();
-  mock_.ExpectGetProxyListCall({MakeChain({"b-proxy"})});
+
+  expected_call =
+      GetProxyListCall{.proxy_chains = std::vector{MakeChain({"b-proxy"})},
+                       .geo_id = "US,US-CA,MOUNTAIN VIEW"};
+  mock_.ExpectGetProxyListCall(expected_call);
   WaitForProxyListRefresh();
   base::TimeDelta delay = net::features::kIpPrivacyProxyListFetchInterval.Get();
   EXPECT_EQ(base::Time::Now() - start, delay);
 
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  exp_proxy_list = {MakeChain({"b-proxy"})};
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), exp_proxy_list);
+  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
+  EXPECT_EQ(ipp_proxy_list_->GeoId(), expected_call.geo_id);
 }
 
 // The manager refreshes the proxy list on demand, but only once even if
 // `RequestRefreshProxyList()` is called repeatedly.
 TEST_F(IpProtectionProxyListManagerImplTest, ProxyListRefresh) {
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"a-proxy"})};
-  mock_.ExpectGetProxyListCall(exp_proxy_list);
+  GetProxyListCall expected_call{
+      .proxy_chains = std::vector{MakeChain({"a-proxy"})},
+      .geo_id = "US,US-AL,ALABASTER"};
+  mock_.ExpectGetProxyListCall(expected_call);
   ipp_proxy_list_->RequestRefreshProxyList();
   ipp_proxy_list_->RequestRefreshProxyList();
   WaitForProxyListRefresh();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), exp_proxy_list);
+  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
+  EXPECT_EQ(ipp_proxy_list_->GeoId(), expected_call.geo_id);
 }
 
 // The manager gets the proxy list on startup and once again on schedule.
 TEST_F(IpProtectionProxyListManagerImplTest, IsProxyListAvailableEvenIfEmpty) {
-  mock_.ExpectGetProxyListCall({});
+  mock_.ExpectGetProxyListCall(GetProxyListCall{
+      .proxy_chains = std::vector<net::ProxyChain>{},  // Empty ProxyList
+  });
   ipp_proxy_list_->RequestRefreshProxyList();
   WaitForProxyListRefresh();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
@@ -178,13 +200,16 @@ TEST_F(IpProtectionProxyListManagerImplTest, IsProxyListAvailableEvenIfEmpty) {
 
 // The manager keeps its existing proxy list if it fails to fetch a new one.
 TEST_F(IpProtectionProxyListManagerImplTest, ProxyListKeptAfterFailure) {
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"a-proxy"})};
-  mock_.ExpectGetProxyListCall(exp_proxy_list);
+  GetProxyListCall expected_call{
+      .proxy_chains = std::vector{MakeChain({"a-proxy"})},
+      .geo_id = "US,US-AL,ALABASTER"};
+  mock_.ExpectGetProxyListCall(expected_call);
   ipp_proxy_list_->RequestRefreshProxyList();
   WaitForProxyListRefresh();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), exp_proxy_list);
+  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
+  EXPECT_EQ(ipp_proxy_list_->GeoId(), expected_call.geo_id);
 
   // Fast-forward long enough that we can fetch again
   task_environment_.FastForwardBy(
@@ -195,7 +220,26 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListKeptAfterFailure) {
   WaitForProxyListRefresh();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), exp_proxy_list);
+  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
+  EXPECT_EQ(ipp_proxy_list_->GeoId(), expected_call.geo_id);
+
+  // GeoHint is returned but ProxyChain is failure.
+  // Fast-forward long enough that we can fetch again
+  task_environment_.FastForwardBy(
+      net::features::kIpPrivacyProxyListMinFetchInterval.Get());
+
+  GetProxyListCall expected_call_fail{
+      .proxy_chains = std::nullopt,
+      .geo_id = "US,US-CA,MOUNTAIN VIEW"};  // A new Geohint
+  mock_.ExpectGetProxyListCall(expected_call_fail);
+  ipp_proxy_list_->RequestRefreshProxyList();
+  WaitForProxyListRefresh();
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
+  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
+  // GeoId returned matches original and not from the "failed" call.
+  EXPECT_EQ(ipp_proxy_list_->GeoId(), expected_call.geo_id);
+  ASSERT_NE(ipp_proxy_list_->GeoId(), expected_call_fail.geo_id);
 }
 
 TEST_F(IpProtectionProxyListManagerImplTest, GetProxyListFailureRecorded) {
@@ -210,7 +254,9 @@ TEST_F(IpProtectionProxyListManagerImplTest, GetProxyListFailureRecorded) {
 }
 
 TEST_F(IpProtectionProxyListManagerImplTest, GotEmptyProxyListRecorded) {
-  mock_.ExpectGetProxyListCall({});
+  mock_.ExpectGetProxyListCall(GetProxyListCall{
+      .proxy_chains = std::vector<net::ProxyChain>{},  // Empty ProxyList
+  });
   ipp_proxy_list_->RequestRefreshProxyList();
   WaitForProxyListRefresh();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
@@ -221,7 +267,10 @@ TEST_F(IpProtectionProxyListManagerImplTest, GotEmptyProxyListRecorded) {
 }
 
 TEST_F(IpProtectionProxyListManagerImplTest, GotPopulatedProxyListRecorded) {
-  mock_.ExpectGetProxyListCall({MakeChain({"a-proxy", "b-proxy"})});
+  GetProxyListCall expected_call{
+      .proxy_chains = std::vector{MakeChain({"a-proxy", "b-proxy"})},
+      .geo_id = "US,US-AL,ALABASTER"};
+  mock_.ExpectGetProxyListCall(expected_call);
   ipp_proxy_list_->RequestRefreshProxyList();
   WaitForProxyListRefresh();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());

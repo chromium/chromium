@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   // IpProtectionProxyListManager implementation.
   bool IsProxyListAvailable() override;
   const std::vector<net::ProxyChain>& ProxyList() override;
+  const std::string& GeoId() override;
   void RequestRefreshProxyList() override;
 
   // Set a callback to occur when the proxy list has been refreshed.
@@ -57,10 +58,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   void RefreshProxyList();
   void OnGotProxyList(
       base::TimeTicks refresh_start_time_for_metrics,
-      const std::optional<std::vector<net::ProxyChain>>& proxy_list);
+      const std::optional<std::vector<net::ProxyChain>>& proxy_list,
+      const network::mojom::GeoHintPtr geo_hint);
 
   // Latest fetched proxy list.
   std::vector<net::ProxyChain> proxy_list_;
+
+  // Latest fetched GeoId.
+  std::string geo_id_;
 
   // True if an invocation of `config_getter_.GetProxyList()` is
   // outstanding.

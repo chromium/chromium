@@ -179,13 +179,13 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   // plan changes, though, we should implement a way for these requests to stop
   // being made.
   if (!IsIpProtectionEnabled()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, nullptr);
     return;
   }
 
   // If we are not able to call `GetProxyConfig` yet, return early.
   if (no_get_proxy_config_until_ > base::Time::Now()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, nullptr);
     return;
   }
 
@@ -196,7 +196,7 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   }
 
   if (!CanRequestOAuthToken()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, nullptr);
     return;
   }
   auto request_token_callback =
@@ -286,7 +286,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompletedForGetProxyConfig(
   if (error.state() != GoogleServiceAuthError::NONE) {
     VLOG(2) << "IPATP::OnRequestOAuthTokenCompletedForGetProxyConfig failed: "
             << static_cast<int>(error.state());
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, nullptr);
     return;
   }
 
@@ -306,7 +306,9 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
     GetProxyListCallback callback,
     base::expected<ip_protection::GetProxyConfigResponse, std::string>
         response) {
-  if (!response.has_value()) {
+  // If either there is an empty response or no geo hint present, it should be
+  // treated as an error and cause a retry.
+  if (IpProtectionConfigProvider::IsProxyConfigResponseError(response)) {
     VLOG(2) << "IPATP::GetProxyList failed: " << response.error();
 
     // Apply exponential backoff to this sort of failure.
@@ -314,7 +316,7 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
         base::Time::Now() + next_get_proxy_config_backoff_;
     next_get_proxy_config_backoff_ *= 2;
 
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, nullptr);
     return;
   }
 
@@ -325,7 +327,25 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
   std::vector<net::ProxyChain> proxy_list =
       IpProtectionConfigProviderHelper::GetProxyListFromProxyConfigResponse(
           response.value());
-  std::move(callback).Run(std::move(proxy_list));
+  network::mojom::GeoHintPtr geo_hint =
+      IpProtectionConfigProviderHelper::GetGeoHintFromProxyConfigResponse(
+          response.value());
+  std::move(callback).Run(std::move(proxy_list), std::move(geo_hint));
+}
+
+bool IpProtectionConfigProvider::IsProxyConfigResponseError(
+    const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
+        response) {
+  if (!response.has_value()) {
+    return true;
+  }
+
+  // Returns true for an error when a geo hint is missing but is required b/c
+  // the proxy chain is NOT empty.
+  const ip_protection::GetProxyConfigResponse& config_response =
+      response.value();
+  return !config_response.has_geo_hint() &&
+         !config_response.proxy_chain().empty();
 }
 
 void IpProtectionConfigProvider::FetchBlindSignedToken(
@@ -394,7 +414,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   for (const quiche::BlindSignToken& token : tokens.value()) {
     network::mojom::BlindSignedAuthTokenPtr converted_token =
         IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(token);
-    if (converted_token->token.empty()) {
+    if (converted_token.is_null() || converted_token->token.empty()) {
       TryGetAuthTokensComplete(
           std::nullopt, std::move(callback),
           IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
@@ -462,8 +482,8 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
       // capabilities check, if this capability/eligibility is something that
       // can change and be detected via callbacks to an overridden
       // `IdentityManager::Observer::OnExtendedAccountInfoUpdated()` method,
-      // then update this failure so that we wait indefinitely as well (like the
-      // cases above).
+      // then update this failure so that we wait indefinitely as well (like
+      // the cases above).
     case IpProtectionTryGetAuthTokensResult::kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
@@ -492,8 +512,8 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
   //  - Concurrent calls to `TryGetAuthTokens` from two network contexts are
   //  made and both fail in the same way
   //
-  //  - A new incognito window is opened (the new network context won't know to
-  //  backoff until after the first request)
+  //  - A new incognito window is opened (the new network context won't know
+  //  to backoff until after the first request)
   //
   //  - The network service restarts (the new network context(s) won't know to
   //  backoff until after the first request(s))
@@ -537,9 +557,9 @@ void IpProtectionConfigProvider::Shutdown() {
   tracking_protection_settings_ = nullptr;
   pref_service_ = nullptr;
   profile_ = nullptr;
-  // If we are shutting down, we can't process messages anymore because we rely
-  // on having `identity_manager_` to get the OAuth token. Thus, just reset the
-  // receiver set.
+  // If we are shutting down, we can't process messages anymore because we
+  // rely on having `identity_manager_` to get the OAuth token. Thus, just
+  // reset the receiver set.
   receivers_.Clear();
   bsa_ = nullptr;
 }
@@ -585,15 +605,15 @@ void IpProtectionConfigProvider::OnPrimaryAccountChanged(
           << static_cast<int>(signin_event_type);
   switch (signin_event_type) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
-      // Account information is now available, so resume making requests for the
-      // OAuth token.
+      // Account information is now available, so resume making requests for
+      // the OAuth token.
       ClearOAuthTokenProblemBackoff();
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       last_try_get_auth_tokens_backoff_ = base::TimeDelta::Max();
-      // No need to tell the Network Service - it will find out the next time it
-      // calls `TryGetAuthTokens()`.
+      // No need to tell the Network Service - it will find out the next time
+      // it calls `TryGetAuthTokens()`.
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -606,10 +626,10 @@ void IpProtectionConfigProvider::OnErrorStateOfRefreshTokenUpdatedForAccount(
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   VLOG(2) << "IPATP::OnErrorStateOfRefreshTokenUpdatedForAccount: "
           << error.ToString();
-  // Workspace user accounts can have account credential expirations that cause
-  // persistent OAuth token errors until the user logs in to Chrome again. To
-  // handle this, watch for these error events and treat them the same way we do
-  // login/logout events.
+  // Workspace user accounts can have account credential expirations that
+  // cause persistent OAuth token errors until the user logs in to Chrome
+  // again. To handle this, watch for these error events and treat them the
+  // same way we do login/logout events.
   if (error.state() == GoogleServiceAuthError::State::NONE) {
     ClearOAuthTokenProblemBackoff();
     return;
@@ -642,8 +662,8 @@ bool IpProtectionConfigProvider::IsIpProtectionEnabled() {
   }
 
   // If the user's enterprise has a policy for IP, use this regardless of user
-  // UX feature status. Enterprises should have the ability to enable or disable
-  // IPP even when users do not have UX access to the feature.
+  // UX feature status. Enterprises should have the ability to enable or
+  // disable IPP even when users do not have UX access to the feature.
   if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
     return pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
   }
