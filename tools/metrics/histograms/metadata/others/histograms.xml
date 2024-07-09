@@ -4558,6 +4558,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FetchKeepAlive.Requests2.Created.Network" enum="Boolean"
+    expires_after="2024-12-12">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Recorded true when a Fetch keepalive request loader in the Network service
+    is created.
+  </summary>
+</histogram>
+
 <histogram name="FetchKeepAlive.Requests2.Shutdown.IsStarted.Browser"
     enum="Boolean" expires_after="2024-12-12">
   <owner>mych@chromium.org</owner>

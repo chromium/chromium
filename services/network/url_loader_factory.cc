@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -220,6 +221,9 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
   }
 
   int keepalive_request_size = 0;
+  if (resource_request.keepalive) {
+    base::UmaHistogramBoolean("FetchKeepAlive.Requests2.Created.Network", true);
+  }
   if (resource_request.keepalive && keepalive_statistics_recorder) {
     const size_t url_size = resource_request.url.spec().size();
     size_t headers_size = 0;
