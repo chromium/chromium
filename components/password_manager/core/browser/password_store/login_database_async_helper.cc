@@ -32,7 +32,7 @@ constexpr base::TimeDelta kSyncTaskTimeout = base::Seconds(30);
 
 LoginDatabaseAsyncHelper::LoginDatabaseAsyncHelper(
     std::unique_ptr<LoginDatabase> login_db,
-    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier,
+    UnsyncedCredentialsDeletionNotifier notifier,
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior)
@@ -434,10 +434,7 @@ void LoginDatabaseAsyncHelper::NotifyUnsyncedCredentialsWillBeDeleted(
   DCHECK(IsAccountStore());
   // |deletion_notifier_| only gets set for desktop.
   if (deletion_notifier_) {
-    main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&UnsyncedCredentialsDeletionNotifier::Notify,
-                                  deletion_notifier_->GetWeakPtr(),
-                                  std::move(unsynced_credentials)));
+    deletion_notifier_.Run(std::move(unsynced_credentials));
   }
 }
 

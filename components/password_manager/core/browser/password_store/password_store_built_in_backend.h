@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -37,7 +38,6 @@ namespace password_manager {
 
 class LoginDatabase;
 class LoginDatabaseAsyncHelper;
-class UnsyncedCredentialsDeletionNotifier;
 
 // Simple password store implementation that delegates everything to
 // the LoginDatabaseAsyncHelper. Works only on the main sequence.
@@ -52,7 +52,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
           wipe_model_upon_sync_disabled_behavior,
       PrefService* prefs,
       os_crypt_async::OSCryptAsync* os_crypt_async = nullptr,
-      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier = nullptr);
+      UnsyncedCredentialsDeletionNotifier notifier = {});
 
   ~PasswordStoreBuiltInBackend() override;
 

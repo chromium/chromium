@@ -46,13 +46,8 @@ using metrics_util::GaiaPasswordHashChange;
 class PasswordStoreConsumer;
 
 // Used to notify that unsynced credentials are about to be deleted.
-class UnsyncedCredentialsDeletionNotifier {
- public:
-  // Should be called from the UI thread.
-  virtual void Notify(std::vector<PasswordForm>) = 0;
-  virtual ~UnsyncedCredentialsDeletionNotifier() = default;
-  virtual base::WeakPtr<UnsyncedCredentialsDeletionNotifier> GetWeakPtr() = 0;
-};
+using UnsyncedCredentialsDeletionNotifier =
+    base::RepeatingCallback<void(std::vector<PasswordForm>)>;
 
 // Partial, cross-platform implementation for storing form passwords.
 // The login request/manipulation API is not threadsafe and must be used

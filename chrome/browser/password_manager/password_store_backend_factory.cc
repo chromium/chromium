@@ -180,7 +180,7 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
 std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
-    std::unique_ptr<password_manager::UnsyncedCredentialsDeletionNotifier>
+    password_manager::UnsyncedCredentialsDeletionNotifier
         unsynced_deletions_notifier,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   std::unique_ptr<password_manager::LoginDatabase> login_db(

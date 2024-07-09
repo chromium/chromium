@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
@@ -30,7 +31,6 @@ namespace password_manager {
 
 class LoginDatabase;
 class PasswordSyncBridge;
-class UnsyncedCredentialsDeletionNotifier;
 
 struct InteractionsStats;
 
@@ -40,7 +40,7 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
  public:
   LoginDatabaseAsyncHelper(
       std::unique_ptr<LoginDatabase> login_db,
-      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier,
+      UnsyncedCredentialsDeletionNotifier notifier,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior);
@@ -159,8 +159,7 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       remote_forms_changes_received_callback_
           GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  UnsyncedCredentialsDeletionNotifier deletion_notifier_;
 
   // A list of callbacks that should be run once all pending deletions have been
   // sent to the Sync server. Note that the vector itself lives on the

@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/bind_post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -37,6 +38,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -54,56 +56,46 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+namespace {
+
 using password_manager::AffiliatedMatchHelper;
+using password_manager::PasswordForm;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 using password_manager::UnsyncedCredentialsDeletionNotifier;
 
-namespace {
-
 #if !BUILDFLAG(IS_ANDROID)
-class UnsyncedCredentialsDeletionNotifierImpl
-    : public UnsyncedCredentialsDeletionNotifier {
- public:
-  explicit UnsyncedCredentialsDeletionNotifierImpl(Profile* profile);
-  ~UnsyncedCredentialsDeletionNotifierImpl() override = default;
-
-  // Finds the last active tab and notifies their ManagePasswordsUIController.
-  void Notify(std::vector<password_manager::PasswordForm> credentials) override;
-  base::WeakPtr<UnsyncedCredentialsDeletionNotifier> GetWeakPtr() override;
-
- private:
-  const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
-  base::WeakPtrFactory<UnsyncedCredentialsDeletionNotifier> weak_ptr_factory_{
-      this};
-};
-
-UnsyncedCredentialsDeletionNotifierImpl::
-    UnsyncedCredentialsDeletionNotifierImpl(Profile* profile)
-    : profile_(profile) {}
-
-void UnsyncedCredentialsDeletionNotifierImpl::Notify(
-    std::vector<password_manager::PasswordForm> credentials) {
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  if (!browser) {
-    return;
-  }
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents) {
-    return;
-  }
-  auto* ui_controller =
-      ManagePasswordsUIController::FromWebContents(web_contents);
-  if (!ui_controller) {
-    return;
-  }
-  ui_controller->NotifyUnsyncedCredentialsWillBeDeleted(std::move(credentials));
-}
-
-base::WeakPtr<UnsyncedCredentialsDeletionNotifier>
-UnsyncedCredentialsDeletionNotifierImpl::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+// Returns a repeating callback that to show warning UI that credentials are
+// about to be deleted. Note that showing the UI is asynchronous, but safe to
+// call from any sequence.
+UnsyncedCredentialsDeletionNotifier CreateUnsyncedCredentialsDeletionNotifier(
+    Profile& profile) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Tries to show warning UI that `credentials` will be deleted.
+  auto try_to_show_ui = base::BindRepeating(
+      [](base::WeakPtr<Profile> profile,
+         std::vector<PasswordForm> credentials) {
+        if (!profile) {
+          return;
+        }
+        Browser* browser = chrome::FindBrowserWithProfile(profile.get());
+        if (!browser) {
+          return;
+        }
+        content::WebContents* web_contents =
+            browser->tab_strip_model()->GetActiveWebContents();
+        if (!web_contents) {
+          return;
+        }
+        if (auto* ui_controller =
+                ManagePasswordsUIController::FromWebContents(web_contents)) {
+          ui_controller->NotifyUnsyncedCredentialsWillBeDeleted(
+              std::move(credentials));
+        }
+      },
+      profile.GetWeakPtr());
+  return base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                            std::move(try_to_show_ui));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -136,12 +128,12 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 #if BUILDFLAG(IS_ANDROID)
       new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
           profile->GetPath(), profile->GetPrefs(),
-          /*unsynced_deletions_notifier=*/nullptr, os_crypt_async));
+          /*unsynced_deletions_notifier=*/base::NullCallback(),
+          os_crypt_async));
 #else
       new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
           profile->GetPath(), profile->GetPrefs(),
-          std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile),
-          os_crypt_async));
+          CreateUnsyncedCredentialsDeletionNotifier(*profile), os_crypt_async));
 #endif
 
   affiliations::AffiliationService* affiliation_service =

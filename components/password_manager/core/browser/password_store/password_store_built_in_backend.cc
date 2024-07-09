@@ -104,7 +104,7 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
         wipe_model_upon_sync_disabled_behavior,
     PrefService* prefs,
     os_crypt_async::OSCryptAsync* os_crypt_async,
-    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier)
+    UnsyncedCredentialsDeletionNotifier notifier)
     : pref_service_(prefs), os_crypt_async_(os_crypt_async) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
