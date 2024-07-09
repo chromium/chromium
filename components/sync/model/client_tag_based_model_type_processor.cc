@@ -1226,11 +1226,7 @@ void ClientTagBasedModelTypeProcessor::GetAllNodesForDebugging(
 
   std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
   if (!batch) {
-    // TODO(crbug.com/347649753): This preserves the historic behavior from the
-    // asynchronous version of GetAllDataForDebugging(), which was to not run
-    // the callback at all in case of errors. It would probably be better to run
-    // it with empty results instead, to avoid hangs in sync-internals if any
-    // data type encounters an error.
+    std::move(callback).Run(type_, base::Value::List());
     return;
   }
 
