@@ -193,6 +193,9 @@ constexpr base::FeatureParam<int> kLensOverlayServerRequestTimeout{
 constexpr base::FeatureParam<bool> kLensOverlayEnableErrorPage{
     &kLensOverlay, "enable-error-page-webui", true};
 
+constexpr base::FeatureParam<std::string> kLensOverlayGscQueryParamValue{
+    &kLensOverlay, "gsc-query-param-value", "2"};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -539,6 +542,10 @@ int GetLensOverlayServerRequestTimeout() {
 
 bool GetLensOverlayEnableErrorPage() {
   return kLensOverlayEnableErrorPage.Get();
+}
+
+std::string GetLensOverlayGscQueryParamValue() {
+  return kLensOverlayGscQueryParamValue.Get();
 }
 
 }  // namespace lens::features
