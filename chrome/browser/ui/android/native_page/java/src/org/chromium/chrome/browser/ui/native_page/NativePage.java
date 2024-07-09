@@ -195,15 +195,27 @@ public interface NativePage {
      */
     private static @NativePageType int nativePageType(
             GURL url, NativePage candidatePage, boolean isIncognito, boolean isPdf) {
-        if (!isPdf) {
-            return chromePageType(url, candidatePage, isIncognito);
+        if (UrlConstants.PDF_HOST.equals(url.getHost())) {
+            if (isPdf) {
+                // For navigation to chrome-native://pdf/ with the isPdf param (e.g. open a pdf
+                // link), pdf page should be created.
+                // Unlike other native pages, each pdf page could be different. We need to compare
+                // the entire url instead of the host to determine if the pdf candidate page could
+                // be reused.
+                if (candidatePage != null && candidatePage.getUrl().equals(url.getSpec())) {
+                    return NativePageType.CANDIDATE;
+                } else {
+                    return NativePageType.PDF;
+                }
+            } else {
+                // For navigation to chrome-native://pdf/ without isPdf param (e.g. navigate
+                // back/forward to pdf page), do not create pdf page yet. The pdf page will be
+                // created after the pdf document is re-downloaded in other parts of the code.
+                return NativePageType.NONE;
+            }
         }
 
-        if (candidatePage != null && candidatePage.getUrl().equals(url.getSpec())) {
-            return NativePageType.CANDIDATE;
-        }
-
-        return NativePageType.PDF;
+        return chromePageType(url, candidatePage, isIncognito);
     }
 
     /**
