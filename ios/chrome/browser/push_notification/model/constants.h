@@ -69,10 +69,17 @@ extern NSString* const kContentNotificationFeedbackCategoryIdentifier;
 // NAU.
 extern NSString* const kContentNotificationNAUBodyParameter;
 
+// The NSUserDefaults key for the delivered content notifications that need to
+// be reported.
+extern NSString* const kContentNotificationContentArrayKey;
+
 // The histogram name for the NAU success metric.
 extern const char kNAUHistogramName[];
 
 // The histogram name to record a Content Notification action.
 extern const char kContentNotificationActionHistogramName[];
+
+// The max amount of NAU sends per session.
+extern const int kDeliveredNAUMaxSendsPerSession;
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_

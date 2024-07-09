@@ -360,6 +360,12 @@ BASE_DECLARE_FEATURE(kContentNotificationProvisionalIgnoreConditions);
 // True if Content Notification Provisional is enabled without any conditions.
 bool IsContentNotificationProvisionalIgnoreConditions();
 
+// Flag to override delivered NAUs.
+BASE_DECLARE_FEATURE(kContentNotificationDeliveredNAU);
+
+// Parameter value for the max number of delivered NAUs to be sent per session.
+extern const char kDeliveredNAUMaxPerSession[];
+
 // Feature flag to enable the Large Fakebox design changes.
 BASE_DECLARE_FEATURE(kIOSLargeFakebox);
 
