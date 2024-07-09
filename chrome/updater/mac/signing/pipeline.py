@@ -121,7 +121,7 @@ def _package_and_sign_pkg(paths, config):
         pkg_path,
     ]
     if config.installer_identity:
-        args.extends([
+        args.extend([
             '--sign',
             config.installer_identity,
         ])
