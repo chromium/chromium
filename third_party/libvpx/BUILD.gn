@@ -113,7 +113,7 @@ config("libvpx_public_config") {
 }
 
 source_set("libvpx_test_generic_headers") {
-  deps = [ ":libvpx_generic_headers" ]
+  deps = [ ":libvpx" ]
   sources = libvpx_test_srcs_generic_headers
 }
 
@@ -127,13 +127,12 @@ config("gtest_config") {
 source_set("gtest") {
   sources = [ "source/libvpx/third_party/googletest/src/src/gtest-all.cc" ]
 
-  include_dirs = [ "source/libvpx/third_party/googletest/src/" ]
-
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   public_configs = [ ":gtest_config" ]
 
+  # gtest-death-test dependency on fdio for fuchsia builds
   if (is_fuchsia) {
     deps = [
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",
@@ -145,7 +144,7 @@ source_set("gtest") {
 executable("decode_encode_profile_test") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  include_dirs = libvpx_include_dirs + [ "source/libvpx/third_party/libwebm/" ]
+  include_dirs = [ "source/libvpx/third_party/libwebm/" ]
 
   testonly = true
   sources = [
@@ -686,7 +685,7 @@ test("test_libvpx") {
   sources = libvpx_test_srcs_generic
   sources += libvpx_test_srcs_generic_cc
 
-  include_dirs = libvpx_include_dirs + [ "source/libvpx/third_party/libwebm/" ]
+  include_dirs = [ "source/libvpx/third_party/libwebm/" ]
 
   deps = [
     ":gtest",
@@ -709,6 +708,8 @@ test("test_libvpx") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
+    # TODO(wtc): Remove ":libvpx_config" when the unused function warnings in
+    # test/vp9_ethread_test.cc have been fixed.
     ":libvpx_config",
   ]
 }
