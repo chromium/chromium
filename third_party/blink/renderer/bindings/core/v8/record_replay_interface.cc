@@ -1365,9 +1365,10 @@ static void LayoutDom(
   }
 }
 
-static void ForTestingSerializeValueToString(
+static void ForTestingSerializeValueToArray(
   const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = args.GetIsolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   CHECK(args.Length() == 1 &&
         "must be called with a single value");
@@ -1378,9 +1379,14 @@ static void ForTestingSerializeValueToString(
     SerializedScriptValue::Serialize(
       isolate, value,
       SerializedScriptValue::SerializeOptions(), ASSERT_NO_EXCEPTION);
-  v8::Local<v8::String> s = ToV8String(isolate, serializedValue->ToWireString().Utf8().c_str());
+  base::span<const uint8_t> data = serializedValue->GetWireData();
 
-  args.GetReturnValue().Set(s);
+  v8::Local<v8::Array> result = v8::Array::New(isolate);
+  for (size_t i = 0; i < data.size(); ++i) {
+    result->Set(context, (uint32_t)i, v8::Number::New(isolate, data[i])).Check();
+  }
+
+  args.GetReturnValue().Set(result);
 }
 
 static void fromJsGetArgumentsInFrame(
@@ -2459,8 +2465,8 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
 
   // exported for tests
   SetFunctionProperty(
-    isolate, args, "forTestingSerializeValueToString",
-    ForTestingSerializeValueToString);
+    isolate, args, "forTestingSerializeValueToArray",
+    ForTestingSerializeValueToArray);
 }
 
 void InitializeRecordReplay(

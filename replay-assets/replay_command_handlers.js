@@ -45,7 +45,7 @@ const {
   REPLAY_CDT_PAUSE_OBJECT_GROUP,
 
   // for testing
-  forTestingSerializeValueToString
+  forTestingSerializeValueToArray
 
 } = __RECORD_REPLAY_ARGUMENTS__;
 
@@ -3278,7 +3278,7 @@ Object.assign(__RECORD_REPLAY__, {
   getFrameArgumentsArray,
   getCurrentEvaluateFrame,
   replayEval,
-  forTestingSerializeValueToString
+  forTestingSerializeValueToArray
 });
 
 /** ###########################################################################
