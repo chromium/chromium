@@ -2109,6 +2109,12 @@ BASE_FEATURE(kOngoingProcesses,
              "OngoingProcesses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, enrollment screen will allow for automatically adding the
+// authenticated user to the device.
+BASE_FEATURE(kOobeAddUserDuringEnrollment,
+             "OobeAddUserDuringEnrollment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, CHOBOE Screen will be shown during the new user onboarding flow.
 BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4203,6 +4209,10 @@ bool IsOobeJellyModalEnabled() {
 
 bool IsBootAnimationEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementOobeSimon);
+}
+
+bool IsOobeAddUserDuringEnrollmentEnabled() {
+  return base::FeatureList::IsEnabled(kOobeAddUserDuringEnrollment);
 }
 
 bool IsOobeSkipAssistantEnabled() {
