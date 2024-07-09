@@ -110,6 +110,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1341651618736211726">Nút tràn</translation>
 <translation id="1341926407152459446">Sử dụng "<ph name="DEVICE_NAME" />" cho đầu vào và đầu ra âm thanh</translation>
 <translation id="1346748346194534595">Phải</translation>
+<translation id="1350494136075914725">Đang diễn ra · Chuyển sang thẻ</translation>
 <translation id="1351937230027495976">Thu gọn menu</translation>
 <translation id="1360220746312242196">Khi tìm kiếm trên trang, hãy chuyển về kết quả phù hợp trước cho nội dung tìm kiếm</translation>
 <translation id="1360788414852622716">Đang vô hiệu hoá hồ sơ. Quá trình này có thể mất vài phút.</translation>
@@ -1048,6 +1049,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4876935764454575645">Lựa chọn nguồn âm thanh</translation>
 <translation id="4881323000405981760">Ứng dụng Linux không hỗ trợ hiệu ứng</translation>
 <translation id="4881695831933465202">Mở</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Đóng góp ý kiến phản hồi (không bắt buộc) để cải thiện nội dung đề xuất:</translation>
 <translation id="4890187583552566966">Quản trị viên của bạn đã tắt Trợ lý Google.</translation>
 <translation id="4890408602550914571">Hãy đảm bảo điện thoại của bạn ở gần và đã bật Bluetooth.</translation>
@@ -1750,6 +1752,7 @@ Mới cài đặt</translation>
 <translation id="742594950370306541">Máy ảnh đang được sử dụng.</translation>
 <translation id="742608627846767349">Xin chào!</translation>
 <translation id="743058460480092004">Máy ảnh và micrô đang được sử dụng.</translation>
+<translation id="7441711280402516925">Đang phát · Chuyển sang thẻ</translation>
 <translation id="7453330308669753048">Đã xoá kết quả khỏi nhật ký tìm kiếm</translation>
 <translation id="7459485586006128091">Điểm phát sóng đã tắt do lỗi nội bộ. Hãy thử kết nối lại sau vài phút.</translation>
 <translation id="7461924472993315131">Ghim</translation>

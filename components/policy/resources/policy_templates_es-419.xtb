@@ -1068,30 +1068,6 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
       La lista aparecerá en el mismo orden que se especifica en la sección "Ordena los idiomas según tus preferencias" de chrome://settings/languages. Los usuarios no podrán cambiar el orden de los idiomas establecidos por la política ni quitarlos, pero podrán agregar idiomas debajo de los que estableció la política. Los usuarios también podrán controlar el idioma de la IU del navegador y las opciones de configuración del corrector ortográfico y de traducción, a menos que se apliquen otras políticas para estas configuraciones.
 
       Si no estableces la política, los usuarios podrán modificar toda la lista de idiomas preferidos.</translation>
-<translation id="1803637633751407847">Te permite establecer una lista de patrones de URL de sitios que especifican los sitios para los cuales
-se inhabilitan las optimizaciones avanzadas de JavaScript.
-
-Si inhabilitas las optimizaciones de JavaScript, es posible que <ph name="PRODUCT_NAME" /> renderice el contenido web más lentamente.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
-
-Las excepciones de la política correspondiente a las optimizaciones de JavaScript solo se aplicarán en el nivel de detalle
-del sitio (eTLD+1). Si una política se establece solo para subdomain.site.com, no se
-aplicará correctamente a site.com ni a subdomain.site.com dado que a ambos sitios les corresponde
-el mismo eTLD+1 (site.com), para el cual no se estableció ninguna política. En este caso, la política
-debe establecerse para site.com de modo que se aplique correctamente tanto a site.com como
-a subdomain.site.com.
-
-Esta política se aplica por marco y no se basa solamente en la URL de origen
-de nivel superior. Entonces, si site-one.com aparece en la política de <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, pero site-one.com carga un marco
-que incluye site-two.com, por ejemplo, site-one.com tendrá inhabilitadas las optimizaciones de JavaScript,
-pero site-two.com utilizará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, si se establece, o bien habilitará
-las optimizaciones de JavaScript de forma predeterminada.
-
-Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, se habilitará
-la optimización de JavaScript para el sitio.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijas para mostrar en el menú de aplicaciones</translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir usar la conexión instantánea mediante dispositivo móvil</translation>
@@ -2212,11 +2188,6 @@ NOTA: Esta política tenía un valor predeterminado "verdadero" documentado de f
 
       Si no estableces la política, se aplicará <ph name="PRINTERS_ALLOW_ALL" />.</translation>
 <translation id="2581338546762479588">Permitir el reinicio automático después de las actualizaciones</translation>
-<translation id="2581374691851317168">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden ejecutar JavaScript.
-
-      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="2585535930727399201">Las extensiones empresariales pueden agregar registros a un archivo de registro del sistema con la API de chrome.systemLog.
 
 Si habilitas la política, los registros se conservarán en el archivo de registro del sistema durante un período limitado.
@@ -6974,27 +6945,6 @@ de esa versión, las restricciones en las anclas de confianza siempre se aplican
 Los orígenes deben corresponder a las aplicaciones web que se instalan de manera automática con la política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (desde la versión 125) o que están configuradas como aplicaciones de kiosco. Para conocer las especificaciones de la API de Device Attributes, consulta https://wicg.github.io/WebApiDevice/device_attributes.
 
 Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos (desde la versión 127), consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
-<translation id="6286225066315435650">Te permite establecer una lista de patrones de URL de sitios que especifican los sitios para los cuales
-se habilitan las optimizaciones avanzadas de JavaScript.
-
-Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
-
-Las excepciones de la política correspondiente a las optimizaciones de JavaScript solo se aplicarán en el nivel de detalle
-del sitio (eTLD+1). Si una política se establece solo para subdomain.site.com, no se
-aplicará correctamente a site.com ni a subdomain.site.com dado que a ambos sitios les corresponde
-el mismo eTLD+1 (site.com), para el cual no se estableció ninguna política. En este caso, la política
-debe establecerse para site.com de modo que se aplique correctamente tanto a site.com como
-a subdomain.site.com.
-
-Esta política se aplica por marco y no se basa solamente en la URL de origen
-de nivel superior. Entonces, si site-one.com aparece en la política de <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, pero site-one.com carga un marco que incluye site-two.com, por ejemplo, site-one.com tendrá habilitadas las optimizaciones de JavaScript,
-pero site-two.com utilizará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, si se establece, o bien habilitará
-las optimizaciones de JavaScript de forma predeterminada.
-
-Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, se habilitará
-la optimización de JavaScript para el sitio.</translation>
 <translation id="6287128640500683781">Permitir que acceda cualquier usuario</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
 <translation id="6287742528823584153">Habilitar el servicio de <ph name="PRODUCT_NAME" /> y abrir el escritorio remoto al acceder</translation>

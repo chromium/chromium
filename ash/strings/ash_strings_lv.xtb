@@ -110,6 +110,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1341651618736211726">Pārpilde</translation>
 <translation id="1341926407152459446">Varat izmantot ierīci <ph name="DEVICE_NAME" /> audio ieejai un izvadei.</translation>
 <translation id="1346748346194534595">Pa labi</translation>
+<translation id="1350494136075914725">Pašlaik notiek · Pārslēgties uz cilni</translation>
 <translation id="1351937230027495976">Sakļaut izvēlni</translation>
 <translation id="1360220746312242196">Veicot meklēšanu lapā, pāriet uz iepriekšējo atbilstošo meklēšanas rezultātu</translation>
 <translation id="1360788414852622716">Notiek profila atspējošana. Tā var ilgt dažas minūtes.</translation>
@@ -1048,6 +1049,7 @@ Pievienota viena ierīce.</translation>
 <translation id="4876935764454575645">Audio atlase</translation>
 <translation id="4881323000405981760">Linux lietotnēs efekti netiek atbalstīti</translation>
 <translation id="4881695831933465202">Atvērt</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Neobligāti — sniedziet atsauksmes, lai uzlabotu ieteikumus:</translation>
 <translation id="4890187583552566966">Jūsu administrators ir atspējojis Google asistentu.</translation>
 <translation id="4890408602550914571">Tālrunim ir jāatrodas tuvumā, un tajā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
@@ -1750,6 +1752,7 @@ Jauna instalācija</translation>
 <translation id="742594950370306541">Kamera tiek lietota.</translation>
 <translation id="742608627846767349">Labrīt!</translation>
 <translation id="743058460480092004">Kamera un mikrofons tiek lietoti.</translation>
+<translation id="7441711280402516925">Notiek atskaņošana · Pārslēgties uz cilni</translation>
 <translation id="7453330308669753048">Meklēšanas vēstures rezultāts ir noņemts</translation>
 <translation id="7459485586006128091">Tīklājs tika izslēgts iekšējas kļūdas dēļ. Pēc dažām minūtēm mēģiniet atkārtoti izveidot savienojumu.</translation>
 <translation id="7461924472993315131">Piespraust</translation>

@@ -110,6 +110,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1341651618736211726">Ampliado</translation>
 <translation id="1341926407152459446">Usar "<ph name="DEVICE_NAME" />" para la entrada y la salida de audio</translation>
 <translation id="1346748346194534595">Derecha</translation>
+<translation id="1350494136075914725">En curso · Cambiar a la pestaña</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1360220746312242196">Ir a la coincidencia de búsqueda anterior al buscar en una página</translation>
 <translation id="1360788414852622716">Se está inhabilitando el perfil. Este proceso puede demorar unos minutos.</translation>
@@ -1049,6 +1050,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4876935764454575645">Selección de audio</translation>
 <translation id="4881323000405981760">No se admiten efectos en las apps de Linux</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Envía comentarios opcionales para mejorar las sugerencias:</translation>
 <translation id="4890187583552566966">Tu administrador inhabilitó el Asistente de Google.</translation>
 <translation id="4890408602550914571">Asegúrate de que el teléfono esté cerca y tenga la conexión Bluetooth activada.</translation>
@@ -1751,6 +1753,7 @@ Nueva instalación</translation>
 <translation id="742594950370306541">Cámara en uso</translation>
 <translation id="742608627846767349">Buenos días:</translation>
 <translation id="743058460480092004">Cámara y micrófono en uso</translation>
+<translation id="7441711280402516925">Reproduciendo · Cambiar a la pestaña</translation>
 <translation id="7453330308669753048">Se quitó el resultado del historial de búsqueda</translation>
 <translation id="7459485586006128091">Debido a un error interno, se desactivó el hotspot. Intenta volver a conectarte dentro de unos minutos.</translation>
 <translation id="7461924472993315131">Fijar</translation>

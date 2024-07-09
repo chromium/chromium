@@ -110,6 +110,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1341651618736211726">Oorloop</translation>
 <translation id="1341926407152459446">Gebruik "<ph name="DEVICE_NAME" />" vir oudio-invoer en -uitvoer</translation>
 <translation id="1346748346194534595">Regs</translation>
+<translation id="1350494136075914725">Voortdurend · Skakel oor na oortjie</translation>
 <translation id="1351937230027495976">Vou kieslys in</translation>
 <translation id="1360220746312242196">Gaan na vorige passing vir soektog wanneer ’n bladsy deurgesoek word</translation>
 <translation id="1360788414852622716">Deaktiveer tans profiel. Dit kan ’n paar minute neem.</translation>
@@ -1049,6 +1050,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4876935764454575645">Oudiokeuse</translation>
 <translation id="4881323000405981760">Effekte word nie in Linux-apps gesteun nie</translation>
 <translation id="4881695831933465202">Maak oop</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Verskaf opsionele terugvoer om voorstelle te verbeter:</translation>
 <translation id="4890187583552566966">Jou administrateur het die Google Assistent gedeaktiveer</translation>
 <translation id="4890408602550914571">Maak seker dat jou foon in die omtrek is en dat Bluetooth aangeskakel is.</translation>
@@ -1751,6 +1753,7 @@ Nuwe installasie</translation>
 <translation id="742594950370306541">Kamera word gebruik.</translation>
 <translation id="742608627846767349">Goeiemôre</translation>
 <translation id="743058460480092004">Kamera en mikrofoon word gebruik.</translation>
+<translation id="7441711280402516925">Speel tans · Skakel oor na oortjie</translation>
 <translation id="7453330308669753048">Soekgeskiedenisresultaat is verwyder</translation>
 <translation id="7459485586006128091">Warmkol is weens ’n interne fout afgeskakel. Probeer oor ’n paar minute weer koppel.</translation>
 <translation id="7461924472993315131">Pin</translation>

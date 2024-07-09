@@ -1033,6 +1033,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1730989807608739928">Scroll towards the last tab</translation>
 <translation id="1731520826054843792">Microsoft Certificate Template</translation>
 <translation id="1731911755844941020">Sending request...</translation>
+<translation id="1732380773380808394">You'll also get your passwords and more from your Google Account.</translation>
 <translation id="1734212868489994726">Light blue</translation>
 <translation id="1734230530703461088">Failed to load extensions within the time limit. Please contact your administrator.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> may not be able to keep itself updated</translation>
@@ -3379,6 +3380,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3441663102605358937">Sign in to <ph name="ACCOUNT" /> again to verify this account</translation>
 <translation id="3441824746233675597">Make it harder for people with access to your Internet traffic to see which sites you visit. <ph name="PRODUCT_NAME" /> uses a secure connection to look up a site's IP address in the DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">Let Google use your hardware data to help improve <ph name="DEVICE_OS" />. If you decline, this data is still sent to Google to determine proper updates but is not stored or used otherwise.</translation>
+<translation id="3443545121847471732">Enter a six-digit PIN</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> timed out</translation>
 <translation id="3443754338602062261">You already have passwords for these accounts in your <ph name="BRAND" />. If you choose to import one of the passwords below, it will replace the existing one.</translation>
 <translation id="344449859752187052">Third-party cookies blocked</translation>
@@ -5822,6 +5824,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5247243947166567755">Select <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">The browser crashed before the download completed.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> uses your location to give you local content. You can change this in <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Create a recovery PIN for Google Password Manager</translation>
 <translation id="5252496130205799136">Use your Google Account to save and fill passwords?</translation>
 <translation id="5252653240322147470">PIN must be less than <ph name="MAXIMUM" /> digits</translation>
 <translation id="5253554634804500860">Use <ph name="DEVICE_NAME" /></translation>
@@ -7857,6 +7860,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6790428901817661496">Play</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> was added remotely</translation>
 <translation id="6790820461102226165">Add Person...</translation>
+<translation id="6793610798874309813">Your PIN can be four characters or more</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">If your passkey for <ph name="APP_NAME" /> is on a USB security key, insert and touch it now</translation>
 <translation id="679486139907144816">To sign in to this site with a passkey, turn on Windows Hello in settings. Then return to this site and try again.</translation>

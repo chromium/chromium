@@ -3326,7 +3326,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3414952576877147120">Velikost:</translation>
 <translation id="3414966631182382431">Váš <ph name="BEGIN_LINK" />prohlížeč je spravován<ph name="END_LINK" /> doménou <ph name="MANAGER" /></translation>
 <translation id="3414974735818878791">Kliknutí prostředním tlačítkem</translation>
-<translation id="341589277604221596">Živý přepis – <ph name="LANGUAGE" /></translation>
+<translation id="341589277604221596">Okamžité titulky – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Vždy zobrazovat úplné adresy URL</translation>
 <translation id="3417835166382867856">Hledat karty</translation>
 <translation id="3417836307470882032">Armádní čas</translation>
@@ -4689,7 +4689,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Přesunout do…</translation>
 <translation id="4405781821077215583">Zmenšit nebo zvětšit položky na obrazovce (včetně textu)</translation>
-<translation id="4406883609789734330">Živý přepis</translation>
+<translation id="4406883609789734330">Okamžité titulky</translation>
 <translation id="4407039574263172582">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e‑mailovou adresu a profilový obrázek. Přečtěte si <ph name="BEGIN_LINK" />smluvní podmínky<ph name="END_LINK" /> tohoto webu.</translation>
 <translation id="4408599188496843485">&amp;Nápověda</translation>
 <translation id="4408965460206576430">Tento soubor obsahuje malware nebo pochází z podezřelého webu</translation>
@@ -4852,7 +4852,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4527929807707405172">Zapnout opačné posouvání. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Návrh překladu</translation>
 <translation id="4528638190900283934">Po přihlášení budete mít k dispozici další funkce</translation>
-<translation id="4529455689802245339">Živý přepis Chrome nemusí fungovat</translation>
+<translation id="4529455689802245339">Okamžité titulky Chrome nemusí fungovat</translation>
 <translation id="4531924570968473143">Koho chcete do tohoto zařízení <ph name="DEVICE_TYPE" /> přidat?</translation>
 <translation id="4532625150642446981">Zařízení <ph name="USB_DEVICE_NAME" /> se používá. Změna přidružení zařízení, které je používáno, může způsobit chyby. Opravdu chcete pokračovat?</translation>
 <translation id="4532646538815530781">Tento web používá senzory pohybu.</translation>
@@ -6312,7 +6312,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5620612546311710611">statistiky o využívání</translation>
 <translation id="5621272825308610394">Žádné zobrazované jméno</translation>
 <translation id="5621350029086078628">Toto je experimentální funkce založená na umělé inteligenci.</translation>
-<translation id="562250930904332809">&amp;Vypnout živý přepis</translation>
+<translation id="562250930904332809">&amp;Vypnout okamžité titulky</translation>
 <translation id="5623282979409330487">Tento web používá senzory pohybu.</translation>
 <translation id="5623842676595125836">Protokol</translation>
 <translation id="5624120631404540903">Spravovat hesla</translation>
@@ -9721,7 +9721,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8158117992543756526">Toto zařízení přestalo v <ph name="MONTH_AND_YEAR" /> dostávat automatické aktualizace softwaru a zabezpečení. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Potvrzovat akce jako rozdělení obrazovky nebo přepnutí plochy vibrací. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Chyba při nastavování důvěryhodnosti certifikátu</translation>
-<translation id="8160775796528709999">Když v nastavení povolíte živý přepis, budou se u zvuku a videí zobrazovat titulky</translation>
+<translation id="8160775796528709999">Když v nastavení povolíte okamžité titulky, budou se u zvuku a videí zobrazovat titulky</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Vrátit se k procházení</translation>
 <translation id="8161604891089629425">Obrysové písmo</translation>
@@ -10080,7 +10080,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8419098111404128271">Výsledky vyhledávání pro <ph name="SEARCH_TEXT" /></translation>
 <translation id="8419144699778179708">Vymaže historii, včetně vyhledávacího pole</translation>
 <translation id="8420308167132684745">Upravit záznamy slovníku</translation>
-<translation id="8421361468937925547">Živý přepis (pouze v angličtině)</translation>
+<translation id="8421361468937925547">Okamžité titulky (pouze v angličtině)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Chybí zásobník</translation>
 <translation id="8424250197845498070">Zablokováno pokročilou ochranou</translation>
@@ -10662,7 +10662,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8846132060409673887">Zjistit výrobce a model počítače</translation>
 <translation id="8846163936679269230">Resetovat profily eSIM karet</translation>
-<translation id="8846239054091760429">Zvuk mono, spuštění, živý přepis a další</translation>
+<translation id="8846239054091760429">Zvuk mono, spuštění, okamžité titulky a další</translation>
 <translation id="8847459600640933659">Tržby z reklam také podporují mnoho bezplatných produktů a služeb Google, jako jsou Chrome, Gmail, Mapy a YouTube.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skryté</translation>
@@ -10833,7 +10833,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8970887620466824814">Došlo k chybě.</translation>
 <translation id="89720367119469899">Escapovat</translation>
 <translation id="8972513834460200407">Obraťte se na svého správce sítě a ověřte, že stahování ze serverů Google neblokuje firewall.</translation>
-<translation id="8973263196882835828">&amp;Zapnout živý přepis</translation>
+<translation id="8973263196882835828">&amp;Zapnout okamžité titulky</translation>
 <translation id="8973557916016709913">Odstranit úroveň přiblížení</translation>
 <translation id="8973596347849323817">Toto zařízení můžete přizpůsobit svým potřebám. Funkce přístupnosti lze později změnit v Nastavení.</translation>
 <translation id="897414447285476047">Cílový soubor je neúplný kvůli problému s připojením.</translation>
@@ -11268,7 +11268,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="98515147261107953">Na šířku</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Všeobecné</translation>
-<translation id="987475089238841621">Jazykové balíčky se používají pro živý přepis a jsou uloženy ve vašem zařízení</translation>
+<translation id="987475089238841621">Jazykové balíčky se používají pro okamžité titulky a jsou uloženy ve vašem zařízení</translation>
 <translation id="988320949174893488">Občasné zadrhávání</translation>
 <translation id="988978206646512040">Prázdné přístupové heslo není povoleno</translation>
 <translation id="992032470292211616">Rozšíření, aplikace a motivy mohou poškodit vaše zařízení. Opravdu chcete pokračovat?</translation>

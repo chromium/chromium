@@ -1014,18 +1014,6 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
       La liste apparaîtra dans le même ordre dans la section "Classer les langues selon vos préférences" dans chrome://settings/languages. Les utilisateurs ne pourront pas supprimer ni réorganiser les langues définies par la règle, mais pourront en ajouter sous celles définies. Les utilisateurs auront un contrôle total de la langue de l'UI du navigateur et des paramètres de traduction/du correcteur orthographique, sauf si d'autres règles s'appliquent.
 
       Si cette règle n'est pas définie, les utilisateurs peuvent manipuler toute la liste des langues préférées.</translation>
-<translation id="1803637633751407847">Permet de lister les formats d'URL des sites pour lesquels les optimisations JavaScript avancées sont désactivées.
-
-Si les optimisations JavaScript sont désactivées, <ph name="PRODUCT_NAME" /> peut afficher le contenu Web plus lentement.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
-
-Les exceptions aux règles liées optimisations JavaScript ne seront appliquées qu'à un niveau de site (eTLD+1). Une règle qui n'est configurée que pour subdomain.site.com ne s'appliquera pas correctement à site.com ni à subdomain.site.com, car tous les deux se résolvent sur le même eTLD+1 (site.com) pour lequel il n'y a aucune règle. Dans ce cas, la règle doit être définie sur site.com pour s'appliquer correctement à la fois à site.com et à subdomain.site.com.
-
-Cette règle s'applique frame par frame et ne repose pas que sur l'URL d'origine de premier niveau. Par exemple, si site-one.com est spécifié dans la règle <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, mais qu'il charge un frame contenant site-two.com, alors les optimisations JavaScript seront désactivées pour site-one.com, mais site-two.com utilisera la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (si elle est configurée) ou les optimisations JavaScript seront activées par défaut.
-
-Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, les optimisations JavaScript sont activées pour le site.</translation>
 <translation id="1803646570632580723">Liste des applications épinglées à afficher dans le lanceur d'applications</translation>
 <translation id="1808715480127969042">Bloquer les cookies sur ces sites</translation>
 <translation id="1810261428246410396">Autoriser le partage de connexion instantané</translation>
@@ -2120,11 +2108,6 @@ REMARQUE : Cette règle avait une valeur par défaut ("True") incorrectement do
 
       Si cette règle n'est pas définie, <ph name="PRINTERS_ALLOW_ALL" /> est appliqué.</translation>
 <translation id="2581338546762479588">Autoriser le redémarrage automatique après les mises à jour</translation>
-<translation id="2581374691851317168">Permet de lister les formats d'URL indiquant quels sites ne peuvent pas exécuter JavaScript.
-
-      Si cette règle n'est pas configurée, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit elle-même configurée. Sinon, le paramètre défini par l'utilisateur s'applique.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="2585535930727399201">Les extensions d'entreprise permettent d'ajouter des journaux à un fichier journal système à l'aide de l'API chrome.systemLog.
 
 Si cette règle est activée, les journaux sont conservés dans le fichier journal système pendant une durée limitée.
@@ -6707,16 +6690,6 @@ Cette règle a été supprimée dans la version 126 de <ph name="PRODUCT_NAME" 
 Les origines doivent correspondre aux applis Web installées d'office à l'aide de la règle <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (depuis la version 125), ou configurées en tant qu'applis kiosque. Pour connaître les spécifications de l'API Device Attributes, veuillez consulter https://wicg.github.io/WebApiDevice/device_attributes.
 
 Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides (depuis la version 127), consultez https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
-<translation id="6286225066315435650">Permet de lister les formats d'URL des sites pour lesquels les optimisations JavaScript avancées sont activées.
-
-Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
-
-Les exceptions aux règles liées optimisations JavaScript ne seront appliquées qu'à un niveau de site (eTLD+1). Une règle qui n'est configurée que pour subdomain.site.com ne s'appliquera pas correctement à site.com ni à subdomain.site.com, car tous les deux se résolvent sur le même eTLD+1 (site.com) pour lequel il n'y a aucune règle. Dans ce cas, la règle doit être définie sur site.com pour s'appliquer correctement à la fois à site.com et à subdomain.site.com.
-
-Cette règle s'applique frame par frame et ne repose pas que sur l'URL d'origine de premier niveau. Par exemple, si site-one.com est spécifié dans la règle <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, mais qu'il charge un frame contenant site-two.com, alors les optimisations JavaScript seront activées pour site-one.com, mais site-two.com utilisera la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (si elle est configurée) ou les optimisations JavaScript seront activées par défaut.
-
-Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, les optimisations JavaScript sont activées pour le site.</translation>
 <translation id="6287128640500683781">Autoriser tous les utilisateurs à se connecter</translation>
 <translation id="6287310684159482272">Paramètres des cookies</translation>
 <translation id="6287742528823584153">Activer le service <ph name="PRODUCT_NAME" /> et lancer le bureau à distance lors de la connexion</translation>

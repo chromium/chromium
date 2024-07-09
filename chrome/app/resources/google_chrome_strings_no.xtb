@@ -176,6 +176,7 @@
 <translation id="3396977131400919238">Det oppsto en feil i operativsystemet under installeringen. Last ned Google Chrome på nytt.</translation>
 <translation id="3428747202529429621">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget</translation>
 <translation id="3434246496373299699">Chrome kan sjekke passordene dine når du logger på med Google-kontoen din</translation>
+<translation id="3438681572027105609">For å få passordene dine med mer på alle enhetene dine, logg på Chrome</translation>
 <translation id="3450887623636316740">Denne filen kan være farlig<ph name="LINE_BREAK" />Chrome kan sjekke denne nedlastingen for deg hvis du oppgir passordet. Informasjon om filen blir sendt til Google Safe Browsing, men filinnholdet og passordet blir værende på enheten.</translation>
 <translation id="3451115285585441894">Legger til i Chrome …</translation>
 <translation id="345171907106878721">Legg til deg selv i Chrome</translation>
@@ -215,6 +216,7 @@
 <translation id="4035053306113201399">ChromeOS må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="4050175100176540509">Viktige sikkerhetsforbedringer og nye funksjoner er tilgjengelige i den nyeste versjonen.</translation>
 <translation id="4053720452172726777">Tilpass og kontroller Google Chrome</translation>
+<translation id="408393047846373801">For å få passordene dine med mer på alle enhetene dine, logg på Chrome. Dette passordet blir lagret i Google-kontoen din når du logger på.</translation>
 <translation id="4084404300720192944">For å dele vinduet, tillat skjermopptak for Chrome i Systemvalg.</translation>
 <translation id="4106587138345390261">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av informasjonen din og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="4110895483821904099">Konfigurer den nye Chrome-profilen din</translation>
@@ -457,6 +459,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="76531479118467370">Chrome har blokkert denne nedlastingen fordi du har slått av Safe Browsing, så filen kan ikke bekreftes</translation>
 <translation id="7655455401911432608">Nettleserloggen din, som er en logg over nettsteder du har besøkt med Chrome på denne enheten.</translation>
+<translation id="7655472416356262023">Fjern kontoen fra Chrome</translation>
 <translation id="7661924425853052955">Du har ikke vært her i det siste. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> til</translation>
 <translation id="7668816516367091728">Utfør oppgaver som oversetting, utregninger med mer – direkte fra adressefeltet</translation>
 <translation id="7670287553302121848">Chrome-kontoen krever ny autentisering</translation>

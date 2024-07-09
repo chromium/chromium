@@ -72,6 +72,7 @@
 <translation id="2174917724755363426">Инсталирането не е завършило. Наистина ли искате да го анулирате?</translation>
 <translation id="2185166961232948079">Chromium – Вход в мрежата – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Грешка при проверката за актуализации: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2199210295479376551">Премахване на профила от Chromium</translation>
 <translation id="2210682093923538346">Опасен сайт. Chromium премахна разрешението за известията.</translation>
 <translation id="2240214816234246077">Не сте посещавали този сайт наскоро. Chromium премахна разрешенията „<ph name="PERMISSION_1" />“ и „<ph name="PERMISSION_2" />“</translation>
 <translation id="2241627712206172106">Ако споделяте компютър, близките и приятелите ви могат да сърфират отделно и да настроят Chromium точно така, както искат.</translation>

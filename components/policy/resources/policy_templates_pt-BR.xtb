@@ -1065,30 +1065,6 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
       A lista aparecerá nessa mesma ordem na seção "Ordenar idiomas com base na sua preferência" em chrome://settings/languages. Os usuários não poderão remover ou reorganizar os idiomas definidos pela política, mas será possível adicionar mais idiomas abaixo deles. Além disso, os usuários terão total controle sobre as configurações de tradução/verificação ortográfica e o idioma da interface do navegador, a menos que eles sejam impostos por outras políticas.
 
       Se a política não for definida, será possível manipular toda a lista de idiomas preferidos.</translation>
-<translation id="1803637633751407847">Permite definir uma lista de padrões de URL que especifica os sites em que as otimizações avançadas
-do JavaScript estão desativadas.
-
-Se você desativar as otimizações do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web mais lentamente.
-
-Para saber mais sobre padrões de URL válidos, consulte
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-As exceções da política de otimização do JavaScript serão aplicadas apenas na granularidade de um
-site (eTLD+1). Uma política definida apenas para subdomain.site.com não será
-corretamente aplicada a site.com ou subdomain.site.com, já que ambos são direcionados para
-o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política
-precisa ser definida em site.com para que seja corretamente aplicada a site.com e
-subdomain.site.com.
-
-Esta política é aplicada frame a frame e não tem base exclusiva no URL de
-origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, mas carregar um frame
-com site-two.com, site-one.com terá as otimizações do JavaScript
-desativadas, mas site-two.com vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se definida, ou terá como padrão as otimizações do
-JavaScript ativadas.
-
-Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário,
-a otimização do JavaScript será ativada.</translation>
 <translation id="1803646570632580723">Lista de aplicativos fixados a serem mostrados no iniciador</translation>
 <translation id="1808715480127969042">Bloquear cookies nestes sites</translation>
 <translation id="1810261428246410396">Permitir que o tethering instantâneo seja usado.</translation>
@@ -2210,11 +2186,6 @@ OBSERVAÇÃO: essa política tinha documentado incorretamente o padrão como "ve
 
       Se a política não for definida, <ph name="PRINTERS_ALLOW_ALL" /> será aplicado.</translation>
 <translation id="2581338546762479588">Permitir a reinicialização automática após atualizações</translation>
-<translation id="2581374691851317168">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica sites que não podem executar JavaScript.
-
-      Se a política não tiver definição, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="2585535930727399201">As extensões empresariais podem adicionar registros pela API chrome.systemLog a um arquivo de registro do sistema.
 
 Se a política for ativada, os registros serão mantidos no arquivo de registro do sistema por tempo limitado.
@@ -6964,27 +6935,6 @@ dessa versão, as restrições em âncoras de confiança são sempre aplicadas.<
 As origens precisam corresponder a aplicativos da Web de instalação forçada usando a política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (da versão 125 em diante) configurados como um aplicativo de quiosque. Para conferir a especificação da API Device Attributes, consulte https://wicg.github.io/WebApiDevice/device_attributes (link em inglês).
 
 Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos (da versão 127 em diante), consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
-<translation id="6286225066315435650">Permite definir uma lista de padrões de URL que especifica os sites em que
-as otimizações avançadas do JavaScript estão ativadas.
-
-Para conferir informações detalhadas sobre padrões de URL válidos, consulte
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-As exceções da política de otimização do JavaScript serão aplicadas apenas na granularidade de um
-site (eTLD+1). Uma política definida apenas para subdomain.site.com não será
-corretamente aplicada a site.com ou subdomain.site.com, já que ambos são direcionados para
-o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política
-precisa ser definida em site.com para que seja corretamente aplicada a site.com e
-subdomain.site.com.
-
-Esta política é aplicada frame a frame e não tem base exclusiva no
-URL de origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, mas carregar um frame com site-two.com, site-one.com terá otimizações do JavaScript
-ativadas, mas site-two.com vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se definida, ou terá como padrão as otimizações do
-JavaScript ativadas.
-
-Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário,
-a otimização do JavaScript será ativada.</translation>
 <translation id="6287128640500683781">Permitir que qualquer usuário faça login</translation>
 <translation id="6287310684159482272">Configurações de cookies</translation>
 <translation id="6287742528823584153">Ativar o serviço <ph name="PRODUCT_NAME" /> e iniciar o espaço de trabalho remoto após o login</translation>

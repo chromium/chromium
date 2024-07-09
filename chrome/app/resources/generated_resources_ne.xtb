@@ -1021,6 +1021,7 @@
 <translation id="1730989807608739928">स्क्रोल गरेर अन्तिम ट्याबमा लगियोस्</translation>
 <translation id="1731520826054843792">Microsoft सर्टिफिकेटको टेम्प्लेट</translation>
 <translation id="1731911755844941020">अनुरोध पठाउँदै...</translation>
+<translation id="1732380773380808394">तपाईं आफ्नो Google खाताबाट आफ्ना पासवर्डलगायतका थप कुराहरू पनि प्राप्त गर्न सक्नु हुने छ।</translation>
 <translation id="1734212868489994726">हल्का निलो</translation>
 <translation id="1734230530703461088">तोकिएको समयभित्र एक्स्टेन्सनहरू लोड गर्न सकिएन। कृपया आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> ले आफैँलाई अद्यावधिक राख्न सक्षम नहुन सक्छ</translation>
@@ -4373,6 +4374,7 @@
 <translation id="4163560723127662357">अज्ञात कुँजीपाटी</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> वैध सङ्गठनको इमेल ठेगाना होइन। आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्। तपाईं एड्मिन हुनुहुन्छ भने तपाईं निम्न लिंकमा गएर आफ्नो सङ्गठन सेटअप गर्न सक्नुहुन्छ: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
+<translation id="4166847326079525123">Windows का सिस्टमसम्बन्धी प्राथमिकताहरूमा लोकेसन अफ गरिएको छ</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" /> प्रयोग गर्न खोज्दै छ। उक्त एपलाई <ph name="DEVICE_NAME" /> प्रयोग गर्ने अनुमति दिन क्यामेराको गोपनीयता स्विच अफ गर्नुहोस्।</translation>
 <translation id="4167393659000039775">कुनै पनि डेटा गुमेका खण्डमा Google जिम्मेवार हुने छैन र <ph name="DEVICE_OS" /> ले प्रमाणित नगरिएका मोडेलहरूमा काम नगर्न सक्छ। g.co/flex/InstallGuide मा गई थप जान्नुहोस्।</translation>
 <translation id="4167924027691268367"><ph name="SHORTCUT_TITLE" /> को सर्टकटका सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
@@ -5804,6 +5806,7 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> चयन गर्नुहोस्</translation>
 <translation id="5249624017678798539">डाउनलोड पूरा हुनुभन्दा अगाडि नै ब्राउजर क्र्यास भयो।</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ले तपाईं समक्ष स्थानीय सामग्री प्रस्तुत गर्नका लागि तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्छ। तपाईंले <ph name="SETTINGS_LINK" /> मा गएर यसलाई परिवर्तन गर्न सक्नुहुन्छ।</translation>
+<translation id="5251885976619018662">Google पासवर्ड म्यानेजरको रिकभरी PIN बनाउनुहोस्</translation>
 <translation id="5252496130205799136">पासवर्डहरू सुरक्षित गर्न र स्वतः भर्न आफ्नो Google खाता प्रयोग गर्ने हो?</translation>
 <translation id="5252653240322147470">PIN अनिवार्य रूपले <ph name="MAXIMUM" /> भन्दा कम अङ्कको हुनु पर्छ</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> प्रयोग गर्नुहोस्</translation>

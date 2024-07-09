@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">Прелевање</translation>
 <translation id="1341926407152459446">Користете „<ph name="DEVICE_NAME" />“ за влез и излез за аудио</translation>
 <translation id="1346748346194534595">Надесно</translation>
+<translation id="1350494136075914725">Тековно · Префрлете на картичката</translation>
 <translation id="1351937230027495976">Собери го менито</translation>
 <translation id="1360220746312242196">При пребарувањето страница, оди на претходното совпаѓање за пребарување</translation>
 <translation id="1360788414852622716">Профилот се оневозможува. Ова може да трае неколку минути.</translation>
@@ -1049,6 +1050,7 @@
 <translation id="4876935764454575645">Избор на аудио</translation>
 <translation id="4881323000405981760">Ефектите не се поддржани во апликациите за Linux</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Дајте незадолжителни повратни информации за да ги подобриме предлозите:</translation>
 <translation id="4890187583552566966">„Помошникот на Google“ е оневозможен од вашиот администратор.</translation>
 <translation id="4890408602550914571">Проверете дали телефонот е во близина и со вклучен Bluetooth.</translation>
@@ -1751,6 +1753,7 @@
 <translation id="742594950370306541">Фотоапаратот е во употреба.</translation>
 <translation id="742608627846767349">Добро утро,</translation>
 <translation id="743058460480092004">Се користат фотоапаратот и микрофонот.</translation>
+<translation id="7441711280402516925">Пуштено · Префрлете на картичката</translation>
 <translation id="7453330308669753048">Резултатот од историјата на пребарување е отстранет</translation>
 <translation id="7459485586006128091">Точката на пристап е исклучена поради внатрешна грешка. Обидете се да се поврзете повторно за неколку минути.</translation>
 <translation id="7461924472993315131">Закачи</translation>

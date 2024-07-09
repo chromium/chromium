@@ -3381,6 +3381,7 @@
 <translation id="3441663102605358937">계정을 인증하려면 <ph name="ACCOUNT" />에 다시 로그인하세요.</translation>
 <translation id="3441824746233675597">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. <ph name="PRODUCT_NAME" />에서는 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> 개선을 위해 Google에서 하드웨어 데이터를 사용하도록 허용합니다. 거부하더라도 데이터가 Google에 전송되어 적절한 업데이트를 결정하는 데 사용되지만, 저장되거나 다른 용도로 사용되지는 않습니다.</translation>
+<translation id="3443545121847471732">6자리 PIN 입력</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> 시간 초과됨</translation>
 <translation id="3443754338602062261"><ph name="BRAND" />에 이미 이 계정의 비밀번호가 있습니다. 아래 비밀번호 중 하나를 가져오면 기존 비밀번호가 대체됩니다.</translation>
 <translation id="344449859752187052">서드 파티 쿠키 차단됨</translation>
@@ -7858,6 +7859,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" />이(가) 원격으로 추가됨</translation>
 <translation id="6790820461102226165">사용자 추가...</translation>
+<translation id="6793610798874309813">PIN은 4자 이상이어야 합니다.</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068"><ph name="APP_NAME" />의 패스키가 USB 보안 키인 경우 지금 삽입하고 터치하세요.</translation>
 <translation id="679486139907144816">패스키로 사이트에 로그인하려면 설정에서 Windows Hello를 사용 설정해야 합니다. 그런 다음 이 사이트로 돌아와서 다시 시도하세요.</translation>

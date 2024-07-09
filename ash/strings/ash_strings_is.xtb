@@ -110,6 +110,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1341651618736211726">Yfirflæði</translation>
 <translation id="1341926407152459446">Nota „<ph name="DEVICE_NAME" />“ fyrir hljóðinntak og -úttak</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
+<translation id="1350494136075914725">Í gangi · Skipta yfir á flipa</translation>
 <translation id="1351937230027495976">Draga valmynd saman</translation>
 <translation id="1360220746312242196">Fara að fyrri leitarniðurstöðu þegar leitað er að síðu</translation>
 <translation id="1360788414852622716">Slekkur á prófíl. Þetta gæti tekið nokkrar mínútur.</translation>
@@ -1048,6 +1049,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4876935764454575645">Val á hljóði</translation>
 <translation id="4881323000405981760">Ekki er stuðningur við myndbrellur í Linux-forritum</translation>
 <translation id="4881695831933465202">Opna</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Sendu valfrjálsar ábendingar til að bæta tillögur:</translation>
 <translation id="4890187583552566966">Kerfisstjóri hefur slökkt á Google hjálpara</translation>
 <translation id="4890408602550914571">Gakktu úr skugga um að síminn þinn sé nálægt og kveikt sé á Bluetooth.</translation>
@@ -1750,6 +1752,7 @@ Ný uppsetning</translation>
 <translation id="742594950370306541">Myndavélin er í notkun.</translation>
 <translation id="742608627846767349">Góðan dag,</translation>
 <translation id="743058460480092004">Myndavél og hljóðnemi eru í notkun.</translation>
+<translation id="7441711280402516925">Í spilun · Skipta yfir á flipa</translation>
 <translation id="7453330308669753048">Niðurstaða leitarferils fjarlægð</translation>
 <translation id="7459485586006128091">Slökkt var á heitum reit vegna innri villu. Reyndu að tengjast aftur eftir nokkrar mínútur.</translation>
 <translation id="7461924472993315131">Festa</translation>

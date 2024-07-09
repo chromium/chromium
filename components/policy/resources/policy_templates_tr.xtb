@@ -1036,18 +1036,6 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
       Listenin sırası, chrome://settings/languages adresindeki "Dilleri tercihinize göre sıralayın" bölümün altındaki liste ile aynı sırada görünür. Kullanıcılar, politika tarafından ayarlanan dilleri kaldıramaz veya sırasını değiştiremezler ancak politika tarafından ayarlanan dillerin altında yeni diller ekleyebilirler. Diğer politikalar tarafından uygulanmadığı sürece kullanıcılar ayrıca, tarayıcının hem kullanıcı arayüzü hem de çeviri/yazım denetimi ayarları üzerinde tam kontrol sahibi olurlar.
 
       Politikanın ayarlanmadan bırakılması, kullanıcıların tercih edilen diller listesinin tamamını manipüle etmelerine olanak tanır.</translation>
-<translation id="1803637633751407847">Gelişmiş JavaScript optimizasyonlarının devre dışı bırakıldığı siteleri belirten site URL kalıplarının listesini oluşturmanıza olanak tanır.
-
-JavaScript optimizasyonlarının devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının web içeriğini daha yavaş oluşturabileceği anlamına gelir.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.
-Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
-
-JavaScript optimizasyon politikası istisnaları, yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
-
-Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript optimizasyonları devre dışı bırakılır. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript optimizasyonları etkin ayarını kullanır.
-
-Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript optimizasyonu site için etkinleştirilir.</translation>
 <translation id="1803646570632580723">Başlatıcıda gösterilecek sabitlenmiş uygulamalar listesi</translation>
 <translation id="1808715480127969042">Bu sitelerdeki çerezleri engelle</translation>
 <translation id="1810261428246410396">Hızlı Tethering'in kullanılmasına izin ver.</translation>
@@ -2159,11 +2147,6 @@ NOT: Bu politikanın varsayılan değeri M117 dokümanında hatalı bir şekilde
 
       Politika ayarlanmadan bırakılırsa <ph name="PRINTERS_ALLOW_ALL" /> uygulanır.</translation>
 <translation id="2581338546762479588">Güncellemelerden sonra otomatik yeniden başlatmaya izin ver</translation>
-<translation id="2581374691851317168">Politikayı ayarlamak, JavaScript çalıştıramayan siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
-
-      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
-
-      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="2585535930727399201">Kurumsal uzantılar, chrome.systemLog API aracılığıyla günlükleri bir sistem günlük dosyasına ekleyebilir.
 
 Politika, Etkin değerine ayarlanırsa günlüklerin sınırlı bir süre boyunca sistem günlük dosyasında saklanmasına izin verilir.
@@ -6817,16 +6800,6 @@ Bu politika <ph name="PRODUCT_NAME" /> sürüm 126'da kaldırıldı. Güven çap
 Kaynaklar, <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> veya <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (sürüm 125'ten itibaren) politikası kullanılarak zorunlu yüklenmiş veya kiosk uygulaması olarak ayarlanmış web uygulamalarına karşılık gelmelidir. Device Attributes API teknik özellikleri için lütfen https://wicg.github.io/WebApiDevice/device_attributes adresini ziyaret edin.
 
 Geçerli <ph name="URL_LABEL" /> kalıpları (sürüm 127'den itibaren) hakkında ayrıntılı bilgi için lütfen https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresini ziyaret edin. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
-<translation id="6286225066315435650">Gelişmiş JavaScript optimizasyonlarının etkinleştirildiği siteleri belirten site URL kalıplarının listesini oluşturmanıza olanak tanır.
-
-Geçerli site URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.
-Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
-
-JavaScript optimizasyon politikası istisnaları, yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
-
-Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript optimizasyonları etkin olur. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript optimizasyonları etkin ayarını kullanır.
-
-Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript optimizasyonu site için etkinleştirilir.</translation>
 <translation id="6287128640500683781">Tüm kullanıcıların oturum açmasına izin ver</translation>
 <translation id="6287310684159482272">Çerez ayarları</translation>
 <translation id="6287742528823584153"><ph name="PRODUCT_NAME" /> Hizmeti'ni etkinleştir ve giriş yaptıktan sonra uzaktan masayı başlat</translation>

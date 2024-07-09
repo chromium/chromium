@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">溢出</translation>
 <translation id="1341926407152459446">使用“<ph name="DEVICE_NAME" />”来输入和输出音频</translation>
 <translation id="1346748346194534595">向右</translation>
+<translation id="1350494136075914725">正在进行 · 切换到标签页</translation>
 <translation id="1351937230027495976">收起菜单</translation>
 <translation id="1360220746312242196">搜索网页时，转到上一个相符的搜索结果</translation>
 <translation id="1360788414852622716">正在停用配置文件。这可能需要几分钟的时间。</translation>
@@ -1047,6 +1048,7 @@
 <translation id="4876935764454575645">音频选择</translation>
 <translation id="4881323000405981760">Linux 应用不支持特效</translation>
 <translation id="4881695831933465202">打开</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">（可选）提供反馈来帮助改进建议：</translation>
 <translation id="4890187583552566966">Google 助理已被您的管理员停用。</translation>
 <translation id="4890408602550914571">请确保您的手机就在附近且已开启蓝牙。</translation>
@@ -1748,6 +1750,7 @@
 <translation id="742594950370306541">摄像头处于使用状态。</translation>
 <translation id="742608627846767349">上午好！</translation>
 <translation id="743058460480092004">摄像头和麦克风处于使用状态。</translation>
+<translation id="7441711280402516925">正在播放 · 切换到标签页</translation>
 <translation id="7453330308669753048">已移除搜索记录结果</translation>
 <translation id="7459485586006128091">由于内部错误，热点已关闭。请过几分钟后尝试重新连接。</translation>
 <translation id="7461924472993315131">固定</translation>

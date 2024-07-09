@@ -89,7 +89,7 @@
 <translation id="1432110487435300883">Para obtener un resultado aproximado, divide el valor de <ph name="CATEGORY_TEXT" /> entre <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Reinicia automáticamente el uso de datos cada mes en el día seleccionado</translation>
 <translation id="1442433966118452622">Fuente de la imagen</translation>
-<translation id="1445573806602812670">Conseguir una transcripción de tu grabación</translation>
+<translation id="1445573806602812670">Consigue una transcripción de tu grabación</translation>
 <translation id="1446954767133808402">zafiro</translation>
 <translation id="1449035143498573192">Abrir en la Búsqueda de Google</translation>
 <translation id="1451536289672181509">El dispositivo es un teclado.</translation>
@@ -1073,7 +1073,7 @@
 <translation id="6798678288485555829">Navegación por el texto</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hay disponible información relacionada con tu selección. Utiliza la flecha hacia arriba para consultarla.</translation>
-<translation id="6818844233294698434">A la escucha para detectar voz...</translation>
+<translation id="6818844233294698434">Escuchando para detectar voz...</translation>
 <translation id="6837645039518471192">Salir de la grabación</translation>
 <translation id="6853312040151791195">Velocidad de descarga</translation>
 <translation id="6866732840889595464">Margarita</translation>
@@ -1279,7 +1279,7 @@
 <translation id="7882501334836096755">Clave pública</translation>
 <translation id="78957024357676568">izquierda</translation>
 <translation id="7897043345768902965">vía peatonal</translation>
-<translation id="7902285181767404769">Silenciar notificaciones mientras se graba</translation>
+<translation id="7902285181767404769">Silencia las notificaciones mientras se graba</translation>
 <translation id="7903695460270716054">Elige obras de arte e imágenes seleccionadas</translation>
 <translation id="7915220255123750251">Gestiona los ajustes de APN de la red. Los APNs establecen una conexión entre una red móvil e Internet.</translation>
 <translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
@@ -1367,7 +1367,7 @@
 <translation id="8373046809163484087">Usa conjuntos de colores que combinen con tu fondo de pantalla</translation>
 <translation id="8379123594780452422">Si permites esta opción, Grabadora procesará tus grabaciones de audio mediante un análisis de audio avanzado.
 
-En Configuración, puedes desactivar esta opción en cualquier momento.</translation>
+Puedes desactivar esta opción en cualquier momento en Configuración.</translation>
 <translation id="8380114448424469341">Anclar ventana en la mitad <ph name="DIRECTION" /> de la pantalla</translation>
 <translation id="8391349326751432483">Necesitas al menos 500 MB de espacio libre para ejecutar una prueba de memoria. Para liberar memoria, cierra pestañas y aplicaciones.</translation>
 <translation id="8395584934117017006">Este dispositivo <ph name="DEVICE_TYPE" /> lo gestiona una empresa</translation>

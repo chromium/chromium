@@ -1068,30 +1068,6 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Urutan daftar akan muncul dalam urutan yang sama di bagian "Urutkan bahasa berdasarkan preferensi Anda" di chrome://settings/languages. Pengguna tidak akan dapat menghapus atau mengurutkan ulang bahasa yang ditetapkan oleh kebijakan, tetapi akan dapat menambahkan bahasa di bawah daftar yang ditetapkan oleh kebijakan. Pengguna juga akan memiliki kontrol penuh atas setelan bahasa UI dan terjemahan/periksa ejaan browser, kecuali diterapkan oleh kebijakan lainnya.
 
       Jika kebijakan tidak disetel, pengguna akan dapat memanipulasi seluruh daftar bahasa pilihan.</translation>
-<translation id="1803637633751407847">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
-dengan pengoptimalan JavaScript lanjutan yang dinonaktifkan.
-
-Jika pengoptimalan JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin akan merender konten web dengan lebih lambat.
-
-Untuk informasi selengkapnya tentang pola URL yang valid, lihat
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-Pengecualian kebijakan pengoptimalan JavaScript hanya akan diterapkan pada perincian
-situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan
-diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke
-eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan
-harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan
-subdomain.site.com.
-
-Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL asal
-tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> tetapi site-one.com memuat
-bingkai yang berisi site-two.com, maka site-one.com akan menonaktifkan pengoptimalan
-JavaScript. Namun, site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, jika disetel, atau secara default
-mengaktifkan pengoptimalan JavaScript.
-
-Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut.
-Jika kebijakan ini disetel, pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="1803646570632580723">Daftar aplikasi tersemat untuk ditampilkan pada peluncur</translation>
 <translation id="1808715480127969042">Blokir cookie di situs ini</translation>
 <translation id="1810261428246410396">Izinkan Tethering Instan untuk digunakan.</translation>
@@ -2215,11 +2191,6 @@ CATATAN: Kebijakan ini salah didokumentasikan di M117, yaitu dengan setelan defa
 
       Jika kebijakan tidak disetel, <ph name="PRINTERS_ALLOW_ALL" /> akan diberlakukan.</translation>
 <translation id="2581338546762479588">Izinkan mulai ulang otomatis setelah update</translation>
-<translation id="2581374691851317168">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang tidak dapat menjalankan JavaScript.
-
-      Jika kebijakan ini tidak disetel, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="2585535930727399201">Ekstensi perusahaan dapat menambahkan log melalui API chrome.systemLog ke file log sistem.
 
 Jika kebijakan disetel ke Aktif, log akan disimpan dalam file log sistem selama jangka waktu terbatas.
@@ -6987,26 +6958,6 @@ versi tersebut, batasan dalam trust anchor selalu diterapkan.</translation>
 Origin harus sesuai dengan aplikasi web yang diinstal otomatis menggunakan kebijakan <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> atau <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (sejak versi 125) atau disiapkan sebagai aplikasi kios. Untuk spesifikasi Device Attributes API, lihat https://wicg.github.io/WebApiDevice/device_attributes.
 
 Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid (sejak versi 127), lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
-<translation id="6286225066315435650">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
-dengan pengoptimalan JavaScript lanjutan yang diaktifkan.
-
-Untuk informasi selengkapnya tentang pola URL situs yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-Pengecualian kebijakan pengoptimalan JavaScript hanya akan diterapkan pada perincian
-situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan
-diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke
-eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan
-harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan
-subdomain.site.com.
-
-Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL asal
-tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> tetapi site-one.com memuat bingkai yang berisi site-two.com, maka site-one.com akan mengaktifkan pengoptimalan
-JavaScript. Namun, site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, jika disetel, atau secara default
-mengaktifkan pengoptimalan JavaScript.
-
-Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut.
-Jika kebijakan ini disetel, pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="6287128640500683781">Izinkan semua pengguna login</translation>
 <translation id="6287310684159482272">Setelan cookie</translation>
 <translation id="6287742528823584153">Aktifkan Layanan <ph name="PRODUCT_NAME" /> dan luncurkan desktop jarak jauh saat login</translation>

@@ -3380,6 +3380,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3441663102605358937">Log ind på <ph name="ACCOUNT" /> igen for at verificere denne konto</translation>
 <translation id="3441824746233675597">Gør det sværere for personer med adgang til din internettrafik at se, hvilke websites du besøger. <ph name="PRODUCT_NAME" /> anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
 <translation id="3442674350323953953">Giv Google tilladelse til at bruge dine hardwaredata til at hjælpe med at forbedre <ph name="DEVICE_OS" />. Hvis du afviser, bliver disse data stadig sendt til Google med henblik på at levere de rigtige opdateringer, men de bliver ikke gemt eller brugt udover det.</translation>
+<translation id="3443545121847471732">Angiv en 6-cifret pinkode</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> oplevede timeout</translation>
 <translation id="3443754338602062261">Du har allerede adgangskoder til disse konti i <ph name="BRAND" />. Hvis du vælger at importere én af adgangskoderne nedenfor, vil den erstatte den eksisterende adgangskode.</translation>
 <translation id="344449859752187052">Tredjepartscookies er blokeret</translation>
@@ -7860,6 +7861,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> blev tilføjet eksternt</translation>
 <translation id="6790820461102226165">Tilføj person...</translation>
+<translation id="6793610798874309813">Din pinkode skal bestå af mindst 4 tegn</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Hvis din adgangsnøgle til <ph name="APP_NAME" /> er på en USB-sikkerhedsnøgle, skal du indsætte og trykke på den nu</translation>
 <translation id="679486139907144816">Du skal aktivere Windows Hello i indstillingerne for at logge ind på dette website med en adgangsnøgle. Gå derefter tilbage til dette website, og prøv igen.</translation>

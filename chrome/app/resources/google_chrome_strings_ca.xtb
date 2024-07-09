@@ -328,6 +328,7 @@
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">No s'ha pogut iniciar Chrome. Torna-ho a provar.</translation>
 <translation id="5809516625706423866">No es pot connectar a Internet. Error d'HTTP "401 Unauthorized". Comprova la configuració del servidor intermediari.</translation>
+<translation id="5825922397106002626">Suprimeix <ph name="EXTENSION_NAME" /> de Chrome</translation>
 <translation id="5858486459377137936">Quan tanquis totes les finestres de Chrome, se't tancarà la sessió de la majoria de llocs web, tret del teu Compte de Google si tens la sessió iniciada a Chrome. Perquè els llocs web et recordin, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome t'avisa<ph name="END_LINK" /> sobre baixades i llocs web que no són segurs</translation>
 <translation id="5895138241574237353">Reinicia</translation>
@@ -457,6 +458,7 @@
 <translation id="7651907282515937834">Logotip de Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome ha bloquejat aquesta baixada perquè has desactivat Navegació segura i el fitxer no es pot verificar</translation>
 <translation id="7655455401911432608">El teu historial de navegació, que és un registre dels llocs web que has visitat amb Chrome en aquest dispositiu.</translation>
+<translation id="7655472416356262023">Suprimeix el compte de Chrome</translation>
 <translation id="7661924425853052955">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="COUNT" /> elements més.</translation>
 <translation id="7668816516367091728">Fes tasques, com ara traduir, calcular i fer altres accions directament des de la barra d'adreces</translation>
 <translation id="7670287553302121848">El compte de Chrome requereix una reautenticació</translation>

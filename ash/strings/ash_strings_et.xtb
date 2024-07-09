@@ -110,6 +110,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1341651618736211726">Ületäide</translation>
 <translation id="1341926407152459446">Helisisendiks ja -väljundiks hakatakse kasutama seadet „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="1346748346194534595">Paremale</translation>
+<translation id="1350494136075914725">Pooleli · Kuva see vaheleht</translation>
 <translation id="1351937230027495976">Ahenda menüü</translation>
 <translation id="1360220746312242196">Lehel otsimisel eelmise vaste juurde liikumine</translation>
 <translation id="1360788414852622716">Profiili keelatakse. See võib võtta mõne minuti.</translation>
@@ -1049,6 +1050,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4876935764454575645">Heli valimine</translation>
 <translation id="4881323000405981760">Linuxi rakendustes efekte ei toetata</translation>
 <translation id="4881695831933465202">Ava</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Esitage soovituste täiustamiseks valikulist tagasisidet.</translation>
 <translation id="4890187583552566966">Administraator on Google'i assistendi keelanud.</translation>
 <translation id="4890408602550914571">Veenduge, et teie telefon oleks läheduses ja Bluetooth oleks sisse lülitatud.</translation>
@@ -1751,6 +1753,7 @@ Uus installimine</translation>
 <translation id="742594950370306541">Kaamera on kasutusel.</translation>
 <translation id="742608627846767349">Tere hommikust!</translation>
 <translation id="743058460480092004">Kaamera ja mikrofon on kasutusel.</translation>
+<translation id="7441711280402516925">Esitamine · Kuva see vaheleht</translation>
 <translation id="7453330308669753048">Otsinguajaloo tulemus eemaldati</translation>
 <translation id="7459485586006128091">Sisemise vea tõttu on kuumkoht välja lülitatud. Proovige mõne minuti pärast uuesti ühendust luua.</translation>
 <translation id="7461924472993315131">Kinnita</translation>

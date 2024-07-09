@@ -1024,6 +1024,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1730989807608739928">Scorri verso l'ultima scheda</translation>
 <translation id="1731520826054843792">Modello di certificato Microsoft</translation>
 <translation id="1731911755844941020">Invio richiesta in corso...</translation>
+<translation id="1732380773380808394">Potrai anche usare le password e altri dati del tuo Account Google.</translation>
 <translation id="1734212868489994726">Azzurro</translation>
 <translation id="1734230530703461088">Impossibile caricare le estensioni entro il limite di tempo. Contatta l'amministratore.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> potrebbe non essere in grado di aggiornarsi automaticamente</translation>
@@ -3365,6 +3366,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3441663102605358937">Accedi di nuovo all'account <ph name="ACCOUNT" /> per effettuare la verifica</translation>
 <translation id="3441824746233675597">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. <ph name="PRODUCT_NAME" /> utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">Consenti a Google di usare i dati relativi al tuo hardware per migliorare <ph name="DEVICE_OS" />. Se rifiuti, questi dati vengono comunque inviati a Google per stabilire gli aggiornamenti appropriati, ma non vengono archiviati o usati in altro modo.</translation>
+<translation id="3443545121847471732">Inserisci un PIN di 6 cifre</translation>
 <translation id="3443744348829035122">Timeout di <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">Hai già le password per questi account in <ph name="BRAND" />. Se scegli di importare una delle password seguenti, quella esistente sostituirà quella esistente.</translation>
 <translation id="344449859752187052">Cookie di terze parti bloccati</translation>
@@ -5808,6 +5810,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5247243947166567755">Seleziona <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Si è verificato un arresto anomalo del browser prima che il download fosse completato.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utilizza la tua posizione per fornirti contenuti locali. Puoi modificare questa preferenza nelle <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Crea un PIN di recupero per il Gestore delle password di Google</translation>
 <translation id="5252496130205799136">Usare l'Account Google per salvare e inserire le password?</translation>
 <translation id="5252653240322147470">Il PIN deve contenere meno di <ph name="MAXIMUM" /> cifre</translation>
 <translation id="5253554634804500860">Utilizza <ph name="DEVICE_NAME" /></translation>
@@ -7840,6 +7843,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6790497603648687708">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta da remoto</translation>
 <translation id="6790820461102226165">Aggiungi persona...</translation>
+<translation id="6793610798874309813">Il PIN deve essere composto da almeno 4 caratteri</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Se la tua passkey di <ph name="APP_NAME" /> si trova su un token di sicurezza USB, inserisci il token e toccalo ora</translation>
 <translation id="679486139907144816">Per accedere a questo sito con una passkey, devi attivare Windows Hello nelle impostazioni. Dopodiché, torna su questo sito e riprova.</translation>

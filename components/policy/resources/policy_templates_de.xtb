@@ -1014,18 +1014,6 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
       Die Reihenfolge der Liste entspricht derjenigen im Bereich „Ordne Sprachen in der gewünschten Reihenfolge an“ unter chrome://settings/languages. Nutzer können Sprachen, die durch die Richtlinie festgelegt sind, nicht entfernen oder neu anordnen, sie haben aber die Möglichkeit, unter den durch diese Richtlinie vorgegebenen Sprachen weitere Sprachen hinzuzufügen. Darüber hinaus haben Nutzer die volle Kontrolle über die Sprache der Benutzeroberfläche und die Übersetzungs- und Rechtschreibprüfungseinstellungen des Browsers, sofern diese nicht durch andere Richtlinien zwingend vorgegeben sind.
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die gesamte Liste bevorzugter Sprachen beliebig anpassen.</translation>
-<translation id="1803637633751407847">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, die angeben, für welche Websites erweiterte JavaScript-Optimierungen deaktiviert werden.
-
-Wenn JavaScript-Optimierungen deaktiviert sind, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer.
-
-Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-Richtlinienausnahmen für JavaScript-Optimierungen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-          Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs‑URL auf oberster Ebene. Wenn z. B. beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, sind für beispiel-eins.de JavaScript-Optimierungen deaktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder JavaScript-Optimierungen sind standardmäßig aktiviert.
-
-Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="1803646570632580723">Liste der im Launcher angezeigten Apps ansehen</translation>
 <translation id="1808715480127969042">Cookies auf diesen Websites blockieren</translation>
 <translation id="1810261428246410396">Verwendung von Instant Tethering erlauben.</translation>
@@ -2116,11 +2104,6 @@ HINWEIS: Diese Richtlinie hatte in M117 den falsch dokumentierten Standardwert �
 
       Wenn die Richtlinie nicht konfiguriert ist, wird <ph name="PRINTERS_ALLOW_ALL" /> verwendet.</translation>
 <translation id="2581338546762479588">Automatischen Neustart nach Updates zulassen</translation>
-<translation id="2581374691851317168">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites kein JavaScript ausführen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="2585535930727399201">Mit Unternehmenserweiterungen lassen sich über die chrome.systemLog API einer Systemprotokolldatei Protokolle hinzufügen.
 
 Wenn die Richtlinie aktiviert ist, können die Protokolle für einen begrenzten Zeitraum in der Systemprotokolldatei gespeichert werden.
@@ -6685,16 +6668,6 @@ Diese Richtlinie wurde in Version 126 von <ph name="PRODUCT_NAME" /> entfernt. 
 Die Ursprünge müssen Webanwendungen sein, deren Installation über die Richtlinien „<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ oder „<ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ (ab Version 125) erzwungen wird oder die als Kiosk-App eingerichtet sind. Technische Daten und Informationen zur Device Attributes API findest du unter https://wicg.github.io/WebApiDevice/device_attributes.
 
 Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern (ab Version 127) findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
-<translation id="6286225066315435650">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, die angeben, für welche Websites erweiterte JavaScript-Optimierungen aktiviert werden.
-
-Ausführliche Informationen zu gültigen Website-URL‑Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-Richtlinienausnahmen für JavaScript-Optimierungen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs‑URL auf oberster Ebene. Wenn z. B. beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, sind für beispiel-eins.de JavaScript-Optimierungen aktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder die JavaScript-Optimierung ist standardmäßig aktiviert.
-
-Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="6287128640500683781">Anmeldung für alle Nutzer zulassen</translation>
 <translation id="6287310684159482272">Cookie-Einstellungen</translation>
 <translation id="6287742528823584153">Den Dienst „<ph name="PRODUCT_NAME" />“ aktivieren und Remote-Desktop nach der Anmeldung starten</translation>

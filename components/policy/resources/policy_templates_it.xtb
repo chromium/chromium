@@ -738,6 +738,17 @@ Se questo criterio non viene configurato, gli utenti potranno aggiungere eccezio
       Se il criterio non viene configurato, gli utenti ricevono un avviso, e non un messaggio di errore, se usano un PIN inefficace.</translation>
 <translation id="1597684038583138808">Attiva definizioni di Risposte rapide</translation>
 <translation id="1598258379228800626">Attiva l'evidenziazione dell'elemento attivo tramite tastiera nella schermata di accesso</translation>
+<translation id="1599334938346636409">Questo criterio controlla un'etichetta personalizzata utilizzata per identificare chi ha gestito un profilo o un browser.
+
+Questa etichetta verrà mostrata nella barra degli strumenti.
+
+Se il criterio viene configurato a livello di browser, tutti i profili avranno questa etichetta nella barra degli strumenti.
+
+Se il criterio viene impostato a livello di profilo, solo quel profilo avrà questa etichetta.
+
+A differenza di altri, quando impostato a livello di profilo, questo criterio ha la precedenza su un criterio impostato a livello di browser.
+
+L'etichetta personalizzata non verrà tradotta.</translation>
 <translation id="1599424828227887013">Attiva isolamento dei siti per origini specificate su dispositivi Android</translation>
 <translation id="159946228300522107">Se il criterio è impostato su True, Chrome ingrandisce la prima finestra mostrata alla prima esecuzione.
 
@@ -1043,19 +1054,6 @@ Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione 
       L'ordine dell'elenco sarà uguale a quello nella sezione "Ordina le lingue in base alle tue preferenze" della pagina chrome://settings/languages. Gli utenti non potranno rimuovere o cambiare l'ordine delle lingue impostate nel criterio, ma potranno aggiungere lingue sotto quelle impostate nel criterio. Gli utenti avranno inoltre il pieno controllo della lingua dell'interfaccia utente del browser e delle impostazioni di traduzione/controllo ortografico, a meno che non vengano applicate da altri criteri.
 
       Se il criterio non viene configurato, gli utenti possono modificare l'intero elenco di lingue preferite.</translation>
-<translation id="1803637633751407847">Consente di impostare un elenco di pattern URL per i siti che specifica i siti per i quali le ottimizzazioni JavaScript avanzate sono disattivate.
-
-Se le ottimizzazioni di JavaScript vengono disattivate, <ph name="PRODUCT_NAME" /> potrebbe eseguire il rendering dei contenuti web più lentamente.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
-
-Le eccezioni relative ai criteri di ottimizzazione di JavaScript verranno applicate soltanto sito per sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi sono equivalenti allo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
-
-Questo criterio viene applicato frame per frame e non si basa esclusivamente sull'URL di origine di primo livello, quindi, ad esempio, se sito-uno.com è presente nell'elenco del criterio <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, ma tale sito carica un frame che contiene sito-due.com, sito-uno.com avrà disattivato le ottimizzazioni di JavaScript, ma sito-due.com utilizzerà il criterio di <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se configurato, o le ottimizzazioni di JavaScript saranno attivate per impostazione predefinita.
-
-Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'ottimizzazione di JavaScript viene attivata per il sito.</translation>
 <translation id="1803646570632580723">Elenco di applicazioni bloccate da visualizzare in Avvio applicazioni</translation>
 <translation id="1808715480127969042">Blocca cookie su questi siti</translation>
 <translation id="1810261428246410396">Consenti l'uso del tethering istantaneo.</translation>
@@ -2149,11 +2147,6 @@ NOTA: questo criterio presentava un valore predefinito documentato erroneamente 
 
       Se il criterio non viene configurato, viene applicato il valore <ph name="PRINTERS_ALLOW_ALL" />.</translation>
 <translation id="2581338546762479588">Consenti il riavvio automatico dopo gli aggiornamenti</translation>
-<translation id="2581374691851317168">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire JavaScript.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="2585535930727399201">Le estensioni aziendali possono aggiungere log a un file di log di sistema tramite l'API chrome.systemLog.
 
 Se il criterio viene attivato, i log saranno mantenuti nel file di log di sistema per un periodo di tempo limitato.
@@ -4272,6 +4265,7 @@ L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto
       Se il criterio viene impostato su Disabled o se non viene configurato, la modalità di ricarica avanzata della batteria rimane disattivata.
 
       Gli utenti non possono modificare questa impostazione.</translation>
+<translation id="4307479555111916927">Imposta un'etichetta aziendale personalizzata</translation>
 <translation id="4309091698378414920">Attiva l'evidenziazione del cursore</translation>
 <translation id="4311141497190183490">Se il criterio viene impostato su 1, i siti possono tracciare la posizione fisica dell'utente come stato predefinito. Se il criterio viene impostato su 2, il tracciamento viene negato per impostazione predefinita. Puoi impostare il criterio per chiedere ogni volta che un sito vuole tracciare la posizione fisica degli utenti.
 
@@ -4677,6 +4671,19 @@ Se il criterio non è configurato, gli utenti possono modificare l'elenco di app
 L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>
 <translation id="4638906910792947645">Abilita sondaggi all'interno del prodotto</translation>
 <translation id="4641557638919545432">Verrà attivata la sintassi deprecata precedente.</translation>
+<translation id="464549601667073177">L'URL di un'immagine che verrà utilizzata come badge aziendale per il profilo. L'URL deve indirizzare a un'immagine.
+
+Questo badge verrà mostrato nella barra degli strumenti.
+
+Se il criterio viene configurato a livello di browser, tutti i profili avranno questo logo nella barra degli strumenti.
+
+Se il criterio viene impostato a livello di profilo, solo quel profilo avrà questo logo.
+
+Se il criterio non viene configurato, verrà mostrata un'icona predefinita a forma di edificio.
+
+Se si verifica un errore durante il tentativo di ottenere e mostrare l'immagine, verrà visualizzata un'icona predefinita a forma di edificio.
+
+A differenza di altri, quando impostato a livello di profilo, questo criterio ha la precedenza su un criterio impostato a livello di browser.</translation>
 <translation id="4646626362889216307">L'impostazione di questo criterio consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello. L'unione avviene tra le chiavi di primo livello del dizionario di ogni origine. Avrà la priorità la chiave proveniente dall'origine con la priorità massima.
 
       Usa il carattere jolly "*" per consentire l'unione di tutti i criteri dei dizionari supportati.
@@ -6764,17 +6771,6 @@ Questo criterio è stato rimosso nella versione 126 di <ph name="PRODUCT_NAME" /
 Le origini devono corrispondere alle applicazioni web con installazione forzata tramite il criterio <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (dalla versione 125) o configurate come app kiosk. Per le specifiche dell'API Device Attributes, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.
 
 Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi (dalla versione 127), visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
-<translation id="6286225066315435650">Consente di impostare un elenco di pattern URL per i siti che specifica i siti per i quali le ottimizzazioni JavaScript avanzate sono attivate.
-
-Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
-
-Le eccezioni relative ai criteri di ottimizzazione di JavaScript verranno applicate soltanto sito per sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi sono equivalenti allo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
-
-Questo criterio viene applicato frame per frame e non si basa esclusivamente sull'URL di origine di primo livello, quindi, ad esempio, se sito-uno.com è presente nell'elenco del criterio <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, ma tale sito carica un frame che contiene sito-due.com, sito-uno.com avrà attivato le ottimizzazioni di JavaScript, ma sito-due.com utilizzerà il criterio di <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se configurato, o le ottimizzazioni di JavaScript saranno attivate per impostazione predefinita.
-
-Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti le ottimizzazioni di JavaScript vengono attivate per il sito.</translation>
 <translation id="6287128640500683781">Consenti a qualsiasi utente di accedere</translation>
 <translation id="6287310684159482272">Impostazioni dei cookie</translation>
 <translation id="6287742528823584153">Attiva il servizio <ph name="PRODUCT_NAME" /> e avvia la scrivania remota all'accesso</translation>

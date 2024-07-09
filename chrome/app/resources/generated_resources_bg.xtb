@@ -3375,6 +3375,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3441663102605358937">Влезте в <ph name="ACCOUNT" /> отново, за да потвърдите този профил</translation>
 <translation id="3441824746233675597">Попречете на хората с достъп до трафика ви в интернет да виждат кои сайтове посещавате. <ph name="PRODUCT_NAME" /> използва защитена връзка, за да потърси IP адреса на даден сайт в DNS (системата за имена на домейни).</translation>
 <translation id="3442674350323953953">Позволете на Google да използва данните за хардуера ви с цел подобряване на <ph name="DEVICE_OS" />. Ако откажете, данните пак се изпращат до Google, за да се определят подходящите актуализации, но не се съхраняват и не се използват за други цели.</translation>
+<translation id="3443545121847471732">Въведете 6-цифрен ПИН код</translation>
 <translation id="3443744348829035122">Времето за изчакване на <ph name="BRAND" /> изтече</translation>
 <translation id="3443754338602062261">Вече има пароли за тези профили в(ъв) <ph name="BRAND" />. Ако решите да импортирате една от паролите по-долу, тя ще замени съществуващата.</translation>
 <translation id="344449859752187052">„Бисквитките“ на трети страни са блокирани</translation>
@@ -7855,6 +7856,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6790497603648687708">Разширението <ph name="EXTENSION_NAME" /> бе добавено отдалечено</translation>
 <translation id="6790820461102226165">Добавяне на човек...</translation>
+<translation id="6793610798874309813">ПИН кодът може да е с дължина най-малко 4 знака</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Ако ключът ви за достъп за <ph name="APP_NAME" /> се съхранява в ключ за сигурност с USB, поставете устройството и го докоснете сега</translation>
 <translation id="679486139907144816">За да влезете в този сайт посредством ключ за достъп, трябва да включите Windows Hello от настройките. След това се върнете на този сайт и опитайте отново.</translation>

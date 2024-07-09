@@ -336,6 +336,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не може да се стартува Chrome. Обидете се повторно.</translation>
 <translation id="5809516625706423866">Не може да се поврзе на интернет. HTTP-грешка 401: неовластен пристап. Проверете ја вашата конфигурација на прокси.</translation>
+<translation id="5825922397106002626">Отстрани ја <ph name="EXTENSION_NAME" /> од Chrome</translation>
 <translation id="5858486459377137936">Ќе се одјавите од повеќето сајтови кога ќе ги затворите сите прозорци во Chrome, со исклучок на вашата сметка на Google ако сте најавени на Chrome. За да овозможите да ве помнат сајтовите, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ве предупредува<ph name="END_LINK" /> за небезбедни сајтови и преземања</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
