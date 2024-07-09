@@ -54,6 +54,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 
 using extensions::ExtensionRegistry;
@@ -762,15 +763,18 @@ TEST_P(ExtensionProtocolsTest, InvalidBackgroundScriptRequest) {
 
   // Requesting script from background key with invalid destination is
   // forbidden.
-  for (network::mojom::RequestDestination destination : {
-           // TODO(crbug.com/333078381): carefully consider which other
-           // request destinations should be allowed or blocked and update
-           // this test
-           network::mojom::RequestDestination::kJson,
-           network::mojom::RequestDestination::kStyle,
-           network::mojom::RequestDestination::kVideo,
-           network::mojom::RequestDestination::kWorker,
-       }) {
+  std::vector<network::mojom::RequestDestination> destinations = {
+      // TODO(crbug.com/333078381): carefully consider which other
+      // request destinations should be allowed or blocked and update
+      // this test
+      network::mojom::RequestDestination::kJson,
+      network::mojom::RequestDestination::kStyle,
+      network::mojom::RequestDestination::kVideo,
+  };
+  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
+    destinations.push_back(network::mojom::RequestDestination::kWorker);
+  }
+  for (network::mojom::RequestDestination destination : destinations) {
     auto get_result =
         RequestOrLoad(extension->GetResourceURL("background.js"), destination);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result()) << destination;

@@ -1769,9 +1769,13 @@ BASE_FEATURE(kPath2DPaintCache,
 
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
-BASE_FEATURE(kPlzDedicatedWorker,
-             "PlzDedicatedWorker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(350785857): remove the non-plzdedicatedworker path.
+#if BUILDFLAG(IS_FUCHSIA)
+#define DISABLED_ON_FUCHSIA base::FEATURE_DISABLED_BY_DEFAULT
+#else
+#define DISABLED_ON_FUCHSIA base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+BASE_FEATURE(kPlzDedicatedWorker, "PlzDedicatedWorker", DISABLED_ON_FUCHSIA);
 
 BASE_FEATURE(kDedicatedWorkerAblationStudyEnabled,
              "DedicatedWorkerAblationStudyEnabled",
@@ -2137,12 +2141,12 @@ BASE_FEATURE(kServiceWorkerUpdateDelay,
              "ServiceWorkerUpdateDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, client_id and resultingClientId behavior keeps the old
+// If disabled, client_id and resultingClientId behavior keeps the old
 // Chromium behavior even after the PlzDedicatedWorker is enabled.
 // This is workaround for crbug.com/1520512 until the fix gets ready.
 BASE_FEATURE(kServiceWorkerClientIdAlignedWithSpec,
              "ServiceWorkerClientIdAlignedWithSpec",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the "not" condition become usable in the ServiceWorker
 // static routing API.

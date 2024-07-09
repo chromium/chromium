@@ -471,6 +471,12 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
     return base::MakeRefCounted<EmptyWebWorkerFetchContext>();
   }
 
+  scoped_refptr<WebWorkerFetchContext>
+  CreateWorkerFetchContextForPlzDedicatedWorker(
+      WebDedicatedWorkerHostFactoryClient*) override {
+    return base::MakeRefCounted<EmptyWebWorkerFetchContext>();
+  }
+
   blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override {
     return nullptr;
   }
