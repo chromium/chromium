@@ -380,12 +380,14 @@ function showText(text: string, onCopy?: () => void): ChipMethods {
         I18nString.TEXT_DETECTED_DESCRIPTION_EXPANDABLE);
     expandEl.classList.remove('hidden');
     expandEl.onclick = () => {
+      const chipTimer = assertExists(currentChip).timer;
       if (isChipExpanded()) {
         collapseChip();
+        chipTimer.start();
       } else {
         expandChip();
+        chipTimer.stop();
       }
-      assertExists(currentChip).timer.resetTimeout();
     };
   } else {
     descriptionEl.textContent =
