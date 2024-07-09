@@ -43,6 +43,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/strings/grit/ui_strings.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
@@ -382,7 +383,7 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
                l10n_util::GetStringUTF8(
                    profile_creation_required_by_policy_
                        ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
-                       : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
+                       : IDS_APP_CONTINUE));
       break;
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       title = l10n_util::GetStringUTF8(
@@ -399,7 +400,7 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
                l10n_util::GetStringUTF8(
                    profile_creation_required_by_policy_
                        ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
-                       : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
+                       : IDS_APP_CONTINUE));
 #if !BUILDFLAG(IS_CHROMEOS)
       // We apply the checkLinkDataCheckboxByDefault to true value only if the
       // link data checkbox is visible and the policy
