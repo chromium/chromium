@@ -426,10 +426,15 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 - (void)forceAnimatedScrollRefresh {
   _forceStateUpdate = YES;
   [self scrollViewWillBeginDragging];
-  [self.scrollView
-      scrollRectToVisible:CGRectMake(0, -kHeaderMaxExpansionThreshold - 1, 1,
-                                     kHeaderMaxExpansionThreshold + 1)
-                 animated:YES];
+  const CGFloat animatedScrollHeight = kHeaderMaxExpansionThreshold + 10;
+  if (self.viewportAdjustsContentInset) {
+    [self.scrollView scrollRectToVisible:CGRectMake(0, -animatedScrollHeight, 1,
+                                                    animatedScrollHeight)
+                                animated:YES];
+  } else {
+    [self.scrollView setContentOffset:CGPointMake(0, -animatedScrollHeight)
+                             animated:YES];
+  }
 }
 
 - (BOOL)isOverscrollActionsAllowed {
