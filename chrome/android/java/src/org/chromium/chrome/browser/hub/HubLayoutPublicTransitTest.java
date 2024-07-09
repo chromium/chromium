@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -53,6 +54,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/350699105")
     public void testEnterAndExitHub() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
@@ -65,6 +67,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/350699105")
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
@@ -79,6 +82,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/350699105")
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
@@ -93,6 +97,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/350699105")
     public void testChangeTabSwitcherPanes() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
