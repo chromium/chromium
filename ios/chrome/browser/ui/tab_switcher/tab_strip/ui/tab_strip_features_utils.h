@@ -34,6 +34,9 @@
 // Whether the tab strip should have a black background.
 @property(class, nonatomic, readonly) BOOL isTabStripBlackBackgroundEnabled;
 
+// Whether any of the V2 experiments are enabled.
+@property(class, nonatomic, readonly) BOOL isTabStripV2;
+
 // Whether the close button should have a bigger tap target.
 @property(class, nonatomic, readonly) BOOL isTabStripBiggerCloseTargetEnabled;
 

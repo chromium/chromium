@@ -43,16 +43,27 @@ class TabStripNewTabButton: UIView {
     addSubview(button)
     button.accessibilityIdentifier = TabStripConstants.NewTabButton.accessibilityIdentifier
 
-    NSLayoutConstraint.activate([
-      button.leadingAnchor.constraint(
-        equalTo: self.leadingAnchor, constant: TabStripConstants.NewTabButton.leadingInset),
-      button.trailingAnchor.constraint(
-        equalTo: self.trailingAnchor, constant: -TabStripConstants.NewTabButton.trailingInset),
-      button.topAnchor.constraint(
-        equalTo: self.topAnchor, constant: TabStripConstants.NewTabButton.topInset),
-      button.bottomAnchor.constraint(
-        equalTo: self.bottomAnchor, constant: -TabStripConstants.NewTabButton.bottomInset),
-    ])
+    if TabStripFeaturesUtils.isTabStripV2 {
+      NSLayoutConstraint.activate([
+        button.leadingAnchor.constraint(
+          equalTo: self.leadingAnchor, constant: TabStripConstants.NewTabButton.leadingInset),
+        button.topAnchor.constraint(
+          equalTo: self.topAnchor, constant: TabStripConstants.NewTabButton.topInset),
+        button.widthAnchor.constraint(equalToConstant: TabStripConstants.NewTabButton.diameter),
+        button.heightAnchor.constraint(equalTo: button.widthAnchor),
+      ])
+    } else {
+      NSLayoutConstraint.activate([
+        button.leadingAnchor.constraint(
+          equalTo: self.leadingAnchor, constant: TabStripConstants.NewTabButton.leadingInset),
+        button.trailingAnchor.constraint(
+          equalTo: self.trailingAnchor, constant: -TabStripConstants.NewTabButton.trailingInset),
+        button.topAnchor.constraint(
+          equalTo: self.topAnchor, constant: TabStripConstants.NewTabButton.topInset),
+        button.bottomAnchor.constraint(
+          equalTo: self.bottomAnchor, constant: -TabStripConstants.NewTabButton.bottomInset),
+      ])
+    }
   }
 
   required init?(coder: NSCoder) {
@@ -69,10 +80,7 @@ class TabStripNewTabButton: UIView {
   /// Configures the `UIButton`.
   private func configureButton() {
     let symbolSize =
-      TabStripFeaturesUtils.isTabStripCloserNTBEnabled
-        || TabStripFeaturesUtils.isTabStripDarkerBackgroundEnabled
-        || TabStripFeaturesUtils.isTabStripCloserNTBDarkerBackgroundEnabled
-        || TabStripFeaturesUtils.isTabStripNTBNoBackgroundEnabled
+      TabStripFeaturesUtils.isTabStripV2
       ? TabStripConstants.NewTabButton.symbolBiggerPointSize
       : TabStripConstants.NewTabButton.symbolPointSize
     let closeSymbol = DefaultSymbolWithPointSize(
@@ -85,7 +93,11 @@ class TabStripNewTabButton: UIView {
     configuration.baseForegroundColor = TabStripHelper.newTabButtonSymbolColor
     button.configuration = configuration
     button.imageView?.contentMode = .center
-    button.layer.cornerRadius = TabStripConstants.NewTabButton.cornerRadius
+    if TabStripFeaturesUtils.isTabStripV2 {
+      button.layer.cornerRadius = TabStripConstants.NewTabButton.diameter / 2.0
+    } else {
+      button.layer.cornerRadius = TabStripConstants.NewTabButton.legacyCornerRadius
+    }
     if !TabStripFeaturesUtils.isTabStripNTBNoBackgroundEnabled
       && !TabStripFeaturesUtils.isTabStripBlackBackgroundEnabled
     {

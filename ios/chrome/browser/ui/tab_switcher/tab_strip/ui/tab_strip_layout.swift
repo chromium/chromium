@@ -80,7 +80,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     let updatedConstant =
       min(
-        contentSize.width, collectionView.bounds.width) - offset
+        contentSize.width, collectionView.bounds.width + offset) - offset
 
     if newTabButtonLeadingConstraint == nil {
       newTabButtonLeadingConstraint = newTabButton.leadingAnchor.constraint(

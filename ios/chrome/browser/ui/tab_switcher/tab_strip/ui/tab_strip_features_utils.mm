@@ -51,6 +51,14 @@
   return feature_param == kModernTabStripBlackBackgroundParam;
 }
 
++ (BOOL)isTabStripV2 {
+  return [self isTabStripCloserNTBEnabled] ||
+         [self isTabStripDarkerBackgroundEnabled] ||
+         [self isTabStripCloserNTBDarkerBackgroundEnabled] ||
+         [self isTabStripNTBNoBackgroundEnabled] ||
+         [self isTabStripBlackBackgroundEnabled];
+}
+
 + (BOOL)isTabStripBiggerCloseTargetEnabled {
   return base::GetFieldTrialParamByFeatureAsBool(
       kModernTabStrip, kModernTabStripBiggerCloseTargetName, false);
