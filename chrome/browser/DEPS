@@ -588,6 +588,11 @@ specific_include_rules = {
     "+services/network/network_context.h",
     "+services/network/network_service.h",
   ],
+  "bound_session_cookie_observer_unittest\.cc": [
+    "+services/network/cookie_manager.h",
+    "+services/network/network_context.h",
+    "+services/network/network_service.h",
+  ],
   "chrome_authenticator_request_delegate_unittest\.cc": [
     "+third_party/microsoft_webauthn/webauthn.h",
   ],
