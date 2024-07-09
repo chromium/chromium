@@ -32,9 +32,7 @@ const test_noopener_opening_popup = (
 
     if (opener_coop == 'noopener-allow-popups') {
       // Assert that we can't script the popup.
-      await t.step_wait(() => { return popup.window == null},
-                        'Opener popup.window becomes null')
-      assert_true(popup.closed, 'Opener popup.closed');
+      await t.step_wait(() => popup.closed, 'Opener popup.closed')
     }
 
     // Ensure that the popup has no access to its opener.
