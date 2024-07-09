@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -18,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -45,6 +47,8 @@ public class AccountSelectionViewTestBase {
     // Constants but this test base is used by parameterized tests. These can only be initialized
     // after parameterized test runner setup.
     GURL mTestProfilePicUrl;
+    GURL mTestConfigUrl;
+    GURL mTestLoginUrl;
     Account mAnaAccount;
     Account mNoOneAccount;
     Account mBobAccount;
@@ -53,12 +57,15 @@ public class AccountSelectionViewTestBase {
     PropertyModel mModel;
     ModelList mSheetAccountItems;
     View mContentView;
+    IdentityProviderMetadata mTestIdpMetadata;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
         mTestProfilePicUrl = new GURL("https://profile-picture.com");
+        mTestConfigUrl = new GURL("https://idp.com/fedcm.json");
+        mTestLoginUrl = new GURL("https://idp.com/login");
 
         mAnaAccount =
                 new Account(
@@ -87,6 +94,15 @@ public class AccountSelectionViewTestBase {
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true);
+
+        mTestIdpMetadata =
+                new IdentityProviderMetadata(
+                        Color.BLUE,
+                        Color.GREEN,
+                        "https://icon-url.example",
+                        mTestConfigUrl,
+                        mTestLoginUrl,
+                        /* supportsAddAccount= */ false);
     }
 
     MVCListAdapter.ListItem buildAccountItem(Account account) {

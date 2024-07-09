@@ -22,6 +22,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
@@ -71,10 +72,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionViewTest
                             mSheetAccountItems = new ModelList();
                             mContentView =
                                     AccountSelectionCoordinator.setupContentView(
-                                            activity,
-                                            mModel,
-                                            mSheetAccountItems,
-                                            /* rpMode= */ RpMode.BUTTON);
+                                            activity, mModel, mSheetAccountItems, RpMode.BUTTON);
                             activity.setContentView(mContentView);
                             mResources = activity.getResources();
                         });
@@ -128,5 +126,28 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionViewTest
         assertEquals(1, accountsList.getItemDecorationCount());
         assertEquals(
                 accountsList.getItemDecorationAt(0).getClass(), AccountPickerItemDecoration.class);
+    }
+
+    /** Tests that the brand background color is the add account secondary button's text color. */
+    @Test
+    public void testAddAccountButtonBranding() {
+        mModel.set(ItemProperties.ADD_ACCOUNT_BUTTON, buildAddAccountButton());
+
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+
+        TextView addAccountButton =
+                mContentView.findViewById(R.id.account_selection_add_account_btn);
+
+        final int expectedTextColor = mTestIdpMetadata.getBrandBackgroundColor();
+        assertEquals(expectedTextColor, addAccountButton.getTextColors().getDefaultColor());
+    }
+
+    private PropertyModel buildAddAccountButton() {
+        AddAccountButtonProperties.Properties properties =
+                new AddAccountButtonProperties.Properties();
+        properties.mIdpMetadata = mTestIdpMetadata;
+        return new PropertyModel.Builder(AddAccountButtonProperties.ALL_KEYS)
+                .with(AddAccountButtonProperties.PROPERTIES, properties)
+                .build();
     }
 }

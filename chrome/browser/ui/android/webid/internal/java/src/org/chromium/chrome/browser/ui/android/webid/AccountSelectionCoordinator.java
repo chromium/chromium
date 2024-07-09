@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -47,6 +46,7 @@ import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -160,26 +160,18 @@ public class AccountSelectionCoordinator
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(sheetItems);
         adapter.registerType(
                 AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
-                AccountSelectionCoordinator::buildAccountView,
+                new LayoutViewBuilder(
+                        rpMode == RpMode.BUTTON
+                                ? R.layout.account_selection_button_mode_account_item
+                                : R.layout.account_selection_account_item),
                 AccountSelectionViewBinder::bindAccountView);
+        adapter.registerType(
+                AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT,
+                new LayoutViewBuilder(R.layout.account_selection_add_account_row_item),
+                AccountSelectionViewBinder::bindAddAccountView);
         sheetItemListView.setAdapter(adapter);
 
         return contentView;
-    }
-
-    static View buildAccountView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.account_selection_account_item, parent, false);
-    }
-
-    static View buildDataSharingConsentView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.account_selection_data_sharing_consent_item, parent, false);
-    }
-
-    static View buildContinueButtonView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.account_selection_continue_button, parent, false);
     }
 
     static int generatedFedCMId() {

@@ -31,6 +31,7 @@ import org.chromium.base.Callback;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorButtonProperties;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -170,6 +172,64 @@ class AccountSelectionViewBinder {
             subject.setText(account.getName());
             TextView email = view.findViewById(R.id.description);
             email.setText(account.getEmail());
+        } else {
+            assert false : "Unhandled update to property:" + key;
+        }
+    }
+
+    /**
+     * Called whenever an add account button is bound to this view.
+     *
+     * @param model The model containing the data for the view.
+     * @param view The view to be bound.
+     * @param key The key of the property to be bound.
+     */
+    @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
+    static void bindAddAccountView(PropertyModel model, View view, PropertyKey key) {
+        if (key == AddAccountButtonProperties.PROPERTIES) {
+            AddAccountButtonProperties.Properties properties =
+                    model.get(AddAccountButtonProperties.PROPERTIES);
+            Context context = view.getContext();
+
+            // If iconView is available, the add account button is an account row at the end of the
+            // accounts list.
+            ImageView iconView = view.findViewById(R.id.start_icon);
+            if (iconView != null) {
+                TintedDrawable plusIcon =
+                        TintedDrawable.constructTintedDrawable(
+                                context,
+                                R.drawable.plus,
+                                R.color.default_icon_color_accent1_tint_list);
+                iconView.setImageDrawable(plusIcon);
+
+                TextView subject = view.findViewById(R.id.title);
+                subject.setText(context.getString(R.string.account_selection_add_account));
+
+                view.setOnClickListener(
+                        clickedView -> {
+                            properties.mOnClickListener.onResult(null);
+                        });
+                return;
+            }
+
+            // Since iconView is not available, the add account button is a secondary button under
+            // the continue button at the bottom of the screen.
+            ButtonCompat button = view.findViewById(R.id.account_selection_add_account_btn);
+            button.setOnClickListener(
+                    clickedView -> {
+                        properties.mOnClickListener.onResult(null);
+                    });
+            button.setText(context.getString(R.string.account_selection_add_account));
+
+            IdentityProviderMetadata idpMetadata = properties.mIdpMetadata;
+            if (!ColorUtils.inNightMode(context)) {
+                Integer backgroundColor = idpMetadata.getBrandBackgroundColor();
+                if (backgroundColor != null) {
+                    // Set background color as text color because this is a secondary button which
+                    // has inverted colors compared to the primary button.
+                    button.setTextColor(backgroundColor);
+                }
+            }
         } else {
             assert false : "Unhandled update to property:" + key;
         }
@@ -440,8 +500,6 @@ class AccountSelectionViewBinder {
                 btnText = context.getString(R.string.idp_signin_status_mismatch_dialog_continue);
             } else if (headerType == HeaderProperties.HeaderType.SIGN_IN_ERROR) {
                 btnText = context.getString(R.string.signin_error_dialog_got_it_button);
-            } else if (headerType == HeaderProperties.HeaderType.SIGN_IN && account == null) {
-                btnText = context.getString(R.string.account_selection_add_account);
             } else {
                 // Prefers to use given name if it is provided otherwise falls back to using the
                 // name.
@@ -522,8 +580,15 @@ class AccountSelectionViewBinder {
         } else if (key == ItemProperties.ERROR_TEXT) {
             itemView = view.findViewById(R.id.error_text);
             itemBinder = AccountSelectionViewBinder::bindErrorTextView;
+        } else if (key == ItemProperties.ADD_ACCOUNT_BUTTON) {
+            itemView = view.findViewById(R.id.account_selection_add_account_btn);
+            itemBinder = AccountSelectionViewBinder::bindAddAccountView;
         } else {
             assert false : "Unhandled update to property:" + key;
+            return;
+        }
+
+        if (itemView == null) {
             return;
         }
 

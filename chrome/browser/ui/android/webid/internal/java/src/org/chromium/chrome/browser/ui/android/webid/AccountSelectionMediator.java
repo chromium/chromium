@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
@@ -341,7 +342,10 @@ class AccountSelectionMediator {
     }
 
     private void updateAccounts(
-            String idpForDisplay, List<Account> accounts, boolean areAccountsClickable) {
+            String idpForDisplay,
+            List<Account> accounts,
+            boolean areAccountsClickable,
+            boolean showAddAccountRow) {
         mSheetAccountItems.clear();
         if (accounts == null) return;
 
@@ -350,6 +354,12 @@ class AccountSelectionMediator {
             mSheetAccountItems.add(
                     new ListItem(AccountSelectionProperties.ITEM_TYPE_ACCOUNT, model));
             requestAvatarImage(model);
+        }
+
+        if (showAddAccountRow) {
+            final PropertyModel model = createAddAccountBtnItem();
+            mSheetAccountItems.add(
+                    new ListItem(AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT, model));
         }
     }
 
@@ -401,9 +411,16 @@ class AccountSelectionMediator {
         if (mHeaderType == HeaderType.SIGN_IN) {
             mHeaderType = HeaderType.VERIFY;
             updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false);
+        } else if (mHeaderType == HeaderType.VERIFY) {
+            // Currently, we show the verify sheet after the single account chooser for button mode
+            // as a result of the previous if block. However, in some cases we need to show the
+            // request permission sheet instead.
+            // TODO(crbug.com/327273595): Implement request permission sheet for button mode
+            // Android.
+            assert mRpMode == RpMode.BUTTON;
         } else {
             // We call showVerifySheet() from updateSheet()->onAccountSelected() in this case, so do
-            // not invoked updateSheet() as that would cause a loop and isn't needed.
+            // not invoke updateSheet() as that would cause a loop and isn't needed.
             assert mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN;
         }
     }
@@ -538,7 +555,18 @@ class AccountSelectionMediator {
     }
 
     private void updateSheet(List<Account> accounts, boolean areAccountsClickable) {
-        updateAccounts(mIdpForDisplay, accounts, areAccountsClickable);
+        boolean supportsAddAccount =
+                mRpMode == RpMode.BUTTON
+                        && mHeaderType == HeaderType.SIGN_IN
+                        && areAccountsClickable
+                        && mIdpMetadata.supportsAddAccount();
+        boolean isSingleAccountChooser = accounts != null && accounts.size() == 1;
+
+        updateAccounts(
+                mIdpForDisplay,
+                accounts,
+                areAccountsClickable,
+                supportsAddAccount && !isSingleAccountChooser);
         updateHeader();
 
         boolean isDataSharingConsentVisible = false;
@@ -563,12 +591,11 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onLoginToIdP;
         }
 
-        if (mHeaderType == HeaderType.SIGN_IN
-                && areAccountsClickable
-                && mIdpMetadata.supportsAddAccount()) {
+        if (supportsAddAccount && isSingleAccountChooser) {
             assert !isDataSharingConsentVisible;
             assert mSelectedAccount == null;
-            continueButtonCallback = this::onLoginToIdP;
+            mSelectedAccount = accounts.get(0);
+            continueButtonCallback = this::onClickAccountSelected;
         }
 
         if (mHeaderType == HeaderType.SIGN_IN_ERROR) {
@@ -597,6 +624,10 @@ class AccountSelectionMediator {
                 mHeaderType == HeaderType.SIGN_IN_ERROR
                         ? createErrorTextItem(mIdpForDisplay, mTopFrameForDisplay, mError)
                         : null);
+        // For multiple account choosers, the add account button is added as an account row.
+        mModel.set(
+                ItemProperties.ADD_ACCOUNT_BUTTON,
+                supportsAddAccount && isSingleAccountChooser ? createAddAccountBtnItem() : null);
 
         mBottomSheetContent.computeAndUpdateAccountListHeight();
         // When a user opens a page that invokes the FedCM API in a new tab, the tab will be hidden
@@ -762,6 +793,16 @@ class AccountSelectionMediator {
         properties.mHeaderType = mHeaderType;
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                 .with(ContinueButtonProperties.PROPERTIES, properties)
+                .build();
+    }
+
+    private PropertyModel createAddAccountBtnItem() {
+        AddAccountButtonProperties.Properties properties =
+                new AddAccountButtonProperties.Properties();
+        properties.mIdpMetadata = mIdpMetadata;
+        properties.mOnClickListener = this::onLoginToIdP;
+        return new PropertyModel.Builder(AddAccountButtonProperties.ALL_KEYS)
+                .with(AddAccountButtonProperties.PROPERTIES, properties)
                 .build();
     }
 

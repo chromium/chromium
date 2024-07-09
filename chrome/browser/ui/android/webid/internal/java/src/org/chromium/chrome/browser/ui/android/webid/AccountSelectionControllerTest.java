@@ -206,7 +206,7 @@ public class AccountSelectionControllerTest {
                         mTestIdpBrandIconUrl.getSpec(),
                         mTestConfigUrl,
                         mTestLoginUrl,
-                        /* supports_add_account= */ false);
+                        /* supportsAddAccount= */ false);
 
         mBottomSheetContent = new AccountSelectionBottomSheetContent(null, null);
         mMediator =
@@ -309,7 +309,7 @@ public class AccountSelectionControllerTest {
                         "",
                         mTestConfigUrl,
                         mTestLoginUrl,
-                        /* supports_add_account= */ false);
+                        /* supportsAddAccount= */ false);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
                 mTestEtldPlusOne1,

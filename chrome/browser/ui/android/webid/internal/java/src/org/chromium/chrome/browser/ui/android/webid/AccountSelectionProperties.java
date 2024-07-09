@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 /** Properties defined here reflect the state of the AccountSelection-components. */
 class AccountSelectionProperties {
     public static final int ITEM_TYPE_ACCOUNT = 1;
+    public static final int ITEM_TYPE_ADD_ACCOUNT = 2;
 
     /** Properties for an account entry in AccountSelection sheet. */
     static class AccountProperties {
@@ -138,8 +139,25 @@ class AccountSelectionProperties {
     }
 
     /**
-     * Properties defined here reflect the state of the got it button in the AccountSelection
+     * Properties defined here reflect the state of the add account button in the AccountSelection
      * sheet.
+     */
+    static class AddAccountButtonProperties {
+        static class Properties {
+            public IdentityProviderMetadata mIdpMetadata;
+            public Callback<Account> mOnClickListener;
+        }
+
+        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+                new ReadableObjectPropertyKey<>("properties");
+
+        static final PropertyKey[] ALL_KEYS = {PROPERTIES};
+
+        private AddAccountButtonProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the state of the got it button in the AccountSelection sheet.
      */
     static class ErrorButtonProperties {
         static final ReadableObjectPropertyKey<IdentityProviderMetadata> IDP_METADATA =
@@ -197,9 +215,16 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("idp_signin");
         static final WritableObjectPropertyKey<PropertyModel> ERROR_TEXT =
                 new WritableObjectPropertyKey<>("error_text");
+        static final WritableObjectPropertyKey<PropertyModel> ADD_ACCOUNT_BUTTON =
+                new WritableObjectPropertyKey<>("add_account_btn");
 
         static final PropertyKey[] ALL_KEYS = {
-            CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER, IDP_SIGNIN, ERROR_TEXT
+            CONTINUE_BUTTON,
+            DATA_SHARING_CONSENT,
+            HEADER,
+            IDP_SIGNIN,
+            ERROR_TEXT,
+            ADD_ACCOUNT_BUTTON
         };
 
         private ItemProperties() {}

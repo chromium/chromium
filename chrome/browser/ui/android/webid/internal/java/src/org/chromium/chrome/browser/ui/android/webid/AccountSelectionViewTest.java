@@ -85,11 +85,8 @@ public class AccountSelectionViewTest extends AccountSelectionViewTestBase {
     private static final String LINK_TAG_REGEX = "<[^>]*>";
 
     // Constants but can only be initialized after parameterized test runner setup.
-    private GURL mTestConfigUrl;
-    private GURL mTestLoginUrl;
     private GURL mTestErrorUrl;
     private GURL mTestEmptyErrorUrl;
-    private IdentityProviderMetadata mTestIdpMetadata;
 
     private final RpContextEntry[] mRpContexts =
             new RpContextEntry[] {
@@ -207,19 +204,8 @@ public class AccountSelectionViewTest extends AccountSelectionViewTestBase {
     public void setUp() throws Exception {
         super.setUp();
 
-        mTestConfigUrl = new GURL("https://idp.com/fedcm.json");
-        mTestLoginUrl = new GURL("https://idp.com/login");
         mTestErrorUrl = new GURL("https://idp.com/error");
         mTestEmptyErrorUrl = new GURL("");
-
-        mTestIdpMetadata =
-                new IdentityProviderMetadata(
-                        Color.BLUE,
-                        Color.GREEN,
-                        "https://icon-url.example",
-                        mTestConfigUrl,
-                        mTestLoginUrl,
-                        false);
 
         mActivityScenarioRule
                 .getScenario()
@@ -427,9 +413,6 @@ public class AccountSelectionViewTest extends AccountSelectionViewTestBase {
                     errorDescription.getText().toString());
         }
     }
-
-    @Test
-    public void testChooseAccountWithAddAccount() {}
 
     private RecyclerView getAccounts() {
         return mContentView.findViewById(R.id.sheet_item_list);

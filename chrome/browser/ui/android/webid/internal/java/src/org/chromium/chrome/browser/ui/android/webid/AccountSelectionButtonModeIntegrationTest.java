@@ -1,0 +1,306 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.android.webid;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.filters.MediumTest;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.blink.mojom.RpContext;
+import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+
+import java.util.Arrays;
+
+/**
+ * Integration tests for the Account Selection Button Mode component check that the calls to the
+ * Account Selection API end up rendering a View. This class is parameterized to run all tests for
+ * each RP mode.
+ */
+@RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionIntegrationTestBase {
+    @Before
+    @Override
+    public void setUp() throws InterruptedException {
+        mRpMode = RpMode.BUTTON;
+        super.setUp();
+    }
+
+    @Test
+    @MediumTest
+    public void testAddAccount() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        onView(withId(R.id.account_selection_add_account_btn))
+                .check(matches(withText("Use a different account")));
+
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                mAccountSelection.showAccounts(
+                                        EXAMPLE_ETLD_PLUS_ONE,
+                                        TEST_ETLD_PLUS_ONE_1,
+                                        TEST_ETLD_PLUS_ONE_2,
+                                        Arrays.asList(ANA),
+                                        IDP_METADATA_WITH_ADD_ACCOUNT,
+                                        mClientIdMetadata,
+                                        /* isAutoReauthn= */ false,
+                                        RpContext.SIGN_IN,
+                                        /* requestPermission= */ true);
+                                mAccountSelection.getMediator().setComponentShowTime(-1000);
+                                return null;
+                            }
+                        })
+                .when(mMockBridge)
+                .onLoginToIdP(any(), any());
+
+        // Click "Use a different account".
+        runOnUiThreadBlocking(
+                () -> {
+                    contentView.findViewById(R.id.account_selection_add_account_btn).performClick();
+                });
+
+        // Because of how we implemented onLogInToIdP, we should be back to account chooser here.
+        // Make sure that the Ana account is now displayed.
+        onView(withText("Ana Doe")).check(matches(isDisplayed()));
+
+        // Click the account.
+        runOnUiThreadBlocking(
+                () -> {
+                    ((RecyclerView) contentView.findViewById(R.id.sheet_item_list))
+                            .getChildAt(0)
+                            .performClick();
+                });
+
+        // Because this is a returning account, we should immediately sign in now.
+        verify(mMockBridge, never()).onDismissed(anyInt());
+        verify(mMockBridge).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testAccountChooserWithAddAccountForNewUser() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        // This should be the "multi-account chooser", so clicking an account should go
+        // to the disclosure text screen.
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        onView(withId(R.id.account_selection_add_account_btn))
+                .check(matches(withText("Use a different account")));
+
+        // Click the first account.
+        runOnUiThreadBlocking(
+                () -> {
+                    ((RecyclerView) contentView.findViewById(R.id.sheet_item_list))
+                            .getChildAt(0)
+                            .performClick();
+                });
+
+        // Sheet should still be open.
+        assertNotEquals(BottomSheetController.SheetState.HIDDEN, getBottomSheetState());
+        onView(withId(R.id.account_selection_continue_btn))
+                .check(matches(withText("Continue as Bob")));
+
+        // Make sure we now show the disclosure text.
+        TextView consent = contentView.findViewById(R.id.user_data_sharing_consent);
+        if (consent == null) {
+            throw new NoMatchingViewException.Builder()
+                    .includeViewHierarchy(true)
+                    .withRootView(contentView)
+                    .build();
+        }
+
+        runOnUiThreadBlocking(
+                () -> {
+                    contentView.findViewById(R.id.account_selection_continue_btn).performClick();
+                });
+
+        verify(mMockBridge, never()).onDismissed(anyInt());
+        // First time is from clicking the accounts list, second time is from clicking the continue
+        // button.
+        verify(mMockBridge, times(2)).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testAccountChooserWithAddAccountReturningUser() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(ANA),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        onView(withId(R.id.account_selection_add_account_btn))
+                .check(matches(withText("Use a different account")));
+
+        // Click the first account.
+        runOnUiThreadBlocking(
+                () -> {
+                    ((RecyclerView) contentView.findViewById(R.id.sheet_item_list))
+                            .getChildAt(0)
+                            .performClick();
+                });
+
+        // Because this is a returning account, we should immediately sign in now.
+        verify(mMockBridge, never()).onDismissed(anyInt());
+        verify(mMockBridge).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testAddAccountIsSecondaryButtonForSingleAccount() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        // Check that only one item is in the accounts list, and the item is an account.
+        RecyclerView accountsList = contentView.findViewById(R.id.sheet_item_list);
+        assertEquals(accountsList.getChildCount(), 1);
+        assertEquals(
+                accountsList.getAdapter().getItemViewType(0),
+                AccountSelectionProperties.ITEM_TYPE_ACCOUNT);
+
+        // Check that secondary button is displayed, with the appropriate text.
+        onView(withId(R.id.account_selection_add_account_btn))
+                .check(matches(withText("Use a different account")));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddAccountIsAccountRowForMultipleAccounts() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(BOB, ANA),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        // Check that three items are in the accounts list, the first two items are accounts and the
+        // third/last item is an add account button.
+        RecyclerView accountsList = contentView.findViewById(R.id.sheet_item_list);
+        assertEquals(accountsList.getChildCount(), 3);
+        assertEquals(
+                accountsList.getAdapter().getItemViewType(0),
+                AccountSelectionProperties.ITEM_TYPE_ACCOUNT);
+        assertEquals(
+                accountsList.getAdapter().getItemViewType(1),
+                AccountSelectionProperties.ITEM_TYPE_ACCOUNT);
+        assertEquals(
+                accountsList.getAdapter().getItemViewType(2),
+                AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT);
+
+        // Check that secondary button is NOT displayed.
+        onView(withId(R.id.account_selection_add_account_btn)).check(matches(not(isDisplayed())));
+    }
+}

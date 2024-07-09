@@ -60,10 +60,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionViewTest
                             mSheetAccountItems = new ModelList();
                             mContentView =
                                     AccountSelectionCoordinator.setupContentView(
-                                            activity,
-                                            mModel,
-                                            mSheetAccountItems,
-                                            /* rpMode= */ RpMode.WIDGET);
+                                            activity, mModel, mSheetAccountItems, RpMode.WIDGET);
                             activity.setContentView(mContentView);
                             mResources = activity.getResources();
                         });
