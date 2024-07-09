@@ -20,11 +20,13 @@
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/translate_browser_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -392,6 +394,19 @@ void BrowserActions::InitializeBrowserActions() {
           IDS_PAYMENT_METHOD_SUBMENU_OPTION, kCreditCardChromeRefreshIcon)
           .SetEnabled(!is_guest_session)
           .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             browser->window()->ShowChromeLabs();
+                           },
+                           base::Unretained(browser)),
+                       kActionShowChromeLabs, IDS_CHROMELABS, IDS_CHROMELABS,
+                       kScienceIcon)
+          .SetEnabled(IsChromeLabsEnabled())
+          .Build());
+
   AddListeners();
 }
 

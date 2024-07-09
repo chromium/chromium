@@ -44462,6 +44462,8 @@ should be able to be added at any place in this file.
       label="Pinned show addresses button"/>
   <suffix name="PinnedShowBookmarkSidePanelButton"
       label="Pinned show bookmark side panel button"/>
+  <suffix name="PinnedShowChromeLabsButton"
+      label="Pinned show Chrome Labs button"/>
   <suffix name="PinnedShowHistorySidePanelButton"
       label="Pinned show history side panel button"/>
   <suffix name="PinnedShowPaymentsBubbleOrPageButton"
