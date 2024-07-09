@@ -448,6 +448,18 @@ test("libyuv_scale_fuzztest") {
   ]
 }
 
+test("paint_vector_icon_fuzztest") {
+  sources = [ "paint_vector_icon_fuzztest.cc" ]
+  fuzztests = [ "PaintVectorIconFuzzTest.PaintVectorIcon" ]
+
+  deps = [
+    "//base",
+    "//skia:skia_switches",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+    "//ui/gfx:gfx",
+  ]
+}
+
 proto_library("command_buffer_lpm_fuzzer_proto") {
   sources = [ "command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.proto" ]
 
