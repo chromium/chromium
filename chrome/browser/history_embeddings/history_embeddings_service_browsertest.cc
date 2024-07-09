@@ -49,6 +49,14 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
     return service()->callback_for_tests_;
   }
 
+  void DeleteEmbeddings(base::OnceCallback<void()> callback) {
+    service()
+        ->storage_
+        .AsyncCall(&HistoryEmbeddingsService::Storage::DeleteDataForTesting)
+        .WithArgs(false, true)
+        .Then(std::move(callback));
+  }
+
   void OverrideVisibilityScoresForTesting(
       const base::flat_map<std::string, double>& visibility_scores_for_input) {
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
@@ -250,10 +258,12 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithDatabaseCacheBrowserTest,
   ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
 
   // First time, the cache isn't used because there's no data yet.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectTotalCount(
+      "History.Embeddings.DatabaseCachedPassageRatio", 1);
+  histogram_tester.ExpectBucketCount(
       "History.Embeddings.DatabaseCachedPassageRatio", 0, 1);
-  EXPECT_EQ(0, histogram_tester.GetBucketCount(
-                   "History.Embeddings.DatabaseCachedPassageRatio", 100));
+  histogram_tester.ExpectBucketCount(
+      "History.Embeddings.DatabaseCachedPassageRatio", 100, 0);
 
   // Retrieve again for the same URL, new visit.
   service()->RetrievePassages(
@@ -263,9 +273,40 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithDatabaseCacheBrowserTest,
   ASSERT_EQ(url_passages.passages.passages_size(), 1);
   ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
 
-  // This time all the passages were found in existing data.
-  EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "History.Embeddings.DatabaseCachedPassageRatio", 100));
+  // This time all the passages were found in existing data. So the
+  // zero bucket stays the same while the 100 bucket increments.
+  histogram_tester.ExpectTotalCount(
+      "History.Embeddings.DatabaseCachedPassageRatio", 2);
+  histogram_tester.ExpectBucketCount(
+      "History.Embeddings.DatabaseCachedPassageRatio", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "History.Embeddings.DatabaseCachedPassageRatio", 100, 1);
+
+  // Delete just the embeddings, leaving the passages intact.
+  // This happens naturally when model version changes. Eventually
+  // the embeddings get rebuilt, but for some time there may be
+  // no embeddings for existing passages.
+  base::test::TestFuture<void> future_deletion;
+  DeleteEmbeddings(future_deletion.GetCallback());
+  ASSERT_TRUE(future_deletion.Wait());
+
+  // Retrieve again for the same URL, new visit.
+  service()->RetrievePassages(
+      1, 3, base::Time::Now(),
+      web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+  url_passages = future.Take();
+  ASSERT_EQ(url_passages.passages.passages_size(), 1);
+  ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
+
+  // This time the passages were found in existing data but there were no
+  // corresponding embeddings so they weren't used. So the 100 bucket stays
+  // the same while the zero bucket increments due to cache miss.
+  histogram_tester.ExpectTotalCount(
+      "History.Embeddings.DatabaseCachedPassageRatio", 3);
+  histogram_tester.ExpectBucketCount(
+      "History.Embeddings.DatabaseCachedPassageRatio", 0, 2);
+  histogram_tester.ExpectBucketCount(
+      "History.Embeddings.DatabaseCachedPassageRatio", 100, 1);
 }
 
 }  // namespace history_embeddings

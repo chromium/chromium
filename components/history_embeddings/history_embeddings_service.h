@@ -183,6 +183,9 @@ class HistoryEmbeddingsService : public KeyedService,
                                 history::URLRows deleted_rows,
                                 std::set<history::VisitID> deleted_visit_ids);
 
+    // Targeted deletion for testing scenarios like model version change.
+    void DeleteDataForTesting(bool delete_passages, bool delete_embeddings);
+
     // Gathers URL and passage data from the database where corresponding
     // embeddings are absent. This is used to rebuild the embeddings table
     // when the model changes.

@@ -102,7 +102,7 @@ const base::FeatureParam<bool> kRebuildEmbeddings(&kHistoryEmbeddings,
 const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder(
     &kHistoryEmbeddings,
     "UseDatabaseBeforeEmbedder",
-    false);
+    true);
 
 bool IsHistoryEmbeddingEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)

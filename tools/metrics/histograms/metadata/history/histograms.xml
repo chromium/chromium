@@ -1959,6 +1959,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.LoadedMissizedEmbedding" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Whether any embeddings loaded from the SQL database are of the wrong size
+    (number of dimensions expected to be consistent). Logged each time
+    history_embeddings::SqlDatabase::GetUrlData completes.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.NumMatchedUrlsVisible" units="counts"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>

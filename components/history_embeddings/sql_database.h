@@ -69,7 +69,10 @@ class SqlDatabase : public VectorDatabase {
   // History deletions, either from user action or time-based expiration.
   bool DeleteDataForUrlId(history::URLID url_id);
   bool DeleteDataForVisitId(history::VisitID visit_id);
-  bool DeleteAllData();
+
+  // This is used to delete data for all URLs, either all data for history
+  // deletion, or selectively for testing.
+  bool DeleteAllData(bool delete_passages, bool delete_embeddings);
 
  private:
   // Initializes the database, if it's not already initialized. Returns true if

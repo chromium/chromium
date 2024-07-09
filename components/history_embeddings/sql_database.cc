@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/passages_util.h"
@@ -250,6 +251,7 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
 
   UrlPassagesEmbeddings url_data(url_id, visit_id, visit_time);
   url_data.url_passages.passages = std::move(passages.value());
+  bool loaded_missized_embedding = false;
   {
     constexpr char kSqlSelectEmbeddings[] =
         "SELECT embeddings_blob FROM embeddings "
@@ -270,9 +272,17 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
         url_data.url_embeddings.embeddings.emplace_back(
             std::vector(vector.floats().cbegin(), vector.floats().cend()),
             vector.passage_word_count());
+        if (url_data.url_embeddings.embeddings.back().Dimensions() !=
+            GetEmbeddingDimensions()) {
+          url_data.url_embeddings.embeddings.clear();
+          loaded_missized_embedding = true;
+          break;
+        }
       }
     }
   }
+  base::UmaHistogramBoolean("History.Embeddings.LoadedMissizedEmbedding",
+                            loaded_missized_embedding);
   return url_data;
 }
 
@@ -483,15 +493,17 @@ bool SqlDatabase::DeleteDataForVisitId(history::VisitID visit_id) {
   return delete_passages_success && delete_embeddings_success;
 }
 
-bool SqlDatabase::DeleteAllData() {
+bool SqlDatabase::DeleteAllData(bool delete_passages, bool delete_embeddings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit()) {
     return false;
   }
 
-  bool delete_passages_success = db_.Execute("DELETE FROM passages;");
-  bool delete_embeddings_success = db_.Execute("DELETE FROM embeddings;");
+  bool delete_passages_success =
+      !delete_passages || db_.Execute("DELETE FROM passages;");
+  bool delete_embeddings_success =
+      !delete_embeddings || db_.Execute("DELETE FROM embeddings;");
 
   return delete_passages_success && delete_embeddings_success;
 }

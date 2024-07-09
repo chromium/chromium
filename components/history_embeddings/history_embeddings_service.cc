@@ -475,7 +475,7 @@ void HistoryEmbeddingsService::Storage::HandleHistoryDeletions(
     history::URLRows deleted_rows,
     std::set<history::VisitID> deleted_visit_ids) {
   if (for_all_history) {
-    sql_database.DeleteAllData();
+    sql_database.DeleteAllData(true, true);
     return;
   }
 
@@ -486,6 +486,12 @@ void HistoryEmbeddingsService::Storage::HandleHistoryDeletions(
   for (history::VisitID visit_id : deleted_visit_ids) {
     sql_database.DeleteDataForVisitId(visit_id);
   }
+}
+
+void HistoryEmbeddingsService::Storage::DeleteDataForTesting(
+    bool delete_passages,
+    bool delete_embeddings) {
+  sql_database.DeleteAllData(delete_passages, delete_embeddings);
 }
 
 std::vector<UrlPassages>
@@ -521,16 +527,19 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(
   std::unordered_map<std::string, Embedding> embedding_cache;
   if (existing_url_data.has_value()) {
     size_t n = existing_url_data.value().url_passages.passages.passages_size();
-    CHECK_EQ(n, existing_url_data.value().url_embeddings.embeddings.size());
-    auto passages_iter =
-        existing_url_data.value().url_passages.passages.passages().begin();
-    auto embeddings_iter =
-        existing_url_data.value().url_embeddings.embeddings.begin();
-    for (size_t i = 0; i < n; i++) {
-      embedding_cache.emplace(std::move(*passages_iter),
-                              std::move(*embeddings_iter));
-      passages_iter++;
-      embeddings_iter++;
+    // It's possible to get passages but no embeddings if the model version
+    // changed and caused embeddings to be deleted, and they're not rebuilt yet.
+    if (n == existing_url_data.value().url_embeddings.embeddings.size()) {
+      auto passages_iter =
+          existing_url_data.value().url_passages.passages.passages().begin();
+      auto embeddings_iter =
+          existing_url_data.value().url_embeddings.embeddings.begin();
+      for (size_t i = 0; i < n; i++) {
+        embedding_cache.emplace(std::move(*passages_iter),
+                                std::move(*embeddings_iter));
+        passages_iter++;
+        embeddings_iter++;
+      }
     }
   }
 
@@ -595,8 +604,10 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
       // only.
       auto cached_embedding = embedding_cache.find(passage);
       CHECK(cached_embedding != embedding_cache.end());
+      CHECK_EQ(embedder_metadata_->output_size,
+               cached_embedding->second.Dimensions());
       embeddings.insert(embeddings.begin() + embeddings_index,
-                        std::move(cached_embedding->second));
+                        cached_embedding->second);
       embeddings_index++;
     }
   }

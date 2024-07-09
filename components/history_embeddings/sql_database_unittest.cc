@@ -346,7 +346,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteAllData) {
                                     GetEncryptorInstance());
   AddBasicMockData(sql_database.get());
 
-  EXPECT_TRUE(sql_database->DeleteAllData());
+  EXPECT_TRUE(sql_database->DeleteAllData(true, true));
   EXPECT_FALSE(sql_database->GetPassages(1));
   EXPECT_FALSE(sql_database->GetPassages(2));
   EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 0U);
