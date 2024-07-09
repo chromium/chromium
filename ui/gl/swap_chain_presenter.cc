@@ -41,6 +41,10 @@ BASE_FEATURE(kFallbackBT709VideoToBT601,
              "FallbackBT709VideoToBT601",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDisableVPBLTUpscale,
+             "DisableVPBLTUpscale",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApplyTransformToLetterboxing,
              "ApplyTransformToLetterBoxing",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1082,8 +1086,19 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
   // Here the destination surface size is set to the whole monitor, while the
   // target region is set to the visual clip rectangle on the screen.
   if (params.z_order > 0) {
-    *dest_size = monitor_size;
-    *target_rect = *visual_clip_rect;
+    if (base::FeatureList::IsEnabled(kApplyTransformToLetterboxing)) {
+      // The transform scaling ratio should be applied in the process of
+      // calculating dest_size and target_rect.
+      float inverse_scale_x = 1.0f / std::abs(visual_transform->rc(0, 0));
+      float inverse_scale_y = 1.0f / std::abs(visual_transform->rc(1, 1));
+      *dest_size =
+          gfx::ScaleSize(monitor_size, inverse_scale_x, inverse_scale_y);
+      *target_rect =
+          gfx::ScaleRect(*visual_clip_rect, inverse_scale_x, inverse_scale_y);
+    } else {
+      *dest_size = monitor_size;
+      *target_rect = *visual_clip_rect;
+    }
   } else {
     // For underlay scenario, keep the destination surface size and target
     // region according to swap chain size.
@@ -1179,7 +1194,19 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   // overlays especially for protected video. Use the onscreen size (scale==1)
   // for overlay can avoid this problem.
   // TODO(sunnyps): Support 90/180/270 deg rotations using video context.
-  if (visual_transform->IsScaleOrTranslation()) {
+
+  // On battery_power mode, set swap_chain_size to the source content size when
+  // the swap chain presents upscaled overlay, multi-plane overlay hardware will
+  // perform an upscaling operation instead of video processor(VP). Disabling VP
+  // upscaled BLT is more power saving as the video processor can do the minimal
+  // amount of work and the overlay has to read the minimal amount of data.
+  bool can_disable_vp_upscaling_blt =
+      base::FeatureList::IsEnabled(kDisableVPBLTUpscale) &&
+      is_on_battery_power_ && std::abs(params.transform.rc(0, 0)) > 1.0f &&
+      std::abs(params.transform.rc(1, 1)) > 1.0f;
+
+  if (visual_transform->IsScaleOrTranslation() &&
+      !can_disable_vp_upscaling_blt) {
     swap_chain_size = overlay_onscreen_rect.size();
   }
 
