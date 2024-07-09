@@ -6679,7 +6679,7 @@
         'cros_dut_pool': 'vmlab',
         'run_cft': True,
       },
-      'chromeos-betty-chrome-dchecks': {
+      'chromeos-betty-chrome-dchecks-fyi': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
