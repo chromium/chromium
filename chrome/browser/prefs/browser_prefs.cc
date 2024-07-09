@@ -3058,11 +3058,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   syncer::SyncPrefs::MaybeMigratePasswordsToPerAccountPref(profile_prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 07/2024.
-  ChromeShelfPrefs::CleanupPreloadPrefs(profile_prefs);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 
