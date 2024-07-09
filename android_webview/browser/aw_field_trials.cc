@@ -197,4 +197,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   // TODO(crbug.com/40272633): Web MIDI permission prompt for all usage.
   aw_feature_overrides.DisableFeature(blink::features::kBlockMidiByDefault);
+
+  // Disable device posture API as the framework implementation causes
+  // AwContents to leak in apps that don't call destroy().
+  aw_feature_overrides.DisableFeature(blink::features::kDevicePosture);
+  aw_feature_overrides.DisableFeature(blink::features::kViewportSegments);
 }
