@@ -60,10 +60,6 @@ BASE_DECLARE_FEATURE(kWebFeedOnboarding);
 // Feature that enables sorting by different heuristics in the web feed.
 BASE_DECLARE_FEATURE(kWebFeedSort);
 
-// Feature that causes the "open in new tab" menu item to appear on feed items
-// on Start Surface.
-BASE_DECLARE_FEATURE(kEnableOpenInNewTabFromStartSurfaceFeed);
-
 bool IsCormorantEnabledForLocale(std::string country);
 
 // Personalize feed for unsigned users.

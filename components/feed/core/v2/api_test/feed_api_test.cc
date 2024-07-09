@@ -1044,12 +1044,10 @@ void FeedApiTest::PrefetchImage(const GURL& url) {
 
 void FeedApiTest::CreateStream(
     bool wait_for_initialization,
-    bool start_surface,
     bool is_new_tab_search_engine_url_android_enabled) {
   ChromeInfo chrome_info;
   chrome_info.channel = version_info::Channel::STABLE;
   chrome_info.version = base::Version({99, 1, 9911, 2});
-  chrome_info.start_surface = start_surface;
   chrome_info.is_new_tab_search_engine_url_android_enabled =
       is_new_tab_search_engine_url_android_enabled;
   stream_ = std::make_unique<FeedStream>(

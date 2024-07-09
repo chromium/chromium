@@ -58,7 +58,6 @@ enum class AccountTokenFetchStatus {
 struct ChromeInfo {
   version_info::Channel channel{};
   base::Version version;
-  bool start_surface = false;
   bool is_new_tab_search_engine_url_android_enabled = false;
 };
 // Device display metrics.

@@ -157,7 +157,6 @@ class FeedNetworkTest : public testing::Test {
     RequestMetadata request_metadata;
     request_metadata.chrome_info.version = base::Version({1, 2, 3, 4});
     request_metadata.chrome_info.channel = version_info::Channel::STABLE;
-    request_metadata.chrome_info.start_surface = false;
     request_metadata.display_metrics.density = 1;
     request_metadata.display_metrics.width_pixels = 2;
     request_metadata.display_metrics.height_pixels = 3;

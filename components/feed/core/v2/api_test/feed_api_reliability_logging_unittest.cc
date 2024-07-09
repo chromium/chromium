@@ -70,7 +70,7 @@ TEST_F(FeedApiReliabilityLoggingTest,
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_DisabledByDse) {
   profile_prefs_.SetBoolean(prefs::kEnableSnippetsByDse, false);
-  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/false,
+  CreateStream(/*wait_for_initialization=*/true,
                /*is_new_tab_search_engine_url_android_enabled*/ true);
   TestForYouSurface surface(stream_.get());
   EXPECT_EQ(

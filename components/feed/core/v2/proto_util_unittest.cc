@@ -35,7 +35,6 @@ TEST(ProtoUtilTest, CreateClientInfo) {
   RequestMetadata request_metadata;
   request_metadata.chrome_info.version = base::Version({1, 2, 3, 4});
   request_metadata.chrome_info.channel = version_info::Channel::STABLE;
-  request_metadata.chrome_info.start_surface = false;
   request_metadata.display_metrics.density = 1;
   request_metadata.display_metrics.width_pixels = 2;
   request_metadata.display_metrics.height_pixels = 3;
@@ -48,7 +47,6 @@ TEST(ProtoUtilTest, CreateClientInfo) {
   EXPECT_EQ(2, result.app_version().minor());
   EXPECT_EQ(3, result.app_version().build());
   EXPECT_EQ(4, result.app_version().revision());
-  EXPECT_FALSE(result.chrome_client_info().start_surface());
 
   EXPECT_EQ(R"({
   screen_density: 1
@@ -58,13 +56,6 @@ TEST(ProtoUtilTest, CreateClientInfo) {
 )",
             ToTextProto(result.display_info(0)));
   EXPECT_EQ("en-US", result.locale());
-}
-
-TEST(ProtoUtilTest, ClientInfoStartSurface) {
-  RequestMetadata request_metadata;
-  request_metadata.chrome_info.start_surface = true;
-  feedwire::ClientInfo result = CreateClientInfo(request_metadata);
-  EXPECT_TRUE(result.chrome_client_info().start_surface());
 }
 
 TEST(ProtoUtilTest, DefaultCapabilities) {

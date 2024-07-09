@@ -73,10 +73,6 @@ BASE_FEATURE(kWebFeedOnboarding,
 
 BASE_FEATURE(kWebFeedSort, "WebFeedSort", base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableOpenInNewTabFromStartSurfaceFeed,
-             "EnableOpenInNewTabFromStartSurfaceFeed",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsCormorantEnabledForLocale(std::string country) {
   return IsWebFeedEnabledForLocale(country);
 }

@@ -208,12 +208,9 @@ FeedServiceFactory::BuildServiceInstanceForBrowserContext(
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
 #if BUILDFLAG(IS_ANDROID)
-  chrome_info.start_surface =
-      base::FeatureList::IsEnabled(chrome::android::kStartSurfaceAndroid);
   chrome_info.is_new_tab_search_engine_url_android_enabled =
       template_url_service->IsEeaChoiceCountry();
 #else
-  chrome_info.start_surface = false;
   chrome_info.is_new_tab_search_engine_url_android_enabled = false;
 #endif
 
