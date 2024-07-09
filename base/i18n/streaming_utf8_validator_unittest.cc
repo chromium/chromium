@@ -4,6 +4,9 @@
 
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+//
+// Note: U8_NEXT couldn't be rewritten using the spanification_tool, because it
+// is a macro.
 #pragma allow_unsafe_buffers
 #endif
 
@@ -17,6 +20,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -48,11 +52,11 @@ class StreamingUtf8ValidatorThoroughTest : public ::testing::Test {
 
   // This uses the same logic as base::IsStringUTF8 except it considers
   // non-characters valid (and doesn't require a string as input).
-  static bool IsStringUtf8(const uint8_t* src, int32_t src_len) {
-    int32_t char_index = 0;
-    while (char_index < src_len) {
+  static bool IsStringUtf8(base::span<const uint8_t> src) {
+    size_t char_index = 0;
+    while (char_index < src.size()) {
       base_icu::UChar32 code_point;
-      U8_NEXT(src, char_index, src_len, code_point);
+      U8_NEXT(src, char_index, src.size(), code_point);
       if (!base::IsValidCodepoint(code_point))
         return false;
     }
@@ -66,8 +70,7 @@ class StreamingUtf8ValidatorThoroughTest : public ::testing::Test {
     uint8_t test[sizeof n];
     memcpy(test, &n, sizeof n);
     StreamingUtf8Validator validator;
-    EXPECT_EQ(IsStringUtf8(test, sizeof n),
-              validator.AddBytes(test) == VALID_ENDPOINT)
+    EXPECT_EQ(IsStringUtf8(test), validator.AddBytes(test) == VALID_ENDPOINT)
         << "Difference of opinion for \""
         << base::StringPrintf("\\x%02X\\x%02X\\x%02X\\x%02X", test[0], test[1],
                               test[2], test[3])
