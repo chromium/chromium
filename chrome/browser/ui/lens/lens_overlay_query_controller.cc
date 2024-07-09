@@ -6,6 +6,7 @@
 
 #include "base/base64url.h"
 #include "base/logging.h"
+#include "base/rand_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -13,12 +14,15 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/common/channel_info.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -33,7 +37,9 @@
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -50,6 +56,8 @@ namespace lens {
 
 namespace {
 
+const int64_t kMaxDownloadBytes = 1024 * 1024;
+
 // The name string for the header for variations information.
 constexpr char kClientDataHeader[] = "X-Client-Data";
 constexpr char kHttpMethod[] = "POST";
@@ -58,6 +66,7 @@ constexpr char kDeveloperKey[] = "X-Developer-Key";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kOAuthConsumerName[] = "LensOverlayQueryController";
 constexpr char kStartTimeQueryParameter[] = "qsubts";
+constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
@@ -157,6 +166,7 @@ LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
+    Profile* profile,
     lens::LensOverlayInvocationSource invocation_source,
     bool use_dark_mode)
     : full_image_callback_(std::move(full_image_callback)),
@@ -167,6 +177,7 @@ LensOverlayQueryController::LensOverlayQueryController(
       url_callback_(std::move(url_callback)),
       variations_client_(variations_client),
       identity_manager_(identity_manager),
+      profile_(profile),
       invocation_source_(invocation_source),
       use_dark_mode_(use_dark_mode) {}
 
@@ -266,6 +277,11 @@ void LensOverlayQueryController::FetchFullImageRequest(
       request_context);
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
 
+  // ID for associating Lens query with Gen204 latency
+  uint64_t gen204_identifier = base::RandUint64();
+  int64_t query_start_time_ms =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
+
   // Fetch the request.
   CreateAndFetchEndpointFetcher(
       request,
@@ -273,10 +289,14 @@ void LensOverlayQueryController::FetchFullImageRequest(
           &LensOverlayQueryController::OnFullImageEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&LensOverlayQueryController::FullImageFetchResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), gen204_identifier,
+                     query_start_time_ms),
+      std::make_optional<uint64_t>(gen204_identifier));
 }
 
 void LensOverlayQueryController::FullImageFetchResponseHandler(
+    uint64_t gen204_identifier,
+    int64_t query_start_time_ms,
     std::unique_ptr<EndpointResponse> response) {
   DCHECK_EQ(query_controller_state_,
             QueryControllerState::kAwaitingFullImageResponse);
@@ -305,6 +325,10 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
     return;
   }
 
+  int64_t elapsed_time =
+      base::Time::Now().InMillisecondsSinceUnixEpoch() - query_start_time_ms;
+  SendLatencyGen204IfEnabled(elapsed_time, gen204_identifier);
+
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
   cluster_info_->CopyFrom(server_response.objects_response().cluster_info());
 
@@ -329,6 +353,37 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
           lens::CreateObjectsMojomArrayFromServerResponse(server_response),
           lens::CreateTextMojomFromServerResponse(server_response),
           /*is_error=*/false));
+}
+
+void LensOverlayQueryController::SendLatencyGen204IfEnabled(
+    int64_t latency_ms,
+    uint64_t gen204_identifier) {
+  if (lens::features::GetLensOverlaySendLatencyGen204() &&
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven()) {
+    std::string query =
+        base::StringPrintf("gen_204?atyp=csi&%s=%s&rt=fpof.%s&s=web",
+                           kGen204IdentifierQueryParameter,
+                           base::NumberToString(gen204_identifier).c_str(),
+                           base::NumberToString(latency_ms).c_str());
+    auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
+                              ->search_terms_data()
+                              .GoogleBaseURLValue())
+                         .Resolve(query);
+    auto request = std::make_unique<network::ResourceRequest>();
+    request->url = fetch_url;
+    gen204_loader_ = network::SimpleURLLoader::Create(std::move(request),
+                                                      kTrafficAnnotationTag);
+    gen204_loader_->DownloadToString(
+        profile_->GetURLLoaderFactory().get(),
+        base::BindOnce(&LensOverlayQueryController::OnGen204LoaderComplete,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kMaxDownloadBytes);
+  }
+}
+
+void LensOverlayQueryController::OnGen204LoaderComplete(
+    std::unique_ptr<std::string> response_body) {
+  gen204_loader_.reset();
 }
 
 void LensOverlayQueryController::RunFullImageCallbackForError() {
@@ -561,7 +616,8 @@ void LensOverlayQueryController::
           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(
           &LensOverlayQueryController::InteractionFetchResponseHandler,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr()),
+      /*gen204_identifier=*/std::nullopt);
 
   // Generate and send the Lens search url.
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
@@ -623,7 +679,8 @@ void LensOverlayQueryController::CreateAndFetchEndpointFetcher(
     lens::LensOverlayServerRequest request_data,
     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
         fetcher_created_callback,
-    EndpointFetcherCallback fetched_response_callback) {
+    EndpointFetcherCallback fetched_response_callback,
+    std::optional<uint64_t> gen204_identifier) {
   // Use OAuth if the flag is enabled and the user is logged in.
   if (lens::features::UseOauthForLensOverlayRequests() && identity_manager_ &&
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -632,7 +689,8 @@ void LensOverlayQueryController::CreateAndFetchEndpointFetcher(
             .Then(base::BindOnce(&LensOverlayQueryController::FetchEndpoint,
                                  weak_ptr_factory_.GetWeakPtr(), request_data,
                                  std::move(fetcher_created_callback),
-                                 std::move(fetched_response_callback)));
+                                 std::move(fetched_response_callback),
+                                 gen204_identifier));
     signin::ScopeSet oauth_scopes;
     oauth_scopes.insert(GaiaConstants::kLensOAuth2Scope);
 
@@ -649,8 +707,8 @@ void LensOverlayQueryController::CreateAndFetchEndpointFetcher(
 
   // Fall back to fetching the endpoint directly using API key.
   FetchEndpoint(request_data, std::move(fetcher_created_callback),
-                std::move(fetched_response_callback),
-                std::vector<std::string>());
+                std::move(fetched_response_callback), gen204_identifier,
+                /*headers=*/std::vector<std::string>());
 }
 
 void LensOverlayQueryController::OnFullImageEndpointFetcherCreated(
@@ -668,6 +726,7 @@ void LensOverlayQueryController::FetchEndpoint(
     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
         fetcher_created_callback,
     EndpointFetcherCallback fetched_response_callback,
+    std::optional<uint64_t> gen204_identifier,
     std::vector<std::string> headers) {
   access_token_fetcher_.reset();
   std::string request_data_string;
@@ -690,6 +749,10 @@ void LensOverlayQueryController::FetchEndpoint(
     fetch_url = net::AppendOrReplaceQueryParameter(
         fetch_url, kSessionIdQueryParameterKey,
         cluster_info_->server_session_id());
+  }
+  if (lens::features::GetLensOverlaySendLatencyGen204() &&
+      gen204_identifier.has_value()) {
+    // TODO(b/344615393): Populate `paella_id` in request.
   }
 
   std::unique_ptr<EndpointFetcher> endpoint_fetcher =

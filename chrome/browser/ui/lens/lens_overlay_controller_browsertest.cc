@@ -256,6 +256,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
+      Profile* profile,
       LensOverlayInvocationSource invocation_source,
       bool use_dark_mode)
       : LensOverlayQueryController(full_image_callback,
@@ -264,6 +265,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
                                    thumbnail_created_callback,
                                    variations_client,
                                    identity_manager,
+                                   profile,
                                    invocation_source,
                                    use_dark_mode) {}
 
@@ -341,7 +343,8 @@ class LensOverlayControllerFake : public LensOverlayController {
                             signin::IdentityManager* identity_manager,
                             PrefService* pref_service,
                             syncer::SyncService* sync_service,
-                            ThemeService* theme_service)
+                            ThemeService* theme_service,
+                            Profile* profile)
       : LensOverlayController(tab,
                               variations_client,
                               identity_manager,
@@ -356,13 +359,14 @@ class LensOverlayControllerFake : public LensOverlayController {
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
+      Profile* profile,
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode) override {
     auto fake_query_controller =
         std::make_unique<LensOverlayQueryControllerFake>(
             full_image_callback, url_callback, interaction_data_callback,
             thumbnail_created_callback, variations_client, identity_manager,
-            invocation_source, use_dark_mode);
+            profile, invocation_source, use_dark_mode);
     fake_query_controller->SetShouldReturnError(
         full_image_request_should_return_error_);
     return fake_query_controller;
@@ -435,7 +439,7 @@ class TabFeaturesFake : public tabs::TabFeatures {
     return std::make_unique<LensOverlayControllerFake>(
         tab, profile->GetVariationsClient(),
         IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-        SyncServiceFactory::GetForProfile(profile), theme_service);
+        SyncServiceFactory::GetForProfile(profile), theme_service, profile);
   }
 };
 

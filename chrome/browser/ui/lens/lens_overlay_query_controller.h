@@ -8,11 +8,13 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
@@ -23,6 +25,8 @@
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
+
+class Profile;
 
 namespace signin {
 class IdentityManager;
@@ -58,6 +62,7 @@ class LensOverlayQueryController {
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
+      Profile* profile,
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode);
   virtual ~LensOverlayQueryController();
@@ -105,7 +110,8 @@ class LensOverlayQueryController {
       lens::LensOverlayServerRequest request_data,
       base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
           fetcher_created_callback,
-      EndpointFetcherCallback fetched_response_callback);
+      EndpointFetcherCallback fetched_response_callback,
+      std::optional<uint64_t> gen204_identifier);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -161,7 +167,16 @@ class LensOverlayQueryController {
 
   // Handles the endpoint fetch response for the initial request.
   void FullImageFetchResponseHandler(
+      uint64_t gen204_identifier,
+      int64_t query_start_time_ms,
       std::unique_ptr<EndpointResponse> response);
+
+  // Handles the response from a gen204 request.
+  void OnGen204LoaderComplete(std::unique_ptr<std::string> response_body);
+
+  // Sends a latency Gen204 ping if enabled.
+  void SendLatencyGen204IfEnabled(int64_t latency_ms,
+                                  uint64_t gen204_identifier);
 
   // Runs the full image callback with empty response data, for errors.
   void RunFullImageCallbackForError();
@@ -224,6 +239,7 @@ class LensOverlayQueryController {
                      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
                          fetcher_created_callback,
                      EndpointFetcherCallback fetched_response_callback,
+                     std::optional<uint64_t> gen204_identifier,
                      std::vector<std::string> headers);
 
   // The request id generator.
@@ -274,12 +290,17 @@ class LensOverlayQueryController {
   // earlier unfinished requests.
   std::unique_ptr<EndpointFetcher> interaction_endpoint_fetcher_;
 
+  // Loader used for gen204 requests.
+  std::unique_ptr<network::SimpleURLLoader> gen204_loader_;
+
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;
 
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.
   raw_ptr<signin::IdentityManager> identity_manager_;
+
+  raw_ptr<Profile> profile_;
 
   // The request counter, used to make sure requests are not sent out of
   // order.

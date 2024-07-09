@@ -365,6 +365,8 @@ void LensOverlayController::ShowUI(
     search_bubble_controller_->Show();
   }
 
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   // Create the query controller.
   lens_overlay_query_controller_ = CreateLensQueryController(
       base::BindRepeating(&LensOverlayController::HandleStartQueryResponse,
@@ -375,9 +377,8 @@ void LensOverlayController::ShowUI(
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
                           weak_factory_.GetWeakPtr()),
-      variations_client_, identity_manager_, invocation_source,
+      variations_client_, identity_manager_, profile, invocation_source,
       lens::LensOverlayShouldUseDarkMode(theme_service_));
-
   side_panel_coordinator_ =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(tab_browser);
   CHECK(side_panel_coordinator_);
@@ -901,13 +902,14 @@ LensOverlayController::CreateLensQueryController(
     lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
+    Profile* profile,
     lens::LensOverlayInvocationSource invocation_source,
     bool use_dark_mode) {
   return std::make_unique<lens::LensOverlayQueryController>(
       std::move(full_image_callback), std::move(url_callback),
       std::move(interaction_data_callback),
       std::move(thumbnail_created_callback), variations_client,
-      identity_manager, invocation_source, use_dark_mode);
+      identity_manager, profile, invocation_source, use_dark_mode);
 }
 
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(

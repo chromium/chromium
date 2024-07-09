@@ -426,6 +426,7 @@ class LensOverlayController : public LensSearchboxClient,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
+      Profile* profile,
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode);
 
