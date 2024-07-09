@@ -63,8 +63,6 @@
     'chrome.pgo': {
       'android-arm32-pgo': 'official_android_arm32_pgo',
       'android-arm64-pgo': 'official_android_arm64_pgo',
-      'lacros-amd64-generic-pgo': 'official_lacros_amd64_pgo',
-      'lacros-arm64-generic-pgo': 'official_lacros_arm64_pgo',
       'linux-pgo': 'official_linux_pgo',
       'mac-arm-pgo': 'official_mac_arm_pgo_with_symbols',
       'mac-pgo': 'official_mac_pgo_with_symbols',
@@ -302,8 +300,6 @@
     'tryserver.chrome.pgo': {
       'android-arm32-pgo': 'official_android_arm32_pgo',
       'android-arm64-pgo': 'official_android_arm64_pgo',
-      'lacros-amd64-generic-pgo': 'official_lacros_amd64_pgo',
-      'lacros-arm64-generic-pgo': 'official_lacros_arm64_pgo',
       'linux-pgo': 'official_linux_pgo_with_symbols',
       'mac-arm-pgo': 'official_mac_arm_pgo_with_symbols',
       'mac-pgo': 'official_mac_pgo_with_symbols',
@@ -712,14 +708,6 @@
 
     'official_fuchsia_x64': [
       'fuchsia', 'official', 'x64', 'custom_args',
-    ],
-
-   'official_lacros_amd64_pgo': [
-      'official', 'release', 'lacros', 'amd64-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'pgo_phase_1',
-    ],
-
-    'official_lacros_arm64_pgo': [
-      'official', 'release', 'lacros', 'arm64-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'pgo_phase_1',
     ],
 
     'official_linux_perf': [
