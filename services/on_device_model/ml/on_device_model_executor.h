@@ -39,7 +39,8 @@ class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
   static base::expected<std::unique_ptr<OnDeviceModelExecutor>,
                         on_device_model::mojom::LoadModelResult>
   CreateWithResult(const ChromeML& chrome_ml,
-                   on_device_model::mojom::LoadModelParamsPtr params);
+                   on_device_model::mojom::LoadModelParamsPtr params,
+                   base::OnceClosure on_complete);
 
   // on_device_model::OnDeviceModel:
   std::unique_ptr<Session> CreateSession(
@@ -49,12 +50,13 @@ class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
   on_device_model::mojom::LanguageDetectionResultPtr DetectLanguage(
       const std::string& text) override;
   base::expected<uint32_t, on_device_model::mojom::LoadModelResult>
-  LoadAdaptation(
-      on_device_model::mojom::LoadAdaptationParamsPtr params) override;
+  LoadAdaptation(on_device_model::mojom::LoadAdaptationParamsPtr params,
+                 base::OnceClosure on_complete) override;
 
  private:
   on_device_model::mojom::LoadModelResult Init(
-      on_device_model::mojom::LoadModelParamsPtr params);
+      on_device_model::mojom::LoadModelParamsPtr params,
+      base::OnceClosure on_complete);
 
   static void Schedule(uintptr_t context, std::function<void()>* fn);
 

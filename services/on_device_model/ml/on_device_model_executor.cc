@@ -507,10 +507,12 @@ OnDeviceModelExecutor::~OnDeviceModelExecutor() {
 base::expected<std::unique_ptr<OnDeviceModelExecutor>, LoadModelResult>
 OnDeviceModelExecutor::CreateWithResult(
     const ChromeML& chrome_ml,
-    on_device_model::mojom::LoadModelParamsPtr params) {
+    on_device_model::mojom::LoadModelParamsPtr params,
+    base::OnceClosure on_complete) {
   auto executor = std::make_unique<OnDeviceModelExecutor>(
       base::PassKey<OnDeviceModelExecutor>(), chrome_ml);
-  auto load_model_result = executor->Init(std::move(params));
+  auto load_model_result =
+      executor->Init(std::move(params), std::move(on_complete));
   if (load_model_result == LoadModelResult::kSuccess) {
     return base::ok<std::unique_ptr<OnDeviceModelExecutor>>(
         std::move(executor));
@@ -572,13 +574,15 @@ on_device_model::mojom::SafetyInfoPtr OnDeviceModelExecutor::ClassifyTextSafety(
 
 DISABLE_CFI_DLSYM
 base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
-    on_device_model::mojom::LoadAdaptationParamsPtr params) {
+    on_device_model::mojom::LoadAdaptationParamsPtr params,
+    base::OnceClosure on_complete) {
   on_device_model::AdaptationAssets assets = std::move(params->assets);
   if (chrome_ml_->api().CreateSession) {
     static uint32_t next_id = 0;
     base_sessions_.insert(
         {next_id, SessionAccessor::Create(model_task_runner_, model_,
                                           std::move(assets.weights))});
+    model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
     return base::ok(next_id++);
   }
 
@@ -596,12 +600,14 @@ base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
   if (!chrome_ml_->api().CreateAdaptation(model_, &descriptor, id)) {
     return base::unexpected(LoadModelResult::kFailedToLoadLibrary);
   }
+  std::move(on_complete).Run();
   return base::ok(id);
 }
 
 DISABLE_CFI_DLSYM
 LoadModelResult OnDeviceModelExecutor::Init(
-    on_device_model::mojom::LoadModelParamsPtr params) {
+    on_device_model::mojom::LoadModelParamsPtr params,
+    base::OnceClosure on_complete) {
   if (chrome_ml_->IsGpuBlocked()) {
     return LoadModelResult::kGpuBlocked;
   }
@@ -658,10 +664,12 @@ LoadModelResult OnDeviceModelExecutor::Init(
       base_sessions_.insert(
           {std::nullopt, SessionAccessor::Create(model_task_runner_, model_)});
     }
+    model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
   } else {
     model_ = chrome_ml_->api().CreateModel(&descriptor,
                                            reinterpret_cast<uintptr_t>(this),
                                            OnDeviceModelExecutor::Schedule);
+    std::move(on_complete).Run();
   }
   return (model_ != 0) ? LoadModelResult::kSuccess
                        : LoadModelResult::kFailedToLoadLibrary;

@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
 
  private:
   static base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
-  CreateModel(mojom::LoadModelParamsPtr params);
+  CreateModel(mojom::LoadModelParamsPtr params, base::OnceClosure on_complete);
 
   void DeleteModel(base::WeakPtr<mojom::OnDeviceModel> model);
 

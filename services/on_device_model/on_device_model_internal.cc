@@ -16,14 +16,15 @@ namespace on_device_model {
 
 // static
 base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
-OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params) {
+OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params,
+                                  base::OnceClosure on_complete) {
   auto* chrome_ml = ml::ChromeML::Get();
   if (!chrome_ml) {
     return base::unexpected(mojom::LoadModelResult::kFailedToLoadLibrary);
   }
 
-  return ml::OnDeviceModelExecutor::CreateWithResult(*chrome_ml,
-                                                     std::move(params));
+  return ml::OnDeviceModelExecutor::CreateWithResult(
+      *chrome_ml, std::move(params), std::move(on_complete));
 }
 
 // static

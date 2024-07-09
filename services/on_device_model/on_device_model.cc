@@ -112,7 +112,9 @@ class OnDeviceModelImpl : public OnDeviceModel {
   }
 
   base::expected<uint32_t, mojom::LoadModelResult> LoadAdaptation(
-      mojom::LoadAdaptationParamsPtr params) override {
+      mojom::LoadAdaptationParamsPtr params,
+      base::OnceClosure on_complete) override {
+    std::move(on_complete).Run();
     return base::ok(++next_adaptation_id_);
   }
 
@@ -124,9 +126,12 @@ class OnDeviceModelImpl : public OnDeviceModel {
 
 // static
 base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
-OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params) {
-  return base::ok<std::unique_ptr<OnDeviceModel>>(
+OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params,
+                                  base::OnceClosure on_complete) {
+  auto model = base::ok<std::unique_ptr<OnDeviceModel>>(
       std::make_unique<OnDeviceModelImpl>());
+  std::move(on_complete).Run();
+  return model;
 }
 
 // static
