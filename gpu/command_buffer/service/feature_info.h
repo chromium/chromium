@@ -68,10 +68,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool angle_pack_reverse_row_order = false;
     bool arb_texture_rectangle = false;
     bool angle_instanced_arrays = false;
-    bool occlusion_query = false;
     bool occlusion_query_boolean = false;
-    bool use_arb_occlusion_query2_for_occlusion_query_boolean = false;
-    bool use_arb_occlusion_query_for_occlusion_query_boolean = false;
     bool native_vertex_array_object = false;
     bool ext_texture_format_astc = false;
     bool ext_texture_format_astc_hdr = false;

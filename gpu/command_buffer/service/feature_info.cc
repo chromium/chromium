@@ -1243,23 +1243,12 @@ void FeatureInfo::InitializeFeatures() {
   bool have_occlusion_query = gl_version_info_->IsAtLeastGLES(3, 0);
   bool have_ext_occlusion_query_boolean =
       gfx::HasExtension(extensions, "GL_EXT_occlusion_query_boolean");
-  bool have_arb_occlusion_query2 =
-      gfx::HasExtension(extensions, "GL_ARB_occlusion_query2");
-  bool have_arb_occlusion_query =
-      gfx::HasExtension(extensions, "GL_ARB_occlusion_query");
 
-  if (have_occlusion_query || have_ext_occlusion_query_boolean ||
-      have_arb_occlusion_query2 || have_arb_occlusion_query) {
-    feature_flags_.occlusion_query = have_arb_occlusion_query;
+  if (have_occlusion_query || have_ext_occlusion_query_boolean) {
     if (context_type_ == CONTEXT_TYPE_OPENGLES2) {
       AddExtensionString("GL_EXT_occlusion_query_boolean");
     }
     feature_flags_.occlusion_query_boolean = true;
-    feature_flags_.use_arb_occlusion_query2_for_occlusion_query_boolean =
-        !have_ext_occlusion_query_boolean && have_arb_occlusion_query2;
-    feature_flags_.use_arb_occlusion_query_for_occlusion_query_boolean =
-        !have_ext_occlusion_query_boolean && have_arb_occlusion_query &&
-        !have_arb_occlusion_query2;
   }
 
   EnableANGLEInstancedArrayIfPossible(extensions);

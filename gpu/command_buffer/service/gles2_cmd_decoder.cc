@@ -3520,7 +3520,6 @@ GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
       feature_info_->IsWebGL2OrES3Context()) {
     caps.max_samples = ComputeMaxSamples();
   }
-  caps.occlusion_query = feature_info_->feature_flags().occlusion_query;
   caps.occlusion_query_boolean =
       feature_info_->feature_flags().occlusion_query_boolean;
   caps.timer_queries = query_manager_->GPUTimingAvailable();
@@ -15352,19 +15351,14 @@ error::Error GLES2DecoderImpl::HandleBeginQueryEXT(
       }
       break;
     case GL_SAMPLES_PASSED_ARB:
-      if (!features().occlusion_query) {
-        LOCAL_SET_GL_ERROR(
-            GL_INVALID_OPERATION, "glBeginQueryEXT",
-            "not enabled for occlusion queries");
-        return error::kNoError;
-      }
-      break;
+      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginQueryEXT",
+                         "not enabled for boolean occlusion queries");
+      return error::kNoError;
     case GL_ANY_SAMPLES_PASSED:
     case GL_ANY_SAMPLES_PASSED_CONSERVATIVE:
       if (!features().occlusion_query_boolean) {
-        LOCAL_SET_GL_ERROR(
-            GL_INVALID_OPERATION, "glBeginQueryEXT",
-            "not enabled for boolean occlusion queries");
+        LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginQueryEXT",
+                           "not enabled for boolean occlusion queries");
         return error::kNoError;
       }
       break;

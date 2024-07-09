@@ -133,7 +133,6 @@ IPC_STRUCT_TRAITS_BEGIN(gpu::GLCapabilities)
   IPC_STRUCT_TRAITS_MEMBER(num_program_binary_formats)
   IPC_STRUCT_TRAITS_MEMBER(uniform_buffer_offset_alignment)
 
-  IPC_STRUCT_TRAITS_MEMBER(occlusion_query)
   IPC_STRUCT_TRAITS_MEMBER(occlusion_query_boolean)
   IPC_STRUCT_TRAITS_MEMBER(timer_queries)
 IPC_STRUCT_TRAITS_END()

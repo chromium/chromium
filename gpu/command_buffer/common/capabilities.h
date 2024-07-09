@@ -178,7 +178,6 @@ struct GPU_EXPORT GLCapabilities {
   int num_program_binary_formats = 0;
   int uniform_buffer_offset_alignment = 1;
 
-  bool occlusion_query = false;
   bool occlusion_query_boolean = false;
   bool timer_queries = false;
 };

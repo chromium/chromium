@@ -6495,12 +6495,9 @@ void GLES2Implementation::BeginQueryEXT(GLenum target, GLuint id) {
       }
       break;
     case GL_SAMPLES_PASSED_ARB:
-      if (!gl_capabilities_.occlusion_query) {
-        SetGLError(GL_INVALID_OPERATION, "glBeginQueryEXT",
-                   "not enabled for occlusion queries");
-        return;
-      }
-      break;
+      SetGLError(GL_INVALID_OPERATION, "glBeginQueryEXT",
+                 "not enabled for occlusion queries");
+      return;
     case GL_ANY_SAMPLES_PASSED:
     case GL_ANY_SAMPLES_PASSED_CONSERVATIVE:
       if (!gl_capabilities_.occlusion_query_boolean) {

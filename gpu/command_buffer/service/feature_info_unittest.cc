@@ -162,10 +162,6 @@ TEST_P(FeatureInfoTest, Basic) {
   EXPECT_FALSE(info_->feature_flags().arb_texture_rectangle);
   EXPECT_FALSE(info_->feature_flags().angle_instanced_arrays);
   EXPECT_FALSE(info_->feature_flags().occlusion_query_boolean);
-  EXPECT_FALSE(info_->feature_flags(
-      ).use_arb_occlusion_query2_for_occlusion_query_boolean);
-  EXPECT_FALSE(info_->feature_flags(
-      ).use_arb_occlusion_query_for_occlusion_query_boolean);
   EXPECT_FALSE(info_->feature_flags().native_vertex_array_object);
   EXPECT_FALSE(info_->feature_flags().map_buffer_range);
   EXPECT_FALSE(info_->feature_flags().use_async_readpixels);
@@ -1128,10 +1124,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_occlusion_query_boolean) {
                                   "GL_EXT_occlusion_query_boolean"));
   }
   EXPECT_TRUE(info_->feature_flags().occlusion_query_boolean);
-  EXPECT_FALSE(info_->feature_flags(
-      ).use_arb_occlusion_query2_for_occlusion_query_boolean);
-  EXPECT_FALSE(info_->feature_flags(
-      ).use_arb_occlusion_query_for_occlusion_query_boolean);
 }
 
 TEST_P(FeatureInfoTest, InitializeGLES3_occlusion_query_boolean) {
