@@ -63,12 +63,6 @@ BASE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard,
              "CustomizeChromeWallpaperSearchInspirationCard",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, "middle slot" promos on the bottom of the NTP will show a dismiss
-// UI that allows users to close them and not see them again.
-BASE_FEATURE(kDismissPromos,
-             "DismissNtpPromos",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, all NTP "realbox" Chrome Refresh features will be enabled
 BASE_FEATURE(kRealboxCr23All,
              "NtpRealboxCr23All",

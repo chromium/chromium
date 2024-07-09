@@ -27,7 +27,6 @@ BASE_DECLARE_FEATURE(kCustomizeChromeSidePanelExtensionsCard);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearch);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchButton);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard);
-BASE_DECLARE_FEATURE(kDismissPromos);
 BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
 BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
 BASE_DECLARE_FEATURE(kRealboxCr23All);
