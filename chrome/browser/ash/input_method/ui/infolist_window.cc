@@ -186,9 +186,7 @@ void InfolistEntryView::UpdateBackground() {
 InfolistWindow::InfolistWindow(views::View* candidate_window,
                                const std::vector<ui::InfolistEntry>& entries)
     : views::BubbleDialogDelegateView(candidate_window,
-                                      views::BubbleBorder::NONE,
-                                      views::BubbleBorder::DIALOG_SHADOW,
-                                      true),
+                                      views::BubbleBorder::NONE),
       title_font_list_(gfx::Font(kJapaneseFontName, kFontSizeDelta + 15)),
       description_font_list_(
           gfx::Font(kJapaneseFontName, kFontSizeDelta + 11)) {
@@ -235,6 +233,7 @@ void InfolistWindow::InitWidget() {
 
   // BubbleFrameView will be initialized through CreateBubble.
   GetBubbleFrameView()->SetBubbleBorder(std::make_unique<InfolistBorder>());
+  SizeToContents();
 }
 
 void InfolistWindow::Relayout(const std::vector<ui::InfolistEntry>& entries) {
@@ -258,6 +257,7 @@ void InfolistWindow::Relayout(const std::vector<ui::InfolistEntry>& entries) {
   }
 
   DeprecatedLayoutImmediately();
+  SizeToContents();
 }
 
 void InfolistWindow::ShowWithDelay() {
