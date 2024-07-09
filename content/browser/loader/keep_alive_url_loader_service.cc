@@ -525,6 +525,8 @@ void KeepAliveURLLoaderService::Shutdown() {
   // Only fetch_later_loader_factories_ needs shutdown notification to handle
   // its non-started loaders.
   fetch_later_loader_factories_->Shutdown();
+  // Notifies fetch keepalive loader factories for it to log debugging metrics.
+  url_loader_factories_->Shutdown();
 }
 
 size_t KeepAliveURLLoaderService::NumLoadersForTesting() const {

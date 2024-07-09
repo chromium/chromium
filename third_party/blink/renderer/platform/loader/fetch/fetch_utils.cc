@@ -202,7 +202,8 @@ net::NetworkTrafficAnnotationTag FetchUtils::GetTrafficAnnotationTag(
 // static
 void FetchUtils::LogFetchKeepAliveRequestMetric(
     const mojom::blink::RequestContextType& request_context_type,
-    const FetchKeepAliveRequestState& request_state) {
+    const FetchKeepAliveRequestState& request_state,
+    bool is_context_detached) {
   FetchKeepAliveRequestMetricType sample_type;
   switch (request_context_type) {
     case mojom::blink::RequestContextType::FETCH:
@@ -264,9 +265,15 @@ void FetchUtils::LogFetchKeepAliveRequestMetric(
       break;
     case FetchKeepAliveRequestState::kStarted:
       request_state_name = "Started";
+      base::UmaHistogramBoolean(
+          "FetchKeepAlive.Requests2.Started.IsContextDetached.Renderer",
+          is_context_detached);
       break;
     case FetchKeepAliveRequestState::kSucceeded:
       request_state_name = "Succeeded";
+      base::UmaHistogramBoolean(
+          "FetchKeepAlive.Requests2.Succeeded.IsContextDetached.Renderer",
+          is_context_detached);
       break;
     case FetchKeepAliveRequestState::kFailed:
       request_state_name = "Failed";

@@ -46,7 +46,8 @@ class PLATFORM_EXPORT FetchUtils {
   // https://docs.google.com/document/d/15MHmkf_SN2S9WYra060yEChgjs3pgZW--aHUuiG8Y1Q/edit#heading=h.z4xv4ogkdxqw
   static void LogFetchKeepAliveRequestMetric(
       const mojom::blink::RequestContextType&,
-      const FetchKeepAliveRequestState&);
+      const FetchKeepAliveRequestState&,
+      bool is_context_detached = false);
   static void LogFetchKeepAliveRequestSentToServiceMetric(
       const network::ResourceRequest& resource_request);
 };

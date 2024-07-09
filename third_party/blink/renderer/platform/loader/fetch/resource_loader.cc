@@ -324,7 +324,8 @@ void ResourceLoader::Start() {
   if (request.GetKeepalive()) {
     FetchUtils::LogFetchKeepAliveRequestMetric(
         request.GetRequestContext(),
-        FetchUtils::FetchKeepAliveRequestState::kStarted);
+        FetchUtils::FetchKeepAliveRequestState::kStarted,
+        fetcher_->GetProperties().IsDetached());
   }
 
   if (!resource_->Url().ProtocolIsData()) {
@@ -782,7 +783,8 @@ void ResourceLoader::DidReceiveResponse(
     // response is a multipart resource or not.
     FetchUtils::LogFetchKeepAliveRequestMetric(
         resource_->GetResourceRequest().GetRequestContext(),
-        FetchUtils::FetchKeepAliveRequestState::kSucceeded);
+        FetchUtils::FetchKeepAliveRequestState::kSucceeded,
+        fetcher_->GetProperties().IsDetached());
   }
 
   DidReceiveResponseInternal(response.ToResourceResponse(),

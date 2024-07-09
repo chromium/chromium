@@ -4558,6 +4558,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FetchKeepAlive.Requests2.Shutdown.IsStarted.Browser"
+    enum="Boolean" expires_after="2024-12-12">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Recorded true when a Fetch keepalive request loader in the browser process
+    is about to shut down and the request loading has been started.
+  </summary>
+</histogram>
+
+<histogram
+    name="FetchKeepAlive.Requests2.{RequestState}.IsContextDetached.{Process}"
+    enum="Boolean" expires_after="2024-12-12">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Recorded true when a Fetch keepalive request loader in the {Process}
+    {RequestState}.
+  </summary>
+  <token key="RequestState">
+    <variant name="Started" summary="starts to load."/>
+    <variant name="Succeeded" summary="succeeds to load."/>
+  </token>
+  <token key="Process">
+    <variant name="Browser" summary="browser process"/>
+    <variant name="Renderer" summary="renderer process"/>
+  </token>
+</histogram>
+
 <histogram name="FetchKeepAlive.Requests2.{RequestState}.{Process}"
     enum="FetchKeepAliveRequestMetricType" expires_after="2024-12-08">
   <owner>mych@chromium.org</owner>
@@ -5746,8 +5775,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the elapsed time it takes to read LCPPNavigationHint and attach it
-    to NavigationHandle. Recorded on DidStartNavigation or DidRedirectNavigation
-    only when there is hint information.
+    to NavigationHandle. Recorded on DidStartNavigatinon or
+    DidRedirectNavigation only when there is hint information.
   </summary>
 </histogram>
 
