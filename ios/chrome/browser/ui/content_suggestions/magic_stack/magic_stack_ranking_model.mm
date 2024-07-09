@@ -62,6 +62,7 @@
   // any omissions due to filtering from `_magicStackOrderFromSegmentation` and
   // any additions beyond `_magicStackOrderFromSegmentation` (e.g. Set Up List).
   NSArray<NSNumber*>* _latestMagicStackOrder;
+  NSArray<MagicStackModule*>* _latestMagicStackConfigOrder;
   // Module mediators.
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   SetUpListMediator* _setUpListMediator;
@@ -293,7 +294,15 @@
 
 - (NSUInteger)indexForMagicStackModule:
     (ContentSuggestionsModuleType)moduleType {
-  return [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    return [_latestMagicStackConfigOrder
+        indexOfObjectPassingTest:^BOOL(MagicStackModule* config, NSUInteger idx,
+                                       BOOL* stop) {
+          return config.type == moduleType;
+        }];
+  } else {
+    return [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
+  }
 }
 
 #pragma mark - MostVisitedTilesMediatorDelegate
@@ -456,8 +465,9 @@
   _magicStackOrderFromSegmentationReceived = YES;
   _magicStackOrderFromSegmentation = magicStackOrder;
   if (IsIOSMagicStackCollectionViewEnabled()) {
+    _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
     [self.delegate magicStackRankingModel:self
-                 didGetLatestRankingOrder:[self latestMagicStackConfigRank]];
+                 didGetLatestRankingOrder:_latestMagicStackConfigOrder];
   } else {
     _latestMagicStackOrder = [self segmentationMagicStackOrder];
     [self.consumer setMagicStackOrder:_latestMagicStackOrder];
