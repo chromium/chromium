@@ -684,6 +684,14 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
 // Tests that media stream counts (used for process priority
 // calculations) are properly set and cleared during media playback and renderer
 // terminations for audio only streams.
+// Test is flaky on Android builders: https://crbug.com/352065578
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_KillProcessZerosVideoCaptureStreams \
+  DISABLED_KillProcessZerosVideoCaptureStreams
+#else
+#define MAYBE_KillProcessZerosVideoCaptureStreams \
+  KillProcessZerosVideoCaptureStreams
+#endif
 IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
                        KillProcessZerosAudioCaptureStreams) {
   ASSERT_TRUE(embedded_test_server()->Start());
