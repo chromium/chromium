@@ -24,8 +24,8 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN label=' '
 ++++++++++UNKNOWN
 ++++++++++++LINK focusable label='2' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='better' actions='{DEFAULT}'
-++++++++++++++++STATIC_TEXT label='2' actions='{DEFAULT}'
+++++++++++++++UNKNOWN label='better'
+++++++++++++++++STATIC_TEXT label='2'
 ++++++++++++++++++UNKNOWN label='2'
 ++++++++++STATIC_TEXT label=' '
 ++++++++++++UNKNOWN label=' '

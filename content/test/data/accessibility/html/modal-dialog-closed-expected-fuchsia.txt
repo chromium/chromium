@@ -6,7 +6,7 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++UNKNOWN focusable actions='{DEFAULT}' value='This should be in the tree.'
 ++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN hidden label='Group' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden label='Group'
 ++++++++++++++UNKNOWN hidden
 ++++++++++++++++UNKNOWN focusable selected label='This should be in the tree.' actions='{DEFAULT}'
 ++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}' value='#000000'

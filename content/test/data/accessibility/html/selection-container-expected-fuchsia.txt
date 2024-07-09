@@ -3,7 +3,7 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++UNKNOWN focusable label='selection_list' actions='{DEFAULT}'
 ++++++++UNKNOWN hidden
-++++++++++UNKNOWN label='Enabled' actions='{DEFAULT}'
+++++++++++UNKNOWN label='Enabled'
 ++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN focusable label='One' actions='{DEFAULT}'
 ++++++++++++++UNKNOWN focusable label='Two' actions='{DEFAULT}'

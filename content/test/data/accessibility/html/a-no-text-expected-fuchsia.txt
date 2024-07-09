@@ -2,24 +2,24 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE
 ++++++STATIC_TEXT label=' '
 ++++++++UNKNOWN label=' '
 ++++++LINK focusable actions='{DEFAULT}'
-++++++++IMAGE actions='{DEFAULT}'
+++++++++IMAGE

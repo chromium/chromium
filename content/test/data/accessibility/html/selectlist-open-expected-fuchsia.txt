@@ -4,7 +4,7 @@ UNKNOWN focusable
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable actions='{DEFAULT}' value='Option 1'
-++++++++++++STATIC_TEXT label='Custom selectlist button' actions='{DEFAULT}'
+++++++++++++STATIC_TEXT label='Custom selectlist button'
 ++++++++++++++UNKNOWN label='Custom selectlist button'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN actions='{DEFAULT}'
