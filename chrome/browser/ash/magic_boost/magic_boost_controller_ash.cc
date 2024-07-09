@@ -7,6 +7,7 @@
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
@@ -46,6 +47,9 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
           &MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed,
           weak_ptr_factory_.GetWeakPtr()));
   disclaimer_widget_->Show();
+
+  RecordDisclaimerViewActionMetrics(opt_in_features_,
+                                    DisclaimerViewAction::kShow);
 }
 
 void MagicBoostControllerAsh::CloseDisclaimerUi() {
@@ -71,6 +75,9 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
       break;
   }
 
+  RecordDisclaimerViewActionMetrics(opt_in_features_,
+                                    DisclaimerViewAction::kAcceptButtonPressed);
+
   CloseDisclaimerUi();
 }
 
@@ -82,6 +89,9 @@ void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
   magic_boost_state->AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kDeclined);
   magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/false);
+
+  RecordDisclaimerViewActionMetrics(
+      opt_in_features_, DisclaimerViewAction::kDeclineButtonPressed);
 
   CloseDisclaimerUi();
 }

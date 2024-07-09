@@ -614,6 +614,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="16" label="Desk switch due to session restore"/>
 </enum>
 
+<enum name="DisclaimerViewAction">
+  <int value="0" label="Show"/>
+  <int value="1" label="AcceptButtonPressed"/>
+  <int value="2" label="DeclineButtonPressed"/>
+</enum>
+
 <enum name="DNDStateOnFocusEndType">
   <int value="0" label="FocusModeOn"/>
   <int value="1" label="AlreadyOn"/>
