@@ -20,6 +20,7 @@ namespace webnn::tflite {
 class ContextImplCrOS final : public WebNNContextImpl {
  public:
   ContextImplCrOS(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                  mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                   WebNNContextProviderImpl* context_provider);
 
   ContextImplCrOS(const ContextImplCrOS&) = delete;

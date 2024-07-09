@@ -22,9 +22,11 @@ namespace webnn::coreml {
 class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
     : public WebNNContextImpl {
  public:
-  ContextImplCoreml(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                    WebNNContextProviderImpl* context_provider,
-                    mojom::CreateContextOptionsPtr options);
+  ContextImplCoreml(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
+      WebNNContextProviderImpl* context_provider,
+      mojom::CreateContextOptionsPtr options);
 
   ContextImplCoreml(const WebNNContextImpl&) = delete;
   ContextImplCoreml& operator=(const ContextImplCoreml&) = delete;

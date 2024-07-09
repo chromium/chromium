@@ -319,6 +319,9 @@ class GraphImplDml final : public WebNNGraphImpl {
   // Adapter used to create the built graph.
   scoped_refptr<Adapter> adapter_;
 
+  // ContextImplDml owns this object.
+  raw_ptr<ContextImplDml> context_;
+
   // The command_recorder is created for the graph execution and recycled
   // after graph execution has completed. It avoids the resource allocation
   // overhead for the first execution and following executions when it is

@@ -21,9 +21,11 @@ namespace webnn {
 
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
     ContextProperties properties)
     : receiver_(this, std::move(receiver)),
+      client_remote_(std::move(client_remote)),
       context_provider_(context_provider),
       properties_(IntersectWithBaseProperties(std::move(properties))) {
   CHECK(context_provider_);
@@ -114,6 +116,11 @@ void WebNNContextImpl::DidCreateWebNNGraphImpl(
       receiver.InitWithNewEndpointAndPassRemote()));
 
   graph_impls_.Add(*std::move(result), std::move(receiver));
+}
+
+void WebNNContextImpl::OnLost(const std::string& message) {
+  client_remote_->OnLost(message);
+  context_provider_->OnConnectionError(this);
 }
 
 base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
