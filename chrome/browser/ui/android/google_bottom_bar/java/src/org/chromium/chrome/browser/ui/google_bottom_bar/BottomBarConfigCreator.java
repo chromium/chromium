@@ -13,6 +13,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /** This class creates a {@link BottomBarConfig} based on provided params. */
@@ -45,7 +47,8 @@ public class BottomBarConfigCreator {
     private static final String IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED_PARAM =
             "google_bottom_bar_variant_is_google_default_search_engine_check_enabled";
 
-    private static final Map<Integer, Integer> CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP =
+    @VisibleForTesting
+    static final Map<Integer, Integer> CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP =
             Map.of(
                     100,
                     ButtonId.SAVE,
@@ -61,6 +64,7 @@ public class BottomBarConfigCreator {
                     ButtonId.SEARCH,
                     107,
                     ButtonId.HOME);
+
     private static final List<Integer> DEFAULT_BUTTON_ID_LIST =
             List.of(ButtonId.SAVE, ButtonId.SHARE);
     private static final List<Integer> DEFAULT_RIGHT_BUTTON_ID_LIST = List.of(ButtonId.SHARE);
@@ -131,7 +135,7 @@ public class BottomBarConfigCreator {
      *     nothing.
      */
     static void initDefaultSearchEngine(Profile originalProfile) {
-        if (isGoogleBottomBarVariantLayoutsEnabled()
+        if (isGoogleBottomBarVariantLayoutsEnabledInFinch()
                 && shouldPerformIsGoogleDefaultSearchEngineCheck()
                 && originalProfile != null) {
             // Must be called on UI thread
@@ -151,6 +155,47 @@ public class BottomBarConfigCreator {
                                 isDefaultSearchEngineGoogle);
             }
         }
+    }
+
+    /**
+     * Determines which buttons to display in the Google Bottom Bar based on
+     * GoogleBottomBarIntentParams.
+     *
+     * @param intentParams that optionally contains:
+     *     <p>Integer list with the following representation [5,1,2,3,4,5], where the first item
+     *     represents the spotlight button and the rest of the list the order of the buttons in the
+     *     bottom bar.
+     *     <p>Variant layout type that specifies variation of the layout that should be used
+     * @return A set of integers representing the customButtonParamIds of the buttons that should be
+     *     displayed in the Google Bottom Bar.
+     */
+    static Set<Integer> getSupportedCustomButtonParamIds(GoogleBottomBarIntentParams intentParams) {
+        if (isGoogleBottomBarVariantLayoutsEnabled(intentParams)) {
+            @GoogleBottomBarVariantLayoutType int layoutType = getLayoutType(intentParams);
+            if (layoutType == SINGLE_DECKER) {
+                return Set.of();
+            } else if (layoutType == SINGLE_DECKER_WITH_RIGHT_BUTTONS) {
+                // For Single decker layout we should return only items that are both supported and
+                // in encoded button list. So that rest can be added to the toolbar.
+                // Example:
+                // SupportedCustomButtonParamIdList = { 100 - SAVE, 101 - SHARE, 103 - PIH_BASIC,
+                // 104 - ADD_NOTES, 105 - CUSTOM, 106 - SEARCH}
+                // EncodedButtonIdList = {0, SHARE, CUSTOM}
+                // SupportedCustomButtonParamIds = {101 - SHARE, 105 - CUSTOM}
+                // As a result SAVE button will be added to the toolbar.
+                List<Integer> supportedCustomButtonParamIdList =
+                        new ArrayList<>(CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet());
+                List<Integer> encodedButtonIdList = getEncodedLayoutList(intentParams);
+                return supportedCustomButtonParamIdList.stream()
+                        .filter(
+                                customButtonParamId ->
+                                        encodedButtonIdList.contains(
+                                                CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.get(
+                                                        customButtonParamId)))
+                        .collect(Collectors.toSet());
+            }
+        }
+        return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet();
     }
 
     /**
@@ -313,9 +358,10 @@ public class BottomBarConfigCreator {
                 variantLayoutType);
     }
 
-    private @GoogleBottomBarVariantLayoutType int getLayoutType(
+    private static @GoogleBottomBarVariantLayoutType int getLayoutType(
             GoogleBottomBarIntentParams intentParams) {
-        if (isGoogleBottomBarVariantLayoutsEnabled() && intentParams.hasVariantLayoutType()) {
+        if (isGoogleBottomBarVariantLayoutsEnabledInFinch()
+                && intentParams.hasVariantLayoutType()) {
             VariantLayoutType variantLayoutType = intentParams.getVariantLayoutType();
             return switch (variantLayoutType) {
                 case NO_VARIANT -> NO_VARIANT;
@@ -328,7 +374,7 @@ public class BottomBarConfigCreator {
         return NO_VARIANT;
     }
 
-    private @GoogleBottomBarVariantLayoutType int
+    private static @GoogleBottomBarVariantLayoutType int
             convertFinchParamToGoogleBottomBarVariantLayoutType() {
         int finchParam = GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.getValue();
         return switch (finchParam) {
@@ -345,7 +391,7 @@ public class BottomBarConfigCreator {
         };
     }
 
-    private List<Integer> getEncodedLayoutList(GoogleBottomBarIntentParams intentParams) {
+    private static List<Integer> getEncodedLayoutList(GoogleBottomBarIntentParams intentParams) {
         // If not empty, use encoded button list provided in intent from embedder,
         // otherwise fall back on encoded string provided in Finch param
         return intentParams.getEncodedButtonCount() != 0
@@ -511,8 +557,16 @@ public class BottomBarConfigCreator {
         return code != 0 ? code : null;
     }
 
-    private static boolean isGoogleBottomBarVariantLayoutsEnabled() {
+    private static boolean isGoogleBottomBarVariantLayoutsEnabledInFinch() {
         return ChromeFeatureList.sCctGoogleBottomBarVariantLayouts.isEnabled();
+    }
+
+    private static boolean isGoogleBottomBarVariantLayoutsEnabled(
+            GoogleBottomBarIntentParams intentParams) {
+        return isGoogleBottomBarVariantLayoutsEnabledInFinch()
+                && isGoogleBottomBarVariantLayoutsSupported()
+                && intentParams.hasVariantLayoutType()
+                && !intentParams.getVariantLayoutType().equals(VariantLayoutType.NO_VARIANT);
     }
 
     private static boolean shouldPerformIsGoogleDefaultSearchEngineCheck() {
@@ -522,7 +576,7 @@ public class BottomBarConfigCreator {
     private static boolean isGoogleBottomBarVariantLayoutsSupported() {
         if (shouldPerformIsGoogleDefaultSearchEngineCheck()) {
             boolean isSupported =
-                    isGoogleBottomBarVariantLayoutsEnabled()
+                    isGoogleBottomBarVariantLayoutsEnabledInFinch()
                             && ChromeSharedPreferences.getInstance()
                                     .readBoolean(
                                             IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE,
@@ -530,7 +584,7 @@ public class BottomBarConfigCreator {
             Log.v(TAG, "isGoogleBottomBarVariantLayoutsSupported: %s", isSupported);
             return isSupported;
         }
-        return isGoogleBottomBarVariantLayoutsEnabled();
+        return isGoogleBottomBarVariantLayoutsEnabledInFinch();
     }
 
     private static List<Integer> getEncodedListFromString(String encodedConfig) {

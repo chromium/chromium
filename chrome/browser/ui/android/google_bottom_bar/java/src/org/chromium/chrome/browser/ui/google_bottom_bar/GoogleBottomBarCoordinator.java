@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Coordinator for GoogleBottomBar module. Provides the view, and initializes various components.
@@ -66,6 +67,23 @@ public class GoogleBottomBarCoordinator {
                         shareDelegateSupplier,
                         getBottomBarConfig(
                                 googleBottomBarIntentParams, customButtonsOnGoogleBottomBar));
+    }
+
+    /**
+     * Determines which buttons to display in the Google Bottom Bar based on
+     * GoogleBottomBarIntentParams.
+     *
+     * @param intentParams that optionally contains:
+     *     <p>Integer list with the following representation [5,1,2,3,4,5], where the first item
+     *     represents the spotlight button and the rest of the list the order of the buttons in the
+     *     bottom bar.
+     *     <p>Variant layout type that specifies variation of the layout that should be used
+     * @return A set of integers representing the customButtonParamIds of the buttons that should be
+     *     displayed in the Google Bottom Bar.
+     */
+    public static Set<Integer> getSupportedCustomButtonParamIds(
+            GoogleBottomBarIntentParams intentParams) {
+        return BottomBarConfigCreator.getSupportedCustomButtonParamIds(intentParams);
     }
 
     /**
