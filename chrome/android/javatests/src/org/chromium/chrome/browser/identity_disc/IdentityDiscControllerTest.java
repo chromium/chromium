@@ -27,8 +27,10 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -41,14 +43,19 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity;
@@ -58,10 +65,10 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -77,10 +84,13 @@ import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
+import java.io.IOException;
+
 /** Instrumentation test for Identity Disc. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IdentityDiscControllerTest {
     private static final String EMAIL = "email@gmail.com";
@@ -101,6 +111,12 @@ public class IdentityDiscControllerTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
+    @Rule
+    public final ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
+                    .build();
+
     private Tab mTab;
 
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
@@ -110,6 +126,22 @@ public class IdentityDiscControllerTest {
     @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
     @Mock private Tracker mTracker;
     @Mock private ActivityLifecycleDispatcher mDispatcher;
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunched() {
+        ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
+    }
+
+    @UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
+    public void setupNightMode(boolean nightModeEnabled) {
+        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+    }
+
+    @AfterClass
+    public static void tearDownAfterActivityDestroyed() {
+        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
+    }
 
     @Before
     public void setUp() {
@@ -244,6 +276,7 @@ public class IdentityDiscControllerTest {
                         withId(R.id.optional_toolbar_button),
                         isDisplayed(),
                         withContentDescription(expectedContentDescription)));
+
         mSigninTestRule.signOut();
         ViewUtils.waitForVisibleView(
                 allOf(
@@ -405,6 +438,44 @@ public class IdentityDiscControllerTest {
         // If the button is tapped before the profile is set, the click shouldn't be recorded.
         identityDiscController.onClick();
         verifyNoMoreInteractions(mTracker);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testIdentityDisc_signedOut(boolean nightModeEnabled) throws IOException {
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
+                "identity_disc_signed_out");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testIdentityDisc_signedIn(boolean nightModeEnabled) throws IOException {
+        // Sign-in and wait for the user profile image to appear.
+        mSigninTestRule.addAccountThenSignin(EMAIL, NAME);
+        String expectedContentDescription =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string
+                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
+                                FULL_NAME,
+                                EMAIL);
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        withContentDescription(expectedContentDescription)));
+
+        // Test the profile image shown in signed-in state to ensure the image is not tinted
+        // accidentally.
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
+                "identity_disc_signed_in");
     }
 
     private void leaveNtp() {

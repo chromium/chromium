@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -49,7 +50,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.ui.UiUtils;
 
 /**
  * Handles displaying IdentityDisc on toolbar depending on several conditions (user sign-in state,
@@ -163,13 +163,16 @@ public class IdentityDiscController
             return buttonSpec;
         }
 
+        // `supportsTinting` must be false when showing the user's profile image or its placeholder,
+        // to not alter the images colors in those cases.
+        boolean shouldSupportTinting = email == null;
         String contentDescription = getContentDescription(email);
         return new ButtonSpec(
                 drawable,
                 buttonSpec.getOnClickListener(),
                 /* onLongClickListener= */ null,
                 contentDescription,
-                buttonSpec.getSupportsTinting(),
+                shouldSupportTinting,
                 buttonSpec.getIPHCommandBuilder(),
                 AdaptiveToolbarButtonVariant.UNKNOWN,
                 buttonSpec.getActionChipLabelResId(),
@@ -193,17 +196,12 @@ public class IdentityDiscController
      * Returns Profile picture Drawable. The size of the image corresponds to current visual state.
      */
     private Drawable getProfileImage(@Nullable String email) {
-        if (email == null) {
-            return UiUtils.getTintedDrawable(
-                    mContext, R.drawable.account_circle, R.color.signed_out_avatar_color);
-        }
-        return mProfileDataCache.getProfileDataOrDefault(email).getImage();
+        return email == null
+                ? AppCompatResources.getDrawable(mContext, R.drawable.account_circle)
+                : mProfileDataCache.getProfileDataOrDefault(email).getImage();
     }
 
-    /**
-     * Resets ProfileDataCache. Used for flushing cached image
-     * when sign-in state changes.
-     */
+    /** Resets ProfileDataCache. Used for flushing cached image when sign-in state changes. */
     private void resetIdentityDiscCache() {
         if (mProfileDataCache != null) {
             mProfileDataCache.removeObserver(this);
