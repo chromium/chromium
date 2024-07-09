@@ -8,10 +8,14 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
@@ -28,6 +32,7 @@ public class CardPreference extends TextMessagePreference {
     private TextViewWithClickableSpans mDescriptionView;
     private ChromeImageView mIcon;
     private ChromeImageView mCloseIcon;
+    private boolean mShouldCenterIcon;
 
     /** Constructor for inflating from XML. */
     public CardPreference(Context context, AttributeSet attrs) {
@@ -45,9 +50,20 @@ public class CardPreference extends TextMessagePreference {
 
         mDescriptionView.setText(mSummary);
         mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
+
         mIcon.setImageDrawable(mIconDrawable);
+        if (mShouldCenterIcon) {
+            LinearLayout.LayoutParams iconParams =
+                    (LinearLayout.LayoutParams) mIcon.getLayoutParams();
+            iconParams.gravity = Gravity.CENTER_VERTICAL;
+            mIcon.setLayoutParams(iconParams);
+        }
+
         mCloseIcon.setVisibility(mCloseIconVisibility);
         mCloseIcon.setOnClickListener(mOnCloseClickListener);
+
+        TextView titleView = (TextView) holder.findViewById(android.R.id.title);
+        ApiCompatibilityUtils.setTextAppearance(titleView, R.style.TextAppearance_Headline2Thick);
     }
 
     /**
@@ -85,5 +101,12 @@ public class CardPreference extends TextMessagePreference {
      */
     public void setOnCloseClickListener(OnClickListener onCloseClickListener) {
         this.mOnCloseClickListener = onCloseClickListener;
+    }
+
+    /**
+     * @param shouldCenterIcon Whether to center the left icon vertically inside the card.
+     */
+    public void setShouldCenterIcon(boolean shouldCenterIcon) {
+        mShouldCenterIcon = shouldCenterIcon;
     }
 }

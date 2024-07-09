@@ -28,12 +28,24 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:importantForAccessibility="no" />
 
+  <LinearLayout
+      android:orientation="vertical"
+      android:layout_height="wrap_content"
+      android:layout_width="0dp"
+      android:layout_weight="6">
+
+    <TextView
+        android:id="@android:id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/PreferenceTitle"/>
+
     <org.chromium.ui.widget.TextViewWithClickableSpans
         android:id="@+id/summary"
         android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:layout_weight="6"
+        android:layout_width="wrap_content"
         style="@style/PreferenceSummary" />
+  </LinearLayout>
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/close_icon"
