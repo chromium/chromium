@@ -68,6 +68,15 @@ AppTerminationObserver::GetFactoryInstance() {
   return factory.get();
 }
 
+void AppTerminationObserver::Shutdown() {
+  // The associated `browser_context_` is shutting down, so it's no longer safe
+  // to use (any attempt to access a KeyedService will crash after this point,
+  // since the context is marked as dead). Reset the subscription. See
+  // https://crbug.com/352003806.
+  // See also the note in `OnAppTerminating()`.
+  subscription_.reset();
+}
+
 void AppTerminationObserver::OnAppTerminating() {
   // NOTE: This fires on application termination, but passes in an associated
   // BrowserContext. If a BrowserContext is actually destroyed *before*
