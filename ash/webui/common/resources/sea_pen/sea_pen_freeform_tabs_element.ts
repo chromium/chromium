@@ -9,6 +9,7 @@
 
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
@@ -70,6 +71,10 @@ export class SeaPenFreeformTabsElement extends WithSeaPenStore {
     // Otherwise, stay in Sample Prompts tab.
     this.selectedTab =
         query?.textQuery ? FreeformTab.RESULTS : FreeformTab.SAMPLE_PROMPTS;
+  }
+
+  private isTabStripEnabled_(query: SeaPenQuery) {
+    return !!query?.textQuery;
   }
 
   private isSamplePromptsTabSelected_(tab: FreeformTab): boolean {

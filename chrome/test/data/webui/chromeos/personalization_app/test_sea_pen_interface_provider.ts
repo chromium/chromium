@@ -59,6 +59,10 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     },
   };
 
+  seaPenFreeformQuery: SeaPenQuery = {
+    textQuery: 'test freeform query',
+  };
+
   recentImageInfo2: RecentSeaPenImageInfo = {
     query: this.seaPenQuery,
     creationTime: stringToMojoString16('Dec 15, 2023'),
