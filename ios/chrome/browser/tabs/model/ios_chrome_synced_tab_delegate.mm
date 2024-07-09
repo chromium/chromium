@@ -215,12 +215,7 @@ bool IOSChromeSyncedTabDelegate::ShouldSync(
 
   int entry_count = GetEntryCount();
   for (int i = 0; i < entry_count; ++i) {
-    const GURL& virtual_url = GetVirtualURLAtIndex(i);
-    if (!virtual_url.is_valid()) {
-      continue;
-    }
-
-    if (sessions_client->ShouldSyncURL(virtual_url)) {
+    if (sessions_client->ShouldSyncURL(GetVirtualURLAtIndex(i))) {
       return true;
     }
   }
