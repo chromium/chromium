@@ -510,7 +510,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.annotationMode_ = annotationMode;
       return;
     }
-    // </if> expr="enable_pdf_ink2"
+    // </if> enable_pdf_ink2
 
     // <if expr="enable_ink">
     if (annotationMode) {
@@ -564,7 +564,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.currentController = this.pluginController_!;
       await this.pluginController_!.load(result.fileName, result.dataToSave);
     }
-    // </if> expr="enable_ink"
+    // </if> enable_ink
   }
 
   /** Exits annotation mode if active. */
@@ -576,10 +576,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.annotationMode_ = false;
     // <if expr="enable_ink">
     await this.restoreSidenav_();
-    // </if> expr="enable_ink"
+    // </if> enable_ink
     await this.loaded;
   }
-  // </if> expr="enable_ink or enable_pdf_ink2"
+  // </if> enable_ink or enable_pdf_ink2
 
   private onDisplayAnnotationsChanged_(e: CustomEvent<boolean>) {
     assert(this.currentController);
