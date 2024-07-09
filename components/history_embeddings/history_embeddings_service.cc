@@ -689,7 +689,9 @@ void HistoryEmbeddingsService::OnPassageVisibilityCalculated(
     auto urls_it = scored_urls.begin();
     for (const page_content_annotations::BatchAnnotationResult&
              annotation_result : annotation_results) {
-      if (annotation_result.visibility_score().value_or(0.0) <=
+      // Note, if threshold is configured at exactly zero then it's
+      // intentionally allowing everything through.
+      if (annotation_result.visibility_score().value_or(0.0) <
           kContentVisibilityThreshold.Get()) {
         urls_it = scored_urls.erase(urls_it);
       } else {

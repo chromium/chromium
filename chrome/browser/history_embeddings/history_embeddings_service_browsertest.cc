@@ -77,7 +77,11 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
     // properly.
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"}, {"SendQualityLog", "true"}}},
+          {
+              {"UseMlEmbedder", "false"},
+              {"SendQualityLog", "true"},
+              {"ContentVisibilityThreshold", "0.01"},
+          }},
          {page_content_annotations::features::kPageContentAnnotations, {{}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
@@ -154,6 +158,7 @@ IN_PROC_BROWSER_TEST_F(
     HistoryEmbeddingsBrowserTest,
     SearchFiltersOutResultWithSourcePassageThatShouldNotBeVisible) {
   OverrideVisibilityScoresForTesting({{"A B C D", 0.14}});
+  OverrideVisibilityScoresForTesting({{"A B C D e f g", 0.00}});
 
   ASSERT_TRUE(embedded_test_server()->Start());
   base::test::TestFuture<UrlPassages> store_future;
