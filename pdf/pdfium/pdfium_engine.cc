@@ -3650,15 +3650,16 @@ void PDFiumEngine::DeviceToPage(int page_index,
                                 double* page_y) {
   *page_x = 0;
   *page_y = 0;
+  PDFiumPage* page = pages_[page_index].get();
+  const gfx::Rect& page_rect = page->rect();
   float device_x = device_point.x();
   float device_y = device_point.y();
   int temp_x = static_cast<int>((device_x + position_.x()) / current_zoom_ -
-                                pages_[page_index]->rect().x());
+                                page_rect.x());
   int temp_y = static_cast<int>((device_y + position_.y()) / current_zoom_ -
-                                pages_[page_index]->rect().y());
+                                page_rect.y());
   FPDF_BOOL ret = FPDF_DeviceToPage(
-      pages_[page_index]->GetPage(), 0, 0, pages_[page_index]->rect().width(),
-      pages_[page_index]->rect().height(),
+      page->GetPage(), 0, 0, page_rect.width(), page_rect.height(),
       ToPDFiumRotation(layout_.options().default_page_orientation()), temp_x,
       temp_y, page_x, page_y);
   DCHECK(ret);
