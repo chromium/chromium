@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "content/public/browser/browser_thread.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -87,7 +88,7 @@ void AwContentsLifecycleNotifier::OnWebViewDestroyed(
     const AwContents* aw_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto it = aw_contents_to_data_.find(aw_contents);
-  DCHECK(it != aw_contents_to_data_.end());
+  CHECK(it != aw_contents_to_data_.end(), base::NotFatalUntil::M130);
 
   state_count_[ToIndex(it->second.aw_content_state)]--;
   DCHECK(state_count_[ToIndex(it->second.aw_content_state)] >= 0);

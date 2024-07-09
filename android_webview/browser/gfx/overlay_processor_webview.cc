@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -904,7 +905,7 @@ void OverlayProcessorWebView::ReturnResource(viz::ResourceId resource_id,
   // OverlayManager return resources. When we delete last lock resource will be
   // return to the client.
   auto it = locked_resources_.find(resource_id);
-  DCHECK(it != locked_resources_.end());
+  CHECK(it != locked_resources_.end(), base::NotFatalUntil::M130);
   locked_resources_.erase(it);
 
   DCHECK(resource_lock_count_.contains(surface_id.frame_sink_id()));
@@ -933,7 +934,7 @@ bool OverlayProcessorWebView::ProcessForFrameSinkId(
     const viz::FrameSinkId& frame_sink_id,
     const viz::ResolvedFrameData* frame_data) {
   auto it = overlays_.find(frame_sink_id);
-  DCHECK(it != overlays_.end());
+  CHECK(it != overlays_.end(), base::NotFatalUntil::M130);
   auto& overlay = it->second;
 
   const auto& passes = frame_data->GetResolvedPasses();
