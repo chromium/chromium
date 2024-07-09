@@ -75,7 +75,7 @@ suite('OverlayFeedbackButton', () => {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.MY_ACTIVITY));
   });
 
@@ -105,7 +105,7 @@ suite('OverlayFeedbackButton', () => {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.LEARN_MORE));
   });
 
@@ -121,7 +121,7 @@ suite('OverlayFeedbackButton', () => {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.SEND_FEEDBACK));
     return testBrowserProxy.handler.whenCalled('feedbackRequestedByOverlay');
   });

@@ -112,7 +112,7 @@ suite('ManualRegionSelection', function() {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.REGION_SELECTION));
   }
 
@@ -138,7 +138,7 @@ suite('ManualRegionSelection', function() {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.REGION_SELECTION));
   }
 

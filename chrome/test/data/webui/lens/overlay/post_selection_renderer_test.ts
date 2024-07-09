@@ -210,7 +210,7 @@ suite('PostSelectionRenderer', () => {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.REGION_SELECTION_CHANGE));
     await assertLensRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);

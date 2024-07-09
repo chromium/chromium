@@ -28,6 +28,6 @@ export function recordLensOverlayInteraction(
   chrome.metricsPrivate.recordEnumerationValue(
       'Lens.Overlay.Overlay.UserAction', interaction, UserAction.MAX_VALUE + 1);
   chrome.metricsPrivate.recordEnumerationValue(
-      `Lens.Overlay.Overlay.ByEntryPoint.${invocationSource}.UserAction`,
+      `Lens.Overlay.Overlay.ByInvocationSource.${invocationSource}.UserAction`,
       interaction, UserAction.MAX_VALUE + 1);
 }
