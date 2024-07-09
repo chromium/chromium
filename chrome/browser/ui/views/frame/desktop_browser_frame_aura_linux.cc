@@ -61,7 +61,7 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
     params.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
         browser.app_name(), browser.profile()->GetPath());
   } else {
-    params.wayland_app_id = params.wm_class_name;
+    params.wayland_app_id = params.wm_class_class;
   }
 
   return params;
