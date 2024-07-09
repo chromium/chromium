@@ -3055,15 +3055,14 @@ namespace gl {
   def GetGLVersionCondition(gl_version):
     if GLVersionBindAlways(gl_version):
       if gl_version.is_es:
-        return 'ver->is_es'
+        return 'True'
       else:
-        return '!ver->is_es'
+        return 'False'
     elif gl_version.is_es:
       return 'ver->IsAtLeastGLES(%du, %du)' % (
           gl_version.major_version, gl_version.minor_version)
     else:
-      return 'ver->IsAtLeastGL(%du, %du)' % (
-          gl_version.major_version, gl_version.minor_version)
+      return 'False'
 
   def GetBindingCondition(version):
     conditions = []
@@ -3073,6 +3072,8 @@ namespace gl {
     if 'extensions' in version and version['extensions']:
       conditions.extend(
           sorted(['ext.b_%s' % e for e in version['extensions']]))
+    if 'False' in conditions:
+      conditions.remove('False')
     return ' || '.join(conditions)
 
   def WriteConditionalFuncBinding(file, func):
@@ -3084,17 +3085,32 @@ namespace gl {
       version = func['versions'][i]
       cond = GetBindingCondition(version)
       if first_version:
-        file.write('  if (%s) {\n  ' % cond)
+        if cond == 'True':
+          file.write('  {\n  ')
+        elif cond != '':
+          file.write('  if (%s) {\n  ' % cond)
+        else:
+          i += 1
+          continue
       else:
-        file.write('  else if (%s) {\n  ' % (cond))
+        if cond == 'True':
+          file.write('  else {\n  ')
+        elif cond != '':
+          file.write('  else if (%s) {\n  ' % (cond))
+        else:
+          i += 1
+          continue
 
       WriteFuncBinding(file, known_as, version['name'])
       if options.validate_bindings:
         if not 'is_optional' in func or not func['is_optional']:
           file.write('DCHECK(fn.%sFn);\n' % known_as)
       file.write('}\n')
+      if cond == 'True':
+        break
       i += 1
-      first_version = False
+      if cond != '':
+        first_version = False
 
   # TODO(jmadill): make more robust
   def IsClientExtensionFunc(func):

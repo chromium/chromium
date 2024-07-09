@@ -266,32 +266,11 @@ class BaseGpuTraceTest : public BaseGpuTest {
   }
 };
 
-class GpuARBTimerTraceTest : public BaseGpuTraceTest {
- public:
-  GpuARBTimerTraceTest() : BaseGpuTraceTest(gl::GPUTiming::kTimerTypeARB) {}
-};
-
 class GpuDisjointTimerTraceTest : public BaseGpuTraceTest {
  public:
   GpuDisjointTimerTraceTest()
       : BaseGpuTraceTest(gl::GPUTiming::kTimerTypeDisjoint) {}
 };
-
-TEST_F(GpuARBTimerTraceTest, ARBTimerTraceTestOff) {
-  DoTraceTest(false, false);
-}
-
-TEST_F(GpuARBTimerTraceTest, ARBTimerTraceTestServiceOnly) {
-  DoTraceTest(true, false);
-}
-
-TEST_F(GpuARBTimerTraceTest, ARBTimerTraceTestDeviceOnly) {
-  DoTraceTest(false, true);
-}
-
-TEST_F(GpuARBTimerTraceTest, ARBTimerTraceTestBothOn) {
-  DoTraceTest(true, true);
-}
 
 TEST_F(GpuDisjointTimerTraceTest, DisjointTimerTraceTestOff) {
   DoTraceTest(false, false);
@@ -622,16 +601,6 @@ class InvalidTimerTracerTest : public BaseGpuTracerTest {
       : BaseGpuTracerTest(gl::GPUTiming::kTimerTypeInvalid) {}
 };
 
-class GpuEXTTimerTracerTest : public BaseGpuTracerTest {
- public:
-  GpuEXTTimerTracerTest() : BaseGpuTracerTest(gl::GPUTiming::kTimerTypeEXT) {}
-};
-
-class GpuARBTimerTracerTest : public BaseGpuTracerTest {
- public:
-  GpuARBTimerTracerTest() : BaseGpuTracerTest(gl::GPUTiming::kTimerTypeARB) {}
-};
-
 class GpuDisjointTimerTracerTest : public BaseGpuTracerTest {
  public:
   GpuDisjointTimerTracerTest()
@@ -639,14 +608,6 @@ class GpuDisjointTimerTracerTest : public BaseGpuTracerTest {
 };
 
 TEST_F(InvalidTimerTracerTest, InvalidTimerBasicTracerTest) {
-  DoBasicTracerTest();
-}
-
-TEST_F(GpuEXTTimerTracerTest, EXTTimerBasicTracerTest) {
-  DoBasicTracerTest();
-}
-
-TEST_F(GpuARBTimerTracerTest, ARBTimerBasicTracerTest) {
   DoBasicTracerTest();
 }
 
@@ -658,14 +619,6 @@ TEST_F(InvalidTimerTracerTest, InvalidTimerDisabledTest) {
   DoDisabledTracingTest();
 }
 
-TEST_F(GpuEXTTimerTracerTest, EXTTimerDisabledTest) {
-  DoDisabledTracingTest();
-}
-
-TEST_F(GpuARBTimerTracerTest, ARBTimerDisabledTest) {
-  DoDisabledTracingTest();
-}
-
 TEST_F(GpuDisjointTimerTracerTest, DisjointTimerDisabledTest) {
   DoDisabledTracingTest();
 }
@@ -674,27 +627,11 @@ TEST_F(InvalidTimerTracerTest, InvalidTimerTracerMarkersTest) {
   DoTracerMarkersTest();
 }
 
-TEST_F(GpuEXTTimerTracerTest, EXTTimerTracerMarkersTest) {
-  DoTracerMarkersTest();
-}
-
-TEST_F(GpuARBTimerTracerTest, ARBTimerTracerMarkersTest) {
-  DoTracerMarkersTest();
-}
-
 TEST_F(GpuDisjointTimerTracerTest, DisjointTimerBasicTracerMarkersTest) {
   DoTracerMarkersTest();
 }
 
 TEST_F(InvalidTimerTracerTest, InvalidTimerOngoingTracerMarkersTest) {
-  DoOngoingTracerMarkerTest();
-}
-
-TEST_F(GpuEXTTimerTracerTest, EXTTimerOngoingTracerMarkersTest) {
-  DoOngoingTracerMarkerTest();
-}
-
-TEST_F(GpuARBTimerTracerTest, ARBTimerBasicOngoingTracerMarkersTest) {
   DoOngoingTracerMarkerTest();
 }
 

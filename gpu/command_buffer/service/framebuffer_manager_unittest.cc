@@ -150,7 +150,8 @@ class FramebufferInfoTestBase : public GpuServiceTest {
     if (context_type_ == CONTEXT_TYPE_WEBGL2 ||
         context_type_ == CONTEXT_TYPE_OPENGLES3)
       is_es3 = true;
-    InitializeContext(is_es3 ? "3.0" : "2.0", "GL_EXT_framebuffer_object");
+    InitializeContext(is_es3 ? "OpenGL ES 3.0" : "OpenGL ES 2.0",
+                      "GL_EXT_framebuffer_object");
   }
 
   void InitializeContext(const char* gl_version, const char* extensions) {
@@ -185,6 +186,11 @@ class FramebufferInfoTestBase : public GpuServiceTest {
 class FramebufferInfoTest : public FramebufferInfoTestBase {
  public:
   FramebufferInfoTest() : FramebufferInfoTestBase(CONTEXT_TYPE_OPENGLES2) {}
+};
+
+class FramebufferInfoES3Test : public FramebufferInfoTestBase {
+ public:
+  FramebufferInfoES3Test() : FramebufferInfoTestBase(CONTEXT_TYPE_WEBGL2) {}
 };
 
 // GCC requires these declarations, but MSVC requires they not be present
@@ -1070,7 +1076,7 @@ TEST_F(FramebufferInfoTest, ClearIntegerOutsideRenderableRange) {
   EXPECT_FALSE(framebuffer_->HasUnclearedColorAttachments());
 }
 
-TEST_F(FramebufferInfoTest, DrawBuffers) {
+TEST_F(FramebufferInfoES3Test, DrawBuffers) {
   const GLuint kTextureClientId[] = { 33, 34 };
   const GLuint kTextureServiceId[] = { 333, 334 };
   for (GLenum i = GL_COLOR_ATTACHMENT0;
@@ -1627,16 +1633,6 @@ TEST_F(FramebufferInfoTest, GetStatus) {
   framebuffer_->UnbindRenderbuffer(GL_RENDERBUFFER, renderbuffer1);
   framebuffer_->GetStatus(texture_manager_.get(), GL_READ_FRAMEBUFFER);
 }
-
-class FramebufferInfoES3Test : public FramebufferInfoTestBase {
- public:
-  FramebufferInfoES3Test() : FramebufferInfoTestBase(CONTEXT_TYPE_WEBGL2) {}
-
- protected:
-  void SetUp() override {
-    InitializeContext("OpenGL ES 3.0", "");
-  }
-};
 
 TEST_F(FramebufferInfoES3Test, DifferentDimensions) {
   const GLuint kRenderbufferClient1Id = 33;

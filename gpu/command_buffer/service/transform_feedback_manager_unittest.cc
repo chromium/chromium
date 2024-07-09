@@ -29,7 +29,7 @@ class TransformFeedbackManagerTest : public GpuServiceTest {
  protected:
   void SetUp() override {
     const GLuint kMaxTransformFeedbackSeparateAttribs = 16;
-    GpuServiceTest::SetUpWithGLVersion("4.1", "");
+    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0", "");
     manager_ = std::make_unique<TransformFeedbackManager>(
         kMaxTransformFeedbackSeparateAttribs, true);
   }
@@ -60,5 +60,3 @@ TEST_F(TransformFeedbackManagerTest, LifeTime) {
 
 }  // namespace gles2
 }  // namespace gpu
-
-

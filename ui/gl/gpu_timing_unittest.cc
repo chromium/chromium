@@ -68,7 +68,7 @@ class GPUTimingTest : public testing::Test {
 
   scoped_refptr<GPUTimingClient> CreateGPUTimingClient() {
     if (!setup_) {
-      SetupGLContext("2.0", "");
+      SetupGLContext("OpenGL ES 2.0", "");
     }
 
     scoped_refptr<GPUTimingClient> client = context_->CreateGPUTimingClient();
@@ -104,7 +104,7 @@ TEST_F(GPUTimingTest, FakeTimerTest) {
 
 TEST_F(GPUTimingTest, ForceTimeElapsedQuery) {
   // Test that forcing time elapsed query affects all clients.
-  SetupGLContext("3.2", "GL_ARB_timer_query");
+  SetupGLContext("OpenGL ES 3.0", "GL_ARB_timer_query");
   scoped_refptr<GPUTimingClient> client1 = CreateGPUTimingClient();
   EXPECT_FALSE(client1->IsForceTimeElapsedQuery());
 
@@ -120,7 +120,7 @@ TEST_F(GPUTimingTest, ForceTimeElapsedQuery) {
 }
 
 TEST_F(GPUTimingTest, QueryTimeStampTest) {
-  SetupGLContext("3.2", "GL_ARB_timer_query");
+  SetupGLContext("OpenGL ES 3.0", "GL_ARB_timer_query");
   scoped_refptr<GPUTimingClient> client = CreateGPUTimingClient();
   std::unique_ptr<GPUTimer> gpu_timer = client->CreateGPUTimer(false);
 
@@ -154,7 +154,7 @@ TEST_F(GPUTimingTest, QueryTimeStampTest) {
 TEST_F(GPUTimingTest, QueryTimeStampUsingElapsedTest) {
   // Test timestamp queries using GL_EXT_timer_query which does not support
   // timestamp queries. Internally we fall back to time elapsed queries.
-  SetupGLContext("3.2", "GL_EXT_timer_query");
+  SetupGLContext("OpenGL ES 3.0", "GL_EXT_timer_query");
   scoped_refptr<GPUTimingClient> client = CreateGPUTimingClient();
   std::unique_ptr<GPUTimer> gpu_timer = client->CreateGPUTimer(false);
   ASSERT_TRUE(client->IsForceTimeElapsedQuery());
@@ -184,7 +184,7 @@ TEST_F(GPUTimingTest, QueryTimeStampUsingElapsedTest) {
 TEST_F(GPUTimingTest, QueryTimestampUsingElapsedARBTest) {
   // Test timestamp queries on platforms with GL_ARB_timer_query but still lack
   // support for timestamp queries
-  SetupGLContext("3.2", "GL_ARB_timer_query");
+  SetupGLContext("OpenGL ES 3.0", "GL_ARB_timer_query");
   scoped_refptr<GPUTimingClient> client = CreateGPUTimingClient();
   std::unique_ptr<GPUTimer> gpu_timer = client->CreateGPUTimer(false);
 

@@ -48,7 +48,7 @@ class QueryManagerTest : public GpuServiceTest {
 
  protected:
   void SetUp() override {
-    GpuServiceTest::SetUpWithGLVersion("3.2",
+    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0",
                                        "GL_ARB_occlusion_query, "
                                        "GL_ARB_timer_query");
     SetUpMockGL("GL_EXT_occlusion_query_boolean, GL_ARB_timer_query");

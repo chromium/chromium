@@ -54,7 +54,7 @@ class TextureTestHelper {
   }
 };
 
-class TextureManagerTest : public GpuServiceTest {
+class TextureManagerTestBase : public GpuServiceTest {
  public:
   static const GLint kMaxTextureSize = 32;
   static const GLint kMaxCubeMapTextureSize = 8;
@@ -68,23 +68,30 @@ class TextureManagerTest : public GpuServiceTest {
   static const GLint kMax3dLevels = 10;
   static const bool kUseDefaultTextures = false;
 
-  TextureManagerTest() : discardable_manager_(GpuPreferences()) {
+  TextureManagerTestBase(ContextType context_type)
+      : context_type_(context_type), discardable_manager_(GpuPreferences()) {
+    DCHECK(context_type == CONTEXT_TYPE_OPENGLES2 ||
+           context_type == CONTEXT_TYPE_OPENGLES3);
     GpuDriverBugWorkarounds gpu_driver_bug_workaround;
     feature_info_ =
         new FeatureInfo(gpu_driver_bug_workaround, GpuFeatureInfo());
   }
 
-  ~TextureManagerTest() override = default;
+  ~TextureManagerTestBase() override = default;
 
  protected:
   void SetUp() override {
-    GpuServiceTest::SetUp();
+    const char* gl_version = (context_type_ == CONTEXT_TYPE_OPENGLES2)
+                                 ? "OpenGL ES 2.0"
+                                 : "OpenGL ES 3.0";
+    bool es3 = (context_type_ == CONTEXT_TYPE_OPENGLES2) ? false : true;
+    GpuServiceTest::SetUpWithGLVersion(gl_version, "GL_EXT_framebuffer_object");
     manager_.reset(new TextureManager(
         nullptr, feature_info_.get(), kMaxTextureSize, kMaxCubeMapTextureSize,
         kMaxRectangleTextureSize, kMax3DTextureSize, kMaxArrayTextureLayers,
         kUseDefaultTextures, nullptr, &discardable_manager_));
-    SetupFeatureInfo("", "OpenGL ES 2.0", CONTEXT_TYPE_OPENGLES2);
-    TestHelper::SetupTextureManagerInitExpectations(gl_.get(), false, false, {},
+    SetupFeatureInfo("", gl_version, context_type_);
+    TestHelper::SetupTextureManagerInitExpectations(gl_.get(), es3, es3, {},
                                                     kUseDefaultTextures);
     manager_->Initialize();
     error_state_.reset(new ::testing::StrictMock<MockErrorState>());
@@ -122,24 +129,35 @@ class TextureManagerTest : public GpuServiceTest {
     }
   }
 
+  ContextType context_type_;
   scoped_refptr<FeatureInfo> feature_info_;
   ServiceDiscardableManager discardable_manager_;
   std::unique_ptr<TextureManager> manager_;
   std::unique_ptr<MockErrorState> error_state_;
 };
 
+class TextureManagerTest : public TextureManagerTestBase {
+ public:
+  TextureManagerTest() : TextureManagerTestBase(CONTEXT_TYPE_OPENGLES2) {}
+};
+
+class TextureManagerES3Test : public TextureManagerTestBase {
+ public:
+  TextureManagerES3Test() : TextureManagerTestBase(CONTEXT_TYPE_OPENGLES3) {}
+};
+
 // GCC requires these declarations, but MSVC requires they not be present
 #ifndef COMPILER_MSVC
-const GLint TextureManagerTest::kMaxTextureSize;
-const GLint TextureManagerTest::kMaxCubeMapTextureSize;
-const GLint TextureManagerTest::kMaxRectangleTextureSize;
-const GLint TextureManagerTest::kMaxExternalTextureSize;
-const GLint TextureManagerTest::kMax3DTextureSize;
-const GLint TextureManagerTest::kMaxArrayTextureLayers;
-const GLint TextureManagerTest::kMax2dLevels;
-const GLint TextureManagerTest::kMaxCubeMapLevels;
-const GLint TextureManagerTest::kMaxExternalLevels;
-const GLint TextureManagerTest::kMax3dLevels;
+const GLint TextureManagerTestBase::kMaxTextureSize;
+const GLint TextureManagerTestBase::kMaxCubeMapTextureSize;
+const GLint TextureManagerTestBase::kMaxRectangleTextureSize;
+const GLint TextureManagerTestBase::kMaxExternalTextureSize;
+const GLint TextureManagerTestBase::kMax3DTextureSize;
+const GLint TextureManagerTestBase::kMaxArrayTextureLayers;
+const GLint TextureManagerTestBase::kMax2dLevels;
+const GLint TextureManagerTestBase::kMaxCubeMapLevels;
+const GLint TextureManagerTestBase::kMaxExternalLevels;
+const GLint TextureManagerTestBase::kMax3dLevels;
 #endif
 
 TEST_F(TextureManagerTest, Basic) {
@@ -246,9 +264,8 @@ TEST_F(TextureManagerTest, UseDefaultTexturesFalse) {
   manager.Destroy();
 }
 
-TEST_F(TextureManagerTest, UseDefaultTexturesTrueES3) {
+TEST_F(TextureManagerES3Test, UseDefaultTexturesTrueES3) {
   bool use_default_textures = true;
-  SetupFeatureInfo("", "OpenGL ES 3.0", CONTEXT_TYPE_OPENGLES3);
   TestHelper::SetupTextureManagerInitExpectations(gl_.get(), true, true, {},
                                                   use_default_textures);
   TextureManager manager(nullptr, feature_info_.get(), kMaxTextureSize,
@@ -264,9 +281,8 @@ TEST_F(TextureManagerTest, UseDefaultTexturesTrueES3) {
   manager.Destroy();
 }
 
-TEST_F(TextureManagerTest, UseDefaultTexturesFalseES3) {
+TEST_F(TextureManagerES3Test, UseDefaultTexturesFalseES3) {
   bool use_default_textures = false;
-  SetupFeatureInfo("", "OpenGL ES 3.0", CONTEXT_TYPE_OPENGLES3);
   TestHelper::SetupTextureManagerInitExpectations(gl_.get(), true, true, {},
                                                   use_default_textures);
   TextureManager manager(nullptr, feature_info_.get(), kMaxTextureSize,
