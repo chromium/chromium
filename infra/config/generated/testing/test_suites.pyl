@@ -6529,6 +6529,12 @@
       'webview_ui_instrumentation_tests_no_field_trial',
     ],
 
+    'webview_native_coverage_bot_gtests': [
+      'webview_bot_instrumentation_test_apk_mutations_gtest',
+      'webview_bot_instrumentation_test_apk_no_field_trial_gtest',
+      'webview_bot_unittests_gtest',
+    ],
+
     'webview_trichrome_64_cts_gtests': [
       'webview_trichrome_64_cts_tests_no_field_trial_suite',
       'webview_trichrome_64_cts_tests_suite',

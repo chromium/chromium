@@ -2314,7 +2314,7 @@
           'walleye',
         ],
         'test_suites': {
-          'gtest_tests': 'webview_fyi_bot_all_gtests',
+          'gtest_tests': 'webview_native_coverage_bot_gtests',
         },
         'os_type': 'android',
       },

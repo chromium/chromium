@@ -1272,6 +1272,15 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "webview_native_coverage_bot_gtests",
+    basic_suites = [
+        "webview_bot_instrumentation_test_apk_mutations_gtest",
+        "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
+        "webview_bot_unittests_gtest",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "webview_trichrome_64_cts_gtests",
     basic_suites = [
         "webview_trichrome_64_cts_tests_suite",
