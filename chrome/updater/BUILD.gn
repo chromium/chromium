@@ -401,10 +401,7 @@ if (is_win || is_mac || is_linux) {
   source_set("constants_header") {
     sources = [ "constants.h" ]
 
-    public_deps = [
-      ":branding_header",
-      "//base",
-    ]
+    public_deps = [ "//base" ]
     deps = [ "//components/update_client" ]
   }
 
@@ -555,6 +552,7 @@ if (is_win || is_mac || is_linux) {
 
   source_set("public_sources") {
     sources = [
+      "constants.cc",
       "constants.h",
       "enum_traits.h",
       "ipc/ipc_support.cc",
@@ -572,9 +570,8 @@ if (is_win || is_mac || is_linux) {
       "util/util.h",
     ]
 
-    public_deps = [ ":branding_header" ]
-
     deps = [
+      ":branding_header",
       ":tagging",
       ":version_header",
       "//base",
