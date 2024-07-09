@@ -186,11 +186,8 @@ PopupViewViews::~PopupViewViews() = default;
 
 void PopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBox;
-  // If controller_ is valid, then the view is expanded.
-  if (controller_) {
-    node_data->AddState(ax::mojom::State::kExpanded);
-  } else {
-    node_data->AddState(ax::mojom::State::kCollapsed);
+
+  if (!controller_) {
     node_data->AddState(ax::mojom::State::kInvisible);
   }
   node_data->SetNameChecked(
@@ -217,7 +214,7 @@ bool PopupViewViews::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   base::AutoReset show_in_progress_reset(&show_in_progress_, !!search_bar_);
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  UpdateExpandedCollapsedAccessibleState();
   if (!DoShow()) {
     return false;
   }
@@ -289,13 +286,12 @@ bool PopupViewViews::Show(
 }
 
 void PopupViewViews::Hide() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
-
   open_sub_popup_timer_.Stop();
   no_selection_sub_popup_close_timer_.Stop();
 
   // The controller is no longer valid after it hides us.
   controller_ = nullptr;
+  UpdateExpandedCollapsedAccessibleState();
   DoHide();
 }
 
@@ -868,6 +864,14 @@ void PopupViewViews::SetSelectedCell(
   }
 }
 
+void PopupViewViews::UpdateExpandedCollapsedAccessibleState() const {
+  if (controller_) {
+    GetViewAccessibility().SetIsExpanded();
+  } else {
+    GetViewAccessibility().SetIsCollapsed();
+  }
+}
+
 bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
   return index < rows_.size() &&
          absl::holds_alternative<PopupRowView*>(rows_[index]);
@@ -904,6 +908,7 @@ void PopupViewViews::InitViews() {
   }
 
   CreateSuggestionViews();
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void PopupViewViews::CreateSuggestionViews() {

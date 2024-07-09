@@ -334,6 +334,26 @@ TEST_F(PopupViewViewsTest, ShowHideTest) {
   view().Hide();
 }
 
+TEST_F(PopupViewViewsTest, ExpandedCollapsedAccessiblityStateTest) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry});
+  ui::AXNodeData node_data;
+  view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  view().Hide();
+  node_data = ui::AXNodeData();
+  view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  CreateAndShowView({SuggestionType::kAutocompleteEntry});
+  node_data = ui::AXNodeData();
+  view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+}
+
 TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
   CreateAndShowView({SuggestionType::kAutocompleteEntry,
                      SuggestionType::kSeparator,

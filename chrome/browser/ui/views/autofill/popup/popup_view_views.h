@@ -160,6 +160,8 @@ class PopupViewViews : public PopupBaseView,
     return *absl::get<PopupRowView*>(rows_[index]);
   }
 
+  void UpdateExpandedCollapsedAccessibleState() const;
+
   // Returns whether the row at `index` exists and is a `PopupRowView`.
   bool HasPopupRowViewAt(size_t index) const;
 

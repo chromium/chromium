@@ -997,6 +997,12 @@ void ViewAccessibility::SetDataForClosedWidget(ui::AXNodeData* data) const {
     // name of a focusable.
     data->SetNameExplicitlyEmpty();
   }
+
+  // Some of the views like popup_view_views have state collapsed when the
+  // widget has already closed and hence explicitly setting the state.
+  if (data_.HasState(ax::mojom::State::kCollapsed)) {
+    data->AddState(ax::mojom::State::kCollapsed);
+  }
 }
 
 void ViewAccessibility::SetHierarchicalLevel(int hierarchical_level) {
