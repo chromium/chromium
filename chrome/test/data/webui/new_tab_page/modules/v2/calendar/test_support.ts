@@ -37,6 +37,7 @@ export function createEvent(
         location: `Location ${index}`,
         attachments: createAttachments(3),
         conferenceUrl: {url: `https://foo.com/conference${index}`},
+        isAccepted: true,
       },
       overrides);
 }

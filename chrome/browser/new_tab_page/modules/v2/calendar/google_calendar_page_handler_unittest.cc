@@ -44,6 +44,15 @@ base::Value::List CreateAttachments() {
   return attachments;
 }
 
+base::Value::List CreateAttendees(bool is_accepted) {
+  return base::Value::List().Append(
+      base::Value::Dict()
+          .Set("email", "test@test.com")
+          .Set("displayName", "Foo Test")
+          .Set("self", true)
+          .Set("responseStatus", is_accepted ? "accepted" : "needsAction"));
+}
+
 base::Value::Dict CreateConferenceData() {
   base::Value::Dict entryPoint =
       base::Value::Dict()
@@ -80,7 +89,8 @@ base::Value::Dict CreateEvent(int index) {
       .Set("end", CreateEventTime(/*is_all_day_event*/ index == 0,
                                   /*is_end_time*/ true))
       .Set("conferenceData", CreateConferenceData())
-      .Set("attachments", CreateAttachments());
+      .Set("attachments", CreateAttachments())
+      .Set("attendees", CreateAttendees(index % 2 == 0));
 }
 
 bool CreateEventsJson(std::string* json) {
@@ -289,6 +299,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
     }
     EXPECT_EQ(response[i]->conference_url,
               GURL("https://foo.com/conference" + base::NumberToString(i)));
+    EXPECT_TRUE(response[i]->is_accepted);
   }
 }
 
@@ -333,6 +344,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
     ASSERT_TRUE(response[i]->conference_url);
     EXPECT_EQ(response[i]->conference_url->spec(),
               "https://meet.google.com/jbe-test");
+    EXPECT_EQ(response[i]->is_accepted, (i + 1) % 2 == 0);
 
     for (int j = 0; j < 2; j++) {
       ASSERT_EQ(response[i]->attachments.size(), 2u);

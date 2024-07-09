@@ -103,6 +103,7 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
   }
   event->conference_url =
       GURL("https://foo.com/conference" + base::NumberToString(index));
+  event->is_accepted = true;
   return event;
 }
 
@@ -240,6 +241,9 @@ void GoogleCalendarPageHandler::OnRequestComplete(
         formatted_event->attachments.push_back(std::move(formatted_attachment));
       }
       formatted_event->conference_url = event->conference_data_uri();
+      formatted_event->is_accepted =
+          event->self_response_status() ==
+          google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted;
       result.push_back(std::move(formatted_event));
     }
   }

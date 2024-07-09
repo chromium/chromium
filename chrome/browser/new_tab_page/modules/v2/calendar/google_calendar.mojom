@@ -33,6 +33,8 @@ struct CalendarEvent {
   array<Attachment> attachments;
   // Url to video conference, if the event has one.
   url.mojom.Url? conference_url;
+  // If the user has accepted the calendar event.
+  bool is_accepted;
 };
 
 // Browser-side handler for requests from NTP Module UI.

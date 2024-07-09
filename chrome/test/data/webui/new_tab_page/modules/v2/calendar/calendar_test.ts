@@ -5,7 +5,7 @@
 import type {CalendarEvent} from 'chrome://new-tab-page/google_calendar.mojom-webui.js';
 import {CalendarElement} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -39,7 +39,7 @@ suite('NewTabPageModulesCalendarTest', () => {
     });
   });
 
-  test('first event that is not over is expanded', async () => {
+  test('first event that is not over is expanded when no overlap', async () => {
     const events: CalendarEvent[] = [];
     // Create 3 concurrent events, each one 30 minutes long.
     // The first event starts 30 minutes ago and ends now.
@@ -62,6 +62,74 @@ suite('NewTabPageModulesCalendarTest', () => {
     assertEquals(eventElements.length, 3);
     const expandedEvent = eventElements[1];
     assertTrue(expandedEvent!.hasAttribute('expanded'));
+  });
+
+  test('prioritize expanding concurrent event', async () => {
+    const events: CalendarEvent[] = [];
+    const mockTime = (new Date('2024-07-01T03:00:00')).valueOf();
+    windowProxy.setResultFor('now', mockTime);
+    // Event that ends in the next 5 minutes.
+    events.push(createEvent(0, {
+      startTime: toTime(new Date(mockTime - (30 * 60000))),
+      endTime: toTime(new Date(mockTime + (5 * 60000))),
+    }));
+    // Event that starts in 5 minutes.
+    events.push(createEvent(1, {
+      startTime: toTime(new Date(mockTime + (5 * 60000))),
+      endTime: toTime(new Date(mockTime + (30 * 60000))),
+    }));
+    element.events = events;
+    await waitAfterNextRender(element);
+
+    // Assert.
+    const eventElements =
+        element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+    assertEquals(eventElements.length, 2);
+    const expandedEvent = eventElements[1];
+    assertTrue(expandedEvent!.hasAttribute('expanded'));
+  });
+
+  test('prioritize accepted event', async () => {
+    const events: CalendarEvent[] = [];
+    const mockTime = (new Date('2024-07-01T03:00:00')).valueOf();
+    windowProxy.setResultFor('now', mockTime);
+    events.push(createEvent(0, {
+      startTime: toTime(new Date(mockTime + (30 * 60000))),
+      endTime: toTime(new Date(mockTime + (60 * 60000))),
+      isAccepted: false,
+    }));
+    events.push(createEvent(1, {
+      startTime: toTime(new Date(mockTime + (30 * 60000))),
+      endTime: toTime(new Date(mockTime + (60 * 60000))),
+      isAccepted: true,
+    }));
+    element.events = events;
+    await waitAfterNextRender(element);
+
+    // Assert.
+    const eventElements =
+        element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+    assertEquals(eventElements.length, 2);
+    const expandedEvent = eventElements[1];
+    assertTrue(expandedEvent!.hasAttribute('expanded'));
+  });
+
+  test('do not expand any meetings if they are all over', async () => {
+    const events: CalendarEvent[] = [];
+    const mockTime = (new Date('2024-07-01T03:00:00')).valueOf();
+    windowProxy.setResultFor('now', mockTime);
+    events.push(createEvent(0, {
+      startTime: toTime(new Date(mockTime - (30 * 60000))),
+      endTime: toTime(new Date(mockTime)),
+    }));
+    element.events = events;
+    await waitAfterNextRender(element);
+
+    // Assert.
+    const eventElements =
+        element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+    assertEquals(eventElements.length, 1);
+    assertFalse(eventElements[0]!.hasAttribute('expanded'));
   });
 
   test('see more link is displayed', async () => {
