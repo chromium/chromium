@@ -18,6 +18,9 @@ namespace base {
 // Returns -1 if the URI is invalid.
 BASE_EXPORT File OpenContentUriForRead(const FilePath& content_uri);
 
+// Gets file size, or -1 if file is unknown length.
+BASE_EXPORT int64_t GetContentUriFileSize(const FilePath& content_uri);
+
 // Check whether a content URI exists.
 BASE_EXPORT bool ContentUriExists(const FilePath& content_uri);
 

@@ -10,7 +10,6 @@ import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -113,6 +112,23 @@ public abstract class ContentUriUtils {
     }
 
     /**
+     * Get the file size of a content URI.
+     *
+     * @param uriString the content URI to look up.
+     * @return File size or -1 if the file does not exist.
+     */
+    @CalledByNative
+    public static long getContentUriFileSize(String uriString) {
+        long size = -1;
+        AssetFileDescriptor afd = getAssetFileDescriptor(uriString);
+        if (afd != null) {
+            size = afd.getLength();
+        }
+        StreamUtil.closeQuietly(afd);
+        return size;
+    }
+
+    /**
      * Retrieve the MIME type for the content URI.
      *
      * @param uriString the content URI to look up.
@@ -140,29 +156,20 @@ public abstract class ContentUriUtils {
         Uri uri = Uri.parse(uriString);
 
         try {
+            AssetFileDescriptor afd = null;
             if (isVirtualDocument(uri)) {
                 String[] streamTypes = resolver.getStreamTypes(uri, "*/*");
                 if (streamTypes != null && streamTypes.length > 0) {
-                    AssetFileDescriptor afd =
-                            resolver.openTypedAssetFileDescriptor(uri, streamTypes[0], null);
-                    if (afd != null && afd.getStartOffset() != 0) {
-                        // Do not use StreamUtil.closeQuietly here, as AssetFileDescriptor
-                        // does not implement Closeable until KitKat.
-                        try {
-                            afd.close();
-                        } catch (IOException e) {
-                            // Closing quietly.
-                        }
-                        throw new SecurityException("Cannot open files with non-zero offset type.");
-                    }
-                    return afd;
+                    afd = resolver.openTypedAssetFileDescriptor(uri, streamTypes[0], null);
                 }
             } else {
-                ParcelFileDescriptor pfd = resolver.openFileDescriptor(uri, "r");
-                if (pfd != null) {
-                    return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
-                }
+                afd = resolver.openAssetFileDescriptor(uri, "r");
             }
+            if (afd != null && afd.getStartOffset() != 0) {
+                StreamUtil.closeQuietly(afd);
+                throw new SecurityException("Cannot open files with non-zero offset type.");
+            }
+            return afd;
         } catch (Exception e) {
             Log.w(TAG, "Cannot open content uri: %s", uriString, e);
         }

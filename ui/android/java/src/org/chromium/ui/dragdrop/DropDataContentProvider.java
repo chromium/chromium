@@ -6,6 +6,7 @@ package org.chromium.ui.dragdrop;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -47,6 +48,12 @@ public class DropDataContentProvider extends ContentProvider {
     @Override
     public String[] getStreamTypes(Uri uri, String mimeTypeFilter) {
         return mDropDataProviderImpl.getStreamTypes(uri, mimeTypeFilter);
+    }
+
+    @Override
+    public AssetFileDescriptor openAssetFile(Uri uri, String mode)
+            throws FileNotFoundException, SecurityException {
+        return mDropDataProviderImpl.openAssetFile(this, uri, mode);
     }
 
     @Override

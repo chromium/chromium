@@ -32,6 +32,13 @@ File OpenContentUriForRead(const FilePath& content_uri) {
   return File(fd);
 }
 
+int64_t GetContentUriFileSize(const FilePath& content_uri) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> j_uri =
+      ConvertUTF8ToJavaString(env, content_uri.value());
+  return Java_ContentUriUtils_getContentUriFileSize(env, j_uri);
+}
+
 std::string GetContentUriMimeType(const FilePath& content_uri) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_uri =
