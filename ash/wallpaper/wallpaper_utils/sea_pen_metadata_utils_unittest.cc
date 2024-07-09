@@ -23,6 +23,7 @@ namespace ash {
 namespace {
 
 std::string user_search_query = "search query";
+std::string escaped_user_search_query = "search%20query";
 std::string user_visible_query_text = "test template query text";
 std::string user_visible_query_template = "test template title";
 
@@ -54,7 +55,7 @@ base::Value::Dict GetTestFreeformQueryDict(
     base::Time time = base::Time::Now()) {
   return base::Value::Dict()
       .Set("creation_time", base::TimeToValue(time))
-      .Set("freeform_query", user_search_query);
+      .Set("freeform_query", escaped_user_search_query);
 }
 
 base::Value::Dict GetTestInvalidTemplateQueryDict(
@@ -111,6 +112,19 @@ TEST_F(SeaPenMetadataUtilsTest, SeaPenTextQueryToDict) {
   base::Value::Dict result = SeaPenQueryToDict(search_query);
 
   EXPECT_EQ(GetTestFreeformQueryDict(), result);
+}
+
+TEST_F(SeaPenMetadataUtilsTest, QueryDictEscapesFreeformQuery) {
+  auto time_override = CreateScopedTimeNowOverride();
+  std::string freeform_query = "<div>test</div>";
+  std::string escaped_freeform_query = "%3Cdiv%3Etest%3C%2Fdiv%3E";
+  ash::personalization_app::mojom::SeaPenQueryPtr search_query =
+      ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
+          freeform_query);
+
+  base::Value::Dict result = SeaPenQueryToDict(search_query);
+
+  EXPECT_EQ(escaped_freeform_query, *result.FindString("freeform_query"));
 }
 
 TEST_F(SeaPenMetadataUtilsTest, SeaPenTemplateQueryToDict) {
@@ -325,6 +339,18 @@ TEST_F(SeaPenMetadataUtilsTest, GetQueryStringFromTextQuery) {
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(GetTestFreeformQueryDict());
   EXPECT_EQ(user_search_query, GetQueryString(recent_image_info));
+}
+
+TEST_F(SeaPenMetadataUtilsTest, GetUnescapedQueryStringFromEscapedTextQuery) {
+  auto time_override = CreateScopedTimeNowOverride();
+  std::string escaped_freeform_query = "%3Cdiv%3Etest%3C%2Fdiv%3E";
+  std::string freeform_query = "<div>test</div>";
+  auto query_dict = GetTestFreeformQueryDict();
+  query_dict.Set("freeform_query", escaped_freeform_query);
+
+  auto recent_image_info = SeaPenQueryDictToRecentImageInfo(query_dict);
+
+  EXPECT_EQ(freeform_query, GetQueryString(recent_image_info));
 }
 
 TEST_F(SeaPenMetadataUtilsTest, GetQueryStringFromTemplateQuery) {

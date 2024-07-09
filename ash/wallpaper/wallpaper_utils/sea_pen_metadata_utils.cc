@@ -16,6 +16,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -75,8 +76,11 @@ SeaPenQueryDictToRecentImageInfo(
 
   auto* freeform_query = query_dict->FindString(kSeaPenFreeformQueryKey);
   if (freeform_query) {
+    std::string unescaped_text;
+    base::UnescapeBinaryURLComponentSafe(
+        *freeform_query, /* fail_on_path_separators= */ false, &unescaped_text);
     return personalization_app::mojom::RecentSeaPenImageInfo::New(
-        personalization_app::mojom::SeaPenQuery::NewTextQuery(*freeform_query),
+        personalization_app::mojom::SeaPenQuery::NewTextQuery(unescaped_text),
         GetCreationTimeInfo(*creation_time));
   }
 
@@ -163,7 +167,8 @@ base::Value::Dict SeaPenQueryToDict(
 
   switch (query->which()) {
     case personalization_app::mojom::SeaPenQuery::Tag::kTextQuery:
-      query_dict.Set(kSeaPenFreeformQueryKey, query->get_text_query());
+      query_dict.Set(kSeaPenFreeformQueryKey,
+                     base::EscapeAllExceptUnreserved(query->get_text_query()));
       break;
     case personalization_app::mojom::SeaPenQuery::Tag::kTemplateQuery:
       query_dict.Set(kSeaPenTemplateIdKey,
