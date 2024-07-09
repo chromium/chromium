@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/proto/client_side_phishing_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -62,6 +63,19 @@ class ClientSidePhishingModelObserverTracker
     }
   }
 
+  optimization_guide::proto::Any WrapMetadata(
+      std::optional<optimization_guide::proto::ClientSidePhishingModelMetadata>
+          metadata) {
+    std::string serialized_metadata;
+    metadata->SerializeToString(&serialized_metadata);
+    optimization_guide::proto::Any any;
+    any.set_value(serialized_metadata);
+    any.set_type_url(
+        "type.googleapis.com/"
+        "optimization_guide.proto.ClientSidePhishingModelMetadata");
+    return any;
+  }
+
   // Notifies the model validation observer about the model file update.
   void NotifyModelFileUpdate(
       optimization_guide::proto::OptimizationTarget optimization_target,
@@ -69,17 +83,27 @@ class ClientSidePhishingModelObserverTracker
       const base::flat_set<base::FilePath>& additional_files_path) {
     if (optimization_target ==
         optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
-      auto model_metadata = optimization_guide::TestModelInfoBuilder()
-                                .SetModelFilePath(model_file_path)
-                                .SetAdditionalFiles(additional_files_path)
-                                .Build();
+      optimization_guide::proto::ClientSidePhishingModelMetadata
+          trigger_model_metadata;
+      trigger_model_metadata.set_image_embedding_model_version(1);
+      auto model_metadata =
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path)
+              .SetAdditionalFiles(additional_files_path)
+              .SetModelMetadata(WrapMetadata(trigger_model_metadata))
+              .Build();
       model_observer_->OnModelUpdated(optimization_target, *model_metadata);
     } else if (optimization_target ==
                optimization_guide::proto::
                    OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
-      auto model_metadata = optimization_guide::TestModelInfoBuilder()
-                                .SetModelFilePath(model_file_path)
-                                .Build();
+      optimization_guide::proto::ClientSidePhishingModelMetadata
+          image_embedding_model_metadata;
+      image_embedding_model_metadata.set_image_embedding_model_version(1);
+      auto model_metadata =
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path)
+              .SetModelMetadata(WrapMetadata(image_embedding_model_metadata))
+              .Build();
       model_observer_->OnModelUpdated(optimization_target, *model_metadata);
     }
   }
@@ -204,6 +228,11 @@ TEST_F(ClientSidePhishingModelTest, ValidModel) {
   histogram_tester().ExpectUniqueSample(
       "SBClientPhishing.ModelDynamicUpdateSuccess", true, 1);
   EXPECT_TRUE(service()->IsEnabled());
+
+  // Image embedding model has not been loaded yet, so the versions are not
+  // matching.
+  EXPECT_FALSE(service()->IsModelMetadataImageEmbeddingVersionMatching());
+
   base::FilePath image_embedding_model_file_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
                          &image_embedding_model_file_path);
@@ -216,6 +245,36 @@ TEST_F(ClientSidePhishingModelTest, ValidModel) {
   ValidateImageEmbeddingModel(image_embedding_model_file_path);
   histogram_tester().ExpectUniqueSample(
       "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", true, 1);
+
+  EXPECT_TRUE(service()->HasImageEmbeddingModel());
+  // The above must be true in order for below to be true.
+  const base::File& image_embedding_file = service()->GetImageEmbeddingModel();
+  EXPECT_TRUE(image_embedding_file.IsValid());
+  EXPECT_TRUE(service()->IsModelMetadataImageEmbeddingVersionMatching());
+
+  // We are going to load it another time to see that it works with a model
+  // loaded already.
+  ValidateImageEmbeddingModel(image_embedding_model_file_path);
+  // Since we loaded the model twice, we expect this to be 2 now.
+  histogram_tester().ExpectUniqueSample(
+      "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", true, 2);
+
+  EXPECT_TRUE(service()->HasImageEmbeddingModel());
+  const base::File& image_embedding_file_2 =
+      service()->GetImageEmbeddingModel();
+  EXPECT_TRUE(image_embedding_file_2.IsValid());
+  EXPECT_TRUE(service()->IsModelMetadataImageEmbeddingVersionMatching());
+
+  // Now we're going to get rid of the image embedding model in file by sending
+  // an empty model info.
+  SendEmptyModelInfoUpdate(
+      optimization_guide::proto::
+          OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER);
+  // Service should still be enabled because it can live without the image
+  // embedding model.
+  EXPECT_TRUE(service()->IsEnabled());
+  EXPECT_FALSE(service()->HasImageEmbeddingModel());
+  EXPECT_FALSE(service()->IsModelMetadataImageEmbeddingVersionMatching());
 }
 
 TEST_F(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
@@ -315,6 +374,19 @@ TEST_F(ClientSidePhishingModelTest,
   histogram_tester().ExpectUniqueSample(
       "SBClientPhishing.ModelDynamicUpdateSuccess", false, 1);
   EXPECT_FALSE(service()->IsEnabled());
+}
+
+TEST_F(ClientSidePhishingModelTest,
+       InvalidImageEmbeddingModelDueToNonexistentPath) {
+  base::ScopedTempDir model_dir;
+  EXPECT_TRUE(model_dir.CreateUniqueTempDir());
+  base::FilePath image_embedding_model_file_path =
+      model_dir.GetPath().AppendASCII("non_existent_directory_2/");
+
+  ValidateImageEmbeddingModel(image_embedding_model_file_path);
+
+  histogram_tester().ExpectUniqueSample(
+      "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", false, 1);
 }
 
 TEST_F(ClientSidePhishingModelTest,
