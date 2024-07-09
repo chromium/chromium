@@ -325,14 +325,14 @@ GURL WebAppRegistrar::GetAppScope(const webapps::AppId& app_id) const {
   return GetAppStartUrl(app_id).GetWithoutFilename();
 }
 
-size_t WebAppRegistrar::GetAppExtendedScopeScore(
+int WebAppRegistrar::GetAppExtendedScopeScore(
     const GURL& url,
     const webapps::AppId& app_id) const {
   if (!url.is_valid()) {
     return 0;
   }
 
-  size_t app_scope = GetUrlInAppScopeScore(url.spec(), app_id);
+  int app_scope = GetUrlInAppScopeScore(url.spec(), app_id);
   if (app_scope > 0) {
     return app_scope;
   }
@@ -384,16 +384,15 @@ bool WebAppRegistrar::IsUrlInAppExtendedScope(
   return GetAppExtendedScopeScore(url, app_id) > 0;
 }
 
-size_t WebAppRegistrar::GetUrlInAppScopeScore(
-    const std::string& url_spec,
-    const webapps::AppId& app_id) const {
+int WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
+                                           const webapps::AppId& app_id) const {
   std::string app_scope = GetAppScope(app_id).spec();
 
   // The app may have been uninstalled.
   if (app_scope.empty())
     return 0;
 
-  size_t score =
+  int score =
       base::StartsWith(url_spec, app_scope, base::CompareCase::SENSITIVE)
           ? app_scope.size()
           : 0;
@@ -757,7 +756,7 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
   const std::string url_spec = url.spec();
 
   std::optional<webapps::AppId> best_app_id;
-  size_t best_score = 0U;
+  int best_score = 0;
   bool best_app_is_shortcut = true;
 
   for (const webapps::AppId& app_id :
@@ -781,7 +780,7 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
       continue;
     }
 
-    size_t score;
+    int score;
     // TODO(crbug.com/341337420): Audit call sites and ideally have scope
     // extensions be considered by default.
     if (options.include_extended_scope) {
@@ -1173,13 +1172,13 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
   // nested app cannot be captured by a parent app. Even so, there can be
   // multiple apps with the same score, but the only one that matters is the
   // first one that also captures links.
-  size_t top_score = 0;
+  int top_score = 0;
   std::vector<webapps::AppId> top_apps;
   for (const webapps::AppId& app_id : GetAppIds()) {
     if (!CanCaptureLinksInScope(app_id)) {
       continue;
     }
-    size_t score;
+    int score;
     if (base::FeatureList::IsEnabled(
             features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
       score = GetAppExtendedScopeScore(url, app_id);
@@ -1211,7 +1210,7 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
 bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
                                             const GURL& url) const {
   CHECK(url.is_valid());
-  size_t app_score;
+  int app_score;
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
     app_score = GetAppExtendedScopeScore(url, app);
@@ -1222,7 +1221,7 @@ bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
     return false;
   }
   return base::ranges::none_of(GetAppIds(), [&](const webapps::AppId& app_id) {
-    size_t other_score;
+    int other_score;
     if (base::FeatureList::IsEnabled(
             features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
       other_score = GetAppExtendedScopeScore(url, app_id);

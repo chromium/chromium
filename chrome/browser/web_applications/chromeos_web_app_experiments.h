@@ -39,8 +39,8 @@ class ChromeOsWebAppExperiments {
   // Returns the max scope score (similar to
   // WebAppRegistrar::GetUrlInAppScopeScore()) for the experimental extended
   // scopes.
-  static size_t GetExtendedScopeScore(const webapps::AppId& app_id,
-                                      std::string_view url_spec);
+  static int GetExtendedScopeScore(const webapps::AppId& app_id,
+                                   std::string_view url_spec);
 
   // Whether the manifest theme_color and background_color should be ignored for
   // `app_id`.

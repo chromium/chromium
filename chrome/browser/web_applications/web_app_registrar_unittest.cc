@@ -1341,43 +1341,43 @@ TEST_F(WebAppRegistrarTest_ScopeExtensions, IsUrlInAppExtendedScope) {
 
   EXPECT_EQ(
       registrar().GetAppExtendedScopeScore(GURL("https://test.com"), app_id),
-      0u);
+      0);
 
   EXPECT_GT(registrar().GetAppExtendedScopeScore(
                 GURL("https://example.com/path"), app_id),
-            0u);
+            0);
 
   // Scope is extended to all sub-domains of example.co with the wildcard
   // prefix.
   EXPECT_GT(registrar().GetAppExtendedScopeScore(GURL("https://app.example.co"),
                                                  app_id),
-            0u);
+            0);
   EXPECT_GT(registrar().GetAppExtendedScopeScore(
                 GURL("https://test.app.example.co"), app_id),
-            0u);
+            0);
   EXPECT_GT(registrar().GetAppExtendedScopeScore(
                 GURL("https://example.co/path"), app_id),
-            0u);
+            0);
 
   EXPECT_GT(registrar().GetAppExtendedScopeScore(
                 GURL("https://example.app/start"), app_id),
-            0u);
+            0);
 
   // Scope is extended to the example.app domain but not to the sub-domain
   // test.example.app as there was no wildcard prefix.
   EXPECT_EQ(registrar().GetAppExtendedScopeScore(
                 GURL("https://test.example.app"), app_id),
-            0u);
+            0);
 
   EXPECT_EQ(registrar().GetAppExtendedScopeScore(
                 GURL("https://other.origin.com"), app_id),
-            0u);
+            0);
   EXPECT_EQ(registrar().GetAppExtendedScopeScore(GURL("https://testexample.co"),
                                                  app_id),
-            0u);
+            0);
   EXPECT_EQ(registrar().GetAppExtendedScopeScore(
                 GURL("https://app.example.com"), app_id),
-            0u);
+            0);
 }
 
 TEST_F(WebAppRegistrarTest_TabStrip, TabbedAppNewTabUrl) {

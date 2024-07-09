@@ -59,17 +59,16 @@ base::span<const char* const> ChromeOsWebAppExperiments::GetScopeExtensions(
   return kMicrosoftOfficeWebAppExperimentScopeExtensions;
 }
 
-size_t ChromeOsWebAppExperiments::GetExtendedScopeScore(
+int ChromeOsWebAppExperiments::GetExtendedScopeScore(
     const webapps::AppId& app_id,
     std::string_view url_spec) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
 
-  size_t best_score = 0;
+  int best_score = 0;
   for (const char* scope : GetScopeExtensions(app_id)) {
-    size_t score =
-        base::StartsWith(url_spec, scope, base::CompareCase::SENSITIVE)
-            ? strlen(scope)
-            : 0;
+    int score = base::StartsWith(url_spec, scope, base::CompareCase::SENSITIVE)
+                    ? strlen(scope)
+                    : 0;
     best_score = std::max(best_score, score);
   }
 
@@ -77,7 +76,7 @@ size_t ChromeOsWebAppExperiments::GetExtendedScopeScore(
   // format.
   GURL url = GURL(url_spec);
   if (url.DomainIs(kOneDriveBusinessDomain)) {
-    best_score = std::max(best_score, strlen(kOneDriveBusinessDomain));
+    best_score = std::max<int>(best_score, strlen(kOneDriveBusinessDomain));
   }
   return best_score;
 }

@@ -396,13 +396,13 @@ class WebAppRegistrar {
   // Returns the strength of matching |url| to the scope and scope_extensions of
   // |app_id|. Returns 0 if not in either.
   // Only checks scope if scope_extensions is disabled.
-  size_t GetAppExtendedScopeScore(const GURL& url,
-                                  const webapps::AppId& app_id) const;
+  int GetAppExtendedScopeScore(const GURL& url,
+                               const webapps::AppId& app_id) const;
 
   // Returns the strength of matching |url_spec| to the scope of |app_id|,
   // returns 0 if not in scope.
-  size_t GetUrlInAppScopeScore(const std::string& url_spec,
-                               const webapps::AppId& app_id) const;
+  int GetUrlInAppScopeScore(const std::string& url_spec,
+                            const webapps::AppId& app_id) const;
 
   // Returns the app id of an app in the registry with the longest scope that is
   // a prefix of |url|, if any.
@@ -649,7 +649,7 @@ class WebAppRegistrar {
     const raw_ptr<const WebAppRegistrar> registrar_;
     const Filter filter_;
 #if DCHECK_IS_ON()
-    const size_t mutations_count_;
+    const int mutations_count_;
 #endif
   };
 
@@ -701,7 +701,7 @@ class WebAppRegistrar {
 
   Registry registry_;
 #if DCHECK_IS_ON()
-  size_t mutations_count_ = 0;
+  int mutations_count_ = 0;
 #endif
 
   // Keeps a record of in-memory (non-persistent) Storage Partitions created by
