@@ -519,7 +519,6 @@ class CONTENT_EXPORT StoragePartitionImpl
  private:
   class DataDeletionHelper;
   class QuotaManagedDataDeletionHelper;
-  class URLLoaderFactoryForBrowserProcess;
   class ServiceWorkerCookieAccessObserver;
   class ServiceWorkerTrustTokenAccessObserver;
   class ServiceWorkerSharedDictionaryAccessObserver;
@@ -532,7 +531,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   friend class ServiceWorkerRegistrationTest;
   friend class ServiceWorkerUpdateJobTest;
   friend class StoragePartitionImplMap;
-  friend class URLLoaderFactoryForBrowserProcess;
   FRIEND_TEST_ALL_PREFIXES(StoragePartitionShaderClearTest, ClearShaderCache);
   FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
                            RemoveQuotaManagedDataForeverBoth);
@@ -689,8 +687,8 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   bool is_in_memory() { return config_.in_memory(); }
 
-  network::mojom::URLLoaderFactory*
-  GetURLLoaderFactoryForBrowserProcessInternal();
+  void CreateURLLoaderFactoryForBrowserProcessInternal(
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory);
 
   std::optional<blink::StorageKey> CalculateStorageKey(
       const url::Origin& origin,
@@ -805,7 +803,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   mojo::Receiver<network::mojom::NetworkContextClient>
       network_context_client_receiver_{this};
 
-  scoped_refptr<URLLoaderFactoryForBrowserProcess>
+  scoped_refptr<ReconnectableURLLoaderFactory>
       shared_url_loader_factory_for_browser_process_;
 
   mojo::Remote<cert_verifier::mojom::CertVerifierServiceUpdater>
@@ -815,9 +813,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // See the method comment for
   // StoragePartition::GetURLLoaderFactoryForBrowserProcess() for
   // more details
-  mojo::Remote<network::mojom::URLLoaderFactory>
-      url_loader_factory_for_browser_process_;
-  bool is_test_url_loader_factory_for_browser_process_ = false;
   mojo::Remote<network::mojom::CookieManager>
       cookie_manager_for_browser_process_;
 

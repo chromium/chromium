@@ -13,15 +13,91 @@
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/run_loop.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace content {
+
+ReconnectableURLLoaderFactory::ReconnectableURLLoaderFactory(
+    CreateCallback create_url_loader_factory_callback)
+    : create_url_loader_factory_callback_(
+          std::move(create_url_loader_factory_callback)) {}
+
+ReconnectableURLLoaderFactory::~ReconnectableURLLoaderFactory() = default;
+
+void ReconnectableURLLoaderFactory::CreateLoaderAndStart(
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+    int32_t request_id,
+    uint32_t options,
+    const network::ResourceRequest& url_request,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  if (network::mojom::URLLoaderFactory* factory = GetURLLoaderFactory()) {
+    factory->CreateLoaderAndStart(std::move(receiver), request_id, options,
+                                  url_request, std::move(client),
+                                  traffic_annotation);
+  }
+}
+
+void ReconnectableURLLoaderFactory::Clone(
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
+  if (network::mojom::URLLoaderFactory* factory = GetURLLoaderFactory()) {
+    factory->Clone(std::move(receiver));
+  }
+}
+
+std::unique_ptr<network::PendingSharedURLLoaderFactory>
+ReconnectableURLLoaderFactory::Clone() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
+      this);
+}
+
+network::mojom::URLLoaderFactory*
+ReconnectableURLLoaderFactory::GetURLLoaderFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Create the URLLoaderFactory as needed, but make sure not to reuse a
+  // previously created one if the test override has changed.
+  if (url_loader_factory_ && url_loader_factory_.is_connected() &&
+      is_test_url_loader_factory_ ==
+          !!url_loader_factory::GetTestingInterceptor()) {
+    return url_loader_factory_.get();
+  }
+
+  is_test_url_loader_factory_ = !!url_loader_factory::GetTestingInterceptor();
+  url_loader_factory_.reset();
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
+  create_url_loader_factory_callback_.Run(&url_loader_factory);
+  if (!url_loader_factory) {
+    return nullptr;
+  }
+
+  url_loader_factory_.Bind(std::move(url_loader_factory));
+  return url_loader_factory_.get();
+}
+
+void ReconnectableURLLoaderFactory::Reset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  url_loader_factory_.reset();
+}
+
+void ReconnectableURLLoaderFactory::FlushForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (url_loader_factory_) {
+    url_loader_factory_.FlushForTesting();  // IN-TEST
+  }
+}
+
+// -----------------------------------------------------------------------------
 
 namespace {
 base::LazyInstance<URLLoaderFactoryGetter::GetNetworkFactoryCallback>::Leaky

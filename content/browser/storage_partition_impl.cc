@@ -138,7 +138,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
-#include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
@@ -759,63 +758,6 @@ StoragePartition::StorageKeyMatcherFunction CreateGenericStorageKeyMatcher(
 
 }  // namespace
 
-class StoragePartitionImpl::URLLoaderFactoryForBrowserProcess
-    : public network::SharedURLLoaderFactory {
- public:
-  explicit URLLoaderFactoryForBrowserProcess(
-      StoragePartitionImpl* storage_partition)
-      : storage_partition_(storage_partition) {}
-
-  URLLoaderFactoryForBrowserProcess(const URLLoaderFactoryForBrowserProcess&) =
-      delete;
-  URLLoaderFactoryForBrowserProcess& operator=(
-      const URLLoaderFactoryForBrowserProcess&) = delete;
-
-  // mojom::URLLoaderFactory implementation:
-
-  void CreateLoaderAndStart(
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t request_id,
-      uint32_t options,
-      const network::ResourceRequest& url_request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override {
-    DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    if (!storage_partition_) {
-      return;
-    }
-    storage_partition_->GetURLLoaderFactoryForBrowserProcessInternal()
-        ->CreateLoaderAndStart(std::move(receiver), request_id, options,
-                               url_request, std::move(client),
-                               traffic_annotation);
-  }
-
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override {
-    if (!storage_partition_) {
-      return;
-    }
-    storage_partition_->GetURLLoaderFactoryForBrowserProcessInternal()->Clone(
-        std::move(receiver));
-  }
-
-  // SharedURLLoaderFactory implementation:
-  std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    return std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-        this);
-  }
-
-  void Shutdown() { storage_partition_ = nullptr; }
-
- private:
-  friend class base::RefCounted<URLLoaderFactoryForBrowserProcess>;
-  ~URLLoaderFactoryForBrowserProcess() override = default;
-
-  raw_ptr<StoragePartitionImpl> storage_partition_;
-};
-
 // Static.
 storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
     uint32_t remove_mask) {
@@ -1190,10 +1132,6 @@ StoragePartitionImpl::~StoragePartitionImpl() {
 
   if (url_loader_factory_getter_) {
     url_loader_factory_getter_->OnStoragePartitionDestroyed();
-  }
-
-  if (shared_url_loader_factory_for_browser_process_) {
-    shared_url_loader_factory_for_browser_process_->Shutdown();
   }
 
   scoped_refptr<storage::DatabaseTracker> database_tracker(
@@ -1645,8 +1583,10 @@ scoped_refptr<network::SharedURLLoaderFactory>
 StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcess() {
   DCHECK(initialized_);
   if (!shared_url_loader_factory_for_browser_process_) {
-    shared_url_loader_factory_for_browser_process_ =
-        new URLLoaderFactoryForBrowserProcess(this);
+    shared_url_loader_factory_for_browser_process_ = base::MakeRefCounted<
+        ReconnectableURLLoaderFactory>(base::BindRepeating(
+        &StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal,
+        GetWeakPtr()));
   }
   return shared_url_loader_factory_for_browser_process_;
 }
@@ -3149,7 +3089,9 @@ void StoragePartitionImpl::Flush() {
 void StoragePartitionImpl::ResetURLLoaderFactories() {
   DCHECK(initialized_);
   GetNetworkContext()->ResetURLLoaderFactories();
-  url_loader_factory_for_browser_process_.reset();
+  if (shared_url_loader_factory_for_browser_process_) {
+    shared_url_loader_factory_for_browser_process_->Reset();
+  }
   url_loader_factory_getter_->Initialize(this);
 }
 
@@ -3169,12 +3111,13 @@ void StoragePartitionImpl::RemoveObserver(DataRemovalObserver* observer) {
 void StoragePartitionImpl::FlushNetworkInterfaceForTesting() {
   DCHECK(initialized_);
   DCHECK(network_context_owner_->network_context);
-  network_context_owner_->network_context.FlushForTesting();
-  if (url_loader_factory_for_browser_process_) {
-    url_loader_factory_for_browser_process_.FlushForTesting();
+  network_context_owner_->network_context.FlushForTesting();  // IN-TEST
+  if (shared_url_loader_factory_for_browser_process_) {
+    shared_url_loader_factory_for_browser_process_
+        ->FlushForTesting();  // IN-TEST
   }
   if (cookie_manager_for_browser_process_) {
-    cookie_manager_for_browser_process_.FlushForTesting();
+    cookie_manager_for_browser_process_.FlushForTesting();  // IN-TEST
   }
 }
 
@@ -3477,32 +3420,19 @@ StoragePartitionImpl::CreateURLLoaderFactoryParams() {
   return params;
 }
 
-network::mojom::URLLoaderFactory*
-StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessInternal() {
-  // Create the URLLoaderFactory as needed, but make sure not to reuse a
-  // previously created one if the test override has changed.
-  if (url_loader_factory_for_browser_process_ &&
-      url_loader_factory_for_browser_process_.is_connected() &&
-      is_test_url_loader_factory_for_browser_process_ ==
-          !!url_loader_factory::GetTestingInterceptor()) {
-    return url_loader_factory_for_browser_process_.get();
-  }
-
-  is_test_url_loader_factory_for_browser_process_ =
-      !!url_loader_factory::GetTestingInterceptor();
+void StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   network::URLLoaderFactoryBuilder factory_builder;
   if (url_loader_factory::GetTestingInterceptor()) {
     url_loader_factory::GetTestingInterceptor().Run(
         network::mojom::kBrowserProcessId, factory_builder);
   }
-  url_loader_factory_for_browser_process_ =
-      mojo::Remote<network::mojom::URLLoaderFactory>(
-          std::move(factory_builder)
-              .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
-                  GetNetworkContext(), CreateURLLoaderFactoryParams()));
-
-  return url_loader_factory_for_browser_process_.get();
+  *out_factory =
+      std::move(factory_builder)
+          .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
+              GetNetworkContext(), CreateURLLoaderFactoryParams());
 }
 
 void StoragePartition::SetDefaultQuotaSettingsForTesting(
