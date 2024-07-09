@@ -30,6 +30,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -49,6 +50,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
@@ -155,6 +157,50 @@ public class NavigationHandlerTest {
                 () ->
                         !((BasicSmoothTransitionDelegate)
                                         ((NewTabPage) tab.getNativePage())
+                                                .getSmoothTransitionDelegateForTesting())
+                                .getAnimatorForTesting()
+                                .isRunning(),
+                "Smooth transition should be finished");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.BACK_FORWARD_TRANSITIONS})
+    public void testSwipeBackToNativeBookmarksPageWithTransition() throws InterruptedException {
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        mActivityTestRule.loadUrl("chrome-native://bookmarks/folder/0");
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+
+        mNavUtils.swipeFromEdgeAndHold(true);
+        Assert.assertEquals(
+                "Back forward transition not invoked yet",
+                AnimationStage.OTHER,
+                tab.getWebContents().getCurrentBackForwardTransitionStage());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mNavigationHandler.release(true));
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        AnimationStage.INVOKE_ANIMATION
+                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
+                "invoking animation should be started");
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        AnimationStage.NONE
+                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
+                "should wait for animation to be finished");
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        ((BookmarkPage) tab.getNativePage()).getSmoothTransitionDelegateForTesting()
+                                != null,
+                "Smooth transition should be enabled");
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        !((BasicSmoothTransitionDelegate)
+                                        ((BookmarkPage) tab.getNativePage())
                                                 .getSmoothTransitionDelegateForTesting())
                                 .getAnimatorForTesting()
                                 .isRunning(),

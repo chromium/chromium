@@ -26,6 +26,7 @@ public abstract class BasicNativePage implements NativePage {
     private Callback<Rect> mMarginObserver;
     private View mView;
     private String mUrl;
+    private SmoothTransitionDelegate mSmoothTransitionDelegate;
 
     protected BasicNativePage(NativePageHost host) {
         mHost = host;
@@ -54,6 +55,14 @@ public abstract class BasicNativePage implements NativePage {
         assert mView != null : "Need to call initWithView()";
 
         return mView;
+    }
+
+    @Override
+    public SmoothTransitionDelegate enableSmoothTransition() {
+        if (mSmoothTransitionDelegate == null) {
+            mSmoothTransitionDelegate = new BasicSmoothTransitionDelegate(getView());
+        }
+        return mSmoothTransitionDelegate;
     }
 
     @Override
@@ -102,5 +111,9 @@ public abstract class BasicNativePage implements NativePage {
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         layoutParams.setMargins(margins.left, margins.top, margins.left, margins.bottom);
         getView().setLayoutParams(layoutParams);
+    }
+
+    public SmoothTransitionDelegate getSmoothTransitionDelegateForTesting() {
+        return mSmoothTransitionDelegate;
     }
 }
