@@ -1,3 +1,4 @@
 bazel
 /luci-go
 /resultdb
+/catapult_bisect_dep
