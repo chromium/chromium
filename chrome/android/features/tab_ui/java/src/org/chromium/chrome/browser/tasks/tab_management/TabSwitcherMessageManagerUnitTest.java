@@ -293,14 +293,18 @@ public class TabSwitcherMessageManagerUnitTest {
         mMessageManager.dismissHandler(messageType);
         verify(mTabListCoordinator)
                 .removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE, messageType);
+        verify(mMessageUpdateObserver).onRemovedMessage();
 
         mMessageManager.unbind(mTabListCoordinator);
         verify(mTabListCoordinator, times(2))
                 .removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE, messageType);
+        verify(mMessageUpdateObserver).onRemovedMessage();
+        verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
 
         mMessageManager.dismissHandler(messageType);
         // Not called again and doesn't crash.
         verify(mTabListCoordinator, times(2))
                 .removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE, messageType);
+        verify(mMessageUpdateObserver).onRemovedMessage();
     }
 }

@@ -2681,6 +2681,13 @@ class TabListMediator {
         return mModel.lastIndexForMessageItemFromType(itemIdentifier) != TabModel.INVALID_TAB_INDEX;
     }
 
+    boolean isLastItemMessage() {
+        if (mModel.size() == 0) return false;
+        int index = mModel.lastIndexForMessageItem();
+        if (index == TabModel.INVALID_TAB_INDEX) return false;
+        return index == mModel.size() - 1;
+    }
+
     /**
      * Prepare and run the Quick Delete animation on the tab list.
      *

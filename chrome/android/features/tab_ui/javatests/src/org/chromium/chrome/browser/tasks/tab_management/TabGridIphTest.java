@@ -27,6 +27,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.c
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.prepareTabsWithThumbnail;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -54,6 +55,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -336,6 +338,22 @@ public class TabGridIphTest {
 
         ChromeRenderTestRule.sanitize(iphDialogView);
         mRenderTestRule.render(iphDialogView, "iph_dialog_landscape");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON)
+    public void testIphMessageRenderedCorrectly_withFloatingActionButton() throws IOException {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        prepareTabsWithThumbnail(mActivityTestRule, 8, 0, null);
+
+        enterTabSwitcher(cta);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+
+        View view = cta.findViewById(R.id.pane_frame);
+        mRenderTestRule.render(view, "iph_message_card");
     }
 
     @Test

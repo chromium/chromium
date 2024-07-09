@@ -38,6 +38,10 @@ class TabListContainerProperties {
             FOCUS_TAB_INDEX_FOR_ACCESSIBILITY =
                     new PropertyModel.WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
+    /** Sets the bottom padding for the recycler view. */
+    public static final PropertyModel.WritableIntPropertyKey BOTTOM_PADDING =
+            new PropertyModel.WritableIntPropertyKey();
+
     /** Keys for {@link TabSwitcherPaneCoordinator}. */
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -46,6 +50,7 @@ class TabListContainerProperties {
                 BROWSER_CONTROLS_STATE_PROVIDER,
                 INITIAL_SCROLL_INDEX,
                 MODE,
-                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY
+                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
+                BOTTOM_PADDING,
             };
 }

@@ -56,6 +56,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         /** Invoked when messages are added. */
         default void onAppendedMessage() {}
 
+        /** Invoked when a message is removed. */
+        default void onRemovedMessage() {}
+
         /** Invoked when messages are removed. */
         default void onRemoveAllAppendedMessage() {}
 
@@ -433,6 +436,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             tabListCoordinator.addSpecialListItemToEnd(
                     TabProperties.UiType.MESSAGE, nextMessage.model);
         }
+        for (MessageUpdateObserver observer : mObservers) {
+            observer.onAppendedMessage();
+        }
     }
 
     private void appendMessagesTo(int index) {
@@ -602,6 +608,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         } else {
             tabListCoordinator.removeSpecialListItem(TabProperties.UiType.MESSAGE, messageType);
             appendNextMessage(messageType);
+        }
+        for (MessageUpdateObserver observer : mObservers) {
+            observer.onRemovedMessage();
         }
     }
 

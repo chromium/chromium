@@ -31,6 +31,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingInvitationDialogCoordinator;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -59,6 +61,44 @@ import java.util.List;
 /** Coordinator for a {@link TabSwitcherPaneBase}'s UI. */
 public class TabSwitcherPaneCoordinator implements BackPressHandler {
     static final String COMPONENT_NAME = "GridTabSwitcher";
+
+    private final MessageUpdateObserver mMessageUpdateObserver =
+            new MessageUpdateObserver() {
+                @Override
+                public void onAppendedMessage() {
+                    updateBottomPadding();
+                }
+
+                @Override
+                public void onRemovedMessage() {
+                    updateBottomPadding();
+                }
+
+                @Override
+                public void onRemoveAllAppendedMessage() {
+                    updateBottomPadding();
+                }
+
+                @Override
+                public void onRestoreAllAppendedMessage() {
+                    updateBottomPadding();
+                }
+
+                @Override
+                public void onShowPriceWelcomeMessage() {
+                    updateBottomPadding();
+                }
+
+                @Override
+                public void onRemovePriceWelcomeMessage() {
+                    updateBottomPadding();
+                }
+
+                @Override
+                public void onRestorePriceWelcomeMessage() {
+                    updateBottomPadding();
+                }
+            };
 
     private final TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener
             mLongPressItemEventListener = this::onLongPressOnTabCard;
@@ -266,6 +306,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /** Destroys the coordinator. */
     public void destroy() {
+        mMessageManager.removeObserver(mMessageUpdateObserver);
         mMessageManager.unbind(mTabListCoordinator);
         mMediator.destroy();
         mTabListCoordinator.onDestroy();
@@ -450,9 +491,13 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     mTabListCoordinator,
                     mParentView,
                     /* priceWelcomeMessageReviewActionProvider= */ mMediator);
+            mMessageManager.addObserver(mMessageUpdateObserver);
+            updateBottomPadding();
             mTabListCoordinator.prepareTabSwitcherPaneView();
         } else {
+            mMessageManager.removeObserver(mMessageUpdateObserver);
             mMessageManager.unbind(mTabListCoordinator);
+            updateBottomPadding();
             mTabListCoordinator.postHiding();
         }
     }
@@ -498,6 +543,18 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (indexInModel == TabList.INVALID_TAB_INDEX) return filterIndex;
 
         return indexInModel;
+    }
+
+    private void updateBottomPadding() {
+        if (HubFieldTrial.usesFloatActionButton() && mTabListCoordinator.isLastItemMessage()) {
+            mContainerViewModel.set(
+                    TabListContainerProperties.BOTTOM_PADDING,
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.floating_action_button_space));
+        } else {
+            mContainerViewModel.set(TabListContainerProperties.BOTTOM_PADDING, 0);
+        }
     }
 
     /**

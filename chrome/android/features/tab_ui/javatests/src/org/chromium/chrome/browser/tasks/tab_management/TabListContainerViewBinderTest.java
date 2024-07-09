@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -69,6 +71,12 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
                 });
     }
 
+    @Override
+    public void tearDownTest() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
+        super.tearDownTest();
+    }
+
     private void setUpGridLayoutManager() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -83,6 +91,30 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
                     mLinearLayoutManager = spy(new LinearLayoutManager(getActivity()));
                     mRecyclerView.setLayoutManager(mLinearLayoutManager);
                 });
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSetBottomPadding() {
+        int oldLeft = mRecyclerView.getPaddingLeft();
+        int oldTop = mRecyclerView.getPaddingTop();
+        int oldRight = mRecyclerView.getPaddingRight();
+        int oldBottom = mRecyclerView.getPaddingBottom();
+
+        int customBottom = 37;
+        mContainerModel.set(TabListContainerProperties.BOTTOM_PADDING, customBottom);
+
+        int left = mRecyclerView.getPaddingLeft();
+        int top = mRecyclerView.getPaddingTop();
+        int right = mRecyclerView.getPaddingRight();
+        int bottom = mRecyclerView.getPaddingBottom();
+
+        assertEquals(oldLeft, left);
+        assertEquals(oldTop, top);
+        assertEquals(oldRight, right);
+        assertNotEquals(oldBottom, customBottom);
+        assertEquals(bottom, customBottom);
     }
 
     @Test
@@ -133,11 +165,5 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
         // 500 / 2 - range / 9 / 2 = result.
         verify(mLinearLayoutManager, times(1))
                 .scrollToPositionWithOffset(eq(5), eq(250 - range / 9 / 2));
-    }
-
-    @Override
-    public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
-        super.tearDownTest();
     }
 }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BLOCK_TOUCH_INPUT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
@@ -65,6 +66,12 @@ class TabListContainerViewBinder {
             View focusView = selectedViewHolder.itemView;
             focusView.requestFocus();
             focusView.sendAccessibilityEvent(TYPE_VIEW_FOCUSED);
+        } else if (BOTTOM_PADDING == propertyKey) {
+            int left = view.getPaddingLeft();
+            int top = view.getPaddingTop();
+            int right = view.getPaddingRight();
+            int bottom = model.get(BOTTOM_PADDING);
+            view.setPadding(left, top, right, bottom);
         }
     }
 

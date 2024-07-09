@@ -831,6 +831,10 @@ public class TabListCoordinator
         return mMediator.specialItemExistsInModel(itemIdentifier);
     }
 
+    boolean isLastItemMessage() {
+        return mMediator.isLastItemMessage();
+    }
+
     private void checkAwaitingLayout() {
         if (mAwaitingLayoutRunnable != null) {
             SimpleRecyclerViewAdapter.ViewHolder holder =

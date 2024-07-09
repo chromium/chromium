@@ -3881,6 +3881,33 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testIsLastItemMessage() {
+        initAndAssertAllProperties();
+
+        assertEquals(2, mModel.size());
+        assertFalse(mMediator.isLastItemMessage());
+
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
+        when(model.get(MESSAGE_TYPE)).thenReturn(FOR_TESTING);
+        mMediator.addSpecialItemToModel(0, TabProperties.UiType.LARGE_MESSAGE, model);
+
+        assertEquals(3, mModel.size());
+        assertFalse(mMediator.isLastItemMessage());
+
+        mMediator.addSpecialItemToModel(mModel.size(), TabProperties.UiType.LARGE_MESSAGE, model);
+
+        assertEquals(4, mModel.size());
+        assertTrue(mMediator.isLastItemMessage());
+
+        mMediator.removeSpecialItemFromModel(
+                TabProperties.UiType.LARGE_MESSAGE, MessageService.MessageType.ALL);
+
+        assertEquals(2, mModel.size());
+        assertFalse(mMediator.isLastItemMessage());
+    }
+
+    @Test
     public void tabClosure_updatesTabGroup_inTabSwitcher() {
         initAndAssertAllProperties();
 
