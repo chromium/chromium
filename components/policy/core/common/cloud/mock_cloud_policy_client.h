@@ -133,6 +133,11 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (enterprise_management::ClientCertificateProvisioningRequest,
                ClientCertProvisioningRequestCallback),
               (override));
+  MOCK_METHOD(void,
+              UploadFmRegistrationToken,
+              (enterprise_management::FmRegistrationTokenUploadRequest request,
+               ResultCallback callback),
+              (override));
 
   // Sets the DMToken.
   void SetDMToken(const std::string& token);

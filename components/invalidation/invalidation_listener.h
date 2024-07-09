@@ -45,7 +45,7 @@ class RegistrationTokenHandler {
   // Will be called whenever the registration token was obtained or refreshed.
   virtual void OnRegistrationTokenReceived(
       const std::string& registration_token,
-      base::Time token_end_of_live) = 0;
+      base::Time token_end_of_life) = 0;
 };
 
 // Represents invalidations availability status.
