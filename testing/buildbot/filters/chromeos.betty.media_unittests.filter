@@ -1,0 +1,18 @@
+# TODO(crbug.com/41401544): Enable these.
+
+# Fails consistently due to g_cras_audio_handler initiailization errors.
+-AudioManagerTest.CheckMakeOutputStreamWithPreferredParameters
+-AudioManagerTest.CheckMinMaxAudioBufferSizeCallbacks
+-AudioManagerTest.DefaultCommunicationsLabelsContainRealLabels
+-AudioManagerTest.GroupId
+
+# Flakes.
+-CrasInputStreamTest.CaptureFrames
+
+# All above filters are copied from chromeos.media_unittests.filter
+# See b/351934529 on why we don't simply pass two filter files.
+
+# Betty specific filters are as below:
+
+# b/351276191
+-PlatformVideoFrameUtilsTest.CreateVideoFrame

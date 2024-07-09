@@ -817,6 +817,12 @@ targets.legacy_basic_suite(
         "ipc_tests": targets.legacy_test_config(),
         "latency_unittests": targets.legacy_test_config(),
         "libcups_unittests": targets.legacy_test_config(),
+        "media_unittests": targets.legacy_test_config(
+            args = [
+                # TODO(b/351276191): Switch to gerneral chromeos.betty.media_unittests.filter
+                "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.betty.media_unittests.filter",
+            ],
+        ),
         "midi_unittests": targets.legacy_test_config(),
         "mojo_unittests": targets.legacy_test_config(),
         "ozone_gl_unittests": targets.legacy_test_config(
@@ -848,11 +854,6 @@ targets.legacy_basic_suite(
         ),
         "fake_libva_driver_unittest": targets.legacy_test_config(
             experiment_percentage = 100,
-        ),
-        "media_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.media_unittests.filter",
-            ],
         ),
         # net_unittests has a test-time dependency on vpython. So add a CIPD'ed
         # vpython of the right arch to the task, and tell the test runner to copy

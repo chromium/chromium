@@ -761,11 +761,6 @@
         ],
         'experiment_percentage': 100,
       },
-      'media_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.media_unittests.filter',
-        ],
-      },
       'net_unittests': {
         'args': [
           '--vpython-dir=../../vpython_dir_linux_amd64',
@@ -828,6 +823,11 @@
       'ipc_tests': {},
       'latency_unittests': {},
       'libcups_unittests': {},
+      'media_unittests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.betty.media_unittests.filter',
+        ],
+      },
       'midi_unittests': {},
       'mojo_unittests': {},
       'ozone_gl_unittests': {

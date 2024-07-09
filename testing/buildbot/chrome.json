@@ -293,12 +293,11 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.media_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.betty.media_unittests.filter"
         ],
         "autotest_name": "chromium",
         "cros_board": "betty",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "name": "media_unittests RELEASE_LKGM",
         "run_cft": true,
         "shard_level_retries_on_ctp": 1,
