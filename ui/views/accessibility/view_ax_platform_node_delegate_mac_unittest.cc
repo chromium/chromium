@@ -67,8 +67,7 @@ class ViewAXPlatformNodeDelegateMacTest : public ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     widget_->widget_delegate()->SetTitle(base::ASCIIToUTF16(kDialogName));
     widget_->SetContentsView(std::make_unique<AccessibleView>());
   }

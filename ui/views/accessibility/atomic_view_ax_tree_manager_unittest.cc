@@ -4,6 +4,7 @@
 
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -11,7 +12,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -27,7 +27,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
     widget_ = std::make_unique<Widget>();
 
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                      Widget::InitParams::TYPE_WINDOW);
     params.bounds = gfx::Rect(50, 50, 200, 200);
     widget_->Init(std::move(params));
@@ -71,7 +71,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
 
  protected:
   raw_ptr<Textfield> textfield_ = nullptr;  // Owned by views hierarchy.
-  UniqueWidgetPtr widget_;
+  std::unique_ptr<Widget> widget_;
   raw_ptr<ViewAXPlatformNodeDelegate> delegate_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
