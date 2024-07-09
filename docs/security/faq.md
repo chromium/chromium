@@ -568,6 +568,13 @@ the operating system and avoid accessing them, e.g.:
 *    C variable length array with an attacker-controlled size.
 *    A call to `alloca()` with an attacker-controlled size.
 
+<a name="TOC-Are-tint-ICE-considered-security-bugs-"></a>
+### Are tint shader compiler Internal Compiler Errors considered security bugs?
+
+No. When tint fails and throws an ICE (Internal Compiler Error), it will
+terminate the process in an intentional manner and produce no shader output.
+Thus there is not security bug that follows from it.
+
 <a name="TOC-Are-enterprise-admins-considered-privileged-"></a>
 ### Are enterprise admins considered privileged?
 
@@ -848,7 +855,7 @@ reach most users within a few days of appearing on a CA's CRL.
 Chrome clients do not, by default, perform "online" certificate revocation
 status checks using CRLs directly or via OCSP URLs included in certificates.
 This is because online checks offer limited security value unless a client, like
-Chrome, refuses to connect to a website if it cannot get a valid response, 
+Chrome, refuses to connect to a website if it cannot get a valid response,
 
 Unfortunately, there are many widely-prevalent causes for why a client
 might be unable to get a valid certificate revocation status response to
