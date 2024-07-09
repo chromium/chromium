@@ -998,7 +998,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.DistantTab.TimeSinceLastUse" units="ms"
-    expires_after="2024-09-10">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -2375,7 +2375,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OpenIn.DownloadResult" enum="IOSOpenInDownloadResult"
-    expires_after="2025-03-11">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -2386,7 +2386,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OpenIn.MimeType" enum="IOSOpenInMimeType"
-    expires_after="2024-09-15">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -2786,7 +2786,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Permission.Modal.Events" enum="IOSPermissionEvent"
-    expires_after="2024-07-10">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -2797,7 +2797,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Permission.PageInfo.Events" enum="IOSPermissionEvent"
-    expires_after="2024-07-10">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -2808,7 +2808,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Permission.Requests" enum="IOSPermissionRequest"
-    expires_after="2024-07-24">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -3999,7 +3999,7 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.TabGrid.CloseTabs" units="Tabs" expires_after="2025-01-05">
+<histogram name="IOS.TabGrid.CloseTabs" units="Tabs" expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4060,7 +4060,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabPickup.TabOpened.TimeSinceLastUse" units="ms"
-    expires_after="2024-11-03">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -4073,7 +4073,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabPickup.TimeSinceLastCrossDeviceSync" units="ms"
-    expires_after="2024-12-30">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -4084,7 +4084,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabStrip.DragDropGroups" enum="IOSTabSwitcherDragDropTabs"
-    expires_after="2025-01-05">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -4094,7 +4094,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabStrip.DragDropTabs" enum="IOSTabSwitcherDragDropTabs"
-    expires_after="2025-01-05">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4105,7 +4105,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabStrip.DragInteraction" enum="Boolean"
-    expires_after="2024-09-01">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4116,21 +4116,21 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabStrip.DragOrigin" enum="IOSTabSwitcherDragOrigin"
-    expires_after="2025-01-05">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records the origin of dropped items in the tab strip.</summary>
 </histogram>
 
 <histogram name="IOS.TabStrip.DragOrigin.Group" enum="IOSTabSwitcherDragOrigin"
-    expires_after="2025-01-05">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>Records the origin of dropped tab groups in the tab strip.</summary>
 </histogram>
 
 <histogram name="IOS.TabStrip.TapInteraction" enum="Boolean"
-    expires_after="2024-12-08">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4141,7 +4141,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.DragDropGroups"
-    enum="IOSTabSwitcherDragDropTabs" expires_after="2024-08-04">
+    enum="IOSTabSwitcherDragDropTabs" expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -4151,7 +4151,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.DragDropTabs"
-    enum="IOSTabSwitcherDragDropTabs" expires_after="2024-08-04">
+    enum="IOSTabSwitcherDragDropTabs" expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4162,14 +4162,14 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.DragOrigin" enum="IOSTabSwitcherDragOrigin"
-    expires_after="2025-01-03">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records the origin of dropped items in the tab switcher.</summary>
 </histogram>
 
 <histogram name="IOS.TabSwitcher.DragOrigin.Group"
-    enum="IOSTabSwitcherDragOrigin" expires_after="2025-01-03">
+    enum="IOSTabSwitcherDragOrigin" expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -4188,7 +4188,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.Idle.IncognitoTabGridPage" enum="Boolean"
-    expires_after="2025-01-03">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4201,7 +4201,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.Idle.RecentTabs" enum="Boolean"
-    expires_after="2025-01-05">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4227,7 +4227,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.Idle.TabGroups" enum="Boolean"
-    expires_after="2025-05-01">
+    expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4240,7 +4240,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
-    enum="IOSTabSwitcherPageChangeInteraction" expires_after="2025-01-05">
+    enum="IOSTabSwitcherPageChangeInteraction" expires_after="2025-07-09">
   <owner>marq@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4252,7 +4252,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.PinnedTabs.DragDropTabs"
-    enum="IOSTabSwitcherDragDropTabs" expires_after="2024-10-20">
+    enum="IOSTabSwitcherDragDropTabs" expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -4262,7 +4262,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.PinnedTabs.DragOrigin"
-    enum="IOSTabSwitcherDragOrigin" expires_after="2024-10-06">
+    enum="IOSTabSwitcherDragOrigin" expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records the origin of dropped items in the pinned tab view.</summary>
