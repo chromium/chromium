@@ -42,9 +42,7 @@ class PLATFORM_EXPORT EncoderStateObserverImpl : public EncoderStateObserver,
   void OnRatesUpdated(int encoder_id,
                       const Vector<bool>& active_spatial_layers) override;
   void OnEncode(int encoder_id, uint32_t rtp_timestamp) override;
-  void OnEncodedFrame(int encoder_id,
-                      const webrtc::EncodedImage& frame,
-                      bool is_hardware_accelerated) override;
+  void OnEncodedImage(int encoder_id, const EncodeResult& result) override;
 
   std::optional<TopLayerInfo> FindHighestActiveEncoding() const;
 

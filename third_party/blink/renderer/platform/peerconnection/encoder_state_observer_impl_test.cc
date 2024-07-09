@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/video/encoded_image.h"
 #include "third_party/webrtc/api/video/video_content_type.h"
@@ -179,24 +180,6 @@ int PixelRate(const T& config) {
   return pixel_rate.ValueOrDie();
 }
 
-webrtc::EncodedImage CreateEncodedImage(bool keyframe,
-                                        int width,
-                                        int height,
-                                        int spatial_idx,
-                                        int temporal_idx,
-                                        uint32_t rtp_timestamp) {
-  webrtc::EncodedImage image;
-  image._encodedWidth = width;
-  image._encodedHeight = height;
-  image.SetRtpTimestamp(rtp_timestamp);
-  image._frameType = keyframe ? webrtc::VideoFrameType::kVideoFrameKey
-                              : webrtc::VideoFrameType::kVideoFrameDelta;
-  image.qp_ = 10;
-  image.SetSpatialIndex(spatial_idx);
-  image.SetTemporalIndex(temporal_idx);
-  return image;
-}
-
 std::tuple<size_t, size_t, size_t> GetActiveIndexInfo(
     const Vector<bool>& active_layers) {
   size_t num_active_layers = 0;
@@ -228,6 +211,7 @@ class EncoderStateObserverImplTest : public ::testing::Test {
 
  protected:
   using TopLayerInfo = EncoderStateObserverImpl::TopLayerInfo;
+  using EncodeResult = EncoderStateObserver::EncodeResult;
   using StatsKey = StatsCollector::StatsKey;
   using VideoStats = StatsCollector::VideoStats;
 
@@ -487,20 +471,21 @@ TEST_F(EncoderStateObserverImplTest,
   CreateObserver(media::VP8PROFILE_ANY);
   observer_->OnEncoderCreated(kEncoderId, vp8);
 
-  constexpr int kTemporalPattern[] = {0, 2, 1, 2};
   constexpr int kEncodeTimes = StatsCollector::kMinSamplesThreshold * 1.1;
   constexpr int kKeyFrameInterval = 40;
   for (size_t i = 0; i < kEncodeTimes; i++) {
-    const int temporal_idx = kTemporalPattern[i % std::size(kTemporalPattern)];
-    const int rtp_timestamp = 100 + i;
+    const uint32_t rtp_timestamp = 100 + i;
     const bool keyframe = i % kKeyFrameInterval == 0;
     observer_->OnEncode(kEncoderId, rtp_timestamp);
     for (size_t stream_idx = 0; stream_idx < kSimulcasts; stream_idx++) {
-      observer_->OnEncodedFrame(
-          kEncoderId,
-          CreateEncodedImage(keyframe, vp8.width, vp8.height, stream_idx,
-                             temporal_idx, rtp_timestamp),
-          /*is_hardware_accelerated=*/true);
+      observer_->OnEncodedImage(
+          kEncoderId, EncodeResult{.width = vp8.width,
+                                   .height = vp8.height,
+                                   .keyframe = keyframe,
+                                   .spatial_index = stream_idx,
+                                   .rtp_timestamp = rtp_timestamp,
+                                   .encode_end_time = base::TimeTicks::Now(),
+                                   .is_hardware_accelerated = true});
     }
   }
 
@@ -537,21 +522,22 @@ TEST_F(EncoderStateObserverImplTest,
                                 codec_params[stream_idx]);
   }
 
-  constexpr int kTemporalPattern[] = {0, 2, 1, 2};
   constexpr int kEncodeTimes = StatsCollector::kMinSamplesThreshold * 1.1;
   constexpr int kKeyFrameInterval = 40;
   for (size_t i = 0; i < kEncodeTimes; i++) {
-    const int temporal_idx = kTemporalPattern[i % std::size(kTemporalPattern)];
-    const int rtp_timestamp = 100 + i;
+    const uint32_t rtp_timestamp = 100 + i;
     const bool keyframe = i % kKeyFrameInterval == 0;
     for (size_t stream_idx = 0; stream_idx < kSimulcasts; stream_idx++) {
       observer_->OnEncode(kBaseEncoderId + stream_idx, rtp_timestamp);
-      observer_->OnEncodedFrame(
+      observer_->OnEncodedImage(
           kBaseEncoderId + stream_idx,
-          CreateEncodedImage(keyframe, codec_params[stream_idx].width,
-                             codec_params[stream_idx].height,
-                             /*spatial_idx=*/0, temporal_idx, rtp_timestamp),
-          /*is_hardware_accelerated=*/true);
+          EncodeResult{.width = codec_params[stream_idx].width,
+                       .height = codec_params[stream_idx].height,
+                       .keyframe = keyframe,
+                       .spatial_index = 0,
+                       .rtp_timestamp = rtp_timestamp,
+                       .encode_end_time = base::TimeTicks::Now(),
+                       .is_hardware_accelerated = true});
     }
   }
 
@@ -570,16 +556,17 @@ TEST_F(EncoderStateObserverImplTest,
 
   // Encode() on the encoder for the lowest resolution stream.
   for (size_t i = kEncodeTimes; i < kEncodeTimes * 2; i++) {
-    const int temporal_idx = kTemporalPattern[i % std::size(kTemporalPattern)];
     const bool keyframe = (i - kEncodeTimes) % kKeyFrameInterval == 0;
-    const int rtp_timestamp = 100 + i;
+    const uint32_t rtp_timestamp = 100 + i;
     observer_->OnEncode(kBaseEncoderId, rtp_timestamp);
-    observer_->OnEncodedFrame(
-        kBaseEncoderId,
-        CreateEncodedImage(keyframe, codec_params[0].width,
-                           codec_params[0].height,
-                           /*spatial_idx=*/0, temporal_idx, rtp_timestamp),
-        /*is_hardware_accelerated=*/true);
+    observer_->OnEncodedImage(
+        kBaseEncoderId, EncodeResult{.width = codec_params[0].width,
+                                     .height = codec_params[0].height,
+                                     .keyframe = keyframe,
+                                     .spatial_index = 0,
+                                     .rtp_timestamp = rtp_timestamp,
+                                     .encode_end_time = base::TimeTicks::Now(),
+                                     .is_hardware_accelerated = true});
   }
 
   EXPECT_EQ(processing_stats_.size(), 1u);
@@ -611,16 +598,18 @@ TEST_F(EncoderStateObserverImplTest, OnEncodedImage_VP9kSVC_SingleEncoder) {
   constexpr int kEncodeTimes = StatsCollector::kMinSamplesThreshold * 1.1;
   constexpr int kKeyFrameInterval = 40;
   for (size_t i = 0; i < kEncodeTimes; i++) {
-    const int rtp_timestamp = 100 + i;
+    const uint32_t rtp_timestamp = 100 + i;
     observer_->OnEncode(kEncoderId, rtp_timestamp);
     for (size_t sid = 0; sid < kSpatialLayers; sid++) {
       const bool keyframe = i % kKeyFrameInterval == 0 && sid == 0;
-      observer_->OnEncodedFrame(
-          kEncoderId,
-          CreateEncodedImage(keyframe, vp9.spatialLayers[sid].width,
-                             vp9.spatialLayers[sid].height, sid, 0,
-                             rtp_timestamp),
-          /*is_hardware_accelerated=*/true);
+      observer_->OnEncodedImage(
+          kEncoderId, EncodeResult{.width = vp9.spatialLayers[sid].width,
+                                   .height = vp9.spatialLayers[sid].height,
+                                   .keyframe = keyframe,
+                                   .spatial_index = sid,
+                                   .rtp_timestamp = rtp_timestamp,
+                                   .encode_end_time = base::TimeTicks::Now(),
+                                   .is_hardware_accelerated = true});
     }
   }
 
@@ -651,7 +640,7 @@ TEST_F(EncoderStateObserverImplTest,
       {true, false, false},  {false, false, true}, {false, true, true},
       {true, false, true},   {true, true, false},  {false, true, true},
       {false, false, false}, {true, true, true}};
-  int rtp_timestamp = 100;
+  uint32_t rtp_timestamp = 100;
   size_t expected_processing_stats_size = 0;
   for (const Vector<bool>& active_layers : active_layers_queries) {
     observer_->OnRatesUpdated(kEncoderId, Vector<bool>(active_layers));
@@ -674,12 +663,14 @@ TEST_F(EncoderStateObserverImplTest,
           continue;
         }
         const bool keyframe = i == 0 && sid == bottom_sid;
-        observer_->OnEncodedFrame(
-            kEncoderId,
-            CreateEncodedImage(keyframe, vp9.spatialLayers[sid].width,
-                               vp9.spatialLayers[sid].height, sid, 0,
-                               rtp_timestamp),
-            /*is_hardware_accelerated=*/true);
+        observer_->OnEncodedImage(
+            kEncoderId, EncodeResult{.width = vp9.spatialLayers[sid].width,
+                                     .height = vp9.spatialLayers[sid].height,
+                                     .keyframe = keyframe,
+                                     .spatial_index = sid,
+                                     .rtp_timestamp = rtp_timestamp,
+                                     .encode_end_time = base::TimeTicks::Now(),
+                                     .is_hardware_accelerated = true});
       }
     }
 

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/instrumented_video_encoder_wrapper.h"
 
+#include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 
@@ -100,8 +102,17 @@ InstrumentedVideoEncoderWrapper::OnEncodedImage(
     const webrtc::CodecSpecificInfo* codec_specific_info) {
   webrtc::EncodedImageCallback::Result result(
       webrtc::EncodedImageCallback::Result::OK);
-  state_observer_->OnEncodedFrame(id_, encoded_image,
-                                  GetEncoderInfo().is_hardware_accelerated);
+  state_observer_->OnEncodedImage(
+      id_,
+      EncoderStateObserver::EncodeResult{
+          .width = base::checked_cast<int>(encoded_image._encodedWidth),
+          .height = base::checked_cast<int>(encoded_image._encodedHeight),
+          .keyframe = encoded_image._frameType ==
+                         webrtc::VideoFrameType::kVideoFrameKey,
+          .spatial_index = encoded_image.SpatialIndex(),
+          .rtp_timestamp = encoded_image.RtpTimestamp(),
+          .encode_end_time = base::TimeTicks::Now(),
+          .is_hardware_accelerated = GetEncoderInfo().is_hardware_accelerated});
   if (callback_) {
     result = callback_->OnEncodedImage(encoded_image, codec_specific_info);
   }

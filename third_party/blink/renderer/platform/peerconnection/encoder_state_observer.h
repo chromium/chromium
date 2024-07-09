@@ -5,12 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_ENCODER_STATE_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_ENCODER_STATE_OBSERVER_H_
 
+#include <optional>
+
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace webrtc {
 class VideoCodec;
-class EncodedImage;
 }  // namespace webrtc
 
 namespace blink {
@@ -19,6 +21,18 @@ namespace blink {
 // encoder.
 class PLATFORM_EXPORT EncoderStateObserver {
  public:
+  struct EncodeResult final {
+    int width;
+    int height;
+    int keyframe;
+    std::optional<int> spatial_index;
+
+    uint32_t rtp_timestamp;
+    base::TimeTicks encode_end_time;
+
+    bool is_hardware_accelerated;
+  };
+
   virtual ~EncoderStateObserver() = default;
 
   // The encoder with |encoder_id| is created with |config|.
@@ -33,10 +47,9 @@ class PLATFORM_EXPORT EncoderStateObserver {
   // Encode() of the encoder with |encoder_id| is about to be performed for
   // the frame whose timestamp is |rtp_timestamp|.
   virtual void OnEncode(int encoder_id, uint32_t rtp_timestamp) = 0;
-  // The encoder with |encoder_id| produces the encoded image, |frame|.
-  virtual void OnEncodedFrame(int encoder_id,
-                              const webrtc::EncodedImage& frame,
-                              bool is_hardware_accelerated) = 0;
+  // The encoder with |encoder_id| completes the encode and its result is
+  // |result|.
+  virtual void OnEncodedImage(int encoder_id, const EncodeResult& result) = 0;
 };
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_ENCODER_STATE_OBSERVER_H_

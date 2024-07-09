@@ -211,16 +211,15 @@ void EncoderStateObserverImpl::OnEncode(int encoder_id,
   encoder_state->AppendEncodeStart(rtp_timestamp, base::TimeTicks::Now());
 }
 
-void EncoderStateObserverImpl::OnEncodedFrame(int encoder_id,
-                                              const webrtc::EncodedImage& frame,
-                                              bool is_hardware_accelerated) {
+void EncoderStateObserverImpl::OnEncodedImage(int encoder_id,
+                                              const EncodeResult& result) {
   if (!top_encoder_info_) {
     LOG(WARNING) << "Received encoded frame while no active encoder "
                     "configured, ignoring.";
     return;
   }
   if (encoder_id != top_encoder_info_->encoder_id ||
-      frame.SpatialIndex().value_or(0) != top_encoder_info_->spatial_id) {
+      result.spatial_index.value_or(0) != top_encoder_info_->spatial_id) {
     return;
   }
 
@@ -235,7 +234,7 @@ void EncoderStateObserverImpl::OnEncodedFrame(int encoder_id,
     return;
   }
 
-  auto encode_start = encoder_state->GetEncodeStart(frame.RtpTimestamp());
+  auto encode_start = encoder_state->GetEncodeStart(result.rtp_timestamp);
   if (!encode_start) {
     return;
   }
@@ -246,12 +245,11 @@ void EncoderStateObserverImpl::OnEncodedFrame(int encoder_id,
     return;
   }
 
-  const float encode_time_ms = (now - encode_start->time).InMillisecondsF();
-  const int pixel_size = frame._encodedWidth * frame._encodedHeight;
-  const bool is_keyframe =
-      frame._frameType == webrtc::VideoFrameType::kVideoFrameKey;
-  AddProcessingTime(pixel_size, is_hardware_accelerated, encode_time_ms,
-                    is_keyframe, now);
+  const float encode_time_ms =
+      (result.encode_end_time - encode_start->time).InMillisecondsF();
+  const int pixel_size = result.width * result.height;
+  AddProcessingTime(pixel_size, result.is_hardware_accelerated, encode_time_ms,
+                    result.keyframe, now);
 }
 
 void EncoderStateObserverImpl::UpdateStatsCollection(base::TimeTicks now) {

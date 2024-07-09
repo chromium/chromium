@@ -14,6 +14,7 @@
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::Return;
 
@@ -31,10 +32,7 @@ class MockEncoderStateObserver : public EncoderStateObserver {
   MOCK_METHOD(void, OnEncoderDestroyed, (int), (override));
   MOCK_METHOD(void, OnRatesUpdated, (int, const Vector<bool>&), (override));
   MOCK_METHOD(void, OnEncode, (int, uint32_t rtp_timestamp), (override));
-  MOCK_METHOD(void,
-              OnEncodedFrame,
-              (int, const webrtc::EncodedImage&, bool),
-              (override));
+  MOCK_METHOD(void, OnEncodedImage, (int, const EncodeResult&), (override));
 };
 
 class MockEncodedImageCallback : public webrtc::EncodedImageCallback {
@@ -71,7 +69,12 @@ class FakeVideoEncoder : public webrtc::VideoEncoder {
       const webrtc::VideoFrame& frame,
       const std::vector<webrtc::VideoFrameType>* frame_types) override {
     if (callback_) {
-      callback_->OnEncodedImage(webrtc::EncodedImage(),
+      webrtc::EncodedImage encoded_image;
+      encoded_image._encodedWidth = frame.width();
+      encoded_image._encodedHeight = frame.height();
+      encoded_image.SetRtpTimestamp(frame.rtp_timestamp());
+      encoded_image._frameType = frame_types->at(0);
+      callback_->OnEncodedImage(encoded_image,
                                 /*codec_specific_info=*/nullptr);
     }
     return WEBRTC_VIDEO_CODEC_OK;
@@ -151,6 +154,8 @@ class InstrumentedVideoEncoderWrapperTest : public ::testing::Test {
   }
 
  protected:
+  using EncodeResult = EncoderStateObserver::EncodeResult;
+
   std::unique_ptr<MockEncoderStateObserver> mock_state_observer_;
 
   std::unique_ptr<InstrumentedVideoEncoderWrapper> wrapper_;
@@ -179,8 +184,16 @@ TEST_F(InstrumentedVideoEncoderWrapperTest, Encode) {
       webrtc::VideoFrameType::kVideoFrameKey};
   EXPECT_CALL(*mock_state_observer_,
               OnEncode(kEncoderId, frame.rtp_timestamp()));
-  EXPECT_CALL(*mock_state_observer_,
-              OnEncodedFrame(kEncoderId, _, /*is_hardware_accelerated=*/false));
+  EXPECT_CALL(
+      *mock_state_observer_,
+      OnEncodedImage(
+          kEncoderId,
+          AllOf(Field(&EncodeResult::width, kWidth),
+                Field(&EncodeResult::height, kHeight),
+                Field(&EncodeResult::keyframe, true),
+                Field(&EncodeResult::spatial_index, std::nullopt),
+                Field(&EncodeResult::rtp_timestamp, frame.rtp_timestamp()),
+                Field(&EncodeResult::is_hardware_accelerated, false))));
   EXPECT_CALL(encoded_image_callback, OnEncodedImage(_, _))
       .WillOnce(Return(webrtc::EncodedImageCallback::Result(
           webrtc::EncodedImageCallback::Result::OK)));
