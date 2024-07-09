@@ -5,6 +5,9 @@
 #include "ash/picker/model/picker_emoji_history_model.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/json/values_util.h"
+#include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -17,6 +20,12 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
+using HistoryItem = PickerEmojiHistoryModel::EmojiHistoryItem;
+
+base::Time TimeFromMicroSeconds(int64_t microseconds) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(microseconds));
+}
 
 class PickerEmojiHistoryModelTest : public testing::Test {
  public:
@@ -32,48 +41,74 @@ class PickerEmojiHistoryModelTest : public testing::Test {
 
 TEST_F(PickerEmojiHistoryModelTest, ReturnsRecentEmojisFromPrefs) {
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
-  update->Set("emoji", base::Value::List()
-                           .Append(base::Value::Dict().Set("text", "abc"))
-                           .Append(base::Value::Dict().Set("text", "xyz")));
+  update->Set(
+      "emoji",
+      base::Value::List()
+          .Append(base::Value::Dict().Set("text", "abc").Set("timestamp", "10"))
+          .Append(
+              base::Value::Dict().Set("text", "xyz").Set("timestamp", "5")));
   PickerEmojiHistoryModel model(pref_service());
 
-  EXPECT_THAT(model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
-              ElementsAre("abc", "xyz"));
+  EXPECT_THAT(
+      model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
+      ElementsAre(
+          HistoryItem{.text = "abc", .timestamp = TimeFromMicroSeconds(10)},
+          HistoryItem{.text = "xyz", .timestamp = TimeFromMicroSeconds(5)}));
 }
 
 TEST_F(PickerEmojiHistoryModelTest, AddsNewRecentEmoji) {
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
-  update->Set("emoji", base::Value::List()
-                           .Append(base::Value::Dict().Set("text", "abc"))
-                           .Append(base::Value::Dict().Set("text", "xyz")));
-  PickerEmojiHistoryModel model(pref_service());
+  update->Set(
+      "emoji",
+      base::Value::List()
+          .Append(base::Value::Dict().Set("text", "abc").Set("timestamp", "10"))
+          .Append(
+              base::Value::Dict().Set("text", "xyz").Set("timestamp", "5")));
+  base::SimpleTestClock clock;
+  PickerEmojiHistoryModel model(pref_service(), &clock);
+  clock.SetNow(TimeFromMicroSeconds(20));
 
   model.UpdateRecentEmoji(ui::EmojiPickerCategory::kEmojis, "def");
 
-  EXPECT_THAT(model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
-              ElementsAre("def", "abc", "xyz"));
+  EXPECT_THAT(
+      model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
+      ElementsAre(
+          HistoryItem{.text = "def", .timestamp = TimeFromMicroSeconds(20)},
+          HistoryItem{.text = "abc", .timestamp = TimeFromMicroSeconds(10)},
+          HistoryItem{.text = "xyz", .timestamp = TimeFromMicroSeconds(5)}));
 }
 
 TEST_F(PickerEmojiHistoryModelTest, AddsExistingRecentEmoji) {
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
-  update->Set("emoji", base::Value::List()
-                           .Append(base::Value::Dict().Set("text", "abc"))
-                           .Append(base::Value::Dict().Set("text", "xyz")));
-  PickerEmojiHistoryModel model(pref_service());
+  update->Set(
+      "emoji",
+      base::Value::List()
+          .Append(base::Value::Dict().Set("text", "abc").Set("timestamp", "10"))
+          .Append(
+              base::Value::Dict().Set("text", "xyz").Set("timestamp", "5")));
+  base::SimpleTestClock clock;
+  PickerEmojiHistoryModel model(pref_service(), &clock);
+  clock.SetNow(TimeFromMicroSeconds(20));
 
   model.UpdateRecentEmoji(ui::EmojiPickerCategory::kEmojis, "xyz");
 
-  EXPECT_THAT(model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
-              ElementsAre("xyz", "abc"));
+  EXPECT_THAT(
+      model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
+      ElementsAre(
+          HistoryItem{.text = "xyz", .timestamp = TimeFromMicroSeconds(20)},
+          HistoryItem{.text = "abc", .timestamp = TimeFromMicroSeconds(10)}));
 }
 
 TEST_F(PickerEmojiHistoryModelTest, AddsRecentEmojiEmptyHistory) {
-  PickerEmojiHistoryModel model(pref_service());
+  base::SimpleTestClock clock;
+  PickerEmojiHistoryModel model(pref_service(), &clock);
+  clock.SetNow(TimeFromMicroSeconds(5));
 
   model.UpdateRecentEmoji(ui::EmojiPickerCategory::kEmojis, "abc");
 
   EXPECT_THAT(model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
-              ElementsAre("abc"));
+              ElementsAre(HistoryItem{.text = "abc",
+                                      .timestamp = TimeFromMicroSeconds(5)}));
 }
 
 }  // namespace

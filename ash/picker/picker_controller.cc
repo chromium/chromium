@@ -601,13 +601,17 @@ PickerActionType PickerController::GetActionForResult(
 
 std::vector<std::string> PickerController::GetSuggestedEmoji() {
   CHECK(emoji_history_model_);
-  std::vector<std::string> recent_emojis =
+  std::vector<PickerEmojiHistoryModel::EmojiHistoryItem> recent_emojis =
       emoji_history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kEmojis);
-  if (recent_emojis.empty()) {
+  std::vector<std::string> results;
+  for (const auto& item : recent_emojis) {
+    results.push_back(item.text);
+  }
+  if (results.empty()) {
     // Fall back to a default set of suggested emojis.
     return {"😀", "😃", "😄"};
   }
-  return recent_emojis;
+  return results;
 }
 
 void PickerController::OnWidgetDestroying(views::Widget* widget) {

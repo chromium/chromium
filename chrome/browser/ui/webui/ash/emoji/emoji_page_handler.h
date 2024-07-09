@@ -51,8 +51,9 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   void OnUiFullyLoaded() override;
   void GetInitialCategory(GetInitialCategoryCallback callback) override;
   void GetInitialQuery(GetInitialQueryCallback callback) override;
-  void UpdateHistoryInPrefs(emoji_picker::mojom::Category category,
-                            const std::vector<std::string>& history) override;
+  void UpdateHistoryInPrefs(
+      emoji_picker::mojom::Category category,
+      std::vector<emoji_picker::mojom::HistoryItemPtr> history) override;
   void UpdatePreferredVariantsInPrefs(
       std::vector<emoji_picker::mojom::EmojiVariantPtr> preferred_variants)
       override;

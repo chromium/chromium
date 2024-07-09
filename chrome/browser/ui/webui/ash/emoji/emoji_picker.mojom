@@ -4,6 +4,7 @@
 
 module emoji_picker.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -72,6 +73,13 @@ struct EmojiVariant {
   string variant;
 };
 
+struct HistoryItem {
+  string emoji;
+  // TODO(b/348066478): use timestamp to merge and sort recent emoji, emoticons
+  // and symbols.
+  mojo_base.mojom.TimeDelta time_since_unix_epoch;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -133,11 +141,11 @@ interface PageHandler {
   GetInitialQuery() => (string query);
 
   // Update emoji picker history in chrome prefs
-  UpdateHistoryInPrefs(Category category, array<string> history);
+  UpdateHistoryInPrefs(Category category, array<HistoryItem> history);
 
   // Update preferred emoji variants in chrome prefs.
   UpdatePreferredVariantsInPrefs(array<EmojiVariant> preferred_variants);
 
   // Gets the emoji picker history from chrome prefs.
-  GetHistoryFromPrefs(Category category) => (array<string> history);
+  GetHistoryFromPrefs(Category category) => (array<HistoryItem> history);
 };

@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_page_handler.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/json/values_util.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -19,9 +21,14 @@ namespace {
 
 using ::emoji_picker::mojom::EmojiVariant;
 using ::emoji_picker::mojom::EmojiVariantPtr;
+using ::emoji_picker::mojom::HistoryItem;
+using ::emoji_picker::mojom::HistoryItemPtr;
 using ::emoji_picker::mojom::Category::kEmojis;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Pointee;
 
 class EmojiPageHandlerTest : public ::testing::Test {
  public:
@@ -43,14 +50,26 @@ TEST_F(EmojiPageHandlerTest, UpdatesEmojiHistoryInPrefs) {
   EmojiPageHandler handler(std::move(receiver), &web_ui_, nullptr, false, false,
                            kEmojis, "");
 
-  handler.UpdateHistoryInPrefs(kEmojis, {"abc", "xyz"});
+  std::vector<HistoryItemPtr> history;
+  history.push_back(HistoryItem::New("abc", base::Seconds(10)));
+  history.push_back(HistoryItem::New("xyz", base::Seconds(5)));
+  handler.UpdateHistoryInPrefs(kEmojis, std::move(history));
 
-  const base::Value::Dict& history =
-      profile_->GetPrefs()->GetDict(prefs::kEmojiPickerHistory);
-  const base::Value::List* emoji_history = history.FindList("emoji");
+  const base::Value::List* emoji_history =
+      profile_->GetPrefs()
+          ->GetDict(prefs::kEmojiPickerHistory)
+          .FindList("emoji");
   EXPECT_EQ(emoji_history->size(), 2u);
-  EXPECT_EQ((*emoji_history)[0].GetDict().Find("text")->GetString(), "abc");
-  EXPECT_EQ((*emoji_history)[1].GetDict().Find("text")->GetString(), "xyz");
+
+  auto& item0 = (*emoji_history)[0].GetDict();
+  EXPECT_EQ(item0.Find("text")->GetString(), "abc");
+  EXPECT_EQ(base::ValueToTime(item0.Find("timestamp")),
+            base::Time::UnixEpoch() + base::Seconds(10));
+
+  auto& item1 = (*emoji_history)[1].GetDict();
+  EXPECT_EQ(item1.Find("text")->GetString(), "xyz");
+  EXPECT_EQ(base::ValueToTime(item1.Find("timestamp")),
+            base::Time::UnixEpoch() + base::Seconds(5));
 }
 
 TEST_F(EmojiPageHandlerTest, UpdatesPerferredVariantsInPrefs) {
@@ -75,13 +94,25 @@ TEST_F(EmojiPageHandlerTest, GetsHistoryFromPrefs) {
   mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver;
   EmojiPageHandler handler(std::move(receiver), &web_ui_, nullptr, false, false,
                            kEmojis, "");
-  handler.UpdateHistoryInPrefs(kEmojis, {"abc", "xyz"});
+  std::vector<HistoryItemPtr> history;
+  history.push_back(HistoryItem::New("abc", base::Seconds(10)));
+  history.push_back(HistoryItem::New("xyz", base::Seconds(5)));
+  handler.UpdateHistoryInPrefs(kEmojis, std::move(history));
 
-  base::test::TestFuture<const std::vector<std::string>&> future;
+  base::test::TestFuture<std::vector<HistoryItemPtr>> future;
   handler.GetHistoryFromPrefs(kEmojis, future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get(), ElementsAre("abc", "xyz"));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Pointee(AllOf(Field("text", &HistoryItem::emoji, "abc"),
+                                Field("time_since_unix_epoch",
+                                      &HistoryItem::time_since_unix_epoch,
+                                      base::Seconds(10)))),
+                  Pointee(AllOf(Field("text", &HistoryItem::emoji, "xyz"),
+                                Field("time_since_unix_epoch",
+                                      &HistoryItem::time_since_unix_epoch,
+                                      base::Seconds(5))))));
 }
 
 TEST_F(EmojiPageHandlerTest, GetsEmptyHistoryFromEmptyPrefs) {
@@ -89,7 +120,7 @@ TEST_F(EmojiPageHandlerTest, GetsEmptyHistoryFromEmptyPrefs) {
   EmojiPageHandler handler(std::move(receiver), &web_ui_, nullptr, false, false,
                            kEmojis, "");
 
-  base::test::TestFuture<const std::vector<std::string>&> future;
+  base::test::TestFuture<std::vector<HistoryItemPtr>> future;
   handler.GetHistoryFromPrefs(kEmojis, future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());

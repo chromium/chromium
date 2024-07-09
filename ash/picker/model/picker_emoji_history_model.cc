@@ -10,6 +10,8 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
+#include "base/json/values_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -21,6 +23,7 @@ namespace {
 constexpr int kMaxRecentEmoji = 20;
 
 constexpr std::string_view kEmojiHistoryValueFieldName = "text";
+constexpr std::string_view kEmojiHistoryTimestampFieldName = "timestamp";
 
 std::string ConvertEmojiCategoryToString(ui::EmojiPickerCategory category) {
   switch (category) {
@@ -37,10 +40,15 @@ std::string ConvertEmojiCategoryToString(ui::EmojiPickerCategory category) {
 
 }  // namespace
 
-PickerEmojiHistoryModel::PickerEmojiHistoryModel(PrefService* prefs)
-    : prefs_(CHECK_DEREF(prefs)) {}
+bool PickerEmojiHistoryModel::EmojiHistoryItem::operator==(
+    const PickerEmojiHistoryModel::EmojiHistoryItem&) const = default;
 
-std::vector<std::string> PickerEmojiHistoryModel::GetRecentEmojis(
+PickerEmojiHistoryModel::PickerEmojiHistoryModel(PrefService* prefs,
+                                                 base::Clock* clock)
+    : prefs_(CHECK_DEREF(prefs)), clock_(clock) {}
+
+std::vector<PickerEmojiHistoryModel::EmojiHistoryItem>
+PickerEmojiHistoryModel::GetRecentEmojis(
     ui::EmojiPickerCategory category) const {
   const base::Value::List* history =
       prefs_->GetDict(prefs::kEmojiPickerHistory)
@@ -48,7 +56,7 @@ std::vector<std::string> PickerEmojiHistoryModel::GetRecentEmojis(
   if (history == nullptr) {
     return {};
   }
-  std::vector<std::string> results;
+  std::vector<EmojiHistoryItem> results;
   for (const base::Value& it : *history) {
     const base::Value::Dict* value_dict = it.GetIfDict();
     if (value_dict == nullptr) {
@@ -56,8 +64,13 @@ std::vector<std::string> PickerEmojiHistoryModel::GetRecentEmojis(
     }
     const std::string* text =
         value_dict->FindString(kEmojiHistoryValueFieldName);
+    std::optional<base::Time> timestamp =
+        base::ValueToTime(value_dict->Find(kEmojiHistoryTimestampFieldName));
     if (text != nullptr) {
-      results.push_back(*text);
+      results.push_back({.text = *text,
+                         .timestamp = timestamp == std::nullopt
+                                          ? base::Time::UnixEpoch()
+                                          : *timestamp});
     }
   }
   return results;
@@ -66,16 +79,20 @@ std::vector<std::string> PickerEmojiHistoryModel::GetRecentEmojis(
 void PickerEmojiHistoryModel::UpdateRecentEmoji(
     ui::EmojiPickerCategory category,
     std::string_view latest_emoji) {
-  std::vector<std::string> history = GetRecentEmojis(category);
+  std::vector<EmojiHistoryItem> history = GetRecentEmojis(category);
   base::Value::List history_value;
-  history_value.Append(
-      base::Value::Dict().Set(kEmojiHistoryValueFieldName, latest_emoji));
-  for (const std::string& value : history) {
-    if (value == latest_emoji) {
+  history_value.Append(base::Value::Dict()
+                           .Set(kEmojiHistoryValueFieldName, latest_emoji)
+                           .Set(kEmojiHistoryTimestampFieldName,
+                                base::TimeToValue(clock_->Now())));
+  for (const EmojiHistoryItem& item : history) {
+    if (item.text == latest_emoji) {
       continue;
     }
-    history_value.Append(
-        base::Value::Dict().Set(kEmojiHistoryValueFieldName, value));
+    history_value.Append(base::Value::Dict()
+                             .Set(kEmojiHistoryValueFieldName, item.text)
+                             .Set(kEmojiHistoryTimestampFieldName,
+                                  base::TimeToValue(item.timestamp)));
     if (history_value.size() == kMaxRecentEmoji) {
       break;
     }
