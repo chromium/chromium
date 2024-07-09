@@ -117,7 +117,8 @@
   </div>
   <div slot="body" class="language-menu-body">
     <span id="noResultsMessage"
-        hidden$="[[searchHasLanguages(availableLanguages_, languageSearchValue_)]]">
+        hidden$="[[searchHasLanguages(availableLanguages_, languageSearchValue_)]]"
+        aria-live="polite">
       $i18n{languageMenuNoResults}
     </span>
     <template is="dom-repeat" index-as="index"
