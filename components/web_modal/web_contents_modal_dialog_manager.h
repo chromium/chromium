@@ -16,6 +16,10 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/native_widget_types.h"
 
+namespace content {
+enum class Visibility;
+}  // namespace content
+
 namespace web_modal {
 
 class WebContentsModalDialogManagerDelegate;
@@ -106,8 +110,8 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   // All active dialogs.
   base::circular_deque<DialogState> child_dialogs_;
 
-  // Whether the WebContents' visibility is content::Visibility::HIDDEN.
-  bool web_contents_is_hidden_;
+  // The WebContents' visibility.
+  content::Visibility web_contents_visibility_;
 
   // True while closing the dialogs on WebContents close.
   bool closing_all_dialogs_ = false;
