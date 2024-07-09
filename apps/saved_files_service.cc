@@ -16,6 +16,7 @@
 #include "apps/saved_files_service_factory.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
@@ -308,7 +309,7 @@ void SavedFilesService::SavedFiles::RegisterFileEntry(
 
 void SavedFilesService::SavedFiles::EnqueueFileEntry(const std::string& id) {
   auto id_it = registered_file_entries_.find(id);
-  DCHECK(id_it != registered_file_entries_.end());
+  CHECK(id_it != registered_file_entries_.end(), base::NotFatalUntil::M130);
 
   SavedFileEntry* file_entry = id_it->second.get();
   int old_sequence_number = file_entry->sequence_number;
