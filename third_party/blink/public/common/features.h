@@ -871,6 +871,19 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kLCPPFontURLPredictorExcludedHosts;
 
+// If enabled, LCPP learns with a navigation-initiator origin.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPInitiatorOrigin);
+
+// The virtual sliding window size for LCP critical path predictor (LCPP)
+// histogram for kLCPPInitiatorOrigin option.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLcppInitiatorOriginHistogramSlidingWindowSize;
+
+// The max histogram bucket count that can be stored in the LCP critical path
+// predictor (LCPP) database for kLCPPInitiatorOrigin option.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLcppInitiatorOriginMaxHistogramBuckets;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPLazyLoadImagePreload);
 
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>

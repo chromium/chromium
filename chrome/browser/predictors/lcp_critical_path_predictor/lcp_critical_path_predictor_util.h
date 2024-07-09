@@ -163,6 +163,9 @@ class LcppDataMap {
   using DataTable = sqlite_proto::KeyValueTable<LcppData>;
   using DataMap =
       sqlite_proto::KeyValueData<LcppData, lcpp::LastVisitTimeCompare>;
+  using OriginTable = sqlite_proto::KeyValueTable<LcppOrigin>;
+  using OriginMap =
+      sqlite_proto::KeyValueData<LcppOrigin, lcpp::LastVisitTimeCompare>;
 
   LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
               const LoadingPredictorConfig& config);
@@ -199,11 +202,15 @@ class LcppDataMap {
 
  private:
   friend class LcppDataMapTest;
+  friend class LcppInitiatorOriginTest;
   const std::map<std::string, LcppData>& GetAllCachedForTesting();
+  const std::map<std::string, LcppOrigin>& GetAllCachedOriginForTesting();
 
   const LoadingPredictorConfig config_;
   std::unique_ptr<DataTable> data_table_;
   DataMap data_map_;
+  std::unique_ptr<OriginTable> origin_table_;
+  std::unique_ptr<OriginMap> origin_map_;
 };
 
 }  // namespace predictors

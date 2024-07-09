@@ -19,6 +19,8 @@ namespace predictors {
 
 namespace {
 constexpr std::string_view kLcppTableName = "lcp_critical_path_predictor";
+constexpr std::string_view kLcppTableNameInitiatorOrigin =
+    "lcp_critical_path_predictor_initiator_origin";
 const char kCreateProtoTableStatementTemplate[] =
     "CREATE TABLE %s ( "
     "key TEXT, "
@@ -675,6 +677,10 @@ bool EnsureTable(sql::Database* db, const std::string_view& table_name) {
                                          std::string(table_name).c_str())));
 }
 
+bool IsInitiatorOriginEnabled() {
+  return base::FeatureList::IsEnabled(blink::features::kLCPPInitiatorOrigin);
+}
+
 }  // namespace
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -974,7 +980,15 @@ LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
       data_map_(manager,
                 data_table_.get(),
                 config.max_hosts_to_track_for_lcpp,
-                base::Seconds(config.flush_data_to_disk_delay_seconds)) {}
+                base::Seconds(config.flush_data_to_disk_delay_seconds)) {
+  if (IsInitiatorOriginEnabled()) {
+    origin_table_ = std::make_unique<OriginTable>(
+        std::string(kLcppTableNameInitiatorOrigin));
+    origin_map_ = std::make_unique<OriginMap>(
+        manager, origin_table_.get(), config.max_hosts_to_track_for_lcpp,
+        base::Seconds(config.flush_data_to_disk_delay_seconds));
+  }
+}
 
 std::unique_ptr<LcppDataMap> LcppDataMap::CreateWithMockTableForTesting(
     scoped_refptr<sqlite_proto::TableManager> manager,
@@ -987,11 +1001,15 @@ LcppDataMap::~LcppDataMap() = default;
 
 void LcppDataMap::InitializeOnDBSequence() {
   data_map_.InitializeOnDBSequence();
+  if (IsInitiatorOriginEnabled()) {
+    origin_map_->InitializeOnDBSequence();
+    // TODO(crbug.com/343093433): Add LcppOrigin sanitizer between
+    // 'origin_data_map' and 'key_frequency_stat'.
+  }
 }
 
 // Record LCP element locators after a page has finished loading and LCP has
 // been determined.
-// TODO(crbug.com/343093433): Update DB to use `initiator_origin`.
 bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
                             const GURL& url,
                             const LcppDataInputs& inputs) {
@@ -999,24 +1017,48 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
     return false;
   }
   const std::string key = GetLCPPDatabaseKey(url);
-  LcppData lcpp_data;
-  bool exists = data_map_.TryGetData(key, &lcpp_data);
-  lcpp_data.set_last_visit_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  LcppData* lcpp_data;
+  LcppData lcpp_data_body;
+  LcppOrigin lcpp_origin;
+  const bool use_origin_map = IsInitiatorOriginEnabled() && initiator_origin;
+  if (use_origin_map) {
+    if (initiator_origin->host().size() >
+        ResourcePrefetchPredictorTables::kMaxStringLength) {
+      return false;
+    }
+    origin_map_->TryGetData(key, &lcpp_origin);
+    lcpp_origin.set_last_visit_time(
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    lcpp_data = UpdateFrequencyStatAndTryGetEntry(
+        config_.lcpp_initiator_origin_histogram_sliding_window_size,
+        config_.lcpp_initiator_origin_max_histogram_buckets,
+        initiator_origin->host(), *lcpp_origin.mutable_key_frequency_stat(),
+        *lcpp_origin.mutable_origin_data_map());
+    if (!lcpp_data) {
+      origin_map_->UpdateData(key, lcpp_origin);
+      return false;
+    }
+  } else {
+    bool exists = data_map_.TryGetData(key, &lcpp_data_body);
+    lcpp_data_body.set_last_visit_time(
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
-  if (!exists) {
-    lcpp_data.set_host(key);
+    if (!exists) {
+      lcpp_data_body.set_host(key);
+    }
+    lcpp_data = &lcpp_data_body;
   }
+  CHECK(lcpp_data);
 
   if (!IsLcppMultipleKeyKeyStatEnabled()) {
-    lcpp_data.mutable_lcpp_key_stat()->Clear();
+    lcpp_data->mutable_lcpp_key_stat()->Clear();
   }
 
   bool data_updated = false;
   LcppStat* lcpp_stat =
       IsLcppMultipleKeyKeyStatEnabled()
-          ? TryToGetLcppStatForKeyStat(config_, url, lcpp_data, data_updated)
-          : lcpp_data.mutable_lcpp_stat();
+          ? TryToGetLcppStatForKeyStat(config_, url, *lcpp_data, data_updated)
+          : lcpp_data->mutable_lcpp_stat();
   if (lcpp_stat) {
     if (!IsValidLcppStat(*lcpp_stat)) {
       lcpp_stat->Clear();
@@ -1032,14 +1074,19 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
     }
     DCHECK(IsValidLcppStat(*lcpp_stat));
   }
-  if (data_updated) {
-    data_map_.UpdateData(key, lcpp_data);
+  if (use_origin_map) {
+    // `origin_map` needs always update due to updating the frequency stat.
+    origin_map_->UpdateData(key, lcpp_origin);
+  } else {
+    if (data_updated) {
+      data_map_.UpdateData(key, *lcpp_data);
+    }
   }
+
   return data_updated;
 }
 
 // Returns LcppStat for the `url`, or std::nullopt on failure.
-// TODO(crbug.com/343093433): Update DB to use `initiator_origin`.
 std::optional<LcppStat> LcppDataMap::GetLcppStat(
     const std::optional<url::Origin>& initiator_origin,
     const GURL& url) const {
@@ -1048,28 +1095,51 @@ std::optional<LcppStat> LcppDataMap::GetLcppStat(
   }
   const std::string key = GetLCPPDatabaseKey(url);
 
-  LcppData data;
-  if (!data_map_.TryGetData(key, &data)) {
-    return std::nullopt;
+  const LcppData* lcpp_data;
+  LcppData lcpp_data_body;
+  LcppOrigin lcpp_origin;
+  const bool use_origin_map = IsInitiatorOriginEnabled() && initiator_origin;
+  if (use_origin_map) {
+    if (initiator_origin->host().size() >
+        ResourcePrefetchPredictorTables::kMaxStringLength) {
+      return std::nullopt;
+    }
+    if (!origin_map_->TryGetData(key, &lcpp_origin)) {
+      return std::nullopt;
+    }
+    const auto& origin_data_map = lcpp_origin.origin_data_map();
+    auto it = origin_data_map.find(initiator_origin->host());
+    if (it == origin_data_map.end()) {
+      return std::nullopt;
+    }
+    lcpp_data = &it->second;
+  } else {
+    if (!data_map_.TryGetData(key, &lcpp_data_body)) {
+      return std::nullopt;
+    }
+    lcpp_data = &lcpp_data_body;
   }
+  CHECK(lcpp_data);
+
   if (IsLcppMultipleKeyKeyStatEnabled()) {
     const std::string first_level_path = GetFirstLevelPath(url);
     if (first_level_path.empty() ||
         !IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
-      return data.lcpp_stat();
+      return lcpp_data->lcpp_stat();
     }
-    const auto& lcpp_stat_map = data.lcpp_key_stat().lcpp_stat_map();
+    const auto& lcpp_stat_map = lcpp_data->lcpp_key_stat().lcpp_stat_map();
     if (auto flp_stat = lcpp_stat_map.find(first_level_path);
         flp_stat != lcpp_stat_map.end()) {
       return flp_stat->second;
     }
     return std::nullopt;
   }
-  return data.lcpp_stat();
+  return lcpp_data->lcpp_stat();
 }
 
 void LcppDataMap::DeleteUrls(const std::vector<GURL>& urls) {
   std::vector<std::string> keys_to_delete;
+  std::vector<std::string> hosts_to_delete;
   for (const GURL& url : urls) {
     if (!IsURLValidForLcpp(url)) {
       continue;
@@ -1077,20 +1147,71 @@ void LcppDataMap::DeleteUrls(const std::vector<GURL>& urls) {
 
     const std::string key = GetLCPPDatabaseKey(url);
     keys_to_delete.emplace_back(key);
+    if (IsInitiatorOriginEnabled()) {
+      hosts_to_delete.push_back(url::Origin::Create(url).host());
+    }
   }
   data_map_.DeleteData(keys_to_delete);
+  if (IsInitiatorOriginEnabled()) {
+    origin_map_->DeleteData(keys_to_delete);
+    // Delete LcppOrigin which `origin_data_map` has hosts in `host_to_delete`.
+    std::map<std::string, LcppOrigin> needs_update;
+    for (auto& key_value : origin_map_->GetAllCached()) {
+      LcppOrigin lcpp_origin = key_value.second;
+      bool updated = false;
+      for (const auto& host : hosts_to_delete) {
+        auto& origin_data_map = *lcpp_origin.mutable_origin_data_map();
+        bool origin_found = false;
+        if (auto it = origin_data_map.find(host); it != origin_data_map.end()) {
+          origin_data_map.erase(it);
+          updated = true;
+          origin_found = true;
+        }
+        auto& main_buckets =
+            *lcpp_origin.mutable_key_frequency_stat()->mutable_main_buckets();
+        bool bucket_found = false;
+        if (auto it = main_buckets.find(host); it != main_buckets.end()) {
+          main_buckets.erase(it);
+          bucket_found = true;
+        }
+        if (origin_found != bucket_found) {
+          LOG(ERROR) << "LcppOrigin for " << key_value.first << " is corrupted";
+        }
+      }
+      if (updated) {
+        needs_update[key_value.first] = lcpp_origin;
+      }
+    }
+    for (auto it : needs_update) {
+      origin_map_->UpdateData(it.first, it.second);
+    }
+  }
 }
 
 void LcppDataMap::DeleteAllData() {
   data_map_.DeleteAllData();
+  if (IsInitiatorOriginEnabled()) {
+    origin_map_->DeleteAllData();
+  }
 }
 
 const std::map<std::string, LcppData>& LcppDataMap::GetAllCachedForTesting() {
   return data_map_.GetAllCached();
 }
+const std::map<std::string, LcppOrigin>&
+LcppDataMap::GetAllCachedOriginForTesting() {
+  CHECK(IsInitiatorOriginEnabled());
+  return origin_map_->GetAllCached();
+}
 
 bool LcppDataMap::CreateOrClearTablesIfNecessary(sql::Database* db) {
-  return EnsureTable(db, kLcppTableName);
+  const bool result = EnsureTable(db, kLcppTableName);
+  if (IsInitiatorOriginEnabled()) {
+    return result && EnsureTable(db, kLcppTableNameInitiatorOrigin);
+  }
+  return result && db->Execute(base::StringPrintf(
+                       "DROP TABLE IF EXISTS %s",
+                       std::string(kLcppTableNameInitiatorOrigin).c_str()));
 }
 
 }  // namespace predictors

@@ -1382,6 +1382,17 @@ const base::FeatureParam<double> kLCPPFontURLPredictorThresholdInMbps{
 const base::FeatureParam<std::string> kLCPPFontURLPredictorExcludedHosts{
     &kLCPPFontURLPredictor, "lcpp_font_prefetch_excluded_hosts", ""};
 
+BASE_FEATURE(kLCPPInitiatorOrigin,
+             "LCPPInitiatorOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kLcppInitiatorOriginHistogramSlidingWindowSize{
+    &kLCPPInitiatorOrigin,
+    "lcpp_initiator_origin_histogram_sliding_window_size", 10000};
+
+const base::FeatureParam<int> kLcppInitiatorOriginMaxHistogramBuckets{
+    &kLCPPInitiatorOrigin, "lcpp_initiator_origin_max_histogram_buckets", 100};
+
 BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",
              base::FEATURE_DISABLED_BY_DEFAULT);

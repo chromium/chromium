@@ -66,3 +66,12 @@ message LcppData {
   optional LcppStat lcpp_stat = 3;
   optional LcppKeyStat lcpp_key_stat = 4;
 }
+
+// `LcppOrigin` contains `LcppData` for each initiator origin in
+// `lcpp_stat_map`, where
+// the keys are maintained by the k-top algorithm using `key_frequency_stat`.
+message LcppOrigin {
+  optional uint64 last_visit_time = 1;
+  map<string, LcppData> origin_data_map = 2;
+  optional LcppStringFrequencyStatData key_frequency_stat = 3;
+}

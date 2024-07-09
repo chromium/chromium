@@ -1021,6 +1021,13 @@ class LcppDataMapTest : public testing::Test {
     content::RunAllTasksUntilIdle();
   }
 
+  void TearDownDB() {
+    content::RunAllTasksUntilIdle();
+    lcpp_data_map_.reset();
+    predictor_database_.reset();
+    content::RunAllTasksUntilIdle();
+  }
+
  protected:
   void TearDown() override {
     if (lcpp_data_map_) {
@@ -1030,6 +1037,10 @@ class LcppDataMapTest : public testing::Test {
 
   const std::map<std::string, LcppData>& GetDataMap() {
     return lcpp_data_map_->GetAllCachedForTesting();
+  }
+
+  const std::map<std::string, LcppOrigin>& GetOriginMap() {
+    return lcpp_data_map_->GetAllCachedOriginForTesting();
   }
 
   void UpdateKeyValueDataDirectly(const std::string& key,
@@ -1046,18 +1057,33 @@ class LcppDataMapTest : public testing::Test {
     return sum;
   }
 
-  void LearnLcpp(const GURL& url, const LcppDataInputs& inputs) {
-    lcpp_data_map_->LearnLcpp(std::nullopt, url, inputs);
+  bool LearnLcpp(const std::optional<url::Origin>& initiator_origin,
+                 const GURL& url,
+                 const LcppDataInputs& inputs) {
+    return lcpp_data_map_->LearnLcpp(initiator_origin, url, inputs);
+  }
+  bool LearnLcpp(const GURL& url, const LcppDataInputs& inputs) {
+    return lcpp_data_map_->LearnLcpp(/*initiator_origin=*/std::nullopt, url,
+                                     inputs);
   }
 
-  void LearnElementLocator(
+  bool LearnElementLocator(
+      const std::optional<url::Origin>& initiator_origin,
       const GURL& url,
       const std::string& lcp_element_locator,
       const std::vector<GURL>& lcp_influencer_scripts = {}) {
     predictors::LcppDataInputs inputs;
     inputs.lcp_element_locator = lcp_element_locator;
     inputs.lcp_influencer_scripts = lcp_influencer_scripts;
-    LearnLcpp(url, inputs);
+    return LearnLcpp(initiator_origin, url, inputs);
+  }
+
+  void LearnElementLocator(
+      const GURL& url,
+      const std::string& lcp_element_locator,
+      const std::vector<GURL>& lcp_influencer_scripts = {}) {
+    LearnElementLocator(/*initiator_origin=*/std::nullopt, url,
+                        lcp_element_locator, lcp_influencer_scripts);
   }
 
   void LearnFontUrls(const GURL& url, const std::vector<GURL>& font_urls) {
@@ -1074,8 +1100,13 @@ class LcppDataMapTest : public testing::Test {
     LearnLcpp(url, inputs);
   }
 
+  std::optional<LcppStat> GetLcppStat(
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& url) {
+    return lcpp_data_map_->GetLcppStat(initiator_origin, url);
+  }
   std::optional<LcppStat> GetLcppStat(const GURL& url) {
-    return lcpp_data_map_->GetLcppStat(/*initiator_origin=*/std::nullopt, url);
+    return GetLcppStat(/*initiator_origin=*/std::nullopt, url);
   }
 
   void TestLearnLcppURL(
@@ -1108,6 +1139,12 @@ class LcppDataMapTest : public testing::Test {
     return stat;
   }
 
+  static url::Origin CreateOrigin(const std::string& host_name) {
+    const url::Origin origin = url::Origin::Create(GURL("http://" + host_name));
+    CHECK_EQ(origin.host(), host_name);
+    return origin;
+  }
+
   content::BrowserTaskEnvironment task_environment_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -1120,7 +1157,70 @@ class LcppDataMapTest : public testing::Test {
   std::unique_ptr<LcppDataMap> lcpp_data_map_;
 };
 
-TEST_F(LcppDataMapTest, LearnLcpp) {
+class LcppDataMapFeatures
+    : public LcppDataMapTest,
+      public testing::WithParamInterface<std::vector<base::test::FeatureRef>> {
+ public:
+  LcppDataMapFeatures() {
+    scoped_feature_list_.InitWithFeatures(GetParam(),
+                                          /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+auto& kLCPPInitiatorOrigin = blink::features::kLCPPInitiatorOrigin;
+auto& kLCPPMultipleKey = blink::features::kLCPPMultipleKey;
+const std::vector<base::test::FeatureRef> featureset1[] = {
+    {},
+    {kLCPPInitiatorOrigin},
+    {kLCPPMultipleKey},
+    {kLCPPInitiatorOrigin, kLCPPMultipleKey}};
+inline std::string CustomParamNameFunction(
+    const testing::TestParamInfo<LcppDataMapFeatures::ParamType>& info) {
+  const auto& features = info.param;
+  if (features.empty()) {
+    return std::string("Default");
+  }
+  std::string name;
+  for (size_t i = 0; i < features.size(); i++) {
+    if (features[i] == kLCPPInitiatorOrigin) {
+      name += "InitiatorOrigin";
+    } else {
+      name += "MultipleKey";
+    }
+    if (i < features.size() - 1) {
+      name += "_";
+    }
+  }
+  return name;
+}
+INSTANTIATE_TEST_SUITE_P(LcppFeatureSet1,
+                         LcppDataMapFeatures,
+                         testing::ValuesIn(featureset1),
+                         &CustomParamNameFunction);
+
+TEST_P(LcppDataMapFeatures, Base) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  InitializeDB(config);
+  EXPECT_TRUE(GetDataMap().empty());
+
+  predictors::LcppDataInputs inputs;
+  inputs.lcp_element_locator = "/#foo";
+  GURL url = GURL("https://a.test");
+  lcpp_data_map_->LearnLcpp(/*initiator_origin=*/std::nullopt, url, inputs);
+
+  auto stat =
+      lcpp_data_map_->GetLcppStat(/*initiator_origin=*/std::nullopt, url);
+  EXPECT_TRUE(stat);
+  LcppData expected;
+  InitializeLcpElementLocatorBucket(expected, "/#foo", 1);
+  EXPECT_EQ(expected.lcpp_stat(), *stat) << *stat;
+}
+
+TEST_P(LcppDataMapFeatures, LearnLcpp) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   EXPECT_EQ(5U, config.lcpp_histogram_sliding_window_size);
@@ -1243,7 +1343,7 @@ TEST_F(LcppDataMapTest, LearnLcpp) {
   }
 }
 
-TEST_F(LcppDataMapTest, LearnFontUrls) {
+TEST_P(LcppDataMapFeatures, LearnFontUrls) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   EXPECT_EQ(5U, config.lcpp_histogram_sliding_window_size);
@@ -1289,7 +1389,7 @@ TEST_F(LcppDataMapTest, LearnFontUrls) {
   }
 }
 
-TEST_F(LcppDataMapTest, LearnSubresourceUrls) {
+TEST_P(LcppDataMapFeatures, LearnSubresourceUrls) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   EXPECT_EQ(5U, config.lcpp_histogram_sliding_window_size);
@@ -1334,7 +1434,7 @@ TEST_F(LcppDataMapTest, LearnSubresourceUrls) {
   }
 }
 
-TEST_F(LcppDataMapTest, WhenLcppDataIsCorrupted_ResetData) {
+TEST_P(LcppDataMapFeatures, WhenLcppDataIsCorrupted_ResetData) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   InitializeDB(config);
@@ -1359,7 +1459,7 @@ TEST_F(LcppDataMapTest, WhenLcppDataIsCorrupted_ResetData) {
   }
 }
 
-TEST_F(LcppDataMapTest, LcppMaxHosts) {
+TEST_P(LcppDataMapFeatures, LcppMaxHosts) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   config.max_hosts_to_track_for_lcpp = 3u;
@@ -1387,7 +1487,17 @@ TEST_F(LcppDataMapTest, LcppMaxHosts) {
   EXPECT_FALSE(GetLcppStat(url_a));
 }
 
-TEST_F(LcppDataMapTest, LcppLearnURL) {
+class LcppDataMapFeatures2 : public LcppDataMapFeatures {};
+
+const std::vector<base::test::FeatureRef> featureset2[] = {
+    {},
+    {kLCPPInitiatorOrigin}};
+INSTANTIATE_TEST_SUITE_P(LcppFeatureSet2,
+                         LcppDataMapFeatures2,
+                         testing::ValuesIn(featureset2),
+                         &CustomParamNameFunction);
+
+TEST_P(LcppDataMapFeatures2, LcppLearnURL) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   InitializeDB(config);
@@ -1403,7 +1513,7 @@ TEST_F(LcppDataMapTest, LcppLearnURL) {
   TestLearnLcppURL(url_keys);
 }
 
-TEST_F(LcppDataMapTest, DeleteUrls) {
+TEST_P(LcppDataMapFeatures, DeleteUrls) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   config.max_hosts_to_track_for_lcpp = 10u;
@@ -1426,16 +1536,24 @@ TEST_F(LcppDataMapTest, DeleteUrls) {
   EXPECT_TRUE(GetLcppStat(url_c));
 }
 
-class LcppMultipleKeyTest : public LcppDataMapTest,
-                            public testing::WithParamInterface<
-                                blink::features::LcppMultipleKeyTypes> {
+class LcppMultipleKeyTest
+    : public LcppDataMapTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, blink::features::LcppMultipleKeyTypes>> {
  public:
   void SetUp() override {
     auto& kLcppMultipleKeyType = blink::features::kLcppMultipleKeyType;
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kLCPPMultipleKey,
-        {{kLcppMultipleKeyType.name,
-          kLcppMultipleKeyType.GetName(GetParam())}});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {blink::features::kLCPPMultipleKey,
+         {{kLcppMultipleKeyType.name,
+           kLcppMultipleKeyType.GetName(std::get<1>(GetParam()))}}}};
+    if (std::get<0>(GetParam())) {
+      base::test::FeatureRefAndParams params = {kLCPPInitiatorOrigin, {}};
+      enabled_features.push_back(params);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{});
 
     LoadingPredictorConfig config;
     PopulateTestConfig(&config);
@@ -1453,8 +1571,19 @@ class LcppMultipleKeyTest : public LcppDataMapTest,
 INSTANTIATE_TEST_SUITE_P(
     LcppMultipleKeyTypes,
     LcppMultipleKeyTest,
-    testing::Values(blink::features::LcppMultipleKeyTypes::kDefault,
-                    blink::features::LcppMultipleKeyTypes::kLcppKeyStat));
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(blink::features::LcppMultipleKeyTypes::kDefault,
+                        blink::features::LcppMultipleKeyTypes::kLcppKeyStat)),
+    [](const testing::TestParamInfo<LcppMultipleKeyTest::ParamType>& info) {
+      std::string name;
+      name += std::get<0>(info.param) ? "InitiatorOrigin_" : "Default_";
+      name += (std::get<1>(info.param) ==
+               blink::features::LcppMultipleKeyTypes::kDefault)
+                  ? "Default"
+                  : "KeyStat";
+      return name;
+    });
 
 TEST_P(LcppMultipleKeyTest, LearnURL) {
   const std::string long_host =
@@ -1504,8 +1633,8 @@ TEST_P(LcppMultipleKeyTest, ShouldNotLearnTooLongLocators) {
 }
 
 TEST_P(LcppMultipleKeyTest, DeleteUrls) {
-  const bool kIsDefault =
-      GetParam() == blink::features::LcppMultipleKeyTypes::kDefault;
+  const bool kIsDefault = std::get<1>(GetParam()) ==
+                          blink::features::LcppMultipleKeyTypes::kDefault;
   const GURL url_a_1("http://a.test");
   const GURL url_a_2("http://a.test/foo");
   const GURL url_a_3("http://a.test/bar");
@@ -1530,15 +1659,23 @@ TEST_P(LcppMultipleKeyTest, DeleteUrls) {
   EXPECT_TRUE(GetLcppStat(url_c));
 }
 
-class LcppMultipleKeyTestDefault : public LcppDataMapTest {
+class LcppMultipleKeyTestDefault : public LcppDataMapTest,
+                                   public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     auto& kLcppMultipleKeyType = blink::features::kLcppMultipleKeyType;
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kLCPPMultipleKey,
-        {{kLcppMultipleKeyType.name,
-          kLcppMultipleKeyType.GetName(
-              blink::features::LcppMultipleKeyTypes::kDefault)}});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {blink::features::kLCPPMultipleKey,
+         {{kLcppMultipleKeyType.name,
+           kLcppMultipleKeyType.GetName(
+               blink::features::LcppMultipleKeyTypes::kDefault)}}}};
+    if (GetParam()) {
+      base::test::FeatureRefAndParams params = {kLCPPInitiatorOrigin, {}};
+      enabled_features.push_back(params);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{});
     LcppDataMapTest::SetUp();
   }
 
@@ -1546,7 +1683,14 @@ class LcppMultipleKeyTestDefault : public LcppDataMapTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(LcppMultipleKeyTestDefault, MaxHosts) {
+INSTANTIATE_TEST_SUITE_P(
+    LcppMultipleKeyTestDefaultP,
+    LcppMultipleKeyTestDefault,
+    testing::Bool(),
+    [](const testing::TestParamInfo<LcppMultipleKeyTestDefault::ParamType>&
+           info) { return (info.param) ? "InitiatorOrigin" : "Default"; });
+
+TEST_P(LcppMultipleKeyTestDefault, MaxHosts) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   config.max_hosts_to_track_for_lcpp = 2u;
@@ -1574,31 +1718,51 @@ TEST_F(LcppMultipleKeyTestDefault, MaxHosts) {
 class ScopedLcppKeyStatFeature {
  public:
   ScopedLcppKeyStatFeature() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{GetParam()},
+        /*disabled_features=*/{});
+  }
+
+  static base::test::FeatureRefAndParams GetParam() {
     auto& kLcppMultipleKeyType = blink::features::kLcppMultipleKeyType;
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kLCPPMultipleKey,
-        {{kLcppMultipleKeyType.name,
-          kLcppMultipleKeyType.GetName(
-              blink::features::LcppMultipleKeyTypes::kLcppKeyStat)}});
+    return {blink::features::kLCPPMultipleKey,
+            {{kLcppMultipleKeyType.name,
+              kLcppMultipleKeyType.GetName(
+                  blink::features::LcppMultipleKeyTypes::kLcppKeyStat)}}};
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class LcppMultipleKeyTestKeyStat : public LcppDataMapTest {
+class LcppMultipleKeyTestKeyStat : public LcppDataMapTest,
+                                   public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    scoped_lcpp_key_stat_feature_ =
-        std::make_unique<ScopedLcppKeyStatFeature>();
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        ScopedLcppKeyStatFeature::GetParam()};
+    if (GetParam()) {
+      base::test::FeatureRefAndParams params = {kLCPPInitiatorOrigin, {}};
+      enabled_features.push_back(params);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{});
     LcppDataMapTest::SetUp();
   }
 
  private:
-  std::unique_ptr<ScopedLcppKeyStatFeature> scoped_lcpp_key_stat_feature_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(LcppMultipleKeyTestKeyStat, MaxHostsAndKeys) {
+INSTANTIATE_TEST_SUITE_P(
+    LcppMultipleKeyTestKeyStatP,
+    LcppMultipleKeyTestKeyStat,
+    testing::Bool(),
+    [](const testing::TestParamInfo<LcppMultipleKeyTestKeyStat::ParamType>&
+           info) { return (info.param) ? "InitiatorOrigin" : "Default"; });
+
+TEST_P(LcppMultipleKeyTestKeyStat, MaxHostsAndKeys) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   config.max_hosts_to_track_for_lcpp = 2u;
@@ -1679,7 +1843,7 @@ TEST_F(LcppDataMapTest, LcppStatShouldBeClearedOverFlagReset) {
   EXPECT_EQ(data, GetDataMap().at("a.test"));
 }
 
-TEST_F(LcppMultipleKeyTestKeyStat, AddNewEntryToFullBucketKeyStat) {
+TEST_P(LcppMultipleKeyTestKeyStat, AddNewEntryToFullBucketKeyStat) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
   config.max_hosts_to_track_for_lcpp = 2u;
@@ -1712,6 +1876,238 @@ TEST_F(LcppMultipleKeyTestKeyStat, AddNewEntryToFullBucketKeyStat) {
   EXPECT_FALSE(GetLcppStat(url_1));
   EXPECT_EQ(*GetLcppStat(url_2),
             MakeLcppStatWithLCPElementLocator("/#lcp2", 2));
+}
+
+class ScopedInitiatorOriginFeature {
+ public:
+  ScopedInitiatorOriginFeature() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kLCPPInitiatorOrigin);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class LcppInitiatorOriginTest : public LcppDataMapTest {
+ public:
+  void SetUp() override {
+    scoped_feature_ = std::make_unique<ScopedInitiatorOriginFeature>();
+    LcppDataMapTest::SetUp();
+  }
+
+ protected:
+  void TearDown() override {
+    lcpp_data_map_->origin_map_->DeleteAllData();
+    LcppDataMapTest::TearDown();
+  }
+
+ private:
+  std::unique_ptr<ScopedInitiatorOriginFeature> scoped_feature_;
+};
+
+TEST_F(LcppInitiatorOriginTest, Base) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 1u;
+  config.lcpp_initiator_origin_histogram_sliding_window_size = 4u;
+  config.lcpp_initiator_origin_max_histogram_buckets = 3u;
+  InitializeDB(config);
+  EXPECT_TRUE(GetDataMap().empty());
+  EXPECT_TRUE(GetOriginMap().empty());
+
+  const GURL url("http://a.test");
+  LearnElementLocator(url, "/#lcp0");
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp0"));
+
+  const url::Origin origin1 = CreateOrigin("origin1.test");
+  LearnElementLocator(origin1, url, "/#lcp1");
+  EXPECT_EQ(*GetLcppStat(origin1, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp1"));
+
+  const url::Origin origin2 = CreateOrigin("origin2.test");
+  LearnElementLocator(origin2, url, "/#lcp2");
+  EXPECT_EQ(*GetLcppStat(origin2, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp2"));
+
+  const url::Origin origin3 = CreateOrigin("origin3.test");
+  LearnElementLocator(origin3, url, "/#lcp3");
+  EXPECT_EQ(*GetLcppStat(origin3, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp3"));
+
+  const url::Origin origin4 = CreateOrigin("origin4.test");
+  LearnElementLocator(origin4, url, "/#lcp4");
+  EXPECT_EQ(*GetLcppStat(origin4, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp4"));
+  // Confirm the first origin over `lcpp_multiple_key_max_histogram_buckets` is
+  // dropped.
+  EXPECT_FALSE(GetLcppStat(origin1, url));
+  // Non origin entry is still alive.
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp0"));
+
+  // Confirm adding other host urls over `max_hosts_to_track_for_lcpp` lets all
+  // the origin-associated entries be dropped.
+  const GURL url_b("http://b.test");
+  LearnElementLocator(origin1, url_b, "/#b");
+  EXPECT_EQ(*GetLcppStat(origin1, url_b),
+            MakeLcppStatWithLCPElementLocator("/#b"));
+  EXPECT_FALSE(GetLcppStat(origin2, url));
+  EXPECT_FALSE(GetLcppStat(origin3, url));
+  EXPECT_FALSE(GetLcppStat(origin4, url));
+  // Non origin entry is still alive.
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp0"));
+}
+
+TEST_F(LcppInitiatorOriginTest, AddNewEntryToFullBuckets) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 1u;
+  config.lcpp_initiator_origin_histogram_sliding_window_size = 4u;
+  config.lcpp_initiator_origin_max_histogram_buckets = 2u;
+  InitializeDB(config);
+
+  const GURL url("http://a.test");
+  const url::Origin origin1 = CreateOrigin("origin1.test");
+  LearnElementLocator(origin1, url, "/#lcp1");
+  LearnElementLocator(origin1, url, "/#lcp1");
+  const url::Origin origin2 = CreateOrigin("origin2.test");
+  LearnElementLocator(origin2, url, "/#lcp2");
+  LearnElementLocator(origin2, url, "/#lcp2");
+  EXPECT_EQ(*GetLcppStat(origin1, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp1", /*frequency=*/2));
+  EXPECT_EQ(*GetLcppStat(origin2, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp2", /*frequency=*/2));
+
+  // New entry is not recorded until its frequency is over existing ones.
+  const url::Origin origin3 = CreateOrigin("origin3.test");
+  EXPECT_FALSE(LearnElementLocator(origin3, url, "/#lcp3"));
+  EXPECT_FALSE(GetLcppStat(origin3, url));
+
+  EXPECT_FALSE(LearnElementLocator(origin3, url, "/#lcp3"));
+  EXPECT_FALSE(GetLcppStat(origin3, url));
+
+  EXPECT_TRUE(LearnElementLocator(origin3, url, "/#lcp3"));
+  EXPECT_EQ(*GetLcppStat(origin3, url),
+            MakeLcppStatWithLCPElementLocator("/#lcp3"));
+}
+
+TEST_F(LcppInitiatorOriginTest, TooLongHostName) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  InitializeDB(config);
+
+  const GURL url("http://a.test");
+  const url::Origin origin1 = CreateOrigin("origin1.test");
+  LearnElementLocator(origin1, url, "/#lcp1");
+  CHECK_EQ(*GetLcppStat(origin1, url),
+           MakeLcppStatWithLCPElementLocator("/#lcp1"));
+
+  const url::Origin too_long_origin = CreateOrigin(
+      std::string(ResourcePrefetchPredictorTables::kMaxStringLength + 1, 'c'));
+  EXPECT_FALSE(LearnElementLocator(too_long_origin, url, "/#lcp1"));
+  EXPECT_FALSE(GetLcppStat(too_long_origin, url));
+}
+
+TEST_F(LcppInitiatorOriginTest, DeleteURL) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 3u;
+  config.lcpp_initiator_origin_histogram_sliding_window_size = 4u;
+  config.lcpp_initiator_origin_max_histogram_buckets = 3u;
+  InitializeDB(config);
+
+  const GURL url1("http://a.test");
+  LearnElementLocator(url1, "/#lcp0");
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url1),
+            MakeLcppStatWithLCPElementLocator("/#lcp0"));
+  const GURL url2("http://b.test");
+  const url::Origin origin2 = url::Origin::Create(url2);
+  LearnElementLocator(origin2, url1, "/#lcp2");
+  EXPECT_EQ(*GetLcppStat(origin2, url1),
+            MakeLcppStatWithLCPElementLocator("/#lcp2"));
+  const GURL url3("http://c.test");
+  const url::Origin origin3 = url::Origin::Create(url3);
+  LearnElementLocator(origin3, url1, "/#lcp3");
+  EXPECT_EQ(*GetLcppStat(origin3, url1),
+            MakeLcppStatWithLCPElementLocator("/#lcp3"));
+
+  LearnElementLocator(url2, "/#lcp4");
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url2),
+            MakeLcppStatWithLCPElementLocator("/#lcp4"));
+
+  lcpp_data_map_->DeleteUrls({url2, GURL("http://d.test")});
+  // Confirm all `url2` associated entries was removed.
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url1),
+            MakeLcppStatWithLCPElementLocator("/#lcp0"));
+  EXPECT_FALSE(GetLcppStat(origin2, url1));
+  EXPECT_EQ(*GetLcppStat(origin3, url1),
+            MakeLcppStatWithLCPElementLocator("/#lcp3"));
+  EXPECT_FALSE(GetLcppStat(std::nullopt, url2));
+
+  lcpp_data_map_->DeleteAllData();
+  // Confirm all data was removed.
+  EXPECT_FALSE(GetLcppStat(std::nullopt, url1));
+  EXPECT_FALSE(GetLcppStat(origin2, url1));
+  EXPECT_FALSE(GetLcppStat(origin3, url1));
+  EXPECT_FALSE(GetLcppStat(std::nullopt, url2));
+}
+
+TEST_F(LcppDataMapTest, ResetInitiatorOriginDBOverFlag) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+
+  const GURL url("http://a.test");
+  const GURL url2("http://b.test");
+  const url::Origin origin = CreateOrigin("origin1.test");
+  {
+    [[maybe_unused]] ScopedInitiatorOriginFeature scoped_feature;
+    InitializeDB(config);
+
+    LearnElementLocator(url, "/#lcp0");
+    EXPECT_EQ(*GetLcppStat(std::nullopt, url),
+              MakeLcppStatWithLCPElementLocator("/#lcp0"));
+
+    LearnElementLocator(origin, url2, "/#lcp1");
+    EXPECT_EQ(*GetLcppStat(origin, url2),
+              MakeLcppStatWithLCPElementLocator("/#lcp1"));
+
+    TearDownDB();
+  }
+
+  {
+    [[maybe_unused]] ScopedInitiatorOriginFeature scoped_feature;
+    InitializeDB(config);
+
+    EXPECT_EQ(*GetLcppStat(std::nullopt, url),
+              MakeLcppStatWithLCPElementLocator("/#lcp0"));
+    EXPECT_EQ(*GetLcppStat(origin, url2),
+              MakeLcppStatWithLCPElementLocator("/#lcp1"));
+    TearDownDB();
+  }
+
+  {
+    InitializeDB(config);
+
+    EXPECT_EQ(*GetLcppStat(std::nullopt, url),
+              MakeLcppStatWithLCPElementLocator("/#lcp0"));
+    // LcppStat associated to an initiator origin is removed.
+    EXPECT_FALSE(GetLcppStat(origin, url2));
+    TearDownDB();
+  }
+
+  {
+    [[maybe_unused]] ScopedInitiatorOriginFeature scoped_feature;
+    InitializeDB(config);
+
+    EXPECT_EQ(*GetLcppStat(std::nullopt, url),
+              MakeLcppStatWithLCPElementLocator("/#lcp0"));
+    // LcppStat associated to an initiator origin is removed.
+    EXPECT_FALSE(GetLcppStat(origin, url2));
+    TearDownDB();
+  }
 }
 
 }  // namespace predictors
