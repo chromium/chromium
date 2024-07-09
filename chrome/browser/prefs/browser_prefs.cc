@@ -2840,11 +2840,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 06/2024.
   profile_prefs->ClearPref(kDefaultSearchProviderChoicePending);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 07/2024.
-  ChromeShelfPrefs::CleanupPreloadPrefs(profile_prefs);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 

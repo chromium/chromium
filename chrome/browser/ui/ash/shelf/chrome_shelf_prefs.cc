@@ -481,17 +481,16 @@ void ChromeShelfPrefs::CleanupPreloadPrefs(PrefService* profile_prefs) {
 
   for (auto* const pref_name : kPrefNames) {
     // Deduplicate items in list.
-    const base::Value::List& list = profile_prefs->GetList(pref_name);
+    ScopedListPrefUpdate list(profile_prefs, pref_name);
     std::set<base::Value> set;
-    for (const auto& item : list) {
+    for (const auto& item : *list) {
       set.insert(item.Clone());
     }
-    if (set.size() < list.size()) {
-      base::Value::List deduplicated;
+    if (set.size() < list->size()) {
+      list->clear();
       for (const auto& item : set) {
-        deduplicated.Append(item.Clone());
+        list->Append(item.Clone());
       }
-      profile_prefs->SetList(pref_name, std::move(deduplicated));
     }
   }
 }
@@ -933,6 +932,9 @@ void ChromeShelfPrefs::AttachProfile(Profile* profile) {
   profile_ = profile;
   needs_consistency_migrations_ = true;
   sync_service_observer_.Reset();
+  if (profile_) {
+    CleanupPreloadPrefs(profile_->GetPrefs());
+  }
 
   pending_preload_apps_.clear();
   preload_pin_order_.clear();
