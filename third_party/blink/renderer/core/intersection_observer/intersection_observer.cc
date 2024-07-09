@@ -476,6 +476,10 @@ int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
     absl::optional<base::TimeTicks>& monotonic_time) {
   DCHECK(!RootIsImplicit());
+  REPLAY_ASSERT("[TT-1483-1527] IntersectionObserver::ComputeIntersections A %d %d %u",
+    !!RootIsValid(),
+    !!GetExecutionContext(),
+    (unsigned)observations_.size());
   if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
     return 0;
 
@@ -488,6 +492,11 @@ int64_t IntersectionObserver::ComputeIntersections(
   bool is_post_layout_delivery_observer =
       GetDeliveryBehavior() ==
       IntersectionObserver::kDeliverDuringPostLayoutSteps;
+
+  REPLAY_ASSERT("[TT-1483-1527] IntersectionObserver::ComputeIntersections B %d %d",
+    post_layout_delivery_only,
+    is_post_layout_delivery_observer);
+
   if (post_layout_delivery_only != is_post_layout_delivery_observer)
     return 0;
 

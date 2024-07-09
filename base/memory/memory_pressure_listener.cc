@@ -32,7 +32,11 @@ class MemoryPressureObserver {
     // MemoryPressureListener is created in a non-sequenced context. Tests will
     // need to be adjusted for that to work.
     if (SequencedTaskRunnerHandle::IsSet()) {
+      REPLAY_ASSERT("MemoryPressureObserver::AddObserver A %d", sync);
       async_observers_->AddObserver(listener);
+    }
+    else {
+      REPLAY_ASSERT("MemoryPressureObserver::AddObserver B %d", sync);
     }
 
     if (sync) {

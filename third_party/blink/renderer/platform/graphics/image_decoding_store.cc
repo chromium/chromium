@@ -50,6 +50,7 @@ ImageDecodingStore::ImageDecodingStore()
           FROM_HERE,
           base::BindRepeating(&ImageDecodingStore::OnMemoryPressure,
                               base::Unretained(this))) {
+  REPLAY_ASSERT("[TT-1524-1526] ImageDecodingStore::ImageDecodingStore");
   gHasInstance = true;
 }
 
