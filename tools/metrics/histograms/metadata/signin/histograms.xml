@@ -1194,10 +1194,28 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram base="true" name="Signin.InterceptResult"
+<histogram name="Signin.InterceptResult.ChromeSignin{State}"
     enum="SigninInterceptResult" expires_after="2025-01-05">
-<!-- Name completed by histogram_suffixes name="SigninInterceptType" -->
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the outcome of the signin interception bubble. Recorded when the
+    bubble is closed, either after the user did an explicit action through the
+    bubble or when the bubble was closed because it was dismissed or ignored
+    (browser is closed while the bubble was showing).
 
+    This histogram records values for the Chrome Signin bubble, with the users
+    {State}.
+  </summary>
+  <token key="State">
+    <variant name="" summary="in any state"/>
+    <variant name=".CookiesDeletedOnExit"
+        summary="that have Clear Cookies on Exit enabled"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.InterceptResult.Enterprise{Mode}.{Status}"
+    enum="SigninInterceptResult" expires_after="2025-01-05">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1205,7 +1223,46 @@ prefs when the profile is loaded.  -->
     bubble is closed, either after the user did an explicit action through the
     bubble or when the bubble was closed because it was dismissed or ignored
     (browser is closed while the bubble was showing).
+
+    This histogram records values for the Enterprise {Mode}, with the {Status}
+    account being enterprise.
   </summary>
+  <token key="Mode">
+    <variant name="" summary="bubble"/>
+    <variant name="Forced" summary="dialog"/>
+  </token>
+  <token key="Status">
+    <variant name="NewIsEnterprise" summary="new"/>
+    <variant name="PrimaryIsEnterprise" summary="primary"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.InterceptResult.{InterceptType}{SigninState}"
+    enum="SigninInterceptResult" expires_after="2025-01-05">
+  <owner>alexilin@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the outcome of the signin interception bubble. Recorded when the
+    bubble is closed, either after the user did an explicit action through the
+    bubble or when the bubble was closed because it was dismissed or ignored
+    (browser is closed while the bubble was showing).
+
+    This histogram records values for the {InterceptType}, with the users
+    {SigninState}.
+  </summary>
+  <token key="InterceptType">
+    <variant name="Enterprise" summary="Enterprise bubble"/>
+    <variant name="EnterpriseForced" summary="Enterprise dialog"/>
+    <variant name="EnterpriseOIDC" summary="Enterprise dialog for OIDC signin"/>
+    <variant name="MultiUser" summary="MultiUser bubble"/>
+    <variant name="Switch" summary="Profile-switch bubble"/>
+  </token>
+  <token key="SigninState">
+    <variant name="" summary="in any sign in state."/>
+    <variant name=".NoSync" summary="that have not opted in to Sync"/>
+    <variant name=".SigninPending" summary="in Signin Pending state"/>
+    <variant name=".Sync" summary="that have opted in to Sync"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.InvalidGaiaCredentialsReason"

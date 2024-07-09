@@ -4141,41 +4141,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Signin.SigninStartedAccessPoint"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SigninInterceptChromeSignin" separator=".">
-  <suffix name="CookiesDeletedOnExit"
-      label="ChromeSignin bubble with Clear Cookies on Exit enabled."/>
-  <affected-histogram name="Signin.InterceptResult.ChromeSignin"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SigninInterceptEnterpriseStatus" separator=".">
-  <suffix name="NewIsEnterprise" label="The new account is enterprise."/>
-  <suffix name="PrimaryIsEnterprise"
-      label="The primary account is enterprise."/>
-  <affected-histogram name="Signin.InterceptResult.Enterprise"/>
-  <affected-histogram name="Signin.InterceptResult.EnterpriseForced"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SigninInterceptState" separator=".">
-  <suffix name="NoSync" label="User has not opted in to Sync."/>
-  <suffix name="SigninPending" label="User is in Signin Pending state."/>
-  <suffix name="Sync" label="User has opted in to Sync."/>
-  <affected-histogram name="Signin.InterceptResult.Enterprise"/>
-  <affected-histogram name="Signin.InterceptResult.EnterpriseForced"/>
-  <affected-histogram name="Signin.InterceptResult.EnterpriseOIDC"/>
-  <affected-histogram name="Signin.InterceptResult.MultiUser"/>
-  <affected-histogram name="Signin.InterceptResult.Switch"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SigninInterceptType" separator=".">
-  <suffix name="ChromeSignin" label="ChromeSignin bubble."/>
-  <suffix name="Enterprise" label="Enterprise bubble."/>
-  <suffix name="EnterpriseForced" label="Enterprise dialog."/>
-  <suffix name="EnterpriseOIDC" label="Enterprise dialog for OIDC signin."/>
-  <suffix name="MultiUser" label="MultiUser bubble."/>
-  <suffix name="Switch" label="Profile-switch bubble."/>
-  <affected-histogram name="Signin.InterceptResult"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SigninSSOIdentityListRequestCacheRequestState"
     separator=".">
   <suffix name="BackgroundRequest" label="Request fetched in background."/>
