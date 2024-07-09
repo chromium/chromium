@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
@@ -159,8 +160,8 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
 
     if (install_param_.has_value()) {
       DCHECK(!install_param_->empty());
-      ExtensionPrefs::Get(browser_context_)
-          ->SetInstallParam(extension_id_, *install_param_);
+      SetInstallParam(ExtensionPrefs::Get(browser_context_), extension_id_,
+                      *install_param_);
       // Reload the extension so listeners of the loaded notification have
       // access to the install param.
       TestExtensionRegistryObserver registry_observer(extension_registry_,

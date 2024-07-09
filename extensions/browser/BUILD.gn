@@ -453,6 +453,8 @@ source_set("browser_sources") {
     "image_sanitizer.cc",
     "image_sanitizer.h",
     "install_flag.h",
+    "install_prefs_helper.cc",
+    "install_prefs_helper.h",
     "install_stage.h",
     "json_file_sanitizer.cc",
     "json_file_sanitizer.h",

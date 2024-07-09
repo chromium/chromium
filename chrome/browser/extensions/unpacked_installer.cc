@@ -32,6 +32,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_flag.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/policy_check.h"
 #include "extensions/browser/preload_check_group.h"
@@ -393,7 +394,7 @@ void UnpackedInstaller::InstallExtension() {
     prefs->SetIsIncognitoEnabled(extension()->id(), *allow_incognito_access_);
   }
   if (install_param_.has_value()) {
-    prefs->SetInstallParam(extension()->id(), *install_param_);
+    SetInstallParam(prefs, extension()->id(), *install_param_);
   }
 
   PermissionsUpdater perms_updater(service_weak_->profile());

@@ -2013,26 +2013,6 @@ void ExtensionPrefs::SetInstallSignature(base::Value::Dict* signature) {
   }
 }
 
-std::string ExtensionPrefs::GetInstallParam(
-    const ExtensionId& extension_id) const {
-  const base::Value::Dict* extension = GetExtensionPref(extension_id);
-  if (!extension)  // Expected during unit testing.
-    return std::string();
-
-  if (const std::string* install_parameter =
-          extension->FindStringByDottedPath(kPrefInstallParam)) {
-    return *install_parameter;
-  }
-
-  return std::string();
-}
-
-void ExtensionPrefs::SetInstallParam(const ExtensionId& extension_id,
-                                     const std::string& install_parameter) {
-  UpdateExtensionPref(extension_id, kPrefInstallParam,
-                      base::Value(install_parameter));
-}
-
 bool ExtensionPrefs::NeedsSync(const ExtensionId& extension_id) const {
   return ReadPrefAsBooleanAndReturn(extension_id, kPrefNeedsSync);
 }

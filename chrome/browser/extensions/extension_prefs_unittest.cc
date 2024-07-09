@@ -32,6 +32,7 @@
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/install_flag.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/extension.h"
@@ -614,7 +615,7 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
 
   void Verify() override {
     EXPECT_FALSE(prefs()->GetDelayedInstallInfo(id_));
-    EXPECT_EQ(std::string("Param"), prefs()->GetInstallParam(id_));
+    EXPECT_EQ(std::string("Param"), GetInstallParam(prefs(), id_));
 
     const base::Value::Dict* dict = prefs()->ReadPrefAsDict(id_, "manifest");
     ASSERT_TRUE(dict);
@@ -648,7 +649,7 @@ class ExtensionPrefsOnExtensionInstalled : public ExtensionPrefsTest {
 
   void Verify() override {
     EXPECT_TRUE(prefs()->IsExtensionDisabled(extension_->id()));
-    EXPECT_EQ(std::string("Param"), prefs()->GetInstallParam(extension_->id()));
+    EXPECT_EQ(std::string("Param"), GetInstallParam(prefs(), extension_->id()));
   }
 
  private:

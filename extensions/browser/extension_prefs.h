@@ -686,11 +686,6 @@ class ExtensionPrefs : public KeyedService {
   const base::Value::Dict& GetInstallSignature() const;
   void SetInstallSignature(base::Value::Dict* signature);
 
-  // The installation parameter associated with the extension.
-  std::string GetInstallParam(const ExtensionId& extension_id) const;
-  void SetInstallParam(const ExtensionId& extension_id,
-                       const std::string& install_parameter);
-
   // Whether the extension with the given |extension_id| needs to be synced.
   // This is set when the state (such as enabled/disabled or allowed in
   // incognito) is changed before Sync is ready.
