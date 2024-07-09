@@ -803,7 +803,8 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsModifiedBetween(
   return buckets;
 }
 
-QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets() {
+QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
+    SpecialStoragePolicy* special_storage_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QuotaError open_error = EnsureOpened();
   if (open_error != QuotaError::kNone) {
@@ -811,16 +812,60 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets() {
   }
 
   // clang-format off
-  static constexpr char kSql[] =
+  static constexpr char kSqlExpired[] =
       "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets "
         "WHERE expiration > 0 AND expiration < ?";
   // clang-format on
   last_operation_ = "GetExpired";
 
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindTime(0, GetNow());
-  return BucketInfosFromSqlStatement(statement);
+  sql::Statement statement_expired(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSqlExpired));
+  statement_expired.BindTime(0, GetNow());
+  std::set<BucketInfo> expired_buckets =
+      BucketInfosFromSqlStatement(statement_expired);
+
+  // Return early if we don't need to gather stale buckets as well.
+  if (!base::FeatureList::IsEnabled(features::kEvictStaleQuotaStorage) ||
+      GetNow() < evict_stale_buckets_after_) {
+    return expired_buckets;
+  }
+
+  // We gather stale buckets in a different fetch round so that we can count
+  // the amount found for metrics and filter out persistent buckets. After
+  // launch it may be worth merging these queries.
+  // clang-format off
+  static constexpr char kSqlStale[] =
+      "SELECT " BUCKET_INFO_FIELDS_SELECTOR
+        "FROM buckets "
+        "WHERE type = ? AND persistent = 0 AND "
+          "last_accessed < ? AND last_modified < ?";
+  // clang-format on
+  last_operation_ = "GetStale";
+
+  sql::Statement statement_stale(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSqlStale));
+  statement_stale.BindInt(
+      0, static_cast<int>(blink::mojom::StorageType::kTemporary));
+  base::Time stale_cutoff = GetNow() - base::Days(400);
+  statement_stale.BindTime(1, stale_cutoff);
+  statement_stale.BindTime(2, stale_cutoff);
+
+  QuotaErrorOr<BucketInfo> bucket;
+  uint64_t buckets_found = 0;
+  while ((bucket = BucketInfoFromSqlStatement(statement_stale)).has_value()) {
+    // Only the default bucket is persisted by `navigator.storage.persist()`.
+    const GURL read_gurl = bucket->storage_key.origin().GetURL();
+    if (bucket->is_default() && special_storage_policy &&
+        (special_storage_policy->IsStorageDurable(read_gurl) ||
+         special_storage_policy->IsStorageUnlimited(read_gurl))) {
+      continue;
+    }
+    expired_buckets.insert(*bucket);
+    buckets_found++;
+  }
+  base::UmaHistogramCounts100000("Quota.StaleBucketCount", buckets_found);
+  return expired_buckets;
 }
 
 bool QuotaDatabase::IsBootstrapped() {

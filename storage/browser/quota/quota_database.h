@@ -201,8 +201,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       base::Time begin,
       base::Time end);
 
-  // Returns a set of all expired buckets.
-  QuotaErrorOr<std::set<BucketInfo>> GetExpiredBuckets();
+  // Returns a set of all expired or stale (not accessed or modified in 400 days
+  // and not persisted) buckets.
+  // See crbug.com/40281870 for more info.
+  QuotaErrorOr<std::set<BucketInfo>> GetExpiredBuckets(
+      SpecialStoragePolicy* special_storage_policy);
 
   base::FilePath GetStoragePath() const { return storage_directory_->path(); }
 
@@ -322,6 +325,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   std::optional<std::string> last_operation_;
 
   base::RepeatingCallback<void(int)> db_error_callback_;
+
+  // We need to delay evicting stale buckets until after any session
+  // restore has taken place, otherwise we might fail to record current usage.
+  // See crbug.com/40281870 for more info.
+  base::Time evict_stale_buckets_after_{GetNow() + base::Minutes(1)};
 };
 
 }  // namespace storage

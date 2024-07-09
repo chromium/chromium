@@ -325,6 +325,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Quota.StaleBucketCount" units="areas"
+    expires_after="2024-12-01">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the amount of stale (400 days since last access or write and not
+    persistent) storage buckets on QuotaTemporaryStorageEvictor rounds.
+
+    Emitted without knowledge of eviction success or failure.
+
+    See crbug.com/40281870 for more info.
+  </summary>
+</histogram>
+
 <histogram name="Quota.StorageKeyNonceCount" units="buckets"
     expires_after="2024-09-22">
   <owner>ayui@chromium.org</owner>

@@ -2655,10 +2655,12 @@ void QuotaManagerImpl::EvictExpiredBuckets(StatusCallback done) {
   bucket_set_data_deleters_[buckets_deleter_ptr] = std::move(buckets_deleter);
 
   PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce([](QuotaDatabase* database) {
-        DCHECK(database);
-        return database->GetExpiredBuckets();
-      }),
+      base::BindOnce(
+          [](SpecialStoragePolicy* policy, QuotaDatabase* database) {
+            DCHECK(database);
+            return database->GetExpiredBuckets(policy);
+          },
+          base::RetainedRef(special_storage_policy_)),
       buckets_deleter_ptr->GetBucketDeletionCallback());
 }
 
