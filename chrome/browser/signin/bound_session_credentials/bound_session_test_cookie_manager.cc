@@ -18,8 +18,8 @@ net::CanonicalCookie BoundSessionTestCookieManager::CreateCookie(
   base::Time expiration_time =
       expiry_date.value_or(base::Time::Now() + base::Minutes(10));
   return *net::CanonicalCookie::CreateSanitizedCookie(
-      /*url=*/url, cookie_name, "value", url.host(),
-      /*path=*/"/",
+      /*url=*/url, cookie_name, "value", /*domain=*/url.host(),
+      /*path=*/url.path(),
       /*creation_time=*/base::Time::Now(), expiration_time,
       /*last_access_time=*/base::Time::Now(), /*secure=*/true,
       /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,

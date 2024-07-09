@@ -59,6 +59,7 @@ class CookieChangeListener : public network::mojom::CookieChangeListener {
 class BoundSessionCookieObserverTest : public testing::Test {
  public:
   const GURL kGoogleUrl = GURL("https://google.com");
+  const GURL kGaiaUrl = GURL("https://accounts.google.com");
   BoundSessionCookieObserverTest()
       : network_service_(network::NetworkService::CreateForTesting()) {
     ResetCookieManager();
@@ -120,6 +121,46 @@ class BoundSessionCookieObserverTest : public testing::Test {
     }
   }
 
+  void RunCookieInsertWasObservedTest(const GURL& observer_url,
+                                      const GURL& cookie_url) {
+    CreateObserver(observer_url);
+    update_expiration_date_call_count_ = 0;
+
+    net::CanonicalCookie cookie = BoundSessionTestCookieManager::CreateCookie(
+        cookie_url, kSIDTSCookieName);
+    base::test::TestFuture<const std::string&, base::Time> future;
+    SetNextCookieChangeCallback(future.GetCallback());
+    cookie_manager()->SetCanonicalCookie(cookie, cookie_url,
+                                         net::CookieOptions::MakeAllInclusive(),
+                                         base::DoNothing());
+
+    EXPECT_EQ(future.Get<0>(), cookie.Name());
+    EXPECT_EQ(future.Get<1>(), cookie.ExpiryDate());
+    EXPECT_EQ(update_expiration_date_call_count_, 1u);
+    EXPECT_EQ(cookie_expiration_date_, cookie.ExpiryDate());
+  }
+
+  void RunCookieInsertWasNotObservedTest(const GURL& observer_url,
+                                         const GURL& cookie_url) {
+    CreateObserver(observer_url);
+    update_expiration_date_call_count_ = 0;
+
+    base::test::TestFuture<const net::CookieChangeInfo&> future;
+    // `listener` should be notified about the cookie change, unlike the
+    // observer.
+    CookieChangeListener listener(cookie_manager(), cookie_url,
+                                  future.GetRepeatingCallback());
+    cookie_manager()->SetCanonicalCookie(
+        BoundSessionTestCookieManager::CreateCookie(cookie_url,
+                                                    kSIDTSCookieName),
+        cookie_url, net::CookieOptions::MakeAllInclusive(), base::DoNothing());
+
+    // It's important that the test waits until the cookie update is dispatched
+    // to CookieChangeListeners.
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(update_expiration_date_call_count_, 0u);
+  }
+
   network::CookieManager* cookie_manager() {
     return network_context_->cookie_manager();
   }
@@ -160,23 +201,45 @@ TEST_F(BoundSessionCookieObserverTest, CookieMissingOnStartup) {
 }
 
 TEST_F(BoundSessionCookieObserverTest, CookieInserted) {
-  CreateObserver(kGoogleUrl);
-  // Cookie not set.
-  update_expiration_date_call_count_ = 0;
+  RunCookieInsertWasObservedTest(kGoogleUrl, kGoogleUrl);
+}
 
-  // Insert event.
-  net::CanonicalCookie cookie =
-      BoundSessionTestCookieManager::CreateCookie(kGoogleUrl, kSIDTSCookieName);
-  base::test::TestFuture<const std::string&, base::Time> future;
-  SetNextCookieChangeCallback(future.GetCallback());
-  cookie_manager()->SetCanonicalCookie(cookie, kGoogleUrl,
-                                       net::CookieOptions::MakeAllInclusive(),
-                                       base::DoNothing());
+TEST_F(BoundSessionCookieObserverTest, CookieInsertedOnDifferentSite) {
+  RunCookieInsertWasNotObservedTest(kGoogleUrl, GURL("https://youtube.com"));
+}
 
-  EXPECT_EQ(future.Get<0>(), cookie.Name());
-  EXPECT_EQ(future.Get<1>(), cookie.ExpiryDate());
-  EXPECT_EQ(update_expiration_date_call_count_, 1u);
-  EXPECT_EQ(cookie_expiration_date_, cookie.ExpiryDate());
+TEST_F(BoundSessionCookieObserverTest, CookieInsertedOnDomain) {
+  RunCookieInsertWasObservedTest(kGaiaUrl, kGaiaUrl);
+}
+
+TEST_F(BoundSessionCookieObserverTest, CookieInsertedOnParentDomain) {
+  RunCookieInsertWasObservedTest(kGaiaUrl, kGoogleUrl);
+}
+
+TEST_F(BoundSessionCookieObserverTest, CookieInsertedOnSubdomain) {
+  RunCookieInsertWasNotObservedTest(kGoogleUrl, kGaiaUrl);
+}
+
+TEST_F(BoundSessionCookieObserverTest, CookieInsertedOnDifferentSubdomain) {
+  RunCookieInsertWasNotObservedTest(kGaiaUrl, GURL("https://docs.google.com"));
+}
+
+TEST_F(BoundSessionCookieObserverTest, CookieInsertedOnPath) {
+  RunCookieInsertWasObservedTest(kGoogleUrl.Resolve("/path"),
+                                 kGoogleUrl.Resolve("/path"));
+}
+
+TEST_F(BoundSessionCookieObserverTest, CookieInsertedOnParentPath) {
+  RunCookieInsertWasObservedTest(kGoogleUrl.Resolve("/path"), kGoogleUrl);
+}
+
+TEST_F(BoundSessionCookieObserverTest, CookieInsertedOnSubPath) {
+  RunCookieInsertWasNotObservedTest(kGoogleUrl, kGoogleUrl.Resolve("/path"));
+}
+
+TEST_F(BoundSessionCookieObserverTest, CookieInsertedOnDifferentPath) {
+  RunCookieInsertWasNotObservedTest(kGoogleUrl.Resolve("/path"),
+                                    kGoogleUrl.Resolve("/other_path"));
 }
 
 TEST_F(BoundSessionCookieObserverTest,
