@@ -11370,24 +11370,6 @@
             ]
         }
     ],
-    "IOSFeedContainment": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "HomeModuleMinimumPadding": "8"
-                    },
-                    "enable_features": [
-                        "EnableFeedContainment"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFeedSyncPromo": [
         {
             "platforms": [

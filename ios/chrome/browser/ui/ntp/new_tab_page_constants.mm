@@ -25,3 +25,5 @@ NSString* const kNTPCustomizationMenuButtonIdentifier =
     @"NTPCustomizationMenuButtonIdentifier";
 
 const CGFloat kHomeModuleContainerCornerRadius = 24.0f;
+
+const CGFloat kHomeModuleMinimumPadding = 4;

@@ -3114,11 +3114,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-feed-containment",
-    "owners": [ "adamta@chromium.org", "chrome-feed-fundamentals@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-feed-position-on-ntp",
     "owners": ["clank-start@chromium.org","hanxi@chromium.org"],
     "expiry_milestone": 130

@@ -304,9 +304,6 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
       self.imageView.image = nil;
       self.imageView.backgroundColor =
           [UIColor colorNamed:kPrimaryBackgroundColor];
-      if (!IsFeedContainmentEnabled()) {
-        self.imageView.backgroundColor = [UIColor colorNamed:kGrey100Color];
-      }
       self.imageView.layer.cornerRadius = kNonProfileIconCornerRadius;
 
       logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -688,10 +685,6 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
       self.textLabel.textColor = [UIColor colorNamed:kGrey800Color];
       self.primaryButton.backgroundColor =
           [UIColor colorNamed:kBackgroundColor];
-      if (!IsFeedContainmentEnabled()) {
-        self.primaryButton.backgroundColor =
-            [UIColor colorNamed:kBlueHaloColor];
-      }
       self.primaryButton.layer.cornerRadius =
           kCompactVerticalStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;

@@ -49,11 +49,6 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
 // Added height to the feed container so that it doesn't end abruptly on
 // overscroll.
 const CGFloat kFeedContainerExtraHeight = 500;
-
-// Constants that define the sizing of NTP modules when feed containment is not
-// enabeld.
-const CGFloat kModuleMaxWidth = 390;
-const CGFloat kModuleMinMargin = 16;
 }  // namespace
 
 @interface NewTabPageViewController () <UICollectionViewDelegate,
@@ -453,7 +448,7 @@ const CGFloat kModuleMinMargin = 16;
   [self.feedWrapperViewController loadViewIfNeeded];
   self.collectionView.accessibilityIdentifier = kNTPCollectionViewIdentifier;
 
-  if (self.isFeedVisible && IsFeedContainmentEnabled()) {
+  if (self.isFeedVisible) {
     _feedContainer = [[UIView alloc] initWithFrame:CGRectZero];
     _feedContainer.translatesAutoresizingMaskIntoConstraints = NO;
     _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
@@ -586,7 +581,6 @@ const CGFloat kModuleMinMargin = 16;
 
 - (void)resetViewHierarchy {
   if (_feedContainer) {
-    CHECK(IsFeedContainmentEnabled());
     [_feedContainer removeFromSuperview];
     _feedContainer = nil;
   }
@@ -824,9 +818,8 @@ const CGFloat kModuleMinMargin = 16;
 
   // The feed model callbacks don't always reliably tell us that the content has
   // paginated, so check if the container should be extended.
-  if (IsFeedContainmentEnabled() &&
-      self.collectionView.contentSize.height >
-          self.feedContainerHeightConstraint.constant) {
+  if (self.collectionView.contentSize.height >
+      self.feedContainerHeightConstraint.constant) {
     [self updateFeedContainerHeight];
   }
 }
@@ -1491,19 +1484,13 @@ const CGFloat kModuleMinMargin = 16;
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
 
-    if (IsFeedContainmentEnabled()) {
-      // When the feed is turned off, do not constrain the width of the empty
-      // collection view, in order to allow vertical scrolling gestures to
-      // happen on the side margins. The width of the feed header is controlled
-      // by the collectionView's contentLayoutGuide.
-      if (self.feedWrapperViewController.feedViewController) {
-        [self.collectionView.widthAnchor
-            constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor]
-            .active = YES;
-      }
-    } else {
+    // When the feed is turned off, do not constrain the width of the empty
+    // collection view, in order to allow vertical scrolling gestures to
+    // happen on the side margins. The width of the feed header is controlled
+    // by the collectionView's contentLayoutGuide.
+    if (self.feedWrapperViewController.feedViewController) {
       [self.collectionView.widthAnchor
-          constraintLessThanOrEqualToConstant:kDiscoverFeedContentMaxWidth]
+          constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor]
           .active = YES;
     }
 
@@ -1544,7 +1531,6 @@ const CGFloat kModuleMinMargin = 16;
   }
 
   if (_feedContainer) {
-    CHECK(IsFeedContainmentEnabled());
     [NSLayoutConstraint activateConstraints:@[
       [_feedContainer.widthAnchor
           constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
@@ -1671,7 +1657,6 @@ const CGFloat kModuleMinMargin = 16;
   if (!_feedContainer) {
     return;
   }
-  CHECK(IsFeedContainmentEnabled());
   self.feedContainerHeightConstraint.active = NO;
   // Container either takes the actual height of all feed components, or a
   // minimum value of `kFeedContainerMinimumHeight` if the content hasn't
@@ -1689,15 +1674,9 @@ const CGFloat kModuleMinMargin = 16;
 // Updates the width constraint of `moduleLayoutGuide`.
 - (void)updateModuleWidth {
   CGFloat oldWidth = _moduleWidth.constant;
-  CGFloat width;
-  if (IsFeedContainmentEnabled()) {
-    CGFloat widthMultiplier = (100 - HomeModuleMinimumPadding()) / 100;
-    width = MIN(self.view.frame.size.width * widthMultiplier,
-                kDiscoverFeedContentMaxWidth);
-  } else {
-    width =
-        MIN(kModuleMaxWidth, self.view.frame.size.width - 2 * kModuleMinMargin);
-  }
+  CGFloat widthMultiplier = (100 - kHomeModuleMinimumPadding) / 100;
+  CGFloat width = MIN(self.view.frame.size.width * widthMultiplier,
+                      kDiscoverFeedContentMaxWidth);
 
   BOOL existingConstraintUpdated = NO;
   if (!_moduleWidth) {

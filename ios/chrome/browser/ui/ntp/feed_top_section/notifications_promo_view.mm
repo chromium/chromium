@@ -164,9 +164,6 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
       button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
 
       button.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      if (!IsFeedContainmentEnabled()) {
-        button.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
-      }
       // Button layout and constraints.
       button.layer.cornerRadius = kButtonCornerRadius;
       button.clipsToBounds = YES;

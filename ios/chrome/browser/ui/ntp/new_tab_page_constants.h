@@ -34,4 +34,8 @@ extern NSString* const kNTPCustomizationMenuButtonIdentifier;
 // The corner radius for the module containers on the Home surface.
 extern const CGFloat kHomeModuleContainerCornerRadius;
 
+// The minimum padding between the content and the edges of the screen,
+// expressed as a percentage which includes both sides.
+extern const CGFloat kHomeModuleMinimumPadding;
+
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONSTANTS_H_

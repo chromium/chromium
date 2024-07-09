@@ -23,7 +23,6 @@
 
 namespace {
 // Content stack padding.
-const CGFloat kContentStackHorizontalPadding = 18;
 const CGFloat kContentStackVerticalPadding = 9;
 
 // Content stack padding for the notifications promo view.
@@ -109,10 +108,6 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   self.promoViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
   self.promoViewContainer.backgroundColor = [UIColor colorNamed:kGrey100Color];
 
-  if (!IsFeedContainmentEnabled()) {
-    self.promoViewContainer.backgroundColor =
-        [UIColor colorNamed:kBackgroundColor];
-  }
   self.promoViewContainer.layer.cornerRadius = kPromoViewContainerBorderRadius;
   self.visiblePromoViewType = type;
   switch (type) {
@@ -159,27 +154,13 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
     return NSDirectionalEdgeInsetsZero;
   }
   if (self.notificationsPromoView) {
-    if (IsFeedContainmentEnabled()) {
-      return NSDirectionalEdgeInsetsMake(
-          kNotificationsContentStackTopPadding, kContentStackVerticalPadding,
-          kNotificationsContentStackBottomPadding,
-          kContentStackVerticalPadding);
-    } else {
-      return NSDirectionalEdgeInsetsMake(
-          kNotificationsContentStackTopPadding, kContentStackHorizontalPadding,
-          kNotificationsContentStackBottomPadding,
-          kContentStackHorizontalPadding);
-    }
+    return NSDirectionalEdgeInsetsMake(
+        kNotificationsContentStackTopPadding, kContentStackVerticalPadding,
+        kNotificationsContentStackBottomPadding, kContentStackVerticalPadding);
   } else {
-    if (IsFeedContainmentEnabled()) {
-      return NSDirectionalEdgeInsetsMake(
-          kContentStackVerticalPadding, kContentStackVerticalPadding,
-          kContentStackVerticalPadding, kContentStackVerticalPadding);
-    } else {
-      return NSDirectionalEdgeInsetsMake(
-          kContentStackVerticalPadding, kContentStackHorizontalPadding,
-          kContentStackVerticalPadding, kContentStackHorizontalPadding);
-    }
+    return NSDirectionalEdgeInsetsMake(
+        kContentStackVerticalPadding, kContentStackVerticalPadding,
+        kContentStackVerticalPadding, kContentStackVerticalPadding);
   }
 }
 

@@ -694,10 +694,6 @@ bool IsKeyboardAccessoryUpgradeEnabled() {
 // Feature disabled by default.
 BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFeedContainment,
-             "EnableFeedContainment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabResumption, "TabResumption", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabResumption2,
@@ -713,8 +709,6 @@ const char kHideIrrelevantModulesParam[] = "HideIrrelevantModules";
 const char kSetUpListCompactedTimeThresholdDays[] =
     "SetUpListCompactedTimeThresholdDays";
 
-const char kHomeModuleMinimumPadding[] = "HomeModuleMinimumPadding";
-
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -726,15 +720,6 @@ const char kTabResumptionAllTabsParam[] = "tab-resumption-all-tabs";
 
 const char kTabResumptionThresholdParameterName[] =
     "tab-resumption-sync-threshold";
-
-bool IsFeedContainmentEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedContainment);
-}
-
-CGFloat HomeModuleMinimumPadding() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kEnableFeedContainment, kHomeModuleMinimumPadding, 8.0);
-}
 
 bool IsTabResumptionEnabled() {
   return base::FeatureList::IsEnabled(kTabResumption);

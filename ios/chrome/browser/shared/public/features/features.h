@@ -553,9 +553,6 @@ bool IsKeyboardAccessoryUpgradeEnabled();
 // Feature for the Magic Stack.
 BASE_DECLARE_FEATURE(kMagicStack);
 
-// Feature that contains the feed in a module.
-BASE_DECLARE_FEATURE(kEnableFeedContainment);
-
 // Feature that enables tab resumption.
 BASE_DECLARE_FEATURE(kTabResumption);
 
@@ -603,14 +600,6 @@ extern const char kTabResumptionAllTabsParam[];
 // Feature parameters for the tab resumption feature. The threshold for tabs
 // fetched from sync in seconds. Default to 12 hours.
 extern const char kTabResumptionThresholdParameterName[];
-
-// Whether the feed is contained in a Home module.
-bool IsFeedContainmentEnabled();
-
-// The minimum padding between the modules and the screen bounds on the Home
-// surface. Relies on `IsFeedContainmentEnabled()` being enabled. This padding
-// is dynamic, so the value represents a percentage including both sides.
-CGFloat HomeModuleMinimumPadding();
 
 // Whether the tab resumption feature is enabled.
 bool IsTabResumptionEnabled();

@@ -371,11 +371,6 @@ NSInteger kFeedSymbolPointSize = 17;
   if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     buttonConfiguration.image =
         DefaultSymbolTemplateWithPointSize(kMenuSymbol, kFeedSymbolPointSize);
-    if (!IsFeedContainmentEnabled()) {
-      buttonConfiguration.background.backgroundColor =
-          [[UIColor colorNamed:kGrey200Color] colorWithAlphaComponent:0.8];
-      managementButton.layer.cornerRadius = kButtonSize / 2;
-    }
     managementButton.clipsToBounds = YES;
   } else {
     UIImage* menuIcon = DefaultSymbolTemplateWithPointSize(
@@ -553,13 +548,9 @@ NSInteger kFeedSymbolPointSize = 17;
 
   CGFloat totalHeaderHeight =
       [self feedHeaderHeight] + [self customSearchEngineViewHeight];
-  if (IsFeedContainmentEnabled()) {
-    totalHeaderHeight += [self.feedControlDelegate isFollowingFeedAvailable]
-                             ? kTopVerticalPaddingFollowing
-                             : kTopVerticalPadding;
-  }
-  CGFloat buttonMargin =
-      IsFeedContainmentEnabled() ? kButtonHorizontalMargin : 0;
+  totalHeaderHeight += [self.feedControlDelegate isFollowingFeedAvailable]
+                           ? kTopVerticalPaddingFollowing
+                           : kTopVerticalPadding;
   [self.feedHeaderConstraints addObjectsFromArray:@[
     // Anchor container and menu button.
     [self.view.heightAnchor constraintEqualToConstant:totalHeaderHeight],
@@ -572,7 +563,7 @@ NSInteger kFeedSymbolPointSize = 17;
     [self.container.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
     [self.managementButton.trailingAnchor
         constraintEqualToAnchor:self.container.trailingAnchor
-                       constant:-buttonMargin],
+                       constant:-kButtonHorizontalMargin],
     [self.managementButton.centerYAnchor
         constraintEqualToAnchor:self.container.centerYAnchor],
     // Set menu button size.
@@ -636,13 +627,11 @@ NSInteger kFeedSymbolPointSize = 17;
     }
 
   } else {
-    CGFloat titleMargin =
-        IsFeedContainmentEnabled() ? kTitleHorizontalMargin : 0;
     [self.feedHeaderConstraints addObjectsFromArray:@[
       // Anchors title label.
       [self.titleLabel.leadingAnchor
           constraintEqualToAnchor:self.container.leadingAnchor
-                         constant:titleMargin],
+                         constant:kTitleHorizontalMargin],
       [self.titleLabel.trailingAnchor
           constraintLessThanOrEqualToAnchor:self.managementButton
                                                 .leadingAnchor],
