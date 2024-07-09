@@ -710,22 +710,6 @@ bool IOSurfaceImageBacking::OverlayRepresentation::IsInUseByWindowServer()
   return IOSurfaceIsInUse(io_surface_.get());
 }
 
-IOSurfaceImageBacking::SharedTextureData::SharedTextureData() = default;
-
-IOSurfaceImageBacking::SharedTextureData::~SharedTextureData() {
-  for (auto element : texture_cache) {
-    auto texture = element.second;
-    texture.Destroy();
-  }
-}
-
-IOSurfaceImageBacking::SharedTextureData::SharedTextureData(
-    SharedTextureData&&) = default;
-
-IOSurfaceImageBacking::SharedTextureData&
-IOSurfaceImageBacking::SharedTextureData::operator=(SharedTextureData&&) =
-    default;
-
 ///////////////////////////////////////////////////////////////////////////////
 // DawnRepresentation
 
@@ -800,12 +784,14 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   usage_ = wgpu_texture_usage;
   internal_usage_ = internal_usage;
 
-  texture_ = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
+  texture_ = iosurface_backing->GetDawnTextureHolder()->GetCachedWGPUTexture(
+      device_, usage_);
   if (!texture_) {
     texture_ = CreateWGPUTexture(shared_texture_memory_, usage(),
                                  io_surface_size_, wgpu_format_, view_formats_,
                                  wgpu_texture_usage, internal_usage);
-    iosurface_backing->MaybeCacheWGPUTexture(device_, texture_);
+    iosurface_backing->GetDawnTextureHolder()->MaybeCacheWGPUTexture(device_,
+                                                                     texture_);
   }
 
   // If there is already an ongoing Dawn access for this texture, then the
@@ -866,7 +852,8 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     // handling.
     LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed";
     iosurface_backing->TrackEndAccessToWGPUTexture(texture_);
-    iosurface_backing->RemoveWGPUTextureFromCache(device_, texture_);
+    iosurface_backing->GetDawnTextureHolder()->RemoveWGPUTextureFromCache(
+        device_, texture_);
     texture_ = {};
 
     iosurface_backing->EndAccess(readonly);
@@ -938,7 +925,8 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
                                                   readonly);
   }
 
-  iosurface_backing->DestroyWGPUTextureIfNotCached(device_, texture_);
+  iosurface_backing->GetDawnTextureHolder()->DestroyWGPUTextureIfNotCached(
+      device_, texture_);
 
   if (end_access_desc.fenceCount > 0) {
     // For write access, we would need to WaitForCommandsToBeScheduled
@@ -1017,6 +1005,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       io_surface_format_(IOSurfaceGetPixelFormat(io_surface_.get())),
       io_surface_num_planes_(IOSurfaceGetPlaneCount(io_surface_.get())),
       io_surface_id_(io_surface_id),
+      dawn_texture_holder_(std::make_unique<DawnSharedTextureHolder>()),
       gl_target_(gl_target),
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
       cleared_rect_(is_cleared ? gfx::Rect(size) : gfx::Rect()),
@@ -1313,71 +1302,8 @@ int IOSurfaceImageBacking::TrackEndAccessToWGPUTexture(wgpu::Texture texture) {
   return num_outstanding_accesses;
 }
 
-IOSurfaceImageBacking::WGPUTextureCache*
-IOSurfaceImageBacking::GetWGPUTextureCache(wgpu::Device device) {
-  auto iter = shared_texture_data_cache_.find(device.Get());
-  if (iter == shared_texture_data_cache_.end()) {
-    return nullptr;
-  }
-  return &iter->second.texture_cache;
-}
-
-wgpu::Texture IOSurfaceImageBacking::GetCachedWGPUTexture(
-    wgpu::Device device,
-    wgpu::TextureUsage texture_usage) {
-  auto* texture_cache = GetWGPUTextureCache(device);
-  if (!texture_cache) {
-    return nullptr;
-  }
-
-  auto iter = texture_cache->find(texture_usage);
-  if (iter == texture_cache->end()) {
-    return nullptr;
-  }
-
-  return iter->second;
-}
-
-void IOSurfaceImageBacking::RemoveWGPUTextureFromCache(wgpu::Device device,
-                                                       wgpu::Texture texture) {
-  auto* texture_cache = GetWGPUTextureCache(device);
-  if (!texture_cache) {
-    return;
-  }
-
-  texture_cache->erase(texture.GetUsage());
-}
-
-void IOSurfaceImageBacking::MaybeCacheWGPUTexture(wgpu::Device device,
-                                                  wgpu::Texture texture) {
-  if (!texture) {
-    return;
-  }
-
-  auto* texture_cache = GetWGPUTextureCache(device);
-  if (!texture_cache) {
-    return;
-  }
-
-  // Determine whether `texture` needs to be cached.
-  auto texture_usage = texture.GetUsage();
-  auto iter = texture_cache->find(texture_usage);
-  if (iter == texture_cache->end()) {
-    texture_cache->emplace(texture_usage, texture);
-  } else {
-    CHECK_EQ(texture.Get(), iter->second.Get());
-  }
-}
-
-void IOSurfaceImageBacking::DestroyWGPUTextureIfNotCached(
-    wgpu::Device device,
-    wgpu::Texture texture) {
-  if (auto cached_texture = GetCachedWGPUTexture(device, texture.GetUsage())) {
-    CHECK_EQ(cached_texture.Get(), texture.Get());
-    return;
-  }
-
-  texture.Destroy();
+DawnSharedTextureHolder* IOSurfaceImageBacking::GetDawnTextureHolder() {
+  return dawn_texture_holder_.get();
 }
 
 void IOSurfaceImageBacking::AddWGPUDeviceWithPendingCommands(
@@ -1455,18 +1381,13 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     // importantly ensures that a new SharedTextureMemory instance will be
     // created if another Device occupies the same memory as a previously-used,
     // now-lost Device.
-    for (auto& [wgpu_device, shared_texture_data] :
-         shared_texture_data_cache_) {
-      if (shared_texture_data.memory.IsDeviceLost()) {
-        shared_texture_data_cache_.erase(wgpu_device);
-      }
-    }
+    dawn_texture_holder_->EraseDataIfDeviceLost();
 
     CHECK(device.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface));
-    auto iter = shared_texture_data_cache_.find(device.Get());
 
-    wgpu::SharedTextureMemory shared_texture_memory;
-    if (iter == shared_texture_data_cache_.end()) {
+    wgpu::SharedTextureMemory shared_texture_memory =
+        dawn_texture_holder_->GetSharedTextureMemory(device);
+    if (!shared_texture_memory) {
       wgpu::SharedTextureMemoryIOSurfaceDescriptor io_surface_desc;
       io_surface_desc.ioSurface = io_surface_.get();
       wgpu::SharedTextureMemoryDescriptor desc = {};
@@ -1488,13 +1409,9 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
           dawn_context_provider->GetDevice().Get() == device.Get()) {
         // This is the Graphite device, so we cache its SharedTextureMemory
         // instance.
-        SharedTextureData shared_texture_data;
-        shared_texture_data.memory = shared_texture_memory;
-        shared_texture_data_cache_.emplace(device.Get(),
-                                           std::move(shared_texture_data));
+        dawn_texture_holder_->MaybeCacheSharedTextureMemory(
+            device, shared_texture_memory);
       }
-    } else {
-      shared_texture_memory = iter->second.memory;
     }
 
     return std::make_unique<DawnRepresentation>(

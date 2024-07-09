@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/shared_image/dawn_shared_texture_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_preferences.h"
@@ -129,13 +130,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   bool InitializePixels(base::span<const uint8_t> pixel_data);
 
-  wgpu::Texture GetCachedWGPUTexture(wgpu::Device device,
-                                     wgpu::TextureUsage texture_usage);
-  void MaybeCacheWGPUTexture(wgpu::Device device, wgpu::Texture texture);
-  void RemoveWGPUTextureFromCache(wgpu::Device device, wgpu::Texture texture);
-  void DestroyWGPUTextureIfNotCached(wgpu::Device device,
-                                     wgpu::Texture texture);
-
   void AddWGPUDeviceWithPendingCommands(wgpu::Device device);
   void WaitForDawnCommandsToBeScheduled(const wgpu::Device& device_to_exclude);
 
@@ -221,28 +215,11 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   const size_t io_surface_num_planes_;
   const gfx::GenericSharedMemoryId io_surface_id_;
 
-  using WGPUTextureCache = base::flat_map<wgpu::TextureUsage, wgpu::Texture>;
+  // DawnSharedTextureHolder that keeps an internal cache of per-device
+  // SharedTextureData that vends WebGPU textures for the underlying IOSurface.
+  std::unique_ptr<DawnSharedTextureHolder> dawn_texture_holder_;
 
-  struct SharedTextureData {
-    SharedTextureData();
-    ~SharedTextureData();
-    SharedTextureData(SharedTextureData&&);
-    SharedTextureData& operator=(SharedTextureData&&);
-
-    wgpu::SharedTextureMemory memory;
-    WGPUTextureCache texture_cache;
-  };
-
-  // Per-Device SharedTextureData instances used to vend WebGPU textures for
-  // the underlying IOSurface. The cache is keyed by raw pointers to the Device
-  // as there is currently no better option. To ensure that we don't incorrectly
-  // use a SharedTextureMemory instance for a lost Device that then gets aliased
-  // by a newly-created Device, we drop all SharedTextureMemory instances whose
-  // corresponding Device has been lost at the beginning of each ProduceDawn()
-  // call before this cache is indexed by the passed-in Device.
-  // TODO(crbug.com/40936879): Dawn should expose a unique ID per-Device, which
-  // this cache should use as keys rather than raw pointers.
-  base::flat_map<WGPUDevice, SharedTextureData> shared_texture_data_cache_;
+  DawnSharedTextureHolder* GetDawnTextureHolder();
 
   // Tracks the number of currently-ongoing accesses to a given WGPU texture.
   base::flat_map<WGPUTexture, int> wgpu_texture_ongoing_accesses_;
@@ -264,10 +241,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // Returns the number of ongoing accesses that will still be present on this
   // texture after ending this access.
   int TrackEndAccessToWGPUTexture(wgpu::Texture texture);
-
-  // Returns a pointer to the WGPUTextureCache instance for this device, or
-  // nullptr if there is no instance.
-  WGPUTextureCache* GetWGPUTextureCache(wgpu::Device device);
 
   const GLenum gl_target_;
   const bool framebuffer_attachment_angle_;
