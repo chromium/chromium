@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/branding_buildflags.h"
@@ -30,40 +31,39 @@
 namespace extensions {
 
 bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
-  const char* const kAllowed[] = {
-    extension_misc::kInAppPaymentsSupportAppId,
-    extension_misc::kPdfExtensionId,
+  constexpr auto kAllowed = base::MakeFixedFlatSet<std::string_view>({
+      extension_misc::kInAppPaymentsSupportAppId,
+      extension_misc::kPdfExtensionId,
 #if BUILDFLAG(IS_CHROMEOS)
-    extension_misc::kAssessmentAssistantExtensionId,
+      extension_misc::kAssessmentAssistantExtensionId,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    extension_misc::kAccessibilityCommonExtensionId,
-    extension_misc::kChromeVoxExtensionId,
-    extension_misc::kEnhancedNetworkTtsExtensionId,
-    extension_misc::kEspeakSpeechSynthesisExtensionId,
-    extension_misc::kGoogleSpeechSynthesisExtensionId,
-    extension_misc::kGuestModeTestExtensionId,
-    extension_misc::kSelectToSpeakExtensionId,
-    extension_misc::kSwitchAccessExtensionId,
+      extension_misc::kAccessibilityCommonExtensionId,
+      extension_misc::kChromeVoxExtensionId,
+      extension_misc::kEnhancedNetworkTtsExtensionId,
+      extension_misc::kEspeakSpeechSynthesisExtensionId,
+      extension_misc::kGoogleSpeechSynthesisExtensionId,
+      extension_misc::kGuestModeTestExtensionId,
+      extension_misc::kSelectToSpeakExtensionId,
+      extension_misc::kSwitchAccessExtensionId,
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    extension_misc::kEmbeddedA11yHelperExtensionId,
-    extension_misc::kChromeVoxHelperExtensionId,
+      extension_misc::kEmbeddedA11yHelperExtensionId,
+      extension_misc::kChromeVoxHelperExtensionId,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_CHROMEOS)
-    extension_misc::kContactCenterInsightsExtensionId,
-    extension_misc::kDeskApiExtensionId,
+      extension_misc::kContactCenterInsightsExtensionId,
+      extension_misc::kDeskApiExtensionId,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    extension_misc::kQuickOfficeComponentExtensionId,
+      extension_misc::kQuickOfficeComponentExtensionId,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    extension_misc::kReadingModeGDocsHelperExtensionId,
+      extension_misc::kReadingModeGDocsHelperExtensionId,
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-  };
+  });
 
-  for (size_t i = 0; i < std::size(kAllowed); ++i) {
-    if (extension_id == kAllowed[i])
-      return true;
+  if (kAllowed.contains(extension_id)) {
+    return true;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -124,21 +124,16 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsComponentExtensionAllowlistedForSignInProfile(
     const std::string& extension_id) {
-  const char* const kAllowed[] = {
+  constexpr auto kAllowed = base::MakeFixedFlatSet<std::string_view>({
       extension_misc::kAccessibilityCommonExtensionId,
       extension_misc::kChromeVoxExtensionId,
       extension_misc::kEspeakSpeechSynthesisExtensionId,
       extension_misc::kGoogleSpeechSynthesisExtensionId,
       extension_misc::kSelectToSpeakExtensionId,
       extension_misc::kSwitchAccessExtensionId,
-  };
+  });
 
-  for (size_t i = 0; i < std::size(kAllowed); ++i) {
-    if (extension_id == kAllowed[i])
-      return true;
-  }
-
-  return false;
+  return kAllowed.contains(extension_id);
 }
 #endif
 
