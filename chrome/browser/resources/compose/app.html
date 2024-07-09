@@ -100,7 +100,7 @@
     line-height: 24px;
     margin: 0;
     margin-inline-end: auto;
-    padding-inline-end: 32px; /* From --cr-icon-button-size */
+    padding-inline-end: 32px; /* From --cr-icon-button-size. */
   }
 
   cr-icon-button {
@@ -175,7 +175,7 @@
   }
 
   /* Different elements are made scrollable depending on whether UI refinements
-   * are enabled */
+   * are enabled. */
   #body::-webkit-scrollbar, #resultTextContainer::-webkit-scrollbar {
     background: transparent;
     width: var(--scrollbar-width_);
@@ -244,11 +244,11 @@
     padding: 16px;
   }
 
-  /* #resultTextContainer is only styled if UI refinements are applied */
+  /* #resultTextContainer is only styled if UI refinements are applied. */
   :host([enable-ui-refinements]) #resultTextContainer {
     max-height: 112px;
     overflow: auto;
-    /* Incorporates width of righthand scrollbar */
+    /* Incorporates width of righthand scrollbar. */
     padding-inline-start: 16px;
     margin-inline-end: 4px;
 
@@ -257,7 +257,7 @@
     scrollbar-gutter: stable;
   }
 
-  /* Border separating result container text and actions bar */
+  /* Border separating result container text and actions bar. */
   :host([enable-ui-refinements]) #resultOptionsContainer {
     border-top: 1px solid var(--color-compose-dialog-divider);
   }
@@ -268,7 +268,7 @@
     gap: 8px;
   }
 
-  /* Adjust padding and margins based on whether UI refinements is enabled */
+  /* Adjust padding and margins based on whether UI refinements is enabled. */
   :host(:not([enable-ui-refinements])) #resultOptions {
     margin-block-start: 16px;
   }
@@ -307,7 +307,7 @@
     font-weight: 500;
     color: var(--cr-secondary-text-color);
 
-    /* Custom drop-down arrow */
+    /* Custom drop-down arrow. */
     background: url(//resources/images/chevron_down.svg)
       calc(100% - var(--md-select-side-padding) + var(--md-arrow-width))
       center no-repeat;
@@ -315,7 +315,8 @@
 
   @media (prefers-color-scheme: dark) {
     :host([enable-ui-refinements]) #resultOptions .md-select {
-      /* Separate svg required for dark mode as color is hard-coded into file */
+      /* Separate svg required for dark mode as color is hard-coded into
+      * file. */
       background-image: url(//resources/images/dark/chevron_down.svg)
     }
   }
@@ -350,7 +351,7 @@
     margin: 0;
   }
 
-  /* cr-button is only used when UI refinements is enabled */
+  /* cr-button is only used when UI refinements is enabled. */
   .icon-buttons-row cr-button {
     --cr-button-text-color: var(--color-compose-dialog-result-icon);
     --cr-icon-size: 16px;
@@ -382,7 +383,7 @@
     position: relative
   }
 
-  /* Vertical divider between undo and redo buttons */
+  /* Vertical divider between undo and redo buttons. */
   :host([enable-ui-refinements]) .icon-buttons-row > div:last-child:before {
     content: "";
     background: var(--color-compose-dialog-divider);
@@ -510,7 +511,6 @@
   .result-container[hidden],
   .md-select[hidden],
   .icon-buttons-row cr-icon-button[hidden],
-  /* #redoButton[hidden], */
   #loading[hidden],
   #editContainer[hidden] {
     display: none;
