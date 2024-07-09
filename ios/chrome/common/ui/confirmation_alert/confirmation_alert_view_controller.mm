@@ -30,6 +30,10 @@ const CGFloat kContentOptimalWidth = 327;
 // The size of the symbol image.
 const CGFloat kSymbolBadgeImagePointSize = 13;
 
+// The size of the checkmark symbol in the confirmation state on the primary
+// button.
+const CGFloat kSymbolConfirmationCheckmarkPointSize = 17;
+
 // The name of the checkmark symbol in filled circle.
 NSString* const kCheckmarkSymbol = @"checkmark.circle.fill";
 
@@ -52,15 +56,49 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 // Sets the activity indicator of the button in the button configuration.
 void SetConfigurationActivityIndicator(UIButton* button,
-                                       BOOL showsActivityIndicator,
-                                       UIColor* activityIndicatorColor) {
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
-  buttonConfiguration.showsActivityIndicator = showsActivityIndicator;
-  buttonConfiguration.activityIndicatorColorTransformer =
+                                       BOOL shows_activity_indicator,
+                                       UIColor* activity_indicator_color) {
+  UIButtonConfiguration* button_configuration = button.configuration;
+  button_configuration.showsActivityIndicator = shows_activity_indicator;
+  button_configuration.activityIndicatorColorTransformer =
       ^UIColor*(UIColor* _) {
-        return activityIndicatorColor;
+        return activity_indicator_color;
       };
-  button.configuration = buttonConfiguration;
+  button.configuration = button_configuration;
+}
+
+// Sets the image in the button's configuration.
+void SetConfigurationImage(UIButton* button,
+                           UIImage* image,
+                           UIColor* image_color) {
+  UIButtonConfiguration* button_configuration = button.configuration;
+  button_configuration.image = image;
+  button_configuration.imageColorTransformer = ^UIColor*(UIColor* input_color) {
+    return image_color ? image_color : input_color;
+  };
+  button.configuration = button_configuration;
+}
+
+// Sets the color of the button's background in the button configuration's
+// background configuration.
+void SetButtonColor(UIButton* button, UIColor* color) {
+  UIButtonConfiguration* configuration = button.configuration;
+  configuration.background.backgroundColor = color;
+  button.configuration = configuration;
+}
+
+// Gets the default checkmark circle fill symbol with default configuration of
+// the given point size.
+//
+// Since this code is in ios/chrome/common we cannot include the standard
+// symbol helpers from ios/chrome/browser/shared/ui/symbols.
+UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:point_size
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+  return [UIImage systemImageNamed:kCheckmarkSymbol
+                 withConfiguration:configuration];
 }
 
 }  // namespace
@@ -100,6 +138,8 @@ void SetConfigurationActivityIndicator(UIButton* button,
     _shouldFillInformationStack = NO;
     _actionStackBottomMargin = kDefaultActionsBottomMargin;
     _activityIndicatorColor = [UIColor colorNamed:kSolidWhiteColor];
+    _confirmationButtonColor = [UIColor colorNamed:kBlue100Color];
+    _confirmationCheckmarkColor = [UIColor colorNamed:kBlue700Color];
   }
   return self;
 }
@@ -336,13 +376,20 @@ void SetConfigurationActivityIndicator(UIButton* button,
                      multiplier:imageAspectRatio];
     self.imageViewAspectRatioConstraint.active = YES;
   }
-  [self updateLoadingState];
+  [self updateButtonState];
 }
 
 - (void)setIsLoading:(BOOL)isLoading {
   if (_isLoading != isLoading) {
     _isLoading = isLoading;
-    [self updateLoadingState];
+    [self updateButtonState];
+  }
+}
+
+- (void)setIsConfirmed:(BOOL)isConfirmed {
+  if (_isConfirmed != isConfirmed) {
+    _isConfirmed = isConfirmed;
+    [self updateButtonState];
   }
 }
 
@@ -617,12 +664,8 @@ void SetConfigurationActivityIndicator(UIButton* button,
 - (UIView*)createImageContainerViewWithShadowAndBadge {
   UIImageView* faviconBadgeView = [[UIImageView alloc] init];
   faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
-  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kSymbolBadgeImagePointSize
-                          weight:UIImageSymbolWeightMedium
-                           scale:UIImageSymbolScaleMedium];
-  faviconBadgeView.image = [UIImage systemImageNamed:kCheckmarkSymbol
-                                   withConfiguration:configuration];
+  faviconBadgeView.image =
+      DefaultCheckmarkCircleFillSymbol(kSymbolBadgeImagePointSize);
   faviconBadgeView.tintColor = [UIColor colorNamed:kGreenColor];
 
   UIImageView* faviconView = [[UIImageView alloc] initWithImage:self.image];
@@ -917,16 +960,26 @@ void SetConfigurationActivityIndicator(UIButton* button,
 
 // Applies an activity indicator to the primary button and disables buttons when
 // loading is true; otherwise, applies button labels and enables buttons.
-- (void)updateLoadingState {
-  _primaryActionButton.enabled = !_isLoading;
-  UpdateButtonColorOnEnableDisable(_primaryActionButton);
+- (void)updateButtonState {
+  const BOOL showingProgressState = _isLoading || _isConfirmed;
+  _primaryActionButton.enabled = !showingProgressState;
+  if (_isConfirmed) {
+    SetButtonColor(_primaryActionButton, _confirmationButtonColor);
+    SetConfigurationImage(
+        _primaryActionButton,
+        DefaultCheckmarkCircleFillSymbol(kSymbolConfirmationCheckmarkPointSize),
+        _confirmationCheckmarkColor);
+  } else {
+    UpdateButtonColorOnEnableDisable(_primaryActionButton);
+    SetConfigurationImage(_primaryActionButton, /*image=*/nil, /*color=*/nil);
+  }
   SetConfigurationActivityIndicator(_primaryActionButton, _isLoading,
                                     _activityIndicatorColor);
   SetConfigurationTitle(_primaryActionButton,
-                        _isLoading ? @"" : _primaryActionString);
+                        showingProgressState ? @"" : _primaryActionString);
 
-  _secondaryActionButton.enabled = !_isLoading;
-  _tertiaryActionButton.enabled = !_isLoading;
+  _secondaryActionButton.enabled = !showingProgressState;
+  _tertiaryActionButton.enabled = !showingProgressState;
 }
 
 @end

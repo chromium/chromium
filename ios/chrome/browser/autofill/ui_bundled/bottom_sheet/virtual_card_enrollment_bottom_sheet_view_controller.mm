@@ -89,11 +89,12 @@ CGFloat const kCreditCardCellHeight = 64;
 
 - (void)showLoadingState {
   self.isLoading = YES;
+  self.isConfirmed = NO;
 }
 
 - (void)showConfirmationState {
-  // TODO(crbug.com/339887700): Implement the confirmation state showing a
-  // checkmark on the primary button.
+  self.isLoading = NO;
+  self.isConfirmed = YES;
 }
 
 #pragma mark - ConfirmationAlertActionHandler

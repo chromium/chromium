@@ -10,6 +10,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/background_color.colorset/Contents.json",
     "Assets.xcassets/background_shadow_color.colorset/Contents.json",
+    "Assets.xcassets/blue_100_color.colorset/Contents.json",
     "Assets.xcassets/blue_300_color.colorset/Contents.json",
     "Assets.xcassets/blue_400_color.colorset/Contents.json",
     "Assets.xcassets/blue_500_color.colorset/Contents.json",
