@@ -42,7 +42,8 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
   }
 
   GURL site(bound_session_params.site());
-  if (!site.is_valid()) {
+  // Site must be valid and must be in canonical form.
+  if (!site.is_valid() || site.spec() != bound_session_params.site()) {
     return false;
   }
 

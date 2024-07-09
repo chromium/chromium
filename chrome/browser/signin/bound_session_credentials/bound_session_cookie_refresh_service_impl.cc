@@ -100,7 +100,8 @@ BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
 
 void BoundSessionCookieRefreshServiceImpl::Initialize() {
   std::vector<bound_session_credentials::BoundSessionParams>
-      bound_session_params = session_params_storage_->ReadAllParams();
+      bound_session_params =
+          session_params_storage_->ReadAllParamsAndCleanStorageIfNecessary();
   if (bound_session_params.empty()) {
     return;
   }
@@ -146,7 +147,7 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
       bool clear_params = controller->GetBoundSessionKey() !=
                           bound_session_credentials::GetBoundSessionKey(params);
       if (clear_params) {
-        session_params_storage_->ClearParams(controller->url().spec(),
+        session_params_storage_->ClearParams(controller->url(),
                                              controller->session_id());
       }
       cookie_controllers_.clear();
@@ -457,7 +458,7 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession(
   cookie_controllers_.erase(it);
   // `controller` is no longer valid and must not be used.
 
-  session_params_storage_->ClearParams(session_key.site.spec(),
+  session_params_storage_->ClearParams(session_key.site,
                                        session_key.session_id);
   UpdateAllRenderers();
   RecordSessionTerminationTrigger(trigger);

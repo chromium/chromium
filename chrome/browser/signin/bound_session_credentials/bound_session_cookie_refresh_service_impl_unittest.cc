@@ -471,7 +471,7 @@ class BoundSessionCookieRefreshServiceImplTest
     CHECK(cookie_refresh_service());
     EXPECT_THAT(cookie_refresh_service()->GetBoundSessionThrottlerParams(),
                 UnorderedPointwise(IsThrottlerParams(), {expected_params}));
-    EXPECT_THAT(storage()->ReadAllParams(),
+    EXPECT_THAT(storage()->ReadAllParamsAndCleanStorageIfNecessary(),
                 ElementsAre(base::test::EqualsProto(expected_params)));
     EXPECT_THAT(cookie_controller().get(),
                 IsBoundSessionCookieController(expected_params));
@@ -482,7 +482,8 @@ class BoundSessionCookieRefreshServiceImplTest
     EXPECT_THAT(cookie_refresh_service()->GetBoundSessionThrottlerParams(),
                 IsEmpty());
     EXPECT_FALSE(cookie_controller());
-    EXPECT_THAT(storage()->ReadAllParams(), IsEmpty());
+    EXPECT_THAT(storage()->ReadAllParamsAndCleanStorageIfNecessary(),
+                IsEmpty());
   }
 
   void SimulateTerminateSession(SessionTerminationTrigger trigger) {
@@ -1083,7 +1084,7 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
 
     // Verify storage.
     EXPECT_THAT(
-        storage()->ReadAllParams(),
+        storage()->ReadAllParamsAndCleanStorageIfNecessary(),
         UnorderedPointwise(base::test::EqualsProto(), all_expected_params));
 
     // Verify controllers.

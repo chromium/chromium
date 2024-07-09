@@ -11,12 +11,10 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 
+class GURL;
 class Profile;
+class PrefRegistrySimple;
 class PrefService;
-
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
 
 // Stores bound session parameters.
 //
@@ -45,7 +43,7 @@ class BoundSessionParamsStorage {
   static std::unique_ptr<BoundSessionParamsStorage>
   CreatePrefsStorageForTesting(PrefService& pref_service);
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Saves `params` to storage. Overwrites existing params with the same
   // (site, session_id) key.
@@ -55,14 +53,16 @@ class BoundSessionParamsStorage {
   [[nodiscard]] virtual bool SaveParams(
       const bound_session_credentials::BoundSessionParams& params) = 0;
 
-  // Returns parameters for all stored sessions.
+  // Patches up storage entries that have one of the known issues:
+  // - https://crbug.com/349411334 (added 2024/06)
+  // After update is complete, prunes all invalid entries, and returns
+  // parameters for all valid stored sessions.
   virtual std::vector<bound_session_credentials::BoundSessionParams>
-  ReadAllParams() const = 0;
+  ReadAllParamsAndCleanStorageIfNecessary() = 0;
 
   // Removes params identified by (site, session_id) from the storage.
   // Returns true if an entry was removed or false otherwise.
-  virtual bool ClearParams(std::string_view site,
-                           std::string_view session_id) = 0;
+  virtual bool ClearParams(const GURL& site, std::string_view session_id) = 0;
 
   // Completely wipes the storage.
   virtual void ClearAllParams() = 0;
