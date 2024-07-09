@@ -429,7 +429,9 @@ void LensOverlayController::ShowUI(
   ukm::builders::Lens_Overlay_Invoked(source_id)
       .SetSource(static_cast<int64_t>(invocation_source))
       .Record(ukm::UkmRecorder::Get());
-  ShowPreselectionBubble();
+  if (!pending_region_) {
+    ShowPreselectionBubble();
+  }
 }
 
 void LensOverlayController::CloseUIAsync(
