@@ -79,8 +79,7 @@ TEST(BrowserUserEducationServiceTest, CheckTutorialHistograms) {
     const auto* tutorial = registry.GetTutorialDescription(identifier);
     ASSERT_NE(nullptr, tutorial->histograms)
         << "Tutorials must be created with a histogram prefix";
-    auto variant_name =
-        std::string(".").append(tutorial->histograms->GetTutorialPrefix());
+    const auto variant_name = tutorial->histograms->GetTutorialPrefix();
     if (!base::Contains(*tutorial_features, variant_name)) {
       missing_features.emplace_back(variant_name);
     }

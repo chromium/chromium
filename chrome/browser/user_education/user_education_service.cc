@@ -24,12 +24,6 @@ BASE_FEATURE(kAllowRecentSessionTracking,
              "AllowRecentSessionTracking",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const char kSidePanelCustomizeChromeTutorialId[] =
-    "Side Panel Customize Chrome Tutorial";
-const char kTabGroupTutorialId[] = "Tab Group Tutorial";
-const char kSavedTabGroupTutorialId[] = "Saved Tab Group Tutorial";
-const char kPasswordManagerTutorialId[] = "Password Manager Tutorial";
-
 UserEducationService::UserEducationService(
     std::unique_ptr<BrowserFeaturePromoStorageService> storage_service,
     bool allows_promos)

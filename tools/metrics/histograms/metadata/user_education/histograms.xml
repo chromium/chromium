@@ -49,16 +49,15 @@ chromium-metrics-reviews@google.com.
 
 <variants name="TutorialID">
   <variant name="" summary="any tutorial"/>
-  <variant name=".CustomizeChromeSidePanel"
+  <variant name="CustomizeChromeSidePanel"
       summary="the tutorial for the customize chrome side panel"/>
-  <variant name=".PasswordManager"
+  <variant name="PasswordManager"
       summary="the tutorial for the password manager"/>
-  <variant name=".SavedTabGroup"
-      summary="the tutorial for the saved tab group"/>
-  <variant name=".SidePanelReadingList"
+  <variant name="SavedTabGroup" summary="the tutorial for the saved tab group"/>
+  <variant name="SidePanelReadingList"
       summary="the tutorial for the side panel reading list"/>
-  <variant name=".TabGroup" summary="the tutorial for tab groups"/>
-  <variant name=".Test" summary="the tutorial used for testing only"/>
+  <variant name="TabGroup" summary="the tutorial for tab groups"/>
+  <variant name="Test" summary="the tutorial used for testing only"/>
 </variants>
 
 <histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"
@@ -73,7 +72,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tutorial{TutorialID}.AbortStep" units="int"
+<histogram name="Tutorial.{TutorialID}.AbortStep" units="int"
     expires_after="2024-12-08">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
@@ -84,7 +83,7 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
-<histogram name="Tutorial{TutorialID}.Completion" enum="BooleanSuccess"
+<histogram name="Tutorial.{TutorialID}.Completion" enum="BooleanSuccess"
     expires_after="2024-11-17">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
@@ -95,7 +94,7 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
-<histogram name="Tutorial{TutorialID}.IPHLinkClicked" enum="BooleanSuccess"
+<histogram name="Tutorial.{TutorialID}.IPHLinkClicked" enum="BooleanSuccess"
     expires_after="2024-09-15">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
@@ -107,7 +106,7 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
-<histogram name="Tutorial{TutorialID}.StartedFromWhatsNewPage"
+<histogram name="Tutorial.{TutorialID}.StartedFromWhatsNewPage"
     enum="BooleanSuccess" expires_after="2024-09-20">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>

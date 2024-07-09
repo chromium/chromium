@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
+#include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -96,10 +97,6 @@ using Platforms = user_education::Metadata::Platforms;
 constexpr std::initializer_list<Platforms> kComposePlatforms{
     Platforms::kWindows, Platforms::kMac, Platforms::kLinux};
 
-const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
-const char kSavedTabGroupTutorialMetricPrefix[] = "SavedTabGroup";
-const char kCustomizeChromeTutorialMetricPrefix[] = "CustomizeChromeSidePanel";
-const char kPasswordManagerTutorialMetricPrefix[] = "PasswordManager";
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 constexpr char kChromeThemeBackElementName[] = "ChromeThemeBackElement";
 
@@ -1258,58 +1255,55 @@ void MaybeRegisterChromeTutorials(
   }
 
   {  // Side panel customize chrome
-    auto customize_chrome_tutorial =
-        TutorialDescription::Create<kCustomizeChromeTutorialMetricPrefix>(
-            // Bubble step - customize chrome button
-            BubbleStep(NewTabPageUI::kCustomizeChromeButtonElementId)
-                .SetBubbleBodyText(
-                    IDS_TUTORIAL_CUSTOMIZE_CHROME_OPEN_SIDE_PANEL)
-                .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
-                .InAnyContext(),
+    auto customize_chrome_tutorial = TutorialDescription::Create<
+        kSidePanelCustomizeChromeTutorialMetricPrefix>(
+        // Bubble step - customize chrome button
+        BubbleStep(NewTabPageUI::kCustomizeChromeButtonElementId)
+            .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_OPEN_SIDE_PANEL)
+            .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
+            .InAnyContext(),
 
-            // Bubble step - change theme button
-            BubbleStep(CustomizeChromeUI::kChangeChromeThemeButtonElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_CHANGE_THEME)
-                .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
-                .AbortIfVisibilityLost(false)
-                .InAnyContext(),
+        // Bubble step - change theme button
+        BubbleStep(CustomizeChromeUI::kChangeChromeThemeButtonElementId)
+            .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_CHANGE_THEME)
+            .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
+            .AbortIfVisibilityLost(false)
+            .InAnyContext(),
 
-            // Bubble step - select collection
-            BubbleStep(CustomizeChromeUI::kChromeThemeCollectionElementId)
-                .SetBubbleBodyText(
-                    IDS_TUTORIAL_CUSTOMIZE_CHROME_SELECT_COLLECTION)
-                .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
-                .AbortIfVisibilityLost(false)
-                .InAnyContext(),
+        // Bubble step - select collection
+        BubbleStep(CustomizeChromeUI::kChromeThemeCollectionElementId)
+            .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_SELECT_COLLECTION)
+            .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
+            .AbortIfVisibilityLost(false)
+            .InAnyContext(),
 
-            // Bubble step - select theme
-            BubbleStep(CustomizeChromeUI::kChromeThemeElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_APPLY_THEME)
-                .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
-                .AbortIfVisibilityLost(false)
-                .InAnyContext(),
+        // Bubble step - select theme
+        BubbleStep(CustomizeChromeUI::kChromeThemeElementId)
+            .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_APPLY_THEME)
+            .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
+            .AbortIfVisibilityLost(false)
+            .InAnyContext(),
 
-            // Event step - select theme event
-            EventStep(kBrowserThemeChangedEventId, kBrowserViewElementId),
+        // Event step - select theme event
+        EventStep(kBrowserThemeChangedEventId, kBrowserViewElementId),
 
-            // Bubble step - back button
-            BubbleStep(CustomizeChromeUI::kChromeThemeBackElementId)
-                .SetBubbleBodyText(
-                    IDS_TUTORIAL_CUSTOMIZE_CHROME_CLICK_BACK_ARROW)
-                .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
-                .NameElement(kChromeThemeBackElementName)
-                .AbortIfVisibilityLost(false)
-                .InAnyContext(),
+        // Bubble step - back button
+        BubbleStep(CustomizeChromeUI::kChromeThemeBackElementId)
+            .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_CLICK_BACK_ARROW)
+            .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
+            .NameElement(kChromeThemeBackElementName)
+            .AbortIfVisibilityLost(false)
+            .InAnyContext(),
 
-            // Hidden step - back button
-            HiddenStep::WaitForHidden(kChromeThemeBackElementName),
+        // Hidden step - back button
+        HiddenStep::WaitForHidden(kChromeThemeBackElementName),
 
-            // Completion of the tutorial.
-            BubbleStep(NewTabPageUI::kCustomizeChromeButtonElementId)
-                .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
-                .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
-                .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY)
-                .InAnyContext());
+        // Completion of the tutorial.
+        BubbleStep(NewTabPageUI::kCustomizeChromeButtonElementId)
+            .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
+            .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
+            .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY)
+            .InAnyContext());
 
     customize_chrome_tutorial.metadata.additional_description =
         "Tutorial for customizing themes using side panel.";

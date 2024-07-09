@@ -4,7 +4,9 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -41,6 +43,7 @@
 
 namespace {
 constexpr char kTestTutorialId[] = "TutorialInteractiveUitest Tutorial";
+constexpr char kTestTutorialMetricPrefix[] = "Test";
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 }  // namespace
 
@@ -76,22 +79,19 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
   }
 
   TutorialDescription GetDefaultTutorialDescription() {
-    TutorialDescription description;
-    description.steps.emplace_back(
+    return TutorialDescription::Create<kTestTutorialMetricPrefix>(
         TutorialDescription::BubbleStep(kToolbarAppMenuButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
-            .SetBubbleArrow(HelpBubbleArrow::kTopRight));
-    description.steps.emplace_back(
-        TutorialDescription::EventStep(kCustomEventType1));
-    description.steps.emplace_back(
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight),
+        TutorialDescription::EventStep(kCustomEventType1),
         TutorialDescription::HiddenStep::WaitForActivated(
-            kToolbarAppMenuButtonElementId));
-    description.steps.emplace_back(
+            kToolbarAppMenuButtonElementId),
         TutorialDescription::BubbleStep(kToolbarAppMenuButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
             .SetBubbleArrow(HelpBubbleArrow::kTopRight));
-    return description;
   }
+
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
@@ -119,6 +119,11 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
               ->bubble_view()
               ->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kKeyboard));
+
+  const auto histogram_name =
+      base::StringPrintf("Tutorial.%s.Completion", kTestTutorialMetricPrefix);
+  histogram_tester_.ExpectBucketCount(histogram_name, 0, 0);
+  histogram_tester_.ExpectBucketCount(histogram_name, 1, 1);
 }
 
 class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
