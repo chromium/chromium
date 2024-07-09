@@ -221,9 +221,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
       stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
       std::move(platform_file));
 
-  viz::SharedImageFormat si_format =
-      viz::GetSinglePlaneSharedImageFormat(buffer_format);
-  CHECK(!si_format.IsLegacyMultiplanar());
+  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(buffer_format);
 
   auto client_shared_image = sii->CreateSharedImage(
       {si_format, size_, gfx::ColorSpace(),
