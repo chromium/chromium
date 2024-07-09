@@ -99,8 +99,7 @@ class BookmarkClientBase : public bookmarks::BookmarkClient {
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_{nullptr};
 
   // A list of providers of a save location for a given URL.
-  std::vector<raw_ptr<SuggestedSaveLocationProvider, VectorExperimental>>
-      save_location_providers_;
+  std::vector<raw_ptr<SuggestedSaveLocationProvider>> save_location_providers_;
 
   // The UUID of the last folder that was suggested.
   base::Uuid last_suggested_folder_uuid_;

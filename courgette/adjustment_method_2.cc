@@ -1215,7 +1215,7 @@ class AssignmentProblem {
   Shingle::OwningSet shingle_instances_;
 
   // |instances_| maps from position in |trace_| to Shingle at that position.
-  std::vector<raw_ptr<Shingle, VectorExperimental>> instances_;
+  std::vector<raw_ptr<Shingle>> instances_;
 
   SingleUsePatternQueue single_use_pattern_queue_;
   ShinglePatternSet active_non_single_use_patterns_;

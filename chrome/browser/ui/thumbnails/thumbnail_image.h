@@ -215,7 +215,7 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
   // notification doesn't matter, so don't maintain any ordering. Since
   // the number of subscribers for a given thumbnail is expected to be
   // small, doing a linear search to remove a subscriber is fine.
-  std::vector<raw_ptr<Subscription, VectorExperimental>> subscribers_;
+  std::vector<raw_ptr<Subscription>> subscribers_;
 
   // Called when an asynchronous operation (such as encoding image data upon
   // assignment or decoding image data for observers) finishes or fails.

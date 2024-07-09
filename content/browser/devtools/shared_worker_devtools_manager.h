@@ -58,8 +58,7 @@ class SharedWorkerDevToolsManager {
       live_hosts_;
   // Clients may retain agent host for the terminated shared worker,
   // and we reconnect them when shared worker is restarted.
-  base::flat_set<raw_ptr<SharedWorkerDevToolsAgentHost, CtnExperimental>>
-      terminated_hosts_;
+  base::flat_set<raw_ptr<SharedWorkerDevToolsAgentHost>> terminated_hosts_;
 };
 
 }  // namespace content

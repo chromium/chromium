@@ -10,9 +10,9 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "courgette/region.h"
 
 namespace courgette {
@@ -55,8 +55,8 @@ class DifferenceEstimator {
   size_t Measure(Base* base,  Subject* subject);
 
  private:
-  std::vector<raw_ptr<Base, VectorExperimental>> owned_bases_;
-  std::vector<raw_ptr<Subject, VectorExperimental>> owned_subjects_;
+  std::vector<std::unique_ptr<Base>> owned_bases_;
+  std::vector<std::unique_ptr<Subject>> owned_subjects_;
 };
 
 }  // namespace

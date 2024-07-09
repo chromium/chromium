@@ -322,14 +322,14 @@ class NET_EXPORT SpdySessionPool
  private:
   friend class SpdySessionPoolPeer;  // For testing.
 
-  using SessionSet = std::set<raw_ptr<SpdySession, SetExperimental>>;
+  using SessionSet = std::set<raw_ptr<SpdySession>>;
   using WeakSessionList = std::vector<base::WeakPtr<SpdySession>>;
   using AvailableSessionMap =
       std::map<SpdySessionKey, base::WeakPtr<SpdySession>>;
   using AliasMap = std::multimap<IPEndPoint, SpdySessionKey>;
   using DnsAliasesBySessionKeyMap =
       std::map<SpdySessionKey, std::set<std::string>>;
-  using RequestSet = std::set<raw_ptr<SpdySessionRequest, SetExperimental>>;
+  using RequestSet = std::set<raw_ptr<SpdySessionRequest>>;
 
   struct RequestInfoForKey {
     RequestInfoForKey();

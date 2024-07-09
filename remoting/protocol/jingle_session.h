@@ -182,7 +182,7 @@ class JingleSession : public Session {
   std::vector<PendingMessage> pending_transport_info_;
 
   // The SessionPlugins attached to this session.
-  std::vector<raw_ptr<SessionPlugin, VectorExperimental>> plugins_;
+  std::vector<raw_ptr<SessionPlugin>> plugins_;
 
   THREAD_CHECKER(thread_checker_);
 

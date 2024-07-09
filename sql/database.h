@@ -973,7 +973,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // A list of all StatementRefs we've given out. Each ref must register with
   // us when it's created or destroyed. This allows us to potentially close
   // any open statements when we encounter an error.
-  std::set<raw_ptr<StatementRef, SetExperimental>> open_statements_;
+  std::set<raw_ptr<StatementRef>> open_statements_;
 
   // Number of currently-nested transactions.
   int transaction_nesting_ = 0;

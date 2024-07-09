@@ -626,7 +626,7 @@ class NET_EXPORT SpdySession
   using PendingStreamRequestQueue =
       base::circular_deque<base::WeakPtr<SpdyStreamRequest>>;
   using ActiveStreamMap = std::map<spdy::SpdyStreamId, SpdyStream*>;
-  using CreatedStreamSet = std::set<raw_ptr<SpdyStream, SetExperimental>>;
+  using CreatedStreamSet = std::set<raw_ptr<SpdyStream>>;
 
   enum AvailabilityState {
     // The session is available in its socket pool and can be used

@@ -330,7 +330,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // The snoopers examining or grabbing a copy of the audio data from the
   // OnMoreData() calls.
   base::Lock snooper_lock_;
-  std::vector<raw_ptr<Snooper, VectorExperimental>> snoopers_;
+  std::vector<raw_ptr<Snooper>> snoopers_;
 
   // The current volume of the audio stream.
   double volume_;
