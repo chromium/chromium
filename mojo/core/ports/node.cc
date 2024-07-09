@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
@@ -1542,7 +1543,7 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
     for (size_t i = 0; i < message->num_ports(); ++i) {
       const PortName& attached_port_name = message->ports()[i];
       auto iter = ports_.find(attached_port_name);
-      DCHECK(iter != ports_.end());
+      CHECK(iter != ports_.end(), base::NotFatalUntil::M130);
       attached_port_refs[i] = PortRef(attached_port_name, iter->second);
       ports_to_lock[i + 1] = &attached_port_refs[i];
     }
