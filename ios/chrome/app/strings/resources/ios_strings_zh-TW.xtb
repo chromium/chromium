@@ -832,7 +832,7 @@
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5235389474593199952">隱藏「歷史記錄」</translation>
 <translation id="5238301240406177137">儲存到帳戶</translation>
-<translation id="5238596603078743134">現在起，當<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />過 Google 密碼管理工具登入 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 時，可以直接使用你的使用者名稱和密碼。</translation>
+<translation id="5238596603078743134">現在起，當<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />透過 Google 密碼管理工具登入 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 時，可以直接使用你的使用者名稱和密碼。</translation>
 <translation id="5245322853195994030">取消同步處理</translation>
 <translation id="5248640482715684545">這個網站正在嘗試開啟另一個應用程式。</translation>
 <translation id="5256661381001734217">這個網站正在嘗試開啟某個應用程式，這會使你退出無痕模式。</translation>

@@ -41,6 +41,7 @@
 <translation id="1070901266639972381">Noc</translation>
 <translation id="1073690811593784042">Sklo (barevné)</translation>
 <translation id="1074497978438210769">Nezabezpečeno</translation>
+<translation id="1074779248866616641">Výsledek</translation>
 <translation id="1075364221219156102">Použít přístupový klíč</translation>
 <translation id="1080116354587839789">Přizpůsobit na šířku</translation>
 <translation id="1081061862829655580">Přihrádka 19</translation>
@@ -63,7 +64,7 @@
 <translation id="1113869188872983271">&amp;Vrátit změnu uspořádání zpět</translation>
 <translation id="1118429183611783760">Vysavače a péče o podlahy</translation>
 <translation id="1122714970786750095">Elektronika a elektrotechnika</translation>
-<translation id="1123753900084781868">Živý přepis teď není k dispozici</translation>
+<translation id="1123753900084781868">Okamžité titulky teď nejsou k dispozici</translation>
 <translation id="1125573121925420732">Během aktualizace zabezpečení na webech mohou být upozornění běžná. Brzy by se to mělo zlepšit.</translation>
 <translation id="112840717907525620">Mezipaměť zásady je v pořádku</translation>
 <translation id="1131264053432022307">Obrázek, který jste zkopírovali</translation>
@@ -1568,7 +1569,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3984581365661308170">Obálka č. 11</translation>
 <translation id="398470910934384994">Ptáci</translation>
 <translation id="3985750352229496475">Spravovat adresy...</translation>
-<translation id="3986705137476756801">Zatím živý přepis vypnout</translation>
+<translation id="3986705137476756801">Zatím okamžité titulky vypnout</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Méně než 1 MB</translation>
 <translation id="3990250421422698716">Běžící odsazení</translation>
@@ -1800,7 +1801,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">Při použití automatického vyplňování vždy ověřit</translation>
 <translation id="4397978002248035985">Otevře vyskakovací okno k ověření na webu vaší banky</translation>
-<translation id="4406883609789734330">Živý přepis</translation>
+<translation id="4406883609789734330">Okamžité titulky</translation>
 <translation id="4406896451731180161">výsledky vyhledávání</translation>
 <translation id="4408413947728134509">Soubory cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Tato konfigurace je označena jako instalovatelná, ale pro tuto architekturu není k dispozici žádný obraz, takže ji nelze nainstalovat.</translation>
@@ -1925,7 +1926,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4701307090948589984">Odesílat do…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Boční</translation>
-<translation id="4702656508969495934">Živý přepis je viditelný, vyberete ho pomocí přepínače oken</translation>
+<translation id="4702656508969495934">Okamžité titulky jsou viditelný, vyberete ho pomocí přepínače oken</translation>
 <translation id="4703342001883078444">Rodina a vztahy</translation>
 <translation id="4708268264240856090">Připojení bylo přerušeno</translation>
 <translation id="4708276642004148190">Zásobování vodou a úprava vody</translation>
@@ -2565,7 +2566,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5944297261866530437">Textilie (vysoký lesk)</translation>
 <translation id="5950901984834744590">Břitvy a holicí strojky</translation>
 <translation id="5951495562196540101">Pomocí běžného uživatelského účtu se nelze zaregistrovat (je k dispozici licence v balíčku).</translation>
-<translation id="5953516610448771166">Živý přepis pro tento mediální obsah není k dispozici. Pokud chcete zobrazit titulky, na tomto webu zablokujte <ph name="CONTENT_SETTINGS" />.</translation>
+<translation id="5953516610448771166">Okamžité titulky pro tento mediální obsah nejsou k dispozici. Pokud chcete zobrazit titulky, zablokujte na tomto webu  <ph name="CONTENT_SETTINGS" />.</translation>
 <translation id="595873925609605681">Pokud web nefunguje správně, <ph name="BEGIN_LINK" />zkuste soubory cookie třetích stran dočasně povolit<ph name="END_LINK" />.</translation>
 <translation id="5960795367348889467">Ověření</translation>
 <translation id="5963413905009737549">Sekce</translation>
@@ -3130,6 +3131,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7031646650991750659">Které aplikace Google Play máte nainstalované</translation>
 <translation id="7035705295266423040">Vaše banka chce ověřit, zda jste to skutečně vy</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat nastavení ochrany soukromí v účtu Google</translation>
+<translation id="7042616127917168121">Vylepšit výsledky</translation>
 <translation id="7043552168914147882">Záložkové médium</translation>
 <translation id="7044081119134178347">Použití kamery bylo pro tentokrát povoleno</translation>
 <translation id="7048095965575426564">European Fanfold</translation>

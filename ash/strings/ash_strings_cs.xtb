@@ -202,7 +202,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1703117532528082099">Aktivní okno je zadokováno vlevo.</translation>
 <translation id="1708345662127501511">Plocha: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nastavení sítě</translation>
-<translation id="1719094688023114093">Živý přepis je zapnutý</translation>
+<translation id="1719094688023114093">Okamžité titulky jsou zapnutý</translation>
 <translation id="1720011244392820496">Zapnutí Synchronizace Wi-Fi</translation>
 <translation id="1720230731642245863">Hotspot je vypnutý</translation>
 <translation id="1731815243805539470">Přepnout na předchozího uživatele</translation>
@@ -913,7 +913,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="439598569299422042">Pozastaveno, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Záznam obrazovky se nepodařilo uložit.</translation>
 <translation id="4405151984121254935">Připojený typ periferního zařízení není podporován</translation>
-<translation id="4406883609789734330">Živý přepis</translation>
+<translation id="4406883609789734330">Okamžité titulky</translation>
 <translation id="4412698727486357573">Centrum nápovědy</translation>
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4417647906073317561">Nastavení soustředění. Nastavte si časovač, úkol a hudbu, aby vás nic nerozptylovalo.</translation>
@@ -1698,7 +1698,7 @@ Nová instalace</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">K pořízení snímků obrazovky můžete použít nástroj pro záznam obrazovky v rychlém nastavení</translation>
 <translation id="7301826272005790482">Zavřít návrhy oken</translation>
-<translation id="7302889331339392448">Živý přepis je vypnutý.</translation>
+<translation id="7302889331339392448">Okamžité titulky jsou vypnutý.</translation>
 <translation id="7303365578352795231">Odpověď dostanete v jiném zařízení.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrátor resetuje vaši eSIM. Může to trvat několik minut.</translation>

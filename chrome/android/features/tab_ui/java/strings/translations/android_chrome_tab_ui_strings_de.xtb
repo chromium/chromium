@@ -80,7 +80,7 @@
 <translation id="5007392906805964215">Ansehen</translation>
 <translation id="5073204694187207510">Vollbildraster ausblenden</translation>
 <translation id="5076161749301278626">Möchtest du dir Händlerrezensionen ansehen?</translation>
-<translation id="5082793167783849073">Du kannst Seiten schnell miteinander vergleichen, indem du eine Gruppe erstellst. Berühre und halte einen Link, um den Vorgang zu starten.</translation>
+<translation id="5082793167783849073">Du kannst Seiten schnell miteinander vergleichen, indem du eine Gruppe erstellst. Halte einen Link gedrückt, um den Vorgang zu starten.</translation>
 <translation id="5094423602314093681">Tab(s) entfernen und Gruppe löschen?</translation>
 <translation id="5161254044473106830">Titel erforderlich</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab schließen.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs schließen.}}</translation>
@@ -110,7 +110,7 @@
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
 <translation id="6615455863669487791">Zeigen</translation>
 <translation id="6744956528665271406">Gruppenfarbe bearbeiten</translation>
-<translation id="6840760312327750441">Wenn du Tabs gruppieren möchtest, berühre und halte einen Tab. Ziehe ihn dann auf einen anderen Tab.</translation>
+<translation id="6840760312327750441">Wenn du Tabs gruppieren möchtest, halte einen Tab gedrückt. Ziehe ihn dann auf einen anderen Tab.</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tab teilen}other{Tabs teilen}}</translation>
 <translation id="7129458170538955174">Informationen zu diesem Händler sind halb geöffnet</translation>

@@ -1821,7 +1821,7 @@
 <translation id="7726391492136714301">查看手機上的通知和應用程式</translation>
 <translation id="7727952505535211425">在新分頁中開啟網址列中的網站</translation>
 <translation id="7742327441377685481">沒有任何通知</translation>
-<translation id="7748275671948949022">醒目顯示檔案櫃中的啟動器按鈕</translation>
+<translation id="7748275671948949022">醒目顯示檔案櫃中的啟動鍵</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">按一下即可查看更新詳細資料</translation>
@@ -2233,7 +2233,7 @@
 <translation id="987589956647469042">行動數據已開啟</translation>
 <translation id="989374776391122812">攝影機和音訊控制選項</translation>
 <translation id="990277280839877440">視窗 <ph name="WINDOW_TITILE" /> 已關閉。</translation>
-<translation id="993398562350683614">導覽步驟 <ph name="STEP" />，共 <ph name="TOTAL_STEPS" /> 個步驟。你可以在 <ph name="PRODUCT_NAME" /> 上使用應用程式處理大小事。如要尋找應用程式，可以使用啟動器。按下 Alt + Shift + L 鍵可將焦點移到啟動器按鈕。</translation>
+<translation id="993398562350683614">導覽步驟 <ph name="STEP" />，共 <ph name="TOTAL_STEPS" /> 個步驟。你可以在 <ph name="PRODUCT_NAME" /> 上使用應用程式處理大小事。如要尋找應用程式，可以使用啟動器。按下 Alt + Shift + L 鍵可將焦點移到啟動鍵。</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />，<ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">取得最新功能並改善安全性。更新作業會在背景執行。</translation>
 </translationbundle>

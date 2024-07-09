@@ -4481,7 +4481,7 @@
 <translation id="4259388776256904261">این کار ممکن است مدتی طول بکشد</translation>
 <translation id="4260699894265914672">برای سفارشی کردن، یکی از کلیدهای صفحه‌کلید را فشار دهید</translation>
 <translation id="4261429981378979799">اجازه‌های افزونه</translation>
-<translation id="4262004481148703251">رد کردن هشدار</translation>
+<translation id="4262004481148703251">بستن هشدار</translation>
 <translation id="4263223596040212967">جانمایی صفحه‌کلید را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="4263470758446311292">به میزان حداکثری در حافظه صرفه‌جویی می‌شود. برگه‌ها بعداز گذشت مدت زمان کوتاه‌تری غیرفعال می‌شود.</translation>
 <translation id="4265096510956307240">تأیید هویت</translation>
@@ -7562,6 +7562,7 @@
 <translation id="6597324406048772521">افزونه‌ها در این سایت مجاز نیست</translation>
 <translation id="6597331566371766302">سرپرستتان افزونه‌های زیر را مسدود کرده است:</translation>
 <translation id="659894938503552850">جدیدترین</translation>
+<translation id="6600016381025017075">هرچیزی در این صفحه را جستجو کنید</translation>
 <translation id="6601262427770154296">مدیریت فرهنگ‌های لغت کاربر</translation>
 <translation id="6602173570135186741">تکمیل خودکار و گذرواژه‌ها</translation>
 <translation id="6602336931411102724">نمایش گروه‌های برگه در نوار نشانک‌ها</translation>
@@ -10409,7 +10410,7 @@
 <translation id="8700416429250425628">راه‌انداز + پس‌بَر</translation>
 <translation id="8702278591052316269">منویی که حاوی گروه‌های برگه ذخیره‌شده پنهان است</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> شما قفل شده است.</translation>
-<translation id="8703346390800944767">رد کردن آگهی</translation>
+<translation id="8703346390800944767">رد شدن از آگهی</translation>
 <translation id="8704662571571150811">دامنه‌ها</translation>
 <translation id="8705331520020532516">شمارهٔ سریال</translation>
 <translation id="8705580154597116082">‏Wi-Fi ازطریق تلفن دردسترس است</translation>

@@ -3830,7 +3830,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3765696567014520261">Các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như để điều chỉnh quảng cáo cho phù hợp với bạn. Các tính năng trên một số trang web có thể không hoạt động</translation>
 <translation id="3766687283066842296">Tìm hiểu thêm về Trung tâm điều khiển điện thoại</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
-<translation id="3767835232661747729">Hiện tại, bạn chỉ có thể chia sẻ mật khẩu với các thành viên gia đình. <ph name="BEGIN_LINK" />Mời thành viên gia đình<ph name="END_LINK" /> tham gia nhóm của bạn để sử dụng các sản phẩm và thuê bao của bạn trên Google hiệu quả hơn.</translation>
+<translation id="3767835232661747729">Hiện tại, bạn chỉ có thể chia sẻ mật khẩu với các thành viên gia đình. <ph name="BEGIN_LINK" />Mời thành viên gia đình<ph name="END_LINK" /> tham gia nhóm của bạn để sử dụng các sản phẩm và gói thuê bao của bạn trên Google hiệu quả hơn.</translation>
 <translation id="376841534249795524">Bạn sẽ dùng <ph name="DEVICE_TYPE" /> vào những việc gì?</translation>
 <translation id="377050016711188788">Kem</translation>
 <translation id="3771290962915251154">Tùy chọn cài đặt này bị tắt do các quyền kiểm soát của cha mẹ đang bật</translation>
@@ -7563,6 +7563,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6597324406048772521">Các tiện ích không được cho phép trên trang web này</translation>
 <translation id="6597331566371766302">Quản trị viên của bạn đã chặn các tiện ích sau:</translation>
 <translation id="659894938503552850">mới nhất</translation>
+<translation id="6600016381025017075">Tìm nội dung bất kỳ trên trang này</translation>
 <translation id="6601262427770154296">Quản lý từ điển người dùng</translation>
 <translation id="6602173570135186741">Tự động điền và mật khẩu</translation>
 <translation id="6602336931411102724">Hiển thị nhóm thẻ trong thanh dấu trang</translation>

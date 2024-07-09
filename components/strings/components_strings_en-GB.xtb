@@ -41,6 +41,7 @@
 <translation id="1070901266639972381">Night</translation>
 <translation id="1073690811593784042">Glass (coloured)</translation>
 <translation id="1074497978438210769">Not secure</translation>
+<translation id="1074779248866616641">Result</translation>
 <translation id="1075364221219156102">Use a passkey</translation>
 <translation id="1080116354587839789">Fit to width</translation>
 <translation id="1081061862829655580">Tray 19</translation>
@@ -3135,6 +3136,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7031646650991750659">Which Google Play apps you have installed</translation>
 <translation id="7035705295266423040">Your bank wants to verify that it's you</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Press Tab then Enter to manage your Google Account privacy settings</translation>
+<translation id="7042616127917168121">Refine results</translation>
 <translation id="7043552168914147882">Tab stock</translation>
 <translation id="7044081119134178347">Camera allowed this time</translation>
 <translation id="7048095965575426564">European Fanfold</translation>

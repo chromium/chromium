@@ -41,8 +41,9 @@
 <translation id="1070901266639972381">Đêm</translation>
 <translation id="1073690811593784042">Thuỷ tinh (Có màu)</translation>
 <translation id="1074497978438210769">Không bảo mật</translation>
+<translation id="1074779248866616641">Kết quả</translation>
 <translation id="1075364221219156102">Dùng khoá truy cập</translation>
-<translation id="1080116354587839789">Chỉnh cho vừa với chiều rộng</translation>
+<translation id="1080116354587839789">Vừa với chiều rộng</translation>
 <translation id="1081061862829655580">Khay 19</translation>
 <translation id="1082026381988252344">Cuộn và thu phóng nội dung thẻ được chia sẻ</translation>
 <translation id="1089439967362294234">Thay đổi mật khẩu</translation>
@@ -3135,6 +3136,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7031646650991750659">Những ứng dụng bạn đã cài đặt bằng Google Play</translation>
 <translation id="7035705295266423040">Ngân hàng muốn xác minh danh tính của bạn</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để quản lý chế độ cài đặt về quyền riêng tư của Tài khoản Google của bạn</translation>
+<translation id="7042616127917168121">Tinh chỉnh kết quả</translation>
 <translation id="7043552168914147882">Giấy có nhãn ở rìa</translation>
 <translation id="7044081119134178347">Đã cho phép sử dụng máy ảnh cho lần này</translation>
 <translation id="7048095965575426564">Fanfold châu Âu</translation>
