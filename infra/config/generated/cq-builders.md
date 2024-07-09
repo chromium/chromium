@@ -601,6 +601,12 @@ builder.
   Location filters:
   * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
 
+* [win-utr-tester](https://ci.chromium.org/p/chromium/builders/try/win-utr-tester) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-utr-tester""))
+
+  Location filters:
+  * [`//tools/utr/.+`](https://cs.chromium.org/chromium/src/tools/utr/)
+  * [`//tools/mb/.+`](https://cs.chromium.org/chromium/src/tools/mb/)
+
 * [win11-rel](https://ci.chromium.org/p/chromium/builders/try/win11-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win11-rel""))
 
   Location filters:
