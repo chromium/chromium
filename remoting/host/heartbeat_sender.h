@@ -6,7 +6,9 @@
 #define REMOTING_HOST_HEARTBEAT_SENDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -110,14 +112,22 @@ class HeartbeatSender final : public SignalStrategy::Listener {
  private:
   class HeartbeatClient {
    public:
-    using HeartbeatResponseCallback =
+    using LegacyHeartbeatResponseCallback =
         base::OnceCallback<void(const ProtobufHttpStatus&,
                                 std::unique_ptr<apis::v1::HeartbeatResponse>)>;
+    using SendHeartbeatResponseCallback = base::OnceCallback<void(
+        const ProtobufHttpStatus&,
+        std::unique_ptr<apis::v1::SendHeartbeatResponse>)>;
 
     virtual ~HeartbeatClient() = default;
 
-    virtual void Heartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
-                           HeartbeatResponseCallback callback) = 0;
+    virtual void LegacyHeartbeat(
+        std::unique_ptr<apis::v1::HeartbeatRequest> request,
+        LegacyHeartbeatResponseCallback callback) = 0;
+    virtual void SendHeartbeat(
+        std::unique_ptr<apis::v1::SendHeartbeatRequest> request,
+        SendHeartbeatResponseCallback callback) = 0;
+
     virtual void CancelPendingRequests() = 0;
   };
 
@@ -130,16 +140,28 @@ class HeartbeatSender final : public SignalStrategy::Listener {
   bool OnSignalStrategyIncomingStanza(
       const jingle_xmpp::XmlElement* stanza) override;
 
-  void SendHeartbeat();
-  void OnResponse(const ProtobufHttpStatus& status,
-                  std::unique_ptr<apis::v1::HeartbeatResponse> response);
-
   // Handlers for host-offline-reason completion and timeout.
   void OnHostOfflineReasonTimeout();
   void OnHostOfflineReasonAck();
 
-  // Helper methods used by DoSendStanza() to generate heartbeat stanzas.
-  std::unique_ptr<apis::v1::HeartbeatRequest> CreateHeartbeatRequest();
+  void ClearHeartbeatTimer();
+  void SendFullHeartbeat();
+  void SendLiteHeartbeat();
+
+  bool CheckHttpStatus(const ProtobufHttpStatus& status);
+  base::TimeDelta CalculateDelay(const ProtobufHttpStatus& status,
+                                 std::optional<base::TimeDelta> optMinDelay);
+
+  void OnLegacyHeartbeatResponse(
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<apis::v1::HeartbeatResponse> response);
+  void OnSendHeartbeatResponse(
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<apis::v1::SendHeartbeatResponse> response);
+
+  // Helper methods used to generate heartbeat stanzas.
+  std::unique_ptr<apis::v1::HeartbeatRequest> CreateLegacyHeartbeatRequest();
+  std::unique_ptr<apis::v1::SendHeartbeatRequest> CreateSendHeartbeatRequest();
 
   raw_ptr<Delegate> delegate_;
   std::string host_id_;

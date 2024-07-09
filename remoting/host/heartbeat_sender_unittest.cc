@@ -35,9 +35,12 @@ using testing::AtMost;
 using testing::InSequence;
 using testing::Return;
 
-using HeartbeatResponseCallback =
+using LegacyHeartbeatResponseCallback =
     base::OnceCallback<void(const ProtobufHttpStatus&,
                             std::unique_ptr<apis::v1::HeartbeatResponse>)>;
+using SendHeartbeatResponseCallback =
+    base::OnceCallback<void(const ProtobufHttpStatus&,
+                            std::unique_ptr<apis::v1::SendHeartbeatResponse>)>;
 
 constexpr char kOAuthAccessToken[] = "fake_access_token";
 constexpr char kHostId[] = "fake_host_id";
@@ -52,10 +55,11 @@ constexpr base::TimeDelta kWaitForAllStrategiesConnectedTimeout =
 constexpr base::TimeDelta kOfflineReasonTimeout = base::Seconds(123);
 constexpr base::TimeDelta kTestHeartbeatDelay = base::Seconds(350);
 
-void ValidateHeartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
-                       bool expected_is_initial_heartbeat = false,
-                       const std::string& expected_host_offline_reason = {},
-                       bool is_googler = false) {
+void ValidateLegacyHeartbeat(
+    std::unique_ptr<apis::v1::HeartbeatRequest> request,
+    bool expected_is_initial_heartbeat = false,
+    const std::string& expected_host_offline_reason = {},
+    bool is_googler = false) {
   ASSERT_TRUE(request->has_host_version());
   if (expected_host_offline_reason.empty()) {
     ASSERT_FALSE(request->has_host_offline_reason());
@@ -74,16 +78,26 @@ void ValidateHeartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
   ASSERT_EQ(is_googler, request->has_hostname());
 }
 
-decltype(auto) DoValidateHeartbeatAndRespondOk(
+decltype(auto) DoValidateLegacyHeartbeatAndRespondOk(
     bool expected_is_initial_heartbeat = false,
     const std::string& expected_host_offline_reason = {},
     bool is_googler = false) {
   return [=](std::unique_ptr<apis::v1::HeartbeatRequest> request,
-             HeartbeatResponseCallback callback) {
-    ValidateHeartbeat(std::move(request), expected_is_initial_heartbeat,
-                      expected_host_offline_reason, is_googler);
+             LegacyHeartbeatResponseCallback callback) {
+    ValidateLegacyHeartbeat(std::move(request), expected_is_initial_heartbeat,
+                            expected_host_offline_reason, is_googler);
     auto response = std::make_unique<apis::v1::HeartbeatResponse>();
     response->set_set_interval_seconds(kGoodIntervalSeconds);
+    std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
+  };
+}
+
+decltype(auto) DoValidateSendHeartbeatAndRespondOk() {
+  return [=](std::unique_ptr<apis::v1::SendHeartbeatRequest> request,
+             SendHeartbeatResponseCallback callback) {
+    ASSERT_EQ(kHostId, request->host_id());
+    auto response = std::make_unique<apis::v1::SendHeartbeatResponse>();
+    response->set_wait_interval_seconds(kGoodIntervalSeconds);
     std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
   };
 }
@@ -130,9 +144,12 @@ class HeartbeatSenderTest : public testing::Test {
  protected:
   class MockHeartbeatClient : public HeartbeatSender::HeartbeatClient {
    public:
-    MOCK_METHOD2(Heartbeat,
+    MOCK_METHOD2(LegacyHeartbeat,
                  void(std::unique_ptr<apis::v1::HeartbeatRequest>,
-                      HeartbeatResponseCallback));
+                      LegacyHeartbeatResponseCallback));
+    MOCK_METHOD2(SendHeartbeat,
+                 void(std::unique_ptr<apis::v1::SendHeartbeatRequest>,
+                      SendHeartbeatResponseCallback));
 
     void CancelPendingRequests() override {
       // We just don't care about this method being called.
@@ -165,8 +182,22 @@ class HeartbeatSenderTest : public testing::Test {
 };
 
 TEST_F(HeartbeatSenderTest, SendHeartbeat) {
-  EXPECT_CALL(*mock_client_, Heartbeat(_, _))
-      .WillOnce(DoValidateHeartbeatAndRespondOk(true));
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true));
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
+  EXPECT_CALL(*mock_observer_, OnHeartbeatSent());
+  EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
+
+  signal_strategy_->Connect();
+  task_environment_.FastForwardBy(kWaitForAllStrategiesConnectedTimeout);
+}
+
+TEST_F(HeartbeatSenderTest, SendHeartbeat_Googler) {
+  set_is_googler();
+
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true, "", true));
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent());
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
 
@@ -177,10 +208,31 @@ TEST_F(HeartbeatSenderTest, SendHeartbeat) {
 TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats) {
   base::RunLoop run_loop;
 
-  EXPECT_CALL(*mock_client_, Heartbeat(_, _))
-      .WillOnce(DoValidateHeartbeatAndRespondOk(true))
-      .WillOnce(DoValidateHeartbeatAndRespondOk())
-      .WillOnce(DoValidateHeartbeatAndRespondOk());
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk())
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk());
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
+  EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
+  EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
+
+  signal_strategy_->Connect();
+  signal_strategy_->Disconnect();
+  signal_strategy_->Connect();
+  signal_strategy_->Disconnect();
+  signal_strategy_->Connect();
+}
+
+TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats_Googler) {
+  base::RunLoop run_loop;
+
+  set_is_googler();
+
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true, "", true))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(false, "", true))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(false, "", true));
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
 
@@ -194,10 +246,30 @@ TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats) {
 TEST_F(HeartbeatSenderTest, Signaling_MultipleHeartbeats) {
   base::RunLoop run_loop;
 
-  EXPECT_CALL(*mock_client_, Heartbeat(_, _))
-      .WillOnce(DoValidateHeartbeatAndRespondOk(true))
-      .WillOnce(DoValidateHeartbeatAndRespondOk())
-      .WillOnce(DoValidateHeartbeatAndRespondOk());
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk())
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk());
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
+  EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
+  EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
+
+  signal_strategy_->Connect();
+  task_environment_.FastForwardBy(kTestHeartbeatDelay * 2);
+}
+
+TEST_F(HeartbeatSenderTest, Signaling_MultipleHeartbeats_Googler) {
+  base::RunLoop run_loop;
+
+  set_is_googler();
+
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true, "", true))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(false, "", true))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(false, "", true));
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _))
+      .WillOnce(DoValidateSendHeartbeatAndRespondOk())
+      .WillOnce(DoValidateSendHeartbeatAndRespondOk());
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
 
@@ -214,8 +286,9 @@ TEST_F(HeartbeatSenderTest, SetHostOfflineReason) {
 
   testing::Mock::VerifyAndClearExpectations(&mock_ack_callback);
 
-  EXPECT_CALL(*mock_client_, Heartbeat(_, _))
-      .WillOnce(DoValidateHeartbeatAndRespondOk(true, "test_error"));
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true, "test_error"));
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent());
 
   // Callback should run once, when we get response to offline-reason.
@@ -226,10 +299,10 @@ TEST_F(HeartbeatSenderTest, SetHostOfflineReason) {
 }
 
 TEST_F(HeartbeatSenderTest, UnknownHostId) {
-  EXPECT_CALL(*mock_client_, Heartbeat(_, _))
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
       .WillRepeatedly([](std::unique_ptr<apis::v1::HeartbeatRequest> request,
-                         HeartbeatResponseCallback callback) {
-        ValidateHeartbeat(std::move(request), true);
+                         LegacyHeartbeatResponseCallback callback) {
+        ValidateLegacyHeartbeat(std::move(request), true);
         std::move(callback).Run(
             ProtobufHttpStatus(ProtobufHttpStatus::Code::NOT_FOUND,
                                "not found"),
@@ -249,20 +322,21 @@ TEST_F(HeartbeatSenderTest, FailedToHeartbeat_Backoff) {
   {
     InSequence sequence;
 
-    EXPECT_CALL(*mock_client_, Heartbeat(_, _))
+    EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
         .Times(2)
         .WillRepeatedly([&](std::unique_ptr<apis::v1::HeartbeatRequest> request,
-                            HeartbeatResponseCallback callback) {
-          ValidateHeartbeat(std::move(request), true);
+                            LegacyHeartbeatResponseCallback callback) {
+          ValidateLegacyHeartbeat(std::move(request), true);
           std::move(callback).Run(
               ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
                                  "unavailable"),
               nullptr);
         });
 
-    EXPECT_CALL(*mock_client_, Heartbeat(_, _))
-        .WillOnce(DoValidateHeartbeatAndRespondOk(true));
+    EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+        .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true));
   }
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
 
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).WillRepeatedly(Return());
 
@@ -283,20 +357,21 @@ TEST_F(HeartbeatSenderTest, HostComesBackOnlineAfterServiceOutage) {
   {
     InSequence sequence;
 
-    EXPECT_CALL(*mock_client_, Heartbeat(_, _))
+    EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
         .Times(retry_attempts)
         .WillRepeatedly([&](std::unique_ptr<apis::v1::HeartbeatRequest> request,
-                            HeartbeatResponseCallback callback) {
-          ValidateHeartbeat(std::move(request), true);
+                            LegacyHeartbeatResponseCallback callback) {
+          ValidateLegacyHeartbeat(std::move(request), true);
           std::move(callback).Run(
               ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
                                  "unavailable"),
               nullptr);
         });
 
-    EXPECT_CALL(*mock_client_, Heartbeat(_, _))
-        .WillOnce(DoValidateHeartbeatAndRespondOk(true));
+    EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+        .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true));
   }
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
 
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).WillRepeatedly(Return());
 
@@ -312,17 +387,18 @@ TEST_F(HeartbeatSenderTest, HostComesBackOnlineAfterServiceOutage) {
 }
 
 TEST_F(HeartbeatSenderTest, Unauthenticated) {
-  int heartbeat_count = 0;
-  EXPECT_CALL(*mock_client_, Heartbeat(_, _))
+  int legacy_heartbeat_count = 0;
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
       .WillRepeatedly([&](std::unique_ptr<apis::v1::HeartbeatRequest> request,
-                          HeartbeatResponseCallback callback) {
-        ValidateHeartbeat(std::move(request), true);
-        heartbeat_count++;
+                          LegacyHeartbeatResponseCallback callback) {
+        ValidateLegacyHeartbeat(std::move(request), true);
+        legacy_heartbeat_count++;
         std::move(callback).Run(
             ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAUTHENTICATED,
                                "unauthenticated"),
             nullptr);
       });
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).WillRepeatedly(Return());
   EXPECT_CALL(mock_delegate_, OnAuthFailed()).Times(1);
 
@@ -330,13 +406,14 @@ TEST_F(HeartbeatSenderTest, Unauthenticated) {
   task_environment_.FastForwardUntilNoTasksRemain();
 
   // Should retry heartbeating at least once.
-  ASSERT_LT(1, heartbeat_count);
+  ASSERT_LT(1, legacy_heartbeat_count);
 }
 
 TEST_F(HeartbeatSenderTest, GooglerHostname) {
   set_is_googler();
-  EXPECT_CALL(*mock_client_, Heartbeat(_, _))
-      .WillOnce(DoValidateHeartbeatAndRespondOk(true, "", true));
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true, "", true));
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(1);
   signal_strategy_->Connect();
 }
