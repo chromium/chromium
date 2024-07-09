@@ -85,6 +85,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crosapi:test_support",
+    "//chrome/browser/ash/login/screens",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ash_test_support",

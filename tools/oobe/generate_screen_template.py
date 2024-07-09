@@ -61,7 +61,8 @@ def GetGitRoot() -> str:
 
 
 GIT_ROOT = GetGitRoot()
-SCREEN_GN_FILE_PATH = os.path.join(GIT_ROOT, 'chrome/browser/ash/BUILD.gn')
+SCREEN_GN_FILE_PATH = os.path.join(GIT_ROOT,
+                                   'chrome/browser/ash/login/screens/BUILD.gn')
 HANDLER_GN_FILE_PATH = os.path.join(GIT_ROOT, 'chrome/browser/ui/BUILD.gn')
 WEBVIEW_JS_LIBRARY_GN_FILE_PATH = os.path.join(
     GIT_ROOT, 'chrome/browser/resources/chromeos/login/screens/common/BUILD.gn')

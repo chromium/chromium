@@ -22,6 +22,7 @@ static_library("enrollment") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ash/login/screens",
     "//chromeos/ash/components/network",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
@@ -80,6 +81,8 @@ static_library("test_support") {
     "//google_apis",
     "//testing/gmock",
   ]
+
+  deps = [ "//chrome/browser/ash/login/screens" ]
 }
 
 source_set("browser_tests") {
@@ -141,6 +144,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/screens:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",
