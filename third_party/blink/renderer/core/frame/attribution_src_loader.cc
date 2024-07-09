@@ -668,10 +668,7 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
   UseCounter::Count(window,
                     mojom::blink::WebFeature::kAttributionReportingAPIAll);
 
-  // Only record the ads APIs counter if enabled in that manner.
-  if (RuntimeEnabledFeatures::PrivacySandboxAdsAPIsEnabled(window)) {
-    UseCounter::Count(window, mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
-  }
+  UseCounter::Count(window, mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
 
   // The Attribution-Reporting-Support header is set on the request in the
   // network service and the context is unavailable. This is an approximate

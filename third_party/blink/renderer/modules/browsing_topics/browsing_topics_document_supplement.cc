@@ -96,11 +96,7 @@ BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
     return ScriptPromise<IDLSequence<BrowsingTopic>>();
   }
 
-  if (RuntimeEnabledFeatures::PrivacySandboxAdsAPIsEnabled(
-          document.GetExecutionContext())) {
-    UseCounter::Count(document,
-                      mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
-  }
+  UseCounter::Count(document, mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<BrowsingTopic>>>(

@@ -515,9 +515,6 @@ void OriginTrialContext::AddForceEnabledTrials(
 }
 
 bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
-  if (trial_name == "PrivacySandboxAdsAPIs")
-    return base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIs);
-
   if (trial_name == "FledgeBiddingAndAuctionServer") {
     return base::FeatureList::IsEnabled(features::kInterestGroupStorage) &&
            base::FeatureList::IsEnabled(
@@ -571,42 +568,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   return true;
 }
 
-Vector<mojom::blink::OriginTrialFeature>
-OriginTrialContext::RestrictedFeaturesForTrial(const String& trial_name) {
-  if (trial_name == "PrivacySandboxAdsAPIs") {
-    Vector<mojom::blink::OriginTrialFeature> restricted;
-    if (!base::FeatureList::IsEnabled(features::kInterestGroupStorage)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kFledge);
-    }
-    if (!base::FeatureList::IsEnabled(features::kBrowsingTopics)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kTopicsAPI);
-    }
-    if (!base::FeatureList::IsEnabled(features::kBrowsingTopics) ||
-        !base::FeatureList::IsEnabled(features::kBrowsingTopicsDocumentAPI)) {
-      restricted.push_back(
-          mojom::blink::OriginTrialFeature::kTopicsDocumentAPI);
-    }
-    if (!base::FeatureList::IsEnabled(
-            attribution_reporting::features::kConversionMeasurement)) {
-      restricted.push_back(
-          mojom::blink::OriginTrialFeature::kAttributionReporting);
-    }
-    if (!base::FeatureList::IsEnabled(features::kFencedFrames)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kFencedFrames);
-    }
-    if (!base::FeatureList::IsEnabled(features::kSharedStorageAPI)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kSharedStorageAPI);
-    }
-    if (!base::FeatureList::IsEnabled(features::kFencedFramesAPIChanges)) {
-      restricted.push_back(
-          mojom::blink::OriginTrialFeature::kFencedFramesAPIChanges);
-    }
-    return restricted;
-  }
-
-  return {};
-}
-
 OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
     const String& trial_name,
     base::Time expiry_time) {
@@ -619,22 +580,12 @@ OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
     return result;
   }
 
-  Vector<mojom::blink::OriginTrialFeature> restricted =
-      RestrictedFeaturesForTrial(trial_name);
-
   bool did_enable_feature = false;
   for (mojom::blink::OriginTrialFeature feature :
        origin_trials::FeaturesForTrial(trial_name.Utf8())) {
     if (!origin_trials::FeatureEnabledForOS(feature)) {
       DVLOG(1) << "EnableTrialFromName: feature " << static_cast<int>(feature)
                << " is disabled on current OS.";
-      continue;
-    }
-
-    if (restricted.Contains(feature)) {
-      DVLOG(1) << "EnableTrialFromName: feature " << static_cast<int>(feature)
-               << " is restricted from being enabled via the trial: "
-               << trial_name << ".";
       continue;
     }
 

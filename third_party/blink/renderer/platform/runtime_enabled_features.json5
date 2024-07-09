@@ -358,9 +358,7 @@
     },
     {
       name: "AttributionReporting",
-      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
-      origin_trial_allows_third_party: true,
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
       public: true,
     },
@@ -1687,18 +1685,16 @@
       // Portals, as we require the support of the browser process to fully
       // enable the feature. Enabling this runtime enabled feature alone has no
       // effect.
-      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
-      origin_trial_allows_third_party: true,
       public: true,
+      status: "stable",
     },
     {
       name: "FencedFramesAPIChanges",
       // Various new IDL attributes on the <fencedframe> element (such as
       // `config`, `sandbox`, and `allow`).
-      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
-      origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "enabled_or_overridden",
+      status: "stable",
     },
     {
       name: "FencedFramesDefaultMode",
@@ -1812,8 +1808,6 @@
       name: "Fledge",
       status: "stable",
       base_feature: "none",
-      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
-      origin_trial_allows_third_party: true,
       public: true,
     },
     {
@@ -3165,14 +3159,6 @@
       name:"PrettyPrintJSONDocument",
       status: "stable",
     },
-    // The RTE feature encompasses multiple APIs, including: Attribution
-    // Reporting, FLEDGE, Topics and Fenced Frames.
-    {
-      name: "PrivacySandboxAdsAPIs",
-      base_feature: "none",
-      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
-      origin_trial_allows_third_party: true,
-    },
     {
       // Controls whether filtering IDs can be specified for Private Aggregation
       // contributions. If disabled, any IDs will be ignored.
@@ -3689,9 +3675,8 @@
     {
       name: "SharedStorageAPI",
       base_feature: "none",
-      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
-      origin_trial_allows_third_party: true,
       public: true,
+      status: "stable",
     },
     {
       name: "SharedStorageAPIM118",
@@ -4037,16 +4022,14 @@
     {
       name: "TopicsAPI",
       base_feature: "none",
-      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
-      origin_trial_allows_third_party: true,
       public: true,
+      status: "stable",
     },
     {
       name: "TopicsDocumentAPI",
       base_feature: "none",
-      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
-      origin_trial_allows_third_party: true,
       public: true,
+      status: "stable",
     },
     {
       name: "TopLevelTpcd",

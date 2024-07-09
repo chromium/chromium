@@ -20210,16 +20210,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(signals, nullptr);
 }
 
-class AdsAPIsOriginTrialBrowserTest : public ContentBrowserTest {
+class BiddingAndAuctionServerAPIsOriginTrialBrowserTest
+    : public ContentBrowserTest {
  public:
-  AdsAPIsOriginTrialBrowserTest() {
-    // Disable `kFledgeBiddingAndAuctionServer` to show that it won't affect the
-    // exposure of the `adAuctionHeaders` fetch param.
+  BiddingAndAuctionServerAPIsOriginTrialBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPrivacySandboxAdsAPIs,
-                              blink::features::kInterestGroupStorage},
-        /*disabled_features=*/{
-            blink::features::kFledgeBiddingAndAuctionServer});
+        /*enabled_features=*/{blink::features::kFledge,
+                              blink::features::kInterestGroupStorage,
+                              blink::features::kFledgeBiddingAndAuctionServer},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -20233,9 +20232,6 @@ class AdsAPIsOriginTrialBrowserTest : public ContentBrowserTest {
     url_loader_interceptor_ =
         std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
             [&](URLLoaderInterceptor::RequestParams* params) -> bool {
-              last_request_is_ad_auction_header_request_ =
-                  params->url_request.ad_auction_headers;
-
               URLLoaderInterceptor::WriteResponse(
                   base::StrCat(
                       {kBaseDataDir, params->url_request.url.path_piece()}),
@@ -20255,84 +20251,9 @@ class AdsAPIsOriginTrialBrowserTest : public ContentBrowserTest {
         .root();
   }
 
-  bool last_request_is_ad_auction_header_request() const {
-    return last_request_is_ad_auction_header_request_;
-  }
-
  private:
-  bool last_request_is_ad_auction_header_request_ = false;
-
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(AdsAPIsOriginTrialBrowserTest,
-                       AdsAPIsOriginTrial_AdAuctionHeadersAllowedForFetch) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
-
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents(),
-             content::JsReplace("fetch($1, {adAuctionHeaders: true})",
-                                GURL("https://example.test/empty.html"))));
-
-  EXPECT_TRUE(last_request_is_ad_auction_header_request());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    AdsAPIsOriginTrialBrowserTest,
-    AdsAPIsOriginTrial_NoFetchParam_AdAuctionHeadersNotAllowedForFetch) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
-
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents(),
-             content::JsReplace("fetch($1)",
-                                GURL("https://example.test/empty.html"))));
-
-  EXPECT_FALSE(last_request_is_ad_auction_header_request());
-}
-
-class AdsAPIsOriginTrialWithMainFledgeFeatureDisabledBrowserTest
-    : public AdsAPIsOriginTrialBrowserTest {
- public:
-  AdsAPIsOriginTrialWithMainFledgeFeatureDisabledBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPrivacySandboxAdsAPIs},
-        /*disabled_features=*/{blink::features::kInterestGroupStorage});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    AdsAPIsOriginTrialWithMainFledgeFeatureDisabledBrowserTest,
-    AdsAPIsOriginTrial_AdAuctionHeadersNotAllowedForFetch) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
-
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents(),
-             content::JsReplace("fetch($1, {adAuctionHeaders: true})",
-                                GURL("https://example.test/empty.html"))));
-
-  EXPECT_FALSE(last_request_is_ad_auction_header_request());
-}
-
-class BiddingAndAuctionServerAPIsOriginTrialBrowserTest
-    : public AdsAPIsOriginTrialBrowserTest {
- public:
-  BiddingAndAuctionServerAPIsOriginTrialBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kFledge,
-                              blink::features::kInterestGroupStorage,
-                              blink::features::kFledgeBiddingAndAuctionServer},
-        {});
-  }
-
- private:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -20343,15 +20264,6 @@ IN_PROC_BROWSER_TEST_F(BiddingAndAuctionServerAPIsOriginTrialBrowserTest,
 
   EXPECT_EQ(true, EvalJs(shell()->web_contents(),
                          "'getInterestGroupAdAuctionData' in navigator"));
-}
-
-IN_PROC_BROWSER_TEST_F(BiddingAndAuctionServerAPIsOriginTrialBrowserTest,
-                       WrongOTFeatureDisabled) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
-
-  EXPECT_EQ(false, EvalJs(shell()->web_contents(),
-                          "'getInterestGroupAdAuctionData' in navigator"));
 }
 
 class InterestGroupBiddingAndAuctionServerBrowserTest

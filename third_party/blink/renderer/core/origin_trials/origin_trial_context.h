@@ -211,13 +211,6 @@ class CORE_EXPORT OriginTrialContext final
   // invalid in the browser's present configuration).
   bool CanEnableTrialFromName(const StringView& trial_name);
 
-  // Returns features which are currently restricted for a given trial name,
-  // these features *will not* be enabled by the origin trial infrastructure if
-  // the given trial is enabled. The corresponding runtime features may still be
-  // enabled via command line flags, etc.
-  Vector<mojom::blink::OriginTrialFeature> RestrictedFeaturesForTrial(
-      const String& trial_name);
-
   // Enable features by trial name. Returns a OriginTrialFeaturesEnabled struct
   // containing whether one or more trials were enabled, and a Vector of the
   // OriginTrialFeatures representing those trials.

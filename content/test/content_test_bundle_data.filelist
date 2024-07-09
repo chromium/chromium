@@ -5831,7 +5831,6 @@ data/attribution_reporting/interop/trigger_header_error_debug_report.json
 data/attribution_reporting/interop/trigger_verbose_debug_report_source_debug_permission.json
 data/attribution_reporting/interop/unsuitable_response_url.json
 data/attribution_reporting/interop/verbose_debug_report_multiple_data.json
-data/attribution_reporting/page_with_ads_apis_ot.html
 data/attribution_reporting/page_with_conversion_measurement_disabled.html
 data/attribution_reporting/page_with_conversion_measurement_disabled.html.mock-http-headers
 data/attribution_reporting/page_with_conversion_redirect.html
@@ -6903,7 +6902,6 @@ data/interest_group/multiply.wat
 data/interest_group/page-with-fledge-permissions-policy-disabled-in-iframe.html
 data/interest_group/page-with-fledge-permissions-policy-disabled.html
 data/interest_group/page-with-fledge-permissions-policy-disabled.html.mock-http-headers
-data/interest_group/page_with_ads_apis_ot.html
 data/interest_group/page_with_ba_server_ot.html
 data/interest_group/page_with_custom_ad_auction_result_header.html
 data/interest_group/page_with_custom_ad_auction_result_header.html.mock-http-headers
