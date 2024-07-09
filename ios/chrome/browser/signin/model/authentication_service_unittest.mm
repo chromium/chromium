@@ -895,3 +895,24 @@ TEST_F(AuthenticationServiceTest,
       identity_manager()->GetExtendedAccountInfoForAccountsWithRefreshToken();
   EXPECT_EQ(3ul, account_info_vector.size());
 }
+
+// Tests that identity manager loads identities while being signed out.
+// And also tests that an identity being removed is forgotten by identity
+// manager.
+// kAlwaysLoadDeviceAccounts flag is enabled.
+TEST_F(AuthenticationServiceTest, TestAccountsForgetIdentityWhenSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAlwaysLoadDeviceAccounts);
+  std::vector<AccountInfo> account_info_vector =
+      identity_manager()->GetExtendedAccountInfoForAccountsWithRefreshToken();
+  // `fakeIdentity1` and `fakeIdentity2` are already loaded.
+  EXPECT_EQ(2ul, account_info_vector.size());
+  // Let's forget `fakeIdentity2`.
+  id<SystemIdentity> fake_identity2 = [FakeSystemIdentity fakeIdentity2];
+  fake_system_identity_manager()->ForgetIdentity(fake_identity2,
+                                                 base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  account_info_vector =
+      identity_manager()->GetExtendedAccountInfoForAccountsWithRefreshToken();
+  EXPECT_EQ(1ul, account_info_vector.size());
+}
