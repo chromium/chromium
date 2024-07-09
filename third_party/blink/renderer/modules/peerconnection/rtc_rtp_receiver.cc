@@ -70,11 +70,13 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
   DCHECK(pc_);
   DCHECK(receiver_);
   DCHECK(track_);
-  if (encoded_audio_transformer_) {
-    RegisterEncodedAudioStreamCallback();
-  } else {
-    CHECK(encoded_video_transformer_);
-    RegisterEncodedVideoStreamCallback();
+  if (!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
+    if (encoded_audio_transformer_) {
+      RegisterEncodedAudioStreamCallback();
+    } else if (encoded_video_transformer_) {
+      CHECK(encoded_video_transformer_);
+      RegisterEncodedVideoStreamCallback();
+    }
   }
 
   if (!require_encoded_insertable_streams) {
@@ -367,8 +369,9 @@ RTCRtpReceiveParameters* RTCRtpReceiver::getParameters() {
 }
 
 void RTCRtpReceiver::RegisterEncodedAudioStreamCallback() {
-  // TODO: crbug.com/347915599 - set the transformer callback to directly call
-  // `audio_from_encoder_underlying_source_` once that's been created.
+  CHECK(!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback));
+  // TODO(crbug.com/347915599): Delete this method once
+  // kWebRtcEncodedTransformDirectCallback is fully launched.
   encoded_audio_transformer_->SetTransformerCallback(
       WTF::CrossThreadBindRepeating(
           &RTCRtpReceiver::OnAudioFrameFromDepacketizer,
@@ -453,6 +456,13 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
     encoded_streams_->setReadable(readable_stream);
+
+    if (base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
+      encoded_audio_transformer_->SetTransformerCallback(
+          WTF::CrossThreadBindRepeating(
+              &RTCEncodedAudioUnderlyingSource::OnFrameFromSource,
+              audio_from_depacketizer_underlying_source_));
+    }
   }
 
   WritableStream* writable_stream;
@@ -485,6 +495,10 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
 void RTCRtpReceiver::OnAudioFrameFromDepacketizer(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface>
         encoded_audio_frame) {
+  // TODO(crbug.com/347915599): Delete this method once
+  // kWebRtcEncodedTransformDirectCallback is fully launched.
+  CHECK(!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback));
+
   base::AutoLock locker(audio_underlying_source_lock_);
   if (audio_from_depacketizer_underlying_source_) {
     audio_from_depacketizer_underlying_source_->OnFrameFromSource(
@@ -493,6 +507,9 @@ void RTCRtpReceiver::OnAudioFrameFromDepacketizer(
 }
 
 void RTCRtpReceiver::RegisterEncodedVideoStreamCallback() {
+  CHECK(!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback));
+  // TODO(crbug.com/347915599): Delete this method once
+  // kWebRtcEncodedTransformDirectCallback is fully launched.
   encoded_video_transformer_->SetTransformerCallback(
       WTF::CrossThreadBindRepeating(
           &RTCRtpReceiver::OnVideoFrameFromDepacketizer,
@@ -591,6 +608,13 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
     encoded_streams_->setReadable(readable_stream);
+
+    if (base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
+      encoded_video_transformer_->SetTransformerCallback(
+          WTF::CrossThreadBindRepeating(
+              &RTCEncodedVideoUnderlyingSource::OnFrameFromSource,
+              video_from_depacketizer_underlying_source_));
+    }
   }
 
   WritableStream* writable_stream;
@@ -623,6 +647,10 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(
 void RTCRtpReceiver::OnVideoFrameFromDepacketizer(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface>
         encoded_video_frame) {
+  // TODO(crbug.com/347915599): Delete this method once
+  // kWebRtcEncodedTransformDirectCallback is fully launched.
+  CHECK(!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback));
+
   base::AutoLock locker(video_underlying_source_lock_);
   if (video_from_depacketizer_underlying_source_) {
     video_from_depacketizer_underlying_source_->OnFrameFromSource(
