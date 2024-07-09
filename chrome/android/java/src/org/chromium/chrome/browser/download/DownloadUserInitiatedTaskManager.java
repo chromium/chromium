@@ -25,9 +25,28 @@ import java.util.Map;
 public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager {
     private static final String TAG = "DownloadUitm";
 
+    /**
+     * Notification callbacks for background jobs in progress. One callback for each type of Job.
+     * Cleared only when a job is stopped or completed. There are few subtleties: 1. Since there can
+     * be multiple downloads, we keep the callback around so that it can be reattached with a new
+     * notification in case the download completes and there are more downloads still in progress.
+     * The job is completed only when all the downloads meeting network conditions are completed. 2.
+     * We only clear the callback when the job is stopped or completed invoked from above via {@code
+     * setTaskNotificationCallback}. 3. We also don't want to invoke the same callback again and
+     * again with the same download. This is possible since a callback can span across multiple
+     * downloads or a download can span across multiple callbacks. This is accomplished by
+     * maintaining a boolean {@code mHasUnseenCallbacks} which is set when a new callback is
+     * received.
+     */
     private Map<Integer, TaskFinishedCallback> mTaskNotificationCallbacks = new HashMap<>();
 
-    /** Constructor.*/
+    /**
+     * Accounts for callbacks for jobs started that haven't yet been attached with a notification.
+     * See documentation above.
+     */
+    private boolean mHasUnseenCallbacks;
+
+    /** Constructor. */
     public DownloadUserInitiatedTaskManager() {}
 
     /**
@@ -41,6 +60,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
         if (taskNotificationCallback == null) {
             mTaskNotificationCallbacks.remove(taskId);
         } else {
+            mHasUnseenCallbacks = true;
             mTaskNotificationCallbacks.put(taskId, taskNotificationCallback);
         }
     }
@@ -51,8 +71,9 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
     }
 
     /**
-     * Process the notification queue for all cases and initiate any needed actions, i.e. attach
-     * the best download notification to the background job.
+     * Process the notification queue for all cases and initiate any needed actions, i.e. attach the
+     * best download notification to the background job.
+     *
      * @param isProcessingPending Unused.
      */
     @VisibleForTesting
@@ -62,13 +83,16 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
         // If the selected downloadUpdate is not active, there are no active downloads left. Return.
         if (downloadUpdate == null || !isActive(downloadUpdate.mDownloadStatus)) return;
 
-        // If the pinned notification is still active, return.
+        // If the pinned notification is still active and we already have processed all the
+        // callbacks, return.
         if (mDownloadUpdateQueue.get(mPinnedNotificationId) != null
-                && isActive(mDownloadUpdateQueue.get(mPinnedNotificationId).mDownloadStatus)) {
+                && isActive(mDownloadUpdateQueue.get(mPinnedNotificationId).mDownloadStatus)
+                && !mHasUnseenCallbacks) {
             return;
         }
 
-        // Start or update the notification.
+        // This is an active download. Notify JobScheduler with a notification as we haven't done it
+        // already.
         attachNotificationToJob(downloadUpdate);
 
         // Clear out inactive download updates in queue if there is at least one active download.
@@ -88,10 +112,15 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
 
         if (mTaskNotificationCallbacks.isEmpty()) return;
 
-        // Attach notification to the job.
+        // Attach notification to the job. Note, we don't clear the callbacks here since it's
+        // possible that the download ends but another download starts thereby changing the pinned
+        // notification ID. The API needs to be reinvoked with the new notification ID to avoid ANR.
+        // We only clear the callback from above when the job is not running or completed.
         for (TaskFinishedCallback taskFinishedCallback : mTaskNotificationCallbacks.values()) {
             taskFinishedCallback.setNotification(notificationId, notification);
         }
+
+        mHasUnseenCallbacks = false;
 
         mPinnedNotificationId = notificationId;
     }

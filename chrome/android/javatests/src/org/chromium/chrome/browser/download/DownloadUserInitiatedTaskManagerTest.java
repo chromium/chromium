@@ -178,4 +178,30 @@ public final class DownloadUserInitiatedTaskManagerTest {
         Mockito.verify(mCallback3, Mockito.times(0))
                 .setNotification(FAKE_DOWNLOAD_1, mNotification);
     }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Download"})
+    public void testDownloadResumeAfterNetworkInterruption() {
+        mDownloadUITaskManager.setTaskNotificationCallback(TASK_ID_1, mCallback3);
+        // Start a download.
+        mDownloadUITaskManager.updateDownloadStatus(
+                mContext,
+                DownloadNotificationService.DownloadStatus.IN_PROGRESS,
+                FAKE_DOWNLOAD_1,
+                mNotification);
+        mDownloadUITaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
+        Mockito.verify(mCallback3).setNotification(FAKE_DOWNLOAD_1, mNotification);
+
+        // Start another job (due to network interruption).
+        mDownloadUITaskManager.setTaskNotificationCallback(TASK_ID_1, mCallback4);
+        mDownloadUITaskManager.updateDownloadStatus(
+                mContext,
+                DownloadNotificationService.DownloadStatus.IN_PROGRESS,
+                FAKE_DOWNLOAD_1,
+                mNotification);
+        mDownloadUITaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
+        Mockito.verify(mCallback4).setNotification(FAKE_DOWNLOAD_1, mNotification);
+    }
 }
