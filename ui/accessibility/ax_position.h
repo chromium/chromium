@@ -4660,12 +4660,6 @@ class AXPosition {
     text_offset_ = text_offset;
     affinity_ = affinity;
 
-    DCHECK(kind == AXPositionKind::NULL_POSITION || GetAnchor())
-        << "Attempting to create a non-null position that has a null anchor:"
-        << "\n* Anchor id: " << anchor_id << "\n* Manager: " << GetManager()
-        << "\n* Known tree id? "
-        << (tree_id == AXTreeIDUnknown() ? "false" : "true");
-
     if (!IsValid()) {
       // Reset to the null position.
       kind_ = AXPositionKind::NULL_POSITION;
