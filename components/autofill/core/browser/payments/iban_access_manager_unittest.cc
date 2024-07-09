@@ -60,16 +60,17 @@ class IbanAccessManagerTest : public testing::Test {
                            int latency_ms = 0) {
     ON_CALL(*payments_network_interface(), UnmaskIban)
         .WillByDefault(
-            [=, this](
-                const payments::PaymentsNetworkInterface::
-                    UnmaskIbanRequestDetails&,
-                base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                        const std::u16string&)> callback) {
+            [=, this](const payments::PaymentsNetworkInterface::
+                          UnmaskIbanRequestDetails&,
+                      base::OnceCallback<void(
+                          payments::PaymentsAutofillClient::PaymentsRpcResult,
+                          const std::u16string&)> callback) {
               task_environment_.FastForwardBy(base::Milliseconds(latency_ms));
               std::move(callback).Run(
-                  is_successful
-                      ? AutofillClient::PaymentsRpcResult::kSuccess
-                      : AutofillClient::PaymentsRpcResult::kPermanentFailure,
+                  is_successful ? payments::PaymentsAutofillClient::
+                                      PaymentsRpcResult::kSuccess
+                                : payments::PaymentsAutofillClient::
+                                      PaymentsRpcResult::kPermanentFailure,
                   value);
             });
   }

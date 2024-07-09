@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -61,8 +62,8 @@ class PaymentsNetworkInterfaceTestBase {
 
   void assertNotIncludedInRequest(std::string field_name_or_value);
 
-  AutofillClient::PaymentsRpcResult result_ =
-      AutofillClient::PaymentsRpcResult::kNone;
+  PaymentsAutofillClient::PaymentsRpcResult result_ =
+      PaymentsAutofillClient::PaymentsRpcResult::kNone;
 
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

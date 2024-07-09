@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "services/network/test/test_utils.h"
@@ -30,7 +31,7 @@ void PaymentsNetworkInterfaceTestBase::SetUpTest() {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWalletServiceUseSandbox, "0");
 
-  result_ = AutofillClient::PaymentsRpcResult::kNone;
+  result_ = PaymentsAutofillClient::PaymentsRpcResult::kNone;
   has_variations_header_ = false;
 
   factory()->SetInterceptor(

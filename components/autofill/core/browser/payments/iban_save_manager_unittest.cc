@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/payments/mock_test_payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
@@ -90,15 +91,16 @@ class IbanSaveManagerTest : public testing::Test {
             [is_successful, regex, includes_invalid_legal_message](
                 const std::string& app_locale, int64_t billing_customer_number,
                 int billable_service_number, const std::string& country_code,
-                base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                        const std::u16string& validation_regex,
-                                        const std::u16string& context_token,
-                                        std::unique_ptr<base::Value::Dict>)>
-                    callback) {
+                base::OnceCallback<void(
+                    payments::PaymentsAutofillClient::PaymentsRpcResult,
+                    const std::u16string& validation_regex,
+                    const std::u16string& context_token,
+                    std::unique_ptr<base::Value::Dict>)> callback) {
               std::move(callback).Run(
-                  is_successful
-                      ? AutofillClient::PaymentsRpcResult::kSuccess
-                      : AutofillClient::PaymentsRpcResult::kPermanentFailure,
+                  is_successful ? payments::PaymentsAutofillClient::
+                                      PaymentsRpcResult::kSuccess
+                                : payments::PaymentsAutofillClient::
+                                      PaymentsRpcResult::kPermanentFailure,
                   regex, u"this is a context token",
                   includes_invalid_legal_message
                       ? std::make_unique<base::Value::Dict>(
@@ -117,12 +119,14 @@ class IbanSaveManagerTest : public testing::Test {
             [is_successful](
                 const payments::PaymentsNetworkInterface::
                     UploadIbanRequestDetails& request_details,
-                base::OnceCallback<void(AutofillClient::PaymentsRpcResult)>
+                base::OnceCallback<void(
+                    payments::PaymentsAutofillClient::PaymentsRpcResult)>
                     callback) {
               std::move(callback).Run(
-                  is_successful
-                      ? AutofillClient::PaymentsRpcResult::kSuccess
-                      : AutofillClient::PaymentsRpcResult::kPermanentFailure);
+                  is_successful ? payments::PaymentsAutofillClient::
+                                      PaymentsRpcResult::kSuccess
+                                : payments::PaymentsAutofillClient::
+                                      PaymentsRpcResult::kPermanentFailure);
             });
   }
 

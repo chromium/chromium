@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
+
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 
@@ -27,7 +29,7 @@ void TestVirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
 void TestVirtualCardEnrollmentManager::
     OnDidGetUpdateVirtualCardEnrollmentResponse(
         VirtualCardEnrollmentRequestType type,
-        AutofillClient::PaymentsRpcResult result) {
+        payments::PaymentsAutofillClient::PaymentsRpcResult result) {
   result_ = result;
   VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
       type, result);

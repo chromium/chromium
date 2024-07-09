@@ -119,9 +119,10 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
     return masked_server_card;
   }
 
-  void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
-                       const std::string& real_pan,
-                       bool is_virtual_card = false) {
+  void OnDidGetRealPan(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      const std::string& real_pan,
+      bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request = GetFullCardRequest();
     DCHECK(full_card_request);
 
@@ -163,7 +164,8 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateServerCardSuccess) {
   cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_);
 
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
+  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  kTestNumber);
   EXPECT_TRUE((*requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
   histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",
@@ -184,7 +186,8 @@ TEST_F(CreditCardCvcAuthenticatorTest,
                                    &personal_data_manager_,
                                    "test_context_token");
 
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
+  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  kTestNumber);
   EXPECT_TRUE((*requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
   histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",
@@ -222,7 +225,8 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateVirtualCardSuccess) {
             cvc_challenge_option.challenge_input_length);
   EXPECT_EQ(challenge_option->cvc_position, cvc_challenge_option.cvc_position);
 
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber,
+  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  kTestNumber,
                   /*is_virtual_card=*/true);
   EXPECT_TRUE((*requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
@@ -267,8 +271,9 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateNetworkError) {
   cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_);
 
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kNetworkError,
-                  std::string());
+  OnDidGetRealPan(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kNetworkError,
+      std::string());
   EXPECT_FALSE((*requester_->did_succeed()));
   histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",
                                       /*sample=*/true,
@@ -286,8 +291,9 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticatePermanentFailure) {
   cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_);
 
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kPermanentFailure,
-                  std::string());
+  OnDidGetRealPan(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      std::string());
   EXPECT_FALSE((*requester_->did_succeed()));
   histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",
                                       /*sample=*/true,
@@ -305,11 +311,13 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateTryAgainFailure) {
   cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_);
 
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kTryAgainFailure,
-                  std::string());
+  OnDidGetRealPan(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
+      std::string());
   EXPECT_FALSE(requester_->did_succeed().has_value());
 
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
+  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  kTestNumber);
   EXPECT_TRUE((*requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
   histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",

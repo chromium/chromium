@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
@@ -5115,7 +5116,7 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->set_upload_request_card_number(
       u"4111111111111111");
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kTryAgainFailure,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
       upload_card_response_details);
   EXPECT_EQ(1, credit_card_save_strike_database.GetStrikes("1111"));
 }
@@ -5386,7 +5387,7 @@ TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
     EXPECT_CALL(payments_data_manager(), AddServerCvc).Times(0);
   }
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kSuccess,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       upload_card_response_details);
 }
 
@@ -5679,7 +5680,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_CALL(payments_data_manager(), AddServerCvc).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kSuccess,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       upload_card_response_details);
 }
 
@@ -5706,7 +5707,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_CALL(payments_data_manager(), AddServerCvc).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kSuccess,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       upload_card_response_details_without_instrument_id);
 }
 
@@ -5744,7 +5745,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
   EXPECT_CALL(payments_data_manager(), SaveCardLocallyIfNew);
 
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
       payments::PaymentsNetworkInterface::UploadCardResponseDetails());
 }
 
@@ -5759,7 +5760,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
   EXPECT_CALL(payments_data_manager(), SaveCardLocallyIfNew).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
       payments::PaymentsNetworkInterface::UploadCardResponseDetails());
 }
 
@@ -5775,7 +5776,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
 
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
       payments::PaymentsNetworkInterface::UploadCardResponseDetails());
 
   histogram_tester.ExpectUniqueSample(
@@ -5794,7 +5795,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
 
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
       payments::PaymentsNetworkInterface::UploadCardResponseDetails());
 
   histogram_tester.ExpectUniqueSample(
@@ -5862,7 +5863,7 @@ TEST_P(CreditCardSaveManagerWithLoadingAndConfirmation,
       .Times(num_of_calls);
 
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kSuccess,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       upload_card_response_details);
 }
 
@@ -5940,7 +5941,7 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
   }
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kSuccess,
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       upload_card_response_details);
 
   // The condition inside of this if-statement is true if virtual card
