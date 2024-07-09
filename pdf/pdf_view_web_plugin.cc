@@ -496,9 +496,22 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
   if (ink_module_) {
-    // TODO(crbug.com/335524380): Use a real canvas.
-    SkCanvas placeholder_canvas(rect.width(), rect.height());
-    ink_module_->Draw(placeholder_canvas);
+    SkBitmap sk_bitmap;
+    sk_bitmap.allocPixels(
+        SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+    SkCanvas sk_canvas(sk_bitmap);
+    sk_canvas.clear(SK_ColorTRANSPARENT);
+    ink_module_->Draw(sk_canvas);
+
+    sk_sp<SkImage> snapshot = sk_bitmap.asImage();
+    CHECK(snapshot);
+    cc::PaintImage cc_snapshot =
+        cc::PaintImageBuilder::WithDefault()
+            .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
+            .set_id(cc::PaintImage::GetNextId())
+            .set_no_cache(true)
+            .TakePaintImage();
+    canvas->drawImage(cc_snapshot, 0, 0);
   }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 }
