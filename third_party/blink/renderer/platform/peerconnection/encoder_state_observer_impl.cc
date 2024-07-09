@@ -8,6 +8,7 @@
 
 #include "base/atomic_ref_count.h"
 #include "base/containers/contains.h"
+#include "base/sequence_checker.h"
 #include "third_party/webrtc/api/video/encoded_image.h"
 
 namespace blink {
@@ -123,21 +124,21 @@ class EncoderStateObserverImpl::EncoderState {
 EncoderStateObserverImpl::EncoderStateObserverImpl(
     media::VideoCodecProfile profile,
     const StatsCollector::StoreProcessingStatsCB& store_processing_stats_cb)
-    : StatsCollector(/*is_decode=*/false, profile, store_processing_stats_cb) {}
+    : StatsCollector(/*is_decode=*/false, profile, store_processing_stats_cb) {
+  DETACH_FROM_SEQUENCE(encoder_sequence_);
+}
 
 EncoderStateObserverImpl::~EncoderStateObserverImpl() {
-  std::vector<int> encoder_ids;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   for (const auto& kv : encoder_state_by_id_) {
-    encoder_ids.push_back(kv.first);
-  }
-  for (const int id : encoder_ids) {
-    OnEncoderDestroyed(id);
+    OnEncoderDestroyed(kv.first);
   }
 }
 
 void EncoderStateObserverImpl::OnEncoderCreated(
     int encoder_id,
     const webrtc::VideoCodec& config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   DCHECK(!base::Contains(encoder_state_by_id_, encoder_id));
 
   // Initially, assume all layers active.
@@ -154,6 +155,7 @@ void EncoderStateObserverImpl::OnEncoderCreated(
 }
 
 void EncoderStateObserverImpl::OnEncoderDestroyed(int encoder_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   EncoderState* encoder_state = GetEncoderState(encoder_id);
   if (!encoder_state) {
     return;
@@ -176,6 +178,7 @@ void EncoderStateObserverImpl::OnEncoderDestroyed(int encoder_id) {
 void EncoderStateObserverImpl::OnRatesUpdated(
     int encoder_id,
     const Vector<bool>& active_spatial_layers) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   EncoderState* encoder_state = GetEncoderState(encoder_id);
   if (!encoder_state) {
     return;
@@ -199,6 +202,7 @@ EncoderStateObserverImpl::GetEncoderState(int encoder_id,
 
 void EncoderStateObserverImpl::OnEncode(int encoder_id,
                                         uint32_t rtp_timestamp) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   EncoderState* encoder_state = GetEncoderState(encoder_id);
   if (!encoder_state) {
     return;
@@ -213,6 +217,7 @@ void EncoderStateObserverImpl::OnEncode(int encoder_id,
 
 void EncoderStateObserverImpl::OnEncodedImage(int encoder_id,
                                               const EncodeResult& result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   if (!top_encoder_info_) {
     LOG(WARNING) << "Received encoded frame while no active encoder "
                     "configured, ignoring.";
@@ -278,6 +283,7 @@ void EncoderStateObserverImpl::UpdateStatsCollection(base::TimeTicks now) {
 
 std::optional<EncoderStateObserverImpl::TopLayerInfo>
 EncoderStateObserverImpl::FindHighestActiveEncoding() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   std::optional<TopLayerInfo> top_info;
   for (const auto& kv : encoder_state_by_id_) {
     std::optional<TopLayerInfo> top_of_encoder = kv.second->TopLayer();

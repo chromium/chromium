@@ -11,6 +11,7 @@
 #include "base/atomic_ref_count.h"
 #include "base/containers/flat_map.h"
 #include "base/location.h"
+#include "base/sequence_checker.h"
 #include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -21,6 +22,8 @@ namespace blink {
 // EncoderStateObserverImpl collects the encode stats for the top spatial layer
 // in SVC encoding, top stream in simulcast or the vanilla stream otherwise. It
 // doesn't collect stats if multiple encoders are running.
+// This is constructed in webrtc worker sequence. After construction, all the
+// operations including destructor must be done in the webrtc encoder sequence.
 class PLATFORM_EXPORT EncoderStateObserverImpl : public EncoderStateObserver,
                                                  public StatsCollector {
  public:
@@ -51,13 +54,21 @@ class PLATFORM_EXPORT EncoderStateObserverImpl : public EncoderStateObserver,
 
   EncoderState* GetEncoderState(
       int encoder_id,
-      base::Location location = base::Location::Current());
-  void UpdateStatsCollection(base::TimeTicks now);
+      base::Location location = base::Location::Current())
+      VALID_CONTEXT_REQUIRED(encoder_sequence_);
+  void UpdateStatsCollection(base::TimeTicks now)
+      VALID_CONTEXT_REQUIRED(encoder_sequence_);
 
-  base::flat_map<int, std::unique_ptr<EncoderState>> encoder_state_by_id_;
-  std::optional<TopLayerInfo> top_encoder_info_;
+  base::flat_map<int, std::unique_ptr<EncoderState>> encoder_state_by_id_
+      GUARDED_BY_CONTEXT(encoder_sequence_);
+  std::optional<TopLayerInfo> top_encoder_info_
+      GUARDED_BY_CONTEXT(encoder_sequence_);
 
-  base::TimeTicks last_update_stats_collection_time_;
+  base::TimeTicks last_update_stats_collection_time_
+      GUARDED_BY_CONTEXT(encoder_sequence_);
+
+  // WebRTC encoder sequence.
+  SEQUENCE_CHECKER(encoder_sequence_);
 };
 
 }  // namespace blink
