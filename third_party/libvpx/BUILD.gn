@@ -493,10 +493,6 @@ source_set("libvpx_x86_64_headers") {
   sources = libvpx_srcs_x86_64_headers
 }
 
-source_set("libvpx_loongarch_headers") {
-  sources = libvpx_srcs_loongarch_headers
-}
-
 source_set("libvpx_arm_headers") {
   sources = libvpx_srcs_arm_headers
 }
@@ -523,6 +519,14 @@ source_set("libvpx_arm64_highbd_headers") {
 
 source_set("libvpx_mips_headers") {
   sources = libvpx_srcs_mips_headers
+}
+
+source_set("libvpx_loongarch_headers") {
+  sources = libvpx_srcs_loongarch_headers
+}
+
+source_set("libvpx_ppc64_headers") {
+  sources = libvpx_srcs_ppc64_headers
 }
 
 source_set("libvpx_nacl_headers") {
@@ -580,6 +584,7 @@ static_library("libvpx") {
     }
   } else if (current_cpu == "ppc64") {
     sources = libvpx_srcs_ppc64
+    public_deps = [ ":libvpx_ppc64_headers" ]
   } else if (current_cpu == "riscv64") {
     sources = libvpx_srcs_generic
     public_deps = [ ":libvpx_generic_headers" ]

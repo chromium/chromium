@@ -36,6 +36,7 @@ libvpx_test_srcs_generic_headers = [
   "//third_party/libvpx/source/libvpx/vpx_ports/arm.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/loongarch.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/mips.h",
+  "//third_party/libvpx/source/libvpx/vpx_ports/ppc.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/x86.h",
   "//third_party/libvpx/source/libvpx/webmdec.h",
   "//third_party/libvpx/source/libvpx/y4menc.h",

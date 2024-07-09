@@ -124,9 +124,10 @@ function convert_srcs_to_project_files() {
   # are present in $1, hence "gn check" will detect them as invalid includes
   # unless explicitly added.
   source_list=$(echo -e "$source_list\\nvpx_ports/arm.h")
-  source_list=$(echo -e "$source_list\\nvpx_ports/x86.h")
-  source_list=$(echo -e "$source_list\\nvpx_ports/mips.h")
   source_list=$(echo -e "$source_list\\nvpx_ports/loongarch.h")
+  source_list=$(echo -e "$source_list\\nvpx_ports/mips.h")
+  source_list=$(echo -e "$source_list\\nvpx_ports/ppc.h")
+  source_list=$(echo -e "$source_list\\nvpx_ports/x86.h")
   source_list=$(echo "$source_list" | sort -u)
 
   # The actual ARM files end in .asm. We have rules to translate them to .S
@@ -597,7 +598,6 @@ if [[ -z $ONLY_CONFIGS ]]; then
   make_clean
   make libvpx_srcs.txt target=libs $config > /dev/null
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_ppc64
-
 
   echo "Generate NaCl source list."
   config=$(print_config_basic nacl)
