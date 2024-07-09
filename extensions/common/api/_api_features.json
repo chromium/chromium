@@ -146,10 +146,13 @@
     "dependencies": ["permission:declarativeNetRequestFeedback", "permission:declarativeNetRequestWithHostAccess"],
     "location": "unpacked"
   }],
-  "declarativeNetRequest.testMatchOutcome": {
+  "declarativeNetRequest.testMatchOutcome": [{
     "dependencies": ["permission:declarativeNetRequest"],
     "location": "unpacked"
-  },
+  }, {
+    "dependencies": ["permission:declarativeNetRequestWithHostAccess"],
+    "location": "unpacked"
+  }],
   "declarativeWebRequest": {
     "dependencies": ["permission:declarativeWebRequest"],
     "contexts": ["privileged_extension"]
