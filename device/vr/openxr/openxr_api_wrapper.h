@@ -109,14 +109,10 @@ class OpenXrApiWrapper {
   device::mojom::XREnvironmentBlendMode PickEnvironmentBlendModeForSession(
       device::mojom::XRSessionMode session_mode);
 
-  OpenXrAnchorManager* GetOrCreateAnchorManager(
-      const OpenXrExtensionHelper& extension_helper);
-  OpenXrLightEstimator* GetOrCreateLightEstimator(
-      const OpenXrExtensionHelper& extension_helper);
-  OpenXRSceneUnderstandingManager* GetOrCreateSceneUnderstandingManager(
-      const OpenXrExtensionHelper& extension_helper);
-
-  // Gets the depth sensor if one exists for this session.
+  // Various manager getters if they exist.
+  OpenXrAnchorManager* GetAnchorManager();
+  OpenXrLightEstimator* GetLightEstimator();
+  OpenXRSceneUnderstandingManager* GetSceneUnderstandingManager();
   OpenXrDepthSensor* GetDepthSensor();
 
   void OnContextProviderCreated(
@@ -136,6 +132,7 @@ class OpenXrApiWrapper {
       device::mojom::XRSessionMode mode,
       const std::vector<device::mojom::XRSessionFeature>& requiredFeatures,
       const std::vector<device::mojom::XRSessionFeature>& optionalFeatures);
+  bool DisableFeature(device::mojom::XRSessionFeature feature);
 
   XrResult InitializeSystem();
   XrResult InitializeViewConfig(XrViewConfigurationType type,

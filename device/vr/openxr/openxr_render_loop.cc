@@ -648,8 +648,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   }
 
   if (openxr_->HasFrameState()) {
-    OpenXrAnchorManager* anchor_manager =
-        openxr_->GetOrCreateAnchorManager(*extension_helper_);
+    OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
 
     if (anchor_manager) {
       frame_data->anchors_data = anchor_manager->ProcessAnchorsForFrame(
@@ -657,8 +656,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
           frame_data->input_state.value(), frame_time);
     }
 
-    OpenXrLightEstimator* light_estimator =
-        openxr_->GetOrCreateLightEstimator(*extension_helper_);
+    OpenXrLightEstimator* light_estimator = openxr_->GetLightEstimator();
 
     if (light_estimator) {
       frame_data->light_estimation_data =
@@ -667,7 +665,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   }
 
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
+      openxr_->GetSceneUnderstandingManager();
 
   if (scene_understanding_manager && frame_data->mojo_from_viewer->position &&
       frame_data->mojo_from_viewer->orientation) {
@@ -893,7 +891,7 @@ void OpenXrRenderLoop::SubscribeToHitTest(
            << ", ray direction=" << ray->direction.ToString();
 
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
+      openxr_->GetSceneUnderstandingManager();
 
   if (!scene_understanding_manager) {
     std::move(callback).Run(
@@ -926,7 +924,7 @@ void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
            << ", ray direction=" << ray->direction.ToString();
 
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
+      openxr_->GetSceneUnderstandingManager();
 
   if (!scene_understanding_manager) {
     std::move(callback).Run(
@@ -952,7 +950,7 @@ void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
 void OpenXrRenderLoop::UnsubscribeFromHitTest(uint64_t subscription_id) {
   DVLOG(2) << __func__;
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
+      openxr_->GetSceneUnderstandingManager();
   if (scene_understanding_manager)
     scene_understanding_manager->UnsubscribeFromHitTest(
         HitTestSubscriptionId(subscription_id));
@@ -962,8 +960,7 @@ void OpenXrRenderLoop::CreateAnchor(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const device::Pose& native_origin_from_anchor,
     CreateAnchorCallback callback) {
-  OpenXrAnchorManager* anchor_manager =
-      openxr_->GetOrCreateAnchorManager(*extension_helper_);
+  OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
   if (!anchor_manager) {
     return;
   }
@@ -982,8 +979,7 @@ void OpenXrRenderLoop::CreatePlaneAnchor(
 }
 
 void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {
-  OpenXrAnchorManager* anchor_manager =
-      openxr_->GetOrCreateAnchorManager(*extension_helper_);
+  OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
   if (!anchor_manager) {
     return;
   }

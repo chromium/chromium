@@ -406,36 +406,16 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
   return GetMojoBlendMode(blend_mode_);
 }
 
-OpenXrAnchorManager* OpenXrApiWrapper::GetOrCreateAnchorManager(
-    const OpenXrExtensionHelper& extension_helper) {
-  if (session_ && !anchor_manager_ &&
-      IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
-    anchor_manager_ =
-        extension_helper.CreateAnchorManager(session_, local_space_);
-  }
+OpenXrAnchorManager* OpenXrApiWrapper::GetAnchorManager() {
   return anchor_manager_.get();
 }
 
-OpenXrLightEstimator* OpenXrApiWrapper::GetOrCreateLightEstimator(
-    const OpenXrExtensionHelper& extension_helper) {
-  if (session_ && !light_estimator_ &&
-      IsFeatureEnabled(device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
-    light_estimator_ =
-        extension_helper.CreateLightEstimator(session_, local_space_);
-  }
-
+OpenXrLightEstimator* OpenXrApiWrapper::GetLightEstimator() {
   return light_estimator_.get();
 }
 
 OpenXRSceneUnderstandingManager*
-OpenXrApiWrapper::GetOrCreateSceneUnderstandingManager(
-    const OpenXrExtensionHelper& extension_helper) {
-  if (session_ && !scene_understanding_manager_ &&
-      IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST)) {
-    scene_understanding_manager_ =
-        extension_helper.CreateSceneUnderstandingManager(session_,
-                                                         local_space_);
-  }
+OpenXrApiWrapper::GetSceneUnderstandingManager() {
   return scene_understanding_manager_.get();
 }
 
@@ -476,6 +456,16 @@ bool OpenXrApiWrapper::UpdateAndGetSessionEnded() {
   // session has ended. Once uninitialized, this object is never re-initialized.
   // If a new session is requested by WebXR, a new object is created.
   return !IsInitialized();
+}
+
+bool OpenXrApiWrapper::DisableFeature(device::mojom::XRSessionFeature feature) {
+  CHECK(session_options_);
+  if (base::Contains(session_options_->required_features, feature)) {
+    return false;
+  }
+
+  size_t removed = enabled_features_.erase(feature);
+  return removed == 1;
 }
 
 // Callers of this function must check the XrResult return value and destroy
@@ -548,13 +538,50 @@ XrResult OpenXrApiWrapper::InitSession(
         unbounded_space_provider_->CreateSpace(session_, &unbounded_space_));
   }
 
-  if (base::Contains(enabled_features_, mojom::XRSessionFeature::DEPTH) &&
+  if (IsFeatureEnabled(mojom::XRSessionFeature::DEPTH) &&
       session_options_->depth_options) {
     depth_sensor_ = extension_helper.CreateDepthSensor(
         session_, local_space_, *session_options_->depth_options);
-    if (!depth_sensor_ && base::Contains(session_options_->required_features,
-                                         mojom::XRSessionFeature::DEPTH)) {
-      DVLOG(1) << __func__ << " Required Feature Depth Initialization failed";
+    // If we could not generate the manager and cannot disable the feature, then
+    // we have to reject the session creation.
+    if (!depth_sensor_ && !DisableFeature(mojom::XRSessionFeature::DEPTH)) {
+      DVLOG(1) << __func__ << " Depth initialization failed";
+      return XR_ERROR_RUNTIME_FAILURE;
+    }
+  }
+
+  if (IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
+    anchor_manager_ =
+        extension_helper.CreateAnchorManager(session_, local_space_);
+    // If we could not generate the manager and cannot disable the feature, then
+    // we have to reject the session creation.
+    if (!anchor_manager_ && !DisableFeature(mojom::XRSessionFeature::ANCHORS)) {
+      DVLOG(1) << __func__ << " Anchors initialization failed";
+      return XR_ERROR_RUNTIME_FAILURE;
+    }
+  }
+
+  if (IsFeatureEnabled(device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
+    light_estimator_ =
+        extension_helper.CreateLightEstimator(session_, local_space_);
+    // If we could not generate the manager and cannot disable the feature, then
+    // we have to reject the session creation.
+    if (!light_estimator_ &&
+        !DisableFeature(mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
+      DVLOG(1) << __func__ << " Light estimation initialization failed";
+      return XR_ERROR_RUNTIME_FAILURE;
+    }
+  }
+
+  if (IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST)) {
+    scene_understanding_manager_ =
+        extension_helper.CreateSceneUnderstandingManager(session_,
+                                                         local_space_);
+    // If we could not generate the manager and cannot disable the feature, then
+    // we have to reject the session creation.
+    if (!scene_understanding_manager_ &&
+        !DisableFeature(mojom::XRSessionFeature::HIT_TEST)) {
+      DVLOG(1) << __func__ << " Hit test initialization failed";
       return XR_ERROR_RUNTIME_FAILURE;
     }
   }
