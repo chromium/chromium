@@ -6,12 +6,14 @@
 
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
+#include "chrome/browser/ui/ash/lobster/lobster_service.h"
 #include "chrome/browser/ui/ash/lobster/lobster_system_state_provider.h"
 
-LobsterClientImpl::LobsterClientImpl() = default;
+LobsterClientImpl::LobsterClientImpl(LobsterService* service)
+    : service_(service) {}
 
 LobsterClientImpl::~LobsterClientImpl() = default;
 
 ash::LobsterSystemState LobsterClientImpl::GetSystemState() {
-  return system_state_provider_.GetSystemState();
+  return service_->system_state_provider()->GetSystemState();
 }

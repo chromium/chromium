@@ -8,7 +8,10 @@
 
 #include "ash/lobster/lobster_controller.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/lobster/lobster_client_impl.h"
+#include "chrome/browser/ui/ash/lobster/lobster_service.h"
+#include "chrome/browser/ui/ash/lobster/lobster_service_provider.h"
 
 LobsterClientFactoryImpl::LobsterClientFactoryImpl(
     ash::LobsterController* controller)
@@ -21,5 +24,8 @@ LobsterClientFactoryImpl::~LobsterClientFactoryImpl() {
 }
 
 std::unique_ptr<ash::LobsterClient> LobsterClientFactoryImpl::CreateClient() {
-  return std::make_unique<LobsterClientImpl>();
+  LobsterService* service = LobsterServiceProvider::GetForProfile(
+      ProfileManager::GetActiveUserProfile());
+  return service != nullptr ? std::make_unique<LobsterClientImpl>(service)
+                            : nullptr;
 }

@@ -75,6 +75,7 @@ include_rules = [
   "+chrome/browser/lifetime/application_lifetime.h",
   "+chrome/browser/lifetime/browser_shutdown.h",
   "+chrome/browser/lifetime/termination_notification.h",
+  "+chrome/browser/manta/manta_service_factory.h",
   "+chrome/browser/media/router/chrome_media_router_factory.h",
   "+chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h",
   "+chrome/browser/media/router/discovery/mdns/dns_sd_registry.h",

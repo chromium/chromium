@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/lobster/lobster_client.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/ash/lobster/lobster_service.h"
 #include "chrome/browser/ui/ash/lobster/lobster_system_state_provider.h"
 
 namespace ash {
@@ -14,14 +16,15 @@ struct LobsterSystemState;
 
 class LobsterClientImpl : public ash::LobsterClient {
  public:
-  LobsterClientImpl();
+  explicit LobsterClientImpl(LobsterService* service);
   ~LobsterClientImpl() override;
 
   // LobsterClient overrides
   ash::LobsterSystemState GetSystemState() override;
 
  private:
-  LobsterSystemStateProvider system_state_provider_;
+  // Not owned by this class
+  raw_ptr<LobsterService> service_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
