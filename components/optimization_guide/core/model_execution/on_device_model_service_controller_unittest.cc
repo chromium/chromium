@@ -40,6 +40,7 @@
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -402,7 +403,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
-  FakeOnDeviceServiceSettings fake_settings_;
+  on_device_model::FakeOnDeviceServiceSettings fake_settings_;
   TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
       &pref_service_};
   scoped_refptr<FakeOnDeviceModelServiceController> test_controller_;

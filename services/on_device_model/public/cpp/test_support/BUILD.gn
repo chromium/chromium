@@ -5,12 +5,15 @@
 source_set("test_support") {
   testonly = true
   sources = [
+    "fake_service.cc",
+    "fake_service.h",
     "test_response_holder.cc",
     "test_response_holder.h",
   ]
 
   public_deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//services/on_device_model/public/mojom",
   ]

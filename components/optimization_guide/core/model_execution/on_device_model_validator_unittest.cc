@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_test_utils.h"
+#include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +17,7 @@ namespace {
 class OnDeviceModelValidatorTest : public testing::Test {
  public:
   OnDeviceModelValidatorTest() {
-    service_ = std::make_unique<FakeOnDeviceModelService>(
+    service_ = std::make_unique<on_device_model::FakeOnDeviceModelService>(
         service_remote_.BindNewPipeAndPassReceiver(), &fake_settings_);
     service_remote_->LoadModel(on_device_model::mojom::LoadModelParams::New(),
                                model_remote_.BindNewPipeAndPassReceiver(),
@@ -41,8 +42,8 @@ class OnDeviceModelValidatorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;
-  FakeOnDeviceServiceSettings fake_settings_;
-  std::unique_ptr<FakeOnDeviceModelService> service_;
+  on_device_model::FakeOnDeviceServiceSettings fake_settings_;
+  std::unique_ptr<on_device_model::FakeOnDeviceModelService> service_;
 };
 
 TEST_F(OnDeviceModelValidatorTest, Succeeds) {
