@@ -334,10 +334,6 @@ class BrowserView : public BrowserWindow,
   // a Picture in Picture window.
   bool GetIsPictureInPictureType() const;
 
-  // Returns the initial_aspect_ratio parameter from |browser_|'s CreateParams.
-  // Valid only for PictureInPicture browsers.
-  float GetInitialAspectRatio() const;
-
   // Returns the document picture in picture options from |browser_|'s
   // CreateParams.
   std::optional<blink::mojom::PictureInPictureWindowOptions>

@@ -1269,12 +1269,6 @@ bool BrowserView::GetIsPictureInPictureType() const {
   return browser_->is_type_picture_in_picture();
 }
 
-float BrowserView::GetInitialAspectRatio() const {
-  const std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options =
-      browser_->create_params().pip_options;
-  return pip_options.has_value() ? pip_options->initial_aspect_ratio : 1.0;
-}
-
 std::optional<blink::mojom::PictureInPictureWindowOptions>
 BrowserView::GetDocumentPictureInPictureOptions() const {
   return browser_->create_params().pip_options;

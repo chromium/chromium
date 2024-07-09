@@ -307,10 +307,6 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         return {nullptr, -1};
       }
 
-      pip_options->initial_aspect_ratio =
-          pip_options->initial_aspect_ratio > 0.0
-              ? pip_options->initial_aspect_ratio
-              : 1.0;
       browser_params.pip_options = pip_options;
 
       const BrowserWindow* const browser_window = params.browser->window();

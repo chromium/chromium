@@ -6645,8 +6645,6 @@ WebView* RenderFrameImpl::CreateNewWindow(
     auto pip_mojom_opts = blink::mojom::PictureInPictureWindowOptions::New();
     pip_mojom_opts->width = pip_options->width;
     pip_mojom_opts->height = pip_options->height;
-    // TODO(crbug.com/40911987): Remove this from mojom and the browser side.
-    pip_mojom_opts->initial_aspect_ratio = 0.0;
     pip_mojom_opts->disallow_return_to_opener =
         pip_options->disallow_return_to_opener;
     params->pip_options = std::move(pip_mojom_opts);

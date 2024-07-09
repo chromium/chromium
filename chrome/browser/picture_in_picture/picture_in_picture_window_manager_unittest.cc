@@ -122,26 +122,6 @@ TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
       PictureInPictureWindowManager::GetInstance()
           ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
           .size());
-
-  // An extremely small aspect ratio should still respect minimum width and
-  // maximum height.
-  pip_options.width = 0;
-  pip_options.height = 0;
-  pip_options.initial_aspect_ratio = 0.00000001;
-  EXPECT_EQ(
-      gfx::Size(240, 800),
-      PictureInPictureWindowManager::GetInstance()
-          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
-          .size());
-
-  // An extremely large aspect ratio should still respect maximum width and
-  // minimum height.
-  pip_options.initial_aspect_ratio = 100000;
-  EXPECT_EQ(
-      gfx::Size(800, 52),
-      PictureInPictureWindowManager::GetInstance()
-          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
-          .size());
 }
 
 TEST_F(PictureInPictureWindowManagerTest,

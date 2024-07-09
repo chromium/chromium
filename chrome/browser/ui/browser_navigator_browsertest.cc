@@ -1940,7 +1940,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_PictureInPicture_Open) {
   // Create the params for the PiP request.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
-  pip_options->initial_aspect_ratio = 0.5;
 
   // The WebContents holds the parameters from the PiP request.
   WebContents::CreateParams web_contents_params(browser()->profile());
@@ -1971,17 +1970,15 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   const gfx::Rect override_bounds = params.browser->override_bounds();
   const double aspect_ratio = static_cast<double>(override_bounds.width()) /
                               static_cast<double>(override_bounds.height());
-  EXPECT_DOUBLE_EQ(0.5, aspect_ratio);
+  EXPECT_DOUBLE_EQ(1.0, aspect_ratio);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_PictureInPicture_OpenWithWidthAndHeight) {
-  // Give both an aspect ratio and a width/height that don't match. The
-  // width/height should take precedence.
+  // Set width/height with equivalent aspect ratio of 1.0.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
   pip_options->width = 500;
   pip_options->height = 500;
-  pip_options->initial_aspect_ratio = 0.5;
   WebContents::CreateParams web_contents_params(browser()->profile());
   web_contents_params.picture_in_picture_options = *pip_options;
 
@@ -2000,8 +1997,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   params.contents_to_insert = WebContents::Create(web_contents_params);
   Navigate(&params);
 
-  // The window should use the width and height and ignore the aspect ratio.
-  //
   // The bounds may have small adjustments for window decorations, since the
   // requested size is the inner size.  We can't get the inner size easily here,
   // so just verify that the aspect ratio is closer to 1.0 than 0.5.
