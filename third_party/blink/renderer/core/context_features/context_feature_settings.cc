@@ -17,7 +17,7 @@ ContextFeatureSettings::ContextFeatureSettings(ExecutionContext& context)
 const char ContextFeatureSettings::kSupplementName[] = "ContextFeatureSettings";
 
 DEFINE_PROTECTED_DATA base::ProtectedMemory<bool>
-    ContextFeatureSettings::mojo_js_allowed_;
+    ContextFeatureSettings::mojo_js_allowed_(false);
 
 // static
 ContextFeatureSettings* ContextFeatureSettings::From(
@@ -30,12 +30,6 @@ ContextFeatureSettings* ContextFeatureSettings::From(
     Supplement<ExecutionContext>::ProvideTo(*context, settings);
   }
   return settings;
-}
-
-// static
-void ContextFeatureSettings::InitializeMojoJSAllowedProtectedMemory() {
-  static base::ProtectedMemoryInitializer mojo_js_allowed_initializer(
-      mojo_js_allowed_, false);
 }
 
 // static

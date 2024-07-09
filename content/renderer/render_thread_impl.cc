@@ -168,7 +168,6 @@
 #include "third_party/blink/public/web/web_render_theme.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_user_level_memory_pressure_signal_generator.h"
-#include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
@@ -663,8 +662,6 @@ void RenderThreadImpl::Init() {
   if (use_cached_routing_table_) {
     RequestNewItemsForFrameRoutingCache();
   }
-
-  blink::WebV8Features::InitializeMojoJSAllowedProtectedMemory();
 }
 
 RenderThreadImpl::~RenderThreadImpl() {

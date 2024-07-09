@@ -19,7 +19,7 @@ namespace blink {
 RuntimeEnabledFeaturesBase::Backup::Backup()
   : {% for feature in features -%}
     {%- if feature.is_protected_feature -%}
-    {{feature.data_member_name}}(RuntimeEnabledFeaturesBase::get_{{feature.data_member_name}}())
+    {{feature.data_member_name}}(*RuntimeEnabledFeaturesBase::{{feature.data_member_name}})
     {%- else -%}
     {{feature.data_member_name}}(RuntimeEnabledFeaturesBase::{{feature.data_member_name}})
     {%- endif -%}
@@ -151,9 +151,6 @@ void RuntimeEnabledFeaturesBase::UpdateStatusFromBaseFeatures() {
 {% for feature in features %}
 {% if feature.is_protected_feature %}
 void RuntimeEnabledFeaturesBase::Set{{feature.name}}Enabled(bool enabled) {
-  if (get_{{feature.data_member_name}}() == enabled) {
-    return;
-  }
   base::AutoWritableMemory protected_memory_writer({{feature.data_member_name}});
   protected_memory_writer.GetProtectedData() = enabled;
 }
@@ -201,7 +198,7 @@ bool RuntimeEnabledFeaturesBase::{{feature.name}}Enabled(const FeatureContext* c
     return true;
   {% endfor %}
   {% if feature.is_protected_feature %}
-  if (get_{{feature.data_member_name}}())
+  if (*{{feature.data_member_name}})
   {% else %}
   if ({{feature.data_member_name}})
   {% endif %}
@@ -220,7 +217,7 @@ bool RuntimeEnabledFeaturesBase::{{feature.name}}Enabled(const FeatureContext* c
 {% for feature in features %}
 {% if feature.status_type == 'str' %}
 {% if feature.is_protected_feature %}
-DEFINE_PROTECTED_DATA base::ProtectedMemory<bool> RuntimeEnabledFeaturesBase::{{feature.data_member_name}};
+DEFINE_PROTECTED_DATA base::ProtectedMemory<bool> RuntimeEnabledFeaturesBase::{{feature.data_member_name}}({{'true' if feature.status == 'stable' else 'false'}});
 {% else %}
 bool RuntimeEnabledFeaturesBase::{{feature.data_member_name}} = {{'true' if feature.status == 'stable' else 'false'}};
 {% endif %}

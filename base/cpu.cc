@@ -221,7 +221,7 @@ const ProcCpuInfo& ParseProcCpu() {
 #endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
-DEFINE_PROTECTED_DATA base::ProtectedMemory<CPU> g_cpu_instance;
+DEFINE_PROTECTED_DATA base::ProtectedMemory<CPU, true> g_cpu_instance;
 
 }  // namespace
 
