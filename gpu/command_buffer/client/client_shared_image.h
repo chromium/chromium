@@ -28,11 +28,6 @@ class ClientSharedImageInterface;
 class GpuChannelSharedImageInterface;
 class TestSharedImageInterface;
 
-// Controls whether SharedImageInterface::DestroySharedImage() should be called
-// in ClientSharedImage's destructor if the shared image has not been marked
-// for destruction.
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableAutomaticSharedImageManagement);
-
 struct ExportedSharedImage;
 
 class GPU_EXPORT ClientSharedImage
@@ -167,7 +162,7 @@ class GPU_EXPORT ClientSharedImage
     destruction_sync_token_ = sync_token;
   }
 
-  void MarkForDestruction() { marked_for_destruction_ = true; }
+  void MarkForDestruction() {}
 
   // Creates a ClientSharedImage that is not associated with any
   // SharedImageInterface for testing.
@@ -254,8 +249,6 @@ class GPU_EXPORT ClientSharedImage
 
   // The texture target returned by `GetTextureTarget()`.
   uint32_t texture_target_ = 0;
-
-  bool marked_for_destruction_ = false;
 };
 
 struct GPU_EXPORT ExportedSharedImage {

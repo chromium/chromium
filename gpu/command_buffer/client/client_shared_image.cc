@@ -116,10 +116,6 @@ uint32_t ComputeTextureTargetForSharedImage(
 
 }  // namespace
 
-BASE_FEATURE(kEnableAutomaticSharedImageManagement,
-             "EnableAutomaticSharedImageManagement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 ClientSharedImage::ScopedMapping::ScopedMapping() = default;
 ClientSharedImage::ScopedMapping::~ScopedMapping() {
   if (buffer_) {
@@ -267,18 +263,12 @@ ClientSharedImage::ClientSharedImage(
 
 ClientSharedImage::~ClientSharedImage() {
   if (!HasHolder()) {
-    if (marked_for_destruction_) {
-      CHECK_IS_TEST();
-    }
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kEnableAutomaticSharedImageManagement) ||
-      marked_for_destruction_) {
-    auto sii = sii_holder_->Get();
-    if (sii) {
-      sii->DestroySharedImage(destruction_sync_token_, mailbox_);
-    }
+  auto sii = sii_holder_->Get();
+  if (sii) {
+    sii->DestroySharedImage(destruction_sync_token_, mailbox_);
   }
 }
 
