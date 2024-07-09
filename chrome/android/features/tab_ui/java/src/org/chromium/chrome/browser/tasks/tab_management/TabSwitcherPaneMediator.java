@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
-import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -273,11 +272,6 @@ public class TabSwitcherPaneMediator
 
     @Override
     public void onTabSelecting(int tabId, boolean fromActionButton) {
-        if (fromActionButton && getMode() == TabListMode.GRID) {
-            TabModel model = mTabModelFilterSupplier.get().getTabModel();
-            Tab newlySelectedTab = model.getTabById(tabId);
-            StartSurfaceUserData.setKeepTab(newlySelectedTab, true);
-        }
         mOnTabClickCallback.onResult(tabId);
     }
 

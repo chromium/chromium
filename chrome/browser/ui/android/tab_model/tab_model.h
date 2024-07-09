@@ -85,6 +85,7 @@ class TabModel {
     // Opened a non-restored tab during the startup process
     FROM_STARTUP,
     // Opened from the start surface.
+    // This is deprecated.
     FROM_START_SURFACE,
     // Opened from Tab group UI.
     // Tab group UI include:

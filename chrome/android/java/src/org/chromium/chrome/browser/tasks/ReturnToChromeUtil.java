@@ -281,7 +281,7 @@ public final class ReturnToChromeUtil {
                                 params,
                                 isBackground
                                         ? TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                                        : TabLaunchType.FROM_START_SURFACE,
+                                        : TabLaunchType.FROM_CHROME_UI,
                                 parentTab);
         if (isBackground) {
             StartSurfaceUserData.setOpenedFromStart(newTab);

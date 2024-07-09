@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneMediator.TabIndexLookup;
-import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -119,9 +118,9 @@ public class TabSwitcherPaneMediatorUnitTest {
         when(mTabIndexLookup.getNthTabIndexInModel(anyInt())).thenAnswer(i -> i.getArguments()[0]);
         mTabModel = new MockTabModel(mProfile, null);
         mTabModel.addTab(
-                new MockTab(UNGROUPED_TAB_ID, mProfile, TabLaunchType.FROM_START_SURFACE),
+                new MockTab(UNGROUPED_TAB_ID, mProfile, TabLaunchType.FROM_CHROME_UI),
                 /* index= */ 0,
-                TabLaunchType.FROM_START_SURFACE,
+                TabLaunchType.FROM_CHROME_UI,
                 TabCreationState.LIVE_IN_FOREGROUND);
         mTabModel.addTab(GROUPED_TAB_1_ID);
         mTabModel.addTab(GROUPED_TAB_2_ID);
@@ -393,10 +392,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Test
     @SmallTest
     public void testOnTabSelecting() {
-        assertFalse(StartSurfaceUserData.getKeepTab(mUngroupedTab));
-
         mMediator.onTabSelecting(mUngroupedTab.getId(), /* fromActionButton= */ true);
-        assertTrue(StartSurfaceUserData.getKeepTab(mUngroupedTab));
         verify(mOnTabClickedCallback).onResult(UNGROUPED_TAB_ID);
     }
 

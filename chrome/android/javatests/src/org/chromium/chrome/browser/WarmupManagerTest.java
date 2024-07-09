@@ -389,13 +389,12 @@ public class WarmupManagerTest {
                     Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
                     mWarmupManager.createRegularSpareTab(profile);
                     Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
-                    Tab tab =
-                            mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_START_SURFACE);
+                    Tab tab = mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_CHROME_UI);
                     WebContents webContents = tab.getWebContents();
                     Assert.assertNotNull(tab);
                     Assert.assertNotNull(webContents);
                     Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
-                    Assert.assertEquals(TabLaunchType.FROM_START_SURFACE, tab.getLaunchType());
+                    Assert.assertEquals(TabLaunchType.FROM_CHROME_UI, tab.getLaunchType());
 
                     // RenderFrame should become live synchronously during WebContents creation when
                     // SPARE_TAB_INITIALIZE_RENDERER is set.
@@ -415,10 +414,10 @@ public class WarmupManagerTest {
                         HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_USED);
         Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
         mWarmupManager.createRegularSpareTab(profile);
-        Tab tab = mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_START_SURFACE);
+        Tab tab = mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_CHROME_UI);
         Assert.assertNotNull(tab);
         Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
-        Assert.assertEquals(TabLaunchType.FROM_START_SURFACE, tab.getLaunchType());
+        Assert.assertEquals(TabLaunchType.FROM_CHROME_UI, tab.getLaunchType());
         histogramWatcher.assertExpected();
         tab.destroy();
     }
@@ -464,7 +463,7 @@ public class WarmupManagerTest {
         // Kill the renderer process, this shouldn't kill the associated spare tab and record
         // TAB_CREATED status.
         WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareTab.getWebContents());
-        Tab tab = mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_START_SURFACE);
+        Tab tab = mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_CHROME_UI);
         Assert.assertNotNull(tab);
         histogramWatcher.assertExpected();
         tab.destroy();

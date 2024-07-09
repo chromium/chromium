@@ -113,8 +113,6 @@ public class ChromeTabCreator extends TabCreator {
                 return "NewIncognitoTab";
             case TabLaunchType.FROM_STARTUP:
                 return "Startup";
-            case TabLaunchType.FROM_START_SURFACE:
-                return "StartSurface";
             case TabLaunchType.FROM_TAB_GROUP_UI:
                 return "TabGroupUI";
             case TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP:
@@ -624,7 +622,6 @@ public class ChromeTabCreator extends TabCreator {
             @PageTransition int originalTransitionType) {
         int transition = PageTransition.LINK;
         switch (tabLaunchType) {
-            case TabLaunchType.FROM_START_SURFACE:
             case TabLaunchType.FROM_OMNIBOX:
                 transition = originalTransitionType;
                 break;
