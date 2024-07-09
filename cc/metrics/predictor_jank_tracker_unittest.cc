@@ -252,7 +252,7 @@ TEST_F(PredictorJankTrackerTest, VerifySqlThresholds) {
   ASSERT_TRUE(status.ok()) << status.message();
   std::string query =
       R"(
-      INCLUDE PERFETTO MODULE chrome.scroll_jank.predictor_jank;
+      INCLUDE PERFETTO MODULE chrome.scroll_jank.predictor_error;
 
       SELECT
         _get_slow_scroll_delta_threshold()
@@ -300,7 +300,7 @@ TEST_F(PredictorJankTrackerTest, VerifySqlPredictorJank) {
   ASSERT_TRUE(status.ok()) << status.message();
   std::string query =
       R"(
-      INCLUDE PERFETTO MODULE chrome.scroll_jank.predictor_jank;
+      INCLUDE PERFETTO MODULE chrome.scroll_jank.predictor_error;
 
       WITH predictor_metrics AS (
         SELECT

@@ -72,7 +72,7 @@ SELECT
 CREATE PERFETTO TABLE _deltas_and_neighbors AS
 SELECT
   scroll_id,
-  event_latency_id,
+  event_latency_slice_id,
   scroll_update_id,
   ts,
   delta_y,
@@ -86,7 +86,7 @@ FROM chrome_presented_scroll_offsets;
 CREATE PERFETTO TABLE _deltas_and_neighbors_with_threshold AS
 SELECT
   scroll_id,
-  event_latency_id,
+  event_latency_slice_id,
   scroll_update_id,
   ts,
   delta_y,
@@ -102,13 +102,13 @@ WHERE delta_y IS NOT NULL
 
 -- The scrolling offsets and predictor jank values for the actual (applied)
 -- scroll events.
-CREATE PERFETTO TABLE chrome_predictor_jank(
+CREATE PERFETTO TABLE chrome_predictor_error(
   -- An ID that ties all EventLatencies in a particular scroll. (implementation
   -- note: This is the EventLatency TraceId of the GestureScrollbegin).
   scroll_id INT,
   -- An ID for this particular EventLatency regardless of it being presented or
   -- not.
-  event_latency_id INT,
+  event_latency_slice_id INT,
   -- An ID that ties this |event_latency_id| with the Trace Id (another
   -- event_latency_id) that it was presented with.
   scroll_update_id INT,
@@ -133,7 +133,7 @@ CREATE PERFETTO TABLE chrome_predictor_jank(
 AS
 SELECT
   scroll_id,
-  event_latency_id,
+  event_latency_slice_id,
   scroll_update_id,
   ts AS present_ts,
   delta_y,

@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingPredictor) {
   ASSERT_TRUE(status.ok()) << status.message();
   std::string query =
       R"(
-      INCLUDE PERFETTO MODULE chrome.scroll_jank.predictor_jank;
+      INCLUDE PERFETTO MODULE chrome.scroll_jank.predictor_error;
 
       SELECT
         prev_delta,
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingPredictor) {
         next_delta,
         predictor_jank,
         delta_threshold
-      FROM chrome_predictor_jank
+      FROM chrome_predictor_error
         ORDER BY present_ts
       ;
       )";
