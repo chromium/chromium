@@ -169,7 +169,13 @@ void PasswordSelectionScreen::ProcessOptions() {
       } else {
         CHECK(auth::IsGaiaPassword(*auth_factors_config_.FindFactorByType(
             cryptohome::AuthFactorType::kPassword)));
-        exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+        if (!has_online_password_) {
+          LOG(WARNING)
+              << "User does not have online password, forcing local password";
+          exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
+        } else {
+          exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+        }
         return;
       }
     case WizardContext::AuthChangeFlow::kInitialSetup:
