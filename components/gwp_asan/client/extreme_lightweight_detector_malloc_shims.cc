@@ -137,6 +137,10 @@ inline bool Quarantine(void* object) {
     return false;
   }
 
+  // This function is going to zap the memory region allocated for `object`,
+  // but it can be cold in cache. So, prefetches it to avoid stall.
+  PA_PREFETCH_FOR_WRITE(object);
+
   if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
           reinterpret_cast<uintptr_t>(object)))) {
     return false;
