@@ -1448,6 +1448,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           "fallback for plus addresses is offered.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
+      plus_addresses::features::kPlusAddressesEnabled,
+      user_education::Metadata(128, "jkeitel@google.com",
+                               "Shown in the autofill popup for suggestions to "
+                               "create a new plus address.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
       password_manager::features::kPasswordManualFallbackAvailable,
       user_education::Metadata(
           128, "theocristea@google.com",

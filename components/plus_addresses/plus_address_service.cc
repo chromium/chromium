@@ -259,6 +259,8 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
               IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
     }
     create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
+    create_plus_address_suggestion.feature_for_new_badge =
+        &features::kPlusAddressesEnabled;
     create_plus_address_suggestion.feature_for_iph =
         &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
 #if BUILDFLAG(IS_ANDROID)
