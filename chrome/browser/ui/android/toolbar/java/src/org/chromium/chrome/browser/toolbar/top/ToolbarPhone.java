@@ -184,7 +184,6 @@ public class ToolbarPhone extends ToolbarLayout
 
     private int mLocationBarBackgroundAlpha = 255;
     private float mNtpSearchBoxScrollFraction = UNINITIALIZED_FRACTION;
-    private float mStartSurfaceScrollFraction = UNINITIALIZED_FRACTION;
     protected ColorDrawable mToolbarBackground;
 
     /** The omnibox background (white with a shadow). */
@@ -318,7 +317,7 @@ public class ToolbarPhone extends ToolbarLayout
         mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
         mToolbarSidePaddingForRealOmnibox =
                 mIsSurfacePolishEnabled
-                        ? OmniboxResourceProvider.getToolbarSidePaddingForStartSurfaceOrNtp(context)
+                        ? OmniboxResourceProvider.getToolbarSidePaddingForNtp(context)
                         : OmniboxResourceProvider.getToolbarSidePadding(context);
         mBackgroundHeightIncreaseWhenFocus =
                 OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(context);
@@ -814,8 +813,6 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The right bounds of the location bar after accounting for any visible right buttons.
      */
     private int getBoundsAfterAccountingForRightButtons() {
-        if (mStartSurfaceScrollFraction == 1.0f) return mToolbarSidePaddingForRealOmnibox;
-
         int toolbarButtonsContainerWidth = mToolbarButtonsContainer.getMeasuredWidth();
 
         // MeasuredWidth() represents the desired width of the container which is accurate most
@@ -1042,10 +1039,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void updateUrlExpansionFraction() {
-        mUrlExpansionFraction =
-                Math.max(
-                        Math.max(mNtpSearchBoxScrollFraction, mStartSurfaceScrollFraction),
-                        mUrlFocusChangeFraction);
+        mUrlExpansionFraction = Math.max(mNtpSearchBoxScrollFraction, mUrlFocusChangeFraction);
         for (UrlExpansionObserver observer : mUrlExpansionObservers) {
             observer.onUrlExpansionProgressChanged(mUrlExpansionFraction);
         }
@@ -1164,8 +1158,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (!mOptionalButtonAnimationRunning) {
             boolean isUrlFocusChangeInProgressWithScrollCompleted =
                     mIsSurfacePolishEnabled
-                            && (mNtpSearchBoxScrollFraction == 1
-                                    || mStartSurfaceScrollFraction == 1)
+                            && mNtpSearchBoxScrollFraction == 1
                             && mUrlFocusChangeInProgress;
             mUrlActionContainer.setTranslationX(
                     getUrlActionsTranslationXForExpansionAnimation(
@@ -1173,9 +1166,7 @@ public class ToolbarPhone extends ToolbarLayout
                             locationBarBaseTranslationX,
                             isUrlFocusChangeInProgressWithScrollCompleted));
             mLocationBar.setUrlFocusChangeFraction(
-                    mNtpSearchBoxScrollFraction,
-                    mStartSurfaceScrollFraction,
-                    mUrlFocusChangeFraction);
+                    mNtpSearchBoxScrollFraction, mUrlFocusChangeFraction);
 
             // Only transition theme colors if in static tab mode that is not the NTP or while
             // focusing on the NTP. In NTP, toolbar and locationbar need to transite color only when

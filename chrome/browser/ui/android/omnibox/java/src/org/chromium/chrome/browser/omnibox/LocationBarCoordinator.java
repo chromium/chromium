@@ -602,17 +602,13 @@ public class LocationBarCoordinator
      *
      * @param ntpSearchBoxScrollFraction The degree to which the omnibox has expanded to full width
      *     in NTP due to the NTP search box is being scrolled up.
-     * @param startSurfaceScrollFraction The degree to which the omnibox has expanded to full width
-     *     in Start Surface due to the Start Surface search box is being scrolled up.
      * @param urlFocusChangeFraction The degree to which the omnibox has expanded due to it is
      *     getting focused.
      */
     public void setUrlFocusChangeFraction(
-            float ntpSearchBoxScrollFraction,
-            float startSurfaceScrollFraction,
-            float urlFocusChangeFraction) {
+            float ntpSearchBoxScrollFraction, float urlFocusChangeFraction) {
         mLocationBarMediator.setUrlFocusChangeFraction(
-                ntpSearchBoxScrollFraction, startSurfaceScrollFraction, urlFocusChangeFraction);
+                ntpSearchBoxScrollFraction, urlFocusChangeFraction);
     }
 
     /**

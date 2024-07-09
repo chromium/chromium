@@ -350,7 +350,6 @@ public class LocationBarLayoutTest {
                                     locationBar.getMeasuredWidth(), MeasureSpec.EXACTLY));
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 0,
-                            /* startSurfaceScrollFraction= */ 0,
                             /* urlFocusChangeFraction= */ MathUtils.EPSILON,
                             /* isUrlFocusChangeInProgress= */ true);
 
@@ -365,7 +364,6 @@ public class LocationBarLayoutTest {
 
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 0.5f,
-                            /* startSurfaceScrollFraction= */ 0.5f,
                             /* urlFocusChangeFraction= */ 0.5f,
                             /* isUrlFocusChangeInProgress= */ false);
                     Assert.assertEquals(
@@ -375,7 +373,6 @@ public class LocationBarLayoutTest {
 
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 1.0f,
-                            /* startSurfaceScrollFraction= */ 1.0f,
                             /* urlFocusChangeFraction= */ 1.0f,
                             /* isUrlFocusChangeInProgress= */ false);
                     Assert.assertEquals(0f, urlBar.getTranslationX(), MathUtils.EPSILON);
@@ -396,12 +393,10 @@ public class LocationBarLayoutTest {
                     // Setting focus percent shouldn't crash.
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 0,
-                            /* startSurfaceScrollFraction= */ 0,
                             /* urlFocusChangeFraction= */ MathUtils.EPSILON,
                             /* isUrlFocusChangeInProgress= */ true);
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 0.5f,
-                            /* startSurfaceScrollFraction= */ 0.5f,
                             /* urlFocusChangeFraction= */ 0.5f,
                             /* isUrlFocusChangeInProgress= */ false);
                 });
@@ -415,8 +410,7 @@ public class LocationBarLayoutTest {
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     int statusIconAndUrlBarOffset =
-                            OmniboxResourceProvider.getToolbarSidePaddingForStartSurfaceOrNtp(
-                                            activity)
+                            OmniboxResourceProvider.getToolbarSidePaddingForNtp(activity)
                                     - OmniboxResourceProvider.getToolbarSidePadding(activity);
                     LocationBarLayout locationBar = getLocationBar();
                     View urlBar = getUrlBar();
@@ -428,7 +422,6 @@ public class LocationBarLayoutTest {
                                     locationBar.getMeasuredWidth(), MeasureSpec.EXACTLY));
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 1,
-                            /* startSurfaceScrollFraction= */ 0,
                             /* urlFocusChangeFraction= */ MathUtils.EPSILON,
                             /* isUrlFocusChangeInProgress= */ true);
 
@@ -444,7 +437,6 @@ public class LocationBarLayoutTest {
 
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 1,
-                            /* startSurfaceScrollFraction= */ 0,
                             /* urlFocusChangeFraction= */ 0.5f,
                             /* isUrlFocusChangeInProgress= */ true);
                     Assert.assertEquals(
@@ -459,28 +451,11 @@ public class LocationBarLayoutTest {
 
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 1.0f,
-                            /* startSurfaceScrollFraction= */ 0,
                             /* urlFocusChangeFraction= */ 1.0f,
                             /* isUrlFocusChangeInProgress= */ true);
                     Assert.assertEquals(0f, urlBar.getTranslationX(), MathUtils.EPSILON);
                     Assert.assertEquals(
                             OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(activity),
-                            statusView.getTranslationX(),
-                            MathUtils.EPSILON);
-
-                    locationBar.setUrlFocusChangePercent(
-                            /* ntpSearchBoxScrollFraction= */ 0,
-                            /* startSurfaceScrollFraction= */ 1,
-                            /* urlFocusChangeFraction= */ MathUtils.EPSILON,
-                            /* isUrlFocusChangeInProgress= */ true);
-
-                    Assert.assertEquals(
-                            statusIconAndUrlBarOffset * (1 - MathUtils.EPSILON),
-                            urlBar.getTranslationX(),
-                            MathUtils.EPSILON);
-                    Assert.assertEquals(
-                            OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(activity)
-                                    + statusIconAndUrlBarOffset * (1 - MathUtils.EPSILON),
                             statusView.getTranslationX(),
                             MathUtils.EPSILON);
                 });

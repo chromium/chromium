@@ -139,7 +139,7 @@ class LocationBarMediator
 
                 @Override
                 public void setValue(LocationBarMediator object, float value) {
-                    setUrlFocusChangeFraction(value, value, value);
+                    setUrlFocusChangeFraction(value, value);
                 }
             };
 
@@ -368,20 +368,15 @@ class LocationBarMediator
     }
 
     /* package */ void setUrlFocusChangeFraction(
-            float ntpSearchBoxScrollFraction,
-            float startSurfaceScrollFraction,
-            float urlFocusChangeFraction) {
-        float fraction =
-                Math.max(
-                        Math.max(ntpSearchBoxScrollFraction, startSurfaceScrollFraction),
-                        urlFocusChangeFraction);
+            float ntpSearchBoxScrollFraction, float urlFocusChangeFraction) {
+        float fraction = Math.max(ntpSearchBoxScrollFraction, urlFocusChangeFraction);
         mUrlFocusChangeFraction = fraction;
         if (mIsTablet) {
             mLocationBarDataProvider
                     .getNewTabPageDelegate()
                     .setUrlFocusChangeAnimationPercent(fraction);
             mLocationBarLayout.setUrlFocusChangePercent(
-                    fraction, fraction, fraction, mIsUrlFocusChangeInProgress);
+                    fraction, fraction, mIsUrlFocusChangeInProgress);
         } else {
             // Determine when the focus state changes as a result of ntp scrolling.
             boolean isLocationBarFocusedFromNtpScroll =
@@ -403,7 +398,6 @@ class LocationBarMediator
             // Add expansion animation for the space besides status view in location bar.
             mLocationBarLayout.setUrlFocusChangePercent(
                     ntpSearchBoxScrollFraction,
-                    startSurfaceScrollFraction,
                     urlFocusChangeFraction,
                     mIsUrlFocusChangeInProgress);
             mStatusCoordinator.setUrlFocusChangePercent(fraction);
@@ -749,7 +743,7 @@ class LocationBarMediator
         if (mIsTablet) {
             float urlFocusChangeFraction = showExpandedState ? 1.0f : 0.0f;
             mLocationBarLayout.setUrlFocusChangePercent(
-                    urlFocusChangeFraction, urlFocusChangeFraction, urlFocusChangeFraction, false);
+                    urlFocusChangeFraction, urlFocusChangeFraction, false);
             mLocationBarLayout.updateLayoutParams(
                     MeasureSpec.makeMeasureSpec(
                             mLocationBarLayout.getMeasuredWidth(), MeasureSpec.EXACTLY));

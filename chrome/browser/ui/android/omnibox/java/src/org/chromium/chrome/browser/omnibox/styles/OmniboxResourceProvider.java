@@ -493,9 +493,9 @@ public class OmniboxResourceProvider {
 
     /**
      * Returns the amount of pixels for the toolbar's side padding when the omnibox is pinned on the
-     * top of the screen in both the start surface and NTP.
+     * top of the screen in NTP.
      */
-    public static @Px int getToolbarSidePaddingForStartSurfaceOrNtp(Context context) {
+    public static @Px int getToolbarSidePaddingForNtp(Context context) {
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.toolbar_edge_padding_modern_polish);
     }

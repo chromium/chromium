@@ -71,7 +71,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
         // Expand status view's left and right space, and expand the vertical padding of the
         // location bar to match the expanded interface on the regular omnibox.
-        setUrlFocusChangePercent(1f, 1f, 1f, /* isUrlFocusChangeInProgress= */ false);
+        setUrlFocusChangePercent(1f, 1f, /* isUrlFocusChangeInProgress= */ false);
     }
 
     @Override
