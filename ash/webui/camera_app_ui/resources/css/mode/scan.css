@@ -63,15 +63,15 @@ body.enable-scan-barcode .barcode-scan-box {
 /* TODO(b/172879638): Tune the position and layout after we finalized the
  * responsive window design. */
 .barcode-chip-container {
-  --chip-height: 36px;
   --chip-max-width: 420px;
   --min-scanbox-distance: 40px;
-  --text-expand-button-height: 48px;
   --text-line-height: 24px;
-  --text-padding-vertical: 8px;
+  --text-padding-vertical: 6px;
+  --chip-height: calc(var(--text-line-height) +
+      2 * var(--text-padding-vertical));
+  --expand-button-size: var(--chip-height);
   /* Avoid collision with scan-box and preview-box */
-  --top: max(8px, min(10%, 33.33% - var(--text-line-height) -
-      var(--text-expand-button-height) - 2 * var(--text-padding-vertical) -
+  --top: max(8px, min(10%, 33.33% - var(--chip-height) -
       var(--min-scanbox-distance)));
 
   left: 50%;
@@ -149,15 +149,14 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 .barcode-chip-text {
-  align-items: center;
+  align-items: flex-start;
   background: var(--cros-sys-base_elevated);
   border-radius: 20px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   display: flex;
-  flex-direction: column;
   font: var(--cros-body-2-font);
-  padding: var(--text-padding-vertical) 16px;
+  padding-inline: 8px;
 }
 
 #barcode-chip-text-content {
@@ -165,6 +164,7 @@ body.enable-scan-barcode .barcode-scan-box {
   line-height: var(--text-line-height);
   max-width: 100%;
   overflow: hidden;
+  padding: var(--text-padding-vertical) 8px;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -181,13 +181,27 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #barcode-chip-text-expand {
-  height: var(--text-expand-button-height);
-  margin-top: 8px;
-  width: 100%;
+  border-radius: 50%;
+  flex-shrink: 0;
+  height: var(--expand-button-size);
+  width: var(--expand-button-size);
 
   .up-icon {
     display: none;
   }
+}
+
+#barcode-chip-text-expand > svg-wrapper {
+  color: var(--cros-sys-primary);
+}
+
+#barcode-chip-text-expand:hover {
+  /* Use linear-gradient to apply multiple background colors. */
+  background: linear-gradient(
+    0deg,
+    var(--cros-sys-hover_on_subtle),
+    var(--cros-sys-hover_on_subtle)
+  ), var(--cros-sys-base_elevated);
 }
 
 .expanded #barcode-chip-text-expand {
