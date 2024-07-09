@@ -40,7 +40,7 @@ const base::BasePathKey kBasePathKey =
     // a user temp env var to query. Because of these issues, we store the crash
     // dumps, which are usually < 100KB, in the install folder so they will get
     // cleaned up when the user uninstalls or we push an update.
-    base::BasePathKey::FILE_MODULE;
+    base::BasePathKey::DIR_ASSETS;
 #else
     base::BasePathKey::DIR_TEMP;
 #endif
@@ -112,9 +112,7 @@ base::win::ScopedHandle GetClientHandleForCrashServerPipe() {
 base::FilePath GetMinidumpDirectoryPath() {
   base::FilePath base_path;
   if (base::PathService::Get(kBasePathKey, &base_path)) {
-    // |base_path| will contain a file for the Windows case so remove it before
-    // appending the fragments.
-    return base_path.DirName().Append(kMinidumpsPath);
+    return base_path.Append(kMinidumpsPath);
   }
 
   LOG(ERROR) << "Failed to retrieve a directory for crash reporting.";
