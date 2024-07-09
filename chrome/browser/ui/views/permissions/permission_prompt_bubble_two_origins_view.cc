@@ -169,7 +169,7 @@ void PermissionPromptBubbleTwoOriginsView::Show() {
                                    base::Unretained(this)));
 }
 
-std::u16string PermissionPromptBubbleTwoOriginsView::CreateWindowTitle() const {
+std::u16string PermissionPromptBubbleTwoOriginsView::CreateWindowTitle() {
   CHECK_GT(delegate()->Requests().size(), 0u);
 
   switch (delegate()->Requests()[0]->request_type()) {
@@ -180,11 +180,17 @@ std::u16string PermissionPromptBubbleTwoOriginsView::CreateWindowTitle() const {
               delegate()->GetEmbeddingOrigin(),
               ContentSettingsType::STORAGE_ACCESS);
 
-      return l10n_util::GetStringFUTF16(
+      size_t title_offset;
+      std::u16string title_string = l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE,
           url_formatter::FormatUrlForSecurityDisplay(
               patterns.first.ToRepresentativeUrl(),
-              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
+          &title_offset);
+      SetTitleBoldedRanges(
+          {{title_offset,
+            title_offset + GetUrlIdentityObject().name.length()}});
+      return title_string;
     }
     default:
       NOTREACHED_NORETURN();

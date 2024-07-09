@@ -47,12 +47,14 @@ PermissionPromptBaseView::PermissionPromptBaseView(
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
 }
 
+PermissionPromptBaseView::~PermissionPromptBaseView() = default;
+
 void PermissionPromptBaseView::AddedToWidget() {
   if (url_identity_.type == UrlIdentity::Type::kDefault) {
     // There is a risk of URL spoofing from origins that are too wide to fit in
     // the bubble; elide origins from the front to prevent this.
     GetBubbleFrameView()->SetTitleView(
-        CreateTitleOriginLabel(GetWindowTitle()));
+        CreateTitleOriginLabel(GetWindowTitle(), GetTitleBoldedRanges()));
   }
 
   StartTrackingPictureInPictureOcclusion();
@@ -159,6 +161,15 @@ void PermissionPromptBaseView::StartTrackingPictureInPictureOcclusion() {
   // Either way, we want to know if we're ever occluded by an always-on-top
   // window.
   occlusion_observation_.Observe(GetWidget());
+}
+
+std::vector<std::pair<size_t, size_t>>
+PermissionPromptBaseView::GetTitleBoldedRanges() {
+  return title_bolded_ranges_;
+}
+void PermissionPromptBaseView::SetTitleBoldedRanges(
+    std::vector<std::pair<size_t, size_t>> bolded_ranges) {
+  title_bolded_ranges_ = bolded_ranges;
 }
 
 BEGIN_METADATA(PermissionPromptBaseView)

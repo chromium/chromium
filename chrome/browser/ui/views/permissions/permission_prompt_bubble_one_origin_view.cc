@@ -157,8 +157,15 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
 
   SetAccessibleTitle(GetAccessibleWindowTitleInternal(
       GetUrlIdentityObject().name, visible_requests));
+
+  size_t title_offset;
   SetTitle(l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
-                                      GetUrlIdentityObject().name));
+                                      GetUrlIdentityObject().name,
+                                      &title_offset));
+  // Calculate the range of $ORIGIN which should be bold. It will be used while
+  // creating title label via `CreateTitleOriginLabel()`.
+  SetTitleBoldedRanges(
+      {{title_offset, title_offset + GetUrlIdentityObject().name.length()}});
 
   auto extra_text = GetExtraText(*delegate.get());
   if (extra_text.has_value()) {

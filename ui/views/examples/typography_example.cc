@@ -42,7 +42,7 @@ void TypographyExample::CreateExampleView(View* container) {
           .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
                      TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed,
                      600, 0)
-          .AddRows(5, TableLayout::kFixedSize, 0)
+          .AddRows(6, TableLayout::kFixedSize, 0)
           .AddChildren(
               Builder<Label>().SetText(u"HeadLine1"),
               Builder<Label>()
@@ -68,6 +68,12 @@ void TypographyExample::CreateExampleView(View* container) {
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetTextStyle(style::STYLE_HEADLINE_4),
+              Builder<Label>().SetText(u"HeadLine4Bold"),
+              Builder<Label>()
+                  .SetText(headline_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_HEADLINE_4_BOLD),
               Builder<Label>().SetText(u"HeadLine5"),
               Builder<Label>()
                   .SetText(headline_text)

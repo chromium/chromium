@@ -190,6 +190,10 @@ ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetailsImpl(
       details.size_delta = gfx::PlatformFont::GetFontSizeDelta(16);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
+    case style::STYLE_HEADLINE_4_BOLD:
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(16);
+      details.weight = gfx::Font::Weight::BOLD;
+      break;
     case style::STYLE_HEADLINE_5:
       details.size_delta = gfx::PlatformFont::GetFontSizeDelta(14);
       details.weight = gfx::Font::Weight::MEDIUM;
@@ -322,17 +326,18 @@ ui::ColorId TypographyProvider::GetColorIdImpl(int context, int style) const {
 
 int TypographyProvider::GetLineHeightImpl(int context, int style) const {
   static constexpr auto kLineHeights = base::MakeFixedFlatMap<int, int>({
-      {style::STYLE_HEADLINE_1, 32},    {style::STYLE_HEADLINE_2, 24},
-      {style::STYLE_HEADLINE_3, 24},    {style::STYLE_HEADLINE_4, 24},
-      {style::STYLE_HEADLINE_5, 20},    {style::STYLE_BODY_1, 24},
-      {style::STYLE_BODY_1_MEDIUM, 24}, {style::STYLE_BODY_1_BOLD, 24},
-      {style::STYLE_BODY_2, 20},        {style::STYLE_BODY_2_MEDIUM, 20},
-      {style::STYLE_BODY_2_BOLD, 20},   {style::STYLE_BODY_3, 20},
-      {style::STYLE_BODY_3_MEDIUM, 20}, {style::STYLE_BODY_3_BOLD, 20},
-      {style::STYLE_BODY_4, 16},        {style::STYLE_BODY_4_MEDIUM, 16},
-      {style::STYLE_BODY_4_BOLD, 16},   {style::STYLE_BODY_5, 16},
-      {style::STYLE_BODY_5_MEDIUM, 16}, {style::STYLE_BODY_5_BOLD, 16},
-      {style::STYLE_LINK_5, 16},        {style::STYLE_CAPTION, 12},
+      {style::STYLE_HEADLINE_1, 32},      {style::STYLE_HEADLINE_2, 24},
+      {style::STYLE_HEADLINE_3, 24},      {style::STYLE_HEADLINE_4, 24},
+      {style::STYLE_HEADLINE_4_BOLD, 24}, {style::STYLE_HEADLINE_5, 20},
+      {style::STYLE_BODY_1, 24},          {style::STYLE_BODY_1_MEDIUM, 24},
+      {style::STYLE_BODY_1_BOLD, 24},     {style::STYLE_BODY_2, 20},
+      {style::STYLE_BODY_2_MEDIUM, 20},   {style::STYLE_BODY_2_BOLD, 20},
+      {style::STYLE_BODY_3, 20},          {style::STYLE_BODY_3_MEDIUM, 20},
+      {style::STYLE_BODY_3_BOLD, 20},     {style::STYLE_BODY_4, 16},
+      {style::STYLE_BODY_4_MEDIUM, 16},   {style::STYLE_BODY_4_BOLD, 16},
+      {style::STYLE_BODY_5, 16},          {style::STYLE_BODY_5_MEDIUM, 16},
+      {style::STYLE_BODY_5_BOLD, 16},     {style::STYLE_LINK_5, 16},
+      {style::STYLE_CAPTION, 12},
   });
   const auto it = kLineHeights.find(style);
   return (it == kLineHeights.end())

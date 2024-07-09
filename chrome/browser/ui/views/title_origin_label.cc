@@ -5,7 +5,8 @@
 #include "chrome/browser/ui/views/title_origin_label.h"
 
 std::unique_ptr<views::Label> CreateTitleOriginLabel(
-    const std::u16string& text) {
+    const std::u16string& text,
+    const std::vector<std::pair<size_t, size_t>> bolded_ranges) {
   auto label =
       std::make_unique<views::Label>(text, views::style::CONTEXT_DIALOG_TITLE);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -20,6 +21,12 @@ std::unique_ptr<views::Label> CreateTitleOriginLabel(
   label->SetMultiLine(true);
   label->SetAllowCharacterBreak(true);
   label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+
+  for (auto bolded_range : bolded_ranges) {
+    label->SetTextStyleRange(
+        views::style::STYLE_HEADLINE_4_BOLD,
+        gfx::Range(bolded_range.first, bolded_range.second));
+  }
 
   return label;
 }

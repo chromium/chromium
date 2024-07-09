@@ -50,7 +50,7 @@ class PermissionPromptBubbleTwoOriginsView
 
  private:
   void CreateFaviconRow();
-  std::u16string CreateWindowTitle() const;
+  std::u16string CreateWindowTitle();
 
   void OnEmbeddingOriginFaviconLoaded(
       const favicon_base::FaviconRawBitmapResult& favicon_result);
