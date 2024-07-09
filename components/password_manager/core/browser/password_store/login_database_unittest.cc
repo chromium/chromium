@@ -36,6 +36,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
@@ -261,13 +262,6 @@ MATCHER(IsGoogle2Account, "") {
 
 MATCHER(IsBasicAuthAccount, "") {
   return arg.scheme == PasswordForm::Scheme::kBasic;
-}
-
-// Matcher that matches all a password form that has the primary_key field set,
-// and that other fields are the same as in |expected_form|.
-auto HasPrimaryKeyAndEquals(PasswordForm expected_form) {
-  return AllOf(Field(&PasswordForm::primary_key, testing::Optional(_)),
-               Eq(expected_form));
 }
 
 os_crypt_async::Encryptor GetInstanceSync(

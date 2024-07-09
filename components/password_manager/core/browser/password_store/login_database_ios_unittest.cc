@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -201,8 +202,8 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   std::vector<PasswordForm> remaining_logins;
   EXPECT_TRUE(login_db_->GetLogins(form, true, &remaining_logins));
   EXPECT_THAT(remaining_logins,
-              testing::UnorderedElementsAre(testing::Eq(forms[0]),
-                                            testing::Eq(forms[2])));
+              testing::UnorderedElementsAreArray(
+                  FormsIgnoringPrimaryKey({forms[0], forms[2]})));
 
   // Verify that keychain entry is removed.
   std::u16string password_value;

@@ -563,6 +563,14 @@ struct PasswordForm {
 
   PasswordForm& operator=(const PasswordForm& form);
   PasswordForm& operator=(PasswordForm&& form);
+
+#if defined(UNIT_TEST)
+  // An exact equality comparison of all the fields is only useful for tests.
+  // Production code should be using `ArePasswordFormUniqueKeysEqual` instead.
+  friend bool operator==(const PasswordForm&, const PasswordForm&) = default;
+  friend bool operator!=(const PasswordForm& lhs,
+                         const PasswordForm& rhs) = default;
+#endif
 };
 
 // True if the unique keys for the forms are the same. The unique key is
@@ -576,14 +584,10 @@ bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
 
 // For testing.
 #if defined(UNIT_TEST)
-// An exact equality comparison of all the fields is only useful for tests.
-// Production code should be using `ArePasswordFormUniqueKeysEqual` instead.
-bool operator==(const PasswordForm& lhs, const PasswordForm& rhs);
-
 std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme);
 std::ostream& operator<<(std::ostream& os, const PasswordForm& form);
 std::ostream& operator<<(std::ostream& os, PasswordForm* form);
-#endif
+#endif  // defined(UNIT_TEST)
 
 constexpr PasswordForm::Store operator&(PasswordForm::Store lhs,
                                         PasswordForm::Store rhs) {
