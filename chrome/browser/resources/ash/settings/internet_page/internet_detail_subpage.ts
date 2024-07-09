@@ -1017,22 +1017,41 @@ export class SettingsInternetDetailPageElement extends
     }
   }
 
+  private checkWifiOutOfRange_(networkState: OncMojo.NetworkStateProperties|
+                               null): void {
+    if (!networkState) {
+      return;
+    }
+    if (networkState.type !== NetworkType.kWiFi) {
+      this.outOfRange_ = false;
+      return;
+    }
+
+    // A hidden network should always have the connect button regardless of
+    // whether it's visible or not.
+    this.outOfRange_ = !networkState.typeState.wifi!.hiddenSsid &&
+        !networkState.typeState.wifi!.visible;
+  }
+
   private async getNetworkDetails_(): Promise<void> {
     assertExists(this.guid);
 
+    const networkStateResponse =
+        await this.networkConfig_.getNetworkState(this.guid);
+    this.checkWifiOutOfRange_(networkStateResponse.result);
+
     if (this.isSecondaryUser_) {
-      const response = await this.networkConfig_.getNetworkState(this.guid);
-      this.getStateCallback_(response.result);
-    } else {
-      const response =
-          await this.networkConfig_.getManagedProperties(this.guid);
-      this.getPropertiesCallback_(response.result);
-      if (this.isPasspointSettingsEnabled_ &&
-          this.isPasspointWifi_(this.managedProperties_)) {
-        const response = await this.passpointService_.getPasspointSubscription(
-            this.managedProperties_!.typeProperties.wifi!.passpointId!);
-        this.passpointSubscription_ = response.result;
-      }
+      this.getStateCallback_(networkStateResponse.result);
+      return;
+    }
+
+    const response = await this.networkConfig_.getManagedProperties(this.guid);
+    this.getPropertiesCallback_(response.result);
+    if (this.isPasspointSettingsEnabled_ &&
+        this.isPasspointWifi_(this.managedProperties_)) {
+      const response = await this.passpointService_.getPasspointSubscription(
+          this.managedProperties_!.typeProperties.wifi!.passpointId!);
+      this.passpointSubscription_ = response.result;
     }
   }
 
@@ -1057,7 +1076,6 @@ export class SettingsInternetDetailPageElement extends
       this.close();
     }
     this.propertiesReceived_ = true;
-    this.outOfRange_ = false;
     if (!this.deviceState_) {
       this.getDeviceState_();
     }
@@ -1108,9 +1126,7 @@ export class SettingsInternetDetailPageElement extends
         break;
     }
     this.updateManagedProperties_(managedProperties);
-
     this.propertiesReceived_ = true;
-    this.outOfRange_ = false;
   }
 
   private getNetworkState_(properties: ManagedProperties):
@@ -1124,7 +1140,6 @@ export class SettingsInternetDetailPageElement extends
   private getDefaultConfigProperties_(): ConfigProperties {
     return OncMojo.getDefaultConfigProperties(this.managedProperties_!.type);
   }
-
 
   private async setMojoNetworkProperties_(config: ConfigProperties):
       Promise<void> {

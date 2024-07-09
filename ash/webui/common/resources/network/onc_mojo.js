@@ -633,6 +633,7 @@ export class OncMojo {
           signalStrength: 0,
           ssid: '',
           passpointId: '',
+          visible: true,
         };
         break;
       default:
@@ -710,6 +711,8 @@ export class OncMojo {
             wifiProperties.signalStrength;
         networkState.typeState.wifi.ssid =
             OncMojo.getActiveString(wifiProperties.ssid);
+        networkState.typeState.wifi.hiddenSsid =
+            !!OncMojo.getActiveValue(wifiProperties.hiddenSsid);
         break;
     }
     return networkState;

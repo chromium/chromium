@@ -263,6 +263,8 @@ struct WiFiStateProperties {
   int32 signal_strength;
   // The network SSID.
   string ssid;
+  // Whether the network is in range.
+  bool visible;
   // Whether the AP has a hidden SSID.
   bool hidden_ssid;
   // Identifier of the set of Passpoint credentials that populated this Wi-Fi

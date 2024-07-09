@@ -244,6 +244,23 @@ export class FakeNetworkConfig {
 
   /**
    * @param {string} guid
+   * @param {boolean} visible
+   */
+  setWifiNetworkVisibleForTest(guid, visible) {
+    const network = this.networkStates_.find(state => {
+      return state.guid === guid;
+    });
+    assert(!!network, 'Network not found: ' + guid);
+    assert(
+        network.type === NetworkType.kWiFi,
+        'Network visible can only be set on WiFi type');
+    network.typeState.wifi.visible = visible;
+
+    this.onNetworkStateChanged(network);
+  }
+
+  /**
+   * @param {string} guid
    * @param {!Array<!Object>} trafficCounters counters for guid
    */
   setTrafficCountersForTest(guid, trafficCounters) {

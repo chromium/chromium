@@ -537,6 +537,7 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
       wifi->security = network->GetMojoSecurity();
       wifi->signal_strength = network->signal_strength();
       wifi->ssid = network->name();
+      wifi->visible = network->visible();
       wifi->hidden_ssid = network->hidden_ssid();
       wifi->passpoint_id = network->passpoint_id();
       result->type_state =

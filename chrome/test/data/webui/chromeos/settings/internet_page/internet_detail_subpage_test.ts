@@ -286,6 +286,49 @@ suite('<settings-internet-detail-subpage>', () => {
       await mojoApi.whenCalled('getManagedProperties');
     });
 
+    test('Connect button disabled when WiFi is out of range', async () => {
+      init();
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(NetworkType.kWiFi, 'out_of_range_wifi');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      mojoApi.setManagedPropertiesForTest(wifiNetwork);
+      mojoApi.setWifiNetworkVisibleForTest('out_of_range_wifi_guid', false);
+
+      internetDetailPage.init(
+          'out_of_range_wifi_guid', 'WiFi', 'out_of_range_wifi');
+      await flushTasks();
+      const connectButton = getButton('connectDisconnect');
+      assertFalse(connectButton.hidden);
+      assertTrue(connectButton.disabled);
+    });
+
+    test(
+        'Connect button enabled on hidden network even when WiFi is out' +
+            ' of range',
+        async () => {
+          init();
+          mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+          const wifiNetwork = getManagedProperties(
+              NetworkType.kWiFi, 'out_of_range_hidden_wifi');
+          wifiNetwork.source = OncSource.kUser;
+          wifiNetwork.connectable = true;
+          wifiNetwork.typeProperties.wifi!.hiddenSsid =
+              OncMojo.createManagedBool(true);
+          mojoApi.setManagedPropertiesForTest(wifiNetwork);
+          mojoApi.setWifiNetworkVisibleForTest(
+              'out_of_range_hidden_wifi_guid', false);
+
+          internetDetailPage.init(
+              'out_of_range_hidden_wifi_guid', 'WiFi',
+              'out_of_range_hidden_wifi');
+          await flushTasks();
+          const connectButton = getButton('connectDisconnect');
+          assertFalse(connectButton.hidden);
+          assertFalse(connectButton.disabled);
+        });
+
     test('WiFi in a portal portalState', async () => {
       init();
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
