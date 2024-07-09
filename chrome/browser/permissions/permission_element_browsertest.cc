@@ -276,6 +276,32 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
+                       TappingScrimViewDispatchDismissEvent) {
+  SkipInvalidElementMessage();
+  permissions::PermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::AutoResponseType::NONE);
+  std::string permission_ids[] = {"microphone", "camera", "camera-microphone"};
+  for (const auto& id : permission_ids) {
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "EmbeddedPermissionPromptContentScrimWidget");
+    ClickElementWithId(web_contents(), id);
+    auto* scrim_view = static_cast<EmbeddedPermissionPromptContentScrimView*>(
+        waiter.WaitIfNeededAndGet()->GetContentsView());
+    ui::GestureEvent tap_down(
+        gfx::Point().x(), gfx::Point().y(), 0, base::TimeTicks::Now(),
+        ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP_DOWN));
+    scrim_view->OnGestureEvent(&tap_down);
+    ui::GestureEvent tap_up(
+        gfx::Point().x(), gfx::Point().y(), 0, base::TimeTicks::Now(),
+        ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP));
+    scrim_view->OnGestureEvent(&tap_up);
+    WaitForDismissEvent(id);
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest, TabSwitchingClosesPrompt) {
   SkipInvalidElementMessage();
   permissions::PermissionRequestManager::FromWebContents(web_contents())

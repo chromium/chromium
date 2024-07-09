@@ -59,6 +59,7 @@ class EmbeddedPermissionPromptContentScrimView : public views::View,
 
   // Views::View
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // views::WidgetObserver
   void OnWidgetDestroyed(views::Widget* widget) override;

@@ -61,6 +61,14 @@ bool EmbeddedPermissionPromptContentScrimView::OnMousePressed(
   return true;
 }
 
+void EmbeddedPermissionPromptContentScrimView::OnGestureEvent(
+    ui::GestureEvent* event) {
+  if (event->type() == ui::ET_GESTURE_TAP ||
+      event->type() == ui::ET_GESTURE_DOUBLE_TAP) {
+    delegate_->DismissScrim();
+  }
+}
+
 void EmbeddedPermissionPromptContentScrimView::OnWidgetDestroyed(
     views::Widget* widget) {
   DCHECK(observation_.IsObservingSource(widget));
