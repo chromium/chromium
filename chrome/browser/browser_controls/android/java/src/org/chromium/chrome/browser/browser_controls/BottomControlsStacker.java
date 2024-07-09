@@ -100,10 +100,12 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
         recalculateLayerSizes();
         updateBrowserControlsHeight(animate);
-        repositionLayers(
-                mBrowserControlsSizer.getBottomControlOffset(),
-                mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
-                animate);
+        if (mBrowserControlsSizer.offsetOverridden() && isDispatchingYOffset()) {
+            repositionLayers(
+                    mBrowserControlsSizer.getBottomControlOffset(),
+                    mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
+                    animate);
+        }
     }
 
     private void updateBrowserControlsHeight(boolean animate) {
@@ -201,7 +203,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             int bottomControlsMinHeightOffset,
             boolean needsAnimate,
             boolean isVisibilityForced) {
-        if (mLayers.size() == 0 || !isEnabled()) return;
+        if (mLayers.size() == 0 || !isDispatchingYOffset()) return;
         repositionLayers(bottomOffset, bottomControlsMinHeightOffset, needsAnimate);
     }
 
@@ -315,8 +317,16 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         mTotalMinHeight = minHeight;
     }
 
+    /** Returns whether bottom controls stacker is calculating height. */
     public static boolean isEnabled() {
         return ChromeFeatureList.sBottomBrowserControlsRefactor.isEnabled();
+    }
+
+    /** Whether Bottom Controls Stacker is dispatching yOffset. */
+    public static boolean isDispatchingYOffset() {
+        // This method is used as a kill switch to fallback to the previous behavior.
+        return isEnabled()
+                && !ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching.getValue();
     }
 
     private static void logIfHeightMismatch(

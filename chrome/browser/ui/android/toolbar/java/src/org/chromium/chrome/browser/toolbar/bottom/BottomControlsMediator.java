@@ -182,11 +182,10 @@ class BottomControlsMediator
             int bottomControlsMinHeightOffset,
             boolean needsAnimate,
             boolean isVisibilityForced) {
-        int minHeight = getBrowserControls().getBottomControlsMinHeight();
-        mModel.set(BottomControlsProperties.Y_OFFSET, bottomOffset - minHeight);
+        // Method call routed to onBrowserControlsOffsetUpdate.
+        if (BottomControlsStacker.isDispatchingYOffset()) return;
 
-        // This call also updates the view's position if the animation has just finished.
-        updateAndroidViewVisibility();
+        setYOffset(bottomOffset - getBrowserControls().getBottomControlsMinHeight());
     }
 
     @Override
@@ -239,6 +238,13 @@ class BottomControlsMediator
      */
     private boolean isInFullscreenMode() {
         return mFullscreenManager != null && mFullscreenManager.getPersistentFullscreenMode();
+    }
+
+    private void setYOffset(int yOffset) {
+        mModel.set(BottomControlsProperties.Y_OFFSET, yOffset);
+
+        // This call also updates the view's position if the animation has just finished.
+        updateAndroidViewVisibility();
     }
 
     /**
@@ -334,6 +340,12 @@ class BottomControlsMediator
     @Override
     public boolean isVisible() {
         return isCompositedViewVisible();
+    }
+
+    @Override
+    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+        assert BottomControlsStacker.isDispatchingYOffset();
+        setYOffset(layerYOffset);
     }
 
     ChangeObserver getEdgeToEdgeChangeObserverForTesting() {

@@ -180,7 +180,7 @@ public class MiniPlayerCoordinatorUnitTest {
     @Test
     public void testBindYOffset() {
         mCoordinator.show(/* animate= */ true);
-        mModel.set(Properties.Y_OFFSET, 100);
-        verify(mLayout).setYOffset(eq(100));
+        mModel.set(Properties.Y_OFFSET, -100);
+        verify(mLayout).setYOffset(eq(-100));
     }
 }

@@ -342,6 +342,7 @@ robolectric_library("player_junit_java") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/device:java",
     "//chrome/browser/device:junit",
+    "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/readaloud/android:java",
     "//chrome/browser/readaloud/android:metrics_java",

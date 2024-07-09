@@ -892,4 +892,9 @@ public abstract class ChromeFeatureList {
     public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterIntervalTimeDeltaHours =
             sAndroidTabDeclutter.newIntParam(
                     "android_tab_declutter_interval_time_delta_hours", 7 * 24);
+
+    public static final MutableBooleanParamWithSafeDefault
+            sDisableBottomControlsStackerYOffsetDispatching =
+                    sBottomBrowserControlsRefactor.newBooleanParam(
+                            "disable_bottom_controls_stacker_y_offset", false);
 }

@@ -185,17 +185,17 @@ public class MiniPlayerLayout extends LinearLayout {
     }
 
     /**
-     * Set the yOffset of the mini player layout. If yOffset > 0, the view need to shift up from the
+     * Set the yOffset of the mini player layout. If yOffset < 0, the view need to shift up from the
      * bottom. It is implemented by applying a bottom margin.
      */
     void setYOffset(int yOffset) {
         if (mYOffset == yOffset) return;
 
-        assert yOffset >= 0;
+        assert yOffset <= 0;
 
-        mYOffset = yOffset;
+        mYOffset = -yOffset;
         MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
-        mlp.bottomMargin = yOffset;
+        mlp.bottomMargin = mYOffset;
         setLayoutParams(mlp);
     }
 
