@@ -1765,4 +1765,45 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTestWithKeepAliveMigration,
   expected_report.WaitForReport();
 }
 
+IN_PROC_BROWSER_TEST_P(
+    AttributionsBrowserTest,
+    ServiceWorkerPerformsAttributionSrcRegistration_SupportHeaderNotSet) {
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/attribution_reporting/register_source");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL page_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+
+  // Setup our service worker.
+  WorkerStateObserver sw_observer(wrapper(), ServiceWorkerVersion::ACTIVATED);
+  blink::mojom::ServiceWorkerRegistrationOptions options(
+      page_url, blink::mojom::ScriptType::kClassic,
+      blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
+  public_context()->RegisterServiceWorker(
+      https_server()->GetURL("a.test",
+                             "/attribution_reporting/service_worker.js"),
+      key, options,
+      base::BindOnce(&ExpectRegisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
+  sw_observer.Wait();
+
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace("createAttributionSrcImg($1);",
+                https_server()->GetURL(
+                    "a.test", "/attribution_reporting/register_source"))));
+
+  register_response->WaitForRequest();
+  EXPECT_TRUE(base::Contains(register_response->http_request()->headers,
+                             "Attribution-Reporting-Eligible"));
+  EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
+                              "Attribution-Reporting-Support"));
+}
+
 }  // namespace content
