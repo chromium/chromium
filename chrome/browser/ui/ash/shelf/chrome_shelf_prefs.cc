@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <set>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -441,6 +442,30 @@ void ChromeShelfPrefs::RegisterProfilePrefs(
       PrefRegistry::NO_REGISTRATION_FLAGS);
 }
 
+// TODO(crbug.com/350769496): Fixes bug from M127 beta, can be removed once M127
+// is no longer in stable (end of 2024, or mid 2025 is ok).
+void ChromeShelfPrefs::CleanupPreloadPrefs(PrefService* profile_prefs) {
+  constexpr std::array<const char*, 2> kPrefNames{
+      prefs::kShelfDefaultPinLayoutRolls,
+      prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor};
+
+  for (auto* const pref_name : kPrefNames) {
+    // Deduplicate items in list.
+    const base::Value::List& list = profile_prefs->GetList(pref_name);
+    std::set<base::Value> set;
+    for (const auto& item : list) {
+      set.insert(item.Clone());
+    }
+    if (set.size() < list.size()) {
+      base::Value::List deduplicated;
+      for (const auto& item : set) {
+        deduplicated.Append(item.Clone());
+      }
+      profile_prefs->SetList(pref_name, std::move(deduplicated));
+    }
+  }
+}
+
 void ChromeShelfPrefs::InitLocalPref(PrefService* prefs,
                                      const char* local,
                                      const char* synced) {
@@ -547,7 +572,8 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
                                                /*is_policy_initiated=*/true);
 
   // Pin preload apps only if none are set by policy.
-  if (policy_pinned_apps.empty() && IsSafeToApplyDefaultPinLayout(profile_)) {
+  if (!DidAddPreloadApps() && policy_pinned_apps.empty() &&
+      IsSafeToApplyDefaultPinLayout(profile_)) {
     PinPreloadApps();
   }
 
@@ -789,12 +815,15 @@ void ChromeShelfPrefs::AddDefaultApps() {
   update->Append(kDefaultPinnedAppsKey);
 }
 
+bool ChromeShelfPrefs::DidAddPreloadApps() const {
+  return base::Contains(
+      profile_->GetPrefs()->GetList(GetShelfDefaultPinLayoutPref()),
+      kPreloadPinnedAppsKey);
+}
+
 void ChromeShelfPrefs::PinPreloadApps() {
   // Only pin once per user.
-  if (pending_preload_apps_.empty() ||
-      base::Contains(
-          profile_->GetPrefs()->GetList(GetShelfDefaultPinLayoutPref()),
-          kPreloadPinnedAppsKey)) {
+  if (pending_preload_apps_.empty() || DidAddPreloadApps()) {
     return;
   }
 
@@ -878,7 +907,7 @@ void ChromeShelfPrefs::AttachProfile(Profile* profile) {
 
   pending_preload_apps_.clear();
   preload_pin_order_.clear();
-  if (profile_) {
+  if (profile_ && !DidAddPreloadApps()) {
     if (auto* app_preload_service = apps::AppPreloadService::Get(profile_)) {
       app_preload_service->GetPinApps(
           base::BindOnce(&ChromeShelfPrefs::OnGetPinPreloadApps,
@@ -919,7 +948,7 @@ void ChromeShelfPrefs::OnGetPinPreloadApps(
     const std::vector<apps::PackageId>& pin_order) {
   pending_preload_apps_ = pin_apps;
   preload_pin_order_ = pin_order;
-  if (pin_apps.empty()) {
+  if (pin_apps.empty() && !DidAddPreloadApps()) {
     SetPreloadPinComplete(profile_);
   }
 }
