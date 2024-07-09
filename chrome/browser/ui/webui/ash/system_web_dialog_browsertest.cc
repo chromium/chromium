@@ -171,4 +171,18 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, StackAtTop) {
   EXPECT_TRUE(widget2->is_top_level());
 }
 
+IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, ShowBeforeFocus) {
+  MockSystemWebDialog* dialog = new MockSystemWebDialog();
+  dialog->ShowSystemDialog();
+
+  aura::Window* dialog_window = dialog->dialog_window();
+  EXPECT_TRUE(dialog_window->IsVisible());
+
+  dialog_window->Hide();
+  EXPECT_FALSE(dialog_window->IsVisible());
+
+  dialog->Focus();
+  EXPECT_TRUE(dialog_window->IsVisible());
+}
+
 }  // namespace ash

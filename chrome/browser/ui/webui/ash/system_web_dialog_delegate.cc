@@ -175,6 +175,9 @@ void SystemWebDialogDelegate::Focus() {
   // preventing interaction with any dialog. TODO(stevenjb): Investigate and
   // fix, https://crbug.com/914133.
   if (GetDialogModalType() == ui::MODAL_TYPE_NONE) {
+    if (!dialog_window()->IsVisible()) {
+      dialog_window()->Show();
+    }
     dialog_window()->Focus();
   }
 }

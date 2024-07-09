@@ -101,6 +101,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
  protected:
   FRIEND_TEST_ALL_PREFIXES(SystemWebDialogLoginTest, NonModalTest);
   FRIEND_TEST_ALL_PREFIXES(SystemWebDialogTest, StackAtTop);
+  FRIEND_TEST_ALL_PREFIXES(SystemWebDialogTest, ShowBeforeFocus);
 
   // Returns the dialog window (pointer to |aura::Window|). This will be a
   // |nullptr| if the dialog has not been created yet.
