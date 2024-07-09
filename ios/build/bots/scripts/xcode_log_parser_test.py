@@ -671,7 +671,9 @@ class XcodeLogParserTest(test_runner_test.TestCase):
     self.mock(test_runner, 'get_current_xcode_info', lambda: XCODE11_DICT)
 
   @mock.patch('subprocess.check_output', autospec=True)
-  def testXcresulttoolGetRoot(self, mock_process):
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testXcresulttoolGetRoot(self, mock_xcode_version, mock_process):
+    mock_xcode_version.return_value = False
     mock_process.return_value = b'%JSON%'
     xcode_log_parser.XcodeLogParser()._xcresulttool_get('xcresult_path')
     self.assertTrue(
@@ -681,7 +683,9 @@ class XcodeLogParserTest(test_runner_test.TestCase):
         mock_process.mock_calls[0][1][0])
 
   @mock.patch('subprocess.check_output', autospec=True)
-  def testXcresulttoolGetRef(self, mock_process):
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testXcresulttoolGetRef(self, mock_xcode_version, mock_process):
+    mock_xcode_version.return_value = False
     mock_process.side_effect = [REF_ID, b'JSON']
     xcode_log_parser.XcodeLogParser()._xcresulttool_get('xcresult_path',
                                                           'testsRef')
@@ -839,8 +843,10 @@ class XcodeLogParserTest(test_runner_test.TestCase):
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
-  def testCopyScreenshots(self, mock_xcresulttool_get, mock_path_exists,
-                          mock_process):
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testCopyScreenshots(self, mock_xcode_version, mock_xcresulttool_get,
+                          mock_path_exists, mock_process):
+    mock_xcode_version.return_value = False
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
     xcode_log_parser.XcodeLogParser().copy_artifacts(OUTPUT_PATH)
@@ -866,8 +872,10 @@ class XcodeLogParserTest(test_runner_test.TestCase):
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
-  def testExportDiagnosticData(self, mock_xcresulttool_get, mock_path_exists,
-                               mock_process, _):
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testExportDiagnosticData(self, mock_xcode_version, mock_xcresulttool_get,
+                               mock_path_exists, mock_process, _):
+    mock_xcode_version.return_value = False
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
     xcode_log_parser.XcodeLogParser.export_diagnostic_data(OUTPUT_PATH)
@@ -882,9 +890,12 @@ class XcodeLogParserTest(test_runner_test.TestCase):
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
-  def testStdoutCopiedInExportDiagnosticData(self, mock_xcresulttool_get,
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testStdoutCopiedInExportDiagnosticData(self, mock_xcode_version,
+                                             mock_xcresulttool_get,
                                              mock_path_exists, mock_process,
                                              mock_copy, _):
+    mock_xcode_version.return_value = False
     output_path_in_test = 'test_data/attempt_0'
     xcresult_path_in_test = 'test_data/attempt_0.xcresult'
     mock_path_exists.return_value = True

@@ -192,6 +192,8 @@ class XcodeLogParser(object):
     id_params = ['--id', ref_id] if ref_id else []
     xcresult_command = ['xcresulttool', 'get', '--format', 'json',
                         '--path', xcresult_path] + id_params
+    if xcode_util.using_xcode_16_or_higher():
+      xcresult_command.append('--legacy')
     return subprocess.check_output(xcresult_command).decode('utf-8').strip()
 
   @staticmethod
@@ -583,6 +585,8 @@ class XcodeLogParser(object):
         'xcresulttool', 'export', '--type', output_type, '--id', ref_id,
         '--path', xcresult, '--output-path', output_path
     ]
+    if xcode_util.using_xcode_16_or_higher():
+      export_command.append('--legacy')
     subprocess.check_output(export_command).decode('utf-8').strip()
 
   @staticmethod
