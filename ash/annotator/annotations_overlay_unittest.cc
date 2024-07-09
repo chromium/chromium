@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/annotator/test/mock_annotator_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -96,9 +97,8 @@ class AnnotationsOverlayTest : public AshTestBase {
 // Create annotations overlay on top of the root window and verify the overlay
 // is a child of menu container.
 TEST_F(AnnotationsOverlayTest, CreateOverlayOnRootWindow) {
-  auto bounds = gfx::Rect(Shell::GetPrimaryRootWindow()->bounds().size());
   auto overlay_controller = std::make_unique<AnnotationsOverlayController>(
-      Shell::GetPrimaryRootWindow(), bounds);
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   VerifyWindowStackingOnRoot(overlay_controller->GetOverlayNativeWindow(),
                              Shell::GetPrimaryRootWindow());
   VerifyToggleOverlay(overlay_controller.get());
@@ -107,9 +107,8 @@ TEST_F(AnnotationsOverlayTest, CreateOverlayOnRootWindow) {
 // Create annotations overlay on top of a new window and verify the overlay is a
 // child of the window.
 TEST_F(AnnotationsOverlayTest, CreateOverlayOnTestWindow) {
-  auto bounds = gfx::Rect(window()->bounds().size());
   auto overlay_controller =
-      std::make_unique<AnnotationsOverlayController>(window(), bounds);
+      std::make_unique<AnnotationsOverlayController>(window(), std::nullopt);
   VerifyWindowStackingOnTestWindow(overlay_controller->GetOverlayNativeWindow(),
                                    window());
   VerifyToggleOverlay(overlay_controller.get());
@@ -119,10 +118,46 @@ TEST_F(AnnotationsOverlayTest, CreateOverlayOnTestWindow) {
 // child of menu container with the bounds of the region.
 TEST_F(AnnotationsOverlayTest, CreateOverlayOnRegion) {
   auto overlay_controller = std::make_unique<AnnotationsOverlayController>(
-      Shell::GetPrimaryRootWindow(), kUserRegion);
+      Shell::GetPrimaryRootWindow(),
+      std::make_optional<gfx::Rect>(kUserRegion));
   VerifyWindowStackingOnRegion(overlay_controller->GetOverlayNativeWindow(),
                                Shell::GetPrimaryRootWindow(), kUserRegion);
   VerifyToggleOverlay(overlay_controller.get());
+}
+
+// Change window's bounds and verify overlay widget size has updated.
+TEST_F(AnnotationsOverlayTest, ChangeWindowBounds) {
+  auto overlay_controller =
+      std::make_unique<AnnotationsOverlayController>(window(), std::nullopt);
+  window()->SetBoundsInScreen(
+      gfx::Rect(900, 0, 600, 500),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          Shell::GetPrimaryRootWindow()));
+  ExpectSameWindowBounds(overlay_controller->GetOverlayNativeWindow(),
+                         window());
+}
+
+// Move window to a second display and verify the overlay widget size has
+// updated.
+TEST_F(AnnotationsOverlayTest, ChangeDisplay) {
+  auto overlay_controller =
+      std::make_unique<AnnotationsOverlayController>(window(), std::nullopt);
+  UpdateDisplay("800x700,801+0-800x700");
+  aura::Window::Windows roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+
+  const auto& displays = Shell::Get()->display_manager()->active_display_list();
+  ASSERT_EQ(2U, displays.size());
+  const gfx::Point point_in_second_display = gfx::Point(1000, 500);
+  ASSERT_TRUE(displays[1].bounds().Contains(point_in_second_display));
+
+  GetEventGenerator()->MoveMouseTo(point_in_second_display);
+  window()->SetBoundsInScreen(
+      gfx::Rect(900, 0, 600, 500),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          Shell::GetAllRootWindows()[1]));
+  ExpectSameWindowBounds(overlay_controller->GetOverlayNativeWindow(),
+                         window());
 }
 
 }  // namespace ash

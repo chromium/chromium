@@ -229,10 +229,6 @@ class ASH_EXPORT VideoRecordingWatcher
   // push the current size of the window being recorded to the service.
   void OnWindowSizeChangeThrottleTimerFiring();
 
-  // Returns the bounds that should be used for the annotations overlay widget
-  // relative to its parent |window_being_recorded_|.
-  gfx::Rect GetOverlayWidgetBounds() const;
-
   // Returns true if the mouse and touch highlights should be enabled during
   // video recording.
   bool PointerHighlightingEnabled() const;

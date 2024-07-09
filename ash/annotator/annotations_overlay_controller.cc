@@ -1,11 +1,13 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/annotator/annotations_overlay_controller.h"
 
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/public/cpp/annotator/annotations_overlay_view.h"
@@ -19,10 +21,10 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_properties.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace ash {
 
@@ -165,17 +167,20 @@ class OverlayTargeter : public aura::WindowTargeter {
 }  // namespace
 
 AnnotationsOverlayController::AnnotationsOverlayController(
-    aura::Window* window,  const gfx::Rect& initial_bounds_in_parent) {
-  DCHECK(window);
+    aura::Window* window,
+    std::optional<gfx::Rect> partial_region_bounds)
+    : window_(window), partial_region_bounds_(partial_region_bounds) {
+  DCHECK(window_);
+  const gfx::Rect initial_bounds_in_parent = GetOverlayWidgetBounds();
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "AnnotationsOverlayWidget";
   params.child = true;
-  params.parent = GetWidgetParent(window);
+  params.parent = GetWidgetParent(window_);
 
   // The overlay hosts transparent contents so actual contents of the window
-  // being recorded shows up underneath.
+  // shows up underneath.
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.bounds =
@@ -191,6 +196,14 @@ AnnotationsOverlayController::AnnotationsOverlayController(
   overlay_window->SetEventTargeter(
       std::make_unique<OverlayTargeter>(overlay_window));
   UpdateWidgetStacking();
+  display_observation_.Observe(display::Screen::GetScreen());
+  window_observation_.Observe(window_);
+}
+
+AnnotationsOverlayController::~AnnotationsOverlayController() {
+  window_observation_.Reset();
+  display_observation_.Reset();
+  window_ = nullptr;
 }
 
 void AnnotationsOverlayController::Toggle() {
@@ -201,14 +214,26 @@ void AnnotationsOverlayController::Toggle() {
     Stop();
 }
 
-void AnnotationsOverlayController::SetBounds(
-  const gfx::Rect& bounds_in_parent) {
-  overlay_widget_->SetBounds(MaybeAdjustOverlayBounds(
-      bounds_in_parent, overlay_widget_->GetNativeWindow()));
-}
-
 aura::Window* AnnotationsOverlayController::GetOverlayNativeWindow() {
   return overlay_widget_->GetNativeWindow();
+}
+
+void AnnotationsOverlayController::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  SetBounds(GetOverlayWidgetBounds());
+}
+
+void AnnotationsOverlayController::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t metrics) {
+  // TODO(b/342104047): Check if DISPLAY_METRIC_BOUNDS and
+  // DISPLAY_METRIC_ROTATION need to be considered here as well.
+  if (metrics & DISPLAY_METRIC_WORK_AREA) {
+    SetBounds(GetOverlayWidgetBounds());
+  }
 }
 
 void AnnotationsOverlayController::Start() {
@@ -237,6 +262,25 @@ void AnnotationsOverlayController::UpdateWidgetStacking() {
     parent->StackChildAtBottom(overlay_window);
   else
     parent->StackChildAtTop(overlay_window);
+}
+
+void AnnotationsOverlayController::SetBounds(
+    const gfx::Rect& bounds_in_parent) {
+  overlay_widget_->SetBounds(MaybeAdjustOverlayBounds(
+      bounds_in_parent, overlay_widget_->GetNativeWindow()));
+}
+
+gfx::Rect AnnotationsOverlayController::GetOverlayWidgetBounds() const {
+  gfx::Rect bounds =
+      partial_region_bounds_.has_value()
+          ? capture_mode_util::GetEffectivePartialRegionBounds(
+                partial_region_bounds_.value(), window_->GetRootWindow())
+          : gfx::Rect(window_->bounds().size());
+  bounds.Subtract(
+      Shell::Get()
+          ->docked_magnifier_controller()
+          ->GetTotalMagnifierBoundsForRoot(window_->GetRootWindow()));
+  return bounds;
 }
 
 }  // namespace ash

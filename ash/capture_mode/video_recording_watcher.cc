@@ -245,9 +245,13 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   const bool should_create_annotations_overlay =
       active_behavior_->ShouldCreateAnnotationsOverlayController();
   if (should_create_annotations_overlay) {
+    std::optional<gfx::Rect> region_bounds =
+        recording_source_ == CaptureModeSource::kRegion
+            ? std::optional<gfx::Rect>(partial_region_bounds_)
+            : std::nullopt;
     annotations_overlay_controller_ =
-        std::make_unique<AnnotationsOverlayController>(
-            window_being_recorded_, GetOverlayWidgetBounds());
+        std::make_unique<AnnotationsOverlayController>(window_being_recorded_,
+                                                       region_bounds);
   }
 
   controller_->camera_controller()->OnRecordingStarted(active_behavior_);
@@ -336,9 +340,8 @@ gfx::Rect VideoRecordingWatcher::GetEffectivePartialRegionBounds() const {
   // so that screen rotation doesn't result in the apparent change of the region
   // position. Discussion with PM/UX determined that this is a low priority for
   // now.
-  gfx::Rect result = partial_region_bounds_;
-  result.AdjustToFit(current_root_->bounds());
-  return result;
+  return capture_mode_util::GetEffectivePartialRegionBounds(
+      partial_region_bounds_, current_root_);
 }
 
 const views::Widget* VideoRecordingWatcher::GetKeyComboWidgetIfVisible() const {
@@ -370,10 +373,6 @@ void VideoRecordingWatcher::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  if (annotations_overlay_controller_) {
-    annotations_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
-  }
-
   if (recording_source_ != CaptureModeSource::kWindow) {
     return;
   }
@@ -511,12 +510,6 @@ void VideoRecordingWatcher::OnDisplayTabletStateChanged(
 void VideoRecordingWatcher::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
-  // A change in the work area, could mean that the docked magnifier state has
-  // changed, therefore we must update the overlay widget's bounds if any.
-  if (annotations_overlay_controller_ && (metrics & DISPLAY_METRIC_WORK_AREA)) {
-    annotations_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
-  }
-
   if (!(metrics &
         (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
          DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
@@ -892,17 +885,6 @@ void VideoRecordingWatcher::OnWindowSizeChangeThrottleTimerFiring() {
 
   controller_->OnRecordedWindowSizeChanged(
       window_being_recorded_->bounds().size());
-}
-
-gfx::Rect VideoRecordingWatcher::GetOverlayWidgetBounds() const {
-  gfx::Rect bounds = recording_source_ == CaptureModeSource::kRegion
-                         ? GetEffectivePartialRegionBounds()
-                         : gfx::Rect(window_being_recorded_->bounds().size());
-  bounds.Subtract(Shell::Get()
-                      ->docked_magnifier_controller()
-                      ->GetTotalMagnifierBoundsForRoot(
-                          window_being_recorded_->GetRootWindow()));
-  return bounds;
 }
 
 bool VideoRecordingWatcher::PointerHighlightingEnabled() const {

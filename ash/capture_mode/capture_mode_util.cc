@@ -596,4 +596,14 @@ gfx::Rect GetCaptureWindowConfineBounds(aura::Window* window) {
   return result;
 }
 
+gfx::Rect GetEffectivePartialRegionBounds(
+    const gfx::Rect& partial_region_bounds,
+    aura::Window* root_window) {
+  CHECK(root_window);
+
+  gfx::Rect result = partial_region_bounds;
+  result.AdjustToFit(root_window->bounds());
+  return result;
+}
+
 }  // namespace ash::capture_mode_util
