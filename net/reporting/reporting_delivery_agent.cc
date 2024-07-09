@@ -30,6 +30,7 @@
 #include "net/reporting/reporting_delegate.h"
 #include "net/reporting/reporting_endpoint_manager.h"
 #include "net/reporting/reporting_report.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_uploader.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -96,12 +97,14 @@ class Delivery {
            const NetworkAnonymizationKey& network_anonymization_key,
            const url::Origin& origin,
            const GURL& endpoint_url,
-           const std::optional<base::UnguessableToken> reporting_source)
+           const std::optional<base::UnguessableToken> reporting_source,
+           ReportingTargetType target_type)
         : isolation_info(isolation_info),
           network_anonymization_key(network_anonymization_key),
           origin(origin),
           endpoint_url(endpoint_url),
-          reporting_source(reporting_source) {
+          reporting_source(reporting_source),
+          target_type(target_type) {
       DCHECK(network_anonymization_key.IsEmpty() ||
              network_anonymization_key ==
                  isolation_info.network_anonymization_key());
@@ -114,9 +117,10 @@ class Delivery {
       // should not need this (but it doesn't hurt). We can remove that as a
       // comparison key when V0 reporting endpoints are removed.
       return std::tie(network_anonymization_key, origin, endpoint_url,
-                      reporting_source) <
+                      reporting_source, target_type) <
              std::tie(other.network_anonymization_key, other.origin,
-                      other.endpoint_url, other.reporting_source);
+                      other.endpoint_url, other.reporting_source,
+                      other.target_type);
     }
 
     IsolationInfo isolation_info;
@@ -124,6 +128,7 @@ class Delivery {
     url::Origin origin;
     GURL endpoint_url;
     std::optional<base::UnguessableToken> reporting_source;
+    ReportingTargetType target_type;
   };
 
   explicit Delivery(const Target& target) : target_(target) {}
@@ -150,6 +155,7 @@ class Delivery {
       // configuration's origin.
       DCHECK(IsSubdomainOf((*it)->url.host_piece() /* subdomain */,
                            endpoint.group_key.origin.host() /* superdomain */));
+      DCHECK_EQ((*it)->target_type, target_.target_type);
     }
 
     reports_per_group_[endpoint.group_key] +=
@@ -323,10 +329,10 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
           cache()->GetIsolationInfoForEndpoint(endpoint);
 
       // Add the reports to the appropriate delivery.
-      Delivery::Target target(isolation_info,
-                              report_group_key.network_anonymization_key,
-                              report_group_key.origin, endpoint.info.url,
-                              endpoint.group_key.reporting_source);
+      Delivery::Target target(
+          isolation_info, report_group_key.network_anonymization_key,
+          report_group_key.origin, endpoint.info.url,
+          endpoint.group_key.reporting_source, ReportingTargetType::kDeveloper);
       auto delivery_it = deliveries.find(target);
       if (delivery_it == deliveries.end()) {
         bool inserted;
