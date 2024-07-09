@@ -40,6 +40,15 @@ OpenXRInputHelper::OpenXRInputHelper(XrSession session,
 
 OpenXRInputHelper::~OpenXRInputHelper() = default;
 
+bool OpenXRInputHelper::IsHandTrackingEnabled() const {
+  // As long as we have at least one controller that can supply hand tracking
+  // data, then hand tracking is enabled.
+  return base::ranges::any_of(controller_states_,
+                              [](const OpenXrControllerState& state) {
+                                return state.controller.IsHandTrackingEnabled();
+                              });
+}
+
 XrResult OpenXRInputHelper::Initialize(
     XrInstance instance,
     XrSystemId system,

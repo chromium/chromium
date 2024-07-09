@@ -320,8 +320,7 @@ XrResult OpenXrController::Update(XrSpace base_space,
     RETURN_IF_XR_FAILED(UpdateInteractionProfile());
   }
 
-  if (hand_tracker_ &&
-      (hand_joints_enabled_ || IsCurrentProfileFromHandTracker())) {
+  if (IsHandTrackingEnabled() || IsCurrentProfileFromHandTracker()) {
     RETURN_IF_XR_FAILED(
         hand_tracker_->Update(base_space, predicted_display_time));
   }
@@ -535,8 +534,12 @@ XrResult OpenXrController::UpdateInteractionProfile() {
   return XR_SUCCESS;
 }
 
+bool OpenXrController::IsHandTrackingEnabled() const {
+  return hand_joints_enabled_ && hand_tracker_;
+}
+
 mojom::XRHandTrackingDataPtr OpenXrController::GetHandTrackingData() {
-  if (!hand_joints_enabled_ || !hand_tracker_) {
+  if (!IsHandTrackingEnabled()) {
     return nullptr;
   }
 

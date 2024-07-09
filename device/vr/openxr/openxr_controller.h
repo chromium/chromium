@@ -61,6 +61,8 @@ class OpenXrController {
       XrSpace local_space,
       bool* emulated_position) const;
 
+  // Returns true if this controller can supply HandTracking data.
+  bool IsHandTrackingEnabled() const;
   mojom::XRHandTrackingDataPtr GetHandTrackingData();
 
   // Specifically update just the interaction profile. Will not update any other
@@ -72,7 +74,6 @@ class OpenXrController {
  private:
   XrResult InitializeControllerActions();
   XrResult InitializeControllerSpaces();
-  XrResult InitializeHandTracking();
 
   XrResult SuggestBindings(
       std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings) const;

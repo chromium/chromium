@@ -538,6 +538,16 @@ XrResult OpenXrApiWrapper::InitSession(
         unbounded_space_provider_->CreateSpace(session_, &unbounded_space_));
   }
 
+  if (IsFeatureEnabled(mojom::XRSessionFeature::HAND_INPUT)) {
+    // If the input helper cannot support HandTracking and we cannot disable it,
+    // then we have to reject the session
+    if (!input_helper_->IsHandTrackingEnabled() &&
+        !DisableFeature(mojom::XRSessionFeature::HAND_INPUT)) {
+      DVLOG(1) << __func__ << " Hand tracking initialization failed";
+      return XR_ERROR_RUNTIME_FAILURE;
+    }
+  }
+
   if (IsFeatureEnabled(mojom::XRSessionFeature::DEPTH) &&
       session_options_->depth_options) {
     depth_sensor_ = extension_helper.CreateDepthSensor(
