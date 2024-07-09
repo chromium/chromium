@@ -135,6 +135,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerEmojiBarView* emoji_bar_view_for_testing() { return emoji_bar_view_; }
 
  private:
+  // Sets the search text field's query text to the query, focuses it, then
+  // starts a search.
+  void StartSearchWithNewQuery(std::u16string query);
+
   // Starts a search with the current query, with search results being returned
   // to `PublishSearchResults` and `PublishEmojiResults`.
   // If the query is empty, this calls `StopSearch` instead.

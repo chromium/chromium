@@ -287,8 +287,7 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
   } else if (const PickerSearchResult::SearchRequestData* search_request_data =
                  std::get_if<PickerSearchResult::SearchRequestData>(
                      &result.data())) {
-    search_field_view_->SetQueryText(search_request_data->text);
-    StartSearch();
+    StartSearchWithNewQuery(search_request_data->text);
   } else if (const PickerSearchResult::EditorData* editor_data =
                  std::get_if<PickerSearchResult::EditorData>(&result.data())) {
     delegate_->ShowEditor(editor_data->preset_query_id,
@@ -405,6 +404,12 @@ gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
   return GetPickerViewBounds(anchor_bounds, layout_type, size(),
                              search_field_view_->bounds().CenterPoint().y() +
                                  main_container_view_->bounds().y());
+}
+
+void PickerView::StartSearchWithNewQuery(std::u16string query) {
+  search_field_view_->SetQueryText(std::move(query));
+  search_field_view_->RequestFocus();
+  StartSearch();
 }
 
 void PickerView::StartSearch() {
@@ -541,24 +546,20 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
 
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
-  // This does not call `StartSearch`.
-  search_field_view_->SetQueryText(std::u16string(query));
   search_field_view_->SetBackButtonVisible(true);
-  search_field_view_->RequestFocus();
+  StartSearchWithNewQuery(std::u16string(query));
 
   if (query.empty()) {
     // Getting suggested results for a category can be slow, so show a loading
     // animation.
     category_results_view_->ShowLoadingAnimation();
-    StopSearch();
     CHECK_EQ(main_container_view_->active_page(), category_results_view_)
-        << "StopSearch did not set active page to category results";
+        << "StartSearchWithNewQuery did not set active page to category "
+           "results";
     delegate_->GetResultsForCategory(
         category,
         base::BindRepeating(&PickerView::PublishCategoryResults,
                             weak_ptr_factory_.GetWeakPtr(), category));
-  } else {
-    StartSearch();
   }
 }
 
@@ -674,13 +675,11 @@ void PickerView::SetPseudoFocusedView(views::View* view) {
 
 void PickerView::OnSearchBackButtonPressed() {
   search_field_view_->SetPlaceholderText(GetSearchFieldPlaceholderText());
-  // This does not call `StartSearch`.
-  search_field_view_->SetQueryText(u"");
   search_field_view_->SetBackButtonVisible(false);
   selected_category_ = std::nullopt;
-  StopSearch();
+  StartSearchWithNewQuery(u"");
   CHECK_EQ(main_container_view_->active_page(), zero_state_view_)
-      << "StopSearch did not set active page to zero state view";
+      << "StartSearchWithNewQuery did not set active page to zero state view";
 }
 
 void PickerView::ResetEmojiBarToZeroState() {
