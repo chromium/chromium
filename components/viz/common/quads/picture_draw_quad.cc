@@ -30,7 +30,8 @@ void PictureDrawQuad::SetNew(
     const gfx::Rect& content,
     float scale,
     ImageAnimationMap animation_map,
-    scoped_refptr<const cc::DisplayItemList> display_items) {
+    scoped_refptr<const cc::DisplayItemList> display_items,
+    cc::ScrollOffsetMap raster_inducing_scrolls) {
   ContentDrawQuadBase::SetNew(shared_quad_state,
                               DrawQuad::Material::kPictureContent, rect,
                               visible_rect, needs_blending, tex_coord_rect,
@@ -39,6 +40,7 @@ void PictureDrawQuad::SetNew(
   contents_scale = scale;
   image_animation_map = std::move(animation_map);
   display_item_list = std::move(display_items);
+  raster_inducing_scroll_offsets = std::move(raster_inducing_scrolls);
 }
 
 const PictureDrawQuad* PictureDrawQuad::MaterialCast(const DrawQuad* quad) {

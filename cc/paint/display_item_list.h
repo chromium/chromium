@@ -48,7 +48,10 @@ class CC_PAINT_EXPORT DisplayItemList
   DisplayItemList(const DisplayItemList&) = delete;
   DisplayItemList& operator=(const DisplayItemList&) = delete;
 
-  void Raster(SkCanvas* canvas, ImageProvider* image_provider = nullptr) const;
+  void Raster(
+      SkCanvas* canvas,
+      ImageProvider* image_provider = nullptr,
+      const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr) const;
   void Raster(SkCanvas* canvas, const PlaybackParams& params) const;
   std::vector<size_t> OffsetsOfOpsToRaster(SkCanvas* canvas) const;
 

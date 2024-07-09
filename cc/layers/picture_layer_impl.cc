@@ -303,11 +303,11 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     }
 
     auto* quad = render_pass->CreateAndAppendDrawQuad<viz::PictureDrawQuad>();
-    quad->SetNew(shared_quad_state, geometry_rect, visible_geometry_rect,
-                 needs_blending, texture_rect, texture_size, nearest_neighbor_,
-                 quad_content_rect, max_contents_scale,
-                 std::move(image_animation_map),
-                 raster_source_->GetDisplayItemList());
+    quad->SetNew(
+        shared_quad_state, geometry_rect, visible_geometry_rect, needs_blending,
+        texture_rect, texture_size, nearest_neighbor_, quad_content_rect,
+        max_contents_scale, std::move(image_animation_map),
+        raster_source_->GetDisplayItemList(), GetRasterInducingScrollOffsets());
     ValidateQuadResources(quad);
     return;
   }

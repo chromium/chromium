@@ -81,9 +81,13 @@ DisplayItemList::DisplayItemList() {
 
 DisplayItemList::~DisplayItemList() = default;
 
-void DisplayItemList::Raster(SkCanvas* canvas,
-                             ImageProvider* image_provider) const {
-  Raster(canvas, PlaybackParams(image_provider));
+void DisplayItemList::Raster(
+    SkCanvas* canvas,
+    ImageProvider* image_provider,
+    const ScrollOffsetMap* raster_inducing_scroll_offsets) const {
+  PlaybackParams params(image_provider);
+  params.raster_inducing_scroll_offsets = raster_inducing_scroll_offsets;
+  Raster(canvas, params);
 }
 
 void DisplayItemList::Raster(SkCanvas* canvas,

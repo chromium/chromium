@@ -461,11 +461,13 @@ TEST(DrawQuadTest, CopyPictureDrawQuad) {
   auto display_item_list =
       cc::FakeRasterSource::CreateEmpty(gfx::Size(100, 100))
           ->GetDisplayItemList();
+  cc::ScrollOffsetMap raster_inducing_scroll_offsets = {
+      {cc::ElementId(123), gfx::PointF(456.f, 789.f)}};
   CREATE_SHARED_STATE();
 
   CREATE_QUAD_NEW(PictureDrawQuad, visible_rect, blending, tex_coord_rect,
                   texture_size, nearest_neighbor, content_rect, contents_scale,
-                  {}, display_item_list);
+                  {}, display_item_list, raster_inducing_scroll_offsets);
   EXPECT_EQ(DrawQuad::Material::kPictureContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(blending, copy_quad->needs_blending);
@@ -475,6 +477,8 @@ TEST(DrawQuadTest, CopyPictureDrawQuad) {
   EXPECT_EQ(content_rect, copy_quad->content_rect);
   EXPECT_EQ(contents_scale, copy_quad->contents_scale);
   EXPECT_EQ(display_item_list, copy_quad->display_item_list);
+  EXPECT_EQ(raster_inducing_scroll_offsets,
+            copy_quad->raster_inducing_scroll_offsets);
 }
 
 class DrawQuadIteratorTest : public testing::Test {
