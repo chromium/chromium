@@ -5,7 +5,7 @@
 import logging
 import os
 import sys
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 import unittest
 
 import gpu_path_util
@@ -21,13 +21,6 @@ from telemetry.util import rgba_color
 
 _MAPS_PERF_TEST_PATH = os.path.join(gpu_path_util.TOOLS_PERF_DIR, 'page_sets',
                                     'maps_perf_test')
-
-_OFF_WHITE_TOP_ROW_DEVICES = {
-    # Samsung A13.
-    'SM-A135M',
-    # Samsung A23.
-    'SM-A235M',
-}
 
 
 class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
@@ -96,26 +89,9 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     dpr = self.tab.EvaluateJavaScript('window.devicePixelRatio')
     logging.info('devicePixelRatio is %s', dpr)
 
-    # The bottom corners of Mac screenshots have black triangles due to the
-    # rounded corners of Mac windows. So, crop the bottom few rows off now to
-    # get rid of those. The triangles appear to be 5 pixels wide and tall
-    # regardless of DPI, so 10 pixels should be sufficient. However, when
-    # running under Python 3, 10 isn't quite enough for some reason, so use
-    # 20 instead.
-    if self.browser.platform.GetOSName() == 'mac':
-      img_height = image_util.Height(screenshot)
-      img_width = image_util.Width(screenshot)
-      screenshot = image_util.Crop(screenshot, 0, 0, img_width, img_height - 20)
-    # For some reason, the top row of the screenshot is very slightly off-white
-    # instead of pure white on some devices, which messes with the crop
-    # boundaries. So, chop off the top row now.
-    if (self.tab.browser.platform.GetDeviceTypeName()
-        in _OFF_WHITE_TOP_ROW_DEVICES):
-      screenshot = image_util.Crop(screenshot, 0, 1,
-                                   image_util.Width(screenshot),
-                                   image_util.Height(screenshot) - 1)
-    x1, y1, x2, y2 = _GetCropBoundaries(screenshot)
-    screenshot = image_util.Crop(screenshot, x1, y1, x2 - x1, y2 - y1)
+    screenshot = test_case.crop_action.CropScreenshot(
+        screenshot, dpr, self.browser.platform.GetDeviceTypeName(),
+        self.browser.platform.GetOSName())
 
     self._ValidateScreenshotSamplesWithSkiaGold(self.tab, test_case, screenshot,
                                                 dpr)
@@ -229,72 +205,6 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
                    if color_expectation.tolerance is None else
                    color_expectation.tolerance)
       _CompareScreenshotWithExpectation(color_expectation)
-
-
-def _GetCropBoundaries(screenshot: ct.Screenshot) -> Tuple[int, int, int, int]:
-  """Returns the boundaries to crop the screenshot to.
-
-  Specifically, we look for the boundaries where the white background
-  transitions into the (non-white) content we care about.
-
-  Args:
-    screenshot: A screenshot returned by Tab.Screenshot() (numpy ndarray?)
-
-  Returns:
-    A 4-tuple (x1, y1, x2, y2) denoting the top left and bottom right
-    coordinates to crop to.
-  """
-  img_height = image_util.Height(screenshot)
-  img_width = image_util.Width(screenshot)
-
-  # We include start/end as optional arguments as an optimization for finding
-  # the lower right corner. If the original image is large and the non-white
-  # portions are small and in the upper left (which is the most common case),
-  # checking every row/column for white can take a while.
-  def RowIsWhite(row, start=None, end=None):
-    start = start or 0
-    end = end or img_width
-    for col in range(start, end):
-      pixel = image_util.GetPixelColor(screenshot, col, row)
-      if pixel.r != 255 or pixel.g != 255 or pixel.b != 255:
-        return False
-    return True
-
-  def ColumnIsWhite(column, start=None, end=None):
-    start = start or 0
-    end = end or img_height
-    for row in range(start, end):
-      pixel = image_util.GetPixelColor(screenshot, column, row)
-      if pixel.r != 255 or pixel.g != 255 or pixel.b != 255:
-        return False
-    return True
-
-  x1 = y1 = 0
-  x2 = img_width
-  y2 = img_height
-  for column in range(img_width):
-    if not ColumnIsWhite(column):
-      x1 = column
-      break
-
-  for row in range(img_height):
-    if not RowIsWhite(row, start=x1):
-      y1 = row
-      break
-
-  # We work from the right/bottom of the image here in case there are multiple
-  # things that need to be tested separated by whitespace like is the case for
-  # many video-related tests.
-  for column in range(img_width - 1, x1, -1):
-    if not ColumnIsWhite(column, start=y1):
-      x2 = column
-      break
-
-  for row in range(img_height - 1, y1, -1):
-    if not RowIsWhite(row, start=x1, end=x2):
-      y2 = row
-      break
-  return x1, y1, x2, y2
 
 
 def load_tests(loader: unittest.TestLoader, tests: Any,

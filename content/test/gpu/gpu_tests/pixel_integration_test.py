@@ -189,19 +189,9 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       self.fail('Could not capture screenshot')
 
     dpr = tab.EvaluateJavaScript('window.devicePixelRatio')
-    if test_case.test_rect:
-      start_x = int(test_case.test_rect[0] * dpr)
-      start_y = int(test_case.test_rect[1] * dpr)
-      # When actually clamping the value, it's possible we'll catch the
-      # scrollbar, so account for its width in the clamp.
-      end_x = min(int(test_case.test_rect[2] * dpr),
-                  image_util.Width(screen_shot) - SCROLLBAR_WIDTH)
-      end_y = min(int(test_case.test_rect[3] * dpr),
-                  image_util.Height(screen_shot))
-      crop_width = end_x - start_x
-      crop_height = end_y - start_y
-      screen_shot = image_util.Crop(screen_shot, start_x, start_y, crop_width,
-                                    crop_height)
+    screen_shot = test_case.crop_action.CropScreenshot(
+        screen_shot, dpr, self.browser.platform.GetDeviceTypeName(),
+        self.browser.platform.GetOSName())
 
     image_name = self._UrlToImageName(test_case.name)
     self._UploadTestResultToSkiaGold(image_name, screen_shot, test_case)

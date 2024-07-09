@@ -6,6 +6,7 @@ import collections
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from gpu_tests import common_browser_args as cba
+from gpu_tests import crop_actions as ca
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 
 from telemetry.internal.browser import browser as browser_module
@@ -52,6 +53,7 @@ class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
       name: str,
       base_tolerance: int,
       expected_colors: List[ExpectedColorExpectation],
+      crop_action: ca.BaseCropAction,
       *args,
       extra_browser_args: Optional[List[str]] = None,
       should_capture_full_screenshot_func: Optional[Callable[
@@ -94,6 +96,7 @@ class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
     self.url = url
     self.base_tolerance = base_tolerance
     self.expected_colors = expected_colors
+    self.crop_action = crop_action
     self.extra_browser_args = extra_browser_args
     self.ShouldCaptureFullScreenshot = should_capture_full_screenshot_func
     self.scale_factor_overrides = scale_factor_overrides or {}
@@ -163,6 +166,7 @@ def MapsTestCases() -> List[ExpectedColorTestCase]:
               TestActionStartMapsTest(),
               sghitb.TestActionWaitForFinish(sghitb.DEFAULT_GLOBAL_TIMEOUT),
           ],
+          crop_action=ca.NonWhiteContentCropAction(),
           extra_browser_args=[
               cba.ENSURE_FORCED_COLOR_PROFILE,
               cba.FORCE_BROWSER_CRASH_ON_GPU_CRASH,
@@ -246,14 +250,23 @@ def MediaRecorderTestCases() -> List[ExpectedColorTestCase]:
   return [
       ExpectedColorTestCase(
           'content/test/data/gpu/pixel_media_recorder_from_canvas_2d.html',
-          'MediaRecorderFrom2DCanvas', 60, canvas_expected_colors),
+          'MediaRecorderFrom2DCanvas',
+          60,
+          canvas_expected_colors,
+          crop_action=ca.NonWhiteContentCropAction(),
+      ),
       ExpectedColorTestCase(
           'content/test/data/gpu/pixel_media_recorder_from_video_element.html',
-          'MediaRecorderFromVideoElement', 60, video_expected_colors),
+          'MediaRecorderFromVideoElement',
+          60,
+          video_expected_colors,
+          crop_action=ca.NonWhiteContentCropAction(),
+      ),
       ExpectedColorTestCase(
           'content/test/data/gpu/pixel_media_recorder_from_video_element.html',
           'MediaRecorderFromVideoElementWithOoprCanvasDisabled',
           60,
           video_expected_colors,
+          crop_action=ca.NonWhiteContentCropAction(),
           extra_browser_args=['--disable-features=CanvasOopRasterization']),
   ]

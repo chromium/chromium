@@ -18,6 +18,7 @@ from typing import Callable, Dict, List, Optional
 from enum import Enum
 
 from gpu_tests import common_browser_args as cba
+from gpu_tests import crop_actions as ca
 from gpu_tests import overlay_support
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 from gpu_tests import skia_gold_matching_algorithms as algo
@@ -67,6 +68,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       name: str,
       test_rect: List[int],
       *args,
+      crop_action: Optional[ca.BaseCropAction] = None,
       browser_args: Optional[BrowserArgType] = None,
       restart_browser_after_test: bool = False,
       other_args: Optional[dict] = None,
@@ -82,7 +84,13 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
     is_video_test = 'video' in name.lower()
     super().__init__(name, refresh_after_finish=is_video_test, *args, **kwargs)
     self.url = url
-    self.test_rect = test_rect
+    # TODO(crbug.com/349510532): Remove this automatic conversion once all
+    # tests explicitly provide a crop action.
+    if crop_action is None:
+      self.crop_action = ca.FixedRectCropAction(test_rect[0], test_rect[1],
+                                                test_rect[2], test_rect[3])
+    else:
+      self.crop_action = crop_action
     self.browser_args = browser_args
     # Whether the browser should be forcibly restarted after the test
     # runs. The browser is always restarted after running tests with
@@ -1570,6 +1578,7 @@ class PixelTestPages():
             browser_args=['--force-color-profile=hdr10']),
     ]
 
+  # TODO(crbug.com/337737554): Move this to trace_test_pages.py
   # Check that the root swap chain claims to be opaque. A root swap chain with a
   # premultiplied alpha mode has a large negative battery impact (even if all
   # the pixels are opaque).
@@ -1579,6 +1588,7 @@ class PixelTestPages():
         PixelTestPage('wait_for_compositing.html',
                       base_name + '_IsOpaque',
                       test_rect=[0, 0, 0, 0],
+                      crop_action=ca.NoOpCropAction(),
                       other_args={
                           'has_alpha': False,
                       }),
@@ -1588,9 +1598,12 @@ class PixelTestPages():
   @staticmethod
   def CastStreamingReceiverPages(base_name) -> List[PixelTestPage]:
     return [
-        PixelTestPage('receiver.html',
-                      base_name + '_VP8_1Frame',
-                      test_rect=[0, 0, 0, 0]),
+        PixelTestPage(
+            'receiver.html',
+            base_name + '_VP8_1Frame',
+            test_rect=[0, 0, 0, 0],
+            crop_action=ca.NoOpCropAction(),
+        ),
     ]
 
   # Check what MediaFoundationD3D11VideoCapture works
