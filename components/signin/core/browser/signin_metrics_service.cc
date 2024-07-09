@@ -19,6 +19,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -141,7 +142,11 @@ void SigninMetricsService::OnPrimaryAccountChanged(
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       return;
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      std::optional<signin_metrics::AccessPoint> access_point =
+          event_details.GetAccessPoint();
+      CHECK(access_point.has_value());
+
       if (pref_service_->HasPrefPath(kWebSigninAccountStartTimesPref)) {
         const base::Value::Dict& web_signin_account_start_time_dict =
             pref_service_->GetDict(kWebSigninAccountStartTimesPref);
@@ -156,10 +161,6 @@ void SigninMetricsService::OnPrimaryAccountChanged(
             start_time_value ? base::ValueToTime(start_time_value)
                              : std::nullopt;
         if (start_time.has_value()) {
-          std::optional<signin_metrics::AccessPoint> access_point =
-              event_details.GetAccessPoint();
-          CHECK(access_point.has_value());
-
           MaybeRecordWebSigninToChromeSignin(start_time.value(),
                                              access_point.value());
 
@@ -171,7 +172,22 @@ void SigninMetricsService::OnPrimaryAccountChanged(
         // event.
         pref_service_->ClearPref(kWebSigninAccountStartTimesPref);
       }
+
+      ChromeSigninUserChoice signin_choice =
+          SigninPrefs(pref_service_.get())
+              .GetChromeSigninInterceptionUserChoice(
+                  event_details.GetCurrentState().primary_account.gaia);
+      base::UmaHistogramEnumeration("Signin.Settings.ChromeSignin.OnSignin",
+                                    signin_choice);
+      if (signin_choice == ChromeSigninUserChoice::kDoNotSignin) {
+        base::UmaHistogramEnumeration(
+            "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin",
+            access_point.value(),
+            signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      }
+
       return;
+    }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       if (pref_service_->HasPrefPath(kSigninPendingStartTimePref)) {
         RecordSigninPendingResolution(

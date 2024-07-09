@@ -217,6 +217,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Modified to never sign in"/>
 </enum>
 
+<!-- LINT.IfChange(ChromeSigninUserChoice) -->
+
+<enum name="ChromeSigninUserChoice">
+  <int value="0" label="No choice selected"/>
+  <int value="1" label="Always ask"/>
+  <int value="2" label="Automatically Sign in"/>
+  <int value="3" label="Do not automatically Sign in"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/public/base/signin_prefs.h:ChromeSigninUserChoice) -->
+
 <!-- LINT.IfChange(ChromeSignoutConfirmationChoice) -->
 
 <enum name="ChromeSignoutConfirmationChoice">

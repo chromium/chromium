@@ -13,6 +13,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -46,6 +47,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
       : identity_test_environment_(/*test_url_loader_factory=*/nullptr,
                                    &pref_service_) {
     SigninMetricsService::RegisterProfilePrefs(pref_service_.registry());
+    SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void CreateSigninMetricsService() {
@@ -55,15 +57,17 @@ class SigninMetricsServiceTest : public ::testing::Test {
 
   void DestroySigninMetricsService() { signin_metrics_service_ = nullptr; }
 
-  void Signin(
+  AccountInfo Signin(
       const std::string& email,
       signin_metrics::AccessPoint access_point = kDefaultTestAccessPoint) {
-    identity_test_environment_.MakeAccountAvailable(
+    return identity_test_environment_.MakeAccountAvailable(
         signin::AccountAvailabilityOptionsBuilder()
             .AsPrimary(signin::ConsentLevel::kSignin)
             .WithAccessPoint(access_point)
             .Build(email));
   }
+
+  void Signout() { identity_test_environment_.ClearPrimaryAccount(); }
 
   void EnableSync(const std::string& email) {
     identity_test_environment_.MakePrimaryAccountAvailable(
@@ -119,7 +123,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
         return;
       }
       case Resolution::kSignout:
-        identity_test_environment_.ClearPrimaryAccount();
+        Signout();
         return;
     }
   }
@@ -478,3 +482,48 @@ TEST_F(SigninMetricsServiceTest, ExplicitSigninMigration) {
         /*expected_bucket_count=*/1);
   }
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
+  AccountInfo account = Signin("test@gmail.com", access_point);
+
+  // Default user choice is no choice.
+  histogram_tester.ExpectUniqueSample("Signin.Settings.ChromeSignin.OnSignin",
+                                      ChromeSigninUserChoice::kNoChoice, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", 0);
+
+  Signout();
+
+  // Repeat with an explicit user choice.
+  ChromeSigninUserChoice user_choice1 = ChromeSigninUserChoice::kAlwaysAsk;
+  SigninPrefs signin_prefs(pref_service());
+  signin_prefs.SetChromeSigninInterceptionUserChoice(account.gaia,
+                                                     user_choice1);
+  Signin("test@gmail.com", access_point);
+
+  histogram_tester.ExpectBucketCount("Signin.Settings.ChromeSignin.OnSignin",
+                                     user_choice1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", 0);
+
+  Signout();
+
+  // Repeat with choice `kDoNotSignin`.
+  ChromeSigninUserChoice user_choice2 = ChromeSigninUserChoice::kDoNotSignin;
+  signin_prefs.SetChromeSigninInterceptionUserChoice(account.gaia,
+                                                     user_choice2);
+  Signin("test@gmail.com", access_point);
+
+  histogram_tester.ExpectBucketCount("Signin.Settings.ChromeSignin.OnSignin",
+                                     user_choice2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", access_point,
+      1);
+}
+#endif

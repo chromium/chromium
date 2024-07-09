@@ -19,8 +19,6 @@ class PrefRegistrySimple;
 class PrefChangeRegistrar;
 
 // Value of the user choice for the Chrome Signin bubble effect.
-// Theses values are persisted to disk through prefs, they should not be
-// renumbered or reused.
 // - `kNoChoice` is the default value, it is applied when the user made no
 // explicit choice yet (on the bubble or the settings).
 // - The user can made a choice through the Chrome Signin bubble by accepting or
@@ -29,12 +27,18 @@ class PrefChangeRegistrar;
 // long as the user is in `kNoChoice` mode.
 // - There is no way to go back to `kNoChoice` after a choice has been taken or
 // applied.
+// Theses values are persisted to disk through prefs and logs, they should not
+// be renumbered or reused.
+// LINT.IfChange(ChromeSigninUserChoice)
 enum class ChromeSigninUserChoice {
   kNoChoice = 0,
   kAlwaysAsk = 1,
   kSignin = 2,
   kDoNotSignin = 3,
+
+  kMaxValue = kDoNotSignin,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ChromeSigninUserChoice)
 
 // Wrapper around `PrefService` to access/update account signin prefs.
 // The prefs used here are Chrome specific prefs that are tied to the accounts
