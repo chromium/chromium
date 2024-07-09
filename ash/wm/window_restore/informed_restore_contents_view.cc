@@ -250,6 +250,11 @@ void InformedRestoreContentsView::OnSettingsButtonPressed() {
   context_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   container->AddChildView(std::move(context_label));
 
+  // Set the label container's a11y name to be the same as the label text so
+  // that it can be read out by screen readers.
+  container->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_PINE_DIALOG_CONTEXT_MENU_EXTRA_INFO));
+
   menu_runner_ =
       std::make_unique<views::MenuRunner>(std::move(root_menu_item), run_types);
   menu_runner_->RunMenuAt(

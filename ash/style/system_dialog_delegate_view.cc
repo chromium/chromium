@@ -250,6 +250,7 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetEnabledColorId(kTitleColorId);
   title_->SetVisible(false);
+  title_->GetViewAccessibility().SetRole(ax::mojom::Role::kHeader);
   title_->SetProperty(views::kElementIdentifierKey, kTitleTextIdForTesting);
 
   description_ = AddChildView(std::make_unique<views::Label>());

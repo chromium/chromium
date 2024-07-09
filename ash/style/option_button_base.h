@@ -42,11 +42,11 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
     virtual ~Delegate() = default;
   };
 
-  explicit OptionButtonBase(int button_width,
-                            PressedCallback callback,
-                            const std::u16string& label = std::u16string(),
-                            const gfx::Insets& insets = kDefaultPadding,
-                            int image_label_spacing = kImageLabelSpacingDP);
+  OptionButtonBase(int button_width,
+                   PressedCallback callback,
+                   const std::u16string& label = std::u16string(),
+                   const gfx::Insets& insets = kDefaultPadding,
+                   int image_label_spacing = kImageLabelSpacingDP);
   OptionButtonBase(const OptionButtonBase&) = delete;
   OptionButtonBase& operator=(const OptionButtonBase&) = delete;
   ~OptionButtonBase() override;

@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/vector_icons.h"
 
@@ -47,6 +48,12 @@ bool Checkbox::IsIconOnTheLeftSide() {
 void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   OptionButtonBase::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kCheckBox;
+  const std::u16string cached_name = GetViewAccessibility().GetCachedName();
+  // Explicitly set the name so that this is compatible with
+  // `MenuItemView::GetAccessibleNodeData()`.
+  if (!cached_name.empty()) {
+    node_data->SetName(cached_name);
+  }
 }
 
 BEGIN_METADATA(Checkbox)

@@ -3338,6 +3338,9 @@ void OverviewGrid::OnBirchBarLayoutChanged(
       RefreshGridBounds(/*animate=*/true);
     }
   }
+
+  // A relayout means the bar's accessibility may have changed.
+  overview_session_->UpdateAccessibilityFocus();
   UpdateFeedbackButton();
 }
 

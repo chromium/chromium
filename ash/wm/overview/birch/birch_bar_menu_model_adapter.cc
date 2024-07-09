@@ -113,6 +113,11 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       // switch button.
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
       item_view->SetTitle(std::u16string());
+      item_view->SetHighlightWhenSelectedWithChildViews(true);
+
+      // Set the name so that this is compatible with
+      // `MenuItemView::GetAccessibleNodeData()`.
+      item_view->GetViewAccessibility().SetName(label);
 
       // Create a container with the show suggestions label, a spacer, and the
       // switch button.
@@ -131,7 +136,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       // Make the spacer fill in the middle space to make the label left aligned
       // and the switch button right aligned.
       switch_container->SetFlexForView(spacer, 1);
-      item_view->SetHighlightWhenSelectedWithChildViews(true);
+
       auto* switch_button =
           switch_container->AddChildView(CreateShowSuggestionSwitch());
       switch_button->GetViewAccessibility().SetName(label);
@@ -152,10 +157,11 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       // To keep the checkbox preferred height, we should set the vertical
       // margins to 0.
       item_view->set_vertical_margin(0);
+      item_view->SetHighlightWhenSelectedWithChildViews(true);
+
       // Creates a checkbox. The argument `button_width` is the minimum width of
       // the checkbox button. Since we are not going to limit the minimum size,
       // so it is set to 0.
-      item_view->SetHighlightWhenSelectedWithChildViews(true);
       auto* checkbox = item_view->AddChildView(std::make_unique<Checkbox>(
           /*button_width=*/0,
           base::BindRepeating(
