@@ -2402,16 +2402,6 @@
     "expires": "Dec 30, 2024"
   },
   {
-    "prefix": "saa-top-level-site-cors-exception",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/storage-access-api/requestStorageAccess-cross-site-sibling-iframes.sub.https.window.js"
-    ],
-    "args": ["--enable-features=ThirdPartyCookieTopLevelSiteCorsException"],
-    "expires": "Jul 1, 2024",
-    "owners": ["dylancutler@google.com"]
-  },
-  {
     "prefix": "ancestor-chain-bit-considered",
     "platforms": ["Linux"],
     "bases": [
