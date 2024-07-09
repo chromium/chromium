@@ -120,7 +120,7 @@ export class TableElement extends PolymerElement {
   }
 
   private showOpenTabButton_(columnIndex: number): boolean {
-    return this.hoveredColumnIndex_ !== null &&
+    return !this.draggingColumn && this.hoveredColumnIndex_ !== null &&
         this.hoveredColumnIndex_ === columnIndex;
   }
 

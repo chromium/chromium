@@ -27,10 +27,6 @@
     z-index: 2;
   }
 
-  .col:last-of-type {
-    overflow: hidden;
-  }
-
   product-selector {
     width: var(--column-width);
   }
@@ -80,9 +76,9 @@
   .detail-title {
     border-bottom: 1px solid var(--color-product-specifications-divider);
     font-weight: 500;
-    margin-inline-end: calc(-1 * var(--table-gap));
     padding-bottom: 4px;
-    width: calc(var(--column-width) + 8px);
+    padding-inline-end: 50px;
+    width: var(--column-width);
   }
 
    /* TODO(b/331955377): Stop visible span from moving with dragged column. */
@@ -102,15 +98,15 @@
     <div class="col"
         style$="grid-row: span [[getRowCount_(column.productDetails.length)]]"
         on-pointerenter="onShowOpenTabButton_"
-        draggable="true"
         is-dragging$="[[isDragging_(columnIndex, draggingColumn)]]">
       <product-selector
+          draggable="true"
           selected-item="[[column.selectedItem]]"
           excluded-urls="[[getUrls_(columns)]]"
           on-selected-url-change="onSelectedUrlChange_"
           on-remove-url="onUrlRemove_">
       </product-selector>
-      <div class="img-container">
+      <div class="img-container" draggable="true">
         <template is="dom-if"
             if="[[column.selectedItem.imageUrl.length]]">
           <img class="main-image" is="cr-auto-img"
@@ -126,7 +122,7 @@
         </template>
         <cr-icon-button class="open-tab-button icon-external"
             hidden$="[[!showOpenTabButton_(columnIndex,
-                hoveredColumnIndex_)]]"
+                draggingColumn, hoveredColumnIndex_)]]"
             on-click="onOpenTabButtonClick_">
         </cr-icon-button>
       </div>

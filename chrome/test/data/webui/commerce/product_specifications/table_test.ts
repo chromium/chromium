@@ -343,6 +343,38 @@ suite('ProductSpecificationsTableTest', () => {
     assertFalse(isVisible(openTabButton2));
   });
 
+  test('hides open tab button when dragging', async () => {
+    // Arrange
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: 'https://example.com',
+          imageUrl: 'https://example.com/image',
+        },
+        productDetails: [
+          {title: 'foo', description: 'fooDescription', summary: 'fooSummary'},
+          {title: 'bar', description: 'barDescription', summary: 'barSummary'},
+        ],
+      },
+    ];
+    await flushTasks();
+    const column = $$<HTMLElement>(tableElement, '.col');
+    assertTrue(!!column);
+    const openTabButton =
+        column!.querySelector<HTMLElement>('.open-tab-button');
+    assertTrue(!!openTabButton);
+    tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
+    assertFalse(isVisible(openTabButton));
+
+    // Act/Assert
+    column!.dispatchEvent(new PointerEvent('pointerenter'));
+    assertTrue(isVisible(openTabButton));
+
+    tableElement.draggingColumn = column!;
+    assertFalse(isVisible(openTabButton));
+  });
+
   test('descriptions hidden if empty or N/A', async () => {
     // Arrange
     tableElement.columns = [
