@@ -1254,7 +1254,7 @@ void CreditCardAccessManager::FetchLocalCard() {
     if (!card_->cvc().empty()) {
       autofill_metrics::LogCvcFilling(
           autofill_metrics::CvcFillingFlowType::kNoInteractiveAuthentication,
-          card_->record_type());
+          CreditCard::RecordType::kLocalCard);
     }
     // Fill immediately if local card, as we do not need to authenticate the
     // user.
@@ -1267,7 +1267,8 @@ void CreditCardAccessManager::FetchLocalCard() {
         .GetFormDataImporter()
         ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
             payments::MandatoryReauthManager::
-                GetNonInteractivePaymentMethodType(card_->record_type()));
+                GetNonInteractivePaymentMethodType(
+                    CreditCard::RecordType::kLocalCard));
 
     // `OnCreditCardFetchedCallback` makes a copy of `card` and `cvc` before it
     // asynchronously fills them into the form. Thus we can safely call
