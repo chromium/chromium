@@ -37,9 +37,9 @@ class SubresourceFilterProfileContext;
 // ContentSubresourceFilterThrottleManager instances. This helper is attached
 // to each WebContents and listens to navigations to ensure certain Page(s) in
 // the WebContents have an associated throttle manager. A throttle manager is
-// created for outermost pages and for portal pages. Fenced frames are treated
-// as subframes and don't create a throttle manager; they use the throttle
-// manager of their embedding page.
+// created for outermost pages. Fenced frames are treated as subframes and don't
+// create a throttle manager; they use the throttle manager of their embedding
+// page.
 //
 // This class also listens to events occurring in the WebContents and
 // SubresourceFilter and, based on their context, routes the event to the

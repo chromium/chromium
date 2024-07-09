@@ -103,11 +103,9 @@ frame's `AsyncDocumentSubresourceFilter`.
 
 The code uses "root frame" and "child frame" terminology distinguish from the
 FrameTree-centric "main frame" and "subframe". Frame trees may be embedded so
-that a single "tab" may have multiple "main frames". In some cases (fenced
-frames) an embedded main frame is treated by the filter like a subframe; a main
-frame in a fenced frame is thus a subresource filter "child frame". In
-others (portals), the embedded main frame establishes a new subresource filter
-root so it is a subresource filter "root frame".
+that a single "tab" may have multiple "main frames". An embedded main frame
+(fenced frame) is treated by the filter like a subframe; a main frame in a
+fenced frame is thus a subresource filter "child frame".
 
 ##### Throttle management
 The `ContentSubresourceFilterThrottleManager` is a `WebContentsObserver`, and manages both the
@@ -138,4 +136,3 @@ the `RenderFrameObserver` that communicates with the
 `ContentSubresourceFilterThrottleManager`.
 
 `SubresourceFilterAgent`~>`WebDocumentSubresourceFilterImpl`
-

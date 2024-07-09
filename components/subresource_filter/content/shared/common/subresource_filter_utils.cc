@@ -57,7 +57,6 @@ bool ShouldInheritParentActivation(
 }
 
 bool IsInSubresourceFilterRoot(content::NavigationHandle* navigation_handle) {
-  // TODO(bokan): This should eventually consider Portals. crbug.com/1267506.
   switch (navigation_handle->GetNavigatingFrameType()) {
     case content::FrameType::kPrimaryMainFrame:
     case content::FrameType::kPrerenderMainFrame:
@@ -74,16 +73,12 @@ bool IsSubresourceFilterRoot(content::RenderFrameHost* rfh) {
 
 content::Page& GetSubresourceFilterRootPage(content::RenderFrameHost* rfh) {
   CHECK(rfh);
-
-  // This only "breaks out" from fenced frames since the desired behavior in
-  // other nested frame trees (e.g. portals) isn't clear. Otherwise we could
-  // just use GetOutermostMainFrame.
-  while (rfh->IsNestedWithinFencedFrame()) {
-    rfh = rfh->GetMainFrame()->GetParentOrOuterDocument();
-    CHECK(rfh);
-  }
-
-  return rfh->GetPage();
+  // If we ever add a new embedded page type (we only have fenced frames
+  // currently), we should reconsider if we should escape its page boundary
+  // here.
+  CHECK(!rfh->GetMainFrame()->GetParentOrOuterDocument() ||
+        rfh->IsNestedWithinFencedFrame());
+  return rfh->GetOutermostMainFrame()->GetPage();
 }
 
 }  // namespace subresource_filter
