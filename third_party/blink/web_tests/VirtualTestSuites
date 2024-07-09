@@ -1722,10 +1722,11 @@
   },
   {
     "prefix": "fenced-frame-mparch",
+    "owners": ["shivanisha@chromium.org",
+               "chrome-fenced-frames-core@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "http/tests/fenced_frame",
-      "wpt_internal/fenced_frame",
       "http/tests/inspector-protocol/fenced-frame",
       "external/wpt/html/anonymous-iframe",
       "external/wpt/fenced-frame",
@@ -1735,7 +1736,6 @@
     ],
     "exclusive_tests": [
       "http/tests/fenced_frame",
-      "wpt_internal/fenced_frame",
       "external/wpt/fenced-frame",
       "http/tests/inspector-protocol/fenced-frame",
       "external/wpt/fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
@@ -1745,6 +1745,27 @@
     "args": ["--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges",
              "--enable-blink-features=FencedFramesDefaultMode"],
     "expires": "May 1, 2025"
+  },
+  "This is the same as the 'fenced-frame-mparch' test suite, but this suite",
+  "exposes debug behavior that isn't implemented in WebDriver yet.",
+  "TODO(crbug.com/350526049): Remove this suite and have 'fenced-frame-mparch'",
+  "include 'wpt_internal/fenced_frame' once Private Aggregation has a",
+  "WebDriver extension.",
+  {
+    "prefix": "fenced-frame-mparch-internal",
+    "owners": ["shivanisha@chromium.org",
+               "chrome-fenced-frames-core@google.com"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "wpt_internal/fenced_frame"
+    ],
+    "exclusive_tests": [
+      "wpt_internal/fenced_frame"
+    ],
+    "args": ["--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges",
+             "--enable-blink-features=FencedFramesDefaultMode",
+             "--private-aggregation-developer-mode"],
+    "expires": "Jan 9, 2025"
   },
   {
     "prefix": "cors-non-wildcard-request-headers",

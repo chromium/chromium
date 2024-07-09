@@ -142,7 +142,7 @@ crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-
 crbug.com/1444753 http/tests/inspector-protocol/tracing/prerender.js [ Skip ]
 
 
-crbug.com/1487775 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced-top.https.html [ Failure Timeout ]
+crbug.com/1487775 virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/unfenced-top.https.html [ Failure Timeout ]
 
 # No plans to run wdspec tests for this flag-specific suite.
 external/wpt/webdriver/tests/* [ Skip ]
