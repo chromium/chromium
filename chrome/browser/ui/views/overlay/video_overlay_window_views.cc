@@ -62,8 +62,11 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/shell_integration_win.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/win/tsf_input_scope.h"
 #include "ui/base/win/shell.h"
 #endif
 
@@ -328,6 +331,19 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
           overlay_window->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
     }
   }
+
+  InputScope input_scope = overlay_window->GetController()
+                                   ->GetWebContents()
+                                   ->GetRenderWidgetHostView()
+                                   ->GetTextInputClient()
+                                   ->ShouldDoLearning()
+                               ? IS_DEFAULT
+                               : IS_PRIVATE;
+
+  ui::tsf_inputscope::SetInputScope(
+      overlay_window->GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
+      input_scope);
+
 #endif  // BUILDFLAG(IS_WIN)
 
   PictureInPictureOcclusionTracker* tracker =

@@ -333,6 +333,15 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
 #if BUILDFLAG(IS_WIN)
   // This will fetch and set the display features.
   ObserveDevicePosturePlatformProvider();
+
+  // We want to set input scope once after the window is created
+  // and before any focus change happens. We want to set it only
+  // once for each hwnd.
+  if (window_->GetHost() && GetInputMethod()) {
+    InputScope input_scope = ShouldDoLearning() ? IS_DEFAULT : IS_PRIVATE;
+    ui::tsf_inputscope::SetInputScope(
+        RenderWidgetHostViewAura::GetHostWindowHWND(), input_scope);
+  }
 #endif
 }
 
