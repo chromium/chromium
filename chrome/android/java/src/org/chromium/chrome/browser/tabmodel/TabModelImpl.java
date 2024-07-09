@@ -405,11 +405,12 @@ public class TabModelImpl extends TabModelJniBridge {
 
     /**
      * See public getNextTabIfClosed documentation
-     * @param tabCloseType the type of tab closure occurring. This is used to avoid searching for
-     *                     a nearby tab when closing all tabs.
+     *
+     * @param tabCloseType the type of tab closure occurring. This is used to avoid searching for a
+     *     nearby tab when closing all tabs.
      */
     private Tab getNextTabIfClosed(int id, boolean uponExit, @TabCloseType int tabCloseType) {
-        Tab tabToClose = TabModelUtils.getTabById(this, id);
+        Tab tabToClose = getTabById(id);
         Tab currentTab = TabModelUtils.getCurrentTab(this);
         if (tabToClose == null) return currentTab;
 

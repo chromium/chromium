@@ -42,7 +42,7 @@ public class TabModelUtils {
      * @return {@code true} if the {@link Tab} was found.
      */
     public static boolean closeTabById(TabModel model, int tabId, boolean canUndo) {
-        Tab tab = TabModelUtils.getTabById(model, tabId);
+        Tab tab = model.getTabById(tabId);
         if (tab == null || tab.isClosing()) return false;
 
         return model.closeTab(tab, false, canUndo);
@@ -76,23 +76,6 @@ public class TabModelUtils {
         }
 
         return TabModel.INVALID_TAB_INDEX;
-    }
-
-    /**
-     * Find the {@link Tab} with the specified id.
-     *
-     * @param model The {@link TabModel} to act on.
-     * @param tabId The id of the {@link Tab} to find.
-     * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found
-     */
-    public static Tab getTabById(TabList model, int tabId) {
-        if (model instanceof TabModel tabModel) {
-            return tabModel.getTabById(tabId);
-        } else {
-            int index = getTabIndexById(model, tabId);
-            if (index == TabModel.INVALID_TAB_INDEX) return null;
-            return model.getTabAt(index);
-        }
     }
 
     /**
