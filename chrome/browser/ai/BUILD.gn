@@ -19,5 +19,8 @@ source_set("ai") {
     "//components/optimization_guide/core",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+
+    # TODO: Use //chrome/browser instead after fixing cyclic dependency.
+    "//components/power_bookmarks/core",
   ]
 }
