@@ -616,8 +616,16 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
 // Tests that video capture stream counts (used for process priority
 // calculations) are properly set and cleared during media playback and renderer
 // terminations.
+// Test is flaky on Android builders: https://crbug.com/352065578
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_KillProcessZerosVideoCaptureStreams \
+  DISABLED_KillProcessZerosVideoCaptureStreams
+#else
+#define MAYBE_KillProcessZerosVideoCaptureStreams \
+  KillProcessZerosVideoCaptureStreams
+#endif
 IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
-                       KillProcessZerosVideoCaptureStreams) {
+                       MAYBE_KillProcessZerosVideoCaptureStreams) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
