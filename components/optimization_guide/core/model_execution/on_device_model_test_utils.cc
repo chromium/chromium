@@ -229,6 +229,13 @@ void FakeOnDeviceModelService::LoadPlatformModel(
   model_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(settings_->load_model_result);
 }
+
+void FakeOnDeviceModelService::GetPlatformModelState(
+    const base::Uuid& uuid,
+    GetPlatformModelStateCallback callback) {
+  std::move(callback).Run(
+      on_device_model::mojom::PlatformModelState::kInstalledOnDisk);
+}
 #endif
 
 void FakeOnDeviceModelService::GetEstimatedPerformanceClass(

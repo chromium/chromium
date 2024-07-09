@@ -51,6 +51,19 @@ interface PlatformModelProgressObserver {
   Progress(double progress);
 };
 
+enum PlatformModelState {
+  kUnknownState,
+  kInstalledOnDisk,
+  kInvalidUuid,
+  kInvalidDlcClient,
+  kInvalidDlcPackage,
+  kInvalidDlcVerifiedState,
+  kInvalidDlcInstall,
+  kInvalidModelFormat,
+  kInvalidModelDescriptor,
+  kInvalidBaseModelDescriptor,
+};
+
 // A service which allows loading trusted models which are stored on-device and
 // which may process untrustworthy data.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
@@ -71,6 +84,11 @@ interface OnDeviceModelService {
       pending_receiver<OnDeviceModel> model,
       pending_remote<PlatformModelProgressObserver>? progress_observer)
       => (LoadModelResult result);
+
+  // Gets the platform model state given platform model `uuid`.
+  [EnableIf=is_chromeos_ash]
+  GetPlatformModelState(mojo_base.mojom.Uuid uuid) =>
+      (PlatformModelState result);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() => (PerformanceClass performance_class);

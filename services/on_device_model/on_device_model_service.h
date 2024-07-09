@@ -60,6 +60,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
       mojo::PendingRemote<mojom::PlatformModelProgressObserver>
           progress_observer,
       LoadPlatformModelCallback callback) override;
+  void GetPlatformModelState(const base::Uuid& uuid,
+                             GetPlatformModelStateCallback callback) override;
 #endif
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;

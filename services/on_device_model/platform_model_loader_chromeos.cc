@@ -259,6 +259,116 @@ void ChromeosPlatformModelLoader::LoadModelWithUuid(
   return;
 }
 
+void ChromeosPlatformModelLoader::IsModelInstalled(
+    const base::Uuid& uuid,
+    GetModelStateCallback callback) {
+  if (!uuid.is_valid()) {
+    std::move(callback).Run(mojom::PlatformModelState::kInvalidUuid);
+    return;
+  }
+
+  auto it = platform_models_.find(uuid);
+  if (it != platform_models_.end() && it->second.platform_model) {
+    std::move(callback).Run(mojom::PlatformModelState::kInstalledOnDisk);
+    return;
+  }
+
+  ash::DlcserviceClient* client = ash::DlcserviceClient::Get();
+  if (!client) {
+    std::move(callback).Run(mojom::PlatformModelState::kInvalidDlcClient);
+    return;
+  }
+
+  std::string uuid_str = uuid.AsLowercaseString();
+  client->GetDlcState(
+      kMlDlcPrefix + uuid_str,
+      base::BindOnce(&ChromeosPlatformModelLoader::IsInstalledFromDlcState,
+                     weak_ptr_factory_.GetWeakPtr(), uuid,
+                     std::move(callback)));
+}
+
+void ChromeosPlatformModelLoader::IsInstalledFromDlcState(
+    const base::Uuid& uuid,
+    GetModelStateCallback callback,
+    std::string_view err,
+    const dlcservice::DlcState& state) {
+  if (err != dlcservice::kErrorNone) {
+    LOG(ERROR) << "Failed to get DlcState: " << err;
+    std::move(callback).Run(mojom::PlatformModelState::kInvalidDlcPackage);
+    return;
+  }
+
+  if (!state.is_verified()) {
+    std::move(callback).Run(
+        mojom::PlatformModelState::kInvalidDlcVerifiedState);
+    return;
+  }
+
+  ash::DlcserviceClient* client = ash::DlcserviceClient::Get();
+  if (!client) {
+    std::move(callback).Run(mojom::PlatformModelState::kInvalidDlcClient);
+    return;
+  }
+
+  // The package is already verified, so the DLC is available on disk and can be
+  // mounted immediately. We will need to install the package to get the model
+  // descriptor in it, and check the package dependency.
+  std::string uuid_str = uuid.AsLowercaseString();
+  dlcservice::InstallRequest request;
+  request.set_id(kMlDlcPrefix + uuid_str);
+  client->Install(
+      request,
+      base::BindOnce(&ChromeosPlatformModelLoader::IsInstalledFromInstallResult,
+                     weak_ptr_factory_.GetWeakPtr(), uuid, std::move(callback)),
+      /*progress_callback=*/base::DoNothing());
+}
+
+void ChromeosPlatformModelLoader::IsInstalledFromInstallResult(
+    const base::Uuid& uuid,
+    GetModelStateCallback callback,
+    const ash::DlcserviceClient::InstallResult& result) {
+  if (result.error != dlcservice::kErrorNone) {
+    LOG(ERROR) << "Failed to install ML DLC with error " << result.error;
+    std::move(callback).Run(mojom::PlatformModelState::kInvalidDlcInstall);
+    return;
+  }
+
+  base::FilePath dlc_root(result.root_path);
+  base::FilePath model_desc = dlc_root.Append(kModelDescriptor);
+  std::string model_json;
+
+  if (!base::ReadFileToString(model_desc, &model_json)) {
+    std::move(callback).Run(mojom::PlatformModelState::kInvalidModelFormat);
+    return;
+  }
+
+  std::optional<base::Value::Dict> model_dict =
+      base::JSONReader::ReadDict(model_json);
+  if (!model_dict) {
+    std::move(callback).Run(mojom::PlatformModelState::kInvalidModelDescriptor);
+    return;
+  }
+
+  const base::Value::Dict* base_model = model_dict->FindDict(kBaseModelKey);
+
+  if (base_model) {
+    // This is an adaptation layer model. We need to load the base model first.
+    const std::string* base_uuid = base_model->FindString(kUuidKey);
+    if (!base_uuid) {
+      std::move(callback).Run(
+          mojom::PlatformModelState::kInvalidBaseModelDescriptor);
+      return;
+    }
+
+    base::Uuid base_model_uuid = base::Uuid::ParseLowercase(*base_uuid);
+
+    IsModelInstalled(base_model_uuid, std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(mojom::PlatformModelState::kInstalledOnDisk);
+}
+
 void ChromeosPlatformModelLoader::OnInstallDlcComplete(
     const base::Uuid& uuid,
     const ash::DlcserviceClient::InstallResult& result) {

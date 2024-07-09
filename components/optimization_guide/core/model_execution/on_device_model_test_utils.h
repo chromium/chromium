@@ -165,6 +165,8 @@ class FakeOnDeviceModelService
       mojo::PendingRemote<on_device_model::mojom::PlatformModelProgressObserver>
           progress_observer,
       LoadModelCallback callback) override;
+  void GetPlatformModelState(const base::Uuid& uuid,
+                             GetPlatformModelStateCallback callback) override;
 #endif
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;

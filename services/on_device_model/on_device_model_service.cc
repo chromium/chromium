@@ -412,6 +412,18 @@ void OnDeviceModelService::LoadPlatformModel(
                                             std::move(progress_observer),
                                             std::move(callback));
 }
+
+void OnDeviceModelService::GetPlatformModelState(
+    const base::Uuid& uuid,
+    GetPlatformModelStateCallback callback) {
+  if (!platform_model_loader_) {
+    LOG(ERROR) << "No valid platform model loader.";
+    std::move(callback).Run(mojom::PlatformModelState::kUnknownState);
+    return;
+  }
+
+  platform_model_loader_->IsModelInstalled(uuid, std::move(callback));
+}
 #endif
 
 void OnDeviceModelService::GetEstimatedPerformanceClass(

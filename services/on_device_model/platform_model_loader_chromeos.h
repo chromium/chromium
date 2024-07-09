@@ -44,6 +44,9 @@ class ChromeosPlatformModelLoader final : public PlatformModelLoader {
           progress_observer,
       LoadModelCallback callback) override;
 
+  void IsModelInstalled(const base::Uuid& uuid,
+                        GetModelStateCallback callback) override;
+
  private:
   class PlatformModel final : public base::RefCounted<PlatformModel> {
    public:
@@ -100,6 +103,16 @@ class ChromeosPlatformModelLoader final : public PlatformModelLoader {
 
   void OnInstallDlcComplete(const base::Uuid& uuid,
                             const ash::DlcserviceClient::InstallResult& result);
+
+  void IsInstalledFromDlcState(const base::Uuid& uuid,
+                               GetModelStateCallback callback,
+                               std::string_view err,
+                               const dlcservice::DlcState& state);
+
+  void IsInstalledFromInstallResult(
+      const base::Uuid& uuid,
+      GetModelStateCallback callback,
+      const ash::DlcserviceClient::InstallResult& result);
 
   void OnDlcProgress(const base::Uuid& uuid, double progress);
 
