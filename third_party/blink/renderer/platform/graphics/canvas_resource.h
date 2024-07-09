@@ -260,13 +260,21 @@ class PLATFORM_EXPORT CanvasResource
     return nullptr;
   }
 
-  // Prepares GPU TransferableResource. Default implementation creates a
-  // TransferableResource that wraps GetMailbox(). Subclasses needing
-  // different behavior should override this method.
-  // NOTE: Will be called only if SupportsAcceleratedCompositing() is true.
-  virtual bool PrepareAcceleratedTransferableResource(
+  // Prepares GPU TransferableResource from the resource's ClientSharedImage.
+  // Invoked if the resource is accelerated and UsesClientSharedImage() returns
+  // true.
+  bool PrepareAcceleratedTransferableResourceFromClientSI(
       viz::TransferableResource* out_resource,
       MailboxSyncMode);
+
+  // Prepares GPU TransferableResource for resources for which
+  // SupportsAcceleratedCompositing() is true but UsesClientSharedImage()
+  // returns false. Subclasses that match these conditions *must* override this
+  // method.
+  virtual bool PrepareAcceleratedTransferableResourceWithoutClientSI(
+      viz::TransferableResource* out_resource) {
+    NOTREACHED();
+  }
 
   // Prepares software TransferableResource if supported (by default it is not).
   // Subclasses that return false for SupportsAcceleratedCompositing() must
@@ -534,9 +542,8 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   const gpu::SyncToken GetSyncToken() override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
-  bool PrepareAcceleratedTransferableResource(
-      viz::TransferableResource* out_resource,
-      MailboxSyncMode) override;
+  bool PrepareAcceleratedTransferableResourceWithoutClientSI(
+      viz::TransferableResource* out_resource) override;
   void GenOrFlushSyncToken();
 
   ExternalCanvasResource(const viz::TransferableResource& transferable_resource,

@@ -199,31 +199,39 @@ bool CanvasResource::PrepareTransferableResource(
 
   if (!out_resource)
     return true;
-  if (SupportsAcceleratedCompositing())
-    return PrepareAcceleratedTransferableResource(out_resource, sync_mode);
+  if (SupportsAcceleratedCompositing()) {
+    return UsesClientSharedImage()
+               ? PrepareAcceleratedTransferableResourceFromClientSI(
+                     out_resource, sync_mode)
+               : PrepareAcceleratedTransferableResourceWithoutClientSI(
+                     out_resource);
+  }
   return PrepareUnacceleratedTransferableResource(out_resource);
 }
 
-bool CanvasResource::PrepareAcceleratedTransferableResource(
+bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
     viz::TransferableResource* out_resource,
     MailboxSyncMode sync_mode) {
   TRACE_EVENT0("blink",
                "CanvasResource::PrepareAcceleratedTransferableResource");
   // This method should only be called if this instance actually supports
-  // accelerated compositing.
+  // accelerated compositing and uses ClientSharedImage.
   CHECK(SupportsAcceleratedCompositing());
+  CHECK(UsesClientSharedImage());
 
   // Gpu compositing is a prerequisite for compositing an accelerated resource
   DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
   if (!ContextProviderWrapper())
     return false;
-  const gpu::Mailbox& mailbox = GetMailbox(sync_mode);
-  if (mailbox.IsZero())
+  auto client_shared_image = GetClientSharedImage(sync_mode);
+  if (!client_shared_image) {
     return false;
+  }
 
   *out_resource = viz::TransferableResource::MakeGpu(
-      mailbox, TextureTarget(), GetSyncToken(), Size(), GetSharedImageFormat(),
-      IsOverlayCandidate(), viz::TransferableResource::ResourceSource::kCanvas);
+      client_shared_image->mailbox(), TextureTarget(), GetSyncToken(), Size(),
+      GetSharedImageFormat(), IsOverlayCandidate(),
+      viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
   if (NeedsReadLockFences()) {
@@ -930,9 +938,9 @@ ExternalCanvasResource::ContextProviderWrapper() const {
   return context_provider_wrapper_;
 }
 
-bool ExternalCanvasResource::PrepareAcceleratedTransferableResource(
-    viz::TransferableResource* out_resource,
-    MailboxSyncMode sync_mode) {
+bool ExternalCanvasResource::
+    PrepareAcceleratedTransferableResourceWithoutClientSI(
+        viz::TransferableResource* out_resource) {
   TRACE_EVENT0(
       "blink",
       "ExternalCanvasResource::PrepareAcceleratedTransferableResource");
