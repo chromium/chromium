@@ -12,7 +12,6 @@
 // Step 6 (sub-sub-frame) Try to use storage access API to access first-party shared worker.
 // Step 7 (sub-sub-frame) Send "HasAccess for SharedWorker" message to top-frame.
 // Step 8 (top-frame) Set up cookie worker to expect it's already opened.
-// TODO(crbug.com/1484966): Verify access to cookies in shared workers.
 
 async_test(t => {
   // Step 1

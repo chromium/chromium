@@ -405,7 +405,7 @@ SET TIMEOUT: speculation-rules/prerender/resources/media-autoplay-attribute.html
 SET TIMEOUT: speculation-rules/prerender/resources/media-play.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
 SET TIMEOUT: dom/abort/crashtests/timeout-close.html
-SET TIMEOUT: storage-access-api/storage-access-beyond-cookies.locks.tentative.sub.https.window.js
+SET TIMEOUT: storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.js
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
