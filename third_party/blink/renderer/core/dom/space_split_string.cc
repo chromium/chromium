@@ -18,6 +18,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"

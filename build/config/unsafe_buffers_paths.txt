@@ -121,6 +121,7 @@
 -testing/
 -third_party/
 +third_party/blink/renderer/core/css/
++third_party/blink/renderer/core/dom/
 -tools/
 -ui/
 +ui/views/
