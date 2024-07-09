@@ -32,7 +32,6 @@ TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
       model_,
       std::move(saved_tab_group_configuration->model_type_store_factory),
       std::move(saved_tab_group_configuration->change_processor), pref_service,
-      std::map<base::Uuid, LocalTabGroupID>(),
       base::BindOnce(&TabGroupSyncBridgeMediator::OnSavedGroupsWithTabsLoaded,
                      base::Unretained(this)));
   if (shared_tab_group_configuration) {

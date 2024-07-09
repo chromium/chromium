@@ -51,7 +51,6 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
       syncer::OnceModelTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       PrefService* pref_service,
-      std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids,
       SavedTabGroupLoadCallback on_load_callback);
 
   SavedTabGroupSyncBridge(const SavedTabGroupSyncBridge&) = delete;
@@ -204,15 +203,6 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
       SavedTabGroupLoadCallback on_load_callback,
       const std::optional<syncer::ModelError>& error);
 
-  // Called to migrate the Android local IDs from shared prefs to
-  // SavedTabGroupData.
-  void MigrateAndroidLocalIds(
-      SavedTabGroupLoadCallback on_load_callback,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
-  void OnAndroidLocalIdMigrationComplete(
-      SavedTabGroupLoadCallback on_load_callback,
-      const std::optional<syncer::ModelError>& error);
-
   // Called to update the cache guid of groups and tabs with latest cache guid
   // and subsequently writes the updated data to storage.
   void UpdateLocalCacheGuidForGroups(
@@ -237,11 +227,6 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   // Observes the SavedTabGroupModel.
   base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
       observation_{this};
-
-  // Sync to local ID map for Android during shared prefs migration. This will
-  // be non-empty during first time migration and always empty after subsequent
-  // restart.
-  std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids_;
 
   // Only for metrics. Used to ensure that a certain metrics is recorded at max
   // once per chrome session.

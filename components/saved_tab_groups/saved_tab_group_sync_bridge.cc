@@ -113,13 +113,11 @@ SavedTabGroupSyncBridge::SavedTabGroupSyncBridge(
     syncer::OnceModelTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     PrefService* pref_service,
-    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids,
     base::OnceCallback<void(std::vector<SavedTabGroup>,
                             std::vector<SavedTabGroupTab>)> on_load_callback)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)),
       model_(model),
-      pref_service_(pref_service),
-      migrated_android_local_ids_(std::move(migrated_android_local_ids)) {
+      pref_service_(pref_service) {
   CHECK(model_);
   CHECK(pref_service_);
   CHECK(on_load_callback);
@@ -816,15 +814,7 @@ void SavedTabGroupSyncBridge::OnDatabaseLoad(
         stats::MigrationResult::kSpecificsToDataMigrationAlreadyComplete);
   }
 
-  // 2. Check if there are Android local ids that needs a migration.
-  if (!migrated_android_local_ids_.empty()) {
-    stats::RecordMigrationResult(
-        stats::MigrationResult::kSharedPrefMigrationStarted);
-    MigrateAndroidLocalIds(std::move(on_load_callback), std::move(entries));
-    return;
-  }
-
-  // 3. If we are done with all the migrations, proceed with regular metadata
+  // 2. If we are done with all the migrations, proceed with regular metadata
   // loading.
   stats::RecordMigrationResult(stats::MigrationResult::kStoreLoadCompleted);
   store_->ReadAllMetadata(
@@ -889,70 +879,6 @@ void SavedTabGroupSyncBridge::OnSpecificsToDataMigrationComplete(
                             true);
   stats::RecordMigrationResult(
       stats::MigrationResult::kSpecificsToDataMigrationSuccess);
-  store_->ReadAllData(base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseLoad,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     std::move(on_load_callback)));
-}
-
-void SavedTabGroupSyncBridge::MigrateAndroidLocalIds(
-    SavedTabGroupLoadCallback on_load_callback,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
-  int migrated_shared_pref_count = 0;
-  int parse_failure_count = 0;
-  for (const syncer::ModelTypeStore::Record& r : *entries) {
-    proto::SavedTabGroupData data;
-    if (!data.ParseFromString(r.value)) {
-      DLOG(WARNING) << "Failed to parse SavedTabGroupData during Android local "
-                       "ID migration";
-      parse_failure_count++;
-      continue;
-    }
-
-    base::Uuid guid = base::Uuid::ParseLowercase(data.specifics().guid());
-    auto iter = migrated_android_local_ids_.find(guid);
-    if (iter == migrated_android_local_ids_.end()) {
-      continue;
-    }
-
-    migrated_shared_pref_count++;
-    data.mutable_local_tab_group_data()->set_local_group_id(
-        iter->second.ToString());
-    batch->WriteData(data.specifics().guid(), data.SerializeAsString());
-  }
-
-  if (parse_failure_count > 0) {
-    stats::RecordMigrationResult(
-        stats::MigrationResult::kSharedPrefMigrationParseFailedAtLeastOnce);
-  }
-
-  if (migrated_shared_pref_count > 0) {
-    stats::RecordMigrationResult(
-        stats::MigrationResult::kSharedPrefMigrationAtLeastOneEntryMigrated);
-  }
-
-  store_->CommitWriteBatch(
-      std::move(batch),
-      base::BindOnce(
-          &SavedTabGroupSyncBridge::OnAndroidLocalIdMigrationComplete,
-          weak_ptr_factory_.GetWeakPtr(), std::move(on_load_callback)));
-}
-
-void SavedTabGroupSyncBridge::OnAndroidLocalIdMigrationComplete(
-    SavedTabGroupLoadCallback on_load_callback,
-    const std::optional<syncer::ModelError>& error) {
-  if (error) {
-    stats::RecordMigrationResult(
-        stats::MigrationResult::kSharedPrefMigrationWriteFailed);
-    change_processor()->ReportError(*error);
-    DLOG(WARNING) << "Failed to write migrated data for android local ids";
-    return;
-  }
-
-  migrated_android_local_ids_.clear();
-  stats::RecordMigrationResult(
-      stats::MigrationResult::kSharedPrefMigrationSuccess);
   store_->ReadAllData(base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseLoad,
                                      weak_ptr_factory_.GetWeakPtr(),
                                      std::move(on_load_callback)));
