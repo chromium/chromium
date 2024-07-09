@@ -329,6 +329,11 @@ void PickerView::ShowEmojiPicker(ui::EmojiPickerCategory category) {
 }
 
 bool PickerView::DoPseudoFocusedAction() {
+  if (clear_results_timer_.IsRunning()) {
+    // New results are still pending.
+    // TODO: b/351920494 - Insert the first new result instead of doing nothing.
+    return false;
+  }
   return pseudo_focused_view_ == nullptr
              ? false
              : DoPickerPseudoFocusedActionOnView(pseudo_focused_view_);

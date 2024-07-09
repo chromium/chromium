@@ -20,6 +20,7 @@
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
@@ -37,8 +38,10 @@
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -77,6 +80,7 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Optional;
@@ -84,6 +88,7 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Truly;
+using ::testing::VariantWith;
 
 constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 0, 10);
 
@@ -2100,6 +2105,175 @@ TEST_F(PickerViewTest,
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
 
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
+}
+
+TEST_F(PickerViewTest, EnterOnZeroState) {
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results = {PickerSearchResult::Text(u"zero state")},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  base::span<const raw_ptr<PickerItemView>> zero_state_item_views =
+      picker_view->zero_state_view_for_testing()
+          .primary_section_view_for_testing()
+          ->item_views_for_testing();
+  PickerListItemView* suggested_item_view;
+  ASSERT_THAT(
+      zero_state_item_views,
+      ElementsAre(ResultOf(
+          [&](const raw_ptr<PickerItemView> view) {
+            ViewDrawnWaiter().Wait(view);
+            suggested_item_view = views::AsViewClass<PickerListItemView>(view);
+            return suggested_item_view;
+          },
+          Pointee(
+              AllOf(Property("primary text",
+                             &PickerListItemView::GetPrimaryTextForTesting,
+                             u"zero state"),
+                    Property("is visible", &views::View::GetVisible, true))))));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_inserted_result(),
+              Optional(Property("data", &PickerSearchResult::data,
+                                VariantWith<PickerSearchResult::TextData>(Field(
+                                    "primary text",
+                                    &PickerSearchResult::TextData::primary_text,
+                                    u"zero state")))));
+}
+
+// TODO: b/351920494 - Insert the first new result instead of doing nothing.
+TEST_F(PickerViewTest, EnterDuringBurnInOnZeroState) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results = {PickerSearchResult::Text(u"zero state")},
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  base::span<const raw_ptr<PickerItemView>> zero_state_item_views =
+      picker_view->zero_state_view_for_testing()
+          .primary_section_view_for_testing()
+          ->item_views_for_testing();
+  PickerListItemView* suggested_item_view;
+  ASSERT_THAT(
+      zero_state_item_views,
+      ElementsAre(ResultOf(
+          [&](const raw_ptr<PickerItemView> view) {
+            ViewDrawnWaiter().Wait(view);
+            suggested_item_view = views::AsViewClass<PickerListItemView>(view);
+            return suggested_item_view;
+          },
+          Pointee(
+              AllOf(Property("primary text",
+                             &PickerListItemView::GetPrimaryTextForTesting,
+                             u"zero state"),
+                    Property("is visible", &views::View::GetVisible, true))))));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  // The suggested item should still be visible.
+  ASSERT_TRUE(suggested_item_view->GetVisible());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_EQ(delegate.last_inserted_result(), std::nullopt);
+}
+
+TEST_F(PickerViewTest, EnterOnSearchResults) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(callback);
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
+  first_callback.Run(
+      {PickerSearchResultsSection(PickerSectionType::kSuggestions,
+                                  {PickerSearchResult::Text(u"first search")},
+                                  /*has_more_results=*/false)});
+  base::span<const raw_ptr<PickerSectionView>> section_views =
+      picker_view->search_results_view_for_testing()
+          .section_views_for_testing();
+  PickerListItemView* search_item_view;
+  ASSERT_THAT(
+      section_views,
+      ElementsAre(Pointee(Property(
+          "item views", &PickerSectionView::item_views_for_testing,
+          ElementsAre(ResultOf(
+              [&](const raw_ptr<PickerItemView> view) {
+                ViewDrawnWaiter().Wait(view);
+                search_item_view = views::AsViewClass<PickerListItemView>(view);
+                return search_item_view;
+              },
+              Pointee(
+                  AllOf(Property("primary text",
+                                 &PickerListItemView::GetPrimaryTextForTesting,
+                                 u"first search"),
+                        Property("is visible", &views::View::GetVisible,
+                                 true)))))))));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_inserted_result(),
+              Optional(Property("data", &PickerSearchResult::data,
+                                VariantWith<PickerSearchResult::TextData>(Field(
+                                    "primary text",
+                                    &PickerSearchResult::TextData::primary_text,
+                                    u"first search")))));
+}
+
+// TODO: b/351920494 - Insert the first new result instead of doing nothing.
+TEST_F(PickerViewTest, EnterDuringBurnInOnSearchResults) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(callback);
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
+  first_callback.Run(
+      {PickerSearchResultsSection(PickerSectionType::kSuggestions,
+                                  {PickerSearchResult::Text(u"first search")},
+                                  /*has_more_results=*/false)});
+  base::span<const raw_ptr<PickerSectionView>> section_views =
+      picker_view->search_results_view_for_testing()
+          .section_views_for_testing();
+  PickerListItemView* search_item_view;
+  ASSERT_THAT(
+      section_views,
+      ElementsAre(Pointee(Property(
+          "item views", &PickerSectionView::item_views_for_testing,
+          ElementsAre(ResultOf(
+              [&](const raw_ptr<PickerItemView> view) {
+                ViewDrawnWaiter().Wait(view);
+                search_item_view = views::AsViewClass<PickerListItemView>(view);
+                return search_item_view;
+              },
+              Pointee(
+                  AllOf(Property("primary text",
+                                 &PickerListItemView::GetPrimaryTextForTesting,
+                                 u"first search"),
+                        Property("is visible", &views::View::GetVisible,
+                                 true)))))))));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  FakePickerViewDelegate::SearchResultsCallback second_callback = future.Take();
+  // The search item should still be visible.
+  ASSERT_TRUE(search_item_view->GetVisible());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_EQ(delegate.last_inserted_result(), std::nullopt);
 }
 
 TEST_F(PickerViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
