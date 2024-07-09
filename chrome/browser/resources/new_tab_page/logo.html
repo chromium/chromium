@@ -29,7 +29,7 @@ ${this.showDoodle_ ? html`
 ` : ''}
 ${this.showShareDialog_ ? html`
   <ntp-doodle-share-dialog title="${this.doodle_!.description}"
-      url="${this.doodle_!.image!.shareUrl}"
+      .url="${this.doodle_!.image!.shareUrl}"
       @close="${this.onShareDialogClose_}" @share="${this.onShare_}">
   </ntp-doodle-share-dialog>
 ` : ''}

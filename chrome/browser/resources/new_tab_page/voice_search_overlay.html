@@ -1,188 +1,7 @@
-<style include="cr-icons">
-  :host {
-    --receiving-audio-color: var(--google-red-500);
-    --speak-shown-duration: 2s;
-  }
-
-  .display-stack {
-    display: grid;
-  }
-
-  .display-stack > * {
-    grid-column-start: 1;
-    grid-row-start: 1;
-  }
-
-  #dialog {
-    align-items: center;
-    background-color: var(--color-new-tab-page-overlay-background);
-    border: none;
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    left: 0;
-    margin: 0;
-    max-height: initial;
-    max-width: initial;
-    padding: 0;
-    top: 0;
-    width: 100%;
-  }
-
-  #closeButton {
-    --cr-icon-button-fill-color:
-        var(--color-new-tab-page-overlay-secondary-foreground);
-    margin: 0;
-    position: absolute;
-    top: 16px;
-  }
-
-  :host-context([dir='ltr']) #closeButton {
-    right: 16px;
-  }
-
-  :host-context([dir='rtl']) #closeButton {
-    left: 16px;
-  }
-
-  #content {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    width: 660px;
-  }
-
-  #texts {
-    color: var(--color-new-tab-page-overlay-secondary-foreground);
-    flex-grow: 1;
-    font-size: 32px;
-    text-align: start;
-  }
-
-  *[text] {
-    transition-delay: 200ms;
-    transition-duration: 500ms;
-    transition-property: opacity, padding-inline-start;
-    transition-timing-function: ease-out;
-    visibility: hidden;
-    width: 100%;
-  }
-
-  *[text='waiting'],
-  *[text='speak'] {
-    opacity: 0;
-    /* Hiding overflow to prevent jitter when the content area is narrow. */
-    overflow-x: hidden;
-    padding-inline-start: 50px;
-  }
-
-  *[text][visible] {
-    opacity: 1;
-    padding-inline-start: 0;
-    visibility: visible;
-  }
-
-  *[text='speak'][visible] #speak {
-    opacity: 0;
-    transition: opacity 0ms var(--speak-shown-duration);
-  }
-
-  *[text='speak'] #listening {
-    opacity: 0;
-  }
-
-  *[text='speak'][visible] #listening {
-    opacity: 1;
-    transition: opacity 750ms ease-out var(--speak-shown-duration);
-  }
-
-  #finalResult {
-    color: var(--color-new-tab-page-overlay-foreground);
-  }
-
-  #errors,
-  #errorLinks {
-    display: inline;
-  }
-
-  #errorLinks a {
-    color: var(--cr-link-color);
-    font-size: 18px;
-    font-weight: 500;
-    margin-inline-start: 0.25em;
-  }
-
-  #micContainer {
-    --mic-button-size: 165px;
-    --mic-container-size: 300px;
-    align-items: center;
-    flex-shrink: 0;
-    height: var(--mic-container-size);
-    justify-items: center;
-    width: var(--mic-container-size);
-  }
-
-  #micVolume {
-    --mic-volume-size: calc(var(--mic-button-size) +
-        var(--mic-volume-level) * (var(--mic-container-size) -
-            var(--mic-button-size)));
-    align-items: center;
-    background-color: var(--color-new-tab-page-border);
-    border-radius: 50%;
-    display: flex;
-    height: var(--mic-volume-size);
-    justify-content: center;
-    transition-duration: var(--mic-volume-duration);
-    transition-property: height, width;
-    transition-timing-function: ease-in-out;
-    width: var(--mic-volume-size);
-  }
-
-  #micVolumeCutout {
-    background-color: var(--color-new-tab-page-overlay-background);
-    border-radius: 50%;
-    height: var(--mic-button-size);
-    width: var(--mic-button-size);
-  }
-
-  #micIconContainer {
-    align-items: center;
-    border: 1px solid var(--color-new-tab-page-mic-border-color);
-    border-radius: 50%;
-    display: flex;
-    height: var(--mic-button-size);
-    justify-content: center;
-    transition: background-color 200ms ease-in-out;
-    width: var(--mic-button-size);
-  }
-
-  .receiving #micIconContainer {
-    background-color: var(--receiving-audio-color);
-    border-color: var(--receiving-audio-color);
-  }
-
-  #micIcon {
-    -webkit-mask-image: url(icons/mic.svg);
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 100%;
-    background-color: var(--color-new-tab-page-mic-icon-color);
-    height: 80px;
-    transition: background-color 200ms ease-in-out;
-    width: 80px;
-  }
-
-  .listening #micIcon {
-    background-color: var(--receiving-audio-color);
-  }
-
-  .receiving #micIcon {
-    background-color: white;
-  }
-</style>
-<dialog id="dialog" on-close="onOverlayClose_" on-click="onOverlayClick_"
-    on-keydown="onOverlayKeydown_">
+<dialog id="dialog" @close="${this.onOverlayClose_}"
+    @click="${this.onOverlayClick_}" @keydown="${this.onOverlayKeydown_}">
   <div id="content" tabindex="-1">
-    <iron-selector id="texts" selected="[[getText_(state_)]]"
+    <iron-selector id="texts" selected="${this.getText_()}"
         attr-for-selected="text" fallback-selection="none" aria-live="polite"
         selected-attribute="visible" class="display-stack">
       <div text="none"></div>
@@ -192,11 +11,11 @@
         <div id="listening">$i18n{listening}</div>
       </div>
       <div text="result" aria-hidden="true">
-        <span id="finalResult">[[finalResult_]]</span>
-        <span>[[interimResult_]]</span>
+        <span id="finalResult">${this.finalResult_}</span>
+        <span>${this.interimResult_}</span>
       </div>
       <div text="error">
-        <iron-pages id="errors" selected="[[getErrorText_(error_)]]"
+        <iron-pages id="errors" selected="${this.getErrorText_()}"
             attr-for-selected="error" fallback-selection="other">
           <span error="no-speech">$i18n{noVoice}</span>
           <span error="audio-capture">$i18n{audioError}</span>
@@ -206,30 +25,32 @@
           <span error="no-match">$i18n{noTranslation}</span>
           <span error="other">$i18n{otherError}</span>
         </iron-pages>
-        <iron-pages id="errorLinks" selected="[[getErrorLink_(error_)]]"
+        <iron-pages id="errorLinks" selected="${this.getErrorLink_()}"
             attr-for-selected="link" fallback-selection="none">
           <span link="none"></span>
-          <a link="learn-more" target="_blank" href="[[helpUrl_]]"
-              on-click="onLearnMoreClick_" on-keydown="onLinkKeydown_"
+          <a link="learn-more" target="_blank" href="${this.helpUrl_}"
+              @click="${this.onLearnMoreClick_}"
+              @keydown="${this.onLinkKeydown_}"
               aria-label="$i18nPolymer{learnMoreA11yLabel}"><!--
             -->$i18n{learnMore}
           </a>
-          <a link="details" target="_blank" href="[[helpUrl_]]"
-              on-keydown="onLinkKeydown_"
+          <a link="details" target="_blank" href="${this.helpUrl_}"
+              @keydown="${this.onLinkKeydown_}"
               aria-label="$i18nPolymer{learnMoreA11yLabel}"><!--
             -->$i18n{details}
           </a>
           <a link="try-again" id="retryLink" href="#"
-              on-click="onTryAgainClick_" on-keydown="onLinkKeydown_"><!--
+              @click="${this.onTryAgainClick_}"
+              @keydown="${this.onLinkKeydown_}"><!--
             -->$i18n{tryAgain}
           </a>
         </iron-pages>
       </div>
     </iron-selector>
-    <div id="micContainer" class$="[[getMicClass_(state_)]] display-stack">
+    <div id="micContainer" class="${this.getMicClass_()} display-stack">
       <div id="micVolume"
-          style="--mic-volume-level: [[micVolumeLevel_]];
-                --mic-volume-duration: [[micVolumeDuration_]]ms;">
+          .style="--mic-volume-level: ${this.micVolumeLevel_};
+                --mic-volume-duration: ${this.micVolumeDuration_}ms;">
         <div id="micVolumeCutout">
         </div>
       </div>

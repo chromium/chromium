@@ -6,12 +6,13 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from './i18n_setup.js';
 import type {PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
-import {getTemplate} from './voice_search_overlay.html.js';
+import {getCss} from './voice_search_overlay.css.js';
+import {getHtml} from './voice_search_overlay.html.js';
 import {WindowProxy} from './window_proxy.js';
 
 /**
@@ -181,53 +182,40 @@ export interface VoiceSearchOverlayElement {
 }
 
 // Overlay that lats the user perform voice searches.
-export class VoiceSearchOverlayElement extends PolymerElement {
+export class VoiceSearchOverlayElement extends CrLitElement {
   static get is() {
     return 'ntp-voice-search-overlay';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      interimResult_: String,
-      finalResult_: String,
-
-      state_: {
-        type: Number,
-        value: State.UNINITIALIZED,
-      },
-
-      error_: Number,
-
-      helpUrl_: {
-        type: String,
-        readOnly: true,
-        value: `https://support.google.com/chrome/?` +
-            `p=ui_voice_search&hl=${window.navigator.language}`,
-      },
-
-      micVolumeLevel_: {
-        type: Number,
-        value: 0,
-      },
-
-      micVolumeDuration_: {
-        type: Number,
-        value: VOLUME_ANIMATION_DURATION_MIN_MS,
-      },
+      interimResult_: {type: String},
+      finalResult_: {type: String},
+      state_: {type: Number},
+      error_: {type: Number},
+      helpUrl_: {type: String},
+      micVolumeLevel_: {type: Number},
+      micVolumeDuration_: {type: Number},
     };
   }
 
-  private interimResult_: string;
-  private finalResult_: string;
-  private state_: State;
+  protected interimResult_: string;
+  protected finalResult_: string;
+  private state_: State = State.UNINITIALIZED;
   private error_: Error;
-  private helpUrl_: string;
-  private micVolumeLevel_: number;
-  private micVolumeDuration_: number;
+  protected helpUrl_: string =
+      `https://support.google.com/chrome/?p=ui_voice_search&hl=${
+          window.navigator.language}`;
+  protected micVolumeLevel_: number = 0;
+  protected micVolumeDuration_: number = VOLUME_ANIMATION_DURATION_MIN_MS;
 
   private pageHandler_: PageHandlerRemote;
   private voiceRecognition_: SpeechRecognition;
@@ -264,12 +252,12 @@ export class VoiceSearchOverlayElement extends PolymerElement {
     this.resetIdleTimer_();
   }
 
-  private onOverlayClose_() {
+  protected onOverlayClose_() {
     this.voiceRecognition_.abort();
     this.dispatchEvent(new Event('close'));
   }
 
-  private onOverlayClick_() {
+  protected onOverlayClick_() {
     this.$.dialog.close();
     recordVoiceAction(Action.CLOSE_OVERLAY);
   }
@@ -277,7 +265,7 @@ export class VoiceSearchOverlayElement extends PolymerElement {
   /**
    * Handles <ENTER> or <SPACE> to trigger a query if we have recognized speech.
    */
-  private onOverlayKeydown_(e: KeyboardEvent) {
+  protected onOverlayKeydown_(e: KeyboardEvent) {
     if (['Enter', ' '].includes(e.key) && this.finalResult_) {
       this.onFinalResult_();
     } else if (e.key === 'Escape') {
@@ -288,7 +276,7 @@ export class VoiceSearchOverlayElement extends PolymerElement {
   /**
    * Handles <ENTER> or <SPACE> to simulate click.
    */
-  private onLinkKeydown_(e: KeyboardEvent) {
+  protected onLinkKeydown_(e: KeyboardEvent) {
     if (!['Enter', ' '].includes(e.key)) {
       return;
     }
@@ -299,11 +287,11 @@ export class VoiceSearchOverlayElement extends PolymerElement {
     (e.target as HTMLElement).click();
   }
 
-  private onLearnMoreClick_() {
+  protected onLearnMoreClick_() {
     recordVoiceAction(Action.SUPPORT_LINK_CLICKED);
   }
 
-  private onTryAgainClick_(e: Event) {
+  protected onTryAgainClick_(e: Event) {
     // Otherwise, we close the overlay.
     e.stopPropagation();
     this.start();
@@ -469,7 +457,7 @@ export class VoiceSearchOverlayElement extends PolymerElement {
         this.animateVolume_.bind(this), this.micVolumeDuration_);
   }
 
-  private getText_(): string {
+  protected getText_(): string {
     switch (this.state_) {
       case State.STARTED:
         return 'waiting';
@@ -486,7 +474,7 @@ export class VoiceSearchOverlayElement extends PolymerElement {
     }
   }
 
-  private getErrorText_(): string {
+  protected getErrorText_(): string {
     switch (this.error_) {
       case Error.NO_SPEECH:
         return 'no-speech';
@@ -508,7 +496,7 @@ export class VoiceSearchOverlayElement extends PolymerElement {
     }
   }
 
-  private getErrorLink_(): string {
+  protected getErrorLink_(): string {
     switch (this.error_) {
       case Error.NO_SPEECH:
       case Error.AUDIO_CAPTURE:
@@ -523,7 +511,7 @@ export class VoiceSearchOverlayElement extends PolymerElement {
     }
   }
 
-  private getMicClass_(): string {
+  protected getMicClass_(): string {
     switch (this.state_) {
       case State.AUDIO_RECEIVED:
         return 'listening';

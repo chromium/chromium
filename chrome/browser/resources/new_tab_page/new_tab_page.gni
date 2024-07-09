@@ -33,8 +33,10 @@ all_web_component_files = [
                           ] + modules_web_component_files
 
 all_css_files = [
+  "doodle_share_dialog.css",
   "iframe.css",
   "logo.css",
+  "voice_search_overlay.css",
 ]
 
 if (optimize_webui) {
