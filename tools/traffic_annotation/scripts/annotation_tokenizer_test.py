@@ -54,14 +54,6 @@ class AnnotationTokenizerTest(unittest.TestCase):
     self.assertEqual(')', tokenizer.advance('right_paren'))
     self.assertEqual(')', tokenizer.advance('right_paren'))
 
-  def testConcatenatedStrings(self):
-    tokenizer = Tokenizer('"hello " + "world" + "!"', 'foo.java', 22)
-    self.assertEqual('hello ', tokenizer.advance('string_literal'))
-    self.assertEqual('+', tokenizer.advance('plus'))
-    self.assertEqual('world', tokenizer.advance('string_literal'))
-    self.assertEqual('+', tokenizer.advance('plus'))
-    self.assertEqual('!', tokenizer.advance('string_literal'))
-
   def testAdvanceMultiline(self):
     tokenizer = Tokenizer('\n\tR"(the quick\nbrown\nfox)"', 'foo.txt', 33)
     self.assertEqual(

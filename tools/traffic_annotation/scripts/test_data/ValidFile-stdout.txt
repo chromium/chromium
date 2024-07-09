@@ -1,55 +1,56 @@
 ==== NEW ANNOTATION ====
 ValidFile.java
-12
+10
 Definition
 id1
 
 semantics {
-sender: 'sender1'
-description: 'desc1'
-trigger: 'trigger1'
-data: 'data1 contains \'quotes '
-destination: GOOGLE_OWNED_SERVICE
+  sender: 'sender1'
+  description: 'desc1'
+  trigger: 'trigger1'
+  data: 'data1 contains 'quotes '
+  destination: GOOGLE_OWNED_SERVICE
 }
 policy {
-cookies_allowed: NO
-setting: 'setting1'
-chrome_policy {
-SpellCheckServiceEnabled {
-SpellCheckServiceEnabled: false
-}
-}
+  cookies_allowed: NO
+  setting: 'setting1'
+  chrome_policy {
+    SpellCheckServiceEnabled {
+      SpellCheckServiceEnabled: false
+    }
+  }
 }
 comments: 'comment1'
+
 ==== ANNOTATION ENDS ====
 ==== NEW ANNOTATION ====
 ValidFile.java
-32
+33
 Definition
 id2
 
 semantics {
-sender: "sender1"
-description: "desc1"
-trigger: "trigger1 contains a backslash\
-"
-data: "data1 contains \"quotes "
-destination: GOOGLE_OWNED_SERVICE
+  sender: "sender1"
+  description: "desc1"
+  trigger: "trigger1 contains a backslash \ "
+  data: "data1 contains "quotes "
+  destination: GOOGLE_OWNED_SERVICE
 }
 policy {
-cookies_allowed: NO
-setting: "setting1"
-chrome_policy {
-SpellCheckServiceEnabled {
-SpellCheckServiceEnabled: false
-}
-}
+  cookies_allowed: NO
+  setting: "setting1"
+  chrome_policy {
+    SpellCheckServiceEnabled {
+      SpellCheckServiceEnabled: false
+    }
+  }
 }
 comments: "comment1"
+
 ==== ANNOTATION ENDS ====
 ==== NEW ANNOTATION ====
 ValidFile.java
-61
+64
 Definition
 test
 
@@ -57,7 +58,7 @@ Traffic annotation for unit, browser and other tests
 ==== ANNOTATION ENDS ====
 ==== NEW ANNOTATION ====
 ValidFile.java
-60
+63
 Definition
 missing
 
@@ -65,7 +66,7 @@ Function called without traffic annotation.
 ==== ANNOTATION ENDS ====
 ==== NEW ANNOTATION ====
 ValidFile.java
-59
+62
 Definition
 undefined
 

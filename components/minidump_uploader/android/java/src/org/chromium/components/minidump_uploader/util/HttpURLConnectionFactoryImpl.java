@@ -16,23 +16,24 @@ public class HttpURLConnectionFactoryImpl implements HttpURLConnectionFactory {
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
             NetworkTrafficAnnotationTag.createComplete(
                     "minidump_uploader_android",
-                    "semantics {"
-                            + "  sender: 'Minidump Uploader (Android)'"
-                            + "  description: 'Uploads crash reports to Google servers. This data '"
-                            + "               'is used by the Chrome team to track down and fix '"
-                            + "               'critical bugs.'"
-                            + "  trigger: 'During startup, if a crash occurred recently.'"
-                            + "  data: 'Crash report, including a trace and device info.'"
-                            + "  destination: GOOGLE_OWNED_SERVICE"
-                            + "}"
-                            + "policy {"
-                            + "  cookies_allowed: NO"
-                            + "  setting: 'Settings > Google Services > Help improve Chrome\\'s '"
-                            + "           'features and performance.'"
-                            + "  policy_exception_justification:"
-                            + "      'MetricsReportingEnabled is only implemented on desktop and '"
-                            + "      'ChromeOS.'"
-                            + "}");
+                    """
+                    semantics {
+                      sender: "Minidump Uploader (Android)"
+                      description:
+                        "Uploads crash reports to Google servers. This data is used by the Chrome "
+                        "team to track down and fix critical bugs."
+                      trigger: "During startup, if a crash occurred recently."
+                      data: "Crash report, including a trace and device info."
+                      destination: GOOGLE_OWNED_SERVICE
+                    }
+                    policy {
+                      cookies_allowed: NO
+                      setting:
+                        "Settings > Google Services > Help improve Chrome's features and "
+                        "performance."
+                      policy_exception_justification:
+                        "MetricsReportingEnabled is only implemented on desktop and ChromeOS."
+                    }""");
 
     @Override
     public HttpURLConnection createHttpURLConnection(String url) {

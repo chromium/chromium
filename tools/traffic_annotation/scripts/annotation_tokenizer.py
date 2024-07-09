@@ -27,13 +27,6 @@ TOKEN_REGEXEN = [
     # that wouldn't compile anyways, we can just ignore this issue.
     ('string_literal', re.compile(r'"((?:\\.|[^"])*?)"|R"\((.*?)\)"',
                                   re.DOTALL)),
-    # The '+' operator, for string concatenation. Java doesn't have multi-line
-    # string literals, so this is the only way to keep long strings readable. It
-    # doesn't incur a runtime cost, since the Java compiler is smart enough to
-    # concat the string literals at compile time. See "constant expressions" in
-    # the JLS:
-    # https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.28
-    ('plus', re.compile(r'(\+)')),
     # C++ or Java identifier.
     ('symbol', re.compile(r'([a-zA-Z_][a-zA-Z_0-9]*)')),
     # Left parenthesis.

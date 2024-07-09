@@ -43,39 +43,38 @@ public final class ConnectivityChecker {
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
             NetworkTrafficAnnotationTag.createComplete(
                     "android_feedback_connectivity_checker",
-                    "semantics {"
-                            + "  sender: 'Feedback Connectivity Checker'"
-                            + "  description:"
-                            + "    'When sending user initiated feedback about Chrome to '"
-                            + "    'Google, this request checks the user\\'s connectivity. It '"
-                            + "    'does this by attempting to connect to Google servers and '"
-                            + "    'records whether the browser was able to directly connect '"
-                            + "    'the servers or not. A redirected request is not considered '"
-                            + "    'a success.'"
-                            + "  trigger: 'User triggers the application feedback flow.'"
-                            + "  data: 'No additional data.'"
-                            + "  destination: GOOGLE_OWNED_SERVICE"
-                            + "  internal {"
-                            + "    contacts {"
-                            + "      email: 'clank-dev@google.com'"
-                            + "    }"
-                            + "    contacts {"
-                            + "      email: 'nyquist@chromium.org'"
-                            + "    }"
-                            + "  }"
-                            + "  user_data {"
-                            + "    type: NONE"
-                            + "  }"
-                            + "  last_reviewed: '2023-01-13'"
-                            + "}"
-                            + "policy {"
-                            + "  cookies_allowed: NO"
-                            + "  setting: 'This feature can not be disabled.'"
-                            + "  policy_exception_justification:"
-                            + "    'A policy for this is not considered necessary as this '"
-                            + "    'request is manually initiated by the user and does '"
-                            + "    'not contain any additional data.'"
-                            + "}");
+                    """
+                    semantics {
+                      sender: "Feedback Connectivity Checker"
+                      description:
+                        "When sending user initiated feedback about Chrome to Google, this request "
+                        "checks the user's connectivity. It does this by attempting to connect to "
+                        "Google servers and records whether the browser was able to directly "
+                        "connect the servers or not. A redirected request is not considered a "
+                        "success."
+                      trigger: "User triggers the application feedback flow."
+                      data: "No additional data."
+                      destination: GOOGLE_OWNED_SERVICE
+                      internal {
+                        contacts {
+                          email: "clank-dev@google.com"
+                        }
+                        contacts {
+                          email: "nyquist@chromium.org"
+                        }
+                      }
+                      user_data {
+                        type: NONE
+                      }
+                      last_reviewed: "2023-01-13"
+                    }
+                    policy {
+                      cookies_allowed: NO
+                      setting: "This feature can not be disabled."
+                      policy_exception_justification:
+                        "A policy for this is not considered necessary as this request is manually "
+                        "initiated by the user and does not contain any additional data."
+                    }""");
 
     /** A callback for whether the device is currently connected to the Internet. */
     public interface ConnectivityCheckerCallback {
