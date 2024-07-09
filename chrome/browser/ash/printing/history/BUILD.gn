@@ -30,8 +30,6 @@ static_library("history") {
 
   deps = [
     ":print_job_info_proto",
-    "//chrome/browser/ash/crosapi",
-    "//chrome/browser/chromeos",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/settings",
@@ -45,9 +43,10 @@ static_library("history") {
     "//components/reporting/util:status",
     "//components/user_manager",
     "//content/public/browser",
+    "//printing/mojom:mojom",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/crosapi" ]
+  public_deps = [ "//printing" ]
 }
 
 source_set("unit_tests") {

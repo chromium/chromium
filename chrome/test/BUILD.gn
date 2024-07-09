@@ -2265,6 +2265,7 @@ if (!is_android) {
         "//chrome/browser/ash/plugin_vm:test_support",
         "//chrome/browser/ash/policy/core",
         "//chrome/browser/ash/policy/core:test_support",
+        "//chrome/browser/ash/printing/print_management",
         "//remoting/host/chromeos:features",
 
         # TODO(b/335293584) : Remove after c/b/a/login/ has been migrated.
@@ -4714,7 +4715,6 @@ if (!is_android) {
         "../browser/ash/policy/skyvault/policy_utils_browsertest.cc",
         "../browser/ash/policy/status_collector/child_status_collector_browsertest.cc",
         "../browser/ash/policy/status_collector/device_status_collector_browsertest.cc",
-        "../browser/ash/printing/print_management/print_management_delegate_impl_browsertest.cc",
         "../browser/ash/remote_apps/remote_apps_manager_browsertest.cc",
         "../browser/ash/system/device_disabling_browsertest.cc",
         "../browser/ash/system/timezone_resolver_manager_browsertest.cc",
