@@ -3325,8 +3325,12 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
     const AttributionInfo& attribution_info,
     std::optional<AttributionReport>& new_aggregatable_report,
     std::optional<base::Time>& min_null_aggregatable_report_time) {
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
   std::optional<base::Time> attributed_source_time;
-  std::vector<AttributionReport> reports;
 
   if (new_aggregatable_report) {
     const auto* data =
@@ -3335,8 +3339,9 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
     DCHECK(data);
     attributed_source_time = data->source.source_time();
 
-    reports.emplace_back(*std::move(new_aggregatable_report));
-    new_aggregatable_report.reset();
+    if (!StoreAttributionReport(*new_aggregatable_report)) {
+      return false;
+    }
   }
 
   if (HasAggregatableData(trigger.registration())) {
@@ -3358,7 +3363,8 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
           GetAggregatableReportTime(trigger, attribution_info.time);
       min_null_aggregatable_report_time = AttributionReport::MinReportTime(
           min_null_aggregatable_report_time, report_time);
-      reports.emplace_back(
+
+      AttributionReport report(
           attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
           /*initial_report_time=*/report_time, delegate_->NewReportID(),
           /*failed_send_attempts=*/0,
@@ -3368,33 +3374,14 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
                   trigger.registration().aggregatable_trigger_config),
               trigger.reporting_origin(),
               null_aggregatable_report.fake_source_time));
-    }
-  }
-
-  if (reports.empty()) {
-    return true;
-  }
-
-  sql::Transaction transaction(&db_);
-  if (!transaction.Begin()) {
-    return false;
-  }
-
-  for (AttributionReport& report : reports) {
-    if (!StoreAttributionReport(report)) {
-      return false;
-    }
-
-    if (report.GetReportType() ==
-        AttributionReport::Type::kAggregatableAttribution) {
-      DCHECK(!new_aggregatable_report.has_value());
-      new_aggregatable_report = std::move(report);
+      if (!StoreAttributionReport(report)) {
+        return false;
+      }
     }
   }
 
   return transaction.Commit();
 }
-
 
 base::Time AttributionStorageSql::GetAggregatableReportTime(
     const AttributionTrigger& trigger,
