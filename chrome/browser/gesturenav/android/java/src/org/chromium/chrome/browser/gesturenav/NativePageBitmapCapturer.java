@@ -5,7 +5,6 @@ package org.chromium.chrome.browser.gesturenav;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -18,7 +17,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.ui.resources.dynamics.CaptureObserver;
+import org.chromium.ui.resources.dynamics.CaptureUtils;
 import org.chromium.ui.resources.dynamics.SoftwareDraw;
 
 /** Capture native page as a bitmap. */
@@ -37,10 +36,11 @@ public class NativePageBitmapCapturer implements UnownedUserData {
      * @param tab The target tab to be captured.
      * @param callback Executed with a non-null bitmap if the tab is presenting a native page. Empty
      *     bitmap if capturing fails, such as out of memory error.
+     * @param topControlsHeight Height of the top controls.
      * @return True if the capture is successfully triggered; otherwise false.
      */
     public static boolean maybeCaptureNativeView(
-            @NonNull Tab tab, @NonNull Callback<Bitmap> callback) {
+            @NonNull Tab tab, @NonNull Callback<Bitmap> callback, int topControlsHeight) {
         if (!tab.isNativePage()) {
             return false;
         }
@@ -53,25 +53,19 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         final var capturer = CAPTURER_KEY.retrieveDataFromHost(host);
 
         View view = tab.getView();
-        Rect viewBound = new Rect(0, 0, view.getWidth(), view.getHeight());
+
+        Bitmap bitmap = CaptureUtils.createBitmap(view.getWidth(), view.getHeight());
+        bitmap.eraseColor(tab.getNativePage().getBackgroundColor());
+
+        Canvas canvas = new Canvas(bitmap);
+        float scale = capturer.getScale();
 
         // TODO(crbug.com/330230340): capture bitmap asynchronously.
-        capturer.mSoftwareDraw.startBitmapCapture(
-                view,
-                viewBound,
-                capturer.getScale(),
-                new CaptureObserver() {
-                    @Override
-                    public void onCaptureStart(Canvas canvas, Rect dirtyRect) {}
-
-                    @Override
-                    public void onCaptureEnd() {}
-                },
-                (bitmap) -> {
-                    // The screenshot callback must be dispatched asynchronously. See
-                    // WebContentsDelegateAndroid#maybeCopyContentAreaAsBitmap.
-                    PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(bitmap));
-                });
+        // Translate to exclude the area of the top controls.
+        canvas.translate(0, -topControlsHeight);
+        canvas.scale(scale, scale);
+        view.draw(canvas);
+        PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(bitmap));
         return true;
     }
 
