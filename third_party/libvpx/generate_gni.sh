@@ -234,7 +234,7 @@ function make_clean() {
 # Lint a pair of vpx_config.h and vpx_config.asm to make sure they match.
 # $1 - Header file directory.
 function lint_config() {
-  # mips, native and loongarch client do not contain any assembly so the
+  # mips, native client and loongarch do not contain any assembly so the
   # headers do not need to be compared to the asm.
   if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl \
       && "$1" != *loongarch ]]; then
@@ -349,7 +349,8 @@ function gen_config_files() {
     local ASM_CONV=ads2gas_apple.pl
   fi
 
-  # Generate vpx_config.asm. Do not create one for mips or native client.
+  # Generate vpx_config.asm. Do not create one for mips, native client or
+  # loongarch.
   if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl \
       && "$1" != *loongarch ]]; then
     if [[ "$1" == *x64* ]] || [[ "$1" == *ia32* ]]; then
