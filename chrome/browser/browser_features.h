@@ -115,7 +115,7 @@ BASE_DECLARE_FEATURE(kReadAnythingPermanentAccessibility);
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-BASE_DECLARE_FEATURE(kRegisterWinUpdateHelper);
+BASE_DECLARE_FEATURE(kRegisterOsUpdateHandlerWin);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
