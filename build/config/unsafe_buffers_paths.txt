@@ -124,6 +124,7 @@
 +third_party/blink/renderer/core/dom/
 +third_party/blink/renderer/core/layout/
 +third_party/blink/renderer/core/svg/
++third_party/blink/renderer/platform/
 -tools/
 -ui/
 +ui/views/
