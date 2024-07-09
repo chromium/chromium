@@ -4,15 +4,23 @@
 
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
+import static org.chromium.chrome.browser.gsa.GSAState.GOOGLE_APP_CLASS_NAME;
+import static org.chromium.chrome.browser.gsa.GSAState.PACKAGE_NAME;
+import static org.chromium.chrome.browser.gsa.GSAState.VOICE_SEARCH_INTENT_ACTION;
+
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
+import android.app.SearchManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lens.LensController;
@@ -33,6 +41,10 @@ import org.chromium.ui.widget.ViewRectProvider;
 /** A handler class for actions triggered by buttons in a GoogleBottomBar. */
 class GoogleBottomBarActionsHandler {
     private static final String TAG = "GBBActionHandler";
+
+    @VisibleForTesting
+    static final String EXTRA_IS_LAUNCHED_FROM_CHROME_SEARCH_ENTRYPOINT =
+            "launched_from_chrome_search_entrypoint";
 
     private final Activity mActivity;
     private final Supplier<Tab> mTabProvider;
@@ -72,13 +84,85 @@ class GoogleBottomBarActionsHandler {
         return null;
     }
 
+    void openGoogleAppHome() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_INFO);
+        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+
+        startGoogleAppActivityForResult(intent, "openGoogleAppHome");
+    }
+
+    void openGoogleAppSearch() {
+        Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
+        intent.setPackage(PACKAGE_NAME);
+
+        startGoogleAppActivityForResult(intent, "openGoogleAppSearch");
+    }
+
+    void openGoogleAppVoiceSearch() {
+        Intent intent = new Intent(VOICE_SEARCH_INTENT_ACTION);
+        intent.setPackage(PACKAGE_NAME);
+
+        startGoogleAppActivityForResult(intent, "openGoogleAppVoiceSearch");
+    }
+
+    void openLens() {
+        Tab tab = mTabProvider.get();
+        if (tab == null) {
+            Log.e(TAG, "Can't open Lens as tab is not available.");
+            return;
+        }
+        WindowAndroid window = tab.getWindowAndroid();
+
+        if (window == null) {
+            Log.e(TAG, "Can't open Lens as window is not available.");
+            return;
+        }
+
+        boolean isIncognito = tab.isIncognito();
+        LensController lensController = LensController.getInstance();
+        LensQueryParams lensQueryParams =
+                new LensQueryParams.Builder(
+                                LensEntryPoint.GOOGLE_BOTTOM_BAR,
+                                isIncognito,
+                                DeviceFormFactor.isWindowOnTablet(window))
+                        .build();
+
+        if (lensController.isLensEnabled(lensQueryParams)) {
+            LensIntentParams lensIntentParams =
+                    new LensIntentParams.Builder(LensEntryPoint.GOOGLE_BOTTOM_BAR, isIncognito)
+                            .build();
+            lensController.startLens(window, lensIntentParams);
+        } else {
+            // TODO(b/351763154) Show toast when Lens is not enabled
+            Log.e(TAG, "Can't open Lens as Lens is not enabled.");
+        }
+    }
+
+    private void startGoogleAppActivityForResult(Intent intent, String actionName) {
+        intent.putExtra(EXTRA_IS_LAUNCHED_FROM_CHROME_SEARCH_ENTRYPOINT, true);
+
+        if (PackageManagerUtils.canResolveActivity(intent)) {
+            Log.w(TAG, "Starts action: %s.", actionName);
+            // startActivityForResult is added so that Google App can verify that the calling
+            // activity is Chrome
+            // Request code will not be checked in onActivityResult
+            mActivity.startActivityForResult(intent, /* requestCode= */ 0);
+        } else {
+            String message = String.format("Can't resolve activity for action: %s", actionName);
+            Log.e(TAG, message);
+            throw new IllegalStateException(message);
+        }
+    }
+
     private void onSearchButtonClick(ButtonConfig buttonConfig) {
         PendingIntent pendingIntent = buttonConfig.getPendingIntent();
         if (pendingIntent != null) {
             sendPendingIntentWithUrl(pendingIntent);
             GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SEARCH_EMBEDDER);
         } else {
-            Log.e(TAG, "Can't perform search action as pending intent is null.");
+            openGoogleAppSearch();
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SEARCH_CHROME);
         }
     }
 
@@ -181,38 +265,6 @@ class GoogleBottomBarActionsHandler {
                     /* options= */ options.toBundle());
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, "CanceledException when sending pending intent.", e);
-        }
-    }
-
-    public void openLens() {
-        Tab tab = mTabProvider.get();
-        if (tab == null) {
-            Log.e(TAG, "Can't open Lens as tab is not available.");
-            return;
-        }
-        WindowAndroid window = tab.getWindowAndroid();
-
-        if (window == null) {
-            Log.e(TAG, "Can't open Lens as window is not available.");
-            return;
-        }
-
-        boolean isIncognito = tab.isIncognito();
-        LensController lensController = LensController.getInstance();
-        LensQueryParams lensQueryParams =
-                new LensQueryParams.Builder(
-                                LensEntryPoint.GOOGLE_BOTTOM_BAR,
-                                isIncognito,
-                                DeviceFormFactor.isWindowOnTablet(window))
-                        .build();
-
-        if (lensController.isLensEnabled(lensQueryParams)) {
-            LensIntentParams lensIntentParams =
-                    new LensIntentParams.Builder(LensEntryPoint.GOOGLE_BOTTOM_BAR, isIncognito)
-                            .build();
-            lensController.startLens(window, lensIntentParams);
-        } else {
-            Log.e(TAG, "Can't open Lens as Lens is not enabled.");
         }
     }
 }

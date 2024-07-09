@@ -521,7 +521,7 @@ public class GoogleBottomBarViewCreatorTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
-    public void testCreateSearchBoxView_returnsViewWithLensButton() {
+    public void testCreateSearchBoxView_returnsViewWithSearcboxElements() {
         BottomBarConfig bottomBarConfig =
                 mConfigCreator.create(
                         GoogleBottomBarIntentParams.newBuilder()
@@ -532,10 +532,14 @@ public class GoogleBottomBarViewCreatorTest {
                         new ArrayList<>());
 
         View root = getGoogleBottomBarViewCreator(bottomBarConfig).createGoogleBottomBarView();
-
-        assertNotNull(root.findViewById(R.id.google_bottom_bar_searchbox));
-        ImageButton lensButton = root.findViewById(R.id.google_bottom_bar_searchbox_lens_button);
-        assertNotNull(lensButton);
+        View superGButton = root.findViewById(R.id.google_bottom_bar_searchbox_super_g_button);
+        View hintTextView = root.findViewById(R.id.google_bottom_bar_searchbox_mic_button);
+        View micButton = root.findViewById(R.id.google_bottom_bar_searchbox_mic_button);
+        View lensButton = root.findViewById(R.id.google_bottom_bar_searchbox_lens_button);
+        assertTrue(superGButton.hasOnClickListeners());
+        assertTrue(hintTextView.hasOnClickListeners());
+        assertTrue(micButton.hasOnClickListeners());
+        assertTrue(lensButton.hasOnClickListeners());
     }
 
     private void assertButtonLayoutCreated(BottomBarConfig config, ViewGroup root) {
