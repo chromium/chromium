@@ -59,7 +59,7 @@ consoles.console_view(
         "Linux|Intel": "*type*",
         "Linux|Nvidia": "*type*",
         "Android": ["Builder", "L32", "M64", "P32", "R32", "S64"],
-        "Lacros": "*builder*",
+        "Wayland": "*builder*",
     },
 )
 
@@ -549,7 +549,8 @@ ci.gpu.linux_builder(
 )
 
 ci.gpu.linux_builder(
-    name = "GPU FYI Lacros x64 Builder",
+    name = "GPU FYI Linux Wayland Builder",
+    description_html = "Parent GPU builder for Linux Wayland builds",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -577,7 +578,7 @@ ci.gpu.linux_builder(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Lacros|Builder",
+        category = "Wayland|Builder",
         short_name = "rel",
     ),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
@@ -814,8 +815,9 @@ ci.gpu.mac_builder(
 )
 
 ci.thin_tester(
-    name = "Lacros FYI x64 Release (AMD)",
-    triggered_by = ["GPU FYI Lacros x64 Builder"],
+    name = "Linux Wayland FYI Release (AMD)",
+    description_html = "Runs GPU tests on weston with Intel UHD 630",
+    triggered_by = ["GPU FYI Linux Wayland Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -833,14 +835,15 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Lacros|AMD",
+        category = "Wayland|AMD",
         short_name = "amd",
     ),
 )
 
 ci.thin_tester(
-    name = "Lacros FYI x64 Release (Intel)",
-    triggered_by = ["GPU FYI Lacros x64 Builder"],
+    name = "Linux Wayland FYI Release (Intel)",
+    description_html = "Runs GPU tests on weston with AMD RX 5500 XT",
+    triggered_by = ["GPU FYI Linux Wayland Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -858,7 +861,7 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Lacros|Intel",
+        category = "Wayland|Intel",
         short_name = "int",
     ),
 )

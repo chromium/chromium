@@ -2502,27 +2502,6 @@
           }
         ]
       },
-      "GPU FYI Lacros x64 Builder": {
-        "contact_team_email": "chrome-gpu-infra@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "GPU FYI Linux Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [
@@ -2545,6 +2524,27 @@
         ]
       },
       "GPU FYI Linux Builder (dbg)": {
+        "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "GPU FYI Linux Wayland Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [
           {
@@ -2923,48 +2923,6 @@
         ]
       },
       "GPU Win x64 Builder (dbg)": {
-        "contact_team_email": "chrome-gpu-infra@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "Lacros FYI x64 Release (AMD)": {
-        "contact_team_email": "chrome-gpu-infra@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "Lacros FYI x64 Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [
           {
@@ -3866,6 +3824,48 @@
         ]
       },
       "Linux Viz": {
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "Linux Wayland FYI Release (AMD)": {
+        "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "Linux Wayland FYI Release (Intel)": {
+        "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

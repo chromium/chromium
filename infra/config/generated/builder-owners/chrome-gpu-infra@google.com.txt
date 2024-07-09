@@ -70,9 +70,9 @@ ci/Dawn Win11 arm64 Builder
 ci/Dawn Win11 arm64 DEPS Builder
 ci/GPU FYI Android arm Builder
 ci/GPU FYI Android arm64 Builder
-ci/GPU FYI Lacros x64 Builder
 ci/GPU FYI Linux Builder
 ci/GPU FYI Linux Builder (dbg)
+ci/GPU FYI Linux Wayland Builder
 ci/GPU FYI Mac Builder
 ci/GPU FYI Mac Builder (asan)
 ci/GPU FYI Mac Builder (dbg)
@@ -91,8 +91,6 @@ ci/GPU Mac Builder
 ci/GPU Mac Builder (dbg)
 ci/GPU Win x64 Builder
 ci/GPU Win x64 Builder (dbg)
-ci/Lacros FYI x64 Release (AMD)
-ci/Lacros FYI x64 Release (Intel)
 ci/Linux Debug (NVIDIA)
 ci/Linux FYI Debug (NVIDIA)
 ci/Linux FYI Experimental Release (Intel UHD 630)
@@ -103,6 +101,8 @@ ci/Linux FYI Release (Intel UHD 630)
 ci/Linux FYI Release (Intel UHD 770)
 ci/Linux FYI Release (NVIDIA)
 ci/Linux Release (NVIDIA)
+ci/Linux Wayland FYI Release (AMD)
+ci/Linux Wayland FYI Release (Intel)
 ci/Mac Debug (Intel)
 ci/Mac FYI ASAN (Intel)
 ci/Mac FYI Debug (Intel)
@@ -185,8 +185,6 @@ try/gpu-fyi-try-android-r-pixel-4-32
 try/gpu-fyi-try-android-s23-64
 try/gpu-fyi-try-chromeos-amd64-generic
 try/gpu-fyi-try-chromeos-skylab-volteer
-try/gpu-fyi-try-lacros-amd-rel
-try/gpu-fyi-try-lacros-intel-rel
 try/gpu-fyi-try-linux-amd-rel
 try/gpu-fyi-try-linux-intel-exp
 try/gpu-fyi-try-linux-intel-rel
@@ -195,6 +193,8 @@ try/gpu-fyi-try-linux-nvidia-dbg
 try/gpu-fyi-try-linux-nvidia-exp
 try/gpu-fyi-try-linux-nvidia-rel
 try/gpu-fyi-try-linux-nvidia-tsn
+try/gpu-fyi-try-linux-wayland-amd-rel
+try/gpu-fyi-try-linux-wayland-intel-rel
 try/gpu-fyi-try-mac-amd-pro-rel
 try/gpu-fyi-try-mac-amd-retina-asan
 try/gpu-fyi-try-mac-amd-retina-dbg

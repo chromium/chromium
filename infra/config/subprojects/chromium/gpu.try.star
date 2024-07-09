@@ -191,22 +191,24 @@ def gpu_linux_builder(*, name, **kwargs):
     )
 
 gpu_linux_builder(
-    name = "gpu-fyi-try-lacros-amd-rel",
+    name = "gpu-fyi-try-linux-wayland-amd-rel",
+    description_html = "Runs GPU tests on weston with AMD RX 5500 XT",
     mirrors = [
-        "ci/GPU FYI Lacros x64 Builder",
-        "ci/Lacros FYI x64 Release (AMD)",
+        "ci/GPU FYI Linux Wayland Builder",
+        "ci/Linux Wayland FYI Release (AMD)",
     ],
-    gn_args = "ci/GPU FYI Lacros x64 Builder",
+    gn_args = "ci/GPU FYI Linux Wayland Builder",
     pool = "luci.chromium.gpu.linux.amd.try",
 )
 
 gpu_linux_builder(
-    name = "gpu-fyi-try-lacros-intel-rel",
+    name = "gpu-fyi-try-linux-wayland-intel-rel",
+    description_html = "Runs GPU tests on weston with Intel UHD 630",
     mirrors = [
-        "ci/GPU FYI Lacros x64 Builder",
-        "ci/Lacros FYI x64 Release (Intel)",
+        "ci/GPU FYI Linux Wayland Builder",
+        "ci/Linux Wayland FYI Release (Intel)",
     ],
-    gn_args = "ci/GPU FYI Lacros x64 Builder",
+    gn_args = "ci/GPU FYI Linux Wayland Builder",
     pool = "luci.chromium.gpu.linux.intel.try",
 )
 

@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "GPU FYI Lacros x64 Builder",
+              "builder": "GPU FYI Linux Wayland Builder",
               "project": "chromium"
             },
             "builder_spec": {
@@ -29,7 +29,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Lacros FYI x64 Release (AMD)",
+              "builder": "Linux Wayland FYI Release (AMD)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -49,7 +49,7 @@
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "GPU FYI Lacros x64 Builder",
+                "builder": "GPU FYI Linux Wayland Builder",
                 "project": "chromium"
               },
               "run_tests_serially": true
@@ -60,13 +60,13 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Lacros FYI x64 Release (AMD)",
+          "builder": "Linux Wayland FYI Release (AMD)",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "gpu-fyi-try-lacros-amd-rel",
+          "builder": "gpu-fyi-try-linux-wayland-amd-rel",
           "group": "tryserver.chromium.linux"
         }
       ]

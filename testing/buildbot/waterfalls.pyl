@@ -4362,28 +4362,6 @@
       'GPU FYI Win x64 Builder (dbg)' : {},
       'GPU FYI Win x64 DX12 Vulkan Builder': {},
       'GPU FYI Win x64 DX12 Vulkan Builder (dbg)': {},
-      'Lacros FYI x64 Release (AMD)': {
-        'os_type': 'lacros',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_amd_rx_5500_xt',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_lacros_release_gtests',
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
-        },
-      },
-      'Lacros FYI x64 Release (Intel)': {
-        'os_type': 'lacros',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_uhd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_lacros_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_lacros_release_telemetry_tests',
-        },
-      },
       'Linux FYI Debug (NVIDIA)': {
         'browser_config': 'debug',
         'os_type': 'linux',
@@ -4479,6 +4457,28 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_linux_release_vulkan_telemetry_tests',
+        },
+      },
+      'Linux Wayland FYI Release (AMD)': {
+        'os_type': 'lacros',
+        'browser_config': 'release',
+        'mixins': [
+          'linux_amd_rx_5500_xt',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_fyi_lacros_release_gtests',
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
+      'Linux Wayland FYI Release (Intel)': {
+        'os_type': 'lacros',
+        'browser_config': 'release',
+        'mixins': [
+          'linux_intel_uhd_630_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_fyi_lacros_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_lacros_release_telemetry_tests',
         },
       },
       'Mac FYI ASAN (Intel)': {
