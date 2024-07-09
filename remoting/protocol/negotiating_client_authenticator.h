@@ -13,7 +13,6 @@
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/client_authentication_config.h"
 #include "remoting/protocol/negotiating_authenticator_base.h"
-#include "remoting/protocol/third_party_client_authenticator.h"
 
 namespace remoting::protocol {
 

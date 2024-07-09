@@ -51,19 +51,6 @@ void RemotingClientSessionDelegate::FetchSecret(
                                   callback:secret_fetched_callback];
 }
 
-void RemotingClientSessionDelegate::FetchThirdPartyToken(
-    const std::string& token_url,
-    const std::string& client_id,
-    const std::string& scopes,
-    const protocol::ThirdPartyTokenFetchedCallback& callback) {
-  DCHECK(runtime_->ui_task_runner()->BelongsToCurrentThread());
-
-  [client_ fetchThirdPartyTokenForUrl:SysUTF8ToNSString(token_url)
-                             clientId:SysUTF8ToNSString(client_id)
-                               scopes:SysUTF8ToNSString(scopes)
-                             callback:callback];
-}
-
 void RemotingClientSessionDelegate::SetCapabilities(
     const std::string& capabilities) {
   DCHECK(runtime_->ui_task_runner()->BelongsToCurrentThread());

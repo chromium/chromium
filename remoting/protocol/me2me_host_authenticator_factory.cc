@@ -17,7 +17,6 @@
 #include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/negotiating_host_authenticator.h"
 #include "remoting/protocol/rejecting_authenticator.h"
-#include "remoting/protocol/token_validator.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"

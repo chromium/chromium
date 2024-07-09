@@ -75,13 +75,6 @@ fetchSecretWithPairingSupported:(BOOL)pairingSupported
                            (const remoting::protocol::SecretFetchedCallback&)
                                secretFetchedCallback;
 
-- (void)fetchThirdPartyTokenForUrl:(NSString*)tokenUrl
-                          clientId:(NSString*)clinetId
-                            scopes:(NSString*)scopes
-                          callback:(const remoting::protocol::
-                                        ThirdPartyTokenFetchedCallback&)
-                                       tokenFetchedCallback;
-
 - (void)setCapabilities:(NSString*)capabilities;
 
 - (void)handleExtensionMessageOfType:(NSString*)type message:(NSString*)message;

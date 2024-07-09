@@ -17,8 +17,6 @@ const NameMapElement<HostAuthenticationConfig::Method>
          "spake2_curve25519"},
         {HostAuthenticationConfig::Method::PAIRED_SPAKE2_CURVE25519,
          "pair_spake2_curve25519"},
-        {HostAuthenticationConfig::Method::THIRD_PARTY_SPAKE2_CURVE25519,
-         "third_party_spake2_curve25519"},
         {HostAuthenticationConfig::Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519,
          "corp_session_authz_spake2_curve25519"},
 };
@@ -56,11 +54,6 @@ void HostAuthenticationConfig::AddSessionAuthzAuth(
   session_authz_client_factory = factory;
 }
 
-void HostAuthenticationConfig::AddThirdPartyAuth(
-    scoped_refptr<TokenValidatorFactory> factory) {
-  token_validator_factory = factory;
-}
-
 void HostAuthenticationConfig::AddPairingAuth(
     scoped_refptr<PairingRegistry> registry) {
   pairing_registry = registry;
@@ -75,9 +68,6 @@ HostAuthenticationConfig::GetSupportedMethods() {
   std::vector<Method> methods;
   if (session_authz_client_factory) {
     methods.push_back(Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519);
-  }
-  if (token_validator_factory) {
-    methods.push_back(Method::THIRD_PARTY_SPAKE2_CURVE25519);
   }
   if (!shared_secret_hash.empty()) {
     // Pairing auth requires a non-empty shared secret hash.

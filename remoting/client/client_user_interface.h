@@ -9,7 +9,6 @@
 #include <string>
 
 #include "remoting/protocol/connection_to_host.h"
-#include "remoting/protocol/third_party_client_authenticator.h"
 
 namespace webrtc {
 class DesktopSize;

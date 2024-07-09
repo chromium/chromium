@@ -32,10 +32,6 @@ NegotiatingClientAuthenticator::NegotiatingClientAuthenticator(
       local_id_(local_id),
       remote_id_(remote_id),
       config_(config) {
-  if (!config_.fetch_third_party_token_callback.is_null()) {
-    AddMethod(Method::THIRD_PARTY_SPAKE2_CURVE25519);
-  }
-
   AddMethod(Method::PAIRED_SPAKE2_CURVE25519);
   AddMethod(Method::SHARED_SECRET_SPAKE2_CURVE25519);
 }
@@ -126,14 +122,6 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
   switch (current_method_) {
     case Method::INVALID:
       NOTREACHED_IN_MIGRATION();
-      break;
-
-    case Method::THIRD_PARTY_SPAKE2_CURVE25519:
-      current_authenticator_ = std::make_unique<ThirdPartyClientAuthenticator>(
-          base::BindRepeating(&Spake2Authenticator::CreateForClient, local_id_,
-                              remote_id_),
-          config_.fetch_third_party_token_callback);
-      std::move(resume_callback).Run();
       break;
 
     case Method::PAIRED_SPAKE2_CURVE25519: {

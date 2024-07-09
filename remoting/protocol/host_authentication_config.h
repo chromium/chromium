@@ -16,7 +16,6 @@
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/session_authz_service_client_factory.h"
 #include "remoting/protocol/pairing_registry.h"
-#include "remoting/protocol/token_validator.h"
 
 namespace remoting::protocol {
 
@@ -32,10 +31,6 @@ struct HostAuthenticationConfig {
 
     // SPAKE2 using shared pairing secret.
     PAIRED_SPAKE2_CURVE25519,
-
-    // Authentication using the third-party authentication server, which
-    // generates the shared secret for SPAKE2 key exchange.
-    THIRD_PARTY_SPAKE2_CURVE25519,
 
     // Authentication using the SessionAuthz service,  which generates the
     // shared secret for SPAKE2 key exchange.
@@ -57,7 +52,6 @@ struct HostAuthenticationConfig {
 
   void AddSessionAuthzAuth(
       scoped_refptr<SessionAuthzServiceClientFactory> factory);
-  void AddThirdPartyAuth(scoped_refptr<TokenValidatorFactory> factory);
 
   // Note that pairing auth does not work without a shared secret hash, so
   // AddSharedSecretAuth() must also be called in order for
@@ -77,9 +71,6 @@ struct HostAuthenticationConfig {
 
   // Used for SessionAuthz authentication.
   scoped_refptr<SessionAuthzServiceClientFactory> session_authz_client_factory;
-
-  // Used for third party authentication.
-  scoped_refptr<TokenValidatorFactory> token_validator_factory;
 
   // Used for pairing authentication.
   scoped_refptr<PairingRegistry> pairing_registry;

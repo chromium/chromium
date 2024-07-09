@@ -23,8 +23,6 @@
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/session_authz_authenticator.h"
 #include "remoting/protocol/spake2_authenticator.h"
-#include "remoting/protocol/third_party_host_authenticator.h"
-#include "remoting/protocol/token_validator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting::protocol {
@@ -159,16 +157,6 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       current_authenticator_ = std::move(authenticator);
       break;
     }
-
-    case Method::THIRD_PARTY_SPAKE2_CURVE25519:
-      current_authenticator_ = std::make_unique<ThirdPartyHostAuthenticator>(
-          base::BindRepeating(&Spake2Authenticator::CreateForHost, local_id_,
-                              remote_id_, config_->local_cert,
-                              config_->key_pair),
-          config_->token_validator_factory->CreateTokenValidator(local_id_,
-                                                                 remote_id_));
-      std::move(resume_callback).Run();
-      break;
 
     case Method::PAIRED_SPAKE2_CURVE25519: {
       PairingHostAuthenticator* pairing_authenticator =

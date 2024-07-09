@@ -28,7 +28,6 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
-#include "remoting/host/third_party_auth_config.h"
 #include "remoting/protocol/port_range.h"
 
 #if !defined(NDEBUG)
@@ -121,19 +120,6 @@ base::Value::Dict CopyChromotingPoliciesIntoDictionary(
 // Takes a dictionary containing only 1) recognized policy names and 2)
 // well-typed policy values and further verifies policy contents.
 bool VerifyWellformedness(const base::Value::Dict& changed_policies) {
-  // Verify ThirdPartyAuthConfig policy.
-  ThirdPartyAuthConfig not_used;
-  switch (ThirdPartyAuthConfig::Parse(changed_policies, &not_used)) {
-    case ThirdPartyAuthConfig::NoPolicy:
-    case ThirdPartyAuthConfig::ParsingSuccess:
-      break;  // Well-formed.
-    case ThirdPartyAuthConfig::InvalidPolicy:
-      return false;  // Malformed.
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
-  }
-
   // Verify UdpPortRange policy.
   const std::string* udp_port_range_string =
       changed_policies.FindString(policy::key::kRemoteAccessHostUdpPortRange);

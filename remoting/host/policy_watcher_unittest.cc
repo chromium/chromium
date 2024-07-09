@@ -160,19 +160,6 @@ class PolicyWatcherTest : public testing::Test {
     username_true_.Set(key::kRemoteAccessHostMatchUsername, true);
     username_false_.Set(key::kRemoteAccessHostMatchUsername, false);
 #endif
-#if !BUILDFLAG(IS_CHROMEOS)
-    third_party_auth_partial_.Set(key::kRemoteAccessHostTokenUrl,
-                                  "https://token.com");
-    third_party_auth_partial_.Set(key::kRemoteAccessHostTokenValidationUrl,
-                                  "https://validation.com");
-    third_party_auth_full_.Merge(third_party_auth_partial_.Clone());
-    third_party_auth_full_.Set(
-        key::kRemoteAccessHostTokenValidationCertificateIssuer,
-        "certificate subject");
-    third_party_auth_cert_empty_.Merge(third_party_auth_partial_.Clone());
-    third_party_auth_cert_empty_.Set(
-        key::kRemoteAccessHostTokenValidationCertificateIssuer, "");
-#endif
 
 #if BUILDFLAG(IS_WIN)
     remote_assistance_uiaccess_true_.Set(
@@ -295,9 +282,6 @@ class PolicyWatcherTest : public testing::Test {
   base::Value::Dict curtain_false_;
   base::Value::Dict username_true_;
   base::Value::Dict username_false_;
-  base::Value::Dict third_party_auth_full_;
-  base::Value::Dict third_party_auth_partial_;
-  base::Value::Dict third_party_auth_cert_empty_;
   base::Value::Dict remote_assistance_uiaccess_true_;
   base::Value::Dict remote_assistance_uiaccess_false_;
   base::Value::Dict deprecated_policies_;
@@ -658,38 +642,6 @@ TEST_F(PolicyWatcherTest, MatchUsername) {
   SetPolicies(username_false_);
 }
 #endif
-
-TEST_F(PolicyWatcherTest, ThirdPartyAuthFull) {
-  testing::InSequence sequence;
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&nat_true_others_default_)));
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&third_party_auth_full_)));
-
-  SetPolicies(empty_);
-  StartWatching();
-  SetPolicies(third_party_auth_full_);
-}
-
-// This test verifies what happens when only 1 out of 3 third-party auth
-// policies changes.  Without the other 2 policy values such policy values
-// combination is invalid (i.e. cannot have TokenUrl without
-// TokenValidationUrl) and can trigger OnPolicyError unless PolicyWatcher
-// implementation is careful around this scenario.
-TEST_F(PolicyWatcherTest, ThirdPartyAuthPartialToFull) {
-  testing::InSequence sequence;
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&nat_true_others_default_)));
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&third_party_auth_cert_empty_)));
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&third_party_auth_full_)));
-
-  SetPolicies(empty_);
-  StartWatching();
-  SetPolicies(third_party_auth_partial_);
-  SetPolicies(third_party_auth_full_);
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PolicyWatcherTest, UdpPortRange) {
