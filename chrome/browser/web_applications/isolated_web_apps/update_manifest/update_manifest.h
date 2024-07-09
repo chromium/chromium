@@ -137,7 +137,7 @@ class UpdateManifest {
 
     // Parses the `channels` field value of a version entry and either returns a
     // set of channels on success or an error on failure. If `channels` is not
-    // set (i.e., `channels_value` is `absl::nullopt`), then a set containing
+    // set (i.e., `channels_value` is `std::nullopt`), then a set containing
     // just the "default" channel is returned.
     static base::expected<base::flat_set<UpdateChannelId>, absl::monostate>
     ParseAndValidateChannels(
@@ -167,7 +167,7 @@ class UpdateManifest {
   const std::vector<VersionEntry>& versions() const { return version_entries_; }
 
   // Returns the most up to date version contained in the `UpdateManifest` for a
-  // given `channel_id`. May return `absl::nullopt` if no applicable version is
+  // given `channel_id`. May return `std::nullopt` if no applicable version is
   // found.
   std::optional<VersionEntry> GetLatestVersion(
       const UpdateChannelId& channel_id) const;

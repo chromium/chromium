@@ -284,7 +284,7 @@ interface MultiDeviceSetup {
 
   // Informs whether the user already connected their phone using OOBE Quick
   // Start. If so, it returns the string of the phone instance ID. If not, it
-  // returns absl::nullopt. MultideviceSetup in OOBE uses this value to prefer
+  // returns std::nullopt. MultideviceSetup in OOBE uses this value to prefer
   // the device and update UI strings if the matching phone is present.
   GetQuickStartPhoneInstanceID() =>
       (string? qs_phone_instance_id);

@@ -110,14 +110,14 @@ class BASE_EXPORT JSONReader {
   JSONReader& operator=(const JSONReader&) = delete;
 
   // Reads and parses |json|, returning a Value.
-  // If |json| is not a properly formed JSON string, returns absl::nullopt.
+  // If |json| is not a properly formed JSON string, returns std::nullopt.
   static std::optional<Value> Read(
       std::string_view json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json|, returning a Value::Dict.
-  // If |json| is not a properly formed JSON dict string, returns absl::nullopt.
+  // If |json| is not a properly formed JSON dict string, returns std::nullopt.
   static std::optional<Value::Dict> ReadDict(
       std::string_view json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,

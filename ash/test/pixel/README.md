@@ -24,7 +24,7 @@ with Chrome testing, read this [doc][3] first.
 class DemoAshPixelDiffTest : public AshTestBase {
  public:
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -190,7 +190,7 @@ create a pixel test to verify the right-to-left UI layout in the code below:
 class DemoRTLTest : public AshTestBase {
  public:
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = true;

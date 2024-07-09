@@ -180,7 +180,7 @@ at run-time, getting or setting the value directly via the getter and setter is
 perfectly valid.
 
 The type converter for a non-serializable type may return something from the
-ToString() method, but it will typically return absl::nullopt from the
+ToString() method, but it will typically return std::nullopt from the
 FromString() method. For a non-serializable type, the ui-devtools front-end
 won’t call the setter since whatever “value” it has is presumed to be
 unconvertable to a valid value.
@@ -195,4 +195,3 @@ converter specialization. This is done the same as other type converter
 specializations, except for the ancestor specialization. The ancestor
 `BaseTypeConverter` template takes a few `bool` parameters. The first of which
 indicates whether a property type is serializable.
-

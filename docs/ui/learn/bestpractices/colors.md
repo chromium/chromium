@@ -476,7 +476,7 @@ SkColor GetAuraColor(
           NativeTheme::kColorId_ButtonColor,
           color_scheme);
       return color_utils::BlendForMinContrast(
-          bg, bg, absl::nullopt, 1.2f).color;
+          bg, bg, std::nullopt, 1.2f).color;
     }
     ...
   }

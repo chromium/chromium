@@ -34,12 +34,12 @@ class WifiDirectMedium : public api::WifiDirectMedium {
   bool ConnectWifiDirect(WifiDirectCredentials* credentials) override;
   bool DisconnectWifiDirect() override;
   std::unique_ptr<api::WifiDirectSocket> ConnectToService(
-      absl::string_view ip_address,
+      std::string_view ip_address,
       int port,
       CancellationFlag* cancellation_flag) override;
   std::unique_ptr<api::WifiDirectServerSocket> ListenForService(
       int port) override;
-  absl::optional<std::pair<std::int32_t, std::int32_t>> GetDynamicPortRange()
+  std::optional<std::pair<std::int32_t, std::int32_t>> GetDynamicPortRange()
       override;
 
  private:

@@ -43,7 +43,7 @@ struct BackForwardCacheNotRestoredReasons {
   string? name;
   // List of reasons that blocked back/forward cache if any.
   array<BFCacheBlockingDetailedReason> reasons;
-  // This will be absl::nullopt when this document is cross-origin from the main
+  // This will be std::nullopt when this document is cross-origin from the main
   // document.
   SameOriginBfcacheNotRestoredDetails? same_origin_details;
 };

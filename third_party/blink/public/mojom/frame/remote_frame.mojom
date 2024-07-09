@@ -433,7 +433,7 @@ interface RemoteFrame {
   // `token`: The frame token. Used to map between RemoteFrame and
   //     RenderFrameProxyHost.
   // `opener_frame_token`: Frame token that identifies the opener frame if one
-  //     exists, or absl::nullopt otherwise.
+  //     exists, or std::nullopt otherwise.
   // `tree_scope_type`: Whether the owner element (e.g. <iframe>, <object>, et
   //     cetera) for this frame is in the document tree or the shadow tree.
   // `owner_properties`: This frame's FrameOwner properties, such as scrolling,

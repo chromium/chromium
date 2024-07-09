@@ -548,7 +548,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   // Error: Invalid return.
   static const char kErrorInvalidReturn[];
 
-  // Property key for absl::Optional dbus serialization.
+  // Property key for std::optional dbus serialization.
   static const char kOptionalValueKey[];
 
   // Error: does not exist.

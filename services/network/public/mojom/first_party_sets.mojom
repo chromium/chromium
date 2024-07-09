@@ -30,10 +30,10 @@ struct FirstPartySetEntry {
 // This struct must match the class fields defined in
 // //net/first_party_sets/first_party_set_metadata.h.
 struct FirstPartySetMetadata {
-  // absl::nullopt indicates that the frame's site is not associated with any
+  // std::nullopt indicates that the frame's site is not associated with any
   // First-Party Set.
   FirstPartySetEntry? frame_entry;
-  // absl::nullopt indicates that the top frame's site is not associated with
+  // std::nullopt indicates that the top frame's site is not associated with
   // any First-Party Set.
   FirstPartySetEntry? top_frame_entry;
 };
@@ -90,4 +90,3 @@ struct GlobalFirstPartySets {
   // The aliases contained in the manually-supplied set.
   map<SchemefulSite, SchemefulSite> manual_aliases;
 };
-

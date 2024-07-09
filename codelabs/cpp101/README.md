@@ -269,14 +269,14 @@ exiting prematurely.
 
 Take the given (slow) function to find a non-trivial factor of a given integer:
 ```cpp
-absl::optional<int> FindNonTrivialFactor(int n) {
+std::optional<int> FindNonTrivialFactor(int n) {
   // Really naive algorithm.
   for (int i = 2; i < n; ++i) {
     if (n % i == 0) {
       return i;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 ```
 Write a command-line utility `factor` that takes a number, posts a task to the

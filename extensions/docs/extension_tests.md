@@ -332,7 +332,7 @@ TEST_F(FrobulationApiUnitTest, CallingFrobulateKicksOffFrobulation) {
   Browser* browser = CreateTestBrowser();
   auto frobulate_function =
       base::MakeRefCounted<FrobulationFrobulateFunction>();
-  absl::optional<base::Value> result(
+  std::optional<base::Value> result(
       api_test_utils::RunFunctionAndReturnSingleResult(
           frobulate_function.get(), R"([{"speed": 10, "target": "foo"}])",
           browser));

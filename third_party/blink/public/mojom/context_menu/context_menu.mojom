@@ -95,7 +95,7 @@ struct UntrustworthyContextMenuParams {
   // Will be empty if |link_url| is empty.
   mojo_base.mojom.String16 link_text;
 
-  // The impression declared by the link. May be absl::nullopt even if
+  // The impression declared by the link. May be std::nullopt even if
   // |link_url| is non-empty.
   Impression? impression;
 

@@ -176,7 +176,7 @@ struct URLRequest {
   //
   // [1]: https://fetch.spec.whatwg.org/#concept-request-origin
   //
-  // |request_initiator| should be omitted (i.e. set to absl::nullopt) for
+  // |request_initiator| should be omitted (i.e. set to std::nullopt) for
   // browser-initiated requests (e.g. navigations initiated via omnibox or
   // bookmarks, internal subresource requests like fetching the SafeBrowsing
   // data, etc.).  Various security features may treat browser-initiated
@@ -190,7 +190,7 @@ struct URLRequest {
   // provided.  Failure to provide a correct, verified |request_initiator| may
   // lead to bypasses of CORS, ORB, SameSite cookies and other HTTP security
   // features.  An untrustworthy process (e.g. a renderer or a utility process)
-  // should not be able to trigger or influence requests with a absl::nullopt
+  // should not be able to trigger or influence requests with a std::nullopt
   // |request_initiator|).
   //
   // See also:

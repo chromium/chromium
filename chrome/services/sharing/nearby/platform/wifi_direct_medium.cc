@@ -84,7 +84,7 @@ bool WifiDirectMedium::DisconnectWifiDirect() {
 }
 
 std::unique_ptr<api::WifiDirectSocket> WifiDirectMedium::ConnectToService(
-    absl::string_view ip_address,
+    std::string_view ip_address,
     int port,
     CancellationFlag* cancellation_flag) {
   // Ensure that there is a valid WiFi Direct connection.
@@ -224,10 +224,10 @@ std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
       std::move(socket));
 }
 
-absl::optional<std::pair<std::int32_t, std::int32_t>>
+std::optional<std::pair<std::int32_t, std::int32_t>>
 WifiDirectMedium::GetDynamicPortRange() {
   NOTIMPLEMENTED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WifiDirectMedium::GetCapabilities(

@@ -4872,7 +4872,7 @@ TEST_F(URLLoaderTest, BlockAllCookies) {
 
   GURL cookie_url = test_server()->GetURL("/");
   auto cc = net::CanonicalCookie::CreateForTesting(
-      cookie_url, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
+      cookie_url, "a=b", base::Time::Now(), std::nullopt /* server_time */,
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com")));
 
@@ -4901,7 +4901,7 @@ TEST_F(URLLoaderTest, BlockOnlyThirdPartyCookies) {
 
   GURL cookie_url = test_server()->GetURL("/");
   auto cc = net::CanonicalCookie::CreateForTesting(
-      cookie_url, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
+      cookie_url, "a=b", base::Time::Now(), std::nullopt /* server_time */,
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com")));
 
@@ -4928,7 +4928,7 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
 
   GURL cookie_url = test_server()->GetURL("/");
   auto cc = net::CanonicalCookie::CreateForTesting(
-      cookie_url, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
+      cookie_url, "a=b", base::Time::Now(), std::nullopt /* server_time */,
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com")));
 

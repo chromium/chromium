@@ -106,8 +106,9 @@ class OptionalOrRawPtrToGCedMatcher : public MatchFinder::MatchCallback {
       : diagnostics_(diagnostics), record_cache_(record_cache) {}
 
   void Register(MatchFinder& match_finder) {
-    // Matches fields and new-expressions of type absl::optional where the
-    // template argument is known to refer to a garbage-collected type.
+    // Matches fields and new-expressions of type std::optional or
+    // absl::optional where the template argument is known to refer to a
+    // garbage-collected type.
     auto optional_gced_type = hasType(
         classTemplateSpecializationDecl(
             hasAnyName("::absl::optional", "::std::optional", "::base::raw_ptr",

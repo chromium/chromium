@@ -279,7 +279,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     const Browser* browser,
     const tab_groups::TabGroupId& group,
     TabGroupHeader* anchor_view,
-    absl::optional<gfx::Rect> anchor_rect,
+    std::optional<gfx::Rect> anchor_rect,
     bool stop_context_menu_propagation)
     : ... {
 
@@ -374,7 +374,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     const Browser* browser,
     const tab_groups::TabGroupId& group,
     views::View* anchor_view,
-    absl::optional<gfx::Rect> anchor_rect,
+    std::optional<gfx::Rect> anchor_rect,
     TabGroupHeader* header_view,
     bool stop_context_menu_propagation)
     : ... {
@@ -1348,4 +1348,3 @@ void TimeView::UpdateClockLayout(
 ```
 
 |||---|||
-
