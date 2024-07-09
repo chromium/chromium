@@ -102,6 +102,9 @@ using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
 //     sites.
 // * HTTPS First Mode in Incognito:
 //     Automatically enables HTTPS First Mode in Incognito windows.
+// * HTTPS First Balanced Mode:
+//     Enables HTTPS First Mode like full HFM, but exempt navigations that are
+//     likely to fail.
 //
 enum class HttpsUpgradesTestType {
   // Enables the HFM pref.
@@ -121,8 +124,11 @@ enum class HttpsUpgradesTestType {
   // window.
   kHttpsFirstModeIncognito,
 
+  // Enables HFM in balanced mode.
+  kHttpsFirstBalancedMode,
+
   // Enables HFM pref, HFM with Site Engagement heuristic, HFM for typically
-  // secure users, and HFM in incognito feature flag.
+  // secure users, HFM in incognito, and balanced HFM feature flags.
   kAll,
 
   // Disables HFM pref, HFM with Site Engagement heuristic, the HFM for
@@ -139,6 +145,9 @@ struct ExpectedInterstitialReasons {
   // The number of times the interstitial was shown because of the Typically
   // Secure User heuristic.
   size_t typically_secure_user = 0;
+  // The number of times the interstitial was shown because of being in balanced
+  // mode.
+  size_t balanced = 0;
 };
 
 // A very low site engagement score.
@@ -163,7 +172,8 @@ class HttpsUpgradesBrowserTest
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForEngagedSites,
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
-                features::kHttpsFirstModeIncognito});
+                features::kHttpsFirstModeIncognito,
+                features::kHttpsFirstBalancedMode});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeWithSiteEngagement:
@@ -188,13 +198,21 @@ class HttpsUpgradesBrowserTest
             /*enabled_features=*/{features::
                                       kHttpsFirstModeV2ForTypicallySecureUsers,
                                   features::kHttpsFirstModeV2ForEngagedSites},
-            /*disabled_features=*/{});
+            /*disabled_features=*/{features::kHttpsFirstBalancedMode});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeIncognito:
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::kHttpsFirstModeIncognito},
             /*disabled_features=*/{});
+        break;
+
+      case HttpsUpgradesTestType::kHttpsFirstBalancedMode:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{features::kHttpsFirstBalancedMode},
+            /*disabled_features=*/{
+                features::kHttpsFirstModeV2ForTypicallySecureUsers,
+                features::kHttpsFirstModeV2ForEngagedSites});
         break;
 
       // Enable HFM, HFM with Site Engagement heuristic, HFM for typically
@@ -208,6 +226,7 @@ class HttpsUpgradesBrowserTest
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
                 features::kHttpsFirstModeForAdvancedProtectionUsers,
                 features::kHttpsFirstModeIncognito,
+                features::kHttpsFirstBalancedMode,
             },
             /*disabled_features=*/{});
         break;
@@ -222,7 +241,7 @@ class HttpsUpgradesBrowserTest
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForEngagedSites,
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
-                features::kHttpsFirstModeIncognito});
+                features::kHttpsFirstBalancedMode});
         break;
     }
 
@@ -313,7 +332,12 @@ class HttpsUpgradesBrowserTest
     ASSERT_EQ(nullptr, incognito_browser_.get());
     incognito_browser_ = CreateIncognitoBrowser();
   }
-  bool IsIncognito() { return incognito_browser_ != nullptr; }
+  bool IsIncognito() const { return incognito_browser_ != nullptr; }
+  bool InBalancedMode() const {
+    return https_upgrades_test_type() ==
+               HttpsUpgradesTestType::kHttpsFirstBalancedMode ||
+           https_upgrades_test_type() == HttpsUpgradesTestType::kAll;
+  }
 
  protected:
   HttpsUpgradesTestType https_upgrades_test_type() const { return GetParam(); }
@@ -349,13 +373,18 @@ class HttpsUpgradesBrowserTest
     content::NavigateToURLBlockUntilNavigationsComplete(tab, url, 1);
   }
 
-  // Whether HFM is enabled by the UI setting and the tests should run steps
-  // that assume the HTTP interstitial will trigger (i.e., for fallback HTTP
-  // navigations when HTTPS-First Mode is enabled).
+  // Whether HFM is enabled by the UI setting.
   bool IsHttpsFirstModePrefEnabled() const {
     return https_upgrades_test_type() ==
                HttpsUpgradesTestType::kHttpsFirstModeOnly ||
            https_upgrades_test_type() == HttpsUpgradesTestType::kAll;
+  }
+
+  // Whether HFM is enabled for many sites, and thus the tests should run steps
+  // that assume the HTTP interstitial will trigger (i.e., for fallback HTTP
+  // navigations when HTTPS-First Mode is enabled).
+  bool IsHttpsFirstModeInterstitialEnabledAcrossSites() const {
+    return IsHttpsFirstModePrefEnabled() || InBalancedMode() || IsIncognito();
   }
 
   // Whether HTTPS-First Mode with Site Engagement Heuristic is enabled. When
@@ -395,28 +424,40 @@ class HttpsUpgradesBrowserTest
   // correct reasons.
   void CheckInterstitialReasonHistogram(
       const ExpectedInterstitialReasons& expected_reasons) {
-    histograms()->ExpectTotalCount(
-        kInterstitialReasonHistogram,
-        expected_reasons.pref + expected_reasons.typically_secure_user);
+    histograms()->ExpectTotalCount(kInterstitialReasonHistogram,
+                                   expected_reasons.pref +
+                                       expected_reasons.typically_secure_user +
+                                       expected_reasons.balanced);
     histograms()->ExpectBucketCount(kInterstitialReasonHistogram,
                                     static_cast<int>(InterstitialReason::kPref),
                                     expected_reasons.pref);
+    histograms()->ExpectBucketCount(
+        kInterstitialReasonHistogram,
+        static_cast<int>(InterstitialReason::kBalanced),
+        expected_reasons.balanced);
     histograms()->ExpectBucketCount(
         kInterstitialReasonHistogram,
         static_cast<int>(InterstitialReason::kTypicallySecureUserHeuristic),
         expected_reasons.typically_secure_user);
   }
 
-  // Verifies that an HFM interstitial is shown only if the HFM-pref is enabled.
-  void ExpectInterstitialOnlyIfPrefIsSet(content::WebContents* contents) {
-    if (IsHttpsFirstModePrefEnabled()) {
-      EXPECT_TRUE(
-          chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-              contents));
-      EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-          contents->GetPrimaryMainFrame(),
-          "You are seeing this warning because this site does not support "
-          "HTTPS."));
+  // Verifies that an HFM interstitial is shown.
+  void ExpectInterstitial(content::WebContents* contents) {
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+        contents->GetPrimaryMainFrame(),
+        "You are seeing this warning because this site does not support "
+        "HTTPS."));
+  }
+
+  // Verifies that an HFM interstitial is shown only if the HFM-pref is enabled
+  // or we're in balanced mode.
+  void ExpectInterstitialOnlyIfPrefIsSetOrInBalancedMode(
+      content::WebContents* contents) {
+    if (IsHttpsFirstModePrefEnabled() || InBalancedMode()) {
+      ExpectInterstitial(contents);
     } else {
       EXPECT_FALSE(
           chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
@@ -448,6 +489,7 @@ INSTANTIATE_TEST_SUITE_P(
         HttpsUpgradesTestType::kHttpsFirstModeForTypicallySecureUsers,
         HttpsUpgradesTestType::kAllAutoHFM,
         HttpsUpgradesTestType::kHttpsFirstModeIncognito,
+        HttpsUpgradesTestType::kHttpsFirstBalancedMode,
         HttpsUpgradesTestType::kAll,
         HttpsUpgradesTestType::kNone),
     // Map param to a human-readable string for better test output.
@@ -464,6 +506,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "AllAutoHFM";
         case HttpsUpgradesTestType::kHttpsFirstModeIncognito:
           return "HttpsFirstModeIncognito";
+        case HttpsUpgradesTestType::kHttpsFirstBalancedMode:
+          return "HttpsFirstBalancedMode";
         case HttpsUpgradesTestType::kAll:
           return "AllFeatures";
         case HttpsUpgradesTestType::kNone:
@@ -649,7 +693,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -775,13 +819,14 @@ IN_PROC_BROWSER_TEST_P(
 
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
-
-  if (IsHttpsFirstModePrefEnabled() || IsSiteEngagementHeuristicEnabled()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites() ||
+      IsSiteEngagementHeuristicEnabled()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
     bool is_interstitial_due_to_se_heuristic =
-        IsSiteEngagementHeuristicEnabled() && !IsHttpsFirstModePrefEnabled();
+        IsSiteEngagementHeuristicEnabled() && !IsHttpsFirstModePrefEnabled() &&
+        !InBalancedMode();
     EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
         contents->GetPrimaryMainFrame(),
         is_interstitial_due_to_se_heuristic
@@ -802,7 +847,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Check engagement heuristic metrics. These are only recorded when the
   // interstitial isn't enabled by the user pref.
-  if (!IsHttpsFirstModePrefEnabled()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 3);
     histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
                                     Event::kUpgradeAttempted, 1);
@@ -853,7 +898,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Should only show the interstitial if the HFM pref is enabled. Site
   // engagement heuristic alone will no longer cause an interstitial.
-  if (IsHttpsFirstModePrefEnabled()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -897,13 +942,13 @@ IN_PROC_BROWSER_TEST_P(
 
   // Event histogram shouldn't change because Site Engagement heuristic didn't
   // kick in.
-  if (!IsHttpsFirstModePrefEnabled()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 3);
   } else {
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
   }
 
-  if (!IsHttpsFirstModePrefEnabled()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // Check host count.
     histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram,
                                    2);
@@ -986,7 +1031,7 @@ IN_PROC_BROWSER_TEST_P(
   NavigateAndWaitForFallback(contents, navigated_url);
   EXPECT_EQ(navigated_url, contents->GetLastCommittedURL());
 
-  if (IsHttpsFirstModePrefEnabled()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -1011,8 +1056,8 @@ IN_PROC_BROWSER_TEST_P(
   histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
 
   // Check engagement heuristic metrics. These are only recorded when the
-  // interstitial isn't enabled by the user pref.
-  if (!IsHttpsFirstModePrefEnabled()) {
+  // interstitial isn't enabled across all sites.
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // Check the heuristic state. The heuristic should enable HFM for
     // example.com
     histograms()->ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);
@@ -1094,15 +1139,11 @@ IN_PROC_BROWSER_TEST_P(
   ExpectedInterstitialReasons expected_reasons;
 
   if (IsHttpsFirstModePrefEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-        contents->GetPrimaryMainFrame(),
-        "You are seeing this warning because this site does not support "
-        "HTTPS."));
-
+    ExpectInterstitial(contents);
     expected_reasons.pref++;
+  } else if (InBalancedMode()) {
+    ExpectInterstitial(contents);
+    expected_reasons.balanced++;
   } else {
     EXPECT_FALSE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
@@ -1118,15 +1159,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   if (IsHttpsFirstModePrefEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-        contents->GetPrimaryMainFrame(),
-        "You are seeing this warning because this site does not support "
-        "HTTPS."));
-
+    ExpectInterstitial(contents);
     expected_reasons.pref++;
+  } else if (InBalancedMode()) {
+    ExpectInterstitial(contents);
+    expected_reasons.balanced++;
   } else {
     EXPECT_FALSE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
@@ -1190,8 +1227,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(initial_navigation_count + 1u,
             hfm_service->GetRecentNavigationCount());
 
-  bool expect_interstitial =
-      IsHttpsFirstModePrefEnabled() || IsTypicallySecureUserFeatureEnabled();
+  bool expect_interstitial = IsHttpsFirstModeInterstitialEnabledAcrossSites() ||
+                             IsTypicallySecureUserFeatureEnabled();
   // Expect typically secure text only when HFM is auto-enabled, so exclude
   // HttpsUpgradesTestType::kAll where HFM is enabled via pref).
   bool expect_typically_secure_user_interstitial_text =
@@ -1213,8 +1250,12 @@ IN_PROC_BROWSER_TEST_P(
 
     if (expect_typically_secure_user_interstitial_text) {
       expected_reasons.typically_secure_user++;
-    } else {
+    } else if (IsHttpsFirstModePrefEnabled()) {
       expected_reasons.pref++;
+    } else if (InBalancedMode()) {
+      expected_reasons.balanced++;
+    } else {
+      NOTREACHED();
     }
   } else {
     EXPECT_FALSE(
@@ -1244,8 +1285,12 @@ IN_PROC_BROWSER_TEST_P(
 
     if (expect_typically_secure_user_interstitial_text) {
       expected_reasons.typically_secure_user++;
-    } else {
+    } else if (IsHttpsFirstModePrefEnabled()) {
       expected_reasons.pref++;
+    } else if (InBalancedMode()) {
+      expected_reasons.balanced++;
+    } else {
+      NOTREACHED();
     }
 
   } else {
@@ -1255,8 +1300,11 @@ IN_PROC_BROWSER_TEST_P(
   }
   CheckInterstitialReasonHistogram(expected_reasons);
 
-  // Disable HFM. Should no longer auto-enable it.
+  // Disable HFM and HF-balanced-mode. Should no longer auto-enable it.
   SetPref(false);
+  auto* state = static_cast<StatefulSSLHostStateDelegate*>(
+      profile->GetSSLHostStateDelegate());
+  state->SetHttpsFirstBalancedModeSuppressedForTesting(true);
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(initial_navigation_count + 3u,
             hfm_service->GetRecentNavigationCount());
@@ -1268,6 +1316,7 @@ IN_PROC_BROWSER_TEST_P(
   // Re-enable HFM. Should now show HFM interstitial without the auto-enabled
   // text.
   SetPref(true);
+  state->SetHttpsFirstBalancedModeSuppressedForTesting(false);
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_EQ(initial_navigation_count + 4u,
@@ -1322,14 +1371,14 @@ IN_PROC_BROWSER_TEST_P(
   GURL http_url("http://bad-https.com/simple.html");
   content::NavigateToURLBlockUntilNavigationsComplete(
       contents, http_url, /*number_of_navigations=*/1);
-  ExpectInterstitialOnlyIfPrefIsSet(contents);
+  ExpectInterstitialOnlyIfPrefIsSetOrInBalancedMode(contents);
 
   // Advance the clock and navigate to an HTTP URL again. This will drop the
   // first fallback event.
   clock.Advance(base::Days(35));
   content::NavigateToURLBlockUntilNavigationsComplete(
       contents, http_url, /*number_of_navigations=*/1);
-  ExpectInterstitialOnlyIfPrefIsSet(contents);
+  ExpectInterstitialOnlyIfPrefIsSetOrInBalancedMode(contents);
 
   // Then, navigate to a non-unique hostname. This will also show an
   // interstitial iff HFM pref is enabled. It'll also record a fallback entry
@@ -1338,7 +1387,13 @@ IN_PROC_BROWSER_TEST_P(
   GURL url("http://test/simple.html");
   content::NavigateToURLBlockUntilNavigationsComplete(
       contents, url, /*number_of_navigations=*/1);
-  ExpectInterstitialOnlyIfPrefIsSet(contents);
+  if (IsHttpsFirstModePrefEnabled()) {
+    ExpectInterstitial(contents);
+  } else {
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
 
   // Advance the clock and try auto-enabling HFM.
   clock.Advance(base::Days(1));
@@ -1349,7 +1404,7 @@ IN_PROC_BROWSER_TEST_P(
   content::NavigateToURLBlockUntilNavigationsComplete(
       contents, http_url, /*number_of_navigations=*/1);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
-  ExpectInterstitialOnlyIfPrefIsSet(contents);
+  ExpectInterstitialOnlyIfPrefIsSetOrInBalancedMode(contents);
 }
 
 // Regression test for crbug.com/1441276. Sequence of events:
@@ -1424,7 +1479,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, http_url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -1463,7 +1518,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -1485,7 +1540,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        ExemptNetErrorOnUpgrade_ShouldNotFallback) {
   // This test is only interesting when HTTPS-First Mode is enabled.
-  if (!IsHttpsFirstModePrefEnabled() && !IsIncognito()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     return;
   }
 
@@ -1526,7 +1581,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                                    /*check_for_repost=*/false);
   nav_observer.Wait();
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     ASSERT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -1547,7 +1602,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        RedirectToNonexistentSite_ShouldNotInterstitial) {
   // This test is only interesting when HTTPS-First Mode is enabled.
-  if (!IsHttpsFirstModePrefEnabled() && !IsIncognito()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     return;
   }
 
@@ -1664,7 +1719,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, parent_url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -1709,7 +1764,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, SlowHttps_ShouldInterstitial) {
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, http_url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -1735,7 +1790,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, HttpPageHttpPost_NotUpgraded) {
   content::NavigateToURLBlockUntilNavigationsComplete(
       contents, http_server()->GetURL("bad-https.com", replacement_path), 1);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // The HTTPS-Only Mode interstitial should trigger.
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
@@ -1824,7 +1879,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -1851,7 +1906,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -1883,7 +1938,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -1936,7 +1991,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, http_url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // The HTTPS-First Mode interstitial should trigger first.
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
@@ -1966,7 +2021,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // Verify that the interstitial metrics were correctly recorded.
     histograms()->ExpectBucketCount(
         "interstitial.https_first_mode.decision",
@@ -1981,7 +2036,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // interstitial opens a new tab for the help center article.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, InterstitialLearnMoreLink) {
   // This test is only relevant to HTTPS-First Mode.
-  if (!IsHttpsFirstModePrefEnabled() && !IsIncognito()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     return;
   }
 
@@ -2026,7 +2081,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, InterstitialLearnMoreLink) {
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   // TODO(crbug.com/40248833): This test is flakey when only HTTPS Upgrades are
   // enabled.
-  if (!IsHttpsFirstModePrefEnabled() && !IsIncognito()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     return;
   }
 
@@ -2047,7 +2102,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   // Navigate to `http_url`, which will get upgraded to `bad_https_url`.
   NavigateAndWaitForFallback(tab, http_url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     ASSERT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
     ProceedThroughInterstitial(tab);
@@ -2074,7 +2129,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   // Navigate to `http_url`, which will get upgraded to `bad_https_url`.
   NavigateAndWaitForFallback(tab, http_url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     ASSERT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
     ProceedThroughInterstitial(tab);
@@ -2106,7 +2161,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
 // navigates back to the previous page (about:blank in this case).
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, InterstitialGoBack) {
   // This test is only relevant to HTTPS-First Mode.
-  if (!IsHttpsFirstModePrefEnabled() && !IsIncognito()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     return;
   }
 
@@ -2138,7 +2193,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, InterstitialGoBack) {
 // not proceeding through the interstitial for metrics.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, CloseInterstitialTab) {
   // This test is only relevant to HTTPS-First Mode.
-  if (!IsHttpsFirstModePrefEnabled() && !IsIncognito()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     return;
   }
 
@@ -2190,7 +2245,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, AllowlistEntryExpires) {
   GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
   NavigateAndWaitForFallback(contents, http_url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -2211,7 +2266,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, AllowlistEntryExpires) {
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
   NavigateAndWaitForFallback(contents, http_url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -2243,7 +2298,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, RevisitingBumpsExpiration) {
   GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
   NavigateAndWaitForFallback(contents, http_url);
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
@@ -2331,7 +2386,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, PreferHstsOverHttpsFirstMode) {
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        InterstitialFallbackMaintainsHistory) {
   // This test only applies to HTTPS-First Mode.
-  if (!IsHttpsFirstModePrefEnabled() && !IsIncognito()) {
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     return;
   }
 
@@ -2557,7 +2612,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
   GURL https_url = https_server()->GetURL("foo.com", "/simple.html");
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // HTTPS-First Mode should supercede HTTPS-Upgrades and upgrade the
     // navigation despite the HttpsUpgradeMode policy setting.
     EXPECT_FALSE(content::NavigateToURL(contents, http_url));
@@ -2751,7 +2806,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, crbug1431026) {
   EXPECT_FALSE(
       content::NavigateToURL(contents, initial_redirecting_good_https_url));
 
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // Should be showing interstitial on http://bad-https.com/.
     EXPECT_EQ(redirecting_http_url, contents->GetLastCommittedURL());
     EXPECT_TRUE(
@@ -2795,13 +2850,22 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // Disable the HTTPS-First Mode pref. This should clear the allowlist.
   SetPref(false);
 
-  // If HTTPS-Upgrades are enabled, navigating again should cause the site to
-  // get added back to the allowlist. If not, the HTTP URL will load normally as
-  // HTTPS-First Mode is disabled.
-  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
-  EXPECT_FALSE(
-      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-          contents));
+  if (InBalancedMode()) {
+    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+
+    // Proceed through the interstitial and add the host to the allowlist.
+    ProceedThroughInterstitial(contents);
+  } else {
+    // With HTTPS-Upgrades enabled, navigating again should cause the site to
+    // get added back to the allowlist.
+    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
 
   // Re-enable the HTTPS-First Mode pref. The allowlist should be cleared again.
   SetPref(true);
@@ -2906,7 +2970,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // opt-out cause the url to be added to the allowlist.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        URLsTypedWithHttpSchemeNoUpgradesAllowlist) {
-  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     return;
   }
   GURL http_url = http_server()->GetURL("foo.com", "/simple.html");

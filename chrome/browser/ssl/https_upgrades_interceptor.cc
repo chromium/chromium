@@ -215,8 +215,9 @@ HttpsUpgradesInterceptor::HttpsUpgradesInterceptor(
 
 HttpsUpgradesInterceptor::~HttpsUpgradesInterceptor() = default;
 
-bool ShouldExcludeNavigation(content::NavigationUIData* navigation_ui_data,
-                             content::WebContents* contents) {
+bool ShouldExcludeNavigationFromUpgrades(
+    content::NavigationUIData* navigation_ui_data,
+    content::WebContents* contents) {
   // If the URL was typed with an explicit http:// URL or is captive portal
   // login URL, it is opted-out from upgrades.
   ChromeNavigationUIData* chrome_navigation_ui_data =
@@ -305,6 +306,10 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
                                             storage_partition)) {
     interstitial_state_->enabled_by_engagement_heuristic = true;
   }
+  if (IsBalanceModeEnabled() &&
+      (state && !state->HttpsFirstBalancedModeSuppressedForTesting())) {
+    interstitial_state_->enabled_in_balanced_mode = true;
+  }
 
   // Exclude HTTPS URLs.
   if (tentative_resource_request.url.SchemeIs(url::kHttpsScheme)) {
@@ -359,8 +364,11 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     }
   }
 
-  if (!IsInterstitialEnabled(*interstitial_state_) &&
-      ShouldExcludeNavigation(navigation_ui_data_, web_contents)) {
+  // Captive portals and manually-entered http:// navigations are excluded from
+  // upgrades and we shouldn't warn on them when strict mode isn't enabled, so
+  // allowlist those http:// connections instead.
+  if (!IsStrictInterstitialEnabled(*interstitial_state_) &&
+      ShouldExcludeNavigationFromUpgrades(navigation_ui_data_, web_contents)) {
     if (state) {
       state->AllowHttpForHost(tentative_resource_request.url.host(),
                               storage_partition);

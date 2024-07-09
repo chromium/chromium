@@ -200,7 +200,8 @@ StatefulSSLHostStateDelegate::StatefulSSLHostStateDelegate(
       https_only_mode_enforcelist_(host_content_settings_map_, clock_.get()),
       recurrent_interstitial_threshold_for_testing(-1),
       recurrent_interstitial_mode_for_testing(NOT_SET),
-      recurrent_interstitial_reset_time_for_testing(-1) {}
+      recurrent_interstitial_reset_time_for_testing(-1),
+      https_first_balanced_mode_suppressed_for_testing(false) {}
 
 StatefulSSLHostStateDelegate::~StatefulSSLHostStateDelegate() = default;
 
@@ -536,6 +537,16 @@ void StatefulSSLHostStateDelegate::ResetRecurrentErrorCountForTesting() {
   ScopedDictPrefUpdate pref_update(pref_service_,
                                    prefs::kRecurrentSSLInterstitial);
   pref_update->clear();
+}
+
+bool StatefulSSLHostStateDelegate::
+    HttpsFirstBalancedModeSuppressedForTesting() {
+  return https_first_balanced_mode_suppressed_for_testing;
+}
+
+void StatefulSSLHostStateDelegate::
+    SetHttpsFirstBalancedModeSuppressedForTesting(bool suppressed) {
+  https_first_balanced_mode_suppressed_for_testing = suppressed;
 }
 
 void StatefulSSLHostStateDelegate::SetClockForTesting(

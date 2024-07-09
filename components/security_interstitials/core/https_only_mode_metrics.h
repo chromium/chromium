@@ -174,6 +174,11 @@ struct HttpInterstitialState {
   // Whether HTTPS-First Mode is enabled because the user's browsing pattern
   // is typically secure, i.e. they mainly visit HTTPS sites.
   bool enabled_by_typically_secure_browsing = false;
+
+  // Whether HTTPS-First Mode is enabled in a balanced mode, which attempts to
+  // warn when HTTPS can be expected to succeed, but not when it will likely
+  // fail (e.g. to non-unique hostnames).
+  bool enabled_in_balanced_mode = false;
 };
 
 // Helper to record an HTTPS-First Mode navigation event.
@@ -219,8 +224,10 @@ enum class InterstitialReason {
   kTypicallySecureUserHeuristic = 4,
   // The interstitial was shown because of HTTPS-First Mode in Incognito.
   kIncognito = 5,
+  // The interstitial was shown because of HTTPS-First Balance Mode.
+  kBalanced = 6,
 
-  kMaxValue = kIncognito,
+  kMaxValue = kBalanced,
 };
 
 void RecordInterstitialReason(const HttpInterstitialState& interstitial_state);

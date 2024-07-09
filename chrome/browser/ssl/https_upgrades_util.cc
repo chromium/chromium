@@ -52,7 +52,24 @@ void ClearHttpAllowlistForHostnamesForTesting(PrefService* prefs) {
   prefs->SetList(prefs::kHttpAllowlist, std::move(empty_list));
 }
 
+bool IsBalanceModeEnabled() {
+  // TODO(crbug.com/349860796): Initially, balanced mode is controlled directly
+  // by the feature, but it may be controlled via pref or setting in the future.
+  return base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode);
+}
+
 bool IsInterstitialEnabled(
+    const security_interstitials::https_only_mode::HttpInterstitialState&
+        state) {
+  // Interstitials are enabled when "strict" interstitials are enabled...
+  if (IsStrictInterstitialEnabled(state)) {
+    return true;
+  }
+  // ...or when balanced mode is enabled.
+  return (IsBalanceModeEnabled() && state.enabled_in_balanced_mode);
+}
+
+bool IsStrictInterstitialEnabled(
     const security_interstitials::https_only_mode::HttpInterstitialState&
         state) {
   if (state.enabled_by_pref) {
@@ -95,6 +112,10 @@ bool ShouldExemptNonUniqueHostnames(
   // the amount of warnings shown.
   if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
       state.enabled_by_incognito) {
+    return true;
+  }
+  // Balanced mode HFM exempts non-unique hostnames to reduce warning volume.
+  if (IsBalanceModeEnabled() && state.enabled_in_balanced_mode) {
     return true;
   }
   // If no interstitial state is set, then the default is HTTPS-Upgrades which

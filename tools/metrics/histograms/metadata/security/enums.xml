@@ -120,6 +120,9 @@ chromium-metrics-reviews@google.com.
     The interstitial was shown because the user was in Incognito mode and
     HTTPS-First Mode in Incognito was enabled.
   </int>
+  <int value="6" label="kBalanced">
+    The interstitial was shown because the user was in balanced mode.
+  </int>
 </enum>
 
 <enum name="HttpsFirstModeNavigationEvent">

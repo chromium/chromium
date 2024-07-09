@@ -67,6 +67,12 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());
+
+  if (IsBalanceModeEnabled() &&
+      (state && !state->HttpsFirstBalancedModeSuppressedForTesting())) {
+    interstitial_state.enabled_in_balanced_mode = true;
+  }
+
   auto* storage_partition =
       handle->GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition();
 

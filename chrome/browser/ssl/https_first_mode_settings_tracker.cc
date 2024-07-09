@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
+
 #include <string_view>
 
 #include "base/feature_list.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -464,6 +466,7 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
   // If HFM or the auto-enable prefs were previously set, do not modify HFM
   // status.
   if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+      IsBalanceModeEnabled() ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
     if (!done_callback.is_null()) {
       std::move(done_callback).Run();
