@@ -35,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -1354,26 +1355,49 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         public void onNativeLibraryReady() {
-            mSecurityButton.setOnClickListener(
-                    v -> {
-                        Tab currentTab = mLocationBarDataProvider.getTab();
-                        if (currentTab == null) return;
-                        WebContents webContents = currentTab.getWebContents();
-                        if (webContents == null) return;
-                        Activity activity = currentTab.getWindowAndroid().getActivity().get();
-                        if (activity == null) return;
-                        if (mCurrentlyShowingBranding) return;
-                        // For now we don't show "store info" row for custom tab.
-                        new ChromePageInfo(
-                                        mModalDialogManagerSupplier,
-                                        TrustedCdn.getContentPublisher(
-                                                getToolbarDataProvider().getTab()),
-                                        OpenedFromSource.TOOLBAR,
-                                        /* storeInfoActionHandlerSupplier= */ null,
-                                        mEphemeralTabCoordinatorSupplier,
-                                        mTabCreator)
-                                .show(currentTab, ChromePageInfoHighlight.noHighlight());
+            mSecurityButton.setOnClickListener(v -> showPageInfo());
+            if (!mOmniboxEnabled && shouldNestSecurityIcon()) {
+                mTitleUrlContainer.setOnClickListener(v -> showPageInfo());
+                // The title and url are independently focusable for accessibility. Set
+                // AccessibilityNodeInfo on each to indicate they respond to clicks / long clicks
+                // via the listeners set on mTitleUrlContainer.
+                setTitleUrlBarAccessibilityDelegate(mTitleBar);
+                setTitleUrlBarAccessibilityDelegate(mUrlBar);
+            }
+        }
+
+        private void setTitleUrlBarAccessibilityDelegate(View view) {
+            view.setAccessibilityDelegate(
+                    new View.AccessibilityDelegate() {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfo info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            info.setLongClickable(true);
+                            info.setClickable(true);
+                            info.setEnabled(true);
+                            info.setEditable(false);
+                        }
                     });
+        }
+
+        private void showPageInfo() {
+            Tab currentTab = mLocationBarDataProvider.getTab();
+            if (currentTab == null) return;
+            WebContents webContents = currentTab.getWebContents();
+            if (webContents == null) return;
+            Activity activity = currentTab.getWindowAndroid().getActivity().get();
+            if (activity == null) return;
+            if (mCurrentlyShowingBranding) return;
+            // For now we don't show "store info" row for custom tab.
+            new ChromePageInfo(
+                            mModalDialogManagerSupplier,
+                            TrustedCdn.getContentPublisher(getToolbarDataProvider().getTab()),
+                            OpenedFromSource.TOOLBAR,
+                            /* storeInfoActionHandlerSupplier= */ null,
+                            mEphemeralTabCoordinatorSupplier,
+                            mTabCreator)
+                    .show(currentTab, ChromePageInfoHighlight.noHighlight());
         }
 
         @Override
