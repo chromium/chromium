@@ -129,6 +129,9 @@ class SyncServiceFactoryTest : public testing::Test {
     if (arc::IsArcAllowedForProfile(profile())) {
       datatypes.Put(syncer::ARC_PACKAGE);
     }
+    if (ash::features::IsFloatingSsoAllowed()) {
+      datatypes.Put(syncer::COOKIES);
+    }
     datatypes.Put(syncer::OS_PREFERENCES);
     datatypes.Put(syncer::OS_PRIORITY_PREFERENCES);
     datatypes.Put(syncer::PRINTERS);
@@ -190,8 +193,6 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::PLUS_ADDRESS_SETTING);
     }
 
-    // TODO(b/318391357) add `syncer::COOKIES` (under IS_CHROMEOS) after adding
-    // a corresponding controller.
     return datatypes;
   }
 
