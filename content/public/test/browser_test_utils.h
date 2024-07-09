@@ -50,6 +50,7 @@
 #include "net/base/load_flags.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key_collection.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1891,6 +1892,10 @@ class TestActivationManager : public WebContentsObserver {
   // Returns true if the navigation is paused by the TestActivationManager.
   bool is_paused() const { return !resume_callback_.is_null(); }
 
+  // Returns ukm::SourceId for the navigated page. This must be called after the
+  // navigation finished.
+  ukm::SourceId next_page_ukm_source_id() const;
+
  private:
   enum class ActivationState {
     kInitial,
@@ -1950,6 +1955,8 @@ class TestActivationManager : public WebContentsObserver {
   bool was_committed_ = false;
   bool was_successful_ = false;
   bool was_activated_ = false;
+
+  ukm::SourceId next_page_ukm_source_id_ = ukm::kInvalidSourceId;
 
   // Callback to be called in the last condition callback after all commit
   // deferring conditions run.

@@ -3196,6 +3196,11 @@ NavigationHandle* TestNavigationManager::GetNavigationHandle() {
   return request_;
 }
 
+ukm::SourceId TestActivationManager::next_page_ukm_source_id() const {
+  EXPECT_NE(ukm::kInvalidSourceId, next_page_ukm_source_id_);
+  return next_page_ukm_source_id_;
+}
+
 bool TestNavigationManager::WaitForResponse() {
   TRACE_EVENT("test", "TestNavigationManager::WaitForResponse");
   desired_state_ = NavigationState::RESPONSE;
@@ -3639,6 +3644,7 @@ void TestActivationManager::DidFinishNavigation(NavigationHandle* handle) {
     was_committed_ = handle->HasCommitted();
     was_successful_ = was_committed_ && !handle->IsErrorPage();
     was_activated_ = was_successful_ && handle->IsPageActivation();
+    next_page_ukm_source_id_ = handle->GetNextPageUkmSourceId();
     request_ = nullptr;
     current_state_ = ActivationState::kFinished;
     StopWaitingIfNeeded();

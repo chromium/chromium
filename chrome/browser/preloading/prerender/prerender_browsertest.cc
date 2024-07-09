@@ -706,6 +706,32 @@ class PrerenderNewTabPageBrowserTest
                                 AttachNewTabPageNavigationHandleUserData));
   }
 
+  void ExpectPrerenderPageLoad(
+      const GURL& prerender_url,
+      page_load_metrics::NavigationHandleUserData::InitiatorLocation
+          initiator_location) {
+    auto entries =
+        test_ukm_recorder()->GetMergedEntriesByName("PrerenderPageLoad");
+    for (auto& kv : entries) {
+      const ukm::mojom::UkmEntry* entry = kv.second.get();
+      const ukm::UkmSource* source =
+          test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
+      if (!source) {
+        continue;
+      }
+      EXPECT_TRUE(source->url().is_valid());
+      if (source->url() != prerender_url) {
+        continue;
+      }
+      test_ukm_recorder()->ExpectEntryMetric(
+          entry,
+          ukm::builders::PrerenderPageLoad::kNavigation_InitiatorLocationName,
+          static_cast<int>(initiator_location));
+      return;
+    }
+    EXPECT_TRUE(false) << "PrerenderPageLoad hasn't been recorded.";
+  }
+
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
     return test_ukm_recorder_.get();
   }
@@ -759,27 +785,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
   histogram_tester.ExpectTotalCount(
       "NewTabPage.PrerenderNavigationToActivation", 1);
 
-  auto entries =
-      test_ukm_recorder()->GetMergedEntriesByName("PrerenderPageLoad");
-  bool witness_new_tab_page_ukm = false;
-  for (auto& kv : entries) {
-    const ukm::mojom::UkmEntry* entry = kv.second.get();
-    const ukm::UkmSource* source =
-        test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
-    if (!source) {
-      continue;
-    }
-    EXPECT_TRUE(source->url().is_valid());
-    if (source->url() == prerender_url) {
-      test_ukm_recorder()->ExpectEntryMetric(
-          entry,
-          ukm::builders::PrerenderPageLoad::kNavigation_InitiatorLocationName,
-          static_cast<int>(page_load_metrics::NavigationHandleUserData::
-                               InitiatorLocation::kNewTabPage));
-      witness_new_tab_page_ukm = true;
-    }
-  }
-  EXPECT_TRUE(witness_new_tab_page_ukm);
+  ExpectPrerenderPageLoad(prerender_url,
+                          page_load_metrics::NavigationHandleUserData::
+                              InitiatorLocation::kNewTabPage);
 }
 
 // This test verifies that a NTP mouse hover trigger followed a NTP mouse down
@@ -831,35 +839,16 @@ IN_PROC_BROWSER_TEST_P(
   histogram_tester.ExpectTotalCount(
       "NewTabPage.PrerenderNavigationToActivation", 1);
 
-  auto entries =
-      test_ukm_recorder()->GetMergedEntriesByName("PrerenderPageLoad");
-  ukm::SourceId ukm_source_id;
-  bool witness_new_tab_page_ukm = false;
-  for (auto& kv : entries) {
-    const ukm::mojom::UkmEntry* entry = kv.second.get();
-    const ukm::UkmSource* source =
-        test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
-    if (!source) {
-      continue;
-    }
-    EXPECT_TRUE(source->url().is_valid());
-    if (source->url() == prerender_url) {
-      ukm_source_id = entry->source_id;
-      test_ukm_recorder()->ExpectEntryMetric(
-          entry,
-          ukm::builders::PrerenderPageLoad::kNavigation_InitiatorLocationName,
-          static_cast<int>(page_load_metrics::NavigationHandleUserData::
-                               InitiatorLocation::kNewTabPage));
-      witness_new_tab_page_ukm = true;
-    }
-  }
-  EXPECT_TRUE(witness_new_tab_page_ukm);
+  ExpectPrerenderPageLoad(prerender_url,
+                          page_load_metrics::NavigationHandleUserData::
+                              InitiatorLocation::kNewTabPage);
 
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       mouse_hover_attempt_entry_builder =
           std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
               chrome_preloading_predictor::kMouseHoverOnNewTabPage);
 
+  ukm::SourceId ukm_source_id = activation_manager.next_page_ukm_source_id();
   content::test::ExpectPreloadingAttemptUkm(
       *test_ukm_recorder(),
       {mouse_hover_attempt_entry_builder->BuildEntry(
