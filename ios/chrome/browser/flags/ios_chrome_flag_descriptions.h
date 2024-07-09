@@ -863,6 +863,11 @@ extern const char kSafeBrowsingRealTimeLookupDescription[];
 extern const char kSafetyCheckMagicStackName[];
 extern const char kSafetyCheckMagicStackDescription[];
 
+// Title and description for the flag to enable Safety Check iOS push
+// notifications.
+extern const char kSafetyCheckNotificationsName[];
+extern const char kSafetyCheckNotificationsDescription[];
+
 // Title and description for the flag to enable integration with the ScreenTime
 // system.
 extern const char kScreenTimeIntegrationName[];

@@ -32,6 +32,13 @@ BASE_FEATURE(kSafetyCheckMagicStack,
              "SafetyCheckMagicStack",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafetyCheckNotifications,
+             "SafetyCheckNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kSafetyCheckNotificationsExperimentType[] =
+    "SafetyCheckNotificationsExperimentType";
+
 const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
     "SafetyCheckMagicStackAutorunHoursThreshold";
 
@@ -312,6 +319,19 @@ BASE_FEATURE(kTabGridAlwaysBounce,
 
 bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
+}
+
+bool IsSafetyCheckNotificationsEnabled() {
+  return base::FeatureList::IsEnabled(kSafetyCheckNotifications);
+}
+
+SafetyCheckNotificationsExperimentalArm
+SafetyCheckNotificationsExperimentTypeEnabled() {
+  return static_cast<SafetyCheckNotificationsExperimentalArm>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kSafetyCheckNotifications, kSafetyCheckNotificationsExperimentType,
+          /*default_value=*/
+          (int)SafetyCheckNotificationsExperimentalArm::kVerbose));
 }
 
 BASE_FEATURE(kIOSChooseFromDrive,

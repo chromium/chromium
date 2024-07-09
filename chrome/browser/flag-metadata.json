@@ -7831,10 +7831,15 @@
     ],
     "expiry_milestone": 125
     },
-{
+  {
     "name": "safety-check-magic-stack",
     "owners": ["bwwilliams@google.com", "thegreenfrog@google.com"],
     "expiry_milestone": 125
+  },
+  {
+    "name": "safety-check-notifications",
+    "owners": ["bwwilliams@google.com", "thegreenfrog@google.com"],
+    "expiry_milestone": 135
   },
   {
     "name": "safety-check-unused-site-permissions",

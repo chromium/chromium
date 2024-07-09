@@ -34,6 +34,22 @@ extern const char kSafetyCheckMagicStackAutorunHoursThreshold[];
 // How many hours between each autorun of the Safety Check in the Magic Stack.
 const base::TimeDelta TimeDelayForSafetyCheckAutorun();
 
+// Feature to enable Safety Check Push Notifications.
+BASE_DECLARE_FEATURE(kSafetyCheckNotifications);
+
+// Safety Check Notifications experiment variations.
+extern const char kSafetyCheckNotificationsExperimentType[];
+
+// Defines param values for the Safety Check Notifications feature,
+// controlling how notifications are presented to the user.
+enum class SafetyCheckNotificationsExperimentalArm {
+  // Arm that displays multiple Safety Check notifications at any given time.
+  kVerbose = 0,
+  // Arm that displays only a single Safety Check notification at any given
+  // time.
+  kSuccinct = 1,
+};
+
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
@@ -317,6 +333,13 @@ BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
 
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
+
+// Whether Safety Check Push Notifications should be sent to the user.
+bool IsSafetyCheckNotificationsEnabled();
+
+// Returns the experiment type for the Safety Check Notifications feature.
+SafetyCheckNotificationsExperimentalArm
+SafetyCheckNotificationsExperimentTypeEnabled();
 
 // Feature flag enabling Choose from Drive.
 BASE_DECLARE_FEATURE(kIOSChooseFromDrive);

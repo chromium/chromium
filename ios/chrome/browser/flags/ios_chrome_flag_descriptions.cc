@@ -971,6 +971,11 @@ const char kSafetyCheckMagicStackDescription[] =
     "When enabled, the Safety Check module will be displayed in the Magic "
     "Stack.";
 
+const char kSafetyCheckNotificationsName[] =
+    "Enable Safety Check Push Notifications";
+const char kSafetyCheckNotificationsDescription[] =
+    "Enables push notifications for important Safety Check findings.";
+
 const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
 const char kScreenTimeIntegrationDescription[] =
     "Enables integration with ScreenTime in iOS 14.0 and above.";
