@@ -508,9 +508,12 @@ TEST_F(LookalikeUrlUtilTest, GetETLDPlusOneHandlesSpecialRegistries) {
 
       // .com.de is a de-facto public registry.
       {"www.google.com.de", "google.com.de"},
+      // Regression test for crbug.com/351775838:
+      {"com.de", ""},
 
       // .cloud.goog is a private registry.
       {"www.example.cloud.goog", "cloud.goog"},
+      {"cloud.goog", "cloud.goog"},
   };
 
   for (auto& test_case : kTestCases) {

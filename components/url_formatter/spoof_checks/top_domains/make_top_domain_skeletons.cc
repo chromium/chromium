@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -126,6 +127,12 @@ int GenerateSkeletons(const char* input_file_name,
     }
 
     if (domain.empty() || domain[0] == '#') {
+      continue;
+    }
+
+    std::string domain_and_registry = lookalikes::GetETLDPlusOne(domain);
+    if (domain_and_registry.empty()) {
+      // This can happen with domains like "com.se".
       continue;
     }
 

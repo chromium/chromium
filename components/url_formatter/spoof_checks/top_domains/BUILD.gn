@@ -11,6 +11,7 @@ if (!is_ios && !is_android) {
     deps = [
       "//base",
       "//base:i18n",
+      "//components/lookalikes/core",
       "//components/url_formatter:skeleton_generator",
       "//third_party/icu",
     ]
