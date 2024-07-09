@@ -7443,6 +7443,9 @@ void NavigationRequest::WillStartRequest() {
 
   processing_navigation_throttle_ = true;
 
+  base::ScopedUmaHistogramTimer timer(base::StrCat(
+      {"Navigation.ProcessNavigationThrottlesTime.WillStartRequest.",
+       IsInMainFrame() ? "MainFrame" : "SubFrame"}));
   // Notify each throttle of the request.
   throttle_runner_->ProcessNavigationEvent(
       NavigationThrottleRunner::Event::kWillStartRequest);

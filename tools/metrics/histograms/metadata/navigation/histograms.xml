@@ -1509,6 +1509,19 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
+<histogram
+    name="Navigation.ProcessNavigationThrottlesTime.WillStartRequest.{FrameType}"
+    units="ms" expires_after="2024-12-02">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time taken to process regsitered navigation throttles in the
+    WillStartRequest event for a {FrameType}. Recorded for every navigation,
+    before dispatching the request.
+  </summary>
+  <token key="FrameType" variants="FrameTypes"/>
+</histogram>
+
 <histogram name="Navigation.QueueTime.{Method}.{FrameType}" units="ms"
     expires_after="2024-11-20">
   <owner>cduvall@chromium.org</owner>
