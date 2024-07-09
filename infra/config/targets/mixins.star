@@ -582,6 +582,14 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "upload_inv_extended_properties",
+    resultdb = targets.resultdb(
+        enable = True,
+        inv_extended_properties_dir = "${ISOLATED_OUTDIR}/invocations",
+    ),
+)
+
+targets.mixin(
     name = "gce",
     swarming = targets.swarming(
         dimensions = {

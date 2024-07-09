@@ -1257,6 +1257,12 @@
       },
     },
   },
+  'upload_inv_extended_properties': {
+    'resultdb': {
+      'enable': True,
+      'inv_extended_properties_dir': '${ISOLATED_OUTDIR}/invocations',
+    },
+  },
   'vaapi_unittest_args': {
     'args': [
       '--stop-ui',

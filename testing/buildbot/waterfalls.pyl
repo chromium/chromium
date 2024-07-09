@@ -3268,7 +3268,10 @@
   },
   {
     'name': 'chromium.fuchsia',
-    'mixins': ['chromium-tester-service-account'],
+    'mixins': [
+        'chromium-tester-service-account',
+        'upload_inv_extended_properties',
+    ],
     'machines': {
       'fuchsia-arm64-cast-receiver-rel': {
         'additional_compile_targets': [
@@ -3336,7 +3339,10 @@
   },
   {
     'name': 'chromium.fuchsia.fyi',
-    'mixins': ['chromium-tester-service-account'],
+    'mixins': [
+        'chromium-tester-service-account',
+        'upload_inv_extended_properties',
+    ],
     'machines': {
       'fuchsia-fyi-arm64-dbg': {
         'additional_compile_targets': [

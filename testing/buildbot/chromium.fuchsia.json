@@ -12,6 +12,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "absl_hardening_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -28,6 +32,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "accessibility_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -44,6 +52,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "aura_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -60,6 +72,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "base_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -76,6 +92,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_common_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -92,6 +112,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_fuzzer_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -108,6 +132,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_heap_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -132,6 +160,10 @@
           "--gerrit-patchset=${patch_set}",
           "--buildbucket-id=${buildbucket_build_id}"
         ],
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -148,6 +180,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -164,6 +200,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "boringssl_crypto_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -180,6 +220,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "boringssl_ssl_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -196,6 +240,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "capture_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -212,6 +260,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cast_runner_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -228,6 +280,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cast_runner_integration_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -244,6 +300,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cast_runner_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -260,6 +320,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cc_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -282,6 +346,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "components_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -298,6 +366,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "components_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -315,6 +387,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "compositor_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -336,6 +412,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -353,6 +433,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -369,6 +453,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "courgette_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -385,6 +473,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "crypto_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -401,6 +493,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "display_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -417,6 +513,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "events_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -433,6 +533,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "filesystem_service_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -449,6 +553,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gcm_unit_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -465,6 +573,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gfx_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -481,6 +593,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gin_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -497,6 +613,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "google_apis_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -513,6 +633,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gpu_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -529,6 +653,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gwp_asan_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -545,6 +673,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "headless_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -561,6 +693,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "headless_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -577,6 +713,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ipc_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -593,6 +733,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "latency_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -609,6 +753,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "media_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -625,6 +773,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "message_center_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -641,6 +793,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "midi_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -657,6 +813,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "mojo_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -673,6 +833,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "native_theme_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -692,6 +856,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "net_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -712,6 +880,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ozone_gl_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -728,6 +900,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ozone_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -744,6 +920,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "perfetto_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -763,6 +943,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "services_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -779,6 +963,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "shell_dialogs_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -795,6 +983,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "skia_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -811,6 +1003,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "snapshot_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -827,6 +1023,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "sql_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -843,6 +1043,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "storage_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -862,6 +1066,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ui_base_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -878,6 +1086,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ui_touch_selection_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -894,6 +1106,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ui_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -910,6 +1126,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "url_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -929,6 +1149,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "views_examples_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -948,6 +1172,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "views_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -967,6 +1195,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "viz_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -983,6 +1215,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "web_engine_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -999,6 +1235,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "web_engine_integration_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -1015,6 +1255,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "web_engine_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -1031,6 +1275,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "wm_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -1047,6 +1295,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "wtf_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -1063,6 +1315,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "zlib_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -1081,6 +1337,10 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "angle_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -1126,6 +1386,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "absl_hardening_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1142,6 +1406,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "accessibility_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1158,6 +1426,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "aura_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1174,6 +1446,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "base_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1190,6 +1466,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_common_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1206,6 +1486,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_fuzzer_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1222,6 +1506,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_heap_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1246,6 +1534,10 @@
           "--gerrit-patchset=${patch_set}",
           "--buildbucket-id=${buildbucket_build_id}"
         ],
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1262,6 +1554,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1278,6 +1574,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "boringssl_crypto_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1294,6 +1594,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "boringssl_ssl_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1310,6 +1614,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "capture_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1326,6 +1634,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cast_runner_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1342,6 +1654,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cast_runner_integration_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1358,6 +1674,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cast_runner_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1374,6 +1694,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cc_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1396,6 +1720,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "components_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1412,6 +1740,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "components_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1429,6 +1761,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "compositor_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1450,6 +1786,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1467,6 +1807,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1483,6 +1827,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "courgette_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1499,6 +1847,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "crypto_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1515,6 +1867,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "display_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1531,6 +1887,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "events_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1547,6 +1907,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "filesystem_service_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1563,6 +1927,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gcm_unit_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1579,6 +1947,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gfx_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1595,6 +1967,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gin_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1611,6 +1987,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "google_apis_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1627,6 +2007,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gpu_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1643,6 +2027,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gwp_asan_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1659,6 +2047,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "headless_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1675,6 +2067,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "headless_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1691,6 +2087,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ipc_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1707,6 +2107,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "latency_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1723,6 +2127,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "media_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1739,6 +2147,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "message_center_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1755,6 +2167,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "midi_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1771,6 +2187,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "mojo_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1787,6 +2207,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "native_theme_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1806,6 +2230,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "net_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1826,6 +2254,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ozone_gl_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1842,6 +2274,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ozone_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1858,6 +2294,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "perfetto_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1877,6 +2317,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "services_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1893,6 +2337,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "shell_dialogs_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1909,6 +2357,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "skia_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1925,6 +2377,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "snapshot_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1941,6 +2397,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "sql_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1957,6 +2417,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "storage_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1976,6 +2440,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ui_base_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1992,6 +2460,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ui_touch_selection_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2008,6 +2480,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ui_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2024,6 +2500,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "url_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2043,6 +2523,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "views_examples_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2062,6 +2546,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "views_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2081,6 +2569,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "viz_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2097,6 +2589,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "web_engine_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2113,6 +2609,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "web_engine_integration_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2129,6 +2629,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "web_engine_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2145,6 +2649,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "wm_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2161,6 +2669,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "wtf_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2177,6 +2689,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "zlib_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2195,6 +2711,10 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "angle_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2486,6 +3006,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "absl_hardening_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2502,6 +3026,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "accessibility_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2518,6 +3046,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "aura_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2534,6 +3066,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "base_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2550,6 +3086,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_common_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2566,6 +3106,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_fuzzer_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2582,6 +3126,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_heap_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2606,6 +3154,10 @@
           "--gerrit-patchset=${patch_set}",
           "--buildbucket-id=${buildbucket_build_id}"
         ],
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2622,6 +3174,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "blink_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2639,6 +3195,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "boringssl_crypto_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2655,6 +3215,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "boringssl_ssl_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2671,6 +3235,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "capture_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2687,6 +3255,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cast_runner_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2703,6 +3275,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cast_runner_integration_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2719,6 +3295,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cast_runner_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2735,6 +3315,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cc_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2757,6 +3341,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "components_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2773,6 +3361,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "components_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2790,6 +3382,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "compositor_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2812,6 +3408,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2829,6 +3429,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2846,6 +3450,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "courgette_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2862,6 +3470,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "crypto_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2878,6 +3490,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "display_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2894,6 +3510,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "events_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2910,6 +3530,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "filesystem_service_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2926,6 +3550,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gcm_unit_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2942,6 +3570,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gfx_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2958,6 +3590,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gin_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2974,6 +3610,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "google_apis_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2990,6 +3630,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gpu_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3006,6 +3650,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gwp_asan_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3022,6 +3670,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "headless_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3038,6 +3690,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "headless_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3054,6 +3710,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ipc_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3070,6 +3730,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "latency_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3086,6 +3750,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "media_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3102,6 +3770,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "message_center_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3118,6 +3790,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "midi_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3134,6 +3810,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "mojo_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3150,6 +3830,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "native_theme_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3169,6 +3853,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "net_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3189,6 +3877,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ozone_gl_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3205,6 +3897,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ozone_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3221,6 +3917,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "perfetto_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3240,6 +3940,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "services_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3256,6 +3960,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "shell_dialogs_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3272,6 +3980,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "skia_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3288,6 +4000,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "snapshot_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3304,6 +4020,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "sql_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3320,6 +4040,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "storage_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3339,6 +4063,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ui_base_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3355,6 +4083,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ui_touch_selection_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3371,6 +4103,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ui_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3387,6 +4123,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "url_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3406,6 +4146,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "views_examples_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3425,6 +4169,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "views_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3444,6 +4192,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "viz_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3460,6 +4212,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "web_engine_browsertests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3476,6 +4232,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "web_engine_integration_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3492,6 +4252,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "web_engine_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3508,6 +4272,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "wm_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3524,6 +4292,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "wtf_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3540,6 +4312,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "zlib_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -3558,6 +4334,10 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "angle_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
         "swarming": {
           "dimensions": {
             "kvm": "1",

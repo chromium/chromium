@@ -1592,11 +1592,21 @@ targets.legacy_basic_suite(
     name = "chromium_webkit_isolated_scripts",
     tests = {
         "blink_web_tests": targets.legacy_test_config(
+            # TODO(crbug.com/337058844): uploading invocations is not supported
+            # by blink_web_tests yet.
+            remove_mixins = [
+                "upload_inv_extended_properties",
+            ],
             swarming = targets.swarming(
                 shards = 5,
             ),
         ),
         "blink_wpt_tests": targets.legacy_test_config(
+            # TODO(crbug.com/337058844): uploading invocations is not supported
+            # by blink_wpt_tests yet.
+            remove_mixins = [
+                "upload_inv_extended_properties",
+            ],
             swarming = targets.swarming(
                 shards = 7,
             ),
@@ -2144,7 +2154,11 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "fuchsia_sizes_tests",
     tests = {
-        "fuchsia_sizes": targets.legacy_test_config(),
+        "fuchsia_sizes": targets.legacy_test_config(
+            remove_mixins = [
+                "upload_inv_extended_properties",
+            ],
+        ),
     },
 )
 
@@ -3083,10 +3097,24 @@ targets.legacy_basic_suite(
             mixins = [
                 "gpu_integration_test_common_args",
             ],
+            remove_mixins = [
+                # TODO(crbug.com/337058844): Android uses both
+                # gpu_passthrough_telemetry_tests and
+                # gpu_validating_telemetry_tests, so the upload_inv_extended_properties needs
+                # to be removed from both suites.
+                "upload_inv_extended_properties",
+            ],
         ),
         "hardware_accelerated_feature_tests": targets.legacy_test_config(
             mixins = [
                 "gpu_integration_test_common_args",
+            ],
+            remove_mixins = [
+                # TODO(crbug.com/337058844): Android uses both
+                # gpu_passthrough_telemetry_tests and
+                # gpu_validating_telemetry_tests, so the upload_inv_extended_properties needs
+                # to be removed from both suites.
+                "upload_inv_extended_properties",
             ],
         ),
         "pixel_skia_gold_passthrough_test": targets.legacy_test_config(
@@ -3199,6 +3227,11 @@ targets.legacy_basic_suite(
             mixins = [
                 "gpu_integration_test_common_args",
             ],
+            remove_mixins = [
+                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
+                # has_native_resultdb_integration is not supported yet.
+                "upload_inv_extended_properties",
+            ],
             args = [
                 "--extra-browser-args=--use-cmd-decoder=validating",
             ],
@@ -3206,6 +3239,11 @@ targets.legacy_basic_suite(
         "expected_color_pixel_validating_test": targets.legacy_test_config(
             mixins = [
                 "gpu_integration_test_common_args",
+            ],
+            remove_mixins = [
+                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
+                # has_native_resultdb_integration is not supported yet.
+                "upload_inv_extended_properties",
             ],
             args = [
                 "--dont-restore-color-profile-after-test",
@@ -3222,15 +3260,30 @@ targets.legacy_basic_suite(
             mixins = [
                 "gpu_integration_test_common_args",
             ],
+            remove_mixins = [
+                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
+                # has_native_resultdb_integration is not supported yet.
+                "upload_inv_extended_properties",
+            ],
         ),
         "hardware_accelerated_feature_tests": targets.legacy_test_config(
             mixins = [
                 "gpu_integration_test_common_args",
             ],
+            remove_mixins = [
+                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
+                # has_native_resultdb_integration is not supported yet.
+                "upload_inv_extended_properties",
+            ],
         ),
         "pixel_skia_gold_validating_test": targets.legacy_test_config(
             mixins = [
                 "gpu_integration_test_common_args",
+            ],
+            remove_mixins = [
+                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
+                # has_native_resultdb_integration is not supported yet.
+                "upload_inv_extended_properties",
             ],
             args = [
                 "--dont-restore-color-profile-after-test",
@@ -3246,6 +3299,11 @@ targets.legacy_basic_suite(
         "screenshot_sync_validating_tests": targets.legacy_test_config(
             mixins = [
                 "gpu_integration_test_common_args",
+            ],
+            remove_mixins = [
+                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
+                # has_native_resultdb_integration is not supported yet.
+                "upload_inv_extended_properties",
             ],
             args = [
                 "--dont-restore-color-profile-after-test",

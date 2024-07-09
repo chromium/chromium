@@ -244,7 +244,8 @@ def _resultdb(
         enable = None,
         has_native_resultdb_integration = None,
         result_format = None,
-        result_file = None):
+        result_file = None,
+        inv_extended_properties_dir = None):
     """Define the ResultDB integration to be used for a test.
 
     Args:
@@ -265,6 +266,7 @@ def _resultdb(
         has_native_resultdb_integration = has_native_resultdb_integration,
         result_format = result_format,
         result_file = result_file,
+        inv_extended_properties_dir = inv_extended_properties_dir,
     )
 
 def _skylab(
@@ -1282,6 +1284,8 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
             formatter.add_line("'result_format': '{}',".format(resultdb.result_format))
         if resultdb.result_file != None:
             formatter.add_line("'result_file': '{}',".format(resultdb.result_file))
+        if resultdb.inv_extended_properties_dir != None:
+            formatter.add_line("'inv_extended_properties_dir': '{}',".format(resultdb.inv_extended_properties_dir))
         formatter.close_scope("},")
 
     if "use_isolated_scripts_api" in mixin:
