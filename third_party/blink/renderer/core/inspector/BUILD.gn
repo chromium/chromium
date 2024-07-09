@@ -56,6 +56,8 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/event_breakpoints.h",
     "inspector/protocol/emulation.cc",
     "inspector/protocol/emulation.h",
+    "inspector/protocol/file_system.cc",
+    "inspector/protocol/file_system.h",
     "inspector/protocol/forward.h",
     "inspector/protocol/indexed_db.cc",
     "inspector/protocol/indexed_db.h",

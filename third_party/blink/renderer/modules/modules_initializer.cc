@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/modules/event_modules_factory.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/exported/web_embedded_worker_impl.h"
+#include "third_party/blink/renderer/modules/file_system_access/bucket_file_system_agent.h"
 #include "third_party/blink/renderer/modules/filesystem/dragged_isolated_file_system_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/modules/gamepad/navigator_gamepad.h"
@@ -303,6 +304,7 @@ void ModulesInitializer::InitInspectorAgentSession(
                                                         dom_agent);
   session->CreateAndAppend<InspectorWebAudioAgent>(page);
   session->CreateAndAppend<InspectorCacheStorageAgent>(inspected_frames);
+  session->CreateAndAppend<BucketFileSystemAgent>(inspected_frames);
   if (allow_view_agents) {
     session->CreateAndAppend<InspectorDatabaseAgent>(page);
   }

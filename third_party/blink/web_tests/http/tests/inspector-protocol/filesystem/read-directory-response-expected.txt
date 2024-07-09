@@ -1,0 +1,26 @@
+Tests retrieving nested directory from the protocol.
+
+Directory: second_level
+Nested Directories:
+  - Name: third_level_2
+  - Name: third_level
+Nested Files:
+  - Name: second_level_2.txt
+    Size: 0
+    Type: text/plain
+  - Name: second_level.txt
+    Size: 0
+    Type: text/plain
+
+Directory: test_bucket:second_level
+Nested Directories:
+  - Name: test_bucket:third_level_2
+  - Name: test_bucket:third_level
+Nested Files:
+  - Name: test_bucket:second_level_2.txt
+    Size: 0
+    Type: text/plain
+  - Name: test_bucket:second_level.txt
+    Size: 0
+    Type: text/plain
+
