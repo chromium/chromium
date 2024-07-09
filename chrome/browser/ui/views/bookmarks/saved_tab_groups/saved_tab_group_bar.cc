@@ -29,6 +29,7 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/types.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -740,7 +741,8 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
     SavedTabGroupKeyedService* const keyed_service =
         SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
 
-    keyed_service->OpenSavedTabGroupInBrowser(browser_, group->saved_guid());
+    keyed_service->OpenSavedTabGroupInBrowser(
+        browser_, group->saved_guid(), OpeningSource::kOpenedFromRevisitUi);
   }
 }
 

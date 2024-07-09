@@ -102,6 +102,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="Opened from revisit UI"/>
   <int value="2" label="Auto-opened from sync"/>
+  <int value="3" label="Opened from Tab or Session Restore"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/types.h:OpeningSource) -->

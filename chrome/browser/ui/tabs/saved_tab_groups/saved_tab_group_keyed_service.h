@@ -12,11 +12,18 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/range/range.h"
 
 class Profile;
 class TabGroup;
+
+namespace syncer {
+
+class DeviceInfoTracker;
+
+}
 
 namespace tab_groups {
 
@@ -26,7 +33,9 @@ class SavedTabGroupKeyedService : public KeyedService,
                                   public SavedTabGroupController,
                                   public SavedTabGroupModelObserver {
  public:
-  explicit SavedTabGroupKeyedService(Profile* profile);
+  explicit SavedTabGroupKeyedService(
+      Profile* profile,
+      syncer::DeviceInfoTracker* device_info_tracker);
   SavedTabGroupKeyedService(const SavedTabGroupKeyedService&) = delete;
   SavedTabGroupKeyedService& operator=(const SavedTabGroupKeyedService& other) =
       delete;
@@ -45,10 +54,12 @@ class SavedTabGroupKeyedService : public KeyedService,
   // SavedTabGroupController
   std::optional<tab_groups::TabGroupId> OpenSavedTabGroupInBrowser(
       Browser* browser,
-      const base::Uuid saved_group_guid) override;
+      const base::Uuid saved_group_guid,
+      tab_groups::OpeningSource opening_source) override;
   base::Uuid SaveGroup(const tab_groups::TabGroupId& group_id,
                        bool is_pinned = false) override;
-  void UnsaveGroup(const tab_groups::TabGroupId& group_id) override;
+  void UnsaveGroup(const tab_groups::TabGroupId& group_id,
+                   ClosingSource closing_source) override;
   void PauseTrackingLocalTabGroup(
       const tab_groups::TabGroupId& group_id) override;
   void ResumeTrackingLocalTabGroup(
@@ -81,6 +92,18 @@ class SavedTabGroupKeyedService : public KeyedService,
       const std::optional<LocalTabID>& tab_id = std::nullopt);
 
   std::optional<std::string> GetLocalCacheGuid() const;
+
+  void OnTabAddedToGroupLocally(const base::Uuid& group_guid);
+
+  void OnTabRemovedFromGroupLocally(const base::Uuid& group_guid,
+                                    const base::Uuid& tab_guid);
+
+  void OnTabNavigatedLocally(const base::Uuid& group_guid,
+                             const base::Uuid& tab_guid);
+
+  void OnTabsReorderedLocally(const base::Uuid& group_guid);
+
+  void OnTabGroupVisualsChanged(const base::Uuid& group_guid);
 
  private:
   // Adds tabs to `tab_group` if `saved_group` was modified and has more tabs
@@ -147,6 +170,12 @@ class SavedTabGroupKeyedService : public KeyedService,
   // Records the Unsaved TabGroup count and the Tab count per Unsaved TabGroup.
   void RecordTabGroupMetrics();
 
+  // Helper function to log a tab group event in histograms. This is implemented
+  // in the same way as TabGroupSyncServiceImpl.
+  void LogEvent(TabGroupEvent event,
+                const base::Uuid& group_id,
+                const std::optional<base::Uuid>& tab_id = std::nullopt);
+
   // The profile used to instantiate the keyed service.
   raw_ptr<Profile> profile_ = nullptr;
 
@@ -163,6 +192,9 @@ class SavedTabGroupKeyedService : public KeyedService,
   // Timer used to record periodic metrics about the state of the TabGroups
   // (saved and unsaved).
   base::RepeatingTimer metrics_timer_;
+
+  // Helper class for logging metrics.
+  std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
 
   // Keeps track of restored group to connect to model load.
   std::vector<std::pair<base::Uuid, tab_groups::TabGroupId>>

@@ -41,7 +41,8 @@ enum class OpeningSource {
   kUnknown = 0,
   kOpenedFromRevisitUi = 1,
   kAutoOpenedFromSync = 2,
-  kMaxValue = kAutoOpenedFromSync,
+  kOpenedFromTabRestore = 3,
+  kMaxValue = kOpenedFromTabRestore,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupOpenReason)
 

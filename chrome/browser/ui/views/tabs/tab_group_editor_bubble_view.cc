@@ -523,7 +523,8 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
   } else {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
-    saved_tab_group_service->UnsaveGroup(group_);
+    saved_tab_group_service->UnsaveGroup(
+        group_, tab_groups::ClosingSource::kDeletedByUser);
   }
 
   save_group_toggle_->GetViewAccessibility().SetName(

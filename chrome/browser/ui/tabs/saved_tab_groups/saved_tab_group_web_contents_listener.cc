@@ -194,6 +194,7 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   tab->SetURL(web_contents_->GetURL());
   tab->SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
   service_->model()->UpdateTabInGroup(group->saved_guid(), *tab);
+  service_->OnTabNavigatedLocally(group->saved_guid(), tab->saved_tab_guid());
 }
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(

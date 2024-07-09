@@ -37,6 +37,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_platform_specific_tab_data.h"
 #include "components/sessions/core/live_tab_context.h"
@@ -256,7 +257,8 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     if (!group_id.has_value()) {
       // Open the group in this browser if it is closed.
       group_id = saved_tab_group_service->OpenSavedTabGroupInBrowser(
-          browser_, saved_group_id.value());
+          browser_, saved_group_id.value(),
+          tab_groups::OpeningSource::kOpenedFromTabRestore);
     } else {
       Browser* source_browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(

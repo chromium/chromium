@@ -1133,7 +1133,8 @@ void MoveTabsToNewWindow(Browser* browser,
 
       service->DisconnectLocalTabGroup(group.value());
       browser->tab_strip_model()->CloseAllTabsInGroup(group.value());
-      service->OpenSavedTabGroupInBrowser(new_browser, saved_guid);
+      service->OpenSavedTabGroupInBrowser(new_browser, saved_guid,
+                                          tab_groups::OpeningSource::kUnknown);
       return;
     }
 

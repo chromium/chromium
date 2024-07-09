@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_CONTROLLER_H_
 
 #include "base/uuid.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_id.h"
 
 class Browser;
@@ -19,7 +20,8 @@ class SavedTabGroupController {
   // opened. If no group was opened, return nullopt.
   virtual std::optional<tab_groups::TabGroupId> OpenSavedTabGroupInBrowser(
       Browser* browser,
-      const base::Uuid saved_group_guid) = 0;
+      const base::Uuid saved_group_guid,
+      tab_groups::OpeningSource opening_source) = 0;
 
   // Saves a group. Finds the TabGroup by groupid from all browsers, constructs
   // the saved tab group, and starts listening to all tabs. If `prepend` is
@@ -30,7 +32,8 @@ class SavedTabGroupController {
 
   // Unsaves a group. Finds the group_id in the list of saved tab groups and
   // removes it. Stops Listening to all tabs.
-  virtual void UnsaveGroup(const tab_groups::TabGroupId& group_id) = 0;
+  virtual void UnsaveGroup(const tab_groups::TabGroupId& group_id,
+                           ClosingSource closing_source) = 0;
 
   // Pauses listening to the Tab Group in the TabStrip, but maintains the
   // connection between the two.
