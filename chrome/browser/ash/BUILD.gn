@@ -4321,28 +4321,6 @@ fuzzer_test("zeroconf_printer_detector_fuzzer") {
   ]
 }
 
-fuzzer_test("create_fnmatch_query_fuzzer") {
-  sources = [ "extensions/file_manager/create_fnmatch_query_fuzzer.cc" ]
-  deps = [
-    ":ash",
-    "//base",
-    "//chrome/browser",
-    "//components/exo/wayland:test_controller",
-    "//components/exo/wayland:ui_controls_protocol",
-  ]
-}
-
-fuzzer_test("search_by_pattern_fuzzer") {
-  sources = [ "extensions/file_manager/search_by_pattern_fuzzer.cc" ]
-  deps = [
-    ":ash",
-    "//base",
-    "//chrome/browser",
-    "//components/exo/wayland:test_controller",
-    "//components/exo/wayland:ui_controls_protocol",
-  ]
-}
-
 if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("policy_fuzzer") {
     sources = [ "policy/fuzzer/policy_fuzzer.cc" ]
