@@ -27,7 +27,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_mock.h"
-#include "ui/gl/gl_version_info.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -2414,18 +2413,6 @@ TEST_P(ProgramManagerDualSourceBlendingES2Test, UseSecondaryFragCoord) {
   Program* program =
       SetupProgramForVariables(nullptr, 0, kFragmentVaryings,
                                std::size(kFragmentVaryings), &shader_version);
-
-  const gl::GLVersionInfo& gl_version = feature_info_->gl_version_info();
-  if (!gl_version.is_es) {
-    // The call is expected only for OpenGL. OpenGL ES expects to
-    // output GLES SL 1.00, which does not bind.
-    EXPECT_CALL(*(gl_.get()),
-                BindFragDataLocationIndexed(kServiceProgramId, 0, 1,
-                                            StrEq("angle_SecondaryFragColor")))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
-
   EXPECT_TRUE(LinkAsExpected(program, true));
 }
 
@@ -2441,18 +2428,6 @@ TEST_P(ProgramManagerDualSourceBlendingES2Test, UseSecondaryFragData) {
   Program* program =
       SetupProgramForVariables(nullptr, 0, kFragmentVaryings,
                                std::size(kFragmentVaryings), &shader_version);
-
-  const gl::GLVersionInfo& gl_version = feature_info_->gl_version_info();
-  if (!gl_version.is_es) {
-    // The call is expected only for OpenGL. OpenGL ES expects to
-    // output GLES SL 1.00, which does not bind.
-    EXPECT_CALL(*(gl_.get()),
-                BindFragDataLocationIndexed(kServiceProgramId, 0, 1,
-                                            StrEq("angle_SecondaryFragData")))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
-
   EXPECT_TRUE(LinkAsExpected(program, true));
 }
 

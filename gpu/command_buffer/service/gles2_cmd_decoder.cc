@@ -3216,8 +3216,8 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
 
   GLint range[2] = {0, 0};
   GLint precision = 0;
-  QueryShaderPrecisionFormat(gl_version_info(), GL_FRAGMENT_SHADER,
-                             GL_HIGH_FLOAT, range, &precision);
+  QueryShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_HIGH_FLOAT, range,
+                             &precision);
   has_fragment_precision_high_ =
       PrecisionMeetsSpecForHighpFloat(range[0], range[1], precision);
 
@@ -3421,13 +3421,11 @@ GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
   CHECK(initialized());
   GLCapabilities caps;
 
-  const gl::GLVersionInfo& version_info = gl_version_info();
-  caps.VisitPrecisions([&version_info](
-                           GLenum shader, GLenum type,
-                           GLCapabilities::ShaderPrecision* shader_precision) {
+  caps.VisitPrecisions([](GLenum shader, GLenum type,
+                          GLCapabilities::ShaderPrecision* shader_precision) {
     GLint range[2] = {0, 0};
     GLint precision = 0;
-    QueryShaderPrecisionFormat(version_info, shader, type, range, &precision);
+    QueryShaderPrecisionFormat(shader, type, range, &precision);
     shader_precision->min_range = range[0];
     shader_precision->max_range = range[1];
     shader_precision->precision = precision;
@@ -5984,23 +5982,7 @@ bool GLES2DecoderImpl::GetHelper(
         }
       }
       if (params) {
-        if (feature_info_->gl_version_info().is_es) {
-          api()->glGetIntegervFn(pname, params);
-        } else {
-          // On Desktop GL where these two enums can be queried, instead of
-          // returning the second pair of read format/type, the preferred pair
-          // is returned. So this semantic is different from GL ES.
-          if (pname == GL_IMPLEMENTATION_COLOR_READ_FORMAT) {
-            *params = GLES2Util::GetGLReadPixelsImplementationFormat(
-                GetBoundReadFramebufferInternalFormat(),
-                GetBoundReadFramebufferTextureType(),
-                feature_info_->feature_flags().ext_read_format_bgra);
-          } else {
-            *params = GLES2Util::GetGLReadPixelsImplementationType(
-                GetBoundReadFramebufferInternalFormat(),
-                GetBoundReadFramebufferTextureType());
-          }
-        }
+        api()->glGetIntegervFn(pname, params);
         if (*params == GL_HALF_FLOAT && feature_info_->IsWebGL1OrES2Context()) {
           *params = GL_HALF_FLOAT_OES;
         }
@@ -6016,49 +5998,12 @@ bool GLES2DecoderImpl::GetHelper(
       break;
   }
 
-  if (!gl_version_info().is_es) {
-    switch (pname) {
-      case GL_MAX_FRAGMENT_UNIFORM_VECTORS:
-        *num_written = 1;
-        if (params) {
-          *params = group_->max_fragment_uniform_vectors();
-        }
-        return true;
-      case GL_MAX_VARYING_VECTORS:
-        *num_written = 1;
-        if (params) {
-          *params = group_->max_varying_vectors();
-        }
-        return true;
-      case GL_MAX_VERTEX_UNIFORM_VECTORS:
-        *num_written = 1;
-        if (params) {
-          *params = group_->max_vertex_uniform_vectors();
-        }
-        return true;
-      }
-  }
   if (feature_info_->IsWebGL2OrES3Context()) {
     switch (pname) {
-      case GL_MAX_VARYING_COMPONENTS: {
-        if (gl_version_info().is_es) {
-          // We can just delegate this query to the driver.
-          *num_written = 1;
-          break;
-        }
-
-        // GL_MAX_VARYING_COMPONENTS is deprecated in the desktop
-        // OpenGL core profile, so for simplicity, just compute it
-        // from GL_MAX_VARYING_VECTORS on non-OpenGL ES
-        // configurations.
-        GLint max_varying_vectors = 0;
-        api()->glGetIntegervFn(GL_MAX_VARYING_VECTORS, &max_varying_vectors);
+      case GL_MAX_VARYING_COMPONENTS:
+        // We can just delegate this query to the driver.
         *num_written = 1;
-        if (params) {
-          *params = max_varying_vectors * 4;
-        }
-        return true;
-      }
+        break;
       case GL_READ_BUFFER:
         *num_written = 1;
         if (params) {
@@ -14428,8 +14373,7 @@ error::Error GLES2DecoderImpl::HandleGetShaderPrecisionFormat(
 
   GLint range[2] = { 0, 0 };
   GLint precision = 0;
-  QueryShaderPrecisionFormat(gl_version_info(), shader_type, precision_type,
-                             range, &precision);
+  QueryShaderPrecisionFormat(shader_type, precision_type, range, &precision);
 
   result->min_range = range[0];
   result->max_range = range[1];

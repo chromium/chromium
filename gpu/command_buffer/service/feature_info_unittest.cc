@@ -58,7 +58,8 @@ class FeatureInfoTest
     switch (GetParam()) {
       case ES2_on_Version3_0:
       case ES3_on_Version3_0:
-        SetupInitExpectationsWithGLVersion(extensions_str.c_str(), "", "3.0");
+        SetupInitExpectationsWithGLVersion(extensions_str.c_str(), "",
+                                           "OpenGL ES 3.0");
         break;
       default:
         NOTREACHED_IN_MIGRATION();
@@ -182,7 +183,7 @@ TEST_P(FeatureInfoTest, Basic) {
 }
 
 TEST_P(FeatureInfoTest, InitializeNoExtensions) {
-  SetupInitExpectations("");
+  SetupInitExpectationsWithGLVersion("", "", "OpenGL ES 2.0");
   // Check default extensions are there
   EXPECT_TRUE(
       gfx::HasExtension(info_->extensions(), "GL_CHROMIUM_resource_safe"));
@@ -887,7 +888,8 @@ TEST_P(FeatureInfoTest, InitializeANGLE_framebuffer_multisample) {
 // because we wouldn't be choosing the right driver entry point and because the
 // extension was falsely advertised on some Android devices (crbug.com/165736).
 TEST_P(FeatureInfoTest, InitializeANGLE_framebuffer_multisampleWithoutANGLE) {
-  SetupInitExpectations("GL_ANGLE_framebuffer_multisample");
+  SetupInitExpectationsWithGLVersion("GL_ANGLE_framebuffer_multisample", "",
+                                     "OpenGL ES 2.0");
   EXPECT_FALSE(info_->feature_flags().chromium_framebuffer_multisample);
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
                                  "GL_CHROMIUM_framebuffer_multisample"));
@@ -946,7 +948,8 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_filter_anisotropic) {
 }
 
 TEST_P(FeatureInfoTest, InitializeOES_depth_texture) {
-  SetupInitExpectations("GL_OES_depth_texture");
+  SetupInitExpectationsWithGLVersion("GL_OES_depth_texture", "",
+                                     "OpenGL ES 2.0");
   EXPECT_TRUE(
       gfx::HasExtension(info_->extensions(), "GL_GOOGLE_depth_texture"));
   EXPECT_TRUE(
@@ -960,7 +963,8 @@ TEST_P(FeatureInfoTest, InitializeOES_depth_texture) {
 }
 
 TEST_P(FeatureInfoTest, InitializeANGLE_depth_texture) {
-  SetupInitExpectations("GL_ANGLE_depth_texture");
+  SetupInitExpectationsWithGLVersion("GL_ANGLE_depth_texture", "",
+                                     "OpenGL ES 2.0");
   EXPECT_TRUE(
       gfx::HasExtension(info_->extensions(), "GL_GOOGLE_depth_texture"));
   EXPECT_TRUE(
@@ -1147,7 +1151,7 @@ TEST_P(FeatureInfoTest, InitializeOES_vertex_array_object) {
 }
 
 TEST_P(FeatureInfoTest, InitializeNo_vertex_array_object) {
-  SetupInitExpectations("");
+  SetupInitExpectationsWithGLVersion("", "", "OpenGL ES 2.0");
   // Even if the native extensions are not available the implementation
   // may still emulate the GL_OES_vertex_array_object functionality. In this
   // scenario native_vertex_array_object must be false.
@@ -1254,7 +1258,7 @@ TEST_P(FeatureInfoTest, InitializeWithES3AndDepthTexture) {
 }
 
 TEST_P(FeatureInfoTest, InitializeWithoutSamplers) {
-  SetupInitExpectationsWithGLVersion("", "", "3.0");
+  SetupInitExpectationsWithGLVersion("", "", "OpenGL ES 2.0");
   EXPECT_FALSE(info_->feature_flags().enable_samplers);
 }
 

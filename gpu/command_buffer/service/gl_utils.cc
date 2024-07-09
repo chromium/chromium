@@ -120,8 +120,7 @@ bool PrecisionMeetsSpecForHighpFloat(GLint rangeMin,
   return (rangeMin >= 62) && (rangeMax >= 62) && (precision >= 16);
 }
 
-void QueryShaderPrecisionFormat(const gl::GLVersionInfo& gl_version_info,
-                                GLenum shader_type,
+void QueryShaderPrecisionFormat(GLenum shader_type,
                                 GLenum precision_type,
                                 GLint* range,
                                 GLint* precision) {
@@ -147,32 +146,30 @@ void QueryShaderPrecisionFormat(const gl::GLVersionInfo& gl_version_info,
       break;
   }
 
-  if (gl_version_info.is_es) {
-    // This function is sometimes defined even though it's really just
-    // a stub, so we need to set range and precision as if it weren't
-    // defined before calling it.
-    // On Mac OS with some GPUs, calling this generates a
-    // GL_INVALID_OPERATION error. Avoid calling it on non-GLES2
-    // platforms.
-    glGetShaderPrecisionFormat(shader_type, precision_type, range, precision);
+  // This function is sometimes defined even though it's really just
+  // a stub, so we need to set range and precision as if it weren't
+  // defined before calling it.
+  // On Mac OS with some GPUs, calling this generates a
+  // GL_INVALID_OPERATION error. Avoid calling it on non-GLES2
+  // platforms.
+  glGetShaderPrecisionFormat(shader_type, precision_type, range, precision);
 
-    // TODO(brianderson): Make the following official workarounds.
+  // TODO(brianderson): Make the following official workarounds.
 
-    // Some drivers have bugs where they report the ranges as a negative number.
-    // Taking the absolute value here shouldn't hurt because negative numbers
-    // aren't expected anyway.
-    range[0] = abs(range[0]);
-    range[1] = abs(range[1]);
+  // Some drivers have bugs where they report the ranges as a negative number.
+  // Taking the absolute value here shouldn't hurt because negative numbers
+  // aren't expected anyway.
+  range[0] = abs(range[0]);
+  range[1] = abs(range[1]);
 
-    // If the driver reports a precision for highp float that isn't actually
-    // highp, don't pretend like it's supported because shader compilation will
-    // fail anyway.
-    if (precision_type == GL_HIGH_FLOAT &&
-        !PrecisionMeetsSpecForHighpFloat(range[0], range[1], *precision)) {
-      range[0] = 0;
-      range[1] = 0;
-      *precision = 0;
-    }
+  // If the driver reports a precision for highp float that isn't actually
+  // highp, don't pretend like it's supported because shader compilation will
+  // fail anyway.
+  if (precision_type == GL_HIGH_FLOAT &&
+      !PrecisionMeetsSpecForHighpFloat(range[0], range[1], *precision)) {
+    range[0] = 0;
+    range[1] = 0;
+    *precision = 0;
   }
 }
 
@@ -195,13 +192,11 @@ void PopulateGLCapabilities(GLCapabilities* caps,
                             const FeatureInfo* feature_info) {
   CHECK(caps);
 
-  const gl::GLVersionInfo& version_info = feature_info->gl_version_info();
-  caps->VisitPrecisions([&version_info](
-                            GLenum shader, GLenum type,
-                            GLCapabilities::ShaderPrecision* shader_precision) {
+  caps->VisitPrecisions([](GLenum shader, GLenum type,
+                           GLCapabilities::ShaderPrecision* shader_precision) {
     GLint range[2] = {0, 0};
     GLint precision = 0;
-    QueryShaderPrecisionFormat(version_info, shader, type, range, &precision);
+    QueryShaderPrecisionFormat(shader, type, range, &precision);
     shader_precision->min_range = range[0];
     shader_precision->max_range = range[1];
     shader_precision->precision = precision;
@@ -1080,9 +1075,7 @@ CopyTextureMethod GetCopyTextureCHROMIUMMethod(const FeatureInfo* feature_info,
 #endif
     // RGB9_E5 isn't accepted by glCopyTexImage2D if underlying context is ES.
     case GL_RGB9_E5:
-      if (feature_info->gl_version_info().is_es)
-        return CopyTextureMethod::DRAW_AND_READBACK;
-      break;
+      return CopyTextureMethod::DRAW_AND_READBACK;
     // SRGB format has color-space conversion issue. WebGL spec doesn't define
     // clearly if linear-to-srgb color space conversion is required or not when
     // uploading DOM elements to SRGB textures. WebGL conformance test expects
@@ -1117,10 +1110,10 @@ CopyTextureMethod GetCopyTextureCHROMIUMMethod(const FeatureInfo* feature_info,
   // GL_RGB10_A2 attachment to an unsized internal format is valid. Most drivers
   // interpreted the explicit call out as not valid (and dEQP actually checks
   // this), so avoid DIRECT_COPY in that case.
-  if (feature_info->gl_version_info().is_es &&
-      source_internal_format == GL_RGB10_A2 &&
-      dest_internal_format != source_internal_format)
+  if (source_internal_format == GL_RGB10_A2 &&
+      dest_internal_format != source_internal_format) {
     copy_tex_image_format_valid = false;
+  }
 
   // TODO(qiankun.miao@intel.com): for WebGL 2.0 or OpenGL ES 3.0, both
   // DIRECT_DRAW path for dest_level > 0 and DIRECT_COPY path for source_level >

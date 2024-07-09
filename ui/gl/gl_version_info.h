@@ -22,8 +22,8 @@ struct GL_EXPORT GLVersionInfo {
   GLVersionInfo& operator=(const GLVersionInfo&) = delete;
 
   bool IsAtLeastGLES(unsigned major, unsigned minor) const {
-    return is_es && (major_version > major ||
-                     (major_version == major && minor_version >= minor));
+    return (major_version > major ||
+            (major_version == major && minor_version >= minor));
   }
 
   struct VersionStrings {
@@ -41,7 +41,6 @@ struct GL_EXPORT GLVersionInfo {
     return !is_angle && !is_swiftshader && is_es3;
   }
 
-  bool is_es = false;
   bool is_angle = false;
   bool is_d3d = false;
   bool is_mesa = false;

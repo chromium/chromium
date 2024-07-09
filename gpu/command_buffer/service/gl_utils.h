@@ -32,10 +32,6 @@
 #define CHECK_GL_ERROR() void(0)
 #endif  // GL_ERROR_DEBUGGING
 
-namespace gl {
-struct GLVersionInfo;
-}
-
 namespace gpu {
 
 struct Capabilities;
@@ -68,8 +64,7 @@ struct CALayerSharedState {
 bool PrecisionMeetsSpecForHighpFloat(GLint rangeMin,
                                      GLint rangeMax,
                                      GLint precision);
-void QueryShaderPrecisionFormat(const gl::GLVersionInfo& gl_version_info,
-                                GLenum shader_type,
+void QueryShaderPrecisionFormat(GLenum shader_type,
                                 GLenum precision_type,
                                 GLint* range,
                                 GLint* precision);

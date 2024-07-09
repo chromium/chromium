@@ -65,7 +65,6 @@ void GLVersionInfo::ParseVersionString(const char* version_str) {
   // Make sure the outputs are always initialized.
   major_version = 0;
   minor_version = 0;
-  is_es = false;
   is_es2 = false;
   is_es3 = false;
   if (!version_str)
@@ -73,7 +72,6 @@ void GLVersionInfo::ParseVersionString(const char* version_str) {
   std::string_view lstr(version_str);
   constexpr std::string_view kESPrefix = "OpenGL ES ";
   if (base::StartsWith(lstr, kESPrefix, base::CompareCase::SENSITIVE)) {
-    is_es = true;
     lstr.remove_prefix(kESPrefix.size());
   }
   std::vector<std::string_view> pieces = base::SplitStringPiece(
@@ -83,15 +81,13 @@ void GLVersionInfo::ParseVersionString(const char* version_str) {
     return;
   }
 
-  if (is_es) {
-    // Desktop GL doesn't specify the GL_VERSION format, but ES spec requires
-    // the string to be in the format of "OpenGL ES major.minor other_info".
-    DCHECK_LE(3u, pieces[0].size());
-    if (pieces[0].size() > 0 && pieces[0].back() == 'V') {
-      // On Nexus 6 with Android N, GL_VERSION string is not spec compliant.
-      // There is no space between "3.1" and "V@104.0".
-      pieces[0].remove_suffix(1);
-    }
+  // ES spec requires the string to be in the format of "OpenGL ES major.minor
+  // other_info".
+  DCHECK_LE(3u, pieces[0].size());
+  if (pieces[0].size() > 0 && pieces[0].back() == 'V') {
+    // On Nexus 6 with Android N, GL_VERSION string is not spec compliant.
+    // There is no space between "3.1" and "V@104.0".
+    pieces[0].remove_suffix(1);
   }
   std::string gl_version(pieces[0]);
   base::Version version(gl_version);
@@ -102,11 +98,11 @@ void GLVersionInfo::ParseVersionString(const char* version_str) {
     if (version.components().size() >= 2) {
       minor_version = version.components()[1];
     }
-    if (is_es) {
-      if (major_version == 2)
-        is_es2 = true;
-      if (major_version == 3)
-        is_es3 = true;
+    if (major_version == 2) {
+      is_es2 = true;
+    }
+    if (major_version == 3) {
+      is_es3 = true;
     }
   }
 }
@@ -126,15 +122,13 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
     return;
   }
 
-  if (is_es) {
-    // Desktop GL doesn't specify the GL_VERSION format, but ES spec requires
-    // the string to be in the format of "OpenGL ES major.minor other_info".
-    DCHECK_LE(3u, pieces[0].size());
-    if (pieces[0].size() > 0 && pieces[0].back() == 'V') {
-      // On Nexus 6 with Android N, GL_VERSION string is not spec compliant.
-      // There is no space between "3.1" and "V@104.0".
-      pieces[0].remove_suffix(1);
-    }
+  // ES spec requires the string to be in the format of
+  // "OpenGL ES major.minor other_info".
+  DCHECK_LE(3u, pieces[0].size());
+  if (pieces[0].size() > 0 && pieces[0].back() == 'V') {
+    // On Nexus 6 with Android N, GL_VERSION string is not spec compliant.
+    // There is no space between "3.1" and "V@104.0".
+    pieces[0].remove_suffix(1);
   }
 
   if (pieces.size() == 1)
@@ -248,44 +242,14 @@ GLVersionInfo::VersionStrings GLVersionInfo::GetFakeVersionStrings(
     unsigned major,
     unsigned minor) const {
   VersionStrings result;
-  if (is_es) {
-    if (major == 2) {
-      result.gl_version = "OpenGL ES 2.0";
-      result.glsl_version = "OpenGL ES GLSL ES 1.00";
-    } else if (major == 3) {
-      result.gl_version = "OpenGL ES 3.0";
-      result.glsl_version = "OpenGL ES GLSL ES 3.00";
-    } else {
-      NOTREACHED_IN_MIGRATION();
-    }
+  if (major == 2) {
+    result.gl_version = "OpenGL ES 2.0";
+    result.glsl_version = "OpenGL ES GLSL ES 1.00";
+  } else if (major == 3) {
+    result.gl_version = "OpenGL ES 3.0";
+    result.glsl_version = "OpenGL ES GLSL ES 3.00";
   } else {
-    if (major == 4 && minor == 1) {
-      result.gl_version = "4.1";
-      result.glsl_version = "4.10";
-    } else if (major == 4 && minor == 0) {
-      result.gl_version = "4.0";
-      result.glsl_version = "4.00";
-    } else if (major == 3 && minor == 3) {
-      result.gl_version = "3.3";
-      result.glsl_version = "3.30";
-    } else if (major == 3 && minor == 2) {
-      result.gl_version = "3.2";
-      result.glsl_version = "1.50";
-    } else if (major == 3 && minor == 1) {
-      result.gl_version = "3.1";
-      result.glsl_version = "1.40";
-    } else if (major == 3 && minor == 0) {
-      result.gl_version = "3.0";
-      result.glsl_version = "1.30";
-    } else if (major == 2 && minor == 1) {
-      result.gl_version = "2.1";
-      result.glsl_version = "1.20";
-    } else if (major == 2 && minor == 0) {
-      result.gl_version = "2.0";
-      result.glsl_version = "1.10";
-    } else {
-      NOTREACHED_IN_MIGRATION();
-    }
+    NOTREACHED_IN_MIGRATION();
   }
   return result;
 }
