@@ -779,8 +779,9 @@ std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo(
 
 SkBitmap PDFiumPage::GetImageForOcr(int page_object_index) {
   FPDF_PAGE page = GetPage();
+  FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, page_object_index);
   SkBitmap bitmap =
-      ::chrome_pdf::GetImageForOcr(engine_->doc(), page, page_object_index);
+      ::chrome_pdf::GetImageForOcr(engine_->doc(), page, page_object);
 
   SkBitmapOperations::RotationAmount rotation;
   switch (FPDFPage_GetRotation(page)) {

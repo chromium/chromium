@@ -22,10 +22,9 @@ namespace chrome_pdf {
 
 SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,
                         FPDF_PAGE page,
-                        int page_object_index) {
+                        FPDF_PAGEOBJECT page_object) {
   SkBitmap bitmap;
 
-  FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, page_object_index);
   if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_IMAGE) {
     return bitmap;
   }

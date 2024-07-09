@@ -12,7 +12,7 @@ namespace chrome_pdf {
 
 SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,
                         FPDF_PAGE page,
-                        int page_object_index);
+                        FPDF_PAGEOBJECT page_object);
 
 }  // namespace chrome_pdf
 

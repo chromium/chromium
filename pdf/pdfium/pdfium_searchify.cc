@@ -247,15 +247,11 @@ std::vector<uint8_t> PDFiumSearchify(
     }
     int object_count = FPDFPage_CountObjects(page.get());
     for (int object_index = 0; object_index < object_count; object_index++) {
-      SkBitmap bitmap =
-          GetImageForOcr(document.get(), page.get(), object_index);
+      // GetImageForOcr() checks for null `image`.
+      FPDF_PAGEOBJECT image = FPDFPage_GetObject(page.get(), object_index);
+      SkBitmap bitmap = GetImageForOcr(document.get(), page.get(), image);
       // The object is not an image or failed to get the bitmap from the image.
       if (bitmap.empty()) {
-        continue;
-      }
-      FPDF_PAGEOBJECT image = FPDFPage_GetObject(page.get(), object_index);
-      if (!image) {
-        DLOG(ERROR) << "Failed to get image object";
         continue;
       }
       auto annotation = perform_ocr_callback.Run(bitmap);
