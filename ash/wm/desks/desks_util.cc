@@ -193,8 +193,14 @@ bool ShouldDesksBarBeCreated() {
     return false;
   }
 
-  // If it is in tablet mode, only show desk bar with more than one desks.
+  // If it is in tablet mode, hide the desk bar in split view. Otherwise, only
+  // show desk bar with more than one desks.
   if (display::Screen::GetScreen()->InTabletMode()) {
+    for (auto& root : Shell::GetAllRootWindows()) {
+      if (SplitViewController::Get(root)->InSplitViewMode()) {
+        return false;
+      }
+    }
     return DesksController::Get()->desks().size() > 1;
   }
 

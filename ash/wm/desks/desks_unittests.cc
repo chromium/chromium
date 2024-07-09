@@ -3468,65 +3468,6 @@ TEST_P(TabletModeDesksTest, RestoreSplitViewOnDeskSwitch) {
   EXPECT_TRUE(WindowState::Get(win4.get())->IsSnapped());
 }
 
-TEST_P(TabletModeDesksTest, SnappedStateRetainedOnSwitchingDesksFromOverview) {
-  auto* desks_controller = DesksController::Get();
-  NewDesk();
-  ASSERT_EQ(2u, desks_controller->desks().size());
-  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto win2 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  split_view_controller()->SnapWindow(win1.get(), SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(win2.get(), SnapPosition::kSecondary);
-  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
-  EXPECT_EQ(win2.get(), split_view_controller()->secondary_window());
-
-  // Enter overview and switch to desk_2 using its mini_view. Overview should
-  // end, but TabletModeWindowManager should not maximize the snapped windows
-  // and they should retain their snapped state.
-  auto* overview_controller = OverviewController::Get();
-  EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  auto* desks_bar_view = overview_grid->desks_bar_view();
-  auto* mini_view = desks_bar_view->mini_views()[1].get();
-  Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
-  EXPECT_EQ(desk_2, mini_view->desk());
-  {
-    DeskSwitchAnimationWaiter waiter;
-    ClickOnView(mini_view, GetEventGenerator());
-    waiter.Wait();
-  }
-  EXPECT_TRUE(WindowState::Get(win1.get())->IsSnapped());
-  EXPECT_TRUE(WindowState::Get(win2.get())->IsSnapped());
-  EXPECT_FALSE(overview_controller->InOverviewSession());
-
-  // Snap two other windows in desk_2, and switch back to desk_1 from overview.
-  // The snapped state should be retained for windows in both source and
-  // destination desks.
-  auto win3 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto win4 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  split_view_controller()->SnapWindow(win3.get(), SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(win4.get(), SnapPosition::kSecondary);
-  EXPECT_EQ(win3.get(), split_view_controller()->primary_window());
-  EXPECT_EQ(win4.get(), split_view_controller()->secondary_window());
-  EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  desks_bar_view = overview_grid->desks_bar_view();
-  mini_view = desks_bar_view->mini_views()[0];
-  Desk* desk_1 = desks_controller->GetDeskAtIndex(0);
-  EXPECT_EQ(desk_1, mini_view->desk());
-  {
-    DeskSwitchAnimationWaiter waiter;
-    ClickOnView(mini_view, GetEventGenerator());
-    waiter.Wait();
-  }
-  EXPECT_TRUE(WindowState::Get(win1.get())->IsSnapped());
-  EXPECT_TRUE(WindowState::Get(win2.get())->IsSnapped());
-  EXPECT_TRUE(WindowState::Get(win3.get())->IsSnapped());
-  EXPECT_TRUE(WindowState::Get(win4.get())->IsSnapped());
-  EXPECT_FALSE(overview_controller->InOverviewSession());
-}
-
 TEST_P(
     TabletModeDesksTest,
     SnappedStateRetainedOnSwitchingDesksWithOverviewFullOfUnsnappableWindows) {
@@ -6191,22 +6132,18 @@ TEST_P(DesksTest, ScrollableDesks) {
 // Tests the visibility of the scroll buttons and behavior while clicking the
 // corresponding scroll button.
 TEST_P(DesksTest, ScrollButtonsVisibility) {
-  UpdateDisplay("501x600");
+  UpdateDisplay("600x400");
   for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); i++) {
     NewDesk();
   }
 
   EXPECT_EQ(DesksController::Get()->desks().size(),
             desks_util::GetMaxNumberOfDesks());
-  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
   TabletModeControllerTestApi().EnterTabletMode();
-  // Snap the window to left and then right side of the display should enter
-  // overview mode.
-  auto* root_window = Shell::GetPrimaryRootWindow();
-  SplitViewController::Get(root_window)
-      ->SnapWindow(window.get(), SnapPosition::kPrimary);
+  EnterOverview();
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  auto* desks_bar = GetOverviewGridForRoot(root_window)->desks_bar_view();
+  auto* desks_bar =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(desks_bar->GetBoundsInScreen().CenterPoint());
 
@@ -6473,7 +6410,7 @@ TEST_P(DesksTest, ContinueScrollBar) {
 // Tests that change the focused mini view should scroll the desks bar and put
 // the focused mini view inside the visible bounds.
 TEST_P(DesksTest, FocusedMiniViewIsVisible) {
-  UpdateDisplay("501x600");
+  UpdateDisplay("600x400");
   for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); i++) {
     NewDesk();
   }
@@ -6482,13 +6419,13 @@ TEST_P(DesksTest, FocusedMiniViewIsVisible) {
             desks_util::GetMaxNumberOfDesks());
   auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
   TabletModeControllerTestApi().EnterTabletMode();
-  // Snap the window to left and then right side of the display should enter
-  // overview mode.
-  auto* root_window = Shell::GetPrimaryRootWindow();
-  SplitViewController::Get(root_window)
-      ->SnapWindow(window.get(), SnapPosition::kPrimary);
+  EnterOverview();
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  auto* desks_bar = GetOverviewGridForRoot(root_window)->desks_bar_view();
+  auto* desks_bar =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  // Check if scroll view is enabled.
+  ASSERT_TRUE(DesksTestApi::GetDeskBarRightScrollButton(
+      DeskBarViewBase::Type::kOverview));
   auto mini_views = desks_bar->mini_views();
   ASSERT_EQ(mini_views.size(), desks_util::GetMaxNumberOfDesks());
   // Traverse all the desks mini views from left to right.
