@@ -11,15 +11,13 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SEA_PEN_SUGGESTIONS} from './constants.js';
+import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
 import {isArrayEqual, shuffle} from './sea_pen_utils.js';
-
-const SeaPenSuggestionsElementBase = I18nMixin(PolymerElement);
 
 const seaPenSuggestionSelectedEvent = 'sea-pen-suggestion-selected';
 
@@ -39,7 +37,7 @@ declare global {
   }
 }
 
-export class SeaPenSuggestionsElement extends SeaPenSuggestionsElementBase {
+export class SeaPenSuggestionsElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-suggestions';
   }
@@ -50,33 +48,60 @@ export class SeaPenSuggestionsElement extends SeaPenSuggestionsElementBase {
 
   static get properties() {
     return {
-      suggestions: {
-        type: Array,
-        value: SEA_PEN_SUGGESTIONS,
+      suggestions_: Array,
+
+      hiddenSuggestions_: Object,
+
+      thumbnails_: {
+        type: Object,
+        observer: 'resetSuggestions_',
       },
     };
   }
 
-  private suggestions: string[];
+  private suggestions_: string[];
+  private hiddenSuggestions_: Set<string>;
+  private thumbnails_: SeaPenThumbnail[]|null;
 
-  private onClickSuggestion_(event: Event) {
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.watch<SeaPenSuggestionsElement['thumbnails_']>(
+        'thumbnails_', state => state.thumbnails);
+    this.hiddenSuggestions_ = new Set();
+    this.suggestions_ = [...SEA_PEN_SUGGESTIONS];
+  }
+
+  private resetSuggestions_() {
+    this.hiddenSuggestions_ = new Set();
+    this.onShuffleClicked_();
+  }
+
+  private onClickSuggestion_(event: Event&{model: {index: number}}) {
     const target = event.currentTarget as HTMLElement;
     const suggestion = target.textContent?.trim();
     assert(suggestion);
     this.dispatchEvent(new SeaPenSuggestionSelectedEvent(suggestion));
+    this.splice('suggestions_', event.model.index, 1);
+    this.hiddenSuggestions_.add(suggestion);
   }
 
   private onShuffleClicked_() {
     // Run shuffle (5 times at most) until the shuffled suggestions are
     // different from current; which is highly likely to happen the first time.
     for (let i = 0; i < 5; i++) {
-      const newSuggestions = shuffle(this.suggestions);
-
-      if (!isArrayEqual(newSuggestions, this.suggestions)) {
-        this.suggestions = newSuggestions;
+      // If there are more than three suggestions, filter the hidden suggestions
+      // out. Otherwise, use the full list of suggestions.
+      const filteredSuggestions =
+          SEA_PEN_SUGGESTIONS.length - this.hiddenSuggestions_.size > 3 ?
+          SEA_PEN_SUGGESTIONS.filter(s => !this.hiddenSuggestions_.has(s)) :
+          SEA_PEN_SUGGESTIONS;
+      const newSuggestions = shuffle(filteredSuggestions);
+      if (!isArrayEqual(newSuggestions, this.suggestions_)) {
+        this.suggestions_ = newSuggestions;
         break;
       }
     }
+    this.hiddenSuggestions_ = new Set();
   }
 }
 

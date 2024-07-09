@@ -57,7 +57,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     return {
       textValue_: {
         type: String,
-        observer: 'onTextValueUpdated_',
+        observer: 'updateShouldShowSuggestions_',
       },
 
       seaPenQuery_: {
@@ -223,14 +223,9 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     }
   }
 
-  private onTextValueUpdated_() {
+  private updateShouldShowSuggestions_() {
     // Show suggestions when there is text input.
     this.shouldShowSuggestions_ = !!this.textValue_;
-  }
-
-  private onFocusChanged_() {
-    // Show suggestions if there are thumbnails and text  input.
-    this.shouldShowSuggestions_ = !!this.thumbnails_ && !!this.textValue_;
   }
 }
 customElements.define(SeaPenInputQueryElement.is, SeaPenInputQueryElement);

@@ -19,8 +19,8 @@
   }
 
   #container cr-button {
-    background-color: inherit;
-    border: 1px solid var(--cros-sys-on_surface);
+    background-color: var(--cros-sys-base_elevated);
+    border: 1px solid var(--cros-sys-separator);
     border-radius: 8px;
     color: var(--cros-sys-on_surface);
     font-family: var(--cros-button-1-font-family);
@@ -44,7 +44,7 @@
       id="suggestionSelector"
       selected="0"
       role="radiogroup">
-    <template is="dom-repeat" items="[[suggestions]]" as="suggestion">
+    <template is="dom-repeat" items="[[suggestions_]]" as="suggestion">
       <cr-button
           class="suggestion"
           on-click="onClickSuggestion_">
