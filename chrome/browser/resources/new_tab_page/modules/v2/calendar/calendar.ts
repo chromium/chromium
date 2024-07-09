@@ -33,6 +33,10 @@ export class CalendarElement extends PolymerElement {
     return {
       calendarLink: String,
       events: Object,
+      doubleBookedIndices_: {
+        type: Object,
+        computed: 'computeDoubleBookedIndices_(events, expandedEventIndex_)',
+      },
       expandedEventIndex_: {
         type: Number,
         computed: 'computeExpandedEventIndex_(events)',
@@ -43,7 +47,27 @@ export class CalendarElement extends PolymerElement {
   calendarLink: string;
   events: CalendarEvent[];
 
+  private doubleBookedIndices_: number[];
   private expandedEventIndex_: number;
+
+  private computeDoubleBookedIndices_(): number[] {
+    const result: number[] = [];
+    if (this.expandedEventIndex_ >= 0) {
+      const expandedEventStartTime =
+          toJsTimestamp(this.events[this.expandedEventIndex_].startTime);
+      const expandedEventEndTime =
+          toJsTimestamp(this.events[this.expandedEventIndex_].endTime);
+      this.events.forEach((event, index) => {
+        const startTime = toJsTimestamp(event.startTime);
+        const endTime = toJsTimestamp(event.endTime);
+        if (startTime < expandedEventEndTime &&
+            endTime > expandedEventStartTime) {
+          result.push(index);
+        }
+      });
+    }
+    return result;
+  }
 
   private compareEventPriority_(
       eventAIndex: number, eventBIndex: number, soon: number): number {
@@ -103,6 +127,10 @@ export class CalendarElement extends PolymerElement {
         (a, b) => this.compareEventPriority_(a, b, in5Minutes));
 
     return expandableEventIndices[0];
+  }
+
+  private isDoubleBooked_(index: number) {
+    return this.doubleBookedIndices_.includes(index);
   }
 
   private isExpanded_(index: number) {

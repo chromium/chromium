@@ -45,7 +45,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     assertEquals(element.$.header.href, element.event.url.url);
   });
 
-  test('time status hidden if not expanded', async () => {
+  test('time status hidden if not expanded or double booked', async () => {
     const startTime = Date.now().valueOf();
     const startTimeFromUnixEpoch =
         (BigInt(startTime) * 1000n) + kWindowsToUnixEpochOffset;
@@ -57,6 +57,21 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     // Assert.
     assertFalse(isVisible(element.$.timeStatus));
     assertEquals(element.$.timeStatus.innerText, '');
+  });
+
+  test('double booked status displayed', async () => {
+    const startTime = Date.now().valueOf();
+    const startTimeFromUnixEpoch =
+        (BigInt(startTime) * 1000n) + kWindowsToUnixEpochOffset;
+
+    element.event =
+        createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
+    element.doubleBooked = true;
+    await waitAfterNextRender(element);
+
+    // Assert.
+    assertTrue(isVisible(element.$.timeStatus));
+    assertEquals(element.$.timeStatus.innerText, 'Double-Booked');
   });
 
   test('time status displays correctly', async () => {

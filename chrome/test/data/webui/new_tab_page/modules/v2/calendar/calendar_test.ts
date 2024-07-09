@@ -142,4 +142,30 @@ suite('NewTabPageModulesCalendarTest', () => {
     assertEquals(anchor!.href, 'https://foo.com/');
     assertEquals(anchor!.innerText, 'See more');
   });
+
+  test('double booked events are marked', async () => {
+    const events: CalendarEvent[] = [];
+    const mockTime = (new Date('2024-07-01T03:00:00')).valueOf();
+    windowProxy.setResultFor('now', mockTime);
+    // Create 3 events with the same start time, but each ends 30 minutes
+    // later.
+    for (let i = 0; i < 3; ++i) {
+      const endTimeMs = mockTime + ((i + 1) * 30 * 60000);
+      events.push(createEvent(i, {
+        startTime: toTime(new Date(mockTime)),
+        endTime: toTime(new Date(endTimeMs)),
+        isAccepted: i === 1,
+      }));
+    }
+    element.events = events;
+    await waitAfterNextRender(element);
+
+    // Assert.
+    const eventElements =
+        element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+    assertEquals(eventElements.length, 3);
+    assertTrue(eventElements[1]!.hasAttribute('expanded'));
+    assertTrue(eventElements[0]!.hasAttribute('double-booked'));
+    assertTrue(eventElements[2]!.hasAttribute('double-booked'));
+  });
 });

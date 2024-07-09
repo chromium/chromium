@@ -12,6 +12,8 @@
   }
 
   ntp-calendar-event:first-of-type,
+  .row[double-booked] + .row,
+  .row[double-booked] + dom-repeat + .row,
   .row[expanded] + .row,
   .row[expanded] + dom-repeat + .row {
     border-top-left-radius: 12px;
@@ -21,6 +23,7 @@
   }
 
   .row:last-child,
+  .row:has(+ .row[double-booked]),
   .row:has(+ .row[expanded]) {
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
@@ -28,6 +31,7 @@
     padding-bottom: 12px;
   }
 
+  .row[double-booked],
   .row[expanded] {
     border-radius: 12px;
     margin: 8px 0;
@@ -70,6 +74,7 @@
 <template is="dom-repeat" items="[[events]]">
   <ntp-calendar-event
       class="row"
+      double-booked="[[isDoubleBooked_(index, doubleBookedIndices_)]]"
       expanded="[[isExpanded_(index, expandedEventIndex_)]]"
       event="[[item]]">
   </ntp-calendar-event>

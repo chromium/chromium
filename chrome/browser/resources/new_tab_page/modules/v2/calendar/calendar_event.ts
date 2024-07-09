@@ -42,6 +42,10 @@ export class CalendarEventElement extends I18nMixin
 
   static get properties() {
     return {
+      doubleBooked: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       event: Object,
       expanded: {
         type: Boolean,
@@ -53,11 +57,12 @@ export class CalendarEventElement extends I18nMixin
       },
       timeStatus_: {
         type: String,
-        computed: 'computeTimeStatus_(event.startTime, expanded)',
+        computed: 'computeTimeStatus_(event.startTime, expanded, doubleBooked)',
       },
     };
   }
 
+  doubleBooked: boolean;
   event: CalendarEvent;
   expanded: boolean;
 
@@ -76,7 +81,7 @@ export class CalendarEventElement extends I18nMixin
 
   private computeTimeStatus_(): string {
     if (!this.expanded) {
-      return '';
+      return this.doubleBooked ? this.i18n('modulesCalendarDoubleBooked') : '';
     }
 
     // Start time of event in milliseconds since Windows epoch.
