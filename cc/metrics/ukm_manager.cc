@@ -16,6 +16,39 @@
 
 namespace cc {
 
+namespace {
+
+// The combination of ScrollType and EventType which we are interested in the
+// TotalLatency of.
+enum class InputMetricEvent {
+  NONE,
+  SCROLL_BEGIN_TOUCH,
+  SCROLL_UPDATE_TOUCH,
+  SCROLL_BEGIN_WHEEL,
+  SCROLL_UPDATE_WHEEL,
+  INPUT_METRIC_EVENT_MAX = SCROLL_UPDATE_WHEEL
+};
+
+InputMetricEvent GetInputMetricEvent(ScrollEventMetrics::ScrollType scroll_type,
+                                     EventMetrics::EventType event_type) {
+  if (scroll_type == ScrollEventMetrics::ScrollType::kTouchscreen) {
+    if (event_type == EventMetrics::EventType::kFirstGestureScrollUpdate) {
+      return InputMetricEvent::SCROLL_BEGIN_TOUCH;
+    } else if (event_type == EventMetrics::EventType::kGestureScrollUpdate) {
+      return InputMetricEvent::SCROLL_UPDATE_TOUCH;
+    }
+  } else if (scroll_type == ScrollEventMetrics::ScrollType::kWheel) {
+    if (event_type == EventMetrics::EventType::kFirstGestureScrollUpdate) {
+      return InputMetricEvent::SCROLL_BEGIN_WHEEL;
+    } else if (event_type == EventMetrics::EventType::kGestureScrollUpdate) {
+      return InputMetricEvent::SCROLL_UPDATE_WHEEL;
+    }
+  }
+  return InputMetricEvent::NONE;
+}
+
+}  // namespace
+
 UkmManager::UkmManager(std::unique_ptr<ukm::UkmRecorder> recorder)
     : recorder_(std::move(recorder)) {
   DCHECK(recorder_);
@@ -171,7 +204,9 @@ void UkmManager::RecordEventLatencyUKM(
         event_metrics->GetDispatchStageTimestamp(
             EventMetrics::DispatchStage::kGenerated);
 
+    std::optional<ScrollEventMetrics::ScrollType> scroll_type;
     if (ScrollEventMetrics* scroll_metrics = event_metrics->AsScroll()) {
+      scroll_type = scroll_metrics->scroll_type();
       builder.SetScrollInputType(
           static_cast<int64_t>(scroll_metrics->scroll_type()));
     } else if (PinchEventMetrics* pinch_metrics = event_metrics->AsPinch()) {
@@ -339,6 +374,33 @@ void UkmManager::RecordEventLatencyUKM(
           stage_it->stage_type == StageType::kTotalLatency
               ? generated_timestamp
               : stage_it->start_time;
+
+      // We want to separate out Touch and Wheel scroll events, along with their
+      // Begin and Update components. Reporting the TotalLatency for each. As
+      // they all have different performance characteristics which are blurred
+      // when analysing the aggregate TotalLatency.
+      if (stage_it->stage_type == StageType::kTotalLatency) {
+        auto delta = (stage_it->end_time - start_time);
+        if (scroll_type.has_value()) {
+          switch (
+              GetInputMetricEvent(scroll_type.value(), event_metrics->type())) {
+            case InputMetricEvent::NONE:
+              break;
+            case InputMetricEvent::SCROLL_BEGIN_TOUCH:
+              builder.SetScrollBegin_Touch(delta.InMicroseconds());
+              break;
+            case InputMetricEvent::SCROLL_UPDATE_TOUCH:
+              builder.SetScrollUpdate_Touch(delta.InMicroseconds());
+              break;
+            case InputMetricEvent::SCROLL_BEGIN_WHEEL:
+              builder.SetScrollBegin_Wheel(delta.InMicroseconds());
+              break;
+            case InputMetricEvent::SCROLL_UPDATE_WHEEL:
+              builder.SetScrollUpdate_Wheel(delta.InMicroseconds());
+              break;
+          }
+        }
+      }
 
       switch (stage_it->stage_type) {
 #define CASE_FOR_STAGE(name)                                               \
