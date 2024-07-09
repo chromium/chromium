@@ -476,7 +476,7 @@ BASE_FEATURE(kCoralFeature, "CoralFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 // EnableNssDbClientCertsRollback feature flag is disabled.
 BASE_FEATURE(kCopyClientKeysCertsToChaps,
              "CopyClientKeysCertsToChaps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Adds location access control to Privacy Hub.
 BASE_FEATURE(kCrosPrivacyHub,

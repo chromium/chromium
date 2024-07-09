@@ -139,7 +139,7 @@ BASE_FEATURE(kDisableQuickAnswersV2Translation,
 // When the feature is disabled, PKCS12 files are imported to NSS DB only.
 BASE_FEATURE(kEnablePkcs12ToChapsDualWrite,
              "EnablePkcs12ToChapsDualWrite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Essential Search in Omnibox for both launcher and browser.
 BASE_FEATURE(kEssentialSearch,
