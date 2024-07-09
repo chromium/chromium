@@ -65,9 +65,6 @@ class TargetHandler : public DevToolsDomainHandler,
   // targets would not auto-attach service workers.
   // TODO(caseq): update front-end logic and get rid of this.
   void DisableAutoAttachOfServiceWorkers();
-  // Unlike the one above, this one indicates the client has opted in into
-  // supporting tab targets, so portals are not reported for frame targets.
-  void DisableAutoAttachOfPortals();
 
   // Domain implementation.
   Response SetDiscoverTargets(
@@ -202,7 +199,6 @@ class TargetHandler : public DevToolsDomainHandler,
   base::flat_map<TargetAutoAttacher*, bool /* wait_for_debugger_on_start */>
       auto_attach_related_targets_;
   bool auto_attach_service_workers_ = true;
-  bool auto_attach_portals_ = true;
 
   std::unique_ptr<TargetFilter> discover_target_filter_;
   bool observing_agent_hosts_ = false;

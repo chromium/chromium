@@ -15,7 +15,6 @@
 namespace content {
 
 class FrameTreeNode;
-class Portal;
 
 class CONTENT_EXPORT WebContentsDevToolsAgentHost
     : public DevToolsAgentHostImpl,
@@ -39,7 +38,6 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   protocol::TargetAutoAttacher* auto_attacher() override;
 
   // Instrumentation methods
-  void PortalActivated(const Portal& portal);
   void WillInitiatePrerender(FrameTreeNode* ftn);
   // TODO(caseq): do we need more specific signals here?
   void UpdateChildFrameTrees(bool update_target_info);

@@ -923,8 +923,8 @@ void EmulationHandler::UpdateDeviceEmulationState() {
   // the EmulationHandler somehow. Mojo callbacks should make this much simpler.
   host_->ForEachRenderFrameHostIncludingSpeculative(
       [this](RenderFrameHostImpl* host) {
-        // The main frame of nested subpages (ex. fenced frames, portals) inside
-        // this page are updated as well.
+        // The main frame of nested subpages (ex. fenced frames) inside this
+        // page are updated as well.
         if (host->is_main_frame())
           UpdateDeviceEmulationStateForHost(host->GetRenderWidgetHost());
       });

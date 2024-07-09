@@ -378,15 +378,11 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->CreateAndAddHandler<protocol::StorageHandler>(session->GetClient());
   session->CreateAndAddHandler<protocol::SystemInfoHandler>(
       /* is_browser_session= */ false);
-  auto* target_handler = session->CreateAndAddHandler<protocol::TargetHandler>(
+  session->CreateAndAddHandler<protocol::TargetHandler>(
       may_attach_to_brower
           ? protocol::TargetHandler::AccessMode::kRegular
           : protocol::TargetHandler::AccessMode::kAutoAttachOnly,
       GetId(), auto_attacher_.get(), session);
-  if (session->session_mode() !=
-      DevToolsSession::Mode::kDoesNotSupportTabTarget) {
-    target_handler->DisableAutoAttachOfPortals();
-  }
   session->CreateAndAddHandler<protocol::PreloadHandler>();
   session->CreateAndAddHandler<protocol::PageHandler>(
       emulation_handler, browser_handler,
@@ -696,10 +692,6 @@ void RenderFrameDevToolsAgentHost::OnNavigationRequestWillBeSent(
   }
   if (!restricted_sessions.empty())
     ForceDetachRestrictedSessions(restricted_sessions);
-}
-
-void RenderFrameDevToolsAgentHost::UpdatePortals() {
-  auto_attacher_->UpdatePages();
 }
 
 void RenderFrameDevToolsAgentHost::DidCreateFencedFrame(

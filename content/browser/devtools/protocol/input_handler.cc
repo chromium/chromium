@@ -1247,12 +1247,6 @@ void InputHandler::ImeSetComposition(
       RenderFrameHost::LifecycleState::kPrerendering) {
     NOTREACHED_IN_MIGRATION();
   }
-  // Portal cannot be focused.
-  if (web_contents_->IsPortal()) {
-    callback->sendFailure(
-        Response::InvalidRequest("A Portal cannot be focused."));
-    return;
-  }
 
   // |RenderFrameHostImpl::GetRenderWidgetHost| returns the RWHImpl of the
   // nearest local root of |host_|.
