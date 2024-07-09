@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/bluetooth/test/fake_peripheral.h"
+#include "device/bluetooth/emulation/fake_peripheral.h"
 
 #include <memory>
 #include <utility>
@@ -16,8 +16,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "device/bluetooth/emulation/fake_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "device/bluetooth/test/fake_remote_gatt_service.h"
 
 namespace bluetooth {
 
@@ -300,8 +300,9 @@ void FakePeripheral::CreateGattConnection(
 
   // TODO(crbug.com/41322843): Stop overriding CreateGattConnection once
   // IsGattConnected() is fixed. See issue for more details.
-  if (gatt_connected_)
+  if (gatt_connected_) {
     return DidConnectGatt(/*error_code=*/std::nullopt);
+  }
 
   CreateGattConnectionImpl(std::move(service_uuid));
 }
@@ -377,8 +378,7 @@ void FakePeripheral::DispatchDiscoveryResponse() {
   }
 }
 
-void FakePeripheral::DisconnectGatt() {
-}
+void FakePeripheral::DisconnectGatt() {}
 
 #if BUILDFLAG(IS_CHROMEOS)
 void FakePeripheral::ExecuteWrite(base::OnceClosure callback,

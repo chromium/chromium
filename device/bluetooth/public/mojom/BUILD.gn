@@ -53,7 +53,7 @@ mojom("mojom") {
 }
 
 mojom("fake_bluetooth_interfaces") {
-  sources = [ "test/fake_bluetooth.mojom" ]
+  sources = [ "emulation/fake_bluetooth.mojom" ]
 
   public_deps = [ ":mojom" ]
 
@@ -65,9 +65,7 @@ mojom("fake_bluetooth_interfaces") {
           cpp = "::device::BluetoothDevice::ServiceDataMap"
         },
       ]
-      traits_headers = [
-        "//device/bluetooth/public/mojom/test/fake_bluetooth_mojom_traits.h",
-      ]
+      traits_headers = [ "//device/bluetooth/public/mojom/emulation/fake_bluetooth_mojom_traits.h" ]
       traits_public_deps = [ "//device/bluetooth" ]
     },
   ]

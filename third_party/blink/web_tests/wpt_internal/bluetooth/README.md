@@ -39,7 +39,7 @@ TODO(https://crbug.com/569709) : Update this document when the remaining
 [BluetoothFakeAdapter]:
 ../../../../content/shell/browser/web_test/web_test_bluetooth_adapter_provider.h
 [FakeBluetooth]:
-../../../../device/bluetooth/test/fake_bluetooth.h
+../../../../device/bluetooth/emulation/fake_bluetooth.h
 [Web Bluetooth Testing]:
 https://docs.google.com/document/d/1Nhv_oVDCodd1pEH_jj9k8gF4rPGb_84VYaZ9IG8M_WY
 [Web Bluetooth Test API Dependencies]:

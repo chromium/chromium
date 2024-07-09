@@ -1,8 +1,8 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef DEVICE_BLUETOOTH_TEST_FAKE_READ_RESPONSE_H_
-#define DEVICE_BLUETOOTH_TEST_FAKE_READ_RESPONSE_H_
+#ifndef DEVICE_BLUETOOTH_EMULATION_FAKE_READ_RESPONSE_H_
+#define DEVICE_BLUETOOTH_EMULATION_FAKE_READ_RESPONSE_H_
 
 #include <cstdint>
 #include <optional>
@@ -33,4 +33,4 @@ class FakeReadResponse {
 
 }  // namespace bluetooth
 
-#endif  // DEVICE_BLUETOOTH_TEST_FAKE_READ_RESPONSE_H_
+#endif  // DEVICE_BLUETOOTH_EMULATION_FAKE_READ_RESPONSE_H_

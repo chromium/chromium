@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/bluetooth/test/fake_remote_gatt_descriptor.h"
+#include "device/bluetooth/emulation/fake_remote_gatt_descriptor.h"
 
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
+#include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
 
 namespace bluetooth {
 

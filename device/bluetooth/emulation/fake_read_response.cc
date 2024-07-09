@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/bluetooth/test/fake_read_response.h"
+#include "device/bluetooth/emulation/fake_read_response.h"
 
 namespace bluetooth {
 

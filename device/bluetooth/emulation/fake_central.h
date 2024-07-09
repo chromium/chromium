@@ -1,8 +1,8 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef DEVICE_BLUETOOTH_TEST_FAKE_CENTRAL_H_
-#define DEVICE_BLUETOOTH_TEST_FAKE_CENTRAL_H_
+#ifndef DEVICE_BLUETOOTH_EMULATION_FAKE_CENTRAL_H_
+#define DEVICE_BLUETOOTH_EMULATION_FAKE_CENTRAL_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
+#include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -29,7 +29,7 @@ class FakeRemoteGattDescriptor;
 class FakeRemoteGattService;
 
 // Implementation of FakeCentral in
-// src/device/bluetooth/public/mojom/test/fake_bluetooth.mojom.
+// src/device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.
 // Implemented on top of the C++ device/bluetooth API, mainly
 // device/bluetooth/bluetooth_adapter.h.
 //
@@ -251,4 +251,4 @@ class FakeCentral final : public mojom::FakeCentral,
 
 }  // namespace bluetooth
 
-#endif  // DEVICE_BLUETOOTH_TEST_FAKE_CENTRAL_H_
+#endif  // DEVICE_BLUETOOTH_EMULATION_FAKE_CENTRAL_H_

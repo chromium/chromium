@@ -1,8 +1,8 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef DEVICE_BLUETOOTH_TEST_FAKE_REMOTE_GATT_SERVICE_H_
-#define DEVICE_BLUETOOTH_TEST_FAKE_REMOTE_GATT_SERVICE_H_
+#ifndef DEVICE_BLUETOOTH_EMULATION_FAKE_REMOTE_GATT_SERVICE_H_
+#define DEVICE_BLUETOOTH_EMULATION_FAKE_REMOTE_GATT_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -11,9 +11,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
+#include "device/bluetooth/emulation/fake_remote_gatt_characteristic.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom-forward.h"
-#include "device/bluetooth/test/fake_remote_gatt_characteristic.h"
+#include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom-forward.h"
 
 namespace device {
 class BluetoothDevice;
@@ -67,4 +67,4 @@ class FakeRemoteGattService : public device::BluetoothRemoteGattService {
 
 }  // namespace bluetooth
 
-#endif  // DEVICE_BLUETOOTH_TEST_FAKE_REMOTE_GATT_SERVICE_H_
+#endif  // DEVICE_BLUETOOTH_EMULATION_FAKE_REMOTE_GATT_SERVICE_H_

@@ -70,7 +70,7 @@ and the new permissions system. For more details, see the following files in
 [BluetoothFakeAdapter]:
 ../../shell/browser/web_test/web_test_bluetooth_adapter_provider.h
 [FakeBluetooth]:
-../../../device/bluetooth/test/fake_bluetooth.h
+../../../device/bluetooth/emulation/fake_bluetooth.h
 [Web Bluetooth Web Tests README]:
 ../../../third_party/blink/web_tests/bluetooth/README.md
 [Web Bluetooth Web Platform Tests README]:

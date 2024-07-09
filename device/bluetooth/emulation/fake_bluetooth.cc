@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/bluetooth/test/fake_bluetooth.h"
+#include "device/bluetooth/emulation/fake_bluetooth.h"
 
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
+#include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 

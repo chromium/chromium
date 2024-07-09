@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/bluetooth/test/fake_central.h"
+#include "device/bluetooth/emulation/fake_central.h"
 
 #include <memory>
 #include <string>
@@ -17,11 +17,11 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
+#include "device/bluetooth/emulation/fake_peripheral.h"
+#include "device/bluetooth/emulation/fake_remote_gatt_characteristic.h"
+#include "device/bluetooth/emulation/fake_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
-#include "device/bluetooth/test/fake_peripheral.h"
-#include "device/bluetooth/test/fake_remote_gatt_characteristic.h"
-#include "device/bluetooth/test/fake_remote_gatt_service.h"
+#include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
@@ -152,19 +152,22 @@ void FakeCentral::SetState(mojom::CentralState new_state,
   switch (old_state) {
     case mojom::CentralState::ABSENT:
       notify_present_changed();
-      if (new_state == mojom::CentralState::POWERED_ON)
+      if (new_state == mojom::CentralState::POWERED_ON) {
         notify_powered_changed();
+      }
       break;
     case mojom::CentralState::POWERED_OFF:
-      if (new_state == mojom::CentralState::ABSENT)
+      if (new_state == mojom::CentralState::ABSENT) {
         notify_present_changed();
-      else
+      } else {
         notify_powered_changed();
+      }
       break;
     case mojom::CentralState::POWERED_ON:
       notify_powered_changed();
-      if (new_state == mojom::CentralState::ABSENT)
+      if (new_state == mojom::CentralState::ABSENT) {
         notify_present_changed();
+      }
       break;
   }
   std::move(callback).Run();

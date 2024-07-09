@@ -1,8 +1,8 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef DEVICE_BLUETOOTH_TEST_FAKE_PERIPHERAL_H_
-#define DEVICE_BLUETOOTH_TEST_FAKE_PERIPHERAL_H_
+#ifndef DEVICE_BLUETOOTH_EMULATION_FAKE_PERIPHERAL_H_
+#define DEVICE_BLUETOOTH_EMULATION_FAKE_PERIPHERAL_H_
 
 #include <optional>
 #include <string>
@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "device/bluetooth/test/fake_central.h"
-#include "device/bluetooth/test/fake_remote_gatt_service.h"
+#include "device/bluetooth/emulation/fake_central.h"
+#include "device/bluetooth/emulation/fake_remote_gatt_service.h"
 
 namespace device {
 class BluetoothUUID;
@@ -179,4 +179,4 @@ class FakePeripheral : public device::BluetoothDevice {
 
 }  // namespace bluetooth
 
-#endif  // DEVICE_BLUETOOTH_TEST_FAKE_PERIPHERAL_H_
+#endif  // DEVICE_BLUETOOTH_EMULATION_FAKE_PERIPHERAL_H_

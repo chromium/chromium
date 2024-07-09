@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/bluetooth/test/fake_remote_gatt_characteristic.h"
+#include "device/bluetooth/emulation/fake_remote_gatt_characteristic.h"
 
 #include <optional>
 #include <utility>
@@ -12,8 +12,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "device/bluetooth/emulation/fake_read_response.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "device/bluetooth/test/fake_read_response.h"
 
 namespace bluetooth {
 
@@ -26,22 +26,30 @@ FakeRemoteGattCharacteristic::FakeRemoteGattCharacteristic(
       characteristic_uuid_(characteristic_uuid),
       service_(service) {
   properties_ = PROPERTY_NONE;
-  if (properties->broadcast)
+  if (properties->broadcast) {
     properties_ |= PROPERTY_BROADCAST;
-  if (properties->read)
+  }
+  if (properties->read) {
     properties_ |= PROPERTY_READ;
-  if (properties->write_without_response)
+  }
+  if (properties->write_without_response) {
     properties_ |= PROPERTY_WRITE_WITHOUT_RESPONSE;
-  if (properties->write)
+  }
+  if (properties->write) {
     properties_ |= PROPERTY_WRITE;
-  if (properties->notify)
+  }
+  if (properties->notify) {
     properties_ |= PROPERTY_NOTIFY;
-  if (properties->indicate)
+  }
+  if (properties->indicate) {
     properties_ |= PROPERTY_INDICATE;
-  if (properties->authenticated_signed_writes)
+  }
+  if (properties->authenticated_signed_writes) {
     properties_ |= PROPERTY_AUTHENTICATED_SIGNED_WRITES;
-  if (properties->extended_properties)
+  }
+  if (properties->extended_properties) {
     properties_ |= PROPERTY_EXTENDED_PROPERTIES;
+  }
 }
 
 FakeRemoteGattCharacteristic::~FakeRemoteGattCharacteristic() = default;
@@ -93,11 +101,10 @@ bool FakeRemoteGattCharacteristic::AllResponsesConsumed() {
   // SetNextUnsubscribeFromNotificationsResponse is implemented.
   return !next_read_response_ && !next_write_response_ &&
          !next_subscribe_to_notifications_response_ &&
-         base::ranges::all_of(
-             descriptors_, [](const auto& e) {
-               return static_cast<FakeRemoteGattDescriptor*>(e.second.get())
-                   ->AllResponsesConsumed();
-             });
+         base::ranges::all_of(descriptors_, [](const auto& e) {
+           return static_cast<FakeRemoteGattDescriptor*>(e.second.get())
+               ->AllResponsesConsumed();
+         });
 }
 
 std::string FakeRemoteGattCharacteristic::GetIdentifier() const {

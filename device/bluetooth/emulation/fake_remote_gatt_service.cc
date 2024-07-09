@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/bluetooth/test/fake_remote_gatt_service.h"
+#include "device/bluetooth/emulation/fake_remote_gatt_service.h"
 
 #include <map>
 #include <memory>
@@ -13,9 +13,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/emulation/fake_remote_gatt_characteristic.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
-#include "device/bluetooth/test/fake_remote_gatt_characteristic.h"
+#include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
 
 namespace bluetooth {
 
@@ -32,11 +32,10 @@ FakeRemoteGattService::FakeRemoteGattService(
 FakeRemoteGattService::~FakeRemoteGattService() = default;
 
 bool FakeRemoteGattService::AllResponsesConsumed() {
-  return base::ranges::all_of(
-      characteristics_, [](const auto& e) {
-        return static_cast<FakeRemoteGattCharacteristic*>(e.second.get())
-            ->AllResponsesConsumed();
-      });
+  return base::ranges::all_of(characteristics_, [](const auto& e) {
+    return static_cast<FakeRemoteGattCharacteristic*>(e.second.get())
+        ->AllResponsesConsumed();
+  });
 }
 
 std::string FakeRemoteGattService::AddFakeCharacteristic(

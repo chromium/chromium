@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_BLUETOOTH_PUBLIC_MOJOM_TEST_FAKE_BLUETOOTH_MOJOM_TRAITS_H_
-#define DEVICE_BLUETOOTH_PUBLIC_MOJOM_TEST_FAKE_BLUETOOTH_MOJOM_TRAITS_H_
+#ifndef DEVICE_BLUETOOTH_PUBLIC_MOJOM_EMULATION_FAKE_BLUETOOTH_MOJOM_TRAITS_H_
+#define DEVICE_BLUETOOTH_PUBLIC_MOJOM_EMULATION_FAKE_BLUETOOTH_MOJOM_TRAITS_H_
 
 #include <map>
 #include <string>
 #include <tuple>
 
 #include "device/bluetooth/bluetooth_device.h"
-#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom-shared.h"
+#include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
@@ -54,4 +54,4 @@ struct StructTraits<bluetooth::mojom::ServiceDataMapDataView,
 
 }  // namespace mojo
 
-#endif  // DEVICE_BLUETOOTH_PUBLIC_MOJOM_TEST_FAKE_BLUETOOTH_MOJOM_TRAITS_H_
+#endif  // DEVICE_BLUETOOTH_PUBLIC_MOJOM_EMULATION_FAKE_BLUETOOTH_MOJOM_TRAITS_H_
