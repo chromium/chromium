@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
-#include "base/logging.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/pin_options_button.h"
@@ -17,14 +19,17 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/view.h"
 
 // static
 void ShowAuthenticatorRequestDialog(content::WebContents* web_contents,
@@ -104,6 +109,12 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   SetButtonLabel(ui::DIALOG_BUTTON_OK, sheet_->model()->GetAcceptButtonLabel());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  sheet_->model()->GetCancelButtonLabel());
+  if (model_->step() ==
+          AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion ||
+      model_->step() ==
+          AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation) {
+    SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
+  }
 
   if (ShouldOtherMechanismsButtonBeVisible()) {
     auto* other_mechanisms = SetExtraView(std::make_unique<views::MdTextButton>(
