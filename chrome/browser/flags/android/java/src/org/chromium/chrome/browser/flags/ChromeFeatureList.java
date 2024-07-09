@@ -355,6 +355,8 @@ public abstract class ChromeFeatureList {
     public static final String MESSAGES_FOR_ANDROID_ADS_BLOCKED = "MessagesForAndroidAdsBlocked";
     public static final String MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES =
             "MigrateAccountManagementSettingsToCapabilities";
+    public static final String MOST_VISITED_TILES_SELECT_EXISTING_TAB =
+            "MostVisitedTilesSelectExistingTab";
     public static final String MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
             "MultiInstanceApplicationStatusCleanup";
     public static final String NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND =
@@ -631,6 +633,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
     public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, false);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
+    public static final CachedFlag sMostVisitedTilesSelectExistingTab =
+            newCachedFlag(MOST_VISITED_TILES_SELECT_EXISTING_TAB, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
     public static final CachedFlag sNavBarColorMatchesTabBackground =
@@ -761,6 +765,7 @@ public abstract class ChromeFeatureList {
                     sIncognitoReauthenticationForAndroid,
                     sLogoPolish,
                     sMagicStackAndroid,
+                    sMostVisitedTilesSelectExistingTab,
                     sMultiInstanceApplicationStatusCleanup,
                     sNavBarColorMatchesTabBackground,
                     sNewTabPageAndroidTriggerForPrerender2,

@@ -248,6 +248,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLogoPolish,
     &kMagicStackAndroid,
     &kMayLaunchUrlUsesSeparateStoragePartition,
+    &kMostVisitedTilesSelectExistingTab,
     &kMultiInstanceApplicationStatusCleanup,
     &kNavBarColorMatchesTabBackground,
     &kNewTabSearchEngineUrlAndroid,
@@ -755,6 +756,10 @@ BASE_FEATURE(kMagicStackAndroid,
 // default.
 BASE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition,
              "MayLaunchUrlUsesSeparateStoragePartition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMostVisitedTilesSelectExistingTab,
+             "MostVisitedTilesSelectExistingTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMultiInstanceApplicationStatusCleanup,

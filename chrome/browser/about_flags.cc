@@ -7585,6 +7585,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDelayTempStripRemovalName,
      flag_descriptions::kDelayTempStripRemovalDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDelayTempStripRemoval)},
+
+    {"enable-most-visited-tiles-select-existing-tab",
+     flag_descriptions::kMostVisitedTilesSelectExistingTabName,
+     flag_descriptions::kMostVisitedTilesSelectExistingTabDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kMostVisitedTilesSelectExistingTab)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"unsafely-treat-insecure-origin-as-secure",

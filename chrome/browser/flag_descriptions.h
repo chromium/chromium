@@ -1336,6 +1336,9 @@ extern const char kMediaRouterCastAllowAllIPsDescription[];
 extern const char kMojoLinuxChannelSharedMemName[];
 extern const char kMojoLinuxChannelSharedMemDescription[];
 
+extern const char kMostVisitedTilesSelectExistingTabName[];
+extern const char kMostVisitedTilesSelectExistingTabDescription[];
+
 extern const char kUsernameFirstFlowFallbackCrowdsourcingName[];
 extern const char kUsernameFirstFlowFallbackCrowdsourcingDescription[];
 

@@ -3539,6 +3539,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-most-visited-tiles-select-existing-tab",
+    "owners": [ "clank-start@google.com", "huangs@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-nacl",
     "owners": [ "dschuff@chromium.org", "native-client-dev@googlegroups.com" ],
     "expiry_milestone": 140
