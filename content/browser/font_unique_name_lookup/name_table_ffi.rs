@@ -1,7 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-use read_fonts::{FileRef, FontRef, ReadError, TableProvider};
+use read_fonts::{FileRef, FontRef, ReadError};
 use skrifa::{string::StringId, MetadataProvider};
 // Only built for Android.
 use std::os::unix::ffi::OsStrExt;
