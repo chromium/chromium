@@ -73,7 +73,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
 std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
     std::unique_ptr<StreamSocket> socket) {
   CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
-  CHECK_LE(ActiveStreamSocketCount(), kMaxStreamSocketsPerGroup);
+  CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
@@ -133,13 +133,17 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
   if (can_reuse) {
     AddIdleStreamSocket(std::move(socket));
   }
+
+  if (in_flight_job_) {
+    in_flight_job_->OnStreamSocketReleased();
+  }
 }
 
 void HttpStreamPool::Group::AddIdleStreamSocket(
     std::unique_ptr<StreamSocket> socket) {
   CHECK(socket->IsConnectedAndIdle());
   CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
-  CHECK_LE(ActiveStreamSocketCount(), kMaxStreamSocketsPerGroup);
+  CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();

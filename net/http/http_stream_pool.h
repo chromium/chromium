@@ -29,6 +29,10 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // ClientSocketPoolManager::max_sockets_per_pool().
   static constexpr size_t kMaxStreamSocketsPerPool = 256;
 
+  // The maximum number of socket per group. The same as
+  // ClientSocketPoolManager::max_sockets_per_group().
+  static constexpr size_t kMaxStreamSocketsPerGroup = 6;
+
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE Job;
 
@@ -62,12 +66,33 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     return http_network_session_;
   }
 
+  size_t max_stream_sockets_per_pool() const {
+    return max_stream_sockets_per_pool_;
+  }
+
+  size_t max_stream_sockets_per_group() const {
+    return max_stream_sockets_per_group_;
+  }
+
+  void set_max_stream_sockets_per_pool_for_testing(
+      size_t max_stream_sockets_per_pool) {
+    max_stream_sockets_per_pool_ = max_stream_sockets_per_pool;
+  }
+
+  void set_max_stream_sockets_per_group_for_testing(
+      size_t max_stream_sockets_per_group) {
+    max_stream_sockets_per_group_ = max_stream_sockets_per_group;
+  }
+
  private:
   Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
 
   const raw_ptr<HttpNetworkSession> http_network_session_;
 
   const bool cleanup_on_ip_address_change_;
+
+  size_t max_stream_sockets_per_pool_ = kMaxStreamSocketsPerPool;
+  size_t max_stream_sockets_per_group_ = kMaxStreamSocketsPerGroup;
 
   // The total number of active streams this pool handed out across all groups.
   size_t total_handed_out_stream_count_ = 0;

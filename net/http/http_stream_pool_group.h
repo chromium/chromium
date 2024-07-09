@@ -33,10 +33,6 @@ class HttpStreamPool::Group {
   static constexpr base::TimeDelta kUnusedIdleStreamSocketTimeout =
       base::Seconds(60);
 
-  // The maximum number of socket per group. The same as
-  // ClientSocketPoolManager::max_sockets_per_group().
-  static constexpr size_t kMaxStreamSocketsPerGroup = 6;
-
   Group(HttpStreamPool* pool, HttpStreamKey stream_key);
 
   Group(const Group&) = delete;
@@ -45,6 +41,8 @@ class HttpStreamPool::Group {
   ~Group();
 
   const HttpStreamKey& stream_key() const { return stream_key_; }
+
+  const HttpStreamPool* pool() const { return pool_; }
 
   HttpNetworkSession* http_network_session() const {
     return pool_->http_network_session();
@@ -91,6 +89,8 @@ class HttpStreamPool::Group {
   void IncrementGeneration();
 
   void CleanupTimedoutIdleStreamSocketsForTesting();
+
+  Job* GetJobForTesting() const { return in_flight_job_.get(); }
 
  private:
   struct IdleStreamSocket {

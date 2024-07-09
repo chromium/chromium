@@ -2,30 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/http/http_stream_pool_job.h"
+
 #include <list>
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "net/base/load_states.h"
+#include "net/base/net_error_details.h"
+#include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_network_session.h"
+#include "net/http/http_request_info.h"
 #include "net/http/http_stream_factory_test_util.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/scheme_host_port.h"
 
 using ::testing::_;
 
 namespace net {
+
+using test::IsError;
+using test::IsOk;
 
 using Group = HttpStreamPool::Group;
 using Job = HttpStreamPool::Job;
@@ -40,6 +53,10 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
 
   void set_endpoints(std::vector<ServiceEndpoint> endpoints) {
     endpoints_ = std::move(endpoints);
+  }
+
+  void add_endpoint(ServiceEndpoint endpoint) {
+    endpoints_.emplace_back(std::move(endpoint));
   }
 
   void set_aliases(std::set<std::string> aliases) {
@@ -195,9 +212,46 @@ FakeServiceEndpointResolver::CreateServiceEndpointRequest(
   return request;
 }
 
-class StreamRequester {
+IPEndPoint MakeIPEndPoint(std::string_view addr, uint16_t port = 80) {
+  return IPEndPoint(*IPAddress::FromIPLiteral(addr), port);
+}
+
+// A helper to build a ServiceEndpoint.
+class EndpointHelper {
+ public:
+  EndpointHelper() = default;
+
+  EndpointHelper& add_v4(std::string_view addr, uint16_t port = 80) {
+    endpoint_.ipv4_endpoints.emplace_back(MakeIPEndPoint(addr));
+    return *this;
+  }
+
+  EndpointHelper& add_v6(std::string_view addr, uint16_t port = 80) {
+    endpoint_.ipv6_endpoints.emplace_back(MakeIPEndPoint(addr));
+    return *this;
+  }
+
+  ServiceEndpoint endpoint() const { return endpoint_; }
+
+ private:
+  ServiceEndpoint endpoint_;
+};
+
+// A helper to request an HttpStream. On success, it keeps the provided
+// HttpStream. On failure, it keeps error information.
+class StreamRequester : public HttpStreamRequest::Delegate {
  public:
   StreamRequester() : destination_(url::SchemeHostPort("http", "a.test", 80)) {}
+
+  StreamRequester(const StreamRequester&) = delete;
+  StreamRequester& operator=(const StreamRequester&) = delete;
+
+  ~StreamRequester() override = default;
+
+  StreamRequester& set_destination(url::SchemeHostPort destination) {
+    destination_ = std::move(destination);
+    return *this;
+  }
 
   StreamRequester& set_priority(RequestPriority priority) {
     priority_ = priority;
@@ -210,12 +264,65 @@ class StreamRequester {
                          disable_cert_network_fetches_);
   }
 
-  std::unique_ptr<HttpStreamRequest> RequestStream(
-      HttpStreamPool& pool,
-      HttpStreamRequest::Delegate* delegate) {
+  HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
     HttpStreamKey stream_key = GetStreamKey();
     Group& group = pool.GetOrCreateGroupForTesting(stream_key);
-    return group.RequestStream(delegate, priority_, NetLogWithSource());
+    request_ = group.RequestStream(this, priority_, NetLogWithSource());
+    return request_.get();
+  }
+
+  void CancelRequest() { request_.reset(); }
+
+  // HttpStreamRequest::Delegate methods:
+  void OnStreamReady(const ProxyInfo& used_proxy_info,
+                     std::unique_ptr<HttpStream> stream) override {
+    stream_ = std::move(stream);
+    result_ = OK;
+  }
+
+  void OnWebSocketHandshakeStreamReady(
+      const ProxyInfo& used_proxy_info,
+      std::unique_ptr<WebSocketHandshakeStreamBase> stream) override {
+    NOTREACHED_NORETURN();
+  }
+
+  void OnBidirectionalStreamImplReady(
+      const ProxyInfo& used_proxy_info,
+      std::unique_ptr<BidirectionalStreamImpl> stream) override {
+    NOTREACHED_NORETURN();
+  }
+
+  void OnStreamFailed(int status,
+                      const NetErrorDetails& net_error_details,
+                      const ProxyInfo& used_proxy_info,
+                      ResolveErrorInfo resolve_error_info) override {
+    result_ = status;
+    net_error_details_ = net_error_details;
+    resolve_error_info_ = resolve_error_info;
+  }
+
+  void OnCertificateError(int status, const SSLInfo& ssl_info) override {}
+
+  void OnNeedsProxyAuth(const HttpResponseInfo& proxy_response,
+                        const ProxyInfo& used_proxy_info,
+                        HttpAuthController* auth_controller) override {
+    NOTREACHED_NORETURN();
+  }
+
+  void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override {}
+
+  void OnQuicBroken() override {}
+
+  std::unique_ptr<HttpStream> ReleaseStream() { return std::move(stream_); }
+
+  std::optional<int> result() const { return result_; }
+
+  const NetErrorDetails& net_error_details() const {
+    return net_error_details_;
+  }
+
+  const ResolveErrorInfo& resolve_error_info() const {
+    return resolve_error_info_;
   }
 
  private:
@@ -225,6 +332,13 @@ class StreamRequester {
   bool disable_cert_network_fetches_ = true;
 
   RequestPriority priority_ = RequestPriority::IDLE;
+
+  std::unique_ptr<HttpStreamRequest> request_;
+
+  std::unique_ptr<HttpStream> stream_;
+  std::optional<int> result_;
+  NetErrorDetails net_error_details_;
+  ResolveErrorInfo resolve_error_info_;
 };
 
 }  // namespace
@@ -249,12 +363,11 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
         session_deps_.alternate_host_resolver.get());
   }
 
-  MockHttpStreamRequestDelegate& request_delegate() {
-    return request_delegate_;
+  MockClientSocketFactory* socket_factory() {
+    return session_deps_.socket_factory.get();
   }
 
  private:
-  MockHttpStreamRequestDelegate request_delegate_;
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_network_session_;
   std::unique_ptr<HttpStreamPool> pool_;
@@ -263,40 +376,38 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
 TEST_F(HttpStreamPoolJobTest, ResolveEndpointFailedSync) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request->set_start_result(ERR_FAILED);
-  EXPECT_CALL(request_delegate(), OnStreamFailed(ERR_FAILED, _, _, _)).Times(1);
-  std::unique_ptr<HttpStreamRequest> request =
-      StreamRequester().RequestStream(pool(), &request_delegate());
+  StreamRequester requester;
+  requester.RequestStream(pool());
+  EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
 }
 
 TEST_F(HttpStreamPoolJobTest, ResolveEndpointFailedMultipleRequests) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
-  MockHttpStreamRequestDelegate request_delegate1;
-  std::unique_ptr<HttpStreamRequest> request1 =
-      StreamRequester().RequestStream(pool(), &request_delegate1);
+  StreamRequester requester1;
+  requester1.RequestStream(pool());
 
-  MockHttpStreamRequestDelegate request_delegate2;
-  std::unique_ptr<HttpStreamRequest> request2 =
-      StreamRequester().RequestStream(pool(), &request_delegate2);
-
-  EXPECT_CALL(request_delegate1, OnStreamFailed(ERR_FAILED, _, _, _)).Times(1);
-  EXPECT_CALL(request_delegate2, OnStreamFailed(ERR_FAILED, _, _, _)).Times(1);
+  StreamRequester requester2;
+  requester2.RequestStream(pool());
 
   endpoint_request->CallOnServiceEndpointRequestFinished(ERR_FAILED);
   RunUntilIdle();
+
+  EXPECT_THAT(*requester1.result(), IsError(ERR_FAILED));
+  EXPECT_THAT(*requester2.result(), IsError(ERR_FAILED));
 }
 
 TEST_F(HttpStreamPoolJobTest, LoadState) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
-  std::unique_ptr<HttpStreamRequest> request =
-      StreamRequester().RequestStream(pool(), &request_delegate());
+  StreamRequester requester;
+  HttpStreamRequest* request = requester.RequestStream(pool());
 
   ASSERT_EQ(request->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
 
-  EXPECT_CALL(request_delegate(), OnStreamFailed(ERR_FAILED, _, _, _)).Times(1);
-
   endpoint_request->CallOnServiceEndpointRequestFinished(ERR_FAILED);
+  EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
+
   RunUntilIdle();
   ASSERT_EQ(request->GetLoadState(), LOAD_STATE_IDLE);
 }
@@ -307,39 +418,207 @@ TEST_F(HttpStreamPoolJobTest, ResolveErrorInfo) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request->set_resolve_error_info(resolve_error_info);
 
-  std::unique_ptr<HttpStreamRequest> request =
-      StreamRequester().RequestStream(pool(), &request_delegate());
-
-  EXPECT_CALL(request_delegate(),
-              OnStreamFailed(ERR_NAME_NOT_RESOLVED, _, _, resolve_error_info))
-      .Times(1);
+  StreamRequester requester;
+  requester.RequestStream(pool());
 
   endpoint_request->CallOnServiceEndpointRequestFinished(ERR_NAME_NOT_RESOLVED);
   RunUntilIdle();
+  EXPECT_THAT(*requester.result(), IsError(ERR_NAME_NOT_RESOLVED));
+  ASSERT_EQ(requester.resolve_error_info(), resolve_error_info);
 }
 
 TEST_F(HttpStreamPoolJobTest, SetPriority) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
-
-  MockHttpStreamRequestDelegate request_delegate1;
-  std::unique_ptr<HttpStreamRequest> request1 =
-      StreamRequester()
-          .set_priority(RequestPriority::LOW)
-          .RequestStream(pool(), &request_delegate1);
+  StreamRequester requester1;
+  HttpStreamRequest* request1 =
+      requester1.set_priority(RequestPriority::LOW).RequestStream(pool());
   ASSERT_EQ(endpoint_request->priority(), RequestPriority::LOW);
 
-  MockHttpStreamRequestDelegate request_delegate2;
-  std::unique_ptr<HttpStreamRequest> request2 =
-      StreamRequester()
-          .set_priority(RequestPriority::IDLE)
-          .RequestStream(pool(), &request_delegate2);
+  StreamRequester requester2;
+  HttpStreamRequest* request2 =
+      requester2.set_priority(RequestPriority::IDLE).RequestStream(pool());
   ASSERT_EQ(endpoint_request->priority(), RequestPriority::LOW);
 
-  request1->SetPriority(RequestPriority::HIGHEST);
+  request2->SetPriority(RequestPriority::HIGHEST);
   ASSERT_EQ(endpoint_request->priority(), RequestPriority::HIGHEST);
 
-  // TODO(crbug.com/346835898): Check `request1` completes first. We need to
-  // implement the success case for the check.
+  // Check `request2` completes first.
+
+  auto data1 = std::make_unique<SequencedSocketData>();
+  data1->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data1.get());
+
+  auto data2 = std::make_unique<SequencedSocketData>();
+  data2->set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(data2.get());
+
+  endpoint_request->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  ASSERT_FALSE(request1->completed());
+  ASSERT_TRUE(request2->completed());
+  std::unique_ptr<HttpStream> stream = requester2.ReleaseStream();
+  ASSERT_TRUE(stream);
+}
+
+TEST_F(HttpStreamPoolJobTest, TcpFailSync) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.RequestStream(pool());
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(SYNCHRONOUS, ERR_FAILED));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  endpoint_request->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
+}
+
+TEST_F(HttpStreamPoolJobTest, TcpFailAsync) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.RequestStream(pool());
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, ERR_FAILED));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  endpoint_request->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
+}
+
+TEST_F(HttpStreamPoolJobTest, RequestCancelledBeforeAttemptSuccess) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.RequestStream(pool());
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  endpoint_request->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  requester.CancelRequest();
+  RunUntilIdle();
+
+  Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+}
+
+TEST_F(HttpStreamPoolJobTest, OneIPEndPointFailed) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.RequestStream(pool());
+
+  auto data1 = std::make_unique<SequencedSocketData>();
+  data1->set_connect_data(MockConnect(ASYNC, ERR_FAILED));
+  socket_factory()->AddSocketDataProvider(data1.get());
+  auto data2 = std::make_unique<SequencedSocketData>();
+  data2->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data2.get());
+
+  endpoint_request->add_endpoint(
+      EndpointHelper().add_v6("2001:db8::1").add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  EXPECT_THAT(*requester.result(), IsOk());
+}
+
+TEST_F(HttpStreamPoolJobTest, ReachedGroupLimit) {
+  constexpr size_t kMaxPerGroup = 4;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  // Create streams up to the per-group limit for a destination.
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  std::vector<std::unique_ptr<SequencedSocketData>> data_providers;
+  for (size_t i = 0; i < kMaxPerGroup; ++i) {
+    auto requester = std::make_unique<StreamRequester>();
+    StreamRequester* raw_requester = requester.get();
+    requesters.emplace_back(std::move(requester));
+    raw_requester->RequestStream(pool());
+
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+  }
+
+  endpoint_request->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  Group& group =
+      pool().GetOrCreateGroupForTesting(requesters[0]->GetStreamKey());
+  Job* job = group.GetJobForTesting();
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+  ASSERT_EQ(job->InFlightAttemptCount(), kMaxPerGroup);
+  ASSERT_EQ(job->PendingRequestCount(), 0u);
+
+  // This request should not start an attempt as the group reached its limit.
+  StreamRequester stalled_requester;
+  HttpStreamRequest* stalled_request = stalled_requester.RequestStream(pool());
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+  data_providers.emplace_back(std::move(data));
+
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+  ASSERT_EQ(job->InFlightAttemptCount(), kMaxPerGroup);
+  ASSERT_EQ(job->PendingRequestCount(), 1u);
+
+  // Finish all in-flight attempts successfully.
+  RunUntilIdle();
+  ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
+  ASSERT_EQ(job->InFlightAttemptCount(), 0u);
+  ASSERT_EQ(job->PendingRequestCount(), 1u);
+
+  // Release one HttpStream and close it to make non-reusable.
+  std::unique_ptr<StreamRequester> released_requester =
+      std::move(requesters.back());
+  requesters.pop_back();
+  std::unique_ptr<HttpStream> released_stream =
+      released_requester->ReleaseStream();
+
+  // Need to initialize the HttpStream as HttpBasicStream doesn't disconnect
+  // the underlying stream socket when not initialized.
+  HttpRequestInfo request_info;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  released_stream->RegisterRequest(&request_info);
+  released_stream->InitializeStream(/*can_send_early=*/false,
+                                    RequestPriority::IDLE, NetLogWithSource(),
+                                    base::DoNothing());
+
+  released_stream->Close(/*not_reusable=*/true);
+  released_stream.reset();
+
+  ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup - 1);
+  ASSERT_EQ(job->InFlightAttemptCount(), 1u);
+  ASSERT_EQ(job->PendingRequestCount(), 0u);
+
+  RunUntilIdle();
+
+  ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
+  ASSERT_EQ(job->InFlightAttemptCount(), 0u);
+  ASSERT_EQ(job->PendingRequestCount(), 0u);
+  ASSERT_TRUE(stalled_request->completed());
+  std::unique_ptr<HttpStream> stream = stalled_requester.ReleaseStream();
+  ASSERT_TRUE(stream);
 }
 
 }  // namespace net

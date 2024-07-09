@@ -6,9 +6,13 @@
 #define NET_HTTP_HTTP_STREAM_POOL_JOB_H_
 
 #include <memory>
+#include <optional>
+#include <set>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/priority_queue.h"
@@ -18,6 +22,7 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
+#include "net/socket/stream_attempt.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -50,6 +55,17 @@ class HttpStreamPool::Job
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;
 
+  // Called when a stream socket is released to `group_`.
+  void OnStreamSocketReleased();
+
+  // Returns the number of in-flight attempts.
+  size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
+
+  // Returns the number of pending requests. The number is calculated by
+  // subtracting the number of in-flight attempts from the number of total
+  // requests.
+  size_t PendingRequestCount() const;
+
  private:
   // A peer of an HttpStreamRequest. Holds the HttpStreamRequest's delegate
   // pointer and implements HttpStreamRequest::Helper.
@@ -70,10 +86,6 @@ class HttpStreamPool::Job
 
     HttpStreamRequest::Delegate* delegate() const { return delegate_; }
 
-    // Extract `delegate_` to call a method of the delegate. `delegate_` becomes
-    // nullptr.
-    HttpStreamRequest::Delegate* ExtractDelegate();
-
     // HttpStreamRequest::Helper methods:
     LoadState GetLoadState() const override;
     void OnRequestComplete() override;
@@ -88,9 +100,13 @@ class HttpStreamPool::Job
 
   using RequestQueue = PriorityQueue<std::unique_ptr<RequestEntry>>;
 
+  struct InFlightAttempt;
+
   const HttpStreamKey& stream_key() const;
 
   HttpNetworkSession* http_network_session();
+
+  bool UsingTls() const;
 
   // Returns the current load state.
   LoadState GetLoadState() const;
@@ -98,30 +114,49 @@ class HttpStreamPool::Job
   // Returns the highest priority in `requests_`.
   RequestPriority GetPriority() const;
 
+  // Returns true if we can't make any connection attempts due to per-pool or
+  // per-group limits.
+  bool ReachedMaxStreamLimit() const;
+
   void ResolveServiceEndpoint(RequestPriority initial_priority);
 
   void MaybeChangeServiceEndpointRequestPriority();
 
   void MaybeAttemptConnection();
 
+  std::optional<IPEndPoint> GetIPEndPointToAttempt();
+  std::optional<IPEndPoint> FindUnattemptedIPEndPoint(
+      const std::vector<IPEndPoint>& ip_endpoints);
+
   void NotifyFailure(int rv);
 
-  // Extracts a delegate pointer from `requests_` of which priority is
-  // highest and the delegate is not extracted.
-  HttpStreamRequest::Delegate* ExtractFirstRequestDelegate();
+  // Extracts an entry from `requests_` of which priority is highest. The
+  // ownership of the entry is moved to `notified_requests_`.
+  RequestEntry* ExtractFirstRequestToNotify();
 
   // Called when the priority of `request` is set.
   void SetRequestPriority(HttpStreamRequest* request, RequestPriority priority);
 
-  // Called when `request` is going to be destroyed.
-  void OnRequestComplete(HttpStreamRequest* request);
+  // Called when an HttpStreamRequest associated with `entry` is going to
+  // be destroyed.
+  void OnRequestComplete(RequestEntry* entry);
+
+  void OnInFlightAttemptComplete(InFlightAttempt* raw_attempt, int rv);
 
   void MaybeComplete();
 
   const raw_ptr<Group> group_;
   const NetLogWithSource net_log_;
 
+  ProxyInfo proxy_info_;
+
+  // Holds requests that are waiting for notifications (a delegate method call
+  // to indicate success or failure).
   RequestQueue requests_;
+  // Holds requests that are already notified results. We need to keep them
+  // to avoid dangling pointers.
+  std::set<std::unique_ptr<RequestEntry>, base::UniquePtrComparator>
+      notified_requests_;
 
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
       service_endpoint_request_;
@@ -129,6 +164,16 @@ class HttpStreamPool::Job
 
   NetErrorDetails net_error_details_;
   ResolveErrorInfo resolve_error_info_;
+  // Set to the latest stream attempt failure result. Used to notify delegates
+  // when all attempts failed.
+  int last_attempt_error_ = ERR_FAILED;
+
+  StreamAttemptParams attempt_params_;
+  std::set<std::unique_ptr<InFlightAttempt>, base::UniquePtrComparator>
+      in_flight_attempts_;
+  // Updated when a stream attempt failed. Used to calculate next IPEndPoint to
+  // attempt.
+  std::set<IPEndPoint> failed_ip_endpoints_;
 
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
 };
