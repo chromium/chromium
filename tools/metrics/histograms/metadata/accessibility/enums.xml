@@ -1306,6 +1306,12 @@ Unknown properties are collapsed to zero. -->
              null."/>
 </enum>
 
+<enum name="MainNodeAnnotationResult">
+  <int value="0" label="Main node successfully identified"/>
+  <int value="1" label="Invalid node returned"/>
+  <int value="2" label="Main node was already set"/>
+</enum>
+
 <enum name="PdfOcrRequestStatus">
   <int value="0" label="OCR requested"/>
   <int value="1" label="OCR performed"/>

@@ -1710,6 +1710,18 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.MainNodeAnnotations.AnnotationResult"
+    enum="MainNodeAnnotationResult" expires_after="2025-02-28">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The result of the Screen2x run to identify a main node in the accessibility
+    tree. The result could successfully identify a main node; could identify an
+    invalid node; or could return a result after a previous had already labeled
+    a main node.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ManuallyEnabled" enum="BooleanEnabled"
     expires_after="2025-02-28">
   <owner>aleventhal@chromium.org</owner>
