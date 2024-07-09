@@ -9691,6 +9691,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kHttpsFirstBalancedMode)},
 
+    {"https-first-dialog-ui", flag_descriptions::kHttpsFirstDialogUiName,
+     flag_descriptions::kHttpsFirstDialogUiDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kHttpsFirstDialogUi)},
+
     {"https-first-mode-v2-for-engaged-sites",
      flag_descriptions::kHttpsFirstModeV2ForEngagedSitesName,
      flag_descriptions::kHttpsFirstModeV2ForEngagedSitesDescription,

@@ -19176,6 +19176,7 @@ from previous Chrome versions.
   <int value="-670188266" label="enable-zip-archiver-unpacker"/>
   <int value="-669761849" label="SplitSettings:disabled"/>
   <int value="-669400536" label="FastPairSoftwareScanning:disabled"/>
+  <int value="-668250016" label="HttpsFirstDialogUi:enabled"/>
   <int value="-668114930" label="WindowsFollowCursor:disabled"/>
   <int value="-667952041" label="CCTRealTimeEngagementSignals:enabled"/>
   <int value="-667517406" label="overscroll-history-navigation"/>
@@ -25209,6 +25210,7 @@ from previous Chrome versions.
   <int value="1890329937"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:disabled"/>
   <int value="1891210939" label="enable-blink-features"/>
+  <int value="1891218220" label="HttpsFirstDialogUi:disabled"/>
   <int value="1891312456" label="AndroidMessagesProdEndpoint:disabled"/>
   <int value="1892124105" label="HistoryClustersVisitDeduping:disabled"/>
   <int value="1892201400" label="enable-password-separated-signin-flow"/>

@@ -2080,6 +2080,9 @@ const char kHttpsFirstBalancedModeName[] = "HTTPS-First Balanced Mode";
 const char kHttpsFirstBalancedModeDescription[] =
     "Use HTTPS-First Mode only when secure connections are likely possible.";
 
+const char kHttpsFirstDialogUiName[] = "Dialog UI for HTTPS-First Modes";
+const char kHttpsFirstDialogUiDescription[] = "Use a dialog-based UI for HFM";
+
 const char kHttpsFirstModeIncognitoName[] = "HTTPS-First Mode in Incognito";
 const char kHttpsFirstModeIncognitoDescription[] =
     "Enable HTTPS-First Mode in Incognito as default setting.";

@@ -752,6 +752,11 @@ BASE_FEATURE(kHttpsFirstBalancedMode,
              "HttpsFirstBalancedMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a dialog-based UI for HTTPS-First Mode.
+BASE_FEATURE(kHttpsFirstDialogUi,
+             "HttpsFirstDialogUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for crbug.com/1414633.
 BASE_FEATURE(kHttpsFirstModeForAdvancedProtectionUsers,
              "HttpsOnlyModeForAdvancedProtectionUsers",

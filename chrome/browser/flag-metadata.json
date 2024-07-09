@@ -5054,6 +5054,14 @@
     "expiry_milestone": 133
   },
   {
+    "name": "https-first-dialog-ui",
+    "owners": [
+      "jdeblasio@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
+    ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "https-first-mode-for-typically-secure-users",
     "owners": [
       "meacer@chromium.org",
