@@ -79,7 +79,7 @@ static inline GLenum GetTexInternalFormat(const GLVersionInfo* version,
     }
   }
 
-  if (version->IsAtLeastGL(2, 1) || version->IsAtLeastGLES(3, 0)) {
+  if (version->IsAtLeastGLES(3, 0)) {
     switch (internal_format) {
       case GL_SRGB_EXT:
         gl_internal_format = GL_SRGB8;
@@ -153,7 +153,7 @@ static inline GLenum GetTexInternalFormat(const GLVersionInfo* version,
 static inline GLenum GetTexFormat(const GLVersionInfo* version, GLenum format) {
   GLenum gl_format = format;
 
-  if (version->IsAtLeastGL(2, 1) || version->IsAtLeastGLES(3, 0)) {
+  if (version->IsAtLeastGLES(3, 0)) {
     switch (format) {
       case GL_SRGB_EXT:
         gl_format = GL_RGB;

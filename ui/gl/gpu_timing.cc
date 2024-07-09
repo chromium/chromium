@@ -337,7 +337,7 @@ GPUTimingImpl::GPUTimingImpl(GLContextReal* context) {
   // The command glGetInteger64v is only supported under ES3 and GL3.2. Since it
   // is only used for timestamps, we workaround this by emulating timestamps
   // so WebGL 1.0 will still have access to the extension.
-  if (!version_info->IsAtLeastGLES(3, 0) && !version_info->IsAtLeastGL(3, 2)) {
+  if (!version_info->IsAtLeastGLES(3, 0)) {
     force_time_elapsed_query_ = true;
     timestamp_bit_count_gl_ = 0;
   }

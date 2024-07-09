@@ -354,17 +354,9 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       .WillOnce(SetArgPointee<1>(normalized_init.has_stencil ? 8 : 0))
       .RetiresOnSaturation();
 
-  if (group_->feature_info()->gl_version_info().IsAtLeastGL(3, 2)) {
-    EXPECT_CALL(*gl_, Enable(GL_TEXTURE_CUBE_MAP_SEAMLESS))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
-
-  if (group_->feature_info()->gl_version_info().is_es) {
-    EXPECT_CALL(
-        *gl_, GetShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_HIGH_FLOAT, _, _))
-        .RetiresOnSaturation();
-  }
+  EXPECT_CALL(*gl_,
+              GetShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_HIGH_FLOAT, _, _))
+      .RetiresOnSaturation();
 
   static GLint max_viewport_dims[] = {
     kMaxViewportWidth,

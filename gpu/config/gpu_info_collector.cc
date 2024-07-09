@@ -631,7 +631,7 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   }
 
   GLint max_samples = 0;
-  if (gl_info.IsAtLeastGL(3, 0) || gl_info.IsAtLeastGLES(3, 0) ||
+  if (gl_info.IsAtLeastGLES(3, 0) ||
       gfx::HasExtension(extension_set, "GL_ANGLE_framebuffer_multisample") ||
       gfx::HasExtension(extension_set, "GL_APPLE_framebuffer_multisample") ||
       gfx::HasExtension(extension_set, "GL_EXT_framebuffer_multisample") ||

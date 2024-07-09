@@ -94,7 +94,7 @@ class GPUInfoCollectorTest
         test_values_.gl_version = "3.2.0 NVIDIA 195.36.24";
         test_values_.gl_extensions =
             "GL_OES_packed_depth_stencil GL_EXT_texture_format_BGRA8888 "
-            "GL_EXT_read_format_bgra";
+            "GL_EXT_read_format_bgra GL_NV_framebuffer_multisample";
         gl_shading_language_version_ = "1.50 NVIDIA via Cg compiler";
         break;
       }
@@ -126,7 +126,7 @@ class GPUInfoCollectorTest
         test_values_.gl_version = "3.1.0";
         test_values_.gl_extensions =
             "GL_OES_packed_depth_stencil GL_EXT_texture_format_BGRA8888 "
-            "GL_EXT_read_format_bgra";
+            "GL_EXT_read_format_bgra GL_ANGLE_framebuffer_multisample";
         gl_shading_language_version_ = "1.40 NVIDIA via Cg compiler";
         break;
       }

@@ -3214,15 +3214,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     state_.viewport_height = surface->GetSize().height();
   }
 
-  // ES3 requires seamless cubemap. ES2 does not.
-  // However, when ES2 is implemented on top of DX11, seamless cubemap is
-  // always enabled and there is no way to disable it.
-  // Therefore, it seems OK to also always enable it on top of Desktop GL for
-  // both ES2 and ES3 contexts.
-  if (gl_version_info().IsAtLeastGL(3, 2)) {
-    api()->glEnableFn(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-  }
-
   GLint range[2] = {0, 0};
   GLint precision = 0;
   QueryShaderPrecisionFormat(gl_version_info(), GL_FRAGMENT_SHADER,
@@ -6595,8 +6586,7 @@ void GLES2DecoderImpl::DoGetInteger64v(GLenum pname,
     switch (pname) {
       case GL_MAX_ELEMENT_INDEX: {
         DCHECK_EQ(params_size, 1);
-        if (gl_version_info().IsAtLeastGLES(3, 0) ||
-            gl_version_info().IsAtLeastGL(4, 3)) {
+        if (gl_version_info().IsAtLeastGLES(3, 0)) {
           api()->glGetInteger64vFn(GL_MAX_ELEMENT_INDEX, params);
         } else {
           // Assume that desktop GL implementations can generally support
@@ -12648,7 +12638,7 @@ namespace {
 
 bool CheckETCFormatSupport(const FeatureInfo& feature_info) {
   const gl::GLVersionInfo& version_info = feature_info.gl_version_info();
-  return version_info.IsAtLeastGL(4, 3) || version_info.IsAtLeastGLES(3, 0);
+  return version_info.IsAtLeastGLES(3, 0);
 }
 
 using CompressedFormatSupportCheck = bool (*)(const FeatureInfo&);

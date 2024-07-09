@@ -362,11 +362,7 @@ void TestHelper::SetupContextGroupInitExpectations(
         .RetiresOnSaturation();
   }
 
-  if (gl_info.IsAtLeastGL(3, 3) ||
-      (gl_info.IsAtLeastGL(3, 2) &&
-       gfx::HasExtension(extension_set, "GL_ARB_blend_func_extended")) ||
-      (gl_info.is_es &&
-       gfx::HasExtension(extension_set, "GL_EXT_blend_func_extended"))) {
+  if (gfx::HasExtension(extension_set, "GL_EXT_blend_func_extended")) {
     EXPECT_CALL(*gl, GetIntegerv(GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT, _))
         .WillOnce(SetArgPointee<1>(8))
         .RetiresOnSaturation();
@@ -613,7 +609,7 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
     }
     if (!enable_es3 &&
         !gfx::HasExtension(extension_set, "GL_EXT_color_buffer_half_float") &&
-        (gl_info.IsAtLeastGLES(3, 0) || gl_info.IsAtLeastGL(3, 0))) {
+        gl_info.IsAtLeastGLES(3, 0)) {
       EXPECT_CALL(*gl, TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, width, 0,
                                   GL_RGBA, GL_HALF_FLOAT, nullptr))
           .Times(1)

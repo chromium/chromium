@@ -320,10 +320,8 @@ void InsertVersionDirective(std::string* source, unsigned glslVersion) {
 unsigned ChooseGLSLVersion(const gl::GLVersionInfo& gl_version_info,
                            GLenum dest_format) {
   bool use_essl300_features = CopyTextureCHROMIUMNeedsESSL3(dest_format);
-  if (use_essl300_features && gl_version_info.is_es) {
+  if (use_essl300_features) {
     return GLSL_ESSL300;
-  } else if (gl_version_info.IsAtLeastGL(3, 2)) {
-    return GLSL_CORE_PROFILE;
   } else {
     return GLSL_ESSL100_OR_COMPATIBILITY_PROFILE;
   }

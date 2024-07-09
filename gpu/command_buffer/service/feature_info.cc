@@ -1240,8 +1240,7 @@ void FeatureInfo::InitializeFeatures() {
     validators_.texture_parameter.AddValue(GL_TEXTURE_USAGE_ANGLE);
   }
 
-  bool have_occlusion_query = gl_version_info_->IsAtLeastGLES(3, 0) ||
-                              gl_version_info_->IsAtLeastGL(3, 3);
+  bool have_occlusion_query = gl_version_info_->IsAtLeastGLES(3, 0);
   bool have_ext_occlusion_query_boolean =
       gfx::HasExtension(extensions, "GL_EXT_occlusion_query_boolean");
   bool have_arb_occlusion_query2 =
