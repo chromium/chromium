@@ -481,7 +481,10 @@ void CanvasPath::arc(double double_x,
   CanonicalizeAngle(&start_angle, &end_angle);
   end_angle = AdjustEndAngle(start_angle, end_angle, anticlockwise);
 
-  if (IsEmpty() && RuntimeEnabledFeatures::CanvasUsesArcPaintOpEnabled()) {
+  // TODO(348683485): small arcs don't render as well with ganesh. Use
+  // old code path in this case.
+  if (IsEmpty() && RuntimeEnabledFeatures::CanvasUsesArcPaintOpEnabled() &&
+      radius >= 1) {
     const float sweep_angle = end_angle - start_angle;
     arc_builder_.ArcTo(x, y, radius, start_angle, sweep_angle);
     DCHECK(IsArc());
