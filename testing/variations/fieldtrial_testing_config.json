@@ -1366,21 +1366,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AuthenticateUsingUserConsentVerifierApi"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AuthenticateUsingUserConsentVerifierInteropApi": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
+                        "AuthenticateUsingUserConsentVerifierApi",
                         "AuthenticateUsingUserConsentVerifierInteropApi"
                     ]
                 }
