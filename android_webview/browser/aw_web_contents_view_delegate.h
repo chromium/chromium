@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_WEB_CONTENTS_VIEW_DELEGATE_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_WEB_CONTENTS_VIEW_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
 namespace content {
@@ -23,8 +24,17 @@ class AwWebContentsViewDelegate : public content::WebContentsViewDelegate {
 
   ~AwWebContentsViewDelegate() override;
 
+  void ShowContextMenu(content::RenderFrameHost& render_frame_host,
+                       const content::ContextMenuParams& params) override;
+
+  void DismissContextMenu() override;
+
   // content::WebContentsViewDelegate implementation.
   content::WebDragDestDelegate* GetDragDestDelegate() override;
+
+ private:
+  // The WebContents that owns the view and this delegate transitively.
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace android_webview

@@ -57,6 +57,8 @@ source_set("browser") {
     "aw_contents_origin_matcher.cc",
     "aw_contents_origin_matcher.h",
     "aw_contents_statics.cc",
+    "aw_context_menu_helper.cc",
+    "aw_context_menu_helper.h",
     "aw_cookie_access_policy.cc",
     "aw_cookie_access_policy.h",
     "aw_crash_keys.cc",
@@ -248,6 +250,7 @@ source_set("browser") {
     "//components/component_updater/installer_policies",
     "//components/content_capture/android",
     "//components/content_capture/browser",
+    "//components/embedder_support/android:context_menu",
 
     # Called via JNI in CrashpadMain
     "//components/crash/android:crashpad_main",

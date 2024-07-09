@@ -241,6 +241,11 @@ BASE_FEATURE(kWebViewDoNotSendAccessibilityEventsOnGSU,
              "WebViewDoNotSendAccessibilityEventsOnGSU",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This enables WebView's hyperlink context menu.
+BASE_FEATURE(kWebViewHyperlinkContextMenu,
+             "WebViewHyperlinkContextMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Creates a spare renderer on browser context creation.
 BASE_FEATURE(kCreateSpareRendererOnBrowserContextCreation,
              "CreateSpareRendererOnBrowserContextCreation",
