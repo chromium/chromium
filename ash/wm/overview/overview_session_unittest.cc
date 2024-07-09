@@ -2061,13 +2061,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   // bar for the y location.
   gfx::Point no_windows_centerpoint =
       no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
-  if (features::IsForestFeatureEnabled()) {
-    EXPECT_EQ(expected_x, no_windows_centerpoint.x());
-    EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
-    EXPECT_LT(no_windows_centerpoint.y(), expected_y);
-  } else {
-    EXPECT_EQ(gfx::Point(expected_x, expected_y), no_windows_centerpoint);
-  }
+  EXPECT_EQ(gfx::Point(expected_x, expected_y), no_windows_centerpoint);
 
   // Tests that when snapping a window to the right in splitview, the no windows
   // indicator shows up in the middle of the left side of the screen.
@@ -2075,13 +2069,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   no_windows_centerpoint =
       no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
   expected_x = /*bounds_right=*/(200 - 4) / 2;
-  if (features::IsForestFeatureEnabled()) {
-    EXPECT_EQ(expected_x, no_windows_centerpoint.x());
-    EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
-    EXPECT_LT(no_windows_centerpoint.y(), expected_y);
-  } else {
-    EXPECT_EQ(gfx::Point(expected_x, expected_y), no_windows_centerpoint);
-  }
+  EXPECT_EQ(gfx::Point(expected_x, expected_y), no_windows_centerpoint);
 }
 
 // Tests that the no windows indicator shows properly after adding an item.
@@ -9072,24 +9060,26 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
   EXPECT_EQ(split_view_controller()->default_snap_position(),
             SnapPosition::kPrimary);
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
-  EXPECT_EQ(
-      GetGridBounds(),
+  // Test that the grid bounds are approximately equal to the bounds of a
+  // snapped window (minus hotseat insets on the grid).
+  EXPECT_TRUE(GetGridBounds().ApproximatelyEqual(
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SnapPosition::kSecondary,
           /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
-          /*account_for_divider_width=*/true));
+          /*account_for_divider_width=*/true),
+      20));
 
   split_view_controller()->SwapWindows();
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kSecondarySnapped);
   EXPECT_EQ(split_view_controller()->default_snap_position(),
             SnapPosition::kSecondary);
-  EXPECT_EQ(
-      GetGridBounds(),
+  EXPECT_TRUE(GetGridBounds().ApproximatelyEqual(
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SnapPosition::kPrimary,
           /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
-          /*account_for_divider_width=*/true));
+          /*account_for_divider_width=*/true),
+      20));
 }
 
 // Test that in tablet mode, pressing tab key in overview should not crash.

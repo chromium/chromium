@@ -298,11 +298,8 @@ gfx::Rect GetGridBoundsInScreen(
 
     const bool forest_enabled = features::IsForestFeatureEnabled();
 
-    // Use the default hotseat size here to avoid the possible re-layout
-    // due to the update in HotseatWidget::is_forced_dense_.
     const int hotseat_bottom_inset =
-        ShelfConfig::Get()->GetHotseatSize(
-            /*density=*/HotseatDensity::kNormal) +
+        ShelfConfig::Get()->GetHotseatSize(HotseatDensity::kNormal) +
         ShelfConfig::Get()->hotseat_bottom_padding();
 
     if (!forest_enabled && hotseat_extended) {
