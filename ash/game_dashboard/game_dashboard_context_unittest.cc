@@ -1240,6 +1240,21 @@ TEST_F(GameDashboardContextTest, CompatModeArcGame) {
   EXPECT_TRUE(screen_size_button->GetEnabled());
 }
 
+// Verifies the screen size row isn't shown on O4C ARC game windows.
+TEST_F(GameDashboardContextTest, ScreenSizeRowAvailability) {
+  // Create an ARC game window that is O4C.
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(kArcResizeLockTypeKey, ArcResizeLockType::NONE);
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
+                                       ArcGameControlsFlag::kO4C));
+
+  test_api_->OpenTheMainMenu();
+
+  EXPECT_FALSE(test_api_->GetMainMenuScreenSizeSettingsButton());
+}
+
 TEST_F(GameDashboardContextTest, NonCompatModeArcGame) {
   // Create an ARC game window that doesn't support Compat Mode.
   CreateGameWindow(/*is_arc_window=*/true);

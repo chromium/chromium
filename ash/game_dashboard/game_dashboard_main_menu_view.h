@@ -106,7 +106,8 @@ class ASH_EXPORT GameDashboardMainMenuView
                            FeatureTile::TileType tile_type);
 
   // Adds menu controls row for Game Controls.
-  void AddGameControlsDetailsRow(views::View* container);
+  void AddGameControlsDetailsRow(views::View* container,
+                                 const gfx::RoundedCornersF& row_corners);
 
   // Adds Record Game feature tile of type `tile_type` to a specified
   // `container`.

@@ -107,16 +107,21 @@ constexpr gfx::Insets kTileIconPadding = gfx::Insets::TLBR(12, 8, 4, 8);
 // Primary Feature Tile Label Padding.
 constexpr gfx::Insets kPrimaryTileLabelPadding = gfx::Insets::TLBR(0, 0, 0, 15);
 
-constexpr gfx::RoundedCornersF kGCDetailRowCorners =
+// Row corners used for the top row of a multi-feature row collection.
+constexpr gfx::RoundedCornersF kTopMultiRowCorners =
     gfx::RoundedCornersF(/*upper_left=*/kDetailRowCornerRadius,
                          /*upper_right=*/kDetailRowCornerRadius,
                          /*lower_right=*/2.0f,
                          /*lower_left=*/2.0f);
-constexpr gfx::RoundedCornersF kScreenSizeRowCorners =
+// Row corners used for the bottom row of a multi-featue row collection.
+constexpr gfx::RoundedCornersF kBottomMultiRowCorners =
     gfx::RoundedCornersF(/*upper_left=*/2.0f,
                          /*upper_right=*/2.0f,
                          /*lower_right=*/kDetailRowCornerRadius,
                          /*lower_left=*/kDetailRowCornerRadius);
+// Row corners used for a single feature row collection.
+constexpr gfx::RoundedCornersF kSingleRowCorners =
+    gfx::RoundedCornersF(kDetailRowCornerRadius);
 
 // For setup button pulse animation.
 constexpr int kSetupPulseExtraHalfSize = 32;
@@ -397,7 +402,7 @@ class ScreenSizeRow : public views::Button {
         IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_BUTTON_A11Y_LABEL));
 
     auto* layout =
-        ConfigureFeatureRowLayout(this, kScreenSizeRowCorners, enabled);
+        ConfigureFeatureRowLayout(this, kBottomMultiRowCorners, enabled);
     // Add header.
     auto* header = AddChildView(std::make_unique<FeatureHeader>(
         enabled, compat_mode_util::GetIcon(resize_mode), title));
@@ -438,7 +443,8 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   METADATA_HEADER(GameControlsDetailsRow, views::Button)
 
  public:
-  explicit GameControlsDetailsRow(GameDashboardMainMenuView* main_menu)
+  explicit GameControlsDetailsRow(GameDashboardMainMenuView* main_menu,
+                                  const gfx::RoundedCornersF& row_corners)
       : views::Button(
             base::BindRepeating(&GameControlsDetailsRow::OnButtonPressed,
                                 base::Unretained(this))),
@@ -455,8 +461,7 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
 
     const bool is_available = game_dashboard_utils::IsFlagSet(
         *flags, ArcGameControlsFlag::kAvailable);
-    auto* layout =
-        ConfigureFeatureRowLayout(this, kGCDetailRowCorners, is_available);
+    auto* layout = ConfigureFeatureRowLayout(this, row_corners, is_available);
 
     // Add header.
     header_ = AddChildView(std::make_unique<FeatureHeader>(
@@ -576,7 +581,7 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
     SetBackground(views::CreateThemedRoundedRectBackground(
         enabled ? cros_tokens::kCrosSysSystemOnBase
                 : cros_tokens::kCrosSysSystemOnBaseOpaque,
-        kGCDetailRowCorners));
+        kTopMultiRowCorners));
     header_->UpdateColors(enabled);
     CHECK(arrow_icon_);
     arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
@@ -1045,7 +1050,8 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
 }
 
 void GameDashboardMainMenuView::MaybeAddArcFeatureRows() {
-  if (!IsArcWindow(context_->game_window())) {
+  aura::Window* game_window = context_->game_window();
+  if (!IsArcWindow(game_window)) {
     return;
   }
   DCHECK(main_menu_container_);
@@ -1056,9 +1062,17 @@ void GameDashboardMainMenuView::MaybeAddArcFeatureRows() {
           views::BoxLayout::Orientation::kVertical,
           /*inside_border_insets=*/gfx::Insets(),
           /*between_child_spacing=*/2));
-
-  AddGameControlsDetailsRow(feature_details_container);
-  AddScreenSizeSettingsRow(feature_details_container);
+  const std::optional<ArcGameControlsFlag> flags =
+      game_dashboard_utils::GetGameControlsFlag(game_window);
+  const bool has_multi_rows =
+      !game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kO4C);
+  AddGameControlsDetailsRow(feature_details_container, has_multi_rows
+                                                           ? kTopMultiRowCorners
+                                                           : kSingleRowCorners);
+  if (has_multi_rows) {
+    // Only add the Screen Size row if an app is NOT O4C.
+    AddScreenSizeSettingsRow(feature_details_container);
+  }
 }
 
 void GameDashboardMainMenuView::AddGameControlsTile(
@@ -1115,10 +1129,11 @@ void GameDashboardMainMenuView::AddRecordGameTile(
 }
 
 void GameDashboardMainMenuView::AddGameControlsDetailsRow(
-    views::View* container) {
+    views::View* container,
+    const gfx::RoundedCornersF& row_corners) {
   DCHECK(IsArcWindow(context_->game_window()));
-  game_controls_details_ =
-      container->AddChildView(std::make_unique<GameControlsDetailsRow>(this));
+  game_controls_details_ = container->AddChildView(
+      std::make_unique<GameControlsDetailsRow>(this, row_corners));
 }
 
 void GameDashboardMainMenuView::AddScreenSizeSettingsRow(
