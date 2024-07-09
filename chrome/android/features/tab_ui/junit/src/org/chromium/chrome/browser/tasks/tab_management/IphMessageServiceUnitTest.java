@@ -43,6 +43,7 @@ public class IphMessageServiceUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        IphMessageService.setSkipIphInTestsForTesting(false);
         TrackerFactory.setTrackerForTests(mTracker);
         mIphMessageService = new IphMessageService(mProfile, mIphController);
     }

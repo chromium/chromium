@@ -116,6 +116,7 @@ public class TabGridIphTest {
 
     @Before
     public void setUp() {
+        IphMessageService.setSkipIphInTestsForTesting(false);
         mActivityTestRule.startMainActivityOnBlankPage();
         TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
         CriteriaHelper.pollUiThread(

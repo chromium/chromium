@@ -9,6 +9,8 @@ import android.annotation.SuppressLint;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -16,12 +18,14 @@ import org.chromium.components.feature_engagement.Tracker;
 
 /** One of the concrete {@link MessageService} that only serves {@link MessageType.IPH}. */
 public class IphMessageService extends MessageService {
+    private static boolean sSkipIphInTests = true;
+
     private final TabSwitcherIphController mIphController;
     private Tracker mTracker;
+
     private Callback<Boolean> mInitializedCallback =
             (result) -> {
-                if (mTracker.wouldTriggerHelpUI(
-                        FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE)) {
+                if (wouldTriggerIph()) {
                     assert mTracker.isInitialized();
                     sendAvailabilityNotification(
                             new IphMessageData(this::review, (int messageType) -> dismiss()));
@@ -85,5 +89,23 @@ public class IphMessageService extends MessageService {
 
     protected Callback<Boolean> getInitializedCallbackForTesting() {
         return mInitializedCallback;
+    }
+
+    /**
+     * Whether to trigger the IPH taking into account testing configuration. By default the IPH is
+     * not shown in tests.
+     */
+    private boolean wouldTriggerIph() {
+        boolean wouldTriggerIph =
+                mTracker.wouldTriggerHelpUI(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
+        boolean skipForTests = BuildConfig.IS_FOR_TEST && sSkipIphInTests;
+        return wouldTriggerIph && !skipForTests;
+    }
+
+    /** Sets whether to skip the IPH for testing. By default the IPH is skipped. */
+    static void setSkipIphInTestsForTesting(boolean skipIphInTests) {
+        boolean oldValue = sSkipIphInTests;
+        sSkipIphInTests = skipIphInTests;
+        ResettersForTesting.register(() -> sSkipIphInTests = oldValue);
     }
 }

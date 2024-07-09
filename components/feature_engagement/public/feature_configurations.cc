@@ -667,12 +667,12 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     config->trigger = EventConfig("dangerous_download_esb_promo_row_trigger",
                                   Comparator(ANY, 0), 360, 360);
-    config->used = EventConfig("enable_enhanced_protection",
-                              Comparator(EQUAL, 0), 21, 90);
+    config->used =
+        EventConfig("enable_enhanced_protection", Comparator(EQUAL, 0), 21, 90);
     config->event_configs.insert(EventConfig("esb_download_promo_row_viewed",
-                                            Comparator(LESS_THAN, 7), 90, 90));
+                                             Comparator(LESS_THAN, 7), 90, 90));
     config->event_configs.insert(EventConfig("esb_download_promo_row_clicked",
-                                            Comparator(LESS_THAN, 3), 90, 90));
+                                             Comparator(LESS_THAN, 3), 90, 90));
 
     return config;
   }
@@ -1087,6 +1087,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("shopping_list_menu_item_iph_triggered",
                     Comparator(LESS_THAN, 3), 360, 360));
     config->used = EventConfig("shopping_list_track_price_from_menu",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+  if (kIPHTabGroupsDragAndDropFeature.name == feature->name) {
+    // IPH for drag & drop promo in the Tab Switcher.
+    // * Drag & drop has not been used previously in the last 360 days.
+    // * Iff IPH has been shown 0 times in 30 days AND less than 2 times in 90 days window.
+    // * Once per session.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("iph_tabgroups_drag_and_drop",
+                                  Comparator(EQUAL, 0), 30, 360);
+    config->event_configs.insert(EventConfig(
+        "iph_tabgroups_drag_and_drop", Comparator(LESS_THAN, 2), 90, 360));
+    config->used = EventConfig("tab_drag_and_drop_to_group",
                                Comparator(EQUAL, 0), 360, 360);
     return config;
   }
