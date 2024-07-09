@@ -336,7 +336,8 @@ void NinePatchGenerator::AppendQuadsForCc(
     UIResourceId ui_resource_id,
     viz::CompositorRenderPass* render_pass,
     viz::SharedQuadState* shared_quad_state,
-    const std::vector<Patch>& patches) {
+    const std::vector<Patch>& patches,
+    const gfx::Vector2d& offset) {
   if (!ui_resource_id) {
     return;
   }
@@ -356,7 +357,7 @@ void NinePatchGenerator::AppendQuadsForCc(
           base::Unretained(
               &layer_impl->draw_properties().occlusion_in_content_space)),
       layer_impl->layer_tree_impl()->resource_provider(), render_pass,
-      shared_quad_state, patches);
+      shared_quad_state, patches, offset);
 }
 
 void NinePatchGenerator::AppendQuads(
@@ -366,7 +367,8 @@ void NinePatchGenerator::AppendQuads(
     viz::ClientResourceProvider* client_resource_provider,
     viz::CompositorRenderPass* render_pass,
     viz::SharedQuadState* shared_quad_state,
-    const std::vector<Patch>& patches) {
+    const std::vector<Patch>& patches,
+    const gfx::Vector2d& offset) {
   if (!resource) {
     return;
   }
@@ -378,7 +380,7 @@ void NinePatchGenerator::AppendQuads(
   constexpr bool premultiplied_alpha = true;
 
   for (const auto& patch : patches) {
-    gfx::Rect output_rect = gfx::ToEnclosingRect(patch.output_rect);
+    gfx::Rect output_rect = gfx::ToEnclosingRect(patch.output_rect + offset);
     gfx::Rect visible_rect = clip_visible_rect.Run(output_rect);
     bool needs_blending = !opaque;
     if (!visible_rect.IsEmpty()) {
@@ -388,8 +390,7 @@ void NinePatchGenerator::AppendQuads(
                    resource, premultiplied_alpha, image_rect.origin(),
                    image_rect.bottom_right(), SkColors::kTransparent, flipped,
                    nearest_neighbor_,
-                   /*secure_output_only=*/false,
-                   gfx::ProtectedVideoType::kClear);
+                   /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
     }
   }
 }

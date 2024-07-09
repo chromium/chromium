@@ -123,20 +123,17 @@ void NinePatchThumbScrollbarLayerImpl::AppendThumbQuads(
       thumb_quad_rect.width() < border.width())
     return;
 
-  quad_generator_.SetLayout(image_bounds_, thumb_quad_rect.size(), aperture_,
-                            border, layer_occlusion, fill_center,
-                            nearest_neighbor);
-  quad_generator_.CheckGeometryLimitations();
-
-  std::vector<NinePatchGenerator::Patch> patches =
-      quad_generator_.GeneratePatches();
-
-  gfx::Vector2dF offset = thumb_quad_rect.OffsetFromOrigin();
-  for (auto& patch : patches)
-    patch.output_rect += offset;
+  const bool layout_changed = quad_generator_.SetLayout(
+      image_bounds_, thumb_quad_rect.size(), aperture_, border, layer_occlusion,
+      fill_center, nearest_neighbor);
+  if (layout_changed) {
+    quad_generator_.CheckGeometryLimitations();
+    patches_ = quad_generator_.GeneratePatches();
+  }
 
   quad_generator_.AppendQuadsForCc(this, thumb_ui_resource_id_, render_pass,
-                                   shared_quad_state, patches);
+                                   shared_quad_state, patches_,
+                                   thumb_quad_rect.OffsetFromOrigin());
 }
 
 void NinePatchThumbScrollbarLayerImpl::AppendTrackQuads(

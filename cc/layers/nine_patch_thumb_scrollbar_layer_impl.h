@@ -6,6 +6,7 @@
 #define CC_LAYERS_NINE_PATCH_THUMB_SCROLLBAR_LAYER_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "cc/cc_export.h"
 #include "cc/input/scrollbar.h"
@@ -92,6 +93,7 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
   gfx::Rect aperture_;
 
   NinePatchGenerator quad_generator_;
+  std::vector<NinePatchGenerator::Patch> patches_;
 };
 
 }  // namespace cc

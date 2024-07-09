@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace base {
 namespace trace_event {
@@ -106,7 +107,8 @@ class CC_EXPORT NinePatchGenerator {
                         UIResourceId ui_resource_id,
                         viz::CompositorRenderPass* render_pass,
                         viz::SharedQuadState* shared_quad_state,
-                        const std::vector<Patch>& patches);
+                        const std::vector<Patch>& patches,
+                        const gfx::Vector2d& offset = gfx::Vector2d());
 
   void AppendQuads(
       viz::ResourceId resource,
@@ -115,7 +117,8 @@ class CC_EXPORT NinePatchGenerator {
       viz::ClientResourceProvider* client_resource_provider,
       viz::CompositorRenderPass* render_pass,
       viz::SharedQuadState* shared_quad_state,
-      const std::vector<Patch>& patches);
+      const std::vector<Patch>& patches,
+      const gfx::Vector2d& offset = gfx::Vector2d());
 
   void AsValueInto(base::trace_event::TracedValue* state) const;
   void CheckGeometryLimitations();
