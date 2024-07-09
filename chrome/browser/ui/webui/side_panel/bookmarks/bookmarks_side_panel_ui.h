@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -37,11 +38,11 @@ class ImageServiceHandler;
 class BookmarksSidePanelUI;
 
 class BookmarksSidePanelUIConfig
-    : public content::DefaultWebUIConfig<BookmarksSidePanelUI> {
+    : public DefaultTopChromeWebUIConfig<BookmarksSidePanelUI> {
  public:
   BookmarksSidePanelUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIBookmarksSidePanelHost) {}
+      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                    chrome::kChromeUIBookmarksSidePanelHost) {}
 };
 
 class BookmarksSidePanelUI

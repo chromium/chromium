@@ -27,6 +27,10 @@
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+ComposeUIUntrustedConfig::ComposeUIUntrustedConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIUntrustedScheme,
+                                  chrome::kChromeUIUntrustedComposeHost) {}
+
 bool ComposeUIUntrustedConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return ComposeEnabling::IsEnabledForProfile(

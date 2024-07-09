@@ -104,19 +104,13 @@ CompanionSidePanelUntrustedUI::GetWeakPtr() {
 }
 
 CompanionSidePanelUntrustedUIConfig::CompanionSidePanelUntrustedUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chrome::kChromeUIUntrustedCompanionSidePanelHost) {}
+    : DefaultTopChromeWebUIConfig(
+          content::kChromeUIUntrustedScheme,
+          chrome::kChromeUIUntrustedCompanionSidePanelHost) {}
 
 bool CompanionSidePanelUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return companion::IsCompanionFeatureEnabled();
-}
-
-std::unique_ptr<content::WebUIController>
-CompanionSidePanelUntrustedUIConfig::CreateWebUIController(
-    content::WebUI* web_ui,
-    const GURL& url) {
-  return std::make_unique<CompanionSidePanelUntrustedUI>(web_ui);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CompanionSidePanelUntrustedUI)

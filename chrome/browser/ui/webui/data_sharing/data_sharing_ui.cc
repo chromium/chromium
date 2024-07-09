@@ -16,16 +16,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 DataSharingUIConfig::DataSharingUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chrome::kChromeUIUntrustedDataSharingHost) {}
+    : DefaultTopChromeWebUIConfig(content::kChromeUIUntrustedScheme,
+                                  chrome::kChromeUIUntrustedDataSharingHost) {}
 
 DataSharingUIConfig::~DataSharingUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-DataSharingUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                           const GURL& url) {
-  return std::make_unique<DataSharingUI>(web_ui);
-}
 
 bool DataSharingUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

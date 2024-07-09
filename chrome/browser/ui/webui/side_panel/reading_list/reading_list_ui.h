@@ -9,10 +9,10 @@
 
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -27,11 +27,11 @@ class ColorChangeHandler;
 
 class ReadingListUI;
 
-class ReadingListUIConfig : public content::DefaultWebUIConfig<ReadingListUI> {
+class ReadingListUIConfig : public DefaultTopChromeWebUIConfig<ReadingListUI> {
  public:
   ReadingListUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIReadLaterHost) {}
+      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                    chrome::kChromeUIReadLaterHost) {}
 };
 
 class ReadingListUI : public TopChromeWebUIController,

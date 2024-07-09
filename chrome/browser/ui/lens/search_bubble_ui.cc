@@ -54,8 +54,8 @@ void SearchBubbleUI::CreatePageHandler(
 }
 
 SearchBubbleUIConfig::SearchBubbleUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUILensSearchBubbleHost) {}
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUILensSearchBubbleHost) {}
 
 bool SearchBubbleUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

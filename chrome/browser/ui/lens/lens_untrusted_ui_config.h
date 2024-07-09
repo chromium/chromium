@@ -5,20 +5,18 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_UNTRUSTED_UI_CONFIG_H_
 #define CHROME_BROWSER_UI_LENS_LENS_UNTRUSTED_UI_CONFIG_H_
 
-#include "content/public/browser/webui_config.h"
+#include "chrome/browser/ui/lens/lens_untrusted_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "content/public/common/url_constants.h"
 
 namespace lens {
 
 // The configuration for the chrome-untrusted://lens page.
-class LensUntrustedUIConfig : public content::WebUIConfig {
+class LensUntrustedUIConfig
+    : public DefaultTopChromeWebUIConfig<LensUntrustedUI> {
  public:
   LensUntrustedUIConfig();
   ~LensUntrustedUIConfig() override = default;
-
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 }  // namespace lens

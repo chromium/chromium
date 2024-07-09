@@ -8,9 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 
 class CompanionSidePanelUntrustedUI
@@ -60,16 +60,14 @@ class CompanionSidePanelUntrustedUI
 };
 
 // The configuration for the chrome-untrusted://companion-side-panel page.
-class CompanionSidePanelUntrustedUIConfig : public content::WebUIConfig {
+class CompanionSidePanelUntrustedUIConfig
+    : public DefaultTopChromeWebUIConfig<CompanionSidePanelUntrustedUI> {
  public:
   CompanionSidePanelUntrustedUIConfig();
   ~CompanionSidePanelUntrustedUIConfig() override = default;
 
-  // content::WebUIConfig:
+  // DefaultTopChromeWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_COMPANION_SIDE_PANEL_UNTRUSTED_UI_H_

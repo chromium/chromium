@@ -31,8 +31,9 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIHistoryClustersSidePanelHost) {}
+    : DefaultTopChromeWebUIConfig(
+          content::kChromeUIScheme,
+          chrome::kChromeUIHistoryClustersSidePanelHost) {}
 
 bool HistoryClustersSidePanelUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

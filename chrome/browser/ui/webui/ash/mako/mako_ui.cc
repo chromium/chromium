@@ -37,15 +37,10 @@ constexpr int kEnUSResourceIds[] = {IDR_MAKO_ORCA_HTML, IDR_MAKO_PRIVACY_HTML,
 } // namespace
 
 MakoUntrustedUIConfig::MakoUntrustedUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme, ash::kChromeUIMakoHost) {}
+    : DefaultTopChromeWebUIConfig(content::kChromeUIUntrustedScheme,
+                                  ash::kChromeUIMakoHost) {}
 
 MakoUntrustedUIConfig::~MakoUntrustedUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-MakoUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                             const GURL& url) {
-  return std::make_unique<MakoUntrustedUI>(web_ui);
-}
 
 bool MakoUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

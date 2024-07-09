@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
-#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,16 +17,13 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 class ReadAnythingUntrustedPageHandler;
+class ReadAnythingUntrustedUI;
 
-class ReadAnythingUIUntrustedConfig : public content::WebUIConfig {
+class ReadAnythingUIUntrustedConfig
+    : public DefaultTopChromeWebUIConfig<ReadAnythingUntrustedUI> {
  public:
   ReadAnythingUIUntrustedConfig();
   ~ReadAnythingUIUntrustedConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

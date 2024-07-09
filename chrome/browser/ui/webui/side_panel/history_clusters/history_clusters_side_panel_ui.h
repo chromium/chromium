@@ -10,10 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -38,11 +38,11 @@ class ImageServiceHandler;
 class HistoryClustersSidePanelUI;
 
 class HistoryClustersSidePanelUIConfig
-    : public content::DefaultWebUIConfig<HistoryClustersSidePanelUI> {
+    : public DefaultTopChromeWebUIConfig<HistoryClustersSidePanelUI> {
  public:
   HistoryClustersSidePanelUIConfig();
 
-  // DefaultWebUIConfig::
+  // DefaultTopChromeWebUIConfig::
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 

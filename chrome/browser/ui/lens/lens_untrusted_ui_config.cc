@@ -11,13 +11,7 @@
 namespace lens {
 
 LensUntrustedUIConfig::LensUntrustedUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chrome::kChromeUILensHost) {}
-
-std::unique_ptr<content::WebUIController>
-LensUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                             const GURL& url) {
-  return std::make_unique<LensUntrustedUI>(web_ui);
-}
+    : DefaultTopChromeWebUIConfig(content::kChromeUIUntrustedScheme,
+                                  chrome::kChromeUILensHost) {}
 
 }  // namespace lens

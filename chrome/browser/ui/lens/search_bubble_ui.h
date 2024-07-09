@@ -7,7 +7,7 @@
 
 #include "chrome/browser/lens/core/mojom/search_bubble.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
-#include "content/public/browser/webui_config.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 
 namespace lens {
 
@@ -45,11 +45,11 @@ class SearchBubbleUI : public TopChromeWebUIController,
 
 // WebUIConfig for chrome://lens-search-bubble.
 class SearchBubbleUIConfig
-    : public content::DefaultWebUIConfig<SearchBubbleUI> {
+    : public DefaultTopChromeWebUIConfig<SearchBubbleUI> {
  public:
   SearchBubbleUIConfig();
 
-  // content::DefaultWebUIConfig:
+  // DefaultTopChromeWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
