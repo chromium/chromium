@@ -218,8 +218,9 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
       return false;
     }
 
+    const AtomicString key(key_event->key());
     if (event.type() == event_type_names::kKeypress &&
-        key_event->key() == "Enter") {
+        key == keywords::kCapitalEnter) {
       // Pressing enter on the button should submit the form, not open the
       // popover. HTMLElement::HandleKeypressEvent will fire DOMActivate which
       // opens the popover unless we prevent the default by returning true here.
@@ -227,13 +228,13 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     }
 
     if (event.type() == event_type_names::kKeydown) {
-      if (key_event->key() == "ArrowUp" || key_event->key() == "ArrowDown" ||
-          key_event->key() == "ArrowRight" || key_event->key() == "ArrowLeft") {
+      if (key == keywords::kArrowUp || key == keywords::kArrowDown ||
+          key == keywords::kArrowRight || key == keywords::kArrowLeft) {
         // Spacebar already opens the datalist because of the popovertarget
         // association.
         DisplayedDatalist()->ShowPopoverForSelectElement();
         return true;
-      } else if (key_event->key() == "Enter") {
+      } else if (key == keywords::kCapitalEnter) {
         if (auto* form = select_->Form()) {
           form->PrepareForSubmission(&event, select_);
           return true;
@@ -269,22 +270,22 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     if (key_event->GetModifiers() & ignore_modifiers)
       return false;
 
-    const String& key = key_event->key();
+    const AtomicString key(key_event->key());
     bool handled = true;
     HTMLOptionElement* option = select_->SelectedOption();
     int list_index = option ? option->ListIndex() : -1;
 
-    if (key == "ArrowDown" || key == "ArrowRight") {
+    if (key == keywords::kArrowDown || key == keywords::kArrowRight) {
       option = NextValidOption(list_index, kSkipForwards, 1);
-    } else if (key == "ArrowUp" || key == "ArrowLeft") {
+    } else if (key == keywords::kArrowUp || key == keywords::kArrowLeft) {
       option = NextValidOption(list_index, kSkipBackwards, 1);
-    } else if (key == "PageDown") {
+    } else if (key == keywords::kPageDown) {
       option = NextValidOption(list_index, kSkipForwards, 3);
-    } else if (key == "PageUp") {
+    } else if (key == keywords::kPageUp) {
       option = NextValidOption(list_index, kSkipBackwards, 3);
-    } else if (key == "Home") {
+    } else if (key == keywords::kHome) {
       option = FirstSelectableOption();
-    } else if (key == "End") {
+    } else if (key == keywords::kEnd) {
       option = LastSelectableOption();
     } else {
       handled = false;
@@ -361,15 +362,16 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
 
 bool MenuListSelectType::ShouldOpenPopupForKeyDownEvent(
     const KeyboardEvent& event) {
-  const String& key = event.key();
+  const AtomicString key(event.key());
   LayoutTheme& layout_theme = LayoutTheme::GetTheme();
 
   if (IsSpatialNavigationEnabled(select_->GetDocument().GetFrame()))
     return false;
 
   return ((layout_theme.PopsMenuByArrowKeys() &&
-           (key == "ArrowDown" || key == "ArrowUp")) ||
-          ((key == "ArrowDown" || key == "ArrowUp") && event.altKey()) ||
+           (key == keywords::kArrowDown || key == keywords::kArrowUp)) ||
+          ((key == keywords::kArrowDown || key == keywords::kArrowUp) &&
+           event.altKey()) ||
           ((!event.altKey() && !event.ctrlKey() && key == "F4")));
 }
 
@@ -1126,35 +1128,35 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
     const auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
     if (!keyboard_event)
       return false;
-    const String& key = keyboard_event->key();
+    const AtomicString key(keyboard_event->key());
 
     bool handled = false;
     HTMLOptionElement* end_option = nullptr;
-    char const* key_next = "ArrowDown";
-    char const* key_previous = "ArrowUp";
+    const AtomicString* key_next = &keywords::kArrowDown;
+    const AtomicString* key_previous = &keywords::kArrowUp;
     const ComputedStyle* style = select_->GetComputedStyle();
     if (style->GetWritingMode() == WritingMode::kVerticalLr) {
-      key_next = "ArrowRight";
-      key_previous = "ArrowLeft";
+      key_next = &keywords::kArrowRight;
+      key_previous = &keywords::kArrowLeft;
     } else if (style->GetWritingMode() == WritingMode::kVerticalRl) {
-      key_next = "ArrowLeft";
-      key_previous = "ArrowRight";
+      key_next = &keywords::kArrowLeft;
+      key_previous = &keywords::kArrowRight;
     }
     if (!active_selection_end_) {
       // Initialize the end index
-      if (key == key_next || key == "PageDown") {
+      if (key == *key_next || key == keywords::kPageDown) {
         HTMLOptionElement* start_option = select_->LastSelectedOption();
         handled = true;
-        if (key == key_next) {
+        if (key == *key_next) {
           end_option = NextSelectableOption(start_option);
         } else {
           end_option =
               NextSelectableOptionPageAway(start_option, kSkipForwards);
         }
-      } else if (key == key_previous || key == "PageUp") {
+      } else if (key == *key_previous || key == keywords::kPageUp) {
         HTMLOptionElement* start_option = select_->SelectedOption();
         handled = true;
-        if (key == key_previous) {
+        if (key == *key_previous) {
           end_option = PreviousSelectableOption(start_option);
         } else {
           end_option =
@@ -1163,36 +1165,37 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
       }
     } else {
       // Set the end index based on the current end index.
-      if (key == key_next) {
+      if (key == *key_next) {
         end_option = NextSelectableOption(active_selection_end_);
         handled = true;
-      } else if (key == key_previous) {
+      } else if (key == *key_previous) {
         end_option = PreviousSelectableOption(active_selection_end_);
         handled = true;
-      } else if (key == "PageDown") {
+      } else if (key == keywords::kPageDown) {
         end_option =
             NextSelectableOptionPageAway(active_selection_end_, kSkipForwards);
         handled = true;
-      } else if (key == "PageUp") {
+      } else if (key == keywords::kPageUp) {
         end_option =
             NextSelectableOptionPageAway(active_selection_end_, kSkipBackwards);
         handled = true;
       }
     }
-    if (key == "Home") {
+    if (key == keywords::kHome) {
       end_option = FirstSelectableOption();
       handled = true;
-    } else if (key == "End") {
+    } else if (key == keywords::kEnd) {
       end_option = LastSelectableOption();
       handled = true;
     }
 
     if (IsSpatialNavigationEnabled(select_->GetDocument().GetFrame())) {
       // Check if the selection moves to the boundary.
-      if (key == "ArrowLeft" || key == "ArrowRight" ||
-          ((key == "ArrowDown" || key == "ArrowUp") &&
-           end_option == active_selection_end_))
+      if (key == keywords::kArrowLeft || key == keywords::kArrowRight ||
+          ((key == keywords::kArrowDown || key == keywords::kArrowUp) &&
+           end_option == active_selection_end_)) {
         return false;
+      }
     }
 
     bool is_control_key = false;

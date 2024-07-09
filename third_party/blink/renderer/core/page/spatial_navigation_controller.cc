@@ -45,14 +45,16 @@ SpatialNavigationDirection FocusDirectionForKey(KeyboardEvent* event) {
     return SpatialNavigationDirection::kNone;
 
   SpatialNavigationDirection ret_val = SpatialNavigationDirection::kNone;
-  if (event->key() == "ArrowDown")
+  const AtomicString key(event->key());
+  if (key == keywords::kArrowDown) {
     ret_val = SpatialNavigationDirection::kDown;
-  else if (event->key() == "ArrowUp")
+  } else if (key == keywords::kArrowUp) {
     ret_val = SpatialNavigationDirection::kUp;
-  else if (event->key() == "ArrowLeft")
+  } else if (key == keywords::kArrowLeft) {
     ret_val = SpatialNavigationDirection::kLeft;
-  else if (event->key() == "ArrowRight")
+  } else if (key == keywords::kArrowRight) {
     ret_val = SpatialNavigationDirection::kRight;
+  }
 
   // TODO(bokan): We should probably assert that we don't get anything else but
   // currently KeyboardEventManager sends non-arrow keys here.

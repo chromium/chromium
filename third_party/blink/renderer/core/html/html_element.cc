@@ -2221,7 +2221,7 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
     // presses instead of this.
     DCHECK(!RuntimeEnabledFeatures::CloseWatcherEnabled());
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
-    if (key_event && key_event->key() == "Escape") {
+    if (key_event && key_event->key() == keywords::kEscape) {
       CHECK(!event.GetEventPath().IsEmpty());
       CHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
       // Escape key just pops the topmost popover=auto/hint off the stack.

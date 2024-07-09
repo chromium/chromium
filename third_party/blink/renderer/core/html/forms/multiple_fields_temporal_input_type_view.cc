@@ -502,7 +502,7 @@ void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
   if (!GetElement().IsFocused())
     return;
   if (picker_indicator_is_visible_ &&
-      ((event.key() == "ArrowDown" && event.getModifierState("Alt")) ||
+      ((event.key() == keywords::kArrowDown && event.getModifierState("Alt")) ||
        event.key() == "F4" || event.key() == " ")) {
     OpenPopupView();
     event.SetDefaultHandled();

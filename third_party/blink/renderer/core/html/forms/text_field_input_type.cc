@@ -231,17 +231,17 @@ void TextFieldInputType::HandleKeydownEvent(KeyboardEvent& event) {
 void TextFieldInputType::HandleKeydownEventForSpinButton(KeyboardEvent& event) {
   if (GetElement().IsDisabledOrReadOnly())
     return;
-  const String& key = event.key();
+  const AtomicString key(event.key());
   bool is_horizontal =
       GetElement().GetComputedStyle()
           ? GetElement().GetComputedStyle()->IsHorizontalWritingMode()
           : true;
 
-  if ((is_horizontal && key == "ArrowUp") ||
-      (!is_horizontal && key == "ArrowRight")) {
+  if ((is_horizontal && key == keywords::kArrowUp) ||
+      (!is_horizontal && key == keywords::kArrowRight)) {
     SpinButtonStepUp();
-  } else if (((is_horizontal && key == "ArrowDown") ||
-              (!is_horizontal && key == "ArrowLeft")) &&
+  } else if (((is_horizontal && key == keywords::kArrowDown) ||
+              (!is_horizontal && key == keywords::kArrowLeft)) &&
              !event.altKey()) {
     SpinButtonStepDown();
   } else {

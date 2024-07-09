@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
@@ -437,7 +438,7 @@ inline void EventDispatcher::DispatchEventPostProcess(
   if (Page* page = node_->GetDocument().GetPage()) {
     if (page->GetSettings().GetSpatialNavigationEnabled() &&
         is_trusted_or_click && keyboard_event &&
-        keyboard_event->key() == "Enter" &&
+        keyboard_event->key() == keywords::kCapitalEnter &&
         event_->type() == event_type_names::kKeyup) {
       page->GetSpatialNavigationController().ResetEnterKeyState();
     }

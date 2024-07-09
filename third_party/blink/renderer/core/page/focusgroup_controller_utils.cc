@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/grid_focusgroup_structure_info.h"
@@ -20,16 +21,18 @@ FocusgroupDirection FocusgroupControllerUtils::FocusgroupDirectionForEvent(
   if (event->ctrlKey() || event->metaKey() || event->shiftKey())
     return FocusgroupDirection::kNone;
 
+  const AtomicString key(event->key());
   // TODO(bebeaudr): Support RTL. Will it be as simple as inverting the
   // direction associated with the left and right arrows when in a RTL element?
-  if (event->key() == "ArrowDown")
+  if (key == keywords::kArrowDown) {
     return FocusgroupDirection::kForwardBlock;
-  else if (event->key() == "ArrowRight")
+  } else if (key == keywords::kArrowRight) {
     return FocusgroupDirection::kForwardInline;
-  else if (event->key() == "ArrowUp")
+  } else if (key == keywords::kArrowUp) {
     return FocusgroupDirection::kBackwardBlock;
-  else if (event->key() == "ArrowLeft")
+  } else if (key == keywords::kArrowLeft) {
     return FocusgroupDirection::kBackwardInline;
+  }
 
   return FocusgroupDirection::kNone;
 }

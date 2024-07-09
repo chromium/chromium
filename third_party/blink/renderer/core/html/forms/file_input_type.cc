@@ -541,7 +541,7 @@ void FileInputType::HandleKeypressEvent(KeyboardEvent& event) {
   if (GetElement().FastHasAttribute(html_names::kWebkitdirectoryAttr)) {
     // Override to invoke the action on Enter key up (not press) to avoid
     // repeats committing the file chooser.
-    if (event.key() == "Enter") {
+    if (event.key() == keywords::kCapitalEnter) {
       event.SetDefaultHandled();
       return;
     }
@@ -553,7 +553,7 @@ void FileInputType::HandleKeyupEvent(KeyboardEvent& event) {
   if (GetElement().FastHasAttribute(html_names::kWebkitdirectoryAttr)) {
     // Override to invoke the action on Enter key up (not press) to avoid
     // repeats committing the file chooser.
-    if (event.key() == "Enter") {
+    if (event.key() == keywords::kCapitalEnter) {
       GetElement().DispatchSimulatedClick(&event);
       event.SetDefaultHandled();
       return;

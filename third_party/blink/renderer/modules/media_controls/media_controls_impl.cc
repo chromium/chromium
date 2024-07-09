@@ -1533,8 +1533,8 @@ void MediaControlsImpl::DefaultEventHandler(Event& event) {
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
   if (keyboard_event && !event.defaultPrevented() &&
       !IsSpatialNavigationEnabled(GetDocument().GetFrame())) {
-    const String& key = keyboard_event->key();
-    if (key == "Enter" || keyboard_event->keyCode() == ' ') {
+    const AtomicString key(keyboard_event->key());
+    if (key == keywords::kCapitalEnter || keyboard_event->keyCode() == ' ') {
       if (overlay_play_button_) {
         overlay_play_button_->OnMediaKeyboardEvent(&event);
       } else {
@@ -1542,12 +1542,13 @@ void MediaControlsImpl::DefaultEventHandler(Event& event) {
       }
       return;
     }
-    if (key == "ArrowLeft" || key == "ArrowRight" || key == "Home" ||
-        key == "End") {
+    if (key == keywords::kArrowLeft || key == keywords::kArrowRight ||
+        key == keywords::kHome || key == keywords::kEnd) {
       timeline_->OnMediaKeyboardEvent(&event);
       return;
     }
-    if (volume_slider_ && (key == "ArrowDown" || key == "ArrowUp")) {
+    if (volume_slider_ &&
+        (key == keywords::kArrowDown || key == keywords::kArrowUp)) {
       for (int i = 0; i < 5; i++)
         volume_slider_->OnMediaKeyboardEvent(&event);
       return;

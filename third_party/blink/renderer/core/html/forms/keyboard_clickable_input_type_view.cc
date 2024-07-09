@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/keywords.h"
 
 namespace blink {
 
@@ -48,7 +49,7 @@ void KeyboardClickableInputTypeView::HandleKeydownEvent(KeyboardEvent& event) {
 
 void KeyboardClickableInputTypeView::HandleKeypressEvent(KeyboardEvent& event) {
   const String& key = event.key();
-  if (key == "Enter") {
+  if (key == keywords::kCapitalEnter) {
     GetElement().DispatchSimulatedClick(&event);
     event.SetDefaultHandled();
     return;

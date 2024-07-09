@@ -662,8 +662,8 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
 
   if (keyboard_event && event.type() == event_type_names::kKeydown &&
       !(keyboard_event->GetModifiers() & ignore_modifiers)) {
-    const String& key = keyboard_event->key();
-    if (key == "ArrowUp" && select) {
+    const AtomicString key(keyboard_event->key());
+    if (key == keywords::kArrowUp && select) {
       HTMLOptionElement* previous_option = nullptr;
       OptionListIterator option_list = select->GetOptionList().begin();
       while (*option_list && *option_list != this) {
@@ -675,7 +675,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         event.SetDefaultHandled();
         return;
       }
-    } else if (key == "ArrowDown" && select) {
+    } else if (key == keywords::kArrowDown && select) {
       OptionListIterator option_list = select->GetOptionList().begin();
       while (*option_list && *option_list != this) {
         ++option_list;
@@ -690,12 +690,12 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
           return;
         }
       }
-    } else if ((key == " " || key == "Enter") && select) {
+    } else if ((key == " " || key == keywords::kCapitalEnter) && select) {
       SetSelected(true);
       select->DisplayedDatalist()->HidePopoverForSelectElement();
       event.SetDefaultHandled();
       return;
-    } else if (key == "Tab") {
+    } else if (key == keywords::kTab) {
       if (auto* selectlist = OwnerSelectList()) {
         selectlist->CloseListbox();
         event.SetDefaultHandled();
