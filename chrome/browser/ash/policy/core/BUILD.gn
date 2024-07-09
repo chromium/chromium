@@ -119,6 +119,16 @@ static_library("core") {
     "//third_party/re2:re2",
     "//ui/base",
     "//url",
+
+    # TODO: Use //chrome/browser/ash/attestation instead after fixing cyclic dependency.
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+
+    # TODO: Use //chrome/browser/ash/login/reporting instead after fixing cyclic dependency.
+    "//chrome/browser/ash:lock_unlock_event_proto",
+    "//chrome/browser/ash:login_logout_event_proto",
+    "//chrome/browser/ash:os_events_proto",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//components/webapps/browser",
   ]
 }
 
