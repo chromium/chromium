@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -150,7 +151,10 @@ public class PasswordSavingIntegrationTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @Restriction({
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
+    })
     @DisabledTest(message = "https://crbug.com/347739972")
     // TODO(crbug.com/40927881): Add integration tests for automotive update password flow.
     public void testUpdatingPassword() throws InterruptedException, TimeoutException {
@@ -189,6 +193,7 @@ public class PasswordSavingIntegrationTest {
         waitForBottomSheetClosed();
 
         // Enter the new password.
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         DOMUtils.clickNode(
                 mWebContents,
                 NEW_PASSWORD_NODE_ID,
@@ -201,6 +206,7 @@ public class PasswordSavingIntegrationTest {
                 NEW_PASSWORD_TEXT,
                 /* shouldFocusNode= */ false);
         // Repeat the new password.
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         DOMUtils.clickNode(
                 mWebContents,
                 NEW_PASSWORD_REPEAT_NODE_ID,
