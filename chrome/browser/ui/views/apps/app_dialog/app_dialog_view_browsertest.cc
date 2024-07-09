@@ -133,7 +133,7 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
     run_loop.Run();
 
     ASSERT_NE(nullptr, ActiveView(name));
-    EXPECT_EQ(ui::DIALOG_BUTTON_OK, ActiveView(name)->GetDialogButtons());
+    EXPECT_EQ(ui::DIALOG_BUTTON_OK, ActiveView(name)->buttons());
 
     if (name == "block") {
       bool state_is_set = false;

@@ -62,7 +62,7 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
 
     ASSERT_NE(nullptr, ActiveView());
     EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-              ActiveView()->GetDialogButtons());
+              ActiveView()->buttons());
     std::u16string title =
         u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
     EXPECT_EQ(title, ActiveView()->GetWindowTitle());
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
 
   ASSERT_NE(nullptr, ActiveView());
   EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-            ActiveView()->GetDialogButtons());
+            ActiveView()->buttons());
   std::u16string title =
       u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
   EXPECT_EQ(title, ActiveView()->GetWindowTitle());

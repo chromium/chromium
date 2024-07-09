@@ -1392,8 +1392,9 @@ bool NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
       root_view_
           ? root_view_->GetWidget()->widget_delegate()->AsDialogDelegate()
           : nullptr;
-  if (!dialog || !(dialog->GetDialogButtons() & button))
+  if (!dialog || !(dialog->buttons() & button)) {
     return true;
+  }
   *button_exists = true;
   *button_label = dialog->GetDialogButtonLabel(button);
   *is_button_enabled = dialog->IsDialogButtonEnabled(button);
@@ -1406,7 +1407,7 @@ bool NativeWidgetMacNSWindowHost::GetDoDialogButtonsExist(bool* buttons_exist) {
       root_view_
           ? root_view_->GetWidget()->widget_delegate()->AsDialogDelegate()
           : nullptr;
-  *buttons_exist = dialog && dialog->GetDialogButtons();
+  *buttons_exist = dialog && dialog->buttons();
   return true;
 }
 

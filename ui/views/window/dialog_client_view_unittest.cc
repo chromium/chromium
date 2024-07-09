@@ -204,7 +204,7 @@ TEST_F(DialogClientViewTest, UpdateButtons) {
   SetSizeConstraints(gfx::Size(200, 100), gfx::Size(300, 200),
                      gfx::Size(400, 300));
   // This dialog should start with no buttons.
-  EXPECT_EQ(delegate()->GetDialogButtons(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(delegate()->buttons(), ui::DIALOG_BUTTON_NONE);
   EXPECT_EQ(nullptr, client_view()->ok_button());
   EXPECT_EQ(nullptr, client_view()->cancel_button());
   const int height_without_buttons = GetUpdatedClientBounds().height();

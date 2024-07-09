@@ -217,7 +217,7 @@ TEST_F(CastDialogViewTest, PopulateDialog) {
 
   EXPECT_TRUE(dialog_->ShouldShowCloseButton());
   EXPECT_EQ(model.dialog_header(), dialog_->GetWindowTitle());
-  EXPECT_EQ(ui::DIALOG_BUTTON_NONE, dialog_->GetDialogButtons());
+  EXPECT_EQ(ui::DIALOG_BUTTON_NONE, dialog_->buttons());
 }
 
 TEST_F(CastDialogViewTest, StartCasting) {

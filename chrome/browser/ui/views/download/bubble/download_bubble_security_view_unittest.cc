@@ -299,7 +299,7 @@ TEST_F(DownloadBubbleSecurityViewTest,
        SubpageButton(DownloadCommands::Command::KEEP, std::u16string(),
                      /*is_prominent=*/false, ui::kColorAlertHighSeverity)});
 
-  EXPECT_EQ(bubble_delegate_->GetDialogButtons(),
+  EXPECT_EQ(bubble_delegate_->buttons(),
             ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_OK);
 
@@ -313,7 +313,7 @@ TEST_F(DownloadBubbleSecurityViewTest,
                      /*is_prominent=*/false, ui::kColorAlertHighSeverity)});
   UpdateView();
 
-  EXPECT_EQ(bubble_delegate_->GetDialogButtons(),
+  EXPECT_EQ(bubble_delegate_->buttons(),
             ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
 
@@ -325,7 +325,7 @@ TEST_F(DownloadBubbleSecurityViewTest,
                      /*is_prominent=*/false)});
   UpdateView();
 
-  EXPECT_EQ(bubble_delegate_->GetDialogButtons(), ui::DIALOG_BUTTON_OK);
+  EXPECT_EQ(bubble_delegate_->buttons(), ui::DIALOG_BUTTON_OK);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
 
   // No buttons, none prominent
@@ -334,7 +334,7 @@ TEST_F(DownloadBubbleSecurityViewTest,
   security_view_info_->SetSubpageButtonsForTesting({});
   UpdateView();
 
-  EXPECT_EQ(bubble_delegate_->GetDialogButtons(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(bubble_delegate_->buttons(), ui::DIALOG_BUTTON_NONE);
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
 }
 

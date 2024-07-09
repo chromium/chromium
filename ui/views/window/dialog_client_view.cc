@@ -339,7 +339,7 @@ void DialogClientView::UpdateDialogButtons() {
 void DialogClientView::UpdateDialogButton(raw_ptr<MdTextButton>* member,
                                           ui::DialogButton type) {
   DialogDelegate* const delegate = GetDialogDelegate();
-  if (!(delegate->GetDialogButtons() & type)) {
+  if (!(delegate->buttons() & type)) {
     if (*member) {
       button_row_container_->RemoveChildViewT(std::exchange(*member, nullptr));
     }

@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstallerViewBrowserTest, UninstallFlow) {
   ShowUi("default");
   EXPECT_NE(nullptr, ActiveView());
   EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-            ActiveView()->GetDialogButtons());
+            ActiveView()->buttons());
 
   EXPECT_TRUE(HasAcceptButton());
   EXPECT_TRUE(HasCancelButton());
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstalledUninstallerViewBrowserTest,
   EXPECT_NE(nullptr, ActiveView());
   EXPECT_FALSE(ActiveView()->GetWidget()->IsClosed());
   EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-            ActiveView()->GetDialogButtons());
+            ActiveView()->buttons());
 
   EXPECT_TRUE(HasAcceptButton());
   EXPECT_TRUE(HasCancelButton());

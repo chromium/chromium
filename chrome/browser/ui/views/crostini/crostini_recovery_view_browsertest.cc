@@ -82,7 +82,7 @@ class CrostiniRecoveryViewBrowserTest : public CrostiniDialogBrowserTest {
     // There is one view, and it's ours.
     EXPECT_NE(nullptr, ActiveView());
     EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-              ActiveView()->GetDialogButtons());
+              ActiveView()->buttons());
 
     EXPECT_NE(ActiveView()->GetOkButton(), nullptr);
     EXPECT_NE(ActiveView()->GetCancelButton(), nullptr);

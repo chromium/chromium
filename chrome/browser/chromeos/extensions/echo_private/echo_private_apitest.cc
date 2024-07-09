@@ -79,14 +79,14 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     dialog_invocation_count_++;
     ASSERT_LE(dialog_invocation_count_, 1);
 
-    EXPECT_EQ(expected_dialog_buttons_, dialog->GetDialogButtons());
+    EXPECT_EQ(expected_dialog_buttons_, dialog->buttons());
 
     // Don't accept the dialog if the dialog buttons don't match expectation.
     // Accepting a dialog which should not have accept option may crash the
     // test. The test already failed, so it's ok to cancel the dialog.
     DialogTestAction dialog_action = dialog_action_;
     if (dialog_action == DIALOG_TEST_ACTION_ACCEPT &&
-        expected_dialog_buttons_ != dialog->GetDialogButtons()) {
+        expected_dialog_buttons_ != dialog->buttons()) {
       dialog_action = DIALOG_TEST_ACTION_CANCEL;
     }
 

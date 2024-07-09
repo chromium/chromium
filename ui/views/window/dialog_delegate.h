@@ -117,8 +117,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 
   // Returns a mask specifying which of the available DialogButtons are visible
   // for the dialog.
-  // TODO(crbug.com/40101916): Rename this to buttons().
-  int GetDialogButtons() const { return params_.buttons; }
+  int buttons() const { return params_.buttons; }
 
   // Returns the default dialog button. This should not be a mask as only
   // one button should ever be the default button.  Return

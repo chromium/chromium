@@ -26,7 +26,7 @@ class CrostiniAppRestartDialogTest : public ChromeViewsTestBase {
 
 TEST_F(CrostiniAppRestartDialogTest, OnlyHasOkButton) {
   auto widget = ShowDialog();
-  EXPECT_EQ(widget->widget_delegate()->AsDialogDelegate()->GetDialogButtons(),
+  EXPECT_EQ(widget->widget_delegate()->AsDialogDelegate()->buttons(),
             ui::DIALOG_BUTTON_OK);
 }
 

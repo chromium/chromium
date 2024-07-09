@@ -65,7 +65,7 @@ TEST_F(LowDiskSpaceDialogViewTest, ConstructDestruct) {
   EXPECT_EQ(0, GetOnCloseCallbackCount());
   // Verify there's only 1 button in the dialog.
   EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-            dialog_view()->GetDialogButtons());
+            dialog_view()->buttons());
   EXPECT_TRUE(
       dialog_view()->IsDialogButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK));
   EXPECT_TRUE(dialog_view()->IsDialogButtonEnabled(

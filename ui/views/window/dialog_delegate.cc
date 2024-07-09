@@ -163,10 +163,12 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
 int DialogDelegate::GetDefaultDialogButton() const {
   if (GetParams().default_button.has_value())
     return *GetParams().default_button;
-  if (GetDialogButtons() & ui::DIALOG_BUTTON_OK)
+  if (buttons() & ui::DIALOG_BUTTON_OK) {
     return ui::DIALOG_BUTTON_OK;
-  if (GetDialogButtons() & ui::DIALOG_BUTTON_CANCEL)
+  }
+  if (buttons() & ui::DIALOG_BUTTON_CANCEL) {
     return ui::DIALOG_BUTTON_CANCEL;
+  }
   return ui::DIALOG_BUTTON_NONE;
 }
 
@@ -178,7 +180,7 @@ std::u16string DialogDelegate::GetDialogButtonLabel(
   if (button == ui::DIALOG_BUTTON_OK)
     return l10n_util::GetStringUTF16(IDS_APP_OK);
   CHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
-  return GetDialogButtons() & ui::DIALOG_BUTTON_OK
+  return buttons() & ui::DIALOG_BUTTON_OK
              ? l10n_util::GetStringUTF16(IDS_APP_CANCEL)
              : l10n_util::GetStringUTF16(IDS_APP_CLOSE);
 }
@@ -254,7 +256,7 @@ View* DialogDelegate::GetInitiallyFocusedView() {
     return nullptr;
 
   // The default button should be a button we have.
-  CHECK(default_button & GetDialogButtons());
+  CHECK(default_button & buttons());
 
   if (default_button & ui::DIALOG_BUTTON_OK)
     return dcv->ok_button();

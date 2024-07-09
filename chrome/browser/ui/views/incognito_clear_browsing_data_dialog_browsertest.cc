@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
 
   ASSERT_TRUE(GetCoordinator()->IsShowing());
   ASSERT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-            incognito_cbd_dialog_view->GetDialogButtons());
+            incognito_cbd_dialog_view->buttons());
   ASSERT_TRUE(
       incognito_cbd_dialog_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   ASSERT_TRUE(incognito_cbd_dialog_view->IsDialogButtonEnabled(
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
 
   ASSERT_TRUE(GetCoordinator()->IsShowing());
   ASSERT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-            incognito_cbd_dialog_view->GetDialogButtons());
+            incognito_cbd_dialog_view->buttons());
   ASSERT_TRUE(
       incognito_cbd_dialog_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   ASSERT_TRUE(incognito_cbd_dialog_view->IsDialogButtonEnabled(

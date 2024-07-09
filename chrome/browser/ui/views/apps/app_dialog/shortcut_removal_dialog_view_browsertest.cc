@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, InvokeUi) {
   EXPECT_TRUE(LastCreatedView()->GetVisible());
 
   EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-            LastCreatedView()->GetDialogButtons());
+            LastCreatedView()->buttons());
 
   std::u16string host_app_name;
   proxy()->AppRegistryCache().ForOneApp(

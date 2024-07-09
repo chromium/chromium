@@ -103,7 +103,7 @@ TEST_F(ArcVmDataMigrationConfirmationDialogTest, UpdateNeededNow) {
             }
           }));
   // There should be no cancel button.
-  EXPECT_EQ(dialog->GetDialogButtons(), ui::DIALOG_BUTTON_OK);
+  EXPECT_EQ(dialog->buttons(), ui::DIALOG_BUTTON_OK);
   dialog->Accept();
   EXPECT_EQ(1, accept_count);
   EXPECT_EQ(0, cancel_count);

@@ -151,7 +151,7 @@ class ContentAnalysisDialogBehaviorBrowserTest
     }
 
     // The dialog's buttons should be Cancel in the pending and fail case.
-    EXPECT_EQ(dialog_->GetDialogButtons(), ui::DIALOG_BUTTON_CANCEL);
+    EXPECT_EQ(dialog_->buttons(), ui::DIALOG_BUTTON_CANCEL);
 
     // Record the number of AX events until now to check if the text update adds
     // one later.
@@ -198,7 +198,7 @@ class ContentAnalysisDialogBehaviorBrowserTest
     ui::DialogButton expected_buttons = dialog_->is_success()
                                             ? ui::DIALOG_BUTTON_NONE
                                             : ui::DIALOG_BUTTON_CANCEL;
-    EXPECT_EQ(expected_buttons, dialog_->GetDialogButtons());
+    EXPECT_EQ(expected_buttons, dialog_->buttons());
 
     // The dialog should only be updated once some time after being shown.
     EXPECT_TRUE(dialog_first_shown_);
@@ -257,9 +257,9 @@ class ContentAnalysisDialogBehaviorBrowserTest
             dtor_called_timestamp_ - dialog_updated_timestamp_;
         EXPECT_GE(delay, ContentAnalysisDialog::GetSuccessDialogTimeout());
 
-        EXPECT_EQ(ui::DIALOG_BUTTON_NONE, dialog_->GetDialogButtons());
+        EXPECT_EQ(ui::DIALOG_BUTTON_NONE, dialog_->buttons());
       } else {
-        EXPECT_EQ(ui::DIALOG_BUTTON_CANCEL, dialog_->GetDialogButtons());
+        EXPECT_EQ(ui::DIALOG_BUTTON_CANCEL, dialog_->buttons());
       }
     } else {
       // Ensure the dialog update didn't occur if no dialog was shown.
@@ -358,7 +358,7 @@ class ContentAnalysisDialogWarningBrowserTest
     // The dialog is first shown in the pending state.
     ASSERT_TRUE(dialog->is_pending());
 
-    ASSERT_EQ(dialog->GetDialogButtons(), ui::DIALOG_BUTTON_CANCEL);
+    ASSERT_EQ(dialog->buttons(), ui::DIALOG_BUTTON_CANCEL);
   }
 
   void DialogUpdated(ContentAnalysisDialog* dialog,
@@ -367,7 +367,7 @@ class ContentAnalysisDialogWarningBrowserTest
 
     // The dialog's buttons should be Ok and Cancel.
     ASSERT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-              dialog->GetDialogButtons());
+              dialog->buttons());
 
     SimulateClickAndEndTest(dialog);
   }

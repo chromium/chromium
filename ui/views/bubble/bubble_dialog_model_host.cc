@@ -1127,7 +1127,7 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
       GetDialogTopMargins(layout_provider, first_field) - extra_margin;
   const int bottom_margin =
       GetDialogBottomMargins(layout_provider, last_field,
-                             GetDialogButtons() != ui::DIALOG_BUTTON_NONE) -
+                             buttons() != ui::DIALOG_BUTTON_NONE) -
       extra_margin;
   set_margins(gfx::Insets::TLBR(top_margin >= 0 ? top_margin : 0, 0,
                                 bottom_margin >= 0 ? bottom_margin : 0, 0));

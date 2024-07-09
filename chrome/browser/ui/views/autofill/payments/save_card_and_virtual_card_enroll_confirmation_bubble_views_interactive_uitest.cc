@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                 .GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->GetDialogButtons(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_NONE);
   EXPECT_TRUE(IconView()->GetVisible());
 
   HideBubble(views::Widget::ClosedReason::kLostFocus);
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                 .GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->GetDialogButtons(), ui::DIALOG_BUTTON_OK);
+  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_OK);
   EXPECT_EQ(
       BubbleView()->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
       l10n_util::GetStringUTF16(
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(
           .GetCachedName(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->GetDialogButtons(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_NONE);
   EXPECT_TRUE(IconView()->GetVisible());
 
   GetController()->HideIconAndBubble();
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_DESCRIPTION_TEXT,
           card.NetworkAndLastFourDigits()));
-  EXPECT_EQ(BubbleView()->GetDialogButtons(), ui::DIALOG_BUTTON_OK);
+  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_OK);
   EXPECT_EQ(
       BubbleView()->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
       l10n_util::GetStringUTF16(
