@@ -33,7 +33,7 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
     case PickerSearchSource::kMath:
     case PickerSearchSource::kClipboard:
       return PickerSectionType::kSuggestions;
-    case PickerSearchSource::kCategory:
+    case PickerSearchSource::kAction:
       return PickerSectionType::kCategories;
     case PickerSearchSource::kLocalFile:
       return PickerSectionType::kFiles;

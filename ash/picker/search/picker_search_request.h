@@ -58,7 +58,7 @@ class ASH_EXPORT PickerSearchRequest {
                                  std::vector<PickerSearchResult> results,
                                  bool has_more_results);
 
-  void HandleCategorySearchResults(std::vector<PickerSearchResult> results);
+  void HandleActionSearchResults(std::vector<PickerSearchResult> results);
   void HandleCrosSearchResults(ash::AppListSearchResultType type,
                                std::vector<PickerSearchResult> results);
   void HandleDateSearchResults(std::vector<PickerSearchResult> results);

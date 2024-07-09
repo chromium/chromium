@@ -1071,8 +1071,7 @@ TEST_F(PickerSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
 TEST_F(PickerSearchRequestTest, DoneClosureCalledImmediatelyWhenSynchronous) {
   // This actually calls category search.
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kCategory, _, _))
+  EXPECT_CALL(search_results_callback, Call(PickerSearchSource::kAction, _, _))
       .Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(PickerSearchSource::kMath, _, _))
       .Times(1);

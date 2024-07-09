@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/picker/search/picker_category_search.h"
+#include "ash/picker/search/picker_action_search.h"
 
 #include <string>
 #include <string_view>
@@ -17,14 +17,14 @@
 
 namespace ash {
 
-std::vector<PickerSearchResult> PickerCategorySearch(
-    base::span<const PickerCategory> categories,
+std::vector<PickerSearchResult> PickerActionSearch(
+    const PickerActionSearchOptions& options,
     std::u16string_view query) {
   CHECK(!query.empty());
   string_matching::TokenizedString tokenized_query((std::u16string(query)));
 
   std::vector<PickerSearchResult> matches;
-  for (const PickerCategory category : categories) {
+  for (const PickerCategory category : options.available_categories) {
     string_matching::TokenizedString tokenized_category(
         GetLabelForPickerCategory(category));
     // Both arguments are stored as `raw_ref`s in the `PrefixMatcher` below, so

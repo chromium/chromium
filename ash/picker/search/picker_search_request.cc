@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "ash/picker/picker_clipboard_provider.h"
-#include "ash/picker/search/picker_category_search.h"
+#include "ash/picker/search/picker_action_search.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_editor_search.h"
 #include "ash/picker/search/picker_math_search.h"
@@ -48,7 +48,7 @@ const char* SearchSourceToHistogram(PickerSearchSource source) {
       return "Ash.Picker.Search.OmniboxProvider.QueryTime";
     case PickerSearchSource::kDate:
       return "Ash.Picker.Search.DateProvider.QueryTime";
-    case PickerSearchSource::kCategory:
+    case PickerSearchSource::kAction:
       return "Ash.Picker.Search.CategoryProvider.QueryTime";
     case PickerSearchSource::kLocalFile:
       return "Ash.Picker.Search.FileProvider.QueryTime";
@@ -135,10 +135,10 @@ PickerSearchRequest::PickerSearchRequest(
 
   // These searches do not have category-specific search.
   if (!category.has_value()) {
-    MarkSearchStarted(PickerSearchSource::kCategory);
-    // Category results are currently synchronous.
-    HandleCategorySearchResults(
-        PickerCategorySearch(available_categories, query));
+    MarkSearchStarted(PickerSearchSource::kAction);
+    // Action results are currently synchronous.
+    HandleActionSearchResults(PickerActionSearch(
+        {.available_categories = available_categories}, query));
 
     if (base::Contains(available_categories, PickerCategory::kEditorWrite)) {
       // Editor results are currently synchronous.
@@ -191,9 +191,9 @@ void PickerSearchRequest::HandleSearchSourceResults(
   MaybeCallDoneClosure();
 }
 
-void PickerSearchRequest::HandleCategorySearchResults(
+void PickerSearchRequest::HandleActionSearchResults(
     std::vector<PickerSearchResult> results) {
-  HandleSearchSourceResults(PickerSearchSource::kCategory, std::move(results),
+  HandleSearchSourceResults(PickerSearchSource::kAction, std::move(results),
                             /*has_more_results*/ false);
 }
 

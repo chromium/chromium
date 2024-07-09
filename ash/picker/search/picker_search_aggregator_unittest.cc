@@ -65,7 +65,7 @@ const TestCase kNonSuggestionTestCases[] = {
         .section_type = PickerSectionType::kLinks,
     },
     TestCase{
-        .source = PickerSearchSource::kCategory,
+        .source = PickerSearchSource::kAction,
         .section_type = PickerSectionType::kCategories,
     },
     TestCase{
@@ -454,7 +454,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate, {},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory, {},
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kAction, {},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile, {},
                                        /*has_more_results=*/false);
@@ -568,7 +568,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
                                        {PickerSearchResult::Text(u"date")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory,
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kAction,
                                        {PickerSearchResult::Text(u"category")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
@@ -829,7 +829,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
                                        {PickerSearchResult::Text(u"date")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory,
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kAction,
                                        {PickerSearchResult::Text(u"category")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,

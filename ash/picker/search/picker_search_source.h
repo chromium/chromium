@@ -10,7 +10,7 @@ namespace ash {
 enum class PickerSearchSource {
   kOmnibox = 0,
   kDate,
-  kCategory,
+  kAction,
   kLocalFile,
   kDrive,
   kMath,
