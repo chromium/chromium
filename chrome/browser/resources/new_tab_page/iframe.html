@@ -1,16 +1,1 @@
-<style>
-  :host(:not([hidden])) {
-    display: block;
-  }
-
-  #iframe {
-    border: none;
-    border-radius: inherit;
-    display: block;
-    height: inherit;
-    max-height: inherit;
-    max-width: inherit;
-    width: inherit;
-  }
-</style>
-<iframe id="iframe" src="[[src_]]" allow="[[allow]]"></iframe>
+<iframe id="iframe" .src="${this.getSrc_()}" .allow="${this.allow}"></iframe>

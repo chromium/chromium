@@ -33,6 +33,11 @@ all_web_component_files = [
                             "voice_search_overlay.ts",
                           ] + modules_web_component_files
 
+all_css_files = [
+  "iframe.css",
+  "logo.css",
+]
+
 if (optimize_webui) {
   # Transpiled Mojo JS files to be excluded from the bundle in optimized builds.
   mojo_js_files = [
