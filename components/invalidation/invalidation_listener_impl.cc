@@ -91,10 +91,6 @@ InvalidationListenerImpl::InvalidationListenerImpl(
       project_number_(std::move(project_number)),
       log_prefix_(log_prefix),
       registration_retry_backoff_(&kRegistrationRetryBackoffPolicy) {
-  // Note that `AddAppHandler()` causes an immediate replay of all received
-  // invalidations in background on Android.
-  gcm_driver_->AddAppHandler(app_id_, this);
-
   LOG(WARNING) << log_prefix_
                << " Created for project_number: " << project_number_;
 }
@@ -142,6 +138,10 @@ void InvalidationListenerImpl::Start(
   CHECK(!registration_token_handler_);
 
   LOG(WARNING) << log_prefix_ << " Starting";
+
+  // Note that `AddAppHandler()` causes an immediate replay of all received
+  // invalidations in background on Android.
+  gcm_driver_->AddAppHandler(app_id_, this);
 
   registration_token_handler_ = registration_token_handler;
   FetchRegistrationToken();
