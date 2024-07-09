@@ -399,9 +399,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   ImplementedAtkInterfaces interface_mask_;
 
   // We own a reference to these ref-counted objects.
-  // RAW_PTR_EXCLUSION: in-out-arg usage.
-  RAW_PTR_EXCLUSION AtkObject* atk_object_ = nullptr;
-  RAW_PTR_EXCLUSION AtkHyperlink* atk_hyperlink_ = nullptr;
+  raw_ptr<AtkObject, DanglingUntriaged> atk_object_ = nullptr;
+  raw_ptr<AtkHyperlink, DanglingUntriaged> atk_hyperlink_ = nullptr;
 
   // A weak pointer which help us track the ATK embeds relation.
   // RAW_PTR_EXCLUSION: #addr-of and not much we can do about it (see
