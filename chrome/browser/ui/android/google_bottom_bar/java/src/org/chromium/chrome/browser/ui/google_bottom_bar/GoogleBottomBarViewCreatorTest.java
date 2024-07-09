@@ -404,7 +404,8 @@ public class GoogleBottomBarViewCreatorTest {
     }
 
     @Test
-    public void testLogButtons_searchButtonHasAssociatedCustomButtonParams_logsSearchButton() {
+    public void
+            testLogButtons_searchButtonHasAssociatedCustomButtonParams_logsSearchEmbedderButton() {
         mHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -429,13 +430,14 @@ public class GoogleBottomBarViewCreatorTest {
     }
 
     @Test
-    public void testLogButtons_searchButtonWithoutCustomButtonParams_doesNotLogSearchButton() {
+    public void testLogButtons_searchButtonWithoutCustomButtonParams_logsSearchChromeButton() {
         mHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
                                 GoogleBottomBarButtonEvent.PIH_EMBEDDER,
-                                GoogleBottomBarButtonEvent.SHARE_CHROME)
+                                GoogleBottomBarButtonEvent.SHARE_CHROME,
+                                GoogleBottomBarButtonEvent.SEARCH_CHROME)
                         .build();
         List<Integer> buttonIdList = List.of(0, PIH_BASIC, SHARE, SEARCH);
         mGoogleBottomBarViewCreator =
@@ -451,7 +453,7 @@ public class GoogleBottomBarViewCreatorTest {
     }
 
     @Test
-    public void testLogButtons_homeButtonHasAssociatedCustomButtonParams_logsHomeButton() {
+    public void testLogButtons_homeButtonHasAssociatedCustomButtonParams_logsHomeEmbedderButton() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -479,13 +481,14 @@ public class GoogleBottomBarViewCreatorTest {
     }
 
     @Test
-    public void testLogButtons_homeButtonWithoutCustomButtonParams_doesNotLogHomeButton() {
+    public void testLogButtons_homeButtonWithoutCustomButtonParams_logsHomeChromeButton() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
                                 GoogleBottomBarButtonEvent.PIH_EMBEDDER,
-                                GoogleBottomBarButtonEvent.SHARE_CHROME)
+                                GoogleBottomBarButtonEvent.SHARE_CHROME,
+                                GoogleBottomBarButtonEvent.HOME_CHROME)
                         .build();
         List<Integer> buttonIdList = List.of(0, PIH_BASIC, SHARE, HOME);
         mGoogleBottomBarViewCreator =

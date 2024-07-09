@@ -74,11 +74,13 @@ class GoogleBottomBarActionsHandler {
             case ButtonId.SEARCH -> {
                 return v -> onSearchButtonClick(buttonConfig);
             }
+            case ButtonId.HOME -> {
+                return v -> onHomeButtonClick(buttonConfig);
+            }
             case ButtonId.PIH_BASIC,
                     ButtonId.PIH_EXPANDED,
                     ButtonId.PIH_COLORED,
-                    ButtonId.CUSTOM,
-                    ButtonId.HOME -> {
+                    ButtonId.CUSTOM -> {
                 return v -> startPendingIntentIfPresentOrThrowError(buttonConfig);
             }
             case ButtonId.ADD_NOTES, ButtonId.REFRESH -> {
@@ -91,11 +93,7 @@ class GoogleBottomBarActionsHandler {
 
     void onSearchboxHomeTap() {
         GoogleBottomBarLogger.logButtonClicked(SEARCHBOX_HOME);
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_INFO);
-        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
-
-        startGoogleAppActivityForResult(intent, "openGoogleAppHome");
+        openGoogleAppHome();
     }
 
     void onSearchboxHintTextTap() {
@@ -152,6 +150,14 @@ class GoogleBottomBarActionsHandler {
         startGoogleAppActivityForResult(intent, "openGoogleAppSearch");
     }
 
+    private void openGoogleAppHome() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_INFO);
+        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+
+        startGoogleAppActivityForResult(intent, "openGoogleAppHome");
+    }
+
     private void startGoogleAppActivityForResult(Intent intent, String actionName) {
         intent.putExtra(EXTRA_IS_LAUNCHED_FROM_CHROME_SEARCH_ENTRYPOINT, true);
 
@@ -176,6 +182,17 @@ class GoogleBottomBarActionsHandler {
         } else {
             GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SEARCH_CHROME);
             openGoogleAppSearch();
+        }
+    }
+
+    private void onHomeButtonClick(ButtonConfig buttonConfig) {
+        PendingIntent pendingIntent = buttonConfig.getPendingIntent();
+        if (pendingIntent != null) {
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.HOME_EMBEDDER);
+            sendPendingIntentWithUrl(pendingIntent);
+        } else {
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.HOME_CHROME);
+            openGoogleAppHome();
         }
     }
 

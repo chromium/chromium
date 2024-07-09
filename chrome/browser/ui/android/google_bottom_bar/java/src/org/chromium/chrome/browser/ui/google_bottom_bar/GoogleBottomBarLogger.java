@@ -245,7 +245,7 @@ class GoogleBottomBarLogger {
             case ButtonId.HOME -> {
                 return buttonConfig.getPendingIntent() != null
                         ? GoogleBottomBarButtonEvent.HOME_EMBEDDER
-                        : GoogleBottomBarButtonEvent.UNKNOWN;
+                        : GoogleBottomBarButtonEvent.HOME_CHROME;
             }
         }
 
