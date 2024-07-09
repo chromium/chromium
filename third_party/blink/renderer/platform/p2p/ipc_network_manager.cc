@@ -154,6 +154,15 @@ void IpcNetworkManager::OnNetworkListChanged(
         continue;
       }
 
+      // On Fuchsia skip private IPv6 addresses as they break some application.
+      // TODO(b/350111561): Remove once the applications are updated to handle
+      // ULA addresses properly.
+#if BUILDFLAG(IS_FUCHSIA)
+      if (rtc::IPIsPrivate(iface_addr)) {
+        continue;
+      }
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
       use_default_ipv6_address |= (default_ipv6_local_address == it->address);
     }
     network->AddIP(iface_addr);
