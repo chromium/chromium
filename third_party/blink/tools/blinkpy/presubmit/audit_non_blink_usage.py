@@ -1144,6 +1144,16 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/dom/scripted_idle_task_controller.cc',
+            'third_party/blink/renderer/core/dom/scripted_idle_task_controller.h',
+            ],
+        'allowed': [
+            'base::DelayedTaskHandle',
+            'base::subtle::PostDelayedTaskPassKey',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/style/computed_style.h'],
         'allowed': [
             'css_longhand::.+',

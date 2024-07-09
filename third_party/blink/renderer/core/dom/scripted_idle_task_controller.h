@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCRIPTED_IDLE_TASK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCRIPTED_IDLE_TASK_CONTROLLER_H_
 
+#include "base/task/delayed_task_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/idle_deadline.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
@@ -12,13 +13,9 @@
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-namespace internal {
-class IdleRequestCallbackWrapper;
-}
 
 class ExecutionContext;
 class IdleRequestOptions;
@@ -72,17 +69,33 @@ class CORE_EXPORT ScriptedIdleTaskController
   void ContextDestroyed() override;
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
 
+ private:
+  // A helper class to cancel timeout tasks. Calls `CancelTask()` for
+  // the passed `delayed_task_handle` in dtor.
+  class DelayedTaskCanceler {
+   public:
+    DelayedTaskCanceler();
+    DelayedTaskCanceler(base::DelayedTaskHandle delayed_task_handle);
+    DelayedTaskCanceler(DelayedTaskCanceler&&);
+    DelayedTaskCanceler& operator=(DelayedTaskCanceler&&);
+
+    ~DelayedTaskCanceler();
+
+   private:
+    base::DelayedTaskHandle delayed_task_handle_;
+  };
+
+  void IdleTaskFired(CallbackId id,
+                     DelayedTaskCanceler canceler,
+                     base::TimeTicks deadline);
+  void TimeoutFired(CallbackId id);
   void CallbackFired(CallbackId,
                      base::TimeTicks deadline,
                      IdleDeadline::CallbackType);
 
- private:
-  friend class internal::IdleRequestCallbackWrapper;
-
   void ContextPaused();
   void ContextUnpaused();
-  void ScheduleCallback(scoped_refptr<internal::IdleRequestCallbackWrapper>,
-                        uint32_t timeout_millis);
+  void ScheduleCallback(CallbackId id, uint32_t timeout_millis);
 
   int NextCallbackId();
 

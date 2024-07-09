@@ -209,6 +209,9 @@ specific_include_rules = {
     "media_values.h": [
         "+ui/base/pointer/pointer_device.h",
     ],
+    "scripted_idle_task_controller(_test)?.(cc|h)": [
+        "+base/task/delayed_task_handle.h",
+    ],
     "xml_http_request.cc": [
         "+net/base/mime_util.h",
     ],

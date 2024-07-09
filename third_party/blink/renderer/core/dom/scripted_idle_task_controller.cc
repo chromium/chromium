@@ -15,65 +15,22 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-
 namespace blink {
 
-namespace internal {
+ScriptedIdleTaskController::DelayedTaskCanceler::DelayedTaskCanceler() =
+    default;
+ScriptedIdleTaskController::DelayedTaskCanceler::DelayedTaskCanceler(
+    base::DelayedTaskHandle delayed_task_handle)
+    : delayed_task_handle_(std::move(delayed_task_handle)) {}
+ScriptedIdleTaskController::DelayedTaskCanceler::DelayedTaskCanceler(
+    DelayedTaskCanceler&&) = default;
+ScriptedIdleTaskController::DelayedTaskCanceler&
+ScriptedIdleTaskController::DelayedTaskCanceler::operator=(
+    ScriptedIdleTaskController::DelayedTaskCanceler&&) = default;
 
-class IdleRequestCallbackWrapper
-    : public RefCounted<IdleRequestCallbackWrapper> {
- public:
-  static scoped_refptr<IdleRequestCallbackWrapper> Create(
-      ScriptedIdleTaskController::CallbackId id,
-      ScriptedIdleTaskController* controller) {
-    return base::AdoptRef(new IdleRequestCallbackWrapper(id, controller));
-  }
-  virtual ~IdleRequestCallbackWrapper() = default;
-
-  static void IdleTaskFired(
-      scoped_refptr<IdleRequestCallbackWrapper> callback_wrapper,
-      base::TimeTicks deadline) {
-    if (ScriptedIdleTaskController* controller =
-            callback_wrapper->Controller()) {
-      // If we are going to yield immediately, reschedule the callback for
-      // later.
-      if (ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
-        controller->ScheduleCallback(std::move(callback_wrapper),
-                                     /* timeout_millis */ 0);
-        return;
-      }
-      controller->CallbackFired(callback_wrapper->Id(), deadline,
-                                IdleDeadline::CallbackType::kCalledWhenIdle);
-    }
-    callback_wrapper->Cancel();
-  }
-
-  static void TimeoutFired(
-      scoped_refptr<IdleRequestCallbackWrapper> callback_wrapper) {
-    if (ScriptedIdleTaskController* controller =
-            callback_wrapper->Controller()) {
-      controller->CallbackFired(callback_wrapper->Id(), base::TimeTicks::Now(),
-                                IdleDeadline::CallbackType::kCalledByTimeout);
-    }
-    callback_wrapper->Cancel();
-  }
-
-  void Cancel() { controller_ = nullptr; }
-
-  ScriptedIdleTaskController::CallbackId Id() const { return id_; }
-  ScriptedIdleTaskController* Controller() const { return controller_; }
-
- private:
-  IdleRequestCallbackWrapper(ScriptedIdleTaskController::CallbackId id,
-                             ScriptedIdleTaskController* controller)
-      : id_(id), controller_(controller) {}
-
-  ScriptedIdleTaskController::CallbackId id_;
-  WeakPersistent<ScriptedIdleTaskController> controller_;
-};
-
-}  // namespace internal
+ScriptedIdleTaskController::DelayedTaskCanceler::~DelayedTaskCanceler() {
+  delayed_task_handle_.CancelTask();
+}
 
 ScriptedIdleTaskController::ScriptedIdleTaskController(
     ExecutionContext* context)
@@ -114,41 +71,68 @@ ScriptedIdleTaskController::RegisterCallback(
   idle_task->async_task_context()->Schedule(GetExecutionContext(),
                                             "requestIdleCallback");
 
-  scoped_refptr<internal::IdleRequestCallbackWrapper> callback_wrapper =
-      internal::IdleRequestCallbackWrapper::Create(id, this);
-  ScheduleCallback(std::move(callback_wrapper), timeout_millis);
+  ScheduleCallback(id, timeout_millis);
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "RequestIdleCallback", inspector_idle_callback_request_event::Data,
       GetExecutionContext(), id, timeout_millis);
   return id;
 }
 
-void ScriptedIdleTaskController::ScheduleCallback(
-    scoped_refptr<internal::IdleRequestCallbackWrapper> callback_wrapper,
-    uint32_t timeout_millis) {
+void ScriptedIdleTaskController::ScheduleCallback(CallbackId id,
+                                                  uint32_t timeout_millis) {
+  // Note: be careful about memory usage of this method.
+  // 1. In certain corner case scenarios, millions of callbacks per minute could
+  //    be processed. The memory usage per callback should be minimized as much
+  //    as possible.
+  // 2. `timeout_millis` is page-originated and doesn't have any reasonable
+  //    limit. When a callback is processed, it's critical to remove the timeout
+  //    task from the queue. Failure to do so is likely to result in OOM.
+  base::DelayedTaskHandle delayed_task_handle;
+  if (timeout_millis > 0) {
+    auto callback = WTF::BindOnce(&ScriptedIdleTaskController::TimeoutFired,
+                                  WrapWeakPersistent(this), id);
+    delayed_task_handle =
+        GetExecutionContext()
+            ->GetTaskRunner(TaskType::kIdleTask)
+            ->PostCancelableDelayedTask(base::subtle::PostDelayedTaskPassKey(),
+                                        FROM_HERE, std::move(callback),
+                                        base::Milliseconds(timeout_millis));
+  }
+
   scheduler_->PostIdleTask(
       FROM_HERE,
-      WTF::BindOnce(&internal::IdleRequestCallbackWrapper::IdleTaskFired,
-                    callback_wrapper));
-  if (timeout_millis > 0) {
-    GetExecutionContext()
-        ->GetTaskRunner(TaskType::kIdleTask)
-        ->PostDelayedTask(
-            FROM_HERE,
-            WTF::BindOnce(&internal::IdleRequestCallbackWrapper::TimeoutFired,
-                          callback_wrapper),
-            base::Milliseconds(timeout_millis));
-  }
+      WTF::BindOnce(&ScriptedIdleTaskController::IdleTaskFired,
+                    WrapWeakPersistent(this), id,
+                    DelayedTaskCanceler(std::move(delayed_task_handle))));
 }
 
 void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "CancelIdleCallback", inspector_idle_callback_cancel_event::Data,
       GetExecutionContext(), id);
-  if (!IsValidCallbackId(id))
+  if (!IsValidCallbackId(id)) {
     return;
+  }
 
   idle_tasks_.erase(id);
+}
+
+void ScriptedIdleTaskController::IdleTaskFired(
+    CallbackId id,
+    ScriptedIdleTaskController::DelayedTaskCanceler /* canceler */,
+    base::TimeTicks deadline) {
+  // If we are going to yield immediately, reschedule the callback for
+  // later.
+  if (ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
+    ScheduleCallback(id, /* timeout_millis */ 0);
+    return;
+  }
+  CallbackFired(id, deadline, IdleDeadline::CallbackType::kCalledWhenIdle);
+}
+
+void ScriptedIdleTaskController::TimeoutFired(CallbackId id) {
+  CallbackFired(id, base::TimeTicks::Now(),
+                IdleDeadline::CallbackType::kCalledByTimeout);
 }
 
 void ScriptedIdleTaskController::CallbackFired(
@@ -234,25 +218,20 @@ void ScriptedIdleTaskController::ContextUnpaused() {
   // Run any pending timeouts as separate tasks, since it's not allowed to
   // execute script from lifecycle callbacks.
   for (auto& id : pending_timeouts_) {
-    scoped_refptr<internal::IdleRequestCallbackWrapper> callback_wrapper =
-        internal::IdleRequestCallbackWrapper::Create(id, this);
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kIdleTask)
-        ->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&internal::IdleRequestCallbackWrapper::TimeoutFired,
-                          callback_wrapper));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&ScriptedIdleTaskController::TimeoutFired,
+                                 WrapWeakPersistent(this), id));
   }
   pending_timeouts_.clear();
 
   // Repost idle tasks for any remaining callbacks.
   for (auto& idle_task : idle_tasks_) {
-    scoped_refptr<internal::IdleRequestCallbackWrapper> callback_wrapper =
-        internal::IdleRequestCallbackWrapper::Create(idle_task.key, this);
     scheduler_->PostIdleTask(
-        FROM_HERE,
-        WTF::BindOnce(&internal::IdleRequestCallbackWrapper::IdleTaskFired,
-                      callback_wrapper));
+        FROM_HERE, WTF::BindOnce(&ScriptedIdleTaskController::IdleTaskFired,
+                                 WrapWeakPersistent(this), idle_task.key,
+                                 DelayedTaskCanceler()));
   }
 }
 
