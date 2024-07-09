@@ -110,6 +110,7 @@ Got Viewport event:
 Object: {
 	args: {
 		data: {
+			dpr: number
 			viewport_rect: [
 				number,
 				number,

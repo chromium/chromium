@@ -106,6 +106,7 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
 
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   CreateQuad(value.get(), "viewport_rect", gfx::QuadF(float_visual_rect));
+  value->SetDouble("dpr", frame_view.GetFrame().DevicePixelRatio());
   TRACE_EVENT_INSTANT1("loading", "PaintTimingVisualizer::Viewport",
                        TRACE_EVENT_SCOPE_THREAD, "data", std::move(value));
   need_recording_viewport = false;
