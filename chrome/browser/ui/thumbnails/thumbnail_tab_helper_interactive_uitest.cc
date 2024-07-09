@@ -13,8 +13,10 @@
 #include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/url_constants.h"
@@ -23,6 +25,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/interaction/state_observer.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -56,6 +59,38 @@ class ThumbnailWaiter {
   base::RunLoop run_loop_;
   std::optional<gfx::ImageSkia> image_;
 };
+
+// Replacement for `ThumbnailWaiter` which will be used in tests that are
+// migrated to Kombucha. This uses the StateObserver pattern to detect
+// that the thumbnail has been updated.
+class ThumbnailObserver : public ui::test::StateObserver<bool> {
+ public:
+  explicit ThumbnailObserver(content::WebContents* web_contents) {
+    auto* const thumbnail_tab_helper =
+        ThumbnailTabHelper::FromWebContents(web_contents);
+    auto* thumbnail = thumbnail_tab_helper->thumbnail().get();
+
+    subscription_ = thumbnail->Subscribe();
+    subscription_->SetUncompressedImageCallback(
+        base::BindRepeating(&ThumbnailObserver::ThumbnailImageCallback,
+                            weak_ptr_factory_.GetWeakPtr()));
+    thumbnail->RequestThumbnailImage();
+  }
+  ~ThumbnailObserver() override = default;
+
+ protected:
+  void ThumbnailImageCallback(gfx::ImageSkia thumbnail_image) {
+    OnStateObserverStateChanged(!thumbnail_image.isNull());
+    subscription_ = nullptr;
+  }
+
+ private:
+  std::unique_ptr<ThumbnailImage::Subscription> subscription_;
+  base::WeakPtrFactory<ThumbnailObserver> weak_ptr_factory_{this};
+};
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ThumbnailObserver, kThumbnailCreatedState);
 
 }  // anonymous namespace
 
@@ -185,19 +220,14 @@ class ThumbnailTabHelperUpdatedInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto WaitForAndVerifyThumbnail(int tab_index) {
-    return Check(
-        [=]() {
-          auto* const thumbnail_tab_helper =
-              ThumbnailTabHelper::FromWebContents(
-                  browser()->tab_strip_model()->GetWebContentsAt(tab_index));
-          auto thumbnail = thumbnail_tab_helper->thumbnail();
-
-          ThumbnailWaiter waiter;
-          const std::optional<gfx::ImageSkia> data =
-              waiter.WaitForThumbnail(thumbnail.get());
-          return data && !data->isNull();
-        },
-        "Wait for thumbail and verify it is present");
+    return Steps(
+        ObserveState(
+            kThumbnailCreatedState,
+            [this, tab_index]() {
+              return this->browser()->tab_strip_model()->GetWebContentsAt(
+                  tab_index);
+            }),
+        WaitForState(kThumbnailCreatedState, true));
   }
 
  private:
@@ -213,15 +243,11 @@ class ThumbnailTabHelperUpdatedInteractiveTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
                        MAYBE_TabLoadTriggersScreenshot) {
   RunTestSequence(
-      Do([this]() {
-        ui_test_utils::NavigateToURLWithDisposition(
-            browser(), GURL(chrome::kChromeUINewTabURL),
-            WindowOpenDisposition::NEW_BACKGROUND_TAB,
-            ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
-      }),
+      AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 0),
+      WaitForWebContentsReady(kFirstTab), CheckTabHasThumbnailData(0, false),
+      SelectTab(kTabStripElementId, 1),
       CheckResult([this]() { return GetTabCount(); }, 2,
                   "Checking that there are two tabs"),
-      CheckTabHasThumbnailData(0, false), CheckTabHasThumbnailData(1, false),
       WaitForAndVerifyThumbnail(0), CheckTabHasThumbnailData(0, true));
 }
 
