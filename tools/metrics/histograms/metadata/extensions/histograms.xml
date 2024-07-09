@@ -2038,24 +2038,6 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
-<histogram name="Extensions.FileAccessAllowed" units="units"
-    expires_after="2023-07-07">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    The number of extensions (and friends) that could have been given access to
-    the file:// scheme, and were, for users that have at least one extension
-    that could have been given access. This excludes anything that doesn't show
-    up in chrome://extensions (platform apps, hosted apps, component
-    extensions), policy-installed extensions, and unpacked extensions. See also
-    Extensions.FileAccessNotAllowed.
-
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </summary>
-</histogram>
-
 <histogram name="Extensions.FileAccessAllowed2" units="units"
     expires_after="2024-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -2069,24 +2051,6 @@ of interesting buckets, such as "internal + external".
     once per profile open for &quot;user profiles&quot; (profiles where people
     can install extensions, specifically profiles that can have non-component
     extensions installed). See also Extensions.FileAccessNotAllowed.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.FileAccessNotAllowed" units="units"
-    expires_after="2023-07-07">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    The number of extensions (and friends) that could have been given access to
-    the file:// scheme, but weren't, for users that have at least one extension
-    that could have been given access. This excludes anything that doesn't show
-    up in chrome://extensions (platform apps, hosted apps, component
-    extensions), policy-installed extensions, and unpacked extensions. See also
-    Extensions.FileAccessAllowed.
-
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3057,8 +3021,7 @@ of interesting buckets, such as "internal + external".
     incognito, and were, for users that have at least one extension that could
     have been allowed. This excludes anything that doesn't show up in
     chrome://extensions (platform apps, hosted apps, component extensions),
-    policy-installed extensions, and unpacked extensions. See also
-    Extensions.IncognitoNotAllowed.
+    policy-installed extensions, and unpacked extensions.
 
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -3081,41 +3044,6 @@ of interesting buckets, such as "internal + external".
     policy-installed extensions, and unpacked extensions. Logged at &quot;user
     profile&quot; (profiles where people can install extensions, specifically
     profiles that can have non-component extensions installed) initialization.
-    See also Extensions.IncognitoNotAllowed.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.IncognitoNotAllowed" units="units"
-    expires_after="2023-07-07">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    The number of extensions (and friends) that could have been allowed in
-    incognito, but weren't, for users that have at least one extension that
-    could have been allowed. This excludes anything that doesn't show up in
-    chrome://extensions (platform apps, hosted apps, component extensions),
-    policy-installed extensions, and unpacked extensions. See also
-    Extensions.IncognitoAllowed.
-
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </summary>
-</histogram>
-
-<histogram name="Extensions.IncognitoNotAllowed2" units="units"
-    expires_after="2024-03-03">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of extensions (and friends) that could have been allowed in
-    incognito, but weren't, for users that have at least one extension that
-    could have been allowed. This excludes anything that doesn't show up in
-    chrome://extensions (platform apps, hosted apps, component extensions),
-    policy-installed extensions, and unpacked extensions. Logged at &quot;user
-    profile&quot; (profiles where people can install extensions, specifically
-    profiles that can have non-component extensions installed) initialization.
-    See also Extensions.IncognitoAllowed.
   </summary>
 </histogram>
 
