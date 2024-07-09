@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -381,7 +382,7 @@ void HandleDeviceSelection(WebContents* web_contents,
 
   const auto it =
       base::ranges::find(devices, device_guid, &SharingTargetDeviceInfo::guid);
-  DCHECK(it != devices.end());
+  CHECK(it != devices.end(), base::NotFatalUntil::M130);
   const SharingTargetDeviceInfo& device = *it;
 
   ClickToCallUiController::GetOrCreateFromWebContents(web_contents)

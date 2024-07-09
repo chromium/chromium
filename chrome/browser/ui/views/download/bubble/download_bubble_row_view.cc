@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -677,7 +678,7 @@ views::View::Views DownloadBubbleRowView::GetChildrenInZOrder() {
   auto children = views::View::GetChildrenInZOrder();
   const auto move_child_to_top = [&](View* child) {
     auto it = base::ranges::find(children, child);
-    DCHECK(it != children.end());
+    CHECK(it != children.end(), base::NotFatalUntil::M130);
     std::rotate(it, it + 1, children.end());
   };
   move_child_to_top(transparent_button_);

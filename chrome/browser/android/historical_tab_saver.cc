@@ -15,6 +15,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/uuid.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
@@ -244,7 +245,7 @@ void CreateHistoricalBulkClosure(
     if (per_tab_root_id[i] != kInvalidRootId) {
       int root_id = per_tab_root_id[i];
       auto it = group_id_mapping.find(root_id);
-      DCHECK(it != group_id_mapping.end());
+      CHECK(it != group_id_mapping.end(), base::NotFatalUntil::M130);
       tab_id_to_group_id.insert(
           std::make_pair(tab->GetAndroidId(), it->second));
     }

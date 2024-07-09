@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -367,7 +368,7 @@ void DiscardsGraphDumpImpl::AddNode(const performance_manager::Node* node) {
 
 void DiscardsGraphDumpImpl::RemoveNode(const performance_manager::Node* node) {
   auto it = node_ids_.find(node);
-  DCHECK(it != node_ids_.end());
+  CHECK(it != node_ids_.end(), base::NotFatalUntil::M130);
   NodeId node_id = it->second;
   node_ids_.erase(it);
   size_t erased = nodes_by_id_.erase(node_id);
@@ -385,7 +386,7 @@ int64_t DiscardsGraphDumpImpl::GetNodeId(
     return 0;
 
   auto it = node_ids_.find(node);
-  DCHECK(it != node_ids_.end());
+  CHECK(it != node_ids_.end(), base::NotFatalUntil::M130);
   return it->second.GetUnsafeValue();
 }
 

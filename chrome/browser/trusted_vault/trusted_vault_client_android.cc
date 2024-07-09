@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
@@ -272,7 +273,7 @@ TrustedVaultClientAndroid::GetAndUnregisterOngoingRequest(RequestId id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto it = ongoing_requests_.find(id);
-  DCHECK(it != ongoing_requests_.end());
+  CHECK(it != ongoing_requests_.end(), base::NotFatalUntil::M130);
 
   OngoingRequest request = std::move(it->second);
   ongoing_requests_.erase(it);

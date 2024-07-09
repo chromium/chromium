@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/not_fatal_until.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -100,7 +101,7 @@ class ExtensionAssetsManagerHelper {
                          PendingInstallList* pending_installs) {
     InstallQueue::iterator it = install_queue_.find(
         InstallQueue::key_type(id, version));
-    DCHECK(it != install_queue_.end());
+    CHECK(it != install_queue_.end(), base::NotFatalUntil::M130);
     pending_installs->swap(it->second);
     install_queue_.erase(it);
   }

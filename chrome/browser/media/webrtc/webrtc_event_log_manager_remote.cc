@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -966,7 +967,7 @@ WebRtcRemoteEventLogManager::PruneAndLoadHistoryFilesForBrowserContext(
   for (auto it = history_files.begin();
        num_history_files > kMaxWebRtcEventLogHistoryFiles;
        --num_history_files) {
-    DCHECK(it != history_files.end());
+    CHECK(it != history_files.end(), base::NotFatalUntil::M130);
     files_to_delete.insert(it->path());
     it = history_files.erase(it);
   }

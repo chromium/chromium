@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -222,7 +223,7 @@ void TabDataAccess::OnSiteDataAvailable(
     return;
 
   auto it = policy->tab_data_.find(contents);
-  DCHECK(it != policy->tab_data_.end());
+  CHECK(it != policy->tab_data_.end(), base::NotFatalUntil::M130);
   auto* tab_data = it->second.get();
 
   SetUsedInBgFromSiteData(tab_data, contents, reader_data);
@@ -305,7 +306,7 @@ float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
 
 void SessionRestorePolicy::RemoveTabForScoring(content::WebContents* contents) {
   auto it = tab_data_.find(contents);
-  DCHECK(it != tab_data_.end());
+  CHECK(it != tab_data_.end(), base::NotFatalUntil::M130);
   auto* tab_data = it->second.get();
 
   if (HasFinalScore(tab_data)) {
@@ -335,7 +336,7 @@ bool SessionRestorePolicy::ShouldLoad(content::WebContents* contents) const {
   }
 
   auto it = tab_data_.find(contents);
-  DCHECK(it != tab_data_.end());
+  CHECK(it != tab_data_.end(), base::NotFatalUntil::M130);
   const TabData* tab_data = it->second.get();
 
   // Enforce a max time since use if one is specified.

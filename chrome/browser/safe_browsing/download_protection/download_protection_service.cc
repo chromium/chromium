@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_split.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -398,7 +399,7 @@ void DownloadProtectionService::PPAPIDownloadCheckRequestFinished(
     PPAPIDownloadRequest* request) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = ppapi_download_requests_.find(request);
-  DCHECK(it != ppapi_download_requests_.end());
+  CHECK(it != ppapi_download_requests_.end(), base::NotFatalUntil::M130);
   ppapi_download_requests_.erase(it);
 }
 
@@ -839,7 +840,7 @@ int DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
 
 void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {
   auto it = deep_scanning_requests_.find(request);
-  DCHECK(it != deep_scanning_requests_.end());
+  CHECK(it != deep_scanning_requests_.end(), base::NotFatalUntil::M130);
   deep_scanning_requests_.erase(it);
 }
 

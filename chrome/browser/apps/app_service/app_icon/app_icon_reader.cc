@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
+#include "base/not_fatal_until.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
@@ -93,7 +94,7 @@ void AppIconReader::OnUncompressedIconRead(int32_t size_in_dip,
 
   auto it = base::ranges::find(decodes_, decoder,
                                &std::unique_ptr<AppIconDecoder>::get);
-  DCHECK(it != decodes_.end());
+  CHECK(it != decodes_.end(), base::NotFatalUntil::M130);
   decodes_.erase(it);
 
   if (!iv || iv->icon_type != IconType::kUncompressed ||

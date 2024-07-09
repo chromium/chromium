@@ -508,7 +508,7 @@ void WebAppSyncBridge::UpdateRegistrar(
   }
   for (const webapps::AppId& app_id : update_data->apps_to_delete) {
     auto it = registrar_->registry().find(app_id);
-    DCHECK(it != registrar_->registry().end());
+    CHECK(it != registrar_->registry().end(), base::NotFatalUntil::M130);
     registrar_->registry().erase(it);
   }
 }

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -168,7 +169,7 @@ void FilesRequestHandler::FileRequestCallbackForTesting(
     safe_browsing::BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
   auto it = base::ranges::find(paths_, path);
-  DCHECK(it != paths_.end());
+  CHECK(it != paths_.end(), base::NotFatalUntil::M130);
   size_t index = std::distance(paths_.begin(), it);
   FileRequestCallback(index, result, response);
 }

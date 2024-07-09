@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/not_fatal_until.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -469,7 +470,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
  private:
   void UnregisterApp(const webapps::AppId& app_id) {
     auto it = registrar_->registry().find(app_id);
-    DCHECK(it != registrar_->registry().end());
+    CHECK(it != registrar_->registry().end(), base::NotFatalUntil::M130);
     registrar_->registry().erase(it);
   }
 

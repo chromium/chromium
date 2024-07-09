@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
@@ -402,7 +403,7 @@ void ProcessMonitor::OnBrowserChildProcessExited(
     return;
   }
 
-  DCHECK(it != browser_child_process_infos_.end());
+  CHECK(it != browser_child_process_infos_.end(), base::NotFatalUntil::M130);
   // Remember the metrics from when the process exited, if available.
   if (info.cpu_usage.has_value()) {
     const ProcessInfo& process_info = it->second;

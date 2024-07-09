@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -245,7 +246,7 @@ void BitmapFetcherService::RemoveFetcher(const BitmapFetcher* fetcher) {
       break;
   }
   // RemoveFetcher should always result in removal.
-  DCHECK(it != active_fetchers_.end());
+  CHECK(it != active_fetchers_.end(), base::NotFatalUntil::M130);
   active_fetchers_.erase(it);
 }
 

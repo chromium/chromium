@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/supports_user_data.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
@@ -94,7 +95,7 @@ class BrowserContextData : public base::SupportsUserData::Data {
 
   void RemoveProxy(ProxyingURLLoaderFactory* proxy) {
     auto it = proxies_.find(proxy);
-    DCHECK(it != proxies_.end());
+    CHECK(it != proxies_.end(), base::NotFatalUntil::M130);
     proxies_.erase(it);
   }
 
@@ -574,7 +575,7 @@ void ProxyingURLLoaderFactory::OnProxyBindingError() {
 
 void ProxyingURLLoaderFactory::RemoveRequest(InProgressRequest* request) {
   auto it = requests_.find(request);
-  DCHECK(it != requests_.end());
+  CHECK(it != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(it);
 
   MaybeDestroySelf();
