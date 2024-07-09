@@ -29,7 +29,6 @@ all_web_component_files = [
                             "lens_upload_dialog.ts",
                             "logo.ts",
                             "middle_slot_promo.ts",
-                            "mini_page.ts",
                             "voice_search_overlay.ts",
                           ] + modules_web_component_files
 
