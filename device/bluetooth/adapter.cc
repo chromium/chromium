@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "device/bluetooth/advertisement.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
@@ -656,7 +657,7 @@ void Adapter::ExecuteConnectToServiceCallback(
     int request_id,
     mojom::ConnectToServiceResultPtr result) {
   auto it = connect_to_service_request_map_.find(request_id);
-  DCHECK(it != connect_to_service_request_map_.end());
+  CHECK(it != connect_to_service_request_map_.end(), base::NotFatalUntil::M130);
 
   std::move(it->second->callback).Run(std::move(result));
   connect_to_service_request_map_.erase(it);
