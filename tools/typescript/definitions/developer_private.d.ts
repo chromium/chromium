@@ -268,7 +268,7 @@ declare global {
         acknowledgeSafetyCheckWarning: boolean;
         pinnedToToolbar?: boolean;
         isAffectedByMV2Deprecation: boolean;
-        didAcknowledgeMV2DeprecationWarning: boolean;
+        didAcknowledgeMV2DeprecationNotice: boolean;
       }
 
       export interface ProfileInfo {
@@ -289,7 +289,7 @@ declare global {
         showAccessRequestsInToolbar?: boolean;
         acknowledgeSafetyCheckWarning?: boolean;
         acknowledgeSafetyCheckWarningReason?: SafetyCheckWarningReason;
-        acknowledgeMv2DeprecationWarning?: boolean;
+        acknowledgeMv2DeprecationNotice?: boolean;
         pinnedToToolbar?: boolean;
       }
 

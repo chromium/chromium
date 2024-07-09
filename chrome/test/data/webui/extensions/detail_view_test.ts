@@ -775,6 +775,13 @@ suite('ExtensionDetailViewTest', function() {
     item.set('data.disableReasons.unsupportedManifestVersion', true);
     flush();
     testVisible(item, '#mv2DeprecationMessage', true);
+
+    // Message is hidden for experiment on stage 2 (disable with re-enable)
+    // when extension is affected by the MV2 deprecation and has been
+    // acknowledged.
+    item.set('data.didAcknowledgeMV2DeprecationNotice', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', false);
   });
 
   test('Mv2DeprecationMessage_DisableWithReEnable_Content', async function() {
@@ -844,7 +851,13 @@ suite('ExtensionDetailViewTest', function() {
     actionMenu.click();
     const keepAction =
         item.shadowRoot!.querySelector<HTMLElement>('#keepAction');
+    assertTrue(!!keepAction);
     assertTrue(isVisible(keepAction));
+
+    // Click on the keep action, and verify it triggered the correct delegate
+    // call.
+    await mockDelegate.testClickingCalls(
+        keepAction, 'dismissMv2DeprecationNoticeForExtension', [id]);
   });
 
   test('PinnedToToolbar', async function() {

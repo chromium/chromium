@@ -301,7 +301,7 @@ suite('ExtensionItemListTest', function() {
                     name: 'Extension F',
                     id: 'f'.repeat(32),
                     isAffectedByMV2Deprecation: true,
-                    didAcknowledgeMV2DeprecationWarning: true,
+                    didAcknowledgeMV2DeprecationNotice: true,
                   }));
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', true);
@@ -354,6 +354,14 @@ suite('ExtensionItemListTest', function() {
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', true);
     assertEquals(2, mv2DeprecationPanel.extensions.length);
+
+    // Extensions that are affected by the MV2 deprecation, but have already
+    // been acknowledged, are not included in the list.
+    itemList.set('extensions.1.didAcknowledgeMV2DeprecationNotice', true);
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', true);
+    // Panel has only one extension.
+    assertEquals(1, mv2DeprecationPanel.extensions.length);
   });
 
   test('ManifestV2DeprecationPanel_TitleVisibility', function() {

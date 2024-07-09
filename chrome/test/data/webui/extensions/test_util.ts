@@ -238,7 +238,7 @@ export function createExtensionInfo(
         showAccessRequestsInToolbar: false,
         acknowledgeSafetyCheckWarning: false,
         isAffectedByMV2Deprecation: false,
-        didAcknowledgeMV2DeprecationWarning: false,
+        didAcknowledgeMV2DeprecationNotice: false,
         safetyCheckWarningReason: 'UNPUBLISHED',
       },
       properties || {});

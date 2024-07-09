@@ -274,6 +274,11 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
 
 bool ManifestV2ExperimentManager::DidUserAcknowledgeNotice(
     const ExtensionId& extension_id) {
+  // There is no notice for kNone stage, thus it cannot be acknowledged.
+  if (experiment_stage_ == MV2ExperimentStage::kNone) {
+    return false;
+  }
+
   bool acknowledged = false;
   PrefMap pref = GetExtensionAcknowledgedPrefFor(experiment_stage_);
   return extension_prefs()->ReadPrefAsBoolean(extension_id, pref,
@@ -283,6 +288,11 @@ bool ManifestV2ExperimentManager::DidUserAcknowledgeNotice(
 
 void ManifestV2ExperimentManager::MarkNoticeAsAcknowledged(
     const ExtensionId& extension_id) {
+  // There is no notice for kNone stage, thus it cannot be acknowledged.
+  if (experiment_stage_ == MV2ExperimentStage::kNone) {
+    return;
+  }
+
   PrefMap pref = GetExtensionAcknowledgedPrefFor(experiment_stage_);
   extension_prefs()->SetBooleanPref(extension_id, pref, true);
 }

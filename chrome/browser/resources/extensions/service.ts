@@ -514,7 +514,7 @@ export class Service implements ServiceInterface {
   dismissMv2DeprecationNoticeForExtension(id: string) {
     chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,
-      acknowledgeMv2DeprecationWarning: true,
+      acknowledgeMv2DeprecationNotice: true,
     });
   }
 

@@ -965,11 +965,8 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   CHECK(mv2_experiment_manager);
   info->is_affected_by_mv2_deprecation =
       mv2_experiment_manager->IsExtensionAffected(extension);
-  if (mv2_experiment_manager->GetCurrentExperimentStage() ==
-      MV2ExperimentStage::kWarning) {
-    info->did_acknowledge_mv2_deprecation_warning =
-        mv2_experiment_manager->DidUserAcknowledgeNotice(extension.id());
-  }
+  info->did_acknowledge_mv2_deprecation_notice =
+      mv2_experiment_manager->DidUserAcknowledgeNotice(extension.id());
   if (info->web_store_url.length() > 0) {
     info->recommendations_url =
         extension_urls::GetNewWebstoreItemRecommendationsUrl(extension.id())

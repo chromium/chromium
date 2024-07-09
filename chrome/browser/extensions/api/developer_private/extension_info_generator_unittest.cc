@@ -31,6 +31,7 @@
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -1586,35 +1587,79 @@ TEST_F(ExtensionInfoGeneratorUnitTest, IsPinnedToToolbar) {
 }
 
 class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
-    : public ExtensionInfoGeneratorUnitTest {
+    : public ExtensionInfoGeneratorUnitTest,
+      public testing::WithParamInterface<MV2ExperimentStage> {
  public:
   ExtensionInfoGeneratorWithMV2DeprecationUnitTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionManifestV2DeprecationWarning);
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    experiment_stage_ = GetParam();
+    switch (experiment_stage_) {
+      case MV2ExperimentStage::kWarning:
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        break;
+      case MV2ExperimentStage::kDisableWithReEnable:
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        break;
+      case MV2ExperimentStage::kNone:
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        break;
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~ExtensionInfoGeneratorWithMV2DeprecationUnitTest() override = default;
+
+  MV2ExperimentStage experiment_stage() { return experiment_stage_; }
 
  private:
   bool ShouldUseSafetyHubFeatures() override { return false; }
 
   base::test::ScopedFeatureList feature_list_;
+  MV2ExperimentStage experiment_stage_;
 };
 
-TEST_F(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
-       DidAcknowledgeMv2DeprecationWarning) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
+    testing::Values(MV2ExperimentStage::kNone,
+                    MV2ExperimentStage::kWarning,
+                    MV2ExperimentStage::kDisableWithReEnable));
+
+// Tests that acknowledging the MV2 deprecation notice updates the extension
+// info when the experiment stage is different than 'kNone'.
+TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
+       DidAcknowledgeMv2DeprecationNotice) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("ext").SetManifestVersion(2).Build();
   service()->AddExtension(extension.get());
 
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
-  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+
+  if (experiment_stage() == MV2ExperimentStage::kNone) {
+    // Extensions are not affected by MV2 deprecation in this stage.
+    EXPECT_FALSE(experiment_manager->IsExtensionAffected(*extension));
+  } else {
+    // Extensions with manifest version 2 are affected in the other stages.
+    EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+  }
   EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 
   {
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_warning);
+    EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_notice);
   }
 
   experiment_manager->MarkNoticeAsAcknowledged(extension->id());
@@ -1622,7 +1667,12 @@ TEST_F(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
   {
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_TRUE(info->did_acknowledge_mv2_deprecation_warning);
+    if (experiment_stage() == MV2ExperimentStage::kNone) {
+      // Cannot acknowledge a notice that doesn't exist.
+      EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_notice);
+    } else {
+      EXPECT_TRUE(info->did_acknowledge_mv2_deprecation_notice);
+    }
   }
 }
 

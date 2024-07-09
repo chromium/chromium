@@ -218,13 +218,11 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
           return false;
         case Mv2ExperimentStage.WARNING:
           return extension.isAffectedByMV2Deprecation &&
-              !extension.didAcknowledgeMV2DeprecationWarning;
+              !extension.didAcknowledgeMV2DeprecationNotice;
         case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-          // TODO(crbug.com/339061151): Verify extension has not been dismissed
-          // for Mv2ExperimentStage.DISABLE_WITH_REENABLE, once that
-          // functionality is added.
           return extension.isAffectedByMV2Deprecation &&
-              extension.disableReasons.unsupportedManifestVersion;
+              extension.disableReasons.unsupportedManifestVersion &&
+              !extension.didAcknowledgeMV2DeprecationNotice;
       }
     });
   }

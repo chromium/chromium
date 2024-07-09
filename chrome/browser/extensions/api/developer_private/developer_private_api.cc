@@ -1144,11 +1144,11 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
       event_router->OnExtensionConfigurationChanged(extension->id());
     }
   }
-  if (update.acknowledge_mv2_deprecation_warning.value_or(false)) {
+  if (update.acknowledge_mv2_deprecation_notice.value_or(false)) {
     ManifestV2ExperimentManager* experiment_manager =
         ManifestV2ExperimentManager::Get(browser_context());
-    if (experiment_manager->GetCurrentExperimentStage() ==
-        MV2ExperimentStage::kWarning) {
+    if (experiment_manager->GetCurrentExperimentStage() !=
+        MV2ExperimentStage::kNone) {
       experiment_manager->MarkNoticeAsAcknowledged(extension->id());
 
       // There isn't a separate observer for the MV2 acknowledged state

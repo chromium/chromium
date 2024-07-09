@@ -283,7 +283,7 @@ namespace developerPrivate {
     boolean acknowledgeSafetyCheckWarning;
     boolean? pinnedToToolbar;
     boolean isAffectedByMV2Deprecation;
-    boolean didAcknowledgeMV2DeprecationWarning;
+    boolean didAcknowledgeMV2DeprecationNotice;
   };
 
   dictionary ProfileInfo {
@@ -346,7 +346,7 @@ namespace developerPrivate {
     boolean? showAccessRequestsInToolbar;
     SafetyCheckWarningReason? acknowledgeSafetyCheckWarningReason;
     boolean? acknowledgeSafetyCheckWarning;
-    boolean? acknowledgeMv2DeprecationWarning;
+    boolean? acknowledgeMv2DeprecationNotice;
     boolean? pinnedToToolbar;
   };
 

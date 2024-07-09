@@ -119,6 +119,7 @@ export class ExtensionsDetailViewElement extends
         type: Boolean,
         computed: 'computeShowMv2DeprecationMessage_(' +
             'mv2ExperimentStage_, data.isAffectedByMV2Deprecation, ' +
+            'data.didAcknowledgeMV2DeprecationNotice, ' +
             'data.disableReasons.unsupportedManifestVersion)',
       },
 
@@ -535,7 +536,8 @@ export class ExtensionsDetailViewElement extends
         return this.data.isAffectedByMV2Deprecation;
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
         return this.data.isAffectedByMV2Deprecation &&
-            this.data.disableReasons.unsupportedManifestVersion;
+            this.data.disableReasons.unsupportedManifestVersion &&
+            !this.data.didAcknowledgeMV2DeprecationNotice;
       default:
         return false;
     }
@@ -626,10 +628,10 @@ export class ExtensionsDetailViewElement extends
   private onKeepActionClick_(): void {
     assert(
         this.mv2ExperimentStage_ === Mv2ExperimentStage.DISABLE_WITH_REENABLE);
-    // TODO(crbug.com/339061151): record user action once we connect the
-    // delegate call to actually dismissing the notice for this stage.
+    chrome.metricsPrivate.recordUserAction(
+        'Extensions.Mv2Deprecation.Disabled.DismissedForExtension.DetailPage');
     this.$.actionMenu.close();
-    // TODO(crbug.com/339061151): dismiss notice.
+    this.delegate.dismissMv2DeprecationNoticeForExtension(this.data.id);
   }
 
   /**

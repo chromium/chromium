@@ -3211,7 +3211,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,
   base::Value::List args;
   args.Append(base::Value::Dict()
                   .Set("extensionId", extension->id())
-                  .Set("acknowledgeMv2DeprecationWarning", true));
+                  .Set("acknowledgeMv2DeprecationNotice", true));
 
   EXPECT_TRUE(RunFunction(update_function, args));
 
