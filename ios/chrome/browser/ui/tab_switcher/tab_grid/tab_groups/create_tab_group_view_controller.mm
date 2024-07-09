@@ -38,12 +38,15 @@ const CGFloat kDotTitleSeparationMargin = 12;
 const CGFloat kSyncGroupTopConstant = 8;
 const CGFloat kContainersMaxWidth = 400;
 const CGFloat kBackgroundAlpha = 0.7;
+const CGFloat kCompactButtonTopMargin = 12;
+const CGFloat kDotAndFieldContainerWidthPercentage = 0.5;
 
 // Group color selection constants.
 const CGFloat kColoredButtonSize = 24;
 const CGFloat kColoredButtonContentInset = 8;
 const CGFloat kColoredButtonWidthAndHeight = 40;
 const CGFloat kColorListBottomMargin = 16;
+const CGFloat kColorListBottomMarginCompact = 8;
 const CGFloat kColoredDotSize = 21;
 
 // Snapshot view constants.
@@ -145,7 +148,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   NSArray<NSLayoutConstraint*>* _regularConstraints;
 
   // Scrollview that containts color selection buttons.
-  UIView* _colorsScrollView;
+  UIScrollView* _colorsScrollView;
 }
 
 - (instancetype)initWithEditMode:(BOOL)editMode
@@ -226,6 +229,8 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   tabGroupTextField.translatesAutoresizingMaskIntoConstraints = NO;
   tabGroupTextField.autocorrectionType = UITextAutocorrectionTypeNo;
   tabGroupTextField.spellCheckingType = UITextSpellCheckingTypeNo;
+  tabGroupTextField.maximumContentSizeCategory =
+      UIContentSizeCategoryAccessibilityExtraLarge;
 
   UIButton* clearButton = [UIButton buttonWithType:UIButtonTypeSystem];
   clearButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -365,8 +370,16 @@ const CGFloat kClearButtonWidthAndHeight = 40;
       [[NSMutableAttributedString alloc]
           initWithString:l10n_util::GetNSString(IDS_CANCEL)
               attributes:attributes];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.attributedTitle = attributedString;
+  cancelButton.configuration = buttonConfiguration;
+
   [cancelButton setAttributedTitle:attributedString
                           forState:UIControlStateNormal];
+
+  cancelButton.maximumContentSizeCategory =
+      UIContentSizeCategoryExtraExtraLarge;
 
   cancelButton.accessibilityIdentifier = kCreateTabGroupCancelButtonIdentifier;
   [cancelButton addTarget:self
@@ -374,7 +387,8 @@ const CGFloat kClearButtonWidthAndHeight = 40;
          forControlEvents:UIControlEventTouchUpInside];
 
   [NSLayoutConstraint activateConstraints:@[
-    [cancelButton.heightAnchor constraintEqualToConstant:kButtonsHeight],
+    [cancelButton.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kButtonsHeight],
   ]];
 
   return cancelButton;
@@ -406,9 +420,11 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
   if (isCompact) {
     // The compact button adheres to the style of the iOS system buttons.
-    creationButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    [creationButton setAttributedTitle:attributedString
-                              forState:UIControlStateNormal];
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
+    buttonConfiguration.attributedTitle = attributedString;
+    creationButton.configuration = buttonConfiguration;
   } else {
     UIButtonConfiguration* buttonConfiguration =
         [UIButtonConfiguration filledButtonConfiguration];
@@ -419,6 +435,9 @@ const CGFloat kClearButtonWidthAndHeight = 40;
     creationButton.configuration = buttonConfiguration;
   }
 
+  creationButton.maximumContentSizeCategory =
+      UIContentSizeCategoryExtraExtraLarge;
+
   creationButton.accessibilityIdentifier =
       kCreateTabGroupCreateButtonIdentifier;
   [creationButton addTarget:self
@@ -426,7 +445,8 @@ const CGFloat kClearButtonWidthAndHeight = 40;
            forControlEvents:UIControlEventTouchUpInside];
 
   [NSLayoutConstraint activateConstraints:@[
-    [creationButton.heightAnchor constraintEqualToConstant:kButtonsHeight],
+    [creationButton.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kButtonsHeight],
   ]];
 
   return creationButton;
@@ -542,7 +562,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 }
 
 // Returns the configured view, which contains all the available colors.
-- (UIView*)listOfColorView {
+- (UIScrollView*)listOfColorView {
   UIStackView* colorsView = [[UIStackView alloc] init];
   colorsView.alignment = UIStackViewAlignmentTop;
   colorsView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -558,14 +578,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
     [colorsView addArrangedSubview:button];
   }
 
-  CGFloat viewWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width;
-  CGFloat selectionWidth =
-      [_colorSelectionButtons count] * kColoredButtonWidthAndHeight;
-
-  if (selectionWidth > viewWidth) {
-    [scrollView setContentInset:UIEdgeInsetsMake(0, kHorizontalMargin, 0,
-                                                 kHorizontalMargin)];
-  }
+  [self updateScrollViewInsets:scrollView];
 
   NSLayoutConstraint* scrollViewWidthConstraint = [scrollView.widthAnchor
       constraintGreaterThanOrEqualToAnchor:colorsView.widthAnchor];
@@ -613,6 +626,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
     view.hidden = NO;
     view.alpha = 0;
   }
+  UIScrollView* scrollView = _colorsScrollView;
   __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:kSnapshotViewAnimationTime
       animations:^{
@@ -622,6 +636,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
         for (UIView* view in toDisplay) {
           view.alpha = 1;
         }
+        [weakSelf updateScrollViewInsets:scrollView];
         [weakSelf.view layoutIfNeeded];
       }
       completion:^(BOOL finished) {
@@ -695,7 +710,9 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   ];
 
   _compactConstraints = @[
-
+    [dotAndFieldContainer.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.view.widthAnchor
+                               multiplier:kDotAndFieldContainerWidthPercentage],
     [_cancelButtonCompact.trailingAnchor
         constraintLessThanOrEqualToAnchor:dotAndFieldContainer.leadingAnchor],
     [_creationButtonCompact.leadingAnchor
@@ -703,7 +720,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
                                                  .trailingAnchor],
     [_colorsScrollView.bottomAnchor
         constraintEqualToAnchor:container.bottomAnchor
-                       constant:-kColorListBottomMargin],
+                       constant:-kColorListBottomMarginCompact],
   ];
 
   NSLayoutConstraint* dotAndFieldWidth = [dotAndFieldContainer.widthAnchor
@@ -745,17 +762,15 @@ const CGFloat kClearButtonWidthAndHeight = 40;
                        constant:kColorListBottomMargin],
 
     [_cancelButtonCompact.leadingAnchor
-        constraintEqualToAnchor:container.leadingAnchor
-                       constant:kHorizontalMargin],
+        constraintEqualToAnchor:container.leadingAnchor],
     [_creationButtonCompact.trailingAnchor
-        constraintEqualToAnchor:container.trailingAnchor
-                       constant:-kHorizontalMargin],
+        constraintEqualToAnchor:container.trailingAnchor],
     [_cancelButtonCompact.topAnchor
         constraintEqualToAnchor:container.topAnchor
-                       constant:kDotAndFieldContainerMargin],
+                       constant:kCompactButtonTopMargin],
     [_creationButtonCompact.topAnchor
         constraintEqualToAnchor:container.topAnchor
-                       constant:kDotAndFieldContainerMargin],
+                       constant:kCompactButtonTopMargin],
 
     [snapshotsContainerLayoutGuide.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
@@ -905,6 +920,23 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   } else {
     [NSLayoutConstraint deactivateConstraints:_singleSnapshotConstraints];
     [NSLayoutConstraint activateConstraints:_multipleSnapshotsConstraints];
+  }
+}
+
+// Updates the insets of the `colorScrollView`.
+- (void)updateScrollViewInsets:(UIScrollView*)colorScrollView {
+  CGFloat viewWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width;
+  CGFloat selectionWidth =
+      [_colorSelectionButtons count] * kColoredButtonWidthAndHeight;
+
+  if (selectionWidth > viewWidth) {
+    colorScrollView.contentInset =
+        UIEdgeInsetsMake(0, kHorizontalMargin, 0, kHorizontalMargin);
+    if (colorScrollView.contentOffset.x == 0) {
+      colorScrollView.contentOffset = CGPointMake(-kHorizontalMargin, 0);
+    }
+  } else {
+    colorScrollView.contentInset = UIEdgeInsetsZero;
   }
 }
 
