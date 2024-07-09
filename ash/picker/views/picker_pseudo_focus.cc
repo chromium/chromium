@@ -26,19 +26,17 @@ void ApplyPickerPseudoFocusToView(views::View* view) {
   }
 
   // PickerItemView has special pseudo focus behavior, so handle it separately.
-  if (views::IsViewClass<PickerItemView>(view)) {
-    views::AsViewClass<PickerItemView>(view)->SetItemState(
-        PickerItemView::ItemState::kPseudoFocused);
-    if (views::IsViewClass<PickerListItemView>(view)) {
-      views::AsViewClass<PickerListItemView>(view)->SetBadgeVisible(true);
+  if (auto* item_view = views::AsViewClass<PickerItemView>(view)) {
+    item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+    if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+      list_item_view->SetBadgeVisible(true);
     }
     return;
   }
 
   // PickerSearchBarTextfield has special pseudo focus appearance.
-  if (views::IsViewClass<PickerSearchBarTextfield>(view)) {
-    views::AsViewClass<PickerSearchBarTextfield>(view)
-        ->SetShouldShowFocusIndicator(true);
+  if (auto* textfield = views::AsViewClass<PickerSearchBarTextfield>(view)) {
+    textfield->SetShouldShowFocusIndicator(true);
     return;
   }
 
@@ -58,19 +56,17 @@ void RemovePickerPseudoFocusFromView(views::View* view) {
   }
 
   // PickerItemView has special pseudo focus behavior, so handle it separately.
-  if (views::IsViewClass<PickerItemView>(view)) {
-    views::AsViewClass<PickerItemView>(view)->SetItemState(
-        PickerItemView::ItemState::kNormal);
-    if (views::IsViewClass<PickerListItemView>(view)) {
-      views::AsViewClass<PickerListItemView>(view)->SetBadgeVisible(false);
+  if (auto* item_view = views::AsViewClass<PickerItemView>(view)) {
+    item_view->SetItemState(PickerItemView::ItemState::kNormal);
+    if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+      list_item_view->SetBadgeVisible(false);
     }
     return;
   }
 
   // PickerSearchBarTextfield has special pseudo focus appearance.
-  if (views::IsViewClass<PickerSearchBarTextfield>(view)) {
-    views::AsViewClass<PickerSearchBarTextfield>(view)
-        ->SetShouldShowFocusIndicator(false);
+  if (auto* textfield = views::AsViewClass<PickerSearchBarTextfield>(view)) {
+    textfield->SetShouldShowFocusIndicator(false);
     return;
   }
 
@@ -95,8 +91,8 @@ bool DoPickerPseudoFocusedActionOnView(views::View* view) {
   }
 
   // PickerItemView has special pseudo focus behavior, so handle it separately.
-  if (views::IsViewClass<PickerItemView>(view)) {
-    views::AsViewClass<PickerItemView>(view)->SelectItem();
+  if (auto* item_view = views::AsViewClass<PickerItemView>(view)) {
+    item_view->SelectItem();
     return true;
   }
 
