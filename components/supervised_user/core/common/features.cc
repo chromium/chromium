@@ -119,12 +119,6 @@ BASE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers,
              "UncredentialedFilteringFallbackForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kMigrateAccountManagementSettingsToCapabilities,
-             "MigrateAccountManagementSettingsToCapabilities",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
              "WaitUntilAccessTokenAvailableForClassifyUrl",
 #if BUILDFLAG(IS_ANDROID)
@@ -148,6 +142,12 @@ BASE_FEATURE(kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS,
 BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
              "ReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kReplaceProfileIsChildWithAccountCapabilitiesOnAndroid,
+             "ReplaceProfileIsChildWithAccountCapabilitiesOnAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kFetchListFamilyMembersWithCapability,

@@ -362,7 +362,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
         kSegmentationPlatformAndroidHomeModuleRanker,
     &send_tab_to_self::kSendTabToSelfV2,
     &supervised_user::kKidFriendlyContentFeed,
-    &supervised_user::kMigrateAccountManagementSettingsToCapabilities,
+    &supervised_user::kReplaceProfileIsChildWithAccountCapabilitiesOnAndroid,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kSearchEngineChoice,

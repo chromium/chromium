@@ -1139,7 +1139,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private boolean isSupervisedUser() {
         if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES)) {
+                ChromeFeatureList.REPLACE_PROFILE_IS_CHILD_WITH_ACCOUNT_CAPABILITIES_ON_ANDROID)) {
             IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(getProfile());
 

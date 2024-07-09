@@ -353,8 +353,6 @@ public abstract class ChromeFeatureList {
     public static final String MAYLAUNCHURL_USES_SEPARATE_STORAGE_PARTITION =
             "MayLaunchUrlUsesSeparateStoragePartition";
     public static final String MESSAGES_FOR_ANDROID_ADS_BLOCKED = "MessagesForAndroidAdsBlocked";
-    public static final String MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES =
-            "MigrateAccountManagementSettingsToCapabilities";
     public static final String MOST_VISITED_TILES_SELECT_EXISTING_TAB =
             "MostVisitedTilesSelectExistingTab";
     public static final String MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
@@ -432,6 +430,8 @@ public abstract class ChromeFeatureList {
     public static final String RENAME_JOURNEYS = "RenameJourneys";
     public static final String REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS =
             "ReplaceSyncPromosWithSignInPromos";
+    public static final String REPLACE_PROFILE_IS_CHILD_WITH_ACCOUNT_CAPABILITIES_ON_ANDROID =
+            "ReplaceProfileIsChildWithAccountCapabilitiesOnAndroid";
     public static final String SAFETY_HUB = "SafetyHub";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP =

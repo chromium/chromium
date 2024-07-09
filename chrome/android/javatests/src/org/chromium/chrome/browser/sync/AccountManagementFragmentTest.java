@@ -119,10 +119,10 @@ public class AccountManagementFragmentTest {
 
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
-    public static class MigrateAccountManagementSettingsToCapabilitiesParams
+    public static class ReplaceProfileIsChildWithAccountCapabilitiesParams
             implements ParameterProvider {
 
-        private static List<ParameterSet> sMigrateAccountManagementSettingsToCapabilities =
+        private static List<ParameterSet> sReplaceProfileIsChildWithAccountCapabilities =
                 Arrays.asList(
                         new ParameterSet()
                                 .value(true)
@@ -133,7 +133,7 @@ public class AccountManagementFragmentTest {
 
         @Override
         public List<ParameterSet> getParameters() {
-            return sMigrateAccountManagementSettingsToCapabilities;
+            return sReplaceProfileIsChildWithAccountCapabilities;
         }
     }
 
@@ -147,12 +147,12 @@ public class AccountManagementFragmentTest {
     }
 
     @ParameterAnnotations.UseMethodParameterBefore(
-            MigrateAccountManagementSettingsToCapabilitiesParams.class)
-    public void enableFlag(boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) {
+            ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
+    public void enableFlag(boolean isReplaceProfileIsChildWithAccountCapabilitiesFlagEnabled) {
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES,
-                isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled);
+                ChromeFeatureList.REPLACE_PROFILE_IS_CHILD_WITH_ACCOUNT_CAPABILITIES_ON_ANDROID,
+                isReplaceProfileIsChildWithAccountCapabilitiesFlagEnabled);
     }
 
     @Test
@@ -243,7 +243,7 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(
-            MigrateAccountManagementSettingsToCapabilitiesParams.class)
+            ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
     public void testAccountManagementViewForChildAccount(
             boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
         final AccountCapabilitiesBuilder accountCapabilitiesBuilder =
@@ -275,7 +275,7 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(
-            MigrateAccountManagementSettingsToCapabilitiesParams.class)
+            ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
     public void testAccountManagementViewForChildAccountWithSecondaryEduAccount(
             boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
         final AccountCapabilitiesBuilder accountCapabilitiesBuilder =

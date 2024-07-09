@@ -579,7 +579,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         // SEED_ACCOUNTS_REVAMP is needed for using capabilities, otherwise
         // findExtendedAccountInfoByEmailAddress is not guaranteed to have the needed account
         if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES)
+                        ChromeFeatureList
+                                .REPLACE_PROFILE_IS_CHILD_WITH_ACCOUNT_CAPABILITIES_ON_ANDROID)
                 && SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
             assert mSignedInCoreAccountInfo != null;
             AccountInfo accountinfo =

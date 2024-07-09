@@ -82,12 +82,6 @@ BASE_DECLARE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers);
 // if they do not have a valid access token.
 BASE_DECLARE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers);
 
-// Updates usages of Profile.isChild() in Profile.java to use the account
-// capability to determine if account is supervised.
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kMigrateAccountManagementSettingsToCapabilities);
-#endif
-
 // Uses PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable for
 // ClassifyUrl fetches.
 BASE_DECLARE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl);
@@ -99,6 +93,12 @@ BASE_DECLARE_FEATURE(kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
 // Replaces usages of system capabilities with AccountInfo capabilities on iOS.
 BASE_DECLARE_FEATURE(
     kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+// Updates usages of Profile.isChild() in Profile.java to use the account
+// capability to determine if account is supervised.
+BASE_DECLARE_FEATURE(kReplaceProfileIsChildWithAccountCapabilitiesOnAndroid);
 #endif
 
 // Updates the ListFamilyMembers service to fetch family account info for
