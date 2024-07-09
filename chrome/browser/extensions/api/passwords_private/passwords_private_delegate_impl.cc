@@ -1012,13 +1012,14 @@ void PasswordsPrivateDelegateImpl::DeleteAllPasswordManagerData(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> success_callback) {
   std::u16string message;
-  // TODO(b/342366264): Verify with UX which messages to show.
 #if BUILDFLAG(IS_MAC)
-  message = l10n_util::GetStringUTF16(
-      IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+  message = l10n_util::GetStringFUTF16(
+      IDS_PASSWORDS_PAGE_DELETE_ALL_DATA_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX,
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE));
 #elif BUILDFLAG(IS_WIN)
   message = l10n_util::GetStringUTF16(
-      IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
+      IDS_PASSWORDS_PAGE_DELETE_ALL_DATA_AUTHENTICATION_PROMPT);
 #endif
 
   AuthenticateUser(
