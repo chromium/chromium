@@ -193,7 +193,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   [self updateAllButtonsVisibility];
   if (IsRegularXRegularSizeClass(self)) {
     [self.view.progressBar setHidden:YES animated:NO completion:nil];
-  } else if (self.loading) {
+  } else if (self.loading && self.hasOmnibox) {
     [self.view.progressBar setHidden:NO animated:NO completion:nil];
   }
 
