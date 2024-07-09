@@ -14,7 +14,6 @@
 #include "base/hash/sha1.h"
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 
@@ -296,13 +295,11 @@ void ProductSpecificationsService::DeleteProductSpecificationsSet(
 
 void ProductSpecificationsService::AddObserver(
     commerce::ProductSpecificationsSet::Observer* observer) {
-  bridge_->AddObserver(observer);
   observers_.AddObserver(observer);
 }
 
 void ProductSpecificationsService::RemoveObserver(
     commerce::ProductSpecificationsSet::Observer* observer) {
-  bridge_->RemoveObserver(observer);
   observers_.RemoveObserver(observer);
 }
 

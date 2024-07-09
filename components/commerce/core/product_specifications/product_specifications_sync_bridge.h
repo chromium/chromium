@@ -8,7 +8,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_store.h"
@@ -112,9 +111,6 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void OnCommit(const std::optional<syncer::ModelError>& error);
 
-  void AddObserver(commerce::ProductSpecificationsSet::Observer* observer);
-  void RemoveObserver(commerce::ProductSpecificationsSet::Observer* observer);
-
   const sync_pb::ProductComparisonSpecifics&
   GetPossiblyTrimmedPasswordSpecificsData(const std::string& storage_key);
 
@@ -124,8 +120,6 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   std::map<std::string, sync_pb::ProductComparisonSpecifics> entries_;
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
-
-  base::ObserverList<commerce::ProductSpecificationsSet::Observer> observers_;
 
   base::OnceCallback<void(void)> init_callback_;
 

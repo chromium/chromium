@@ -309,15 +309,6 @@ void ProductSpecificationsSyncBridge::OnCommit(
   }
 }
 
-void ProductSpecificationsSyncBridge::AddObserver(
-    commerce::ProductSpecificationsSet::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-void ProductSpecificationsSyncBridge::RemoveObserver(
-    commerce::ProductSpecificationsSet::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 const sync_pb::ProductComparisonSpecifics&
 ProductSpecificationsSyncBridge::GetPossiblyTrimmedPasswordSpecificsData(
     const std::string& storage_key) {

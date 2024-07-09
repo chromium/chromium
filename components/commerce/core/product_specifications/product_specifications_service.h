@@ -7,13 +7,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace commerce {
 
 class ProductSpecificationsServiceTest;
-class ProductSpecificationsSet;
 
 // Acquires synced data about product specifications.
 class ProductSpecificationsService
