@@ -18,8 +18,11 @@ FakeOnDeviceServiceSettings::~FakeOnDeviceServiceSettings() = default;
 
 FakeOnDeviceSession::FakeOnDeviceSession(
     FakeOnDeviceServiceSettings* settings,
-    std::optional<uint32_t> adaptation_model_id)
-    : settings_(settings), adaptation_model_id_(adaptation_model_id) {}
+    std::optional<uint32_t> adaptation_model_id,
+    FakeOnDeviceModel* model)
+    : settings_(settings),
+      adaptation_model_id_(adaptation_model_id),
+      model_(model) {}
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
 
@@ -55,6 +58,14 @@ void FakeOnDeviceSession::GetSizeInTokens(const std::string& text,
 void FakeOnDeviceSession::Score(const std::string& text,
                                 ScoreCallback callback) {
   std::move(callback).Run(0.5);
+}
+
+void FakeOnDeviceSession::Clone(
+    mojo::PendingReceiver<on_device_model::mojom::Session> session) {
+  auto new_session = std::make_unique<FakeOnDeviceSession>(
+      settings_, adaptation_model_id_, model_);
+  new_session->context_ = context_;
+  model_->AddSession(std::move(session), std::move(new_session));
 }
 
 void FakeOnDeviceSession::ExecuteImpl(
@@ -130,12 +141,17 @@ FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 
 void FakeOnDeviceModel::StartSession(
     mojo::PendingReceiver<on_device_model::mojom::Session> session) {
+  AddSession(std::move(session), std::make_unique<FakeOnDeviceSession>(
+                                     settings_, adaptation_model_id_, this));
+}
+
+void FakeOnDeviceModel::AddSession(
+    mojo::PendingReceiver<on_device_model::mojom::Session> receiver,
+    std::unique_ptr<FakeOnDeviceSession> session) {
   // Mirror what the real OnDeviceModel does, which is only allow a single
   // Session.
   receivers_.Clear();
-  receivers_.Add(
-      std::make_unique<FakeOnDeviceSession>(settings_, adaptation_model_id_),
-      std::move(session));
+  receivers_.Add(std::move(session), std::move(receiver));
 }
 
 void FakeOnDeviceModel::DetectLanguage(const std::string& text,

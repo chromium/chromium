@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
                               base::OnceCallback<void(uint32_t)> callback) = 0;
     virtual void Score(const std::string& text,
                        base::OnceCallback<void(float)> callback) = 0;
+    virtual std::unique_ptr<Session> Clone() = 0;
   };
 
   virtual std::unique_ptr<Session> CreateSession(

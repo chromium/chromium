@@ -299,19 +299,17 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
   SessionImpl(const ChromeML& chrome_ml,
               ChromeMLModel model,
               SessionAccessor::Ptr session,
+              SessionAccessor::Ptr empty_session,
               uint32_t max_tokens,
               scoped_refptr<LanguageDetector> language_detector,
               std::optional<uint32_t> adaptation_id)
       : chrome_ml_(chrome_ml),
         model_(model),
         session_(std::move(session)),
+        empty_session_(std::move(empty_session)),
         max_tokens_(max_tokens),
         language_detector_(std::move(language_detector)),
-        adaptation_id_(adaptation_id) {
-    if (session_) {
-      empty_session_ = session_->Clone();
-    }
-  }
+        adaptation_id_(adaptation_id) {}
   ~SessionImpl() override = default;
 
   SessionImpl(const SessionImpl&) = delete;
@@ -449,6 +447,12 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
                             ConvertCallbackToFn(std::move(callback)));
   }
 
+  std::unique_ptr<Session> Clone() override {
+    return std::make_unique<SessionImpl>(
+        chrome_ml_.get(), model_, session_->Clone(), empty_session_->Clone(),
+        max_tokens_, language_detector_, adaptation_id_);
+  }
+
  private:
   void RemoveContext(ContextHolder* context) {
     std::erase_if(context_holders_, base::MatchesUniquePtr(context));
@@ -469,7 +473,7 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
   const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLModel model_;
   SessionAccessor::Ptr session_;
-  SessionAccessor::Ptr empty_session_ = SessionAccessor::Empty();
+  SessionAccessor::Ptr empty_session_;
   const uint32_t max_tokens_;
   const scoped_refptr<LanguageDetector> language_detector_;
   std::unique_ptr<Responder> responder_;
@@ -517,14 +521,16 @@ OnDeviceModelExecutor::CreateWithResult(
 std::unique_ptr<on_device_model::OnDeviceModel::Session>
 OnDeviceModelExecutor::CreateSession(std::optional<uint32_t> adaptation_id) {
   auto session = SessionAccessor::Empty();
+  auto empty_session = SessionAccessor::Empty();
   if (chrome_ml_->api().CreateSession) {
     auto it = base_sessions_.find(adaptation_id);
     CHECK(it != base_sessions_.end());
+    empty_session = it->second->Clone();
     session = it->second->Clone();
   }
-  return std::make_unique<SessionImpl>(*chrome_ml_, model_, std::move(session),
-                                       max_tokens_ - kReserveTokensForSafety,
-                                       language_detector_, adaptation_id);
+  return std::make_unique<SessionImpl>(
+      *chrome_ml_, model_, std::move(session), std::move(empty_session),
+      max_tokens_ - kReserveTokensForSafety, language_detector_, adaptation_id);
 }
 
 on_device_model::mojom::LanguageDetectionResultPtr

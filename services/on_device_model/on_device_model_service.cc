@@ -44,10 +44,15 @@ class SessionWrapper final : public mojom::Session {
   void GetSizeInTokens(const std::string& text,
                        GetSizeInTokensCallback callback) override;
   void Score(const std::string& text, ScoreCallback callback) override;
+  void Clone(mojo::PendingReceiver<mojom::Session> session) override;
 
   mojo::Receiver<mojom::Session>& receiver() { return receiver_; }
 
   void ReplayPreviousContext();
+
+  void AddPreviousContext(mojom::InputOptionsPtr input) {
+    previous_contexts_.push_back(std::move(input));
+  }
 
  private:
   void AddContextInternal(mojom::InputOptionsPtr input,
@@ -77,9 +82,7 @@ class SessionWrapper final : public mojom::Session {
     session_->Score(text, std::move(callback).Then(std::move(on_complete)));
   }
 
-  void AddPreviousContext(mojom::InputOptionsPtr input) {
-    previous_contexts_.push_back(std::move(input));
-  }
+  void CloneInternal(mojo::PendingReceiver<mojom::Session> session);
 
   base::WeakPtr<ModelWrapper> model_;
   mojo::Receiver<mojom::Session> receiver_;
@@ -129,19 +132,8 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   }
 
   void StartSession(mojo::PendingReceiver<mojom::Session> session) override {
-    auto current_session = std::make_unique<SessionWrapper>(
-        weak_ptr_factory_.GetWeakPtr(), std::move(session),
-        model_->CreateSession(receivers_.current_context()));
-    SessionWrapper* current_session_ptr = current_session.get();
-
-    if (!support_multiple_sessions_) {
-      sessions_.clear();
-    }
-
-    sessions_.insert(std::move(current_session));
-    current_session_ptr->receiver().set_disconnect_handler(
-        base::BindOnce(&ModelWrapper::SessionDisconnected,
-                       base::Unretained(this), current_session_ptr));
+    AddSession(std::move(session),
+               model_->CreateSession(receivers_.current_context()), {});
   }
 
   void ClassifyTextSafety(const std::string& text,
@@ -166,6 +158,28 @@ class ModelWrapper final : public mojom::OnDeviceModel {
         std::move(params), std::move(model), std::move(callback));
     AddAndRunPendingTask(
         base::IgnoreArgs<base::OnceClosure>(std::move(load_adaptation)));
+  }
+
+  void AddSession(
+      mojo::PendingReceiver<mojom::Session> receiver,
+      std::unique_ptr<on_device_model::OnDeviceModel::Session> session,
+      const std::vector<mojom::InputOptionsPtr>& previous_contexts) {
+    auto current_session = std::make_unique<SessionWrapper>(
+        weak_ptr_factory_.GetWeakPtr(), std::move(receiver),
+        std::move(session));
+    for (const auto& context : previous_contexts) {
+      current_session->AddPreviousContext(context.Clone());
+    }
+    SessionWrapper* current_session_ptr = current_session.get();
+
+    if (!support_multiple_sessions_) {
+      sessions_.clear();
+    }
+
+    sessions_.insert(std::move(current_session));
+    current_session_ptr->receiver().set_disconnect_handler(
+        base::BindOnce(&ModelWrapper::SessionDisconnected,
+                       base::Unretained(this), current_session_ptr));
   }
 
  private:
@@ -315,6 +329,27 @@ void SessionWrapper::Score(const std::string& text, ScoreCallback callback) {
       base::BindOnce(&SessionWrapper::ScoreInternal,
                      weak_ptr_factory_.GetWeakPtr(), text, std::move(callback)),
       weak_ptr_factory_.GetWeakPtr());
+}
+
+void SessionWrapper::Clone(mojo::PendingReceiver<mojom::Session> session) {
+  if (!model_) {
+    return;
+  }
+
+  model_->AddAndRunPendingTask(
+      base::IgnoreArgs<base::OnceClosure>(
+          base::BindOnce(&SessionWrapper::CloneInternal,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(session))),
+      weak_ptr_factory_.GetWeakPtr());
+}
+
+void SessionWrapper::CloneInternal(
+    mojo::PendingReceiver<mojom::Session> session) {
+  if (!model_) {
+    return;
+  }
+
+  model_->AddSession(std::move(session), session_->Clone(), previous_contexts_);
 }
 
 void SessionWrapper::ReplayPreviousContext() {

@@ -78,6 +78,12 @@ class SessionImpl : public OnDeviceModel::Session {
     std::move(callback).Run(static_cast<float>(text[0]));
   }
 
+  std::unique_ptr<Session> Clone() override {
+    auto session = std::make_unique<SessionImpl>(adaptation_id_);
+    session->context_ = context_;
+    return session;
+  }
+
  private:
   std::vector<std::string> context_;
   std::optional<uint32_t> adaptation_id_;

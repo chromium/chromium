@@ -126,6 +126,73 @@ TEST_F(OnDeviceModelServiceTest, AddContext) {
       ElementsAre("Context: cheese\n", "Context: more\n", "Input: cheddar\n"));
 }
 
+TEST_F(OnDeviceModelServiceTest, CloneContext) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver());
+  session->AddContext(MakeInput("cheese"), {});
+  session->AddContext(MakeInput("more"), {});
+
+  mojo::Remote<mojom::Session> cloned;
+  session->Clone(cloned.BindNewPipeAndPassReceiver());
+  cloned->Execute(MakeInput("cheddar"), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(
+      response.responses(),
+      ElementsAre("Context: cheese\n", "Context: more\n", "Input: cheddar\n"));
+}
+
+TEST_F(OnDeviceModelServiceTest, MultipleSessionsCloneContextAndContinue) {
+  auto model = LoadModel(/*support_multiple_sessions=*/true);
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver());
+  session->AddContext(MakeInput("cheese"), {});
+  session->AddContext(MakeInput("more"), {});
+
+  mojo::Remote<mojom::Session> cloned;
+  session->Clone(cloned.BindNewPipeAndPassReceiver());
+
+  {
+    TestResponseHolder response;
+    cloned->Execute(MakeInput("cheddar"), response.BindRemote());
+    response.WaitForCompletion();
+    EXPECT_THAT(response.responses(),
+                ElementsAre("Context: cheese\n", "Context: more\n",
+                            "Input: cheddar\n"));
+  }
+  {
+    TestResponseHolder response;
+    session->Execute(MakeInput("swiss"), response.BindRemote());
+    response.WaitForCompletion();
+    EXPECT_THAT(
+        response.responses(),
+        ElementsAre("Context: cheese\n", "Context: more\n", "Input: swiss\n"));
+  }
+
+  session->AddContext(MakeInput("foo"), {});
+  cloned->AddContext(MakeInput("bar"), {});
+  {
+    TestResponseHolder response;
+    session->Execute(MakeInput("swiss"), response.BindRemote());
+    response.WaitForCompletion();
+    EXPECT_THAT(response.responses(),
+                ElementsAre("Context: cheese\n", "Context: more\n",
+                            "Context: foo\n", "Input: swiss\n"));
+  }
+  {
+    TestResponseHolder response;
+    cloned->Execute(MakeInput("cheddar"), response.BindRemote());
+    response.WaitForCompletion();
+    EXPECT_THAT(response.responses(),
+                ElementsAre("Context: cheese\n", "Context: more\n",
+                            "Context: bar\n", "Input: cheddar\n"));
+  }
+}
+
 TEST_F(OnDeviceModelServiceTest, MultipleSessionsAddContext) {
   auto model = LoadModel(/*support_multiple_sessions=*/true);
 

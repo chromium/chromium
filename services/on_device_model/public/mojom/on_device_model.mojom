@@ -147,6 +147,11 @@ interface Session {
   // Gets the probability score of the first token in `text` on top of the
   // current context.
   Score@3(string text) => (float probability);
+
+  // Clones the current session. The cloned session will have the same context
+  // as the current session.
+  [MinVersion=1]
+  Clone@4(pending_receiver<Session> session);
 };
 
 // A loaded model which can be queried. This interface must be controlled by the

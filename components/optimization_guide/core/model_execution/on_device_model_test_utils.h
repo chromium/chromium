@@ -19,6 +19,8 @@ namespace optimization_guide {
 
 using on_device_model::mojom::LoadModelResult;
 
+class FakeOnDeviceModel;
+
 // Hooks for tests to control the FakeOnDeviceService behavior.
 struct FakeOnDeviceServiceSettings final {
   FakeOnDeviceServiceSettings();
@@ -63,7 +65,8 @@ struct FakeOnDeviceServiceSettings final {
 class FakeOnDeviceSession final : public on_device_model::mojom::Session {
  public:
   explicit FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
-                               std::optional<uint32_t> adaptation_model_id);
+                               std::optional<uint32_t> adaptation_model_id,
+                               FakeOnDeviceModel* model);
   ~FakeOnDeviceSession() override;
 
   // on_device_model::mojom::Session:
@@ -80,6 +83,9 @@ class FakeOnDeviceSession final : public on_device_model::mojom::Session {
 
   void Score(const std::string& text, ScoreCallback callback) override;
 
+  void Clone(
+      mojo::PendingReceiver<on_device_model::mojom::Session> session) override;
+
  private:
   void ExecuteImpl(
       on_device_model::mojom::InputOptionsPtr input,
@@ -92,6 +98,7 @@ class FakeOnDeviceSession final : public on_device_model::mojom::Session {
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   std::optional<uint32_t> adaptation_model_id_;
   std::vector<std::string> context_;
+  raw_ptr<FakeOnDeviceModel> model_;
 
   base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
 };
@@ -117,6 +124,10 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
       on_device_model::mojom::LoadAdaptationParamsPtr params,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadAdaptationCallback callback) override;
+
+  void AddSession(
+      mojo::PendingReceiver<on_device_model::mojom::Session> receiver,
+      std::unique_ptr<FakeOnDeviceSession> session);
 
  private:
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
