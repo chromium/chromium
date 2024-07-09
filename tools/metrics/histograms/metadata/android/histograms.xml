@@ -4343,6 +4343,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Tab.BackgroundColorChange"
+    enum="BackgroundColorChangeOrigin" expires_after="2024-12-31">
+  <owner>clhager@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records a change in the background color of a tab resulting in an update to
+    tab observers. This background color change may be due to a change in web
+    content or web content background, a custom view being set, or a native page
+    being shown or hidden. A sharp increase in such updates may have performance
+    implications - measuring an increase in such updates is particularly helpful
+    for the OSNavBarMatchesTab feature, which has observed some performance
+    regressions.
+  </summary>
+</histogram>
+
+<histogram name="Android.Tab.BackgroundColorChange.PreOptimization"
+    enum="BackgroundColorChangeOrigin" expires_after="2024-12-31">
+  <owner>clhager@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records a potential change in the background color of a tab. This potential
+    change may or may not be communicated to observers, as an optimization will
+    attempt to avoid redundant notifications. To measure the number of
+    notifications that are actually communicated to observers, refer to
+    'Android.Tab.BackgroundColorChange'.
+  </summary>
+</histogram>
+
 <histogram name="Android.Tab.CreateNewTabDuration.{TabLaunchType}" units="ms"
     expires_after="2024-11-03">
   <owner>sreejakshetty@chromium.org</owner>
