@@ -909,10 +909,12 @@ function assert_point_within_viewport(x, y, origin = "viewport") {
 //                           Once scrolled past the slop region, a touch
 //                           scroll will stick to the finger position.
 //                           Defaults to false.
+//    button: String with the button type, 'Left' (default), 'Middle' or 'Right'
 function pointerDrag(x, y, deltaX, deltaY, options = {}) {
   const origin = options.origin || "viewport";
   const eventTarget = options.eventTarget || document;
   const pointerType = options.pointerType || 'mouse';
+  const buttonType = options.button || Buttons.LEFT;
   const prevent_fling_pause_ms = options.prevent_fling_pause_ms || 0;
   if (options.adjust_for_touch_slop) {
     // TODO(kevers): This value may become platform specific, in which case
@@ -926,9 +928,9 @@ function pointerDrag(x, y, deltaX, deltaY, options = {}) {
       deltaY += TOUCH_SLOP_AMOUNT * Math.sign(deltaY);
     }
   }
-  verifyTestDriverLoaded();
   assert_point_within_viewport(x, y, origin);
   assert_point_within_viewport(x + deltaX, y + deltaY, origin);
+  verifyTestDriverLoaded();
   // Expect a pointerup or pointercancel event depending on whether scrolling
   // actually took place.
   return new Promise(resolve => {
@@ -944,10 +946,10 @@ function pointerDrag(x, y, deltaX, deltaY, options = {}) {
     const actionPromise = new test_driver.Actions()
       .addPointer("pointer1", pointerType)
       .pointerMove(x, y, { origin: origin })
-      .pointerDown()
+      .pointerDown({button: pointerActionButtonId(buttonType)})
       .pointerMove(x + deltaX, y + deltaY, { origin: origin })
       .pause(prevent_fling_pause_ms)
-      .pointerUp()
+      .pointerUp({button: pointerActionButtonId(buttonType)})
       .send();
     Promise.all([actionPromise, pointerPromise]).then(responses => {
       resolve(responses[1]);

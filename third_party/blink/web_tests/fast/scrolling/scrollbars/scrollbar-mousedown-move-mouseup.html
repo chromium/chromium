@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../resources/testdriver.js'></script>
+<script src='../../../resources/testdriver-actions.js'></script>
+<script src='../../../resources/testdriver-vendor.js'></script>
 <script src='../../../resources/gesture-util.js'></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src='../../../resources/scrollbar-util.js'></script>
 
 <style>
   #scrollme,
@@ -39,8 +44,8 @@
   window.onload = async () => {
     let d1 = document.querySelector('#scrollme');
     let d2 = document.querySelector('#notscrollme');
-    const leftButton = 0;
-    const middleButton = 1;
+    const scroll_start = trackTop(d1);
+    const delta_y = d1.getBoundingClientRect().height;
 
     initEventHandlers(d1);
     initEventHandlers(d2);
@@ -48,12 +53,13 @@
     internals.settings.setScrollAnimatorEnabled(false);
 
     promise_test(async () => {
+      if (scrollbarThickness() == 0) {
+        // Test is not relevant on platforms that don't display scrollbars.
+        return;
+      }
+
       await waitForCompositorReady();
-      await mouseDragAndDrop(d1.offsetLeft + d1.offsetWidth - 4,
-        d1.offsetTop + 30,
-        d2.offsetLeft + d2.offsetWidth - 4,
-        d2.offsetTop + 4);
-      await waitFor(() => { return events['scrollme'].length == 2; });
+      await pointerDrag(scroll_start.x, scroll_start.y, /*deltaX=*/0, delta_y);
 
       assert_greater_than(d1.scrollTop, 0);
       assert_equals(d2.scrollTop, 0);
@@ -63,14 +69,12 @@
       assert_equals(events['scrollme'][1].type, 'mouseup');
       assert_equals(events['scrollme'][1].which, 1);
 
-      d1.scrollTop = 0;
-      await waitForCompositorReady();
-      await mouseDragAndDrop(d1.offsetLeft + d1.offsetWidth - 4,
-        d1.offsetTop + 30,
-        d2.offsetLeft + d2.offsetWidth - 4,
-        d2.offsetTop + 4,
-        middleButton);
-      await waitFor(() => { return events['scrollme'].length == 4; });
+      await waitForScrollReset(d1);
+      await pointerDrag(scroll_start.x,
+        scroll_start.y,
+        /*deltaX=*/0,
+        delta_y,
+        { button: Buttons.MIDDLE });
 
       assert_greater_than(d1.scrollTop, 0);
       assert_equals(d2.scrollTop, 0);
