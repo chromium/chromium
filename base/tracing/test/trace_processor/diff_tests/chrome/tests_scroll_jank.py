@@ -26,6 +26,21 @@ class ChromeScrollJankStdlib(TestSuite):
         """,
         out=Path('scroll_jank_v3.out'))
 
+  def test_chrome_frames_with_missed_vsyncs_new(self):
+    return DiffTestBlueprint(
+        trace=DataPath('chrome_input_with_frame_view_new.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
+
+        SELECT
+          cause_of_jank,
+          sub_cause_of_jank,
+          delay_since_last_frame,
+          vsync_interval
+        FROM chrome_janky_frames;
+        """,
+        out=Path('scroll_jank_v3_new.out'))
+
   def test_chrome_frames_with_missed_vsyncs_percentage(self):
     return DiffTestBlueprint(
         trace=DataPath('chrome_input_with_frame_view.pftrace'),

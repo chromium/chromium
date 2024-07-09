@@ -22,8 +22,25 @@ SELECT
     ELSE NULL
   END
 FROM descendant_slice($parent_id) s
-WHERE s.name = $child_name
+WHERE s.name GLOB $child_name
 LIMIT 1;
+
+-- Returns the presentation timestamp for a given EventLatency slice.
+-- This is either the end of
+-- SwapEndToPresentationCompositorFrame (if it exists),
+-- the end of LatchToPresentation (if it exists),
+-- the end of SwapStartToPresentation (if it exists),
+-- or the end of LatchToSwapEnd (workaround in older Chrome versions).
+CREATE PERFETTO FUNCTION _get_presentation_timestamp(
+  -- The slice id which we need the presentation timestamp for.
+  id LONG
+)
+RETURNS INT AS
+SELECT
+  COALESCE(_descendant_slice_end(id, 'SwapEndToPresentationCompositorFrame'),
+    _descendant_slice_end(id, '*ToPresentation'),
+    _descendant_slice_end(id, 'LatchToSwapEnd'))
+FROM slice WHERE $id = id;
 
 -- All EventLatency slices.
 CREATE PERFETTO TABLE chrome_event_latencies(
@@ -70,12 +87,7 @@ SELECT
   id,
   scroll_update_id,
   is_presented,
-  CASE WHEN has_descendant_slice_with_name(
-      id,
-      'SwapEndToPresentationCompositorFrame')
-    THEN _descendant_slice_end(id, 'SwapEndToPresentationCompositorFrame')
-    ELSE _descendant_slice_end(id, 'LatchToSwapEnd')
-  END
+  _get_presentation_timestamp(chrome_event_latencies.id)
   AS presentation_timestamp,
   event_type,
   track_id

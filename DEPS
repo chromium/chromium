@@ -2318,6 +2318,13 @@ deps = {
         'size_bytes': 769741,
         'generation': 1693402148909129,
         'output_file': 'scroll_offsets.pftrace'
+      },
+      {
+        'object_name': 'test_data/chrome_input_with_frame_view_new.pftrace-e901ad9577088e62c921dd8bfcb43d652ecf49fa69b5b57f81bb3d27dbe94e12',
+        'sha256sum': 'e901ad9577088e62c921dd8bfcb43d652ecf49fa69b5b57f81bb3d27dbe94e12',
+        'size_bytes': 1967821,
+        'generation': 1719520814352733,
+        'output_file': 'chrome_input_with_frame_view_new.pftrace'
       }
     ],
     'dep_type': 'gcs'

@@ -37,8 +37,6 @@ CREATE PERFETTO TABLE chrome_gesture_scroll_updates(
   is_presented BOOL,
   -- Frame presentation timestamp aka the timestamp of the
   -- SwapEndToPresentationCompositorFrame substage.
-  -- TODO(b/341047059): temporarily use LatchToSwapEnd as a workaround if
-  -- SwapEndToPresentationCompositorFrame is missing due to b/247542163.
   presentation_timestamp INT,
   -- EventLatency event type.
   event_type INT

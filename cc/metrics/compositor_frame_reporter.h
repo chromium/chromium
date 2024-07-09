@@ -120,6 +120,8 @@ class CC_EXPORT CompositorFrameReporter {
   // earlier in `VizBreakdown`) for traces to record them correctly. The only
   // exception is `kSwapStartToSwapEnd` and its breakdowns as we either record
   // the former or the latter in a trace, but not both.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class VizBreakdown {
     kSubmitToReceiveCompositorFrame = 0,
     kReceivedCompositorFrameToStartDraw = 1,
@@ -134,7 +136,8 @@ class CC_EXPORT CompositorFrameReporter {
     kLatchToSwapEnd = 7,
 
     kSwapEndToPresentationCompositorFrame = 8,
-    kBreakdownCount
+    kBreakdownCount,
+    kMaxValue = kBreakdownCount
   };
 
   enum class BlinkBreakdown {

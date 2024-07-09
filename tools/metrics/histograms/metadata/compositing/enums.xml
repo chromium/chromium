@@ -219,6 +219,18 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Multiple videos"/>
 </enum>
 
+<enum name="VizBreakdown">
+  <int value="0" label="SubmitToReceiveCompositorFrame"/>
+  <int value="1" label="ReceivedCompositorFrameToStartDraw"/>
+  <int value="2" label="StartDrawToSwapStart"/>
+  <int value="3" label="SwapStartToSwapEnd"/>
+  <int value="4" label="SwapStartToBufferAvailable"/>
+  <int value="5" label="BufferAvailableToBufferReady"/>
+  <int value="6" label="BufferReadyToLatch"/>
+  <int value="7" label="LatchToSwapEnd"/>
+  <int value="8" label="SwapEndToPresentationCompositorFrame"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

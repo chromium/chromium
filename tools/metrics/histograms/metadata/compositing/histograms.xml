@@ -906,6 +906,15 @@ chromium-metrics-reviews@google.com.
   <token key="ProcessType" variants="TileManagerProcessType"/>
 </histogram>
 
+<histogram name="Compositing.VizBreakdownToPresentationUnexpected"
+    enum="VizBreakdown" expires_after="M129">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Recorded when an unexpected viz stage ends after the presentation time.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.{Process}.CompositorFrame.Quads" units="quads"
     expires_after="2024-12-08">
   <owner>vmiura@chromium.org</owner>
