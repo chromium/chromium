@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -122,6 +123,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -395,7 +397,8 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel,
                             public ui::SimpleMenuModel::Delegate {
  public:
   ProfileSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                      Profile* profile);
+                      Profile* profile,
+                      const ui::ColorProvider* color_provider);
   ProfileSubMenuModel(const ProfileSubMenuModel&) = delete;
   ProfileSubMenuModel& operator=(const ProfileSubMenuModel&) = delete;
   ~ProfileSubMenuModel() override = default;
@@ -432,7 +435,8 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel,
 
 ProfileSubMenuModel::ProfileSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
-    Profile* profile)
+    Profile* profile,
+    const ui::ColorProvider* color_provider)
     : SimpleMenuModel(this),
       profile_(profile),
       app_menu_model_delegate_(delegate),
@@ -441,6 +445,7 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
   avatar_image_model_ = ui::ImageModel::FromVectorIcon(
       kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon, avatar_icon_size);
+
   if (profile->IsIncognitoProfile()) {
     avatar_image_model_ = ui::ImageModel::FromVectorIcon(
         kIncognitoIcon, ui::kColorAvatarIconIncognito, avatar_icon_size);
@@ -458,7 +463,10 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       AccountInfo account_info = GetAccountInfoFromProfile(profile);
       gfx::Image avatar_image =
           account_info.IsEmpty()
-              ? profile_attributes->GetAvatarIcon(avatar_icon_size)
+              ? profile_attributes->GetAvatarIcon(
+                    avatar_icon_size, /*use_high_res_file=*/true,
+                    /*icon_params=*/
+                    {.has_padding = false, .has_background = false})
               : account_info.account_image;
       // The avatar image can be empty if the account image hasn't been
       // fetched yet, if there is no image, or in tests.
@@ -503,17 +511,22 @@ ProfileSubMenuModel::ProfileSubMenuModel(
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddTitle(l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
     auto profile_entries = GetAllOtherProfileEntriesForProfileSubMenu(profile);
+    profiles::PlaceholderAvatarIconParams icon_params =
+        GetPlaceholderAvatarIconParamsVisibleAgainstColor(
+            color_provider->GetColor(ui::kColorMenuBackground));
     for (ProfileAttributesEntry* profile_entry : profile_entries) {
       std::u16string display_name = GetProfileMenuDisplayName(profile_entry);
       int menu_id = GetAndIncrementNextMenuID();
-      AddItemWithIcon(menu_id,
-                      ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
-                          display_name,
-                          GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
-                          gfx::CHARACTER_BREAK)),
-                      ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-                          profile_entry->GetAvatarIcon(), avatar_icon_size,
-                          avatar_icon_size, profiles::SHAPE_CIRCLE)));
+      AddItemWithIcon(
+          menu_id,
+          ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
+              display_name,
+              GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+              gfx::CHARACTER_BREAK)),
+          ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+              profile_entry->GetAvatarIcon(
+                  avatar_icon_size, /*use_high_res_file=*/true, icon_params),
+              avatar_icon_size, avatar_icon_size, profiles::SHAPE_CIRCLE)));
       other_profiles_.insert({menu_id, profile_entry->GetPath()});
     }
 
@@ -1735,8 +1748,8 @@ void AppMenuModel::Build() {
   AddSeparator(ui::NORMAL_SEPARATOR);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  sub_menus_.push_back(
-      std::make_unique<ProfileSubMenuModel>(this, browser()->profile()));
+  sub_menus_.push_back(std::make_unique<ProfileSubMenuModel>(
+      this, browser()->profile(), browser()->window()->GetColorProvider()));
   auto* const profile_submenu_model =
       static_cast<ProfileSubMenuModel*>(sub_menus_.back().get());
   AddSubMenu(IDC_PROFILE_MENU_IN_APP_MENU,

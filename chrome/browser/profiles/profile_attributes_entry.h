@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
 
@@ -87,8 +88,10 @@ class ProfileAttributesEntry {
   // value of |size_for_placeholder_avatar| when all callsites pass some value.
   // Consider adding a |shape| parameter and get rid of
   // profiles::GetSizedAvatarIcon().
-  gfx::Image GetAvatarIcon(int size_for_placeholder_avatar = 74,
-                           bool use_high_res_file = true) const;
+  gfx::Image GetAvatarIcon(
+      int size_for_placeholder_avatar = 74,
+      bool use_high_res_file = true,
+      const profiles::PlaceholderAvatarIconParams& icon_params = {}) const;
   // Returns true if the profile is currently running any background apps. Note
   // that a return value of false could mean an error in collection or that
   // there are currently no background apps running. However, the action which
@@ -292,7 +295,9 @@ class ProfileAttributesEntry {
   const gfx::Image* GetHighResAvatar() const;
 
   // Generates the colored placeholder avatar icon for the given |size|.
-  gfx::Image GetPlaceholderAvatarIcon(int size) const;
+  gfx::Image GetPlaceholderAvatarIcon(
+      int size,
+      const profiles::PlaceholderAvatarIconParams& icon_params) const;
 
   // Returns if this profile has accounts (signed-in or signed-out) with
   // different account names. This is approximate as only a short hash of an

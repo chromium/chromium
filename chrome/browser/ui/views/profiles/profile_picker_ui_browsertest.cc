@@ -34,6 +34,8 @@ struct ProfilePickerTestParam {
   bool use_multiple_profiles = false;
   bool hide_guest_mode_for_supervised_users = false;
   bool show_kite_for_supervised_users = false;
+  // param to be removed when `kOutlineSilhouetteIcon` is enabled by default.
+  bool outline_silhouette_icon = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -49,11 +51,21 @@ const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
     {.pixel_test_param = {.test_suffix = "MultipleProfiles"},
      .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix = "MultipleProfiles_OutlineSilhouette"},
+     .use_multiple_profiles = true,
+     .outline_silhouette_icon = true},
     {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
                           .use_small_window = true},
      .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix =
+                              "DarkRtlSmallMultipleProfiles_OutlineSilhouette",
+                          .use_dark_theme = true,
+                          .use_right_to_left_language = true,
+                          .use_small_window = true},
+     .use_multiple_profiles = true,
+     .outline_silhouette_icon = true},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {.pixel_test_param = {.test_suffix = "MultipleProfiles_HideGuest"},
      .use_multiple_profiles = true,
@@ -134,7 +146,8 @@ class ProfilePickerUIPixelTest
         {{supervised_user::kHideGuestModeForSupervisedUsers,
           GetParam().hide_guest_mode_for_supervised_users},
          {supervised_user::kShowKiteForSupervisedUsers,
-          GetParam().show_kite_for_supervised_users}});
+          GetParam().show_kite_for_supervised_users},
+         {kOutlineSilhouetteIcon, GetParam().outline_silhouette_icon}});
 #endif
   }
 

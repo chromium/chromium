@@ -1152,7 +1152,9 @@ gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
     return gaia_account_image;
   }
 
-  return entry->GetAvatarIcon(preferred_size);
+  return entry->GetAvatarIcon(
+      preferred_size, /*use_high_res_file=*/true,
+      /*icon_params=*/{.has_padding = false, .has_background = false});
 }
 
 int AvatarToolbarButtonDelegate::GetWindowCount() const {
@@ -1182,11 +1184,13 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
 
   // Use default profile colors only for extension and system themes.
   const bool use_default_profile_colors =
-      service->UsingExtensionTheme() || service->UsingSystemTheme();
+      service->UsingExtensionTheme() ||
+      (service->IsSystemThemeDistinctFromDefaultTheme() &&
+       service->UsingSystemTheme());
   entry->SetProfileThemeColors(
       use_default_profile_colors
           ? GetDefaultProfileThemeColors(color_provider)
-          : GetCurrentProfileThemeColors(*color_provider));
+          : GetCurrentProfileThemeColors(*color_provider, *service));
 }
 
 base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(

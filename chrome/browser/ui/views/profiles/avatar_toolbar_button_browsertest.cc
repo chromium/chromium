@@ -995,7 +995,8 @@ class AvatarToolbarButtonProfileColorBrowserTest
       Browser* target_browser = nullptr) {
     target_browser = target_browser ? target_browser : browser();
     return GetCurrentProfileThemeColors(
-        *target_browser->window()->GetColorProvider());
+        *target_browser->window()->GetColorProvider(),
+        *ThemeServiceFactory::GetForProfile(target_browser->profile()));
   }
 };
 

@@ -18,7 +18,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
@@ -29,6 +28,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/profile_metrics/state.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -80,6 +80,7 @@ const char kGAIAPictureFileNameKey[] = "gaia_picture_file_name";
 const char kProfileHighlightColorKey[] = "profile_highlight_color";
 const char kDefaultAvatarFillColorKey[] = "default_avatar_fill_color";
 const char kDefaultAvatarStrokeColorKey[] = "default_avatar_stroke_color";
+const char kProfileColorSeedKey[] = "profile_color_seed";
 
 // Low-entropy accounts info, for metrics only.
 const char kFirstAccountNameHash[] = "first_account_name_hash";
@@ -114,6 +115,8 @@ int GetLowEntropyHashValue(const std::string& value) {
 }
 
 }  // namespace
+
+using profiles::PlaceholderAvatarIconParams;
 
 const char ProfileAttributesEntry::kSupervisedUserId[] = "managed_user_id";
 const char ProfileAttributesEntry::kAvatarIconKey[] = "avatar_icon";
@@ -323,7 +326,8 @@ std::u16string ProfileAttributesEntry::GetUserName() const {
 
 gfx::Image ProfileAttributesEntry::GetAvatarIcon(
     int size_for_placeholder_avatar,
-    bool use_high_res_file) const {
+    bool use_high_res_file,
+    const PlaceholderAvatarIconParams& icon_params) const {
   if (IsUsingGAIAPicture()) {
     const gfx::Image* image = GetGAIAPicture();
     if (image)
@@ -334,7 +338,7 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
   // TODO(crbug.com/40138086): After launch, remove the treatment of placeholder
   // avatars from GetHighResAvatar() and from any other places.
   if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
-    return GetPlaceholderAvatarIcon(size_for_placeholder_avatar);
+    return GetPlaceholderAvatarIcon(size_for_placeholder_avatar, icon_params);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -494,6 +498,8 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
       GetProfileThemeColor(kDefaultAvatarFillColorKey);
   std::optional<SkColor> default_avatar_stroke_color =
       GetProfileThemeColor(kDefaultAvatarStrokeColorKey);
+  std::optional<SkColor> profile_color_seed =
+      GetProfileThemeColor(kProfileColorSeedKey);
 
   DCHECK_EQ(profile_highlight_color.has_value(),
             default_avatar_stroke_color.has_value());
@@ -508,6 +514,9 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
   colors.profile_highlight_color = profile_highlight_color.value();
   colors.default_avatar_fill_color = default_avatar_fill_color.value();
   colors.default_avatar_stroke_color = default_avatar_stroke_color.value();
+  colors.profile_color_seed =
+      profile_color_seed.value_or(profile_highlight_color.value());
+
   return colors;
 }
 
@@ -516,7 +525,7 @@ ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
   // Profile theme colors shouldn't be queried on Android.
   NOTREACHED_IN_MIGRATION();
   return {gfx::kPlaceholderColor, gfx::kPlaceholderColor,
-          gfx::kPlaceholderColor};
+          gfx::kPlaceholderColor, gfx::kPlaceholderColor};
 #else
   std::optional<ProfileThemeColors> theme_colors = GetProfileThemeColorsIfSet();
   if (theme_colors)
@@ -734,10 +743,12 @@ void ProfileAttributesEntry::SetProfileThemeColors(
                           colors->default_avatar_fill_color);
     changed |= SetInteger(kDefaultAvatarStrokeColorKey,
                           colors->default_avatar_stroke_color);
+    changed |= SetInteger(kProfileColorSeedKey, colors->profile_color_seed);
   } else {
     changed |= ClearValue(kProfileHighlightColorKey);
     changed |= ClearValue(kDefaultAvatarFillColorKey);
     changed |= ClearValue(kDefaultAvatarStrokeColorKey);
+    changed |= ClearValue(kProfileColorSeedKey);
   }
 
   if (changed) {
@@ -832,11 +843,32 @@ const gfx::Image* ProfileAttributesEntry::GetHighResAvatar() const {
                                                                 image_path);
 }
 
-gfx::Image ProfileAttributesEntry::GetPlaceholderAvatarIcon(int size) const {
+gfx::Image ProfileAttributesEntry::GetPlaceholderAvatarIcon(
+    int size,
+    const PlaceholderAvatarIconParams& icon_params) const {
   ProfileThemeColors colors = GetProfileThemeColors();
+
+  // Filled Person Icon
+  if (!base::FeatureList::IsEnabled(kOutlineSilhouetteIcon)) {
+    return profiles::GetPlaceholderAvatarIconWithColors(
+        colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
+        size, icon_params);
+  }
+
+  // Outline Silhouette Person Icon
+  if (icon_params.visibility_against_background.has_value()) {
+    // If the icon should be visible against the background, it cannot have a
+    // background or padding.
+    CHECK(!icon_params.has_background);
+    CHECK(!icon_params.has_padding);
+    return profiles::GetPlaceholderAvatarIconVisibleAgainstBackground(
+        colors.profile_color_seed, size,
+        icon_params.visibility_against_background.value());
+  }
+
   return profiles::GetPlaceholderAvatarIconWithColors(
       colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
-      size);
+      size, icon_params);
 }
 
 bool ProfileAttributesEntry::HasMultipleAccountNames() const {

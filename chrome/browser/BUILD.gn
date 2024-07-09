@@ -2628,6 +2628,7 @@ static_library("browser") {
     "//ui/base/idle",
     "//ui/base/ime",
     "//ui/color",
+    "//ui/color/dynamic_color",
     "//ui/compositor",
     "//ui/display/util:util",
     "//ui/events:events_base",

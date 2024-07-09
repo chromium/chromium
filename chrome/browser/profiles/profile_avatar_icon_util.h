@@ -33,6 +33,19 @@ class SkBitmap;
 
 namespace profiles {
 
+enum class AvatarVisibilityAgainstBackground {
+  // Use a color for the icon that is visible against the background.
+  kVisibleAgainstDarkTheme,
+  kVisibleAgainstLightTheme
+};
+
+struct PlaceholderAvatarIconParams {
+  bool has_padding = true;
+  bool has_background = true;
+  std::optional<AvatarVisibilityAgainstBackground>
+      visibility_against_background;
+};
+
 #if BUILDFLAG(IS_WIN)
 // The avatar badge size needs to be half of the shortcut icon size because
 // the Windows taskbar icon is 32x32 and the avatar icon overlay is 16x16. So to
@@ -113,10 +126,27 @@ int GetPlaceholderAvatarIconResourceID();
 // Returns a URL for the placeholder avatar icon.
 std::string GetPlaceholderAvatarIconUrl();
 
-// Returns colored generic avatar.
-gfx::Image GetPlaceholderAvatarIconWithColors(SkColor fill_color,
-                                              SkColor stroke_color,
-                                              int size);
+// Returns the outline silhouette colored generic avatar, either visible against
+// a dark or a light theme background. This function is currently under
+// experiment and only used when `kOutlineSilhouetteIcon` is enabled.
+gfx::Image GetPlaceholderAvatarIconVisibleAgainstBackground(
+    SkColor profile_color_seed,
+    int size,
+    AvatarVisibilityAgainstBackground visibility);
+
+// Returns a filled person icon if `kOutlineSilhouetteIcon` is disabled, and the
+// outline silhouette colored generic avatar if it is enabled. Depending on the
+// `icon_params`, the outline silhouette avatar will have a background/padding
+// or not.
+//
+// If the avatar icon should not have a background itself but be visible against
+// the background it is displayed against, use
+// `GetPlaceholderAvatarIconVisibleAgainstBackground()` instead.
+gfx::Image GetPlaceholderAvatarIconWithColors(
+    SkColor fill_color,
+    SkColor stroke_color,
+    int size,
+    const PlaceholderAvatarIconParams& icon_params = {});
 
 // Gets the resource ID of the default avatar icon at |index|.
 int GetDefaultAvatarIconResourceIDAtIndex(size_t index);

@@ -911,8 +911,11 @@ void ProfileMenuView::BuildAvailableProfiles() {
 #endif
 
     AddAvailableProfile(
-        ui::ImageModel::FromImage(
-            profile_entry->GetAvatarIcon(profiles::kMenuAvatarIconSize)),
+        ui::ImageModel::FromImage(profile_entry->GetAvatarIcon(
+            profiles::kMenuAvatarIconSize, /*use_high_res_file=*/true,
+            GetPlaceholderAvatarIconParamsVisibleAgainstColor(
+                browser()->window()->GetColorProvider()->GetColor(
+                    ui::kColorMenuBackground)))),
         profile_entry->GetName(),
         /*is_guest=*/false,
         /*is_enabled=*/profiles_selectable,

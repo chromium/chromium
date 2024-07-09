@@ -207,6 +207,10 @@ BASE_FEATURE(kProfilesReordering,
              "ProfilesReordering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOutlineSilhouetteIcon,
+             "OutlineSilhouetteIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kForceSigninFlowInProfilePicker,
              "ForceSigninFlowInProfilePicker",
