@@ -4741,14 +4741,31 @@ String AXNodeObject::TextAlternative(
   }
 
   // Step 2I from: http://www.w3.org/TR/accname-aam-1.1
-  String resulting_text = TextAlternativeFromTooltip(
-      name_from, name_sources, &found_text_alternative, &text_alternative,
-      related_objects);
-  if (!resulting_text.empty()) {
-    if (name_sources) {
-      text_alternative = resulting_text;
-    } else {
-      return resulting_text;
+  // Use the tooltip text for the name if there was no other accessible name.
+  // However, it does not make sense to do this if the object has a role
+  // that prohibits name as specified in
+  // https://w3c.github.io/aria/#namefromprohibited.
+  // Preventing the tooltip for being used in the name causes it to be used for
+  // the description instead.
+  // This complies with https://w3c.github.io/html-aam/#att-title, which says
+  // how to expose a title: "Either the accessible name, or the accessible
+  // description, or Not mapped". There's nothing in HTML-AAM that explicitly
+  // forbids this, and it seems reasonable for authors to use a tooltip on any
+  // visible element without causing an accessibility error or user problem.
+  // Note: https://github.com/w3c/html-aam/issues/552 has been filed to
+  // change the spec to be more explicit about this.
+  // Note: if this is part of another label or description, it needs to be
+  // computed as a name, in order to contribute to that.
+  if (aria_label_or_description_root || !IsNameProhibited()) {
+    String resulting_text = TextAlternativeFromTooltip(
+        name_from, name_sources, &found_text_alternative, &text_alternative,
+        related_objects);
+    if (!resulting_text.empty()) {
+      if (name_sources) {
+        text_alternative = resulting_text;
+      } else {
+        return resulting_text;
+      }
     }
   }
 

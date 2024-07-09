@@ -4386,6 +4386,57 @@ String AXObject::ComputedName() const {
   return GetName(name_from, &name_objects);
 }
 
+bool AXObject::IsNameProhibited() const {
+  if (!RuntimeEnabledFeatures::AccessibilityProhibitedNamesEnabled()) {
+    return false;
+  }
+
+  if (CanSetFocusAttribute()) {
+    // Make an exception for focusable elements. ATs will likely read the name
+    // of a focusable element even if it has the wrong role.
+    // TODO(crbug.com/350528330): Test to see whether the following content
+    // works in all screen readers we support, and not, we should return true
+    // here: <div tabindex="0" aria-label="Some label"></div>.
+    return false;
+  }
+  // Will not be in platform tree.
+  if (IsIgnored()) {
+    return false;
+  }
+  // This is temporary in order for web-ui to pass tests.
+  // For example, <cr-expand-button> in cr_expand_button.ts expects authors
+  // to supply the label by putting aria-label on the <cr-expand-button>
+  // element, which it then copies to a second element inside the shadow root,
+  // and resulting in two elements with the same aria-label. This could be
+  // modified to use data-label instead of aria-label.
+  // TODO(crbug.com/350528330):  Fix WebUI and remove this.
+  if (GetElement() && GetElement()->IsCustomElement()) {
+    return false;
+  }
+
+  // The ARIA specification disallows providing accessible names on certain
+  // roles because doing so causes problems in screen readers.
+  // Roles which probit names: https://w3c.github.io/aria/#namefromprohibited.
+  switch (RoleValue()) {
+    case ax::mojom::blink::Role::kCaption:
+    case ax::mojom::blink::Role::kCode:
+    case ax::mojom::blink::Role::kContentDeletion:
+    case ax::mojom::blink::Role::kContentInsertion:
+    case ax::mojom::blink::Role::kDefinition:
+    case ax::mojom::blink::Role::kEmphasis:
+    case ax::mojom::blink::Role::kGenericContainer:
+    case ax::mojom::blink::Role::kMark:
+    case ax::mojom::blink::Role::kNone:
+    case ax::mojom::blink::Role::kParagraph:
+    case ax::mojom::blink::Role::kStrong:
+    case ax::mojom::blink::Role::kSuggestion:
+    case ax::mojom::blink::Role::kTerm:
+      return true;
+    default:
+      return false;
+  }
+}
+
 String AXObject::GetName(ax::mojom::blink::NameFrom& name_from,
                          AXObject::AXObjectVector* name_objects) const {
   HeapHashSet<Member<const AXObject>> visited;

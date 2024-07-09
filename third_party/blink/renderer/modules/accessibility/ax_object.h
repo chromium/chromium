@@ -1499,6 +1499,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Collapses multiple whitespace characters into one. Used by GetName().
   String SimplifyName(const String&) const;
+  // Returns true if the object's role prohibits it from being named, even by
+  // the author. See https://w3c.github.io/aria/#namefromprohibited
+  bool IsNameProhibited() const;
   static String RecursiveTextAlternative(
       const AXObject&,
       const AXObject* aria_label_or_description_root,
