@@ -4,9 +4,12 @@
 
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 
+#import "base/containers/contains.h"
+#import "base/containers/to_vector.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/observer_list.h"
 #import "components/autofill/core/browser/autofill_driver_router.h"
 #import "components/autofill/core/browser/form_filler.h"
 #import "components/autofill/core/browser/form_structure.h"
@@ -325,7 +328,9 @@ void AutofillDriverIOS::DidFillAutofillFormData(const FormData& form,
   }
 }
 
-void AutofillDriverIOS::FormsSeen(const std::vector<FormData>& updated_forms) {
+void AutofillDriverIOS::FormsSeen(
+    const std::vector<FormData>& updated_forms,
+    const std::vector<FormGlobalId>& removed_forms) {
   auto callback = [](AutofillDriver& driver,
                      const std::vector<FormData>& updated_forms,
                      const std::vector<FormGlobalId>& removed_forms) {
@@ -353,9 +358,9 @@ void AutofillDriverIOS::FormsSeen(const std::vector<FormData>& updated_forms) {
       }
     }
     // TODO(crbug.com/40184363): Notify about deleted fields.
-    router_->FormsSeen(callback, *this, updated_forms, {});
+    router_->FormsSeen(callback, *this, updated_forms, removed_forms);
   } else {
-    callback(*this, updated_forms, {});
+    callback(*this, updated_forms, removed_forms);
   }
 }
 
@@ -486,8 +491,42 @@ void AutofillDriverIOS::FormsRemoved(
                   mojom::SubmissionSource::XHR_SUCCEEDED);
   }
 
-  // TODO(crbug.com/40184363): Call FormsSeen with deleted forms and formless
-  // form.
+  // Report the removed forms so Autofill can be synced with the DOM state.
+
+  std::vector<FormGlobalId> forms_to_report =
+      base::ToVector(removed_forms, [&](const auto& renderer_id) {
+        return FormGlobalId{.frame_token = local_frame_token_,
+                            .renderer_id = renderer_id};
+      });
+
+  if (!removed_unowned_fields.empty()) {
+    // Determine whether the synthetic form should be reported as removed based
+    // on the removed fields, where having all fields removed is considered as
+    // a deletion.
+    FormGlobalId synthetic_global_id = {.frame_token = local_frame_token_,
+                                        .renderer_id = FormRendererId(0)};
+    if (FormStructure* form =
+            GetAutofillManager().FindCachedFormById(synthetic_global_id)) {
+      // If the synthetic form fields are a subset of the removed fields, it
+      // means that all the synthetic form fields were removed.
+      const bool is_deleted = base::ranges::includes(
+          removed_unowned_fields, form->fields(), /*comp=*/{},
+          /*proj1=*/{},
+          /*proj2=*/[](const std::unique_ptr<AutofillField>& field) {
+            return field->renderer_id();
+          });
+      if (is_deleted) {
+        forms_to_report.emplace_back(synthetic_global_id);
+      }
+    }
+
+    // TODO(crbug.com/351685487): Trigger forms extraction if there are some
+    // fields removed but not all of them.
+  }
+
+  if (!forms_to_report.empty()) {
+    FormsSeen(/*updated_forms=*/{}, /*removed_forms=*/forms_to_report);
+  }
 }
 
 bool AutofillDriverIOS::DetectFormSubmissionAfterFormRemoval(

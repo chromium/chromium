@@ -10,6 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #import "base/types/id_type.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
@@ -166,9 +167,10 @@ class TestAutofillManager : public BrowserAutofillManager {
 
   void OnFormsSeen(const std::vector<FormData>& updated_forms,
                    const std::vector<FormGlobalId>& removed_forms) override {
-    for (const FormData& form : updated_forms) {
-      seen_forms_.push_back(form);
-    }
+    seen_forms_.insert(seen_forms_.end(), updated_forms.begin(),
+                       updated_forms.end());
+    removed_forms_.insert(removed_forms_.end(), removed_forms.begin(),
+                          removed_forms.end());
     BrowserAutofillManager::OnFormsSeen(updated_forms, removed_forms);
   }
 
@@ -203,6 +205,7 @@ class TestAutofillManager : public BrowserAutofillManager {
   }
 
   const std::vector<FormData>& seen_forms() { return seen_forms_; }
+  const std::vector<FormGlobalId>& removed_forms() { return removed_forms_; }
   const std::vector<FormData>& filled_forms() { return filled_forms_; }
   const std::vector<FormData>& submitted_forms() { return submitted_forms_; }
   const std::vector<FormData>& ask_for_filldata_forms() {
@@ -214,6 +217,7 @@ class TestAutofillManager : public BrowserAutofillManager {
 
   void ResetTestState() {
     seen_forms_.clear();
+    removed_forms_.clear();
     filled_forms_.clear();
     forms_seen_waiter_.Reset();
     did_submit_forms_waiter_.Reset();
@@ -223,6 +227,7 @@ class TestAutofillManager : public BrowserAutofillManager {
 
  private:
   std::vector<FormData> seen_forms_;
+  std::vector<FormGlobalId> removed_forms_;
   std::vector<FormData> filled_forms_;
   std::vector<FormData> submitted_forms_;
   std::vector<FormData> ask_for_filldata_forms_;
@@ -1083,6 +1088,159 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFrameDeletion) {
           // Verify the phone field.
           AllOf(Property(&FormFieldData::placeholder, kPhonePlaceholder),
                 Property(&FormFieldData::value, kFakePhone))));
+}
+
+// Tests that form deletion in a child frame is taken into consideration where
+// the parent browser form is updated accordingly.
+TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion) {
+  // Enable Autofill XHR detection to enable the detection of deleted forms.
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillEnableXHRSubmissionDetectionIOS);
+
+  AddIframe("cf1", "<form><input type=\"text\"></input></form>");
+  AddIframe("cf2", "<form><input type=\"text\"></input></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  FormGlobalId browser_form_global_id;
+  {
+    const FormData& form = main_frame_manager().seen_forms().back();
+    browser_form_global_id = form.global_id();
+    // There should be 2 fields in the initial browser form.
+    ASSERT_EQ(2u, form.fields().size());
+  }
+
+  main_frame_manager().ResetTestState();
+
+  {
+    // Remove form in the top child frame.
+    const std::u16string script =
+        u"const frame = document.querySelector('iframe'); "
+        "frame.contentWindow.eval('document.forms[0].remove()');";
+    ASSERT_TRUE(ExecuteJavaScriptInFrame(WaitForMainFrame(), script));
+  }
+
+  // Wait for the deleted form to be reported as seen to the main frame that
+  // hosts the browser form.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
+  ASSERT_EQ(main_frame_manager().removed_forms().size(), 1u);
+
+  // Verify that the field count is now 1 for the xframes browser form since
+  // there was one form containing one field that was deleted.
+  FormStructure* form =
+      main_frame_manager().FindCachedFormById(browser_form_global_id);
+  ASSERT_TRUE(form);
+  EXPECT_EQ(1u, form->field_count());
+}
+
+// Tests that synthethic form deletion in a child frame is taken into
+// consideration where the parent browser form is updated accordingly.
+TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion_Synthetic) {
+  // Enable Autofill XHR detection to enable the detection of deleted forms.
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillEnableXHRSubmissionDetectionIOS);
+
+  AddIframe("cf1", "<div id=\"form1\"><input type=\"text\"></input>"
+                   "<input type=\"text\"></input></div>");
+  AddIframe("cf2", "<div id=\"form1\"><input type=\"text\"></input>"
+                   "<input type=\"text\"></input></div>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  FormGlobalId browser_form_global_id;
+  {
+    const FormData& form = main_frame_manager().seen_forms().back();
+    browser_form_global_id = form.global_id();
+    // There should be 4 fields in the initial browser form, 2 per frame.
+    ASSERT_EQ(4u, form.fields().size());
+  }
+
+  main_frame_manager().ResetTestState();
+
+  {
+    // Remove all input fields in the top child frame, to repoduce synthetic
+    // form deletion.
+    const std::u16string script =
+        u"const frame = document.querySelector('iframe'); "
+        "frame.contentWindow.eval(\"document.getElementById('form1')"
+        ".remove()\");";
+    ASSERT_TRUE(ExecuteJavaScriptInFrame(WaitForMainFrame(), script));
+  }
+
+  // Wait for the deleted form to be reported as seen to the main frame that
+  // hosts the browser form.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
+  ASSERT_EQ(main_frame_manager().removed_forms().size(), 1u);
+
+  // Verify that the field count is now 2 for the xframe browser form since
+  // the synthetic form in one of the frames was deleted.
+  FormStructure* form =
+      main_frame_manager().FindCachedFormById(browser_form_global_id);
+  ASSERT_TRUE(form);
+  EXPECT_EQ(2u, form->field_count());
+}
+
+// Tests that the partial deletion of fields in the synthethic form of a child
+// frame isn't reported as form removal since the synthetic still remains.
+TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion_Synthetic_Partial) {
+  // Enable Autofill XHR detection to enable the detection of deleted forms.
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillEnableXHRSubmissionDetectionIOS);
+
+  AddIframe("cf1", "<input type=\"text\"></input>"
+                   "<input type=\"text\"></input>");
+  AddIframe("cf2", "<input type=\"text\"></input>"
+                   "<input type=\"text\"></input>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  FormGlobalId browser_form_global_id;
+  {
+    const FormData& form = main_frame_manager().seen_forms().back();
+    browser_form_global_id = form.global_id();
+    // There should be 4 fields in the initial browser form, 2 per frame.
+    ASSERT_EQ(4u, form.fields().size());
+  }
+
+  main_frame_manager().ResetTestState();
+
+  {
+    // Remove one input field in the top child frame without entirely deleting
+    // the synthethic form.
+    const std::u16string script =
+        u"const frame = document.querySelector('iframe'); "
+        "frame.contentWindow.eval(\"document.querySelector('input').remove()\")"
+        ";";
+    ASSERT_TRUE(ExecuteJavaScriptInFrame(WaitForMainFrame(), script));
+  }
+
+  // Give some time to handle the deleted input field.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(200));
+
+  // Verify that there we no forms reported as removed.
+  EXPECT_EQ(main_frame_manager().removed_forms().size(), 0u);
+
+  // Verify that the field count is still 4 for the xframe browser form since
+  // the synthetic form in one of the frames was deleted.
+  FormStructure* form =
+      main_frame_manager().FindCachedFormById(browser_form_global_id);
+  ASSERT_TRUE(form);
+  EXPECT_EQ(4u, form->field_count());
 }
 
 // Ensure that disabling the feature actually disables the feature.

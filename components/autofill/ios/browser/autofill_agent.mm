@@ -1177,7 +1177,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   DCHECK(!updatedForms.empty());
 
-  driver->FormsSeen(/*updated_forms=*/updatedForms);
+  driver->FormsSeen(/*updated_forms=*/updatedForms, /*removed_forms=*/{});
 }
 
 // Invokes the form extraction script in |frame| and loads the output into the
