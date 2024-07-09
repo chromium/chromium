@@ -29,6 +29,8 @@ SevenZipAnalyzer::~SevenZipAnalyzer() = default;
 void SevenZipAnalyzer::OnOpenError(seven_zip::Result result) {
   results()->success = false;
   results()->analysis_result = ArchiveAnalysisResult::kFailedToOpen;
+  results()->encryption_info.is_encrypted |=
+      result == seven_zip::Result::kEncryptedHeaders;
 }
 
 base::File SevenZipAnalyzer::OnTempFileRequest() {
