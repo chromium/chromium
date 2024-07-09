@@ -700,8 +700,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->get_preselection_widget_for_testing(), nullptr);
 }
 
-// TODO(crbug.com/40938945): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/351958199): Flaky on Linux and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_PreselectionToastOmniboxFocusState \
   DISABLED_PreselectionToastOmniboxFocusState
 #else
