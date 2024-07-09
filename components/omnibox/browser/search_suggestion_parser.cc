@@ -952,6 +952,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
       // Ensure `answer_template` has an answer.
       if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
           answer_template.answers_size() > 0) {
+        if (OmniboxFieldTrial::kAnswerActionsCounterfactual.Get()) {
+          answer_template.mutable_enhancements()->Clear();
+        }
         results->suggest_results.back().SetRichAnswerTemplate(answer_template);
       } else if (answer_parsed_successfully) {
         results->suggest_results.back().SetAnswer(answer);

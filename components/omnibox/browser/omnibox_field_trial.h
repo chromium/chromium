@@ -729,6 +729,10 @@ constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>
         {},
         &kActionsInSuggestRemoveActionTypesVariants);
 
+constexpr base::FeatureParam<bool> kAnswerActionsCounterfactual(
+    &omnibox::kOmniboxAnswerActions,
+    "AnswerActionsCounterfactual",
+    false);
 constexpr base::FeatureParam<bool> kAnswerActionsShowAboveKeyboard(
     &omnibox::kOmniboxAnswerActions,
     "ShowAboveKeyboard",

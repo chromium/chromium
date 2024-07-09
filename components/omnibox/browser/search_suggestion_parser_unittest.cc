@@ -11,10 +11,12 @@
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -965,6 +967,87 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
     EXPECT_EQ(answer_data.subhead().text(), "68F Fri - Los Angeles, CA");
     EXPECT_EQ(answer_data.image().url(),
               "https://www.gstatic.com/images/image.png");
+  }
+}
+
+TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfoCounterfactual) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kOmniboxAnswerActions,
+        {{OmniboxFieldTrial::kAnswerActionsCounterfactual.name, "true"}}},
+       {omnibox_feature_configs::SuggestionAnswerMigration::
+            kOmniboxSuggestionAnswerMigration,
+        {}}},
+      /*disabled_features=*/{});
+
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"weather los",
+                          metrics::OmniboxEventProto::NTP_REALBOX,
+                          scheme_classifier);
+  {
+    // Setup RichAnswerTemplate with answer data.
+    omnibox::RichSuggestTemplate suggest_template;
+    omnibox::RichAnswerTemplate* answer_template =
+        suggest_template.mutable_rich_answer_template();
+    omnibox::AnswerData* answer_data = answer_template->add_answers();
+    answer_data->mutable_headline()->set_text("68F Fri - Los Angeles, CA");
+    answer_data->mutable_subhead()->set_text("weather los angeles");
+    answer_data->mutable_image()->set_url("//www.gstatic.com/images/image.png");
+    answer_template->mutable_enhancements()
+        ->add_enhancements()
+        ->set_display_text("7 day forecast");
+
+    std::string json_data =
+        R"([
+      "weather los",
+      ["weather los angeles", "weather los angeles ca", "weather los alamitos"],
+      ["", "", ""],
+      [],
+      {
+        "google:clientdata": {
+          "bpc": false,
+          "tlw": false
+        },
+        "google:suggestdetail": [
+          {
+            "ansb": "8",
+            "google:templateinfo": ")" +
+        SerializeAndEncodeRichSuggestTemplate(suggest_template) +
+        R"("
+          },
+          {},
+          {}
+        ],
+        "google:suggestrelevance": [1252, 1251, 1250],
+        "google:suggestsubtypes": [
+          [512, 433],
+          [512],
+          [512]
+        ],
+        "google:suggesttype": ["QUERY", "QUERY", "QUERY"],
+        "google:verbatimrelevance": 851
+      }
+    ])";
+
+    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    ASSERT_TRUE(root_val);
+    ASSERT_TRUE(root_val.value().is_list());
+
+    SearchSuggestionParser::Results results;
+    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+        root_val->GetList(), input, scheme_classifier,
+        /*default_result_relevance=*/400,
+        /*is_keyword_result=*/false, &results));
+    ASSERT_EQ(3U, results.suggest_results.size());
+    ASSERT_TRUE(results.suggest_results[0].answer_template().has_value());
+    ASSERT_FALSE(
+        ProtosAreEqual(results.suggest_results[0].answer_template().value(),
+                       *answer_template));
+    ASSERT_TRUE(results.suggest_results[0]
+                    .answer_template()
+                    ->enhancements()
+                    .enhancements()
+                    .empty());
   }
 }
 

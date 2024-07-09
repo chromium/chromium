@@ -1698,7 +1698,8 @@ constexpr FeatureEntry::FeatureVariation kOmniboxActionsInSuggestVariants[] = {
      std::size(kOmniboxActionsInSuggestTreatment8), "t3366528"},
 };
 
-constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsCounterfactual[] = {};
+constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsCounterfactual[] = {
+    {OmniboxFieldTrial::kAnswerActionsCounterfactual.name, "true"}};
 constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsTreatment1[] = {
     {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "true"},
     {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "false"},
@@ -1726,7 +1727,8 @@ constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsTreatment5[] = {
 
 constexpr FeatureEntry::FeatureVariation kOmniboxAnswerActionsVariants[] = {
     {"Counterfactual: fetch without rendering ",
-     kOmniboxAnswerActionsCounterfactual, 0, "t3379046"},
+     kOmniboxAnswerActionsCounterfactual,
+     std::size(kOmniboxAnswerActionsCounterfactual), "t3379046"},
     {"T1: Show chips above keyboard when there are no url matches",
      kOmniboxAnswerActionsTreatment1,
      std::size(kOmniboxAnswerActionsTreatment1), "t3379047"},
