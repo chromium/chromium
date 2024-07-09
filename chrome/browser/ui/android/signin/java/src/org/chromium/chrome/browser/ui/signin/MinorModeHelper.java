@@ -119,8 +119,14 @@ public class MinorModeHelper implements IdentityManager.Observer {
                 new MinorModeHelper(identityManager, primaryAccount, uiUpdater));
     }
 
-    static void recordButtonsShown(@SigninMetricsUtils.SyncButtonsType int type) {
-        SigninMetricsUtils.recordButtonsShownOnHistorySync(type);
+    /**
+     * Records whether the buttons on sync screen and history sync were equally weighted. If the
+     * buttons were unweighted it specifies if this was due to the deadline or the capability.
+     *
+     * @param type See {@link SigninMetricsUtils.SyncButtonsType}
+     */
+    public static void recordButtonsShown(@SigninMetricsUtils.SyncButtonsType int type) {
+        SigninMetricsUtils.recordButtonsShown(type);
     }
 
     /**

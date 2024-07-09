@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.SyncButtonsType;
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class HistorySyncViewBinder {
+
+    private static boolean sMinorModeButtonShownMetricRecorded;
+
     public static void bind(PropertyModel model, HistorySyncView view, PropertyKey key) {
         if (key == HistorySyncProperties.PROFILE_DATA) {
             view.getAccountImageView()
@@ -27,6 +32,24 @@ class HistorySyncViewBinder {
                 assert model.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS)
                         == ScreenMode.PENDING;
                 return;
+            }
+
+            if (!sMinorModeButtonShownMetricRecorded) {
+                switch (model.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS)) {
+                    case ScreenMode.RESTRICTED:
+                        MinorModeHelper.recordButtonsShown(
+                                SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
+                        break;
+                    case ScreenMode.UNRESTRICTED:
+                        MinorModeHelper.recordButtonsShown(
+                                SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED);
+                        break;
+                    case ScreenMode.DEADLINED:
+                        MinorModeHelper.recordButtonsShown(
+                                SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_DEADLINE);
+                        break;
+                }
+                sMinorModeButtonShownMetricRecorded = true;
             }
 
             view.getAcceptButton()

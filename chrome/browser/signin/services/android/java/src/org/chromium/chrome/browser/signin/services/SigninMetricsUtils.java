@@ -74,10 +74,12 @@ public class SigninMetricsUtils {
     @IntDef({
         SyncButtonsType.SYNC_EQUAL_WEIGHTED_DEPRECATED,
         SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED,
-        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED,
+        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_DEPRECATED,
         SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED,
         SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE,
         SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY,
+        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_DEADLINE,
+        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY,
         SyncButtonsType.NUM_ENTRIES,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -86,11 +88,13 @@ public class SigninMetricsUtils {
         // numeric values should never be reused.
         int SYNC_EQUAL_WEIGHTED_DEPRECATED = 0;
         int SYNC_NOT_EQUAL_WEIGHTED = 1;
-        int HISTORY_SYNC_EQUAL_WEIGHTED = 2;
+        int HISTORY_SYNC_EQUAL_WEIGHTED_DEPRECATED = 2;
         int HISTORY_SYNC_NOT_EQUAL_WEIGHTED = 3;
         int SYNC_EQUAL_WEIGHTED_FROM_DEADLINE = 4;
         int SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY = 5;
-        int NUM_ENTRIES = 6;
+        int HISTORY_SYNC_EQUAL_WEIGHTED_FROM_DEADLINE = 6;
+        int HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY = 7;
+        int NUM_ENTRIES = 8;
     };
 
     /**
@@ -151,7 +155,7 @@ public class SigninMetricsUtils {
                 "Signin.SyncButtons.Clicked", type, SyncButtonClicked.NUM_ENTRIES);
     }
 
-    public static void recordButtonsShownOnHistorySync(@SyncButtonsType int type) {
+    public static void recordButtonsShown(@SyncButtonsType int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.SyncButtons.Shown", type, SyncButtonsType.NUM_ENTRIES);
     }
