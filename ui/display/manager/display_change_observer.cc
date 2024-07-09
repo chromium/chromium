@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -174,7 +175,7 @@ DisplayChangeObserver::GetExternalManagedDisplayModeList(
     const gfx::Size size = native_mode.size();
 
     auto it = display_mode_map.find(size);
-    DCHECK(it != display_mode_map.end())
+    CHECK(it != display_mode_map.end(), base::NotFatalUntil::M130)
         << "Native mode must be part of the mode list.";
 
     // If the native mode was replaced (e.g. by a mode with similar size but

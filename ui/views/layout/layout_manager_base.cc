@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -322,7 +323,7 @@ void LayoutManagerBase::ViewRemoved(View* host, View* view) {
   DCHECK_EQ(GetRootLayoutManager(), this);
 
   auto it = child_infos_.find(view);
-  DCHECK(it != child_infos_.end());
+  CHECK(it != child_infos_.end(), base::NotFatalUntil::M130);
   const bool removed_visible =
       it->second.can_be_visible && !view->GetProperty(kViewIgnoredByLayoutKey);
 
@@ -340,7 +341,7 @@ void LayoutManagerBase::ViewVisibilitySet(View* host,
                                           bool new_visibility) {
   DCHECK_EQ(host_view_, host);
   auto it = child_infos_.find(view);
-  DCHECK(it != child_infos_.end());
+  CHECK(it != child_infos_.end(), base::NotFatalUntil::M130);
   const bool was_ignored = view->GetProperty(kViewIgnoredByLayoutKey);
   if (it->second.can_be_visible == new_visibility)
     return;

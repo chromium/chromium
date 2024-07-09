@@ -6,6 +6,8 @@
 
 #include <ostream>
 
+#include "base/not_fatal_until.h"
+
 namespace ui {
 
 WaylandBufferHandle::WaylandBufferHandle(WaylandBufferBacking* backing)
@@ -35,7 +37,7 @@ void WaylandBufferHandle::OnWlBufferCreated(wl::Object<wl_buffer> wl_buffer) {
 
 void WaylandBufferHandle::OnExplicitRelease(WaylandSurface* requestor) {
   auto it = released_callbacks_.find(requestor);
-  DCHECK(it != released_callbacks_.end());
+  CHECK(it != released_callbacks_.end(), base::NotFatalUntil::M130);
   released_callbacks_.erase(it);
 }
 

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -101,7 +102,7 @@ class ElementTracker::ElementData {
   void NotifyElementHidden(TrackedElement* element) {
     if (context_) {
       const auto it = element_lookup_.find(element);
-      DCHECK(it != element_lookup_.end());
+      CHECK(it != element_lookup_.end(), base::NotFatalUntil::M130);
       elements_.erase(it->second);
       element_lookup_.erase(it);
     }
@@ -410,7 +411,7 @@ void ElementTracker::NotifyElementActivated(TrackedElement* element) {
   GarbageCollector::Frame gc_frame(gc_.get());
   const auto it =
       element_data_.find(LookupKey(element->identifier(), element->context()));
-  DCHECK(it != element_data_.end());
+  CHECK(it != element_data_.end(), base::NotFatalUntil::M130);
   it->second.NotifyElementActivated(safe_element);
 
   // Do "all contexts" notification:
@@ -439,7 +440,7 @@ void ElementTracker::NotifyElementHidden(TrackedElement* element) {
   // Call context-specific callbacks and erase entry.
   const auto it =
       element_data_.find(LookupKey(element->identifier(), element->context()));
-  DCHECK(it != element_data_.end());
+  CHECK(it != element_data_.end(), base::NotFatalUntil::M130);
   ElementData* const data = &it->second;
   data->NotifyElementHidden(element);
   gc_frame.Add(data);

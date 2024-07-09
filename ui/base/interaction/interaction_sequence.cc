@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -617,7 +618,7 @@ void InteractionSequence::OnElementHidden(TrackedElement* element) {
     if (next_step()->uses_named_element()) {
       // Find the named element; if it still exists, it hasn't been hidden.
       const auto it = named_elements_.find(next_step()->element_name);
-      DCHECK(it != named_elements_.end());
+      CHECK(it != named_elements_.end(), base::NotFatalUntil::M130);
       if (it->second.get())
         return;
     }

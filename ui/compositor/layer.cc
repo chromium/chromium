@@ -19,6 +19,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
@@ -1907,7 +1908,7 @@ void Layer::OnMirrorDestroyed(LayerMirror* mirror) {
   const auto it =
       base::ranges::find(mirrors_, mirror, &std::unique_ptr<LayerMirror>::get);
 
-  DCHECK(it != mirrors_.end());
+  CHECK(it != mirrors_.end(), base::NotFatalUntil::M130);
   mirrors_.erase(it);
 }
 

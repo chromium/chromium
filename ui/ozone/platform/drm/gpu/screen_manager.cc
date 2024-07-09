@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -358,7 +359,7 @@ bool ScreenManager::TestAndSetPreferredModifiers(
 
   for (const auto& params : controllers_params) {
     auto it = FindDisplayController(params.drm, params.crtc);
-    DCHECK(controllers_.end() != it);
+    CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
     HardwareDisplayController* controller = it->get();
 
     if (params.mode) {
@@ -410,7 +411,7 @@ bool ScreenManager::TestAndSetLinearModifier(
 
   for (const auto& params : controllers_params) {
     auto it = FindDisplayController(params.drm, params.crtc);
-    DCHECK(controllers_.end() != it);
+    CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
     HardwareDisplayController* controller = it->get();
 
     uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
@@ -487,7 +488,7 @@ bool ScreenManager::TestModesetWithOverlays(
   auto drm = controllers_params[0].drm;
   for (const auto& params : controllers_params) {
     auto it = FindDisplayController(params.drm, params.crtc);
-    DCHECK(controllers_.end() != it);
+    CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
     HardwareDisplayController* controller = it->get();
 
     if (params.mode) {
@@ -534,7 +535,7 @@ bool ScreenManager::Modeset(
   for (const auto& params : controllers_params) {
     if (params.mode) {
       auto it = FindDisplayController(params.drm, params.crtc);
-      DCHECK(controllers_.end() != it);
+      CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
       HardwareDisplayController* controller = it->get();
 
       uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
@@ -577,7 +578,7 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
     const DrmOverlayPlaneList& modeset_planes,
     bool enable_vrr) {
   HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
-  DCHECK(controllers_.end() != it)
+  CHECK(controllers_.end() != it, base::NotFatalUntil::M130)
       << "Display controller (crtc=" << crtc << ") doesn't exist.";
 
   HardwareDisplayController* controller = it->get();

@@ -5,9 +5,11 @@
 #include "ui/ozone/platform/wayland/test/mock_wayland_zcr_color_manager.h"
 
 #include <chrome-color-management-server-protocol.h>
+
 #include <cstdint>
 #include <iterator>
 
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/wayland/color_manager_util.h"
 #include "ui/gfx/color_space.h"
@@ -182,21 +184,21 @@ void MockZcrColorManagerV1::StoreZcrColorSpace(TestZcrColorSpaceV1* params) {
 void MockZcrColorManagerV1::OnZcrColorManagementOutputDestroyed(
     TestZcrColorManagementOutputV1* params) {
   auto it = base::ranges::find(color_manager_outputs_, params);
-  DCHECK(it != color_manager_outputs_.end());
+  CHECK(it != color_manager_outputs_.end(), base::NotFatalUntil::M130);
   color_manager_outputs_.erase(it);
 }
 
 void MockZcrColorManagerV1::OnZcrColorManagementSurfaceDestroyed(
     TestZcrColorManagementSurfaceV1* params) {
   auto it = base::ranges::find(color_manager_surfaces_, params);
-  DCHECK(it != color_manager_surfaces_.end());
+  CHECK(it != color_manager_surfaces_.end(), base::NotFatalUntil::M130);
   color_manager_surfaces_.erase(it);
 }
 
 void MockZcrColorManagerV1::OnZcrColorSpaceDestroyed(
     TestZcrColorSpaceV1* params) {
   auto it = base::ranges::find(color_manager_color_spaces_, params);
-  DCHECK(it != color_manager_color_spaces_.end());
+  CHECK(it != color_manager_color_spaces_.end(), base::NotFatalUntil::M130);
   color_manager_color_spaces_.erase(it);
 }
 

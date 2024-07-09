@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_number_conversions.h"
@@ -890,7 +891,7 @@ void Compositor::StartThroughputTracker(
 
 bool Compositor::StopThroughputTracker(TrackerId tracker_id) {
   auto it = throughput_tracker_map_.find(tracker_id);
-  DCHECK(it != throughput_tracker_map_.end());
+  CHECK(it != throughput_tracker_map_.end(), base::NotFatalUntil::M130);
 
   // Clean up if report has happened since StopThroughputTracking would
   // not trigger report in this case.
@@ -906,7 +907,7 @@ bool Compositor::StopThroughputTracker(TrackerId tracker_id) {
 
 void Compositor::CancelThroughputTracker(TrackerId tracker_id) {
   auto it = throughput_tracker_map_.find(tracker_id);
-  DCHECK(it != throughput_tracker_map_.end());
+  CHECK(it != throughput_tracker_map_.end(), base::NotFatalUntil::M130);
 
   const bool should_stop = !it->second.report_attempted;
 

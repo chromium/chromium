@@ -4,6 +4,7 @@
 
 #include "ui/gtk/nav_button_provider_gtk.h"
 
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -433,7 +434,7 @@ gfx::ImageSkia NavButtonProviderGtk::GetImage(
     ui::NavButtonProvider::FrameButtonDisplayType type,
     ui::NavButtonProvider::ButtonState state) const {
   auto it = button_images_.find(type);
-  DCHECK(it != button_images_.end());
+  CHECK(it != button_images_.end(), base::NotFatalUntil::M130);
   auto it2 = it->second.find(state);
   DCHECK(it2 != it->second.end());
   return it2->second;
@@ -442,7 +443,7 @@ gfx::ImageSkia NavButtonProviderGtk::GetImage(
 gfx::Insets NavButtonProviderGtk::GetNavButtonMargin(
     ui::NavButtonProvider::FrameButtonDisplayType type) const {
   auto it = button_margins_.find(type);
-  DCHECK(it != button_margins_.end());
+  CHECK(it != button_margins_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 

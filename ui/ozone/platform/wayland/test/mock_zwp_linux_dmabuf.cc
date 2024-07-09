@@ -7,6 +7,7 @@
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
 
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/wayland/test/test_buffer.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
@@ -58,7 +59,7 @@ void MockZwpLinuxDmabufV1::StoreBufferParams(
 void MockZwpLinuxDmabufV1::OnBufferParamsDestroyed(
     TestZwpLinuxBufferParamsV1* params) {
   auto it = base::ranges::find(buffer_params_, params);
-  DCHECK(it != buffer_params_.end());
+  CHECK(it != buffer_params_.end(), base::NotFatalUntil::M130);
   buffer_params_.erase(it);
 }
 

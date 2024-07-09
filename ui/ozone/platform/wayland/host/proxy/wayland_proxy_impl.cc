@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
@@ -60,7 +61,7 @@ wl_buffer* WaylandProxyImpl::CreateShmBasedWlBuffer(
 void WaylandProxyImpl::DestroyShmForWlBuffer(wl_buffer* buffer) {
   auto it =
       base::ranges::find(shm_buffers_, buffer, &ui::WaylandShmBuffer::get);
-  DCHECK(it != shm_buffers_.end());
+  CHECK(it != shm_buffers_.end(), base::NotFatalUntil::M130);
   shm_buffers_.erase(it);
 }
 

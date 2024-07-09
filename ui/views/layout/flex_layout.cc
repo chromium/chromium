@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -182,7 +183,7 @@ int FlexLayout::ChildViewSpacing::GetTrailingInset() const {
 
 int FlexLayout::ChildViewSpacing::GetLeadingSpace(size_t view_index) const {
   auto it = leading_spacings_.find(view_index);
-  DCHECK(it != leading_spacings_.end());
+  CHECK(it != leading_spacings_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
