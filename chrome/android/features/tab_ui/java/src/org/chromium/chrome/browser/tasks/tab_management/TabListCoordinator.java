@@ -95,6 +95,7 @@ public class TabListCoordinator
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabListModel mModel;
     private final ViewGroup mRootView;
+    private final boolean mAllowDragAndDrop;
 
     private boolean mIsInitialized;
     private OnLayoutChangeListener mListLayoutListener;
@@ -140,6 +141,7 @@ public class TabListCoordinator
      * @param rootView The root view of the app.
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *     respected in TabListMode.STRIP mode.
+     * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
      */
     TabListCoordinator(
             @TabListMode int mode,
@@ -158,7 +160,8 @@ public class TabListCoordinator
             boolean attachToParent,
             String componentName,
             @NonNull ViewGroup rootView,
-            @Nullable Callback<Object> onModelTokenChange) {
+            @Nullable Callback<Object> onModelTokenChange,
+            boolean allowDragAndDrop) {
         this(
                 mode,
                 context,
@@ -181,7 +184,8 @@ public class TabListCoordinator
                 0,
                 0,
                 0,
-                /* onTabGroupCreation= */ null);
+                /* onTabGroupCreation= */ null,
+                /* allowDragAndDrop= */ allowDragAndDrop);
     }
 
     TabListCoordinator(
@@ -207,7 +211,8 @@ public class TabListCoordinator
             int emptyImageResId,
             int emptyHeadingStringResId,
             int emptySubheadingStringResId,
-            @Nullable Runnable onTabGroupCreation) {
+            @Nullable Runnable onTabGroupCreation,
+            boolean allowDragAndDrop) {
         mMode = mode;
         mTabActionState = initialTabActionState;
         mContext = context;
@@ -216,6 +221,7 @@ public class TabListCoordinator
         mModel = new TabListModel();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
         mRootView = rootView;
+        mAllowDragAndDrop = allowDragAndDrop;
 
         RecyclerView.RecyclerListener recyclerListener = null;
         if (mMode == TabListMode.GRID) {
@@ -513,8 +519,9 @@ public class TabListCoordinator
 
     private void configureRecyclerViewTouchHelpers(
             @TabListMode int mode, @TabActionState int tabActionState) {
-        if ((mMode == TabListMode.GRID || mMode == TabListMode.LIST)
-                && mTabActionState != TabActionState.SELECTABLE) {
+        boolean modeAllowsDragAndDrop = mMode == TabListMode.GRID || mMode == TabListMode.LIST;
+        boolean actionStateAllowsDragAndDrop = mTabActionState != TabActionState.SELECTABLE;
+        if (mAllowDragAndDrop && modeAllowsDragAndDrop && actionStateAllowsDragAndDrop) {
             if (mItemTouchHelper == null || mOnItemTouchListener == null) {
                 TabGridItemTouchHelperCallback callback =
                         (TabGridItemTouchHelperCallback)

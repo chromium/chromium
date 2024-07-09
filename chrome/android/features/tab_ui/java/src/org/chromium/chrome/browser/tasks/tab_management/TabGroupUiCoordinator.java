@@ -159,18 +159,19 @@ public class TabGroupUiCoordinator
                             mContext,
                             mBrowserControlsStateProvider,
                             currentTabModelFilterSupplier,
-                            null,
-                            false,
-                            null,
-                            null,
+                            /* thumbnailProvider= */ null,
+                            /* actionOnRelatedTabs= */ false,
+                            /* gridCardOnClickListenerProvider= */ null,
+                            /* dialogHandler= */ null,
                             TabProperties.TabActionState.UNSET,
-                            null,
-                            null,
+                            /* selectionDelegateProvider= */ null,
+                            /* priceWelcomeMessageControllerSupplier= */ null,
                             mTabListContainerView,
-                            true,
+                            /* attachToParent= */ true,
                             COMPONENT_NAME,
                             mRootView,
-                            onModelTokenChange);
+                            onModelTokenChange,
+                            /* allowDragAndDrop= */ false);
             mTabStripCoordinator.initWithNative(mTabModelSelector.getModel(false).getProfile());
 
             mModelChangeProcessor =

@@ -198,17 +198,18 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                 tabContentManager.getTabThumbnailWithCallback(
                                         tabId, thumbnailSize, callback);
                             },
-                            false,
+                            /* actionOnRelatedTabs= */ false,
                             gridCardOnClickListenerProvider,
                             mMediator.getTabGridDialogHandler(),
                             TabProperties.TabActionState.CLOSABLE,
-                            null,
-                            null,
+                            /* selectionDelegateProvider= */ null,
+                            /* priceWelcomeMessageControllerSupplier= */ null,
                             containerView,
-                            false,
+                            /* attachToParent= */ false,
                             mComponentName,
                             rootView,
-                            null);
+                            /* onModelTokenChange= */ null,
+                            /* allowDragAndDrop= */ true);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
 

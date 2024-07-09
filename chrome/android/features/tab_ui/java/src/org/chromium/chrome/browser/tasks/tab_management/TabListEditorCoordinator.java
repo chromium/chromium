@@ -223,6 +223,19 @@ class TabListEditorCoordinator {
     private PropertyModelChangeProcessor mTabListEditorLayoutChangeProcessor;
     private @TabActionState int mTabActionState;
 
+    /**
+     * @param context The Android context to use.
+     * @param parentView The parentView to attach the view to.
+     * @param browserControlsStateProvider Provides the browser controls state.
+     * @param currentTabModelFilterSupplier Supplies the current TabModelFilter.
+     * @param tabContentManager Provides thumbnails for tabs.
+     * @param clientTabListRecyclerViewPositionSetter Allows setting the recycler view position.
+     * @param mode Modes of showing the list of tabs. Can be used in GRID or STRIP.
+     * @param rootView The root view of the app.
+     * @param displayGroups Whether groups should be displayed.
+     * @param snackbarManager Used to display snackbar messages.
+     * @param initialTabActionState The initial TabActionState to use.
+     */
     public TabListEditorCoordinator(
             Context context,
             ViewGroup parentView,
@@ -379,16 +392,17 @@ class TabListEditorCoordinator {
                         mCurrentTabModelFilterSupplier,
                         thumbnailProvider,
                         mDisplayGroups,
-                        null,
-                        null,
+                        /* gridCardOnClickListenerProvider= */ null,
+                        /* dialogHandler= */ null,
                         mTabActionState,
                         this::getSelectionDelegate,
-                        null,
+                        /* priceWelcomeMessageControllerSupplier= */ null,
                         mTabListEditorLayout,
-                        false,
+                        /* attachToParent= */ false,
                         COMPONENT_NAME,
                         mRootView,
-                        null);
+                        null,
+                        /* allowDragAndDrop= */ false);
 
         // Note: The TabListEditorCoordinator is always created after native is initialized.
         mTabListCoordinator.initWithNative(regularProfile);

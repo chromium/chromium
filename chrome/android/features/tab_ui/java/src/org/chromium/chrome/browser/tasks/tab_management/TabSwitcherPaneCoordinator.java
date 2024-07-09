@@ -226,7 +226,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             supportsEmptyState
                                     ? R.string.tabswitcher_no_tabs_open_to_visit_different_pages
                                     : Resources.ID_NULL,
-                            onTabGroupCreation);
+                            onTabGroupCreation,
+                            /* allowDragAndDrop= */ true);
             mTabListCoordinator = tabListCoordinator;
             tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);
 
