@@ -96,15 +96,12 @@ namespace autofill {
 
 namespace {
 
-// By spec, dropdowns should always have a width which is a multiple of 12.
-constexpr int kAutofillPopupWidthMultiple = 12;
-
 // The minimum width should exceed the maximum size of a cursor, which is 128
 // (see crbug.com/1434330).
-constexpr int kAutofillPopupMinWidth = kAutofillPopupWidthMultiple * 13;
+constexpr int kAutofillPopupMinWidth = 156;
 static_assert(kAutofillPopupMinWidth > 128);
 // TODO(crbug.com/41382463): move handling the max width to the base class.
-constexpr int kAutofillPopupMaxWidth = kAutofillPopupWidthMultiple * 38;
+constexpr int kAutofillPopupMaxWidth = 456;
 
 // Preferred position relative to the control sides of the sub-popup.
 constexpr std::array<views::BubbleArrowSide, 2> kDefaultSubPopupSides = {
@@ -1095,37 +1092,15 @@ void PopupViewViews::CreateSuggestionViews() {
   }
 }
 
-int PopupViewViews::AdjustWidth(int width) const {
-  if (width >= kAutofillPopupMaxWidth) {
-    return kAutofillPopupMaxWidth;
-  }
-
-  if (width <= kAutofillPopupMinWidth) {
-    return kAutofillPopupMinWidth;
-  }
-
-  // The popup size is being determined by the contents, rather than the min/max
-  // or the element bounds. Round up to a multiple of
-  // |kAutofillPopupWidthMultiple|.
-  if (width % kAutofillPopupWidthMultiple) {
-    width +=
-        (kAutofillPopupWidthMultiple - (width % kAutofillPopupWidthMultiple));
-  }
-
-  return width;
-}
-
 gfx::Size PopupViewViews::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   gfx::Size size = views::View::CalculatePreferredSize(available_size);
-  // Applies certain rounding rules to the given width, such as matching the
-  // element width when possible.
-  const int width = AdjustWidth(size.width());
   if (size.width() > kAutofillPopupMaxWidth) {
     // TODO(crbug.com/40232718): When we set the vertical axis to stretch,
     // BoxLayout will occupy the entire vertical axis size. Two calculations are
     // needed to correct this.
-    return views::View::CalculatePreferredSize(views::SizeBounds(width, {}));
+    return views::View::CalculatePreferredSize(
+        views::SizeBounds(kAutofillPopupMaxWidth, {}));
   }
 
   return size;
@@ -1193,7 +1168,9 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
     // compensate.
     scroll_width = scroll_view_->GetScrollBarLayoutWidth();
   }
-  preferred_size.set_width(AdjustWidth(preferred_size.width() + scroll_width));
+  preferred_size.set_width(std::clamp(preferred_size.width() + scroll_width,
+                                      kAutofillPopupMinWidth,
+                                      kAutofillPopupMaxWidth));
 
   popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
       element_bounds, content_area_bounds, preferred_size);

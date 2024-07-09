@@ -171,10 +171,6 @@ class PopupViewViews : public PopupBaseView,
   // suggestions.
   void CreateSuggestionViews();
 
-  // Applies certain rounding rules to the given width, such as matching the
-  // element width when possible.
-  int AdjustWidth(int width) const;
-
   // Selects the first row prior to the currently selected one that is
   // selectable (e.g. not a separator). If no row is selected or no row prior to
   // the current one is selectable, it tries to select the last row. If that one
