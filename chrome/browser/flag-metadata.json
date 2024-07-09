@@ -8476,8 +8476,13 @@
   },
   {
     "name": "tab-strip-layout-optimization",
-    "owners": [ "wenyufu@chromium.org", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "wenyufu@chromium.org", "aishwaryarj@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 133
+  },
+  {
+    "name": "tab-strip-transition-in-desktop-window",
+    "owners": [ "aishwaryarj@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 133
   },
   {
     "name" : "tabstrip-collection-storage",

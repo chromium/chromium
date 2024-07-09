@@ -484,6 +484,8 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_GROUP_INDICATORS = "TabStripGroupIndicatorsAndroid";
     public static final String TAB_STRIP_LAYOUT_OPTIMIZATION = "TabStripLayoutOptimization";
     public static final String TAB_STRIP_STARTUP_REFACTORING = "TabStripStartupRefactoring";
+    public static final String TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW =
+            "TabStripTransitionInDesktopWindow";
     public static final String TABLET_TAB_SWITCHER_LONG_PRESS_MENU =
             "TabletTabSwitcherLongPressMenu";
     public static final String TABLET_TOOLBAR_REORDERING = "TabletToolbarReordering";

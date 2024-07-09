@@ -4743,6 +4743,12 @@ const char kTabStripStartupRefactoringDescription[] =
     "tabs before the tab strip is initialized to prevent "
     "jank (tabs seeming to quickly flicker / scroll).";
 
+const char kTabStripTransitionInDesktopWindowName[] =
+    "Tab Strip Transition in Desktop Window";
+const char kTabStripTransitionInDesktopWindowDescription[] =
+    "Allows hiding / showing the tab strip with varying desktop window widths "
+    "by initiating a fade transition.";
+
 const char kDelayTempStripRemovalName[] =
     "Delay temp tab strip removal on startup";
 const char kDelayTempStripRemovalDescription[] =

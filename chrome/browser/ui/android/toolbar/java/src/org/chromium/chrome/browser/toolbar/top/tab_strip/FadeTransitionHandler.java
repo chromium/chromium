@@ -8,6 +8,7 @@ import android.util.DisplayMetrics;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.ui.base.ViewUtils;
 
@@ -43,7 +44,7 @@ class FadeTransitionHandler {
     void updateTabStripTransitionThreshold(DisplayMetrics displayMetrics) {
         mTabStripTransitionThreshold = ViewUtils.dpToPx(displayMetrics, getStripWidthThresholdDp());
 
-        // TODO (crbug/342641516): Find an alternate way to trigger #requestTtransition in
+        // TODO (crbug/342641516): Find an alternate way to trigger #requestTransition in
         // instrumentation testing.
         if (TabStripTransitionCoordinator.sFadeTransitionThresholdForTesting != null) {
             requestTransition();
@@ -51,6 +52,10 @@ class FadeTransitionHandler {
     }
 
     void requestTransition() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)) {
+            return;
+        }
         mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
                 mCallbackController.makeCancelable(delegate -> maybeUpdateTabStripVisibility()));
     }
