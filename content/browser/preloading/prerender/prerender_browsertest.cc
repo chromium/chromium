@@ -26,6 +26,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -4680,17 +4681,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderBlankIframe) {
   TestHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
 }
 
-// Tests that an inner WebContents can be attached in a prerendered page.
-// TODO(crbug.com/346929955): The test shows high flakiness on sanitizer bots.
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-#define MAYBE_ActivatePageWithInnerContents \
-  DISABLED_ActivatePageWithInnerContents
-#else
-#define MAYBE_ActivatePageWithInnerContents ActivatePageWithInnerContents
-#endif
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       MAYBE_ActivatePageWithInnerContents) {
+using PrerenderBrowserDeathTest = PrerenderBrowserTest;
+
+// Tests that an inner WebContents cannot be attached in a prerendered page.
+// See https://crbug.com/40191159 for details.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserDeathTest,
+                       PrerenderCannotHaveInnerContents) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_blank_iframe.html");
   const GURL kInnerContentsUrl = GetUrl("/empty.html?prerender");
@@ -4699,15 +4695,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   int host_id = AddPrerender(kPrerenderingUrl);
   RenderFrameHostImpl* prerendered_render_frame_host =
       GetPrerenderedMainFrameHost(host_id);
-  WebContentsImpl* inner_contents =
-      static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(
-          prerendered_render_frame_host->child_at(0)->current_frame_host()));
-  ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, kInnerContentsUrl));
 
-  NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  EXPECT_EQ(GetRequestCount(kInnerContentsUrl), 1);
+  EXPECT_CHECK_DEATH({
+    CreateAndAttachInnerContents(
+        prerendered_render_frame_host->child_at(0)->current_frame_host());
+  });
 }
 
 // Ensure that whether or not a NavigationRequest is for a prerender activation

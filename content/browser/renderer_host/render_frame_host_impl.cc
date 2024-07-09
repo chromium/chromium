@@ -16341,19 +16341,14 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
       FrameTree::NodeIterator node_iter = node_range.begin();
       while (node_iter != node_range.end()) {
         FrameTreeNode* ftn = *node_iter;
-        // TODO(crbug.com/40191159): Inner WebContents do not know about
-        // prerendering state so skip them for now. This check does not
-        // impact back/forward cache since inner WebContents aren't allowed.
-        if (ftn->IsOutermostMainFrame()) {
-          DCHECK(ftn->current_frame_host()->lifecycle_state() !=
-                 LifecycleStateImpl::kInBackForwardCache);
-          node_iter.AdvanceSkippingChildren();
-        } else {
-          RenderFrameHostImpl* rfh = ftn->current_frame_host();
-          DCHECK_EQ(rfh->lifecycle_state(), lifecycle_state_);
-          rfh->SetLifecycleState(new_state);
-          ++node_iter;
-        }
+
+        // We should not encounter an Inner WebContents.
+        CHECK(!ftn->IsOutermostMainFrame());
+
+        RenderFrameHostImpl* rfh = ftn->current_frame_host();
+        DCHECK_EQ(rfh->lifecycle_state(), lifecycle_state_);
+        rfh->SetLifecycleState(new_state);
+        ++node_iter;
       }
     }
   }

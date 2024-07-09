@@ -2923,6 +2923,11 @@ void WebContentsImpl::AttachInnerWebContents(
   DCHECK_EQ(this, WebContents::FromRenderFrameHost(render_frame_host_impl));
   DCHECK(render_frame_host_impl->GetParent());
 
+  // Inner WebContents aren't supported with prerendering. See
+  // https://crbug.com/40191159 for details.
+  CHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+           render_frame_host_impl->lifecycle_state());
+
   RenderFrameHostManager* inner_render_manager =
       inner_web_contents_impl->GetRenderManager();
   RenderFrameHostImpl* inner_main_frame =

@@ -200,8 +200,8 @@ RenderFrameHostImpl* FencedFrame::GetProspectiveOuterDocument() {
 }
 
 FrameTree* FencedFrame::LoadingTree() {
-  // TODO(crbug.com/40191159): Consider and fix the case when fenced frames are
-  // being prerendered.
+  CHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+           owner_render_frame_host_->lifecycle_state());
   return web_contents_->LoadingTree();
 }
 

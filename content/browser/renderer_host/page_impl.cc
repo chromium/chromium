@@ -258,15 +258,8 @@ void PageImpl::Activate(
   }
 
   // Prepare each RenderFrameHostImpl in this Page for activation.
-  // TODO(crbug.com/40191159): Currently we check GetPage() below because
-  // RenderFrameHostImpls may be in a different Page, if, e.g., they are in an
-  // inner WebContents. These are in a different FrameTree which might not know
-  // it is being prerendered. We should teach these FrameTrees that they are
-  // being prerendered, or ban inner FrameTrees in a prerendering page.
   main_document_->ForEachRenderFrameHostIncludingSpeculative(
-      [this](RenderFrameHostImpl* rfh) {
-        if (&rfh->GetPage() != this)
-          return;
+      [](RenderFrameHostImpl* rfh) {
         rfh->RendererWillActivateForPrerenderingOrPreview();
       });
 }

@@ -446,13 +446,13 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
     // content, so the primary frame tree's NavigationController needs to
     // represent an aggregate view of the security state of its inner frame
     // trees.
-    RenderFrameHost* rfh =
+    RenderFrameHostImpl* rfh =
         controller_->frame_tree().root()->current_frame_host();
     DCHECK(rfh);
-    WebContentsImpl* contents = static_cast<WebContentsImpl*>(
-        WebContents::FromRenderFrameHost(rfh->GetOutermostMainFrame()));
-    // TODO(crbug.com/40191159): Ensure only fenced frames owned by active pages
-    // can modify this.
+    CHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+             rfh->GetOutermostMainFrame()->lifecycle_state());
+    WebContentsImpl* contents =
+        WebContentsImpl::FromRenderFrameHostImpl(rfh->GetOutermostMainFrame());
     entry = contents->GetController().GetLastCommittedEntry();
   } else {
     entry = controller_->GetLastCommittedEntry();
