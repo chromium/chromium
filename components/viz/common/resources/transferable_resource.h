@@ -157,19 +157,13 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     texture_target_ = texture_target;
   }
 
-  // Returns the Mailbox or SharedBitmapId that this instance is storing.
+  // Returns the Mailbox that this instance is storing. Valid to call only if
+  // this instance has been created via MakeSoftwareSharedImage() or MakeGpu().
   const gpu::Mailbox& mailbox() const {
-    bool holds_mailbox =
-        absl::holds_alternative<gpu::Mailbox>(memory_buffer_id_);
-    DUMP_WILL_BE_CHECK(holds_mailbox);
-    // TODO(crbug.com/337538024): Remove this escape hatch post safe rollout of
-    // the above.
-    if (!holds_mailbox) {
-      return empty_mailbox_;
-    }
-
     return absl::get<gpu::Mailbox>(memory_buffer_id_);
   }
+  // Returns the SharedBitmapId that this instance is storing. Valid to call
+  // only if this instance has been created via MakeSoftwareSharedBitmap().
   const SharedBitmapId& shared_bitmap_id() const {
     return absl::get<SharedBitmapId>(memory_buffer_id_);
   }
