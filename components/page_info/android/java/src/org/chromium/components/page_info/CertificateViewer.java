@@ -20,7 +20,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.view.ViewCompat;
 
 import org.jni_zero.NativeMethods;
 
@@ -84,8 +83,7 @@ public class CertificateViewer implements OnItemSelectedListener {
                         TextView view = (TextView) super.getView(position, convertView, parent);
                         // Add extra padding on the end side to avoid overlapping the dropdown
                         // arrow.
-                        ViewCompat.setPaddingRelative(
-                                view, mPadding, mPadding, mPadding * 2, mPadding);
+                        view.setPaddingRelative(mPadding, mPadding, mPadding * 2, mPadding);
                         return view;
                     }
                 };

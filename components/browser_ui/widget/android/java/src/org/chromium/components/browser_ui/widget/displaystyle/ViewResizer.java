@@ -6,8 +6,6 @@ package org.chromium.components.browser_ui.widget.displaystyle;
 
 import android.view.View;
 
-import androidx.core.view.ViewCompat;
-
 /**
  * Changes a view's padding when switching between {@link UiConfig} display styles. If the display
  * style is {@link HorizontalDisplayStyle#REGULAR}, a predetermined value will be used to set the
@@ -92,8 +90,7 @@ public class ViewResizer implements DisplayStyleObserver, View.OnLayoutChangeLis
 
     private void updatePadding() {
         int padding = computePadding();
-        ViewCompat.setPaddingRelative(
-                mView, padding, mView.getPaddingTop(), padding, mView.getPaddingBottom());
+        mView.setPaddingRelative(padding, mView.getPaddingTop(), padding, mView.getPaddingBottom());
     }
 
     /** Computes the lateral padding to be applied to the associated view. */

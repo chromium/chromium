@@ -109,8 +109,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             // WRAP_CONTENT, defined above for multiline labels, leaves none.
             int existingStart = ViewCompat.getPaddingStart(labelView);
             int existingEnd = ViewCompat.getPaddingEnd(labelView);
-            ViewCompat.setPaddingRelative(
-                    labelView, existingStart, mLabelMargin, existingEnd, mLabelMargin);
+            labelView.setPaddingRelative(existingStart, mLabelMargin, existingEnd, mLabelMargin);
         }
 
         labelView.setEnabled(item.isEnabled());

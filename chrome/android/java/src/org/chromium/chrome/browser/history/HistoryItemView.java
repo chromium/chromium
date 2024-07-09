@@ -179,8 +179,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
     public void setRemoveButtonVisiblity(int visibility) {
         mRemoveButton.setVisibility(visibility);
         int endPadding = visibility == View.GONE ? mEndPadding : 0;
-        ViewCompat.setPaddingRelative(
-                mContentView,
+        mContentView.setPaddingRelative(
                 ViewCompat.getPaddingStart(mContentView),
                 mContentView.getPaddingTop(),
                 endPadding,

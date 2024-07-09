@@ -190,8 +190,7 @@ public class CredentialEditFragmentView extends CredentialEntryFragmentViewBase 
                         int oldRight,
                         int oldBottom) -> {
                     // Padding at the end of the text to ensure space for the icons.
-                    ViewCompat.setPaddingRelative(
-                            textField,
+                    textField.setPaddingRelative(
                             ViewCompat.getPaddingStart(textField),
                             textField.getPaddingTop(),
                             icons.getWidth(),

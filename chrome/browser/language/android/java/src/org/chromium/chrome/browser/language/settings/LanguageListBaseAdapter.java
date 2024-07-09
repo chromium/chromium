@@ -103,8 +103,7 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
             mMoreButton.setVisibility(View.VISIBLE);
             mMoreButton.setDelegate(delegate);
             // Set item row end padding 0 when MenuButton is visible.
-            ViewCompat.setPaddingRelative(
-                    itemView,
+            itemView.setPaddingRelative(
                     ViewCompat.getPaddingStart(itemView),
                     itemView.getPaddingTop(),
                     0,

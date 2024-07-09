@@ -120,8 +120,7 @@ class TextFieldView extends FrameLayout implements FieldView {
                             int oldRight,
                             int oldBottom) {
                         // Padding at the end of mInput to preserve space for mIconsLayer.
-                        ViewCompat.setPaddingRelative(
-                                mInput,
+                        mInput.setPaddingRelative(
                                 ViewCompat.getPaddingStart(mInput),
                                 mInput.getPaddingTop(),
                                 mIconsLayer.getWidth(),

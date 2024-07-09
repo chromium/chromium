@@ -841,8 +841,7 @@ public class ToolbarTablet extends ToolbarLayout
     private void setStartPaddingBasedOnButtonVisibility(boolean buttonsVisible) {
         buttonsVisible = buttonsVisible || mHomeButton.getVisibility() == View.VISIBLE;
 
-        ViewCompat.setPaddingRelative(
-                this,
+        this.setPaddingRelative(
                 buttonsVisible ? mStartPaddingWithButtons : mStartPaddingWithoutButtons,
                 getPaddingTop(),
                 ViewCompat.getPaddingEnd(this),

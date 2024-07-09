@@ -65,8 +65,7 @@ class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
                         : (TextView) convertView.findViewById(mTextViewResourceId);
         if (mTextView != null) {
             // Clear the possible changes for the first and last view.
-            ViewCompat.setPaddingRelative(
-                    convertView,
+            convertView.setPaddingRelative(
                     ViewCompat.getPaddingStart(convertView),
                     0,
                     ViewCompat.getPaddingEnd(convertView),
@@ -79,8 +78,7 @@ class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
 
         if (position == 0) {
             // Padding at the top of the dropdown.
-            ViewCompat.setPaddingRelative(
-                    convertView,
+            convertView.setPaddingRelative(
                     ViewCompat.getPaddingStart(convertView),
                     getContext()
                             .getResources()

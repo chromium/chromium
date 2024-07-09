@@ -31,7 +31,6 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -660,9 +659,9 @@ public class PaymentRequestUI
                 int paddingSize =
                         mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.editor_dialog_section_large_spacing);
-                ViewCompat.setPaddingRelative(mRetryErrorView, 0, paddingSize, 0, paddingSize);
+                mRetryErrorView.setPaddingRelative(0, paddingSize, 0, paddingSize);
             } else {
-                ViewCompat.setPaddingRelative(mRetryErrorView, 0, 0, 0, 0);
+                mRetryErrorView.setPaddingRelative(0, 0, 0, 0);
             }
             mRetryErrorView.setVisibility(View.VISIBLE);
         }
@@ -1181,7 +1180,7 @@ public class PaymentRequestUI
         int paddingSize =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.editor_dialog_section_large_spacing);
-        ViewCompat.setPaddingRelative(view, paddingSize, paddingSize, paddingSize, paddingSize);
+        view.setPaddingRelative(paddingSize, paddingSize, paddingSize, paddingSize);
         parent.addView(view);
     }
 

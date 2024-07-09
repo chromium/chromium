@@ -22,7 +22,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -225,7 +224,7 @@ class KeyboardAccessoryView extends LinearLayout {
         mBarItemsView.addOnScrollListener(mScrollingIphCallback);
 
         // Remove any paddings that might be inherited since this messes up the fading edge.
-        ViewCompat.setPaddingRelative(mBarItemsView, 0, 0, 0, 0);
+        mBarItemsView.setPaddingRelative(0, 0, 0, 0);
         TraceEvent.end("KeyboardAccessoryView#onFinishInflate");
     }
 
@@ -444,7 +443,7 @@ class KeyboardAccessoryView extends LinearLayout {
         // Remove all animations - the accessory shouldn't be visibly built anyway.
         recyclerView.setItemAnimator(null);
 
-        ViewCompat.setPaddingRelative(recyclerView, pad, 0, 0, 0);
+        recyclerView.setPaddingRelative(pad, 0, 0, 0);
     }
 
     @VisibleForTesting

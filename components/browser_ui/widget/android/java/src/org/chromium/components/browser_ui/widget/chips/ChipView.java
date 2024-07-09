@@ -24,7 +24,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -220,7 +219,7 @@ public class ChipView extends LinearLayout {
         // Setting this enforces 16dp padding at the end and 8dp at the start (unless overridden).
         // For text, the start padding needs to be 16dp which is why a ChipTextView contributes the
         // remaining 8dp.
-        ViewCompat.setPaddingRelative(this, leadingElementPadding, 0, endPadding, 0);
+        this.setPaddingRelative(leadingElementPadding, 0, endPadding, 0);
 
         mPrimaryText =
                 new AppCompatTextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
@@ -368,8 +367,7 @@ public class ChipView extends LinearLayout {
 
         // Remove the end padding from the chip to make X icon touch target extend till the end of
         // the chip.
-        ViewCompat.setPaddingRelative(
-                this, getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
+        this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
     }
 
     /** Adds a dropdown icon at the trailing end of the chip next to the primary text. */
@@ -395,8 +393,7 @@ public class ChipView extends LinearLayout {
 
         // Remove the end padding from the chip to make X icon touch target extend till the end of
         // the chip.
-        ViewCompat.setPaddingRelative(
-                this, getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
+        this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
     }
 
     /**
