@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "base/numerics/checked_math.h"
@@ -27,10 +26,6 @@
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 class GURL;
-
-namespace net {
-class HttpRequestHeaders;
-}  // namespace net
 
 namespace content {
 
@@ -68,7 +63,6 @@ class CONTENT_EXPORT AttributionReport {
   struct CONTENT_EXPORT CommonAggregatableData {
     CommonAggregatableData(std::optional<attribution_reporting::SuitableOrigin>
                                aggregation_coordinator_origin,
-                           std::optional<std::string> verification_token,
                            attribution_reporting::AggregatableTriggerConfig);
     CommonAggregatableData();
     CommonAggregatableData(const CommonAggregatableData&);
@@ -91,10 +85,6 @@ class CONTENT_EXPORT AttributionReport {
 
     std::optional<attribution_reporting::SuitableOrigin>
         aggregation_coordinator_origin;
-
-    // A token that can be sent alongside the report to complete its
-    // verification.
-    std::optional<std::string> verification_token;
 
     attribution_reporting::AggregatableTriggerConfig
         aggregatable_trigger_config;
@@ -175,9 +165,6 @@ class CONTENT_EXPORT AttributionReport {
 
   base::Value::Dict ReportBody() const;
 
-  // Populate additional headers that should be sent alongside the report.
-  void PopulateAdditionalHeaders(net::HttpRequestHeaders&) const;
-
   const AttributionInfo& attribution_info() const { return attribution_info_; }
 
   Id id() const { return id_; }
@@ -203,8 +190,6 @@ class CONTENT_EXPORT AttributionReport {
   void set_id(Id id) { id_ = id; }
 
   void set_report_time(base::Time report_time);
-
-  void set_external_report_id(base::Uuid external_report_id);
 
  private:
   // The attribution info.

@@ -69,13 +69,12 @@ message AttributionCommonAggregatableMetadata {
     EXCLUDE = 1;
   }
 
-  optional string verification_token = 2;
   optional SourceRegistrationTimeConfig source_registration_time_config = 3;
   optional string coordinator_origin = 4;
   optional string trigger_context_id = 5;
   optional uint32 filtering_id_max_bytes = 6;
 
-  reserved 1;
+  reserved 1, 2;
   reserved "coordinator";
 }
 

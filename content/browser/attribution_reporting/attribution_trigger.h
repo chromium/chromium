@@ -5,14 +5,11 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TRIGGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TRIGGER_H_
 
-#include <vector>
-
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_result.mojom.h"
 #include "content/browser/attribution_reporting/event_level_result.mojom.h"
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/trigger_verification.h"
 
 namespace content {
 
@@ -26,7 +23,6 @@ class CONTENT_EXPORT AttributionTrigger {
   AttributionTrigger(attribution_reporting::SuitableOrigin reporting_origin,
                      attribution_reporting::TriggerRegistration registration,
                      attribution_reporting::SuitableOrigin destination_origin,
-                     std::vector<network::TriggerVerification> verifications,
                      bool is_within_fenced_frame);
 
   AttributionTrigger(const AttributionTrigger&);
@@ -53,10 +49,6 @@ class CONTENT_EXPORT AttributionTrigger {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
-  const std::vector<network::TriggerVerification>& verifications() const {
-    return verifications_;
-  }
-
   friend bool operator==(const AttributionTrigger&,
                          const AttributionTrigger&) = default;
 
@@ -67,9 +59,6 @@ class CONTENT_EXPORT AttributionTrigger {
 
   // Origin on which this trigger was registered.
   attribution_reporting::SuitableOrigin destination_origin_;
-
-  // Optional tokens attesting to the veracity of the trigger.
-  std::vector<network::TriggerVerification> verifications_;
 
   // Whether the trigger is registered within a fenced frame tree.
   bool is_within_fenced_frame_;

@@ -51,10 +51,6 @@ struct SourceRegistration;
 struct TriggerRegistration;
 }  // namespace attribution_reporting
 
-namespace network {
-class TriggerVerification;
-}  // namespace network
-
 namespace content {
 
 class AttributionManager;
@@ -115,8 +111,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       BackgroundRegistrationsId id,
       const net::HttpResponseHeaders* headers,
       GURL reporting_url,
-      network::AttributionReportingRuntimeFeatures,
-      const std::vector<network::TriggerVerification>&) override;
+      network::AttributionReportingRuntimeFeatures) override;
   void NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId id) override;
 
@@ -188,7 +183,6 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
-      std::vector<network::TriggerVerification>,
       bool was_fetched_via_service_worker) override;
   void OsSourceDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,

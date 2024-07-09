@@ -517,7 +517,6 @@ mojom("data_host_mojom") {
   deps = [
     ":registration_header_error_mojom",
     ":registration_mojom",
-    "//services/network/public/mojom:mojom_attribution",
   ]
 
   export_class_attribute_blink = "PLATFORM_EXPORT"

@@ -178,7 +178,6 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),
-                    aggregatable_data.common_data.verification_token,
                     aggregatable_data.common_data.aggregation_coordinator_origin
                         ? aggregatable_data.common_data
                               .aggregation_coordinator_origin->Serialize()
@@ -197,7 +196,6 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),
-                    null_data.common_data.verification_token,
                     null_data.common_data.aggregation_coordinator_origin
                         ? null_data.common_data.aggregation_coordinator_origin
                               ->Serialize()
@@ -480,7 +478,6 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
                       cleared_debug_key);
   web_ui_trigger->event_level_result = result.event_level_status();
   web_ui_trigger->aggregatable_result = result.aggregatable_status();
-  web_ui_trigger->verifications = trigger.verifications();
 
   observer_->OnTriggerHandled(std::move(web_ui_trigger));
 

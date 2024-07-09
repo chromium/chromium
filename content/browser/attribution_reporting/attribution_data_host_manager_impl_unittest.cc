@@ -28,7 +28,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -76,8 +75,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/trigger_verification.h"
-#include "services/network/public/cpp/trigger_verification_test_utils.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -325,7 +322,6 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
       mock_manager_,
       HandleTrigger(
           AttributionTrigger(reporting_origin, trigger_data, destination_origin,
-                             /*verifications=*/{},
                              /*is_within_fenced_frame=*/false),
           kFrameId))
       .Times(2);
@@ -341,11 +337,9 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
   data_host_remote->TriggerDataAvailable(
       reporting_origin, trigger_data,
-      /*verifications=*/{},
       /*was_fetched_via_service_worker=*/true);
   data_host_remote->TriggerDataAvailable(
       reporting_origin, trigger_data,
-      /*verifications=*/{},
       /*was_fetched_via_service_worker=*/false);
   data_host_remote.FlushForTesting();
 
@@ -387,14 +381,12 @@ TEST_F(AttributionDataHostManagerImplTest,
   TriggerRegistration trigger_data;
 
   data_host_remote->TriggerDataAvailable(reporting_origin, trigger_data,
-                                         /*verifications=*/{},
                                          kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(1);
 
   data_host_remote->TriggerDataAvailable(reporting_origin, trigger_data,
-                                         /*verifications=*/{},
                                          kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
@@ -418,7 +410,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_remote->TriggerDataAvailable(
       std::move(reporting_origin), std::move(trigger_data),
-      /*verifications=*/{}, /*was_fetched_via_service_worker=*/true);
+      /*was_fetched_via_service_worker=*/true);
   data_host_remote.FlushForTesting();
 
   // kForegroundBlink = 6, kForegroundBlinkViaSW = 7
@@ -470,8 +462,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(2);
 
   data_host_remote->TriggerDataAvailable(
-      reporting_origin, TriggerRegistration(),
-      /*verifications=*/{}, kViaServiceWorker);
+      reporting_origin, TriggerRegistration(), kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(3);
@@ -528,8 +519,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     mojo::test::BadMessageObserver bad_message_observer;
 
     data_host_remote->TriggerDataAvailable(
-        reporting_origin, TriggerRegistration(),
-        /*verifications=*/{}, kViaServiceWorker);
+        reporting_origin, TriggerRegistration(), kViaServiceWorker);
     data_host_remote.FlushForTesting();
 
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
@@ -933,7 +923,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     trigger_data_host_remote->TriggerDataAvailable(
         /*reporting_origin=*/*SuitableOrigin::Deserialize(
             "https://report.test"),
-        TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+        TriggerRegistration(), kViaServiceWorker);
 
     task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -966,7 +956,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // delayed.
   data_host_remote2->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
 
   data_host_remote2.FlushForTesting();
 }
@@ -1011,7 +1001,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // be delayed.
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
 
   checkpoint.Call(1);
   source_data_host_remote.reset();
@@ -1068,7 +1058,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     trigger_data_host_remote->TriggerDataAvailable(
         /*reporting_origin=*/*SuitableOrigin::Deserialize(
             "https://report.test"),
-        TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+        TriggerRegistration(), kViaServiceWorker);
     trigger_data_hosts.emplace_back(std::move(trigger_data_host_remote));
   }
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1121,7 +1111,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/reporting_origin, TriggerRegistration(),
-      /*verifications=*/{}, kViaServiceWorker);
+      kViaServiceWorker);
 
   // 2 - On the main navigation, a source is registered.
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -1182,7 +1172,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
 
   checkpoint.Call(1);
   task_environment_.FastForwardBy(base::Seconds(20));
@@ -1241,7 +1231,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
 
   // The first trigger should be processed immediately as the previous
   // navigation has completed and had no sources registered alongside it.
@@ -1274,7 +1264,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote_2->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
 
   // The second trigger should be delayed as the source datahost is still
   // connected, it could still receive more sources. The 20s timeouts also isn't
@@ -1309,7 +1299,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote_3->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
 
   // The third trigger registration should be delayed as the source data host
   // is still connected.
@@ -1366,7 +1356,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 }
 
@@ -2029,8 +2019,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*last_navigation_id=*/kNavigationId),
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
-      reporter, TriggerRegistration(),
-      /*verifications=*/{}, kViaServiceWorker);
+      reporter, TriggerRegistration(), kViaServiceWorker);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, /*headers=*/nullptr, reporter_url,
       network::AttributionReportingRuntimeFeatures());
@@ -2097,7 +2086,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 }
 
@@ -2129,10 +2118,9 @@ TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
   TriggerRegistration trigger_data;
 
   trigger_data_host_remote1->TriggerDataAvailable(
-      reporting_origin, trigger_data, /*verifications=*/{}, kViaServiceWorker);
+      reporting_origin, trigger_data, kViaServiceWorker);
   trigger_data_host_remote2->TriggerDataAvailable(
-      std::move(reporting_origin), std::move(trigger_data),
-      /*verifications=*/{}, kViaServiceWorker);
+      std::move(reporting_origin), std::move(trigger_data), kViaServiceWorker);
 
   trigger_data_host_remote1.FlushForTesting();
   trigger_data_host_remote2.FlushForTesting();
@@ -2173,7 +2161,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 
   // kRegistered = 0, kNavigationFailed = 2.
@@ -2231,8 +2219,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   auto send_trigger = [&](const SuitableOrigin& reporting_origin) {
     trigger_data_host_remote->TriggerDataAvailable(
-        reporting_origin, TriggerRegistration(), /*verifications=*/{},
-        kViaServiceWorker);
+        reporting_origin, TriggerRegistration(), kViaServiceWorker);
   };
 
   send_trigger(reporting_origin1);
@@ -2274,7 +2261,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 
   task_environment_.FastForwardBy(base::Seconds(2));
@@ -2318,7 +2305,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
@@ -2428,8 +2415,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   data_host_remote->TriggerDataAvailable(
-      reporting_origin, TriggerRegistration(), /*verifications=*/{},
-      kViaServiceWorker);
+      reporting_origin, TriggerRegistration(), kViaServiceWorker);
   data_host_remote.FlushForTesting();
 }
 
@@ -2646,7 +2632,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // trigger should be delayed.
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
   // Leave time for the trigger to be processed (if it weren't delayed) to
   // enseure the test past because it is delayed.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -2714,7 +2700,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
 
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -2790,7 +2776,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/reporting_origin, TriggerRegistration(),
-      /*verifications=*/{}, kViaServiceWorker);
+      kViaServiceWorker);
 
   // 2 - A source is registered on the foreground navigation request
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -2871,7 +2857,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
 
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -2959,7 +2945,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       *SuitableOrigin::Create(std::move(reporting_origin)),
-      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
+      TriggerRegistration(), kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 }
 
@@ -2995,8 +2981,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   trigger_data_host_remote->TriggerDataAvailable(
-      reporting_origin, TriggerRegistration(), /*verifications=*/{},
-      kViaServiceWorker);
+      reporting_origin, TriggerRegistration(), kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 }
 
@@ -3315,8 +3300,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                        R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       first_background_id, headers_1.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      /*trigger_verifications*/ {}));
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(first_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
   checkpoint.Call(0);
@@ -3356,8 +3340,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                        R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       second_background_id, headers_3.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      /*trigger_verifications*/ {}));
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       second_background_id);
 
@@ -3406,8 +3389,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                        base::JoinString(urls, ", "));
     EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
         id, headers.get(), reporting_url,
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-        /*trigger_verifications*/ {}));
+        {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
     data_host_manager_.NotifyBackgroundRegistrationCompleted(id);
     task_environment_.FastForwardBy(base::TimeDelta());
   };
@@ -3523,8 +3505,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                        kRegisterTriggerJson);
     data_host_manager_.NotifyBackgroundRegistrationData(
         kBackgroundId, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures(),
-        /*trigger_verifications=*/{});
+        network::AttributionReportingRuntimeFeatures());
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
     task_environment_.FastForwardBy(base::TimeDelta());
@@ -3550,8 +3531,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                        os_header_value);
     data_host_manager_.NotifyBackgroundRegistrationData(
         kBackgroundId, headers.get(), reporting_url,
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-        /*trigger_verificaations=*/{});
+        {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
 
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -3635,8 +3615,7 @@ TEST_F(
                             kRegisterTriggerJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       trigger_background_id, triggerHeaders.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       trigger_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3646,12 +3625,10 @@ TEST_F(
                      kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verification*/ {}));
+      network::AttributionReportingRuntimeFeatures()));
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       second_background_id, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verification*/ {}));
+      network::AttributionReportingRuntimeFeatures()));
   task_environment_.FastForwardBy(base::TimeDelta());
 
   // Both the foreground & background registrations needs to be done for
@@ -3719,8 +3696,7 @@ TEST_F(
                             kRegisterTriggerJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       trigger_background_id, triggerHeaders.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       trigger_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3744,8 +3720,7 @@ TEST_F(
                      kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
   // The background source registration must be completed for the trigger to
   // be processed.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3803,8 +3778,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                      kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -3839,8 +3813,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       first_background_id, headers_1.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(first_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -3864,8 +3837,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                        kRegisterSourceJson);
   EXPECT_FALSE(data_host_manager_.NotifyBackgroundRegistrationData(
       second_background_id, headers_2.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       second_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3907,8 +3879,7 @@ TEST_F(
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       first_background_id, headers_1.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(first_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -3940,8 +3911,7 @@ TEST_F(
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       second_background_id, headers_2.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       second_background_id);
 
@@ -4001,8 +3971,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                      kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       first_background_id, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(first_background_id);
 
   auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -4010,8 +3979,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       second_background_id, headers_2.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{}));
+      network::AttributionReportingRuntimeFeatures()));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       second_background_id);
@@ -4057,15 +4025,13 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                        kRegisterSourceJson);
     EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
         kBackgroundId, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures(),
-        /*trigger_verifications=*/{}));
+        network::AttributionReportingRuntimeFeatures()));
     auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
     headers_2->SetHeader(kAttributionReportingRegisterSourceHeader,
                          kRegisterSourceJson);
     EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
         kBackgroundId, headers_2.get(), reporting_url2,
-        network::AttributionReportingRuntimeFeatures(),
-        /*trigger_verifications=*/{}));
+        network::AttributionReportingRuntimeFeatures()));
 
     if (navigation_eventually_starts) {
       data_host_manager_.NotifyNavigationRegistrationStarted(
@@ -4083,8 +4049,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                          kRegisterSourceJson);
     EXPECT_EQ(data_host_manager_.NotifyBackgroundRegistrationData(
                   kBackgroundId, headers_3.get(), reporting_url,
-                  network::AttributionReportingRuntimeFeatures(),
-                  /*trigger_verifications=*/{}),
+                  network::AttributionReportingRuntimeFeatures()),
               navigation_eventually_starts ? true : false);
 
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
@@ -4137,14 +4102,12 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers_1->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers_1.get(), reporting_url, enabled_features,
-      /*trigger_verification*/ {}));
+      kBackgroundId, headers_1.get(), reporting_url, enabled_features));
   auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers_2.get(), reporting_url, enabled_features,
-      /*trigger_verification*/ {}));
+      kBackgroundId, headers_2.get(), reporting_url, enabled_features));
 
   // The navigation now start and complete.
   data_host_manager_.NotifyNavigationRegistrationStarted(
@@ -4186,8 +4149,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                      R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      /*trigger_verifications=*/{}));
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4222,8 +4184,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                      R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      /*trigger_verifications=*/{}));
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4272,8 +4233,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
           /*last_navigation_id=*/kNavigationId),
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
-      reporting_origin, TriggerRegistration(), /*verifications=*/{},
-      kViaServiceWorker);
+      reporting_origin, TriggerRegistration(), kViaServiceWorker);
 
   task_environment_.FastForwardBy(base::TimeDelta());
   checkpoint.Call(1);
@@ -4283,8 +4243,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                      kRegisterSourceJson);
   data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{});
+      network::AttributionReportingRuntimeFeatures());
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -4301,11 +4260,6 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   const auto context_origin =
       *SuitableOrigin::Deserialize("https://destination.test");
 
-  std::vector<network::TriggerVerification> trigger_verifications = {
-      *network::TriggerVerification::Create(
-          /*token=*/"test-token",
-          /*aggregatable_report_id=*/base::Uuid::GenerateRandomV4())};
-
   EXPECT_CALL(mock_manager_, HandleTrigger).Times(1);
 
   data_host_manager_.NotifyBackgroundRegistrationStarted(
@@ -4321,7 +4275,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                      kRegisterTriggerJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(), trigger_verifications));
+      network::AttributionReportingRuntimeFeatures()));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -4359,8 +4313,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
         data_host_manager_.NotifyBackgroundRegistrationData(
             kBackgroundId, headers.get(),
             suitable ? suitable_reporting_url : non_suitable_reporting_url,
-            network::AttributionReportingRuntimeFeatures(),
-            /*trigger_verifications=*/{}),
+            network::AttributionReportingRuntimeFeatures()),
         suitable);
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4396,8 +4349,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                      R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      /*trigger_verificaations=*/{}));
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4431,8 +4383,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                      R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      /*trigger_verificaations=*/{}));
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4466,8 +4417,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     headers->SetHeader(kAttributionReportingRegisterTriggerHeader, "");
     data_host_manager_.NotifyBackgroundRegistrationData(
         kBackgroundId, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures(),
-        /*trigger_verifications=*/{});
+        network::AttributionReportingRuntimeFeatures());
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
     task_environment_.FastForwardBy(base::TimeDelta());
@@ -4579,11 +4529,11 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
       for (const auto& header : test_case.headers) {
         headers->SetHeader(header.first, header.second);
       }
-      EXPECT_EQ(data_host_manager_.NotifyBackgroundRegistrationData(
-                    kBackgroundId, headers.get(), reporting_url,
-                    {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-                    /*trigger_verifications=*/{}),
-                test_case.expect_registration)
+      EXPECT_EQ(
+          data_host_manager_.NotifyBackgroundRegistrationData(
+              kBackgroundId, headers.get(), reporting_url,
+              {network::AttributionReportingRuntimeFeature::kCrossAppWeb}),
+          test_case.expect_registration)
           << test_case.description;
       data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4880,8 +4830,7 @@ TEST_P(
 
   data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      /*trigger_verifications=*/{});
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -4928,8 +4877,7 @@ TEST_P(
 
   data_host_manager_.NotifyBackgroundRegistrationData(
       kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      /*trigger_verifications=*/{});
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -5103,8 +5051,7 @@ TEST_F(AttributionDataHostManagerImplTest,
             {net::SchemefulSite::Deserialize("https://destination.example")})),
         kViaServiceWorker);
     data_host_remote->TriggerDataAvailable(
-        reporting_origin, TriggerRegistration(),
-        /*verifications=*/{}, kViaServiceWorker);
+        reporting_origin, TriggerRegistration(), kViaServiceWorker);
     data_host_remote->OsSourceDataAvailable(
         reporting_origin,
         {attribution_reporting::OsRegistrationItem{
@@ -5154,8 +5101,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     }
     data_host_manager_.NotifyBackgroundRegistrationData(
         kBackgroundId, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures(),
-        /*trigger_verifications=*/{});
+        network::AttributionReportingRuntimeFeatures());
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
     // Wait for parsing to finish.
     task_environment_.FastForwardBy(base::TimeDelta());
@@ -5196,8 +5142,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
     }
     data_host_manager_.NotifyBackgroundRegistrationData(
         kBackgroundId, headers.get(), reporting_url,
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-        /*trigger_verifications=*/{});
+        {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
     // Wait for parsing to finish.
     task_environment_.FastForwardBy(base::TimeDelta());

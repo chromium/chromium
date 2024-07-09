@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -58,7 +57,6 @@
 #include "content/shell/browser/shell.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/trigger_verification.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/origin.h"
@@ -1143,7 +1141,6 @@ IN_PROC_BROWSER_TEST_F(
                     SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(3))
           .SetAggregatableHistogramContributions(contributions)
-          .SetVerificationToken("abc")
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
       SendResult(SendResult::Sent(SentResult::kSent,
@@ -1202,16 +1199,14 @@ IN_PROC_BROWSER_TEST_F(
               'https://report.test/.well-known/attribution-reporting/report-aggregate-attribution' &&
             table.rows[0].cells[0]?.innerText === 'Pending' &&
             table.rows[0].cells[4]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
-            table.rows[0].cells[5]?.innerText === '' &&
-            table.rows[0].cells[6]?.innerText === 'https://aws.example.test' &&
-            table.rows[0].cells[7]?.innerText === 'false' &&
+            table.rows[0].cells[5]?.innerText === 'https://aws.example.test' &&
+            table.rows[0].cells[6]?.innerText === 'false' &&
             table.rows[1].cells[0]?.innerText === 'Sent: HTTP 200' &&
-            table.rows[1].cells[5]?.innerText === 'abc' &&
             table.rows[2].cells[0]?.innerText === 'Prohibited by browser policy' &&
             table.rows[3].cells[0]?.innerText === 'Dropped due to assembly failure' &&
             table.rows[4].cells[0]?.innerText === 'Network error: ERR_INVALID_REDIRECT' &&
             table.rows[5].cells[4]?.innerText === '[ {  "key": "0x0",  "value": 0 }]' &&
-            table.rows[5].cells[7]?.innerText === 'true') {
+            table.rows[5].cells[6]?.innerText === 'true') {
           if (obs) {
             obs.disconnect();
           }
@@ -1238,21 +1233,15 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   NavigateAndWaitForObserver();
 
   const auto create_trigger =
-      [](std::vector<network::TriggerVerification> verifications) {
+      []() {
         return AttributionTrigger(
             /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
             attribution_reporting::TriggerRegistration(),
             *SuitableOrigin::Deserialize("https://d.test"),
-            std::move(verifications),
             /*is_within_fenced_frame=*/false);
       };
 
   static constexpr char kScript[] = R"(
-    const expectedVerification =
-      '<dl><dt>Token</dt><dd>abc</dd>' +
-      '<dt>Report ID</dt><dd>aaab30b9-d664-4dfc-a9db-85f9729b9a30</dd></dl>' +
-      '<dl><dt>Token</dt><dd>def</dd>' +
-      '<dt>Report ID</dt><dd>bbab30b9-d664-4dfc-a9db-85f9729b9a30</dd></dl>';
 
     const table = document.querySelector('#trigger-registration-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
@@ -1263,8 +1252,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.rows[0].cells[1]?.innerText === 'https://d.test' &&
           table.rows[0].cells[2]?.innerText === 'https://r.test' &&
           table.rows[0].cells[3]?.innerText === '' &&
-          table.rows[1].cells[3]?.innerText === '123' &&
-          table.rows[1].cells[6]?.innerHTML === expectedVerification) {
+          table.rows[1].cells[3]?.innerText === '123') {
         if (obs) {
           obs.disconnect();
         }
@@ -1299,18 +1287,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             cleared_debug_key);
       };
 
-  notify_trigger_handled(create_trigger(/*verifications=*/{}),
+  notify_trigger_handled(create_trigger(),
                          AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess);
 
-  std::vector<network::TriggerVerification> verifications;
-  verifications.push_back(*network::TriggerVerification::Create(
-      "abc",
-      base::Uuid::ParseLowercase("aaab30b9-d664-4dfc-a9db-85f9729b9a30")));
-  verifications.push_back(*network::TriggerVerification::Create(
-      "def",
-      base::Uuid::ParseLowercase("bbab30b9-d664-4dfc-a9db-85f9729b9a30")));
-  notify_trigger_handled(create_trigger(std::move(verifications)),
+  notify_trigger_handled(create_trigger(),
                          AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess,
                          /*cleared_debug_key=*/123);

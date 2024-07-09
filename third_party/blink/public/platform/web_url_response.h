@@ -33,7 +33,6 @@
 
 #include <memory>
 #include <optional>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -49,7 +48,6 @@
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace network {
-class TriggerVerification;
 namespace mojom {
 enum class AlternateProtocolUsage;
 enum class FetchResponseSource;
@@ -115,9 +113,6 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetConnectionID(unsigned);
 
   void SetConnectionReused(bool);
-
-  void SetTriggerVerifications(
-      const std::vector<network::TriggerVerification>&);
 
   void SetLoadTiming(const network::mojom::LoadTimingInfo&);
 

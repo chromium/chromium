@@ -30,7 +30,6 @@
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "services/network/public/cpp/trigger_verification.h"
 
 namespace content {
 
@@ -148,19 +147,6 @@ void AttributionResolverDelegateImpl::ShuffleReports(
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:
       base::RandomShuffle(reports.begin(), reports.end());
-      break;
-    case AttributionNoiseMode::kNone:
-      break;
-  }
-}
-
-void AttributionResolverDelegateImpl::ShuffleTriggerVerifications(
-    std::vector<network::TriggerVerification>& verifications) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  switch (noise_mode_) {
-    case AttributionNoiseMode::kDefault:
-      base::RandomShuffle(verifications.begin(), verifications.end());
       break;
     case AttributionNoiseMode::kNone:
       break;

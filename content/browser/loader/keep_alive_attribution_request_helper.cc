@@ -10,7 +10,6 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
@@ -28,7 +27,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
-#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -97,26 +95,24 @@ KeepAliveAttributionRequestHelper::KeepAliveAttributionRequestHelper(
 
 void KeepAliveAttributionRequestHelper::OnReceiveRedirect(
     const net::HttpResponseHeaders* headers,
-    const std::vector<network::TriggerVerification>& verifications,
     const GURL& redirect_url) {
   if (!attribution_data_host_manager_) {
     return;
   }
 
   attribution_data_host_manager_->NotifyBackgroundRegistrationData(
-      id_, headers, reporting_url_, runtime_features_, verifications);
+      id_, headers, reporting_url_, runtime_features_);
   reporting_url_ = redirect_url;
 }
 
 void KeepAliveAttributionRequestHelper::OnReceiveResponse(
-    const net::HttpResponseHeaders* headers,
-    const std::vector<network::TriggerVerification>& verifications) {
+    const net::HttpResponseHeaders* headers) {
   if (!attribution_data_host_manager_) {
     return;
   }
 
   attribution_data_host_manager_->NotifyBackgroundRegistrationData(
-      id_, headers, reporting_url_, runtime_features_, verifications);
+      id_, headers, reporting_url_, runtime_features_);
   attribution_data_host_manager_->NotifyBackgroundRegistrationCompleted(id_);
   attribution_data_host_manager_.reset();
 }

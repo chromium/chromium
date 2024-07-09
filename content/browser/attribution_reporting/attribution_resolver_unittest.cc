@@ -2465,7 +2465,7 @@ TEST_F(AttributionResolverTest, AggregatableDedupKeysFiltering) {
 
   AttributionTrigger trigger1(
       /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
-      /*destination_origin=*/origin, /*verifications=*/{},
+      /*destination_origin=*/origin,
       /*is_within_fenced_frame=*/false);
 
   trigger1.registration().aggregatable_dedup_keys.emplace_back(
@@ -2586,7 +2586,7 @@ TEST_F(AttributionResolverTest, AggregatableDedupKeysFiltering) {
     AttributionTrigger trigger2(
         /*reporting_origin=*/origin,
         attribution_reporting::TriggerRegistration(),
-        /*destination_origin=*/origin, /*verifications=*/{},
+        /*destination_origin=*/origin,
         /*is_within_fenced_frame=*/false);
 
     trigger2.registration().aggregatable_dedup_keys.emplace_back(
@@ -3330,7 +3330,6 @@ TEST_F(AttributionResolverTest, NoMatchingTriggerData_ReturnsError) {
             MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
                 /*reporting_origin=*/origin, std::move(registration),
                 /*destination_origin=*/origin,
-                /*verifications=*/{},
                 /*is_within_fenced_frame=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
@@ -3404,7 +3403,6 @@ TEST_F(AttributionResolverTest, MatchingTriggerData_UsesCorrectData) {
             MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
                 /*reporting_origin=*/origin, std::move(registration),
                 /*destination_origin=*/origin,
-                /*verifications=*/{},
                 /*is_within_fenced_frame=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
@@ -3447,7 +3445,7 @@ TEST_F(AttributionResolverTest, TopLevelTriggerFiltering) {
 
   AttributionTrigger trigger1(
       /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
-      /*destination_origin=*/origin, /*verifications=*/{},
+      /*destination_origin=*/origin,
       /*is_within_fenced_frame=*/false);
   trigger1.registration().filters.positive.emplace_back(*FilterConfig::Create({
       {"abc", {"456"}},
@@ -3458,7 +3456,7 @@ TEST_F(AttributionResolverTest, TopLevelTriggerFiltering) {
 
   AttributionTrigger trigger2(
       /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
-      /*destination_origin=*/origin, /*verifications=*/{},
+      /*destination_origin=*/origin,
       /*is_within_fenced_frame=*/false);
   trigger2.registration().filters.positive.emplace_back(*FilterConfig::Create(
       {
@@ -3472,7 +3470,6 @@ TEST_F(AttributionResolverTest, TopLevelTriggerFiltering) {
   AttributionTrigger trigger3(
       /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
       /*destination_origin=*/origin,
-      /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
   trigger3.registration().filters.negative =
       attribution_reporting::FiltersForSourceType(SourceType::kNavigation);
@@ -3482,7 +3479,7 @@ TEST_F(AttributionResolverTest, TopLevelTriggerFiltering) {
 
   AttributionTrigger trigger4(
       /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
-      /*destination_origin=*/origin, /*verifications=*/{},
+      /*destination_origin=*/origin,
       /*is_within_fenced_frame=*/false);
   trigger4.registration().filters.positive.emplace_back(*FilterConfig::Create(
       {

@@ -25,7 +25,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "services/network/public/cpp/trigger_verification.h"
 
 namespace content {
 
@@ -108,15 +107,6 @@ void ConfigurableStorageDelegate::ShuffleReports(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (reverse_reports_on_shuffle_) {
     base::ranges::reverse(reports);
-  }
-}
-
-void ConfigurableStorageDelegate::ShuffleTriggerVerifications(
-    std::vector<network::TriggerVerification>& verifications) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (reverse_verifications_on_shuffle_) {
-    base::ranges::reverse(verifications);
   }
 }
 
@@ -223,11 +213,6 @@ void ConfigurableStorageDelegate::set_offline_report_delay_config(
 void ConfigurableStorageDelegate::set_reverse_reports_on_shuffle(bool reverse) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   reverse_reports_on_shuffle_ = reverse;
-}
-void ConfigurableStorageDelegate::set_reverse_verifications_on_shuffle(
-    bool reverse) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  reverse_verifications_on_shuffle_ = reverse;
 }
 
 void ConfigurableStorageDelegate::set_randomized_response_rate(double rate) {

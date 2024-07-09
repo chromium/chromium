@@ -31,10 +31,6 @@ namespace base {
 class Uuid;
 }  // namespace base
 
-namespace network {
-class TriggerVerification;
-}  // namespace network
-
 namespace content {
 
 class AttributionReport;
@@ -129,11 +125,6 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // if they are within the same reporting window, and we do not want to allow
   // ordering on their conversion metadata bits.
   virtual void ShuffleReports(std::vector<AttributionReport>& reports) = 0;
-
-  // Shuffles trigger verifications to provide plausible deniability on the
-  // ordering and use of verification tokens.
-  virtual void ShuffleTriggerVerifications(
-      std::vector<network::TriggerVerification>& verifications) = 0;
 
   // Returns the rate used to determine whether to randomize the response to a
   // source with the given trigger specs, as implemented by

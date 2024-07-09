@@ -9,7 +9,6 @@ import './attribution_internals_table.js';
 import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {AggregatableResult} from './aggregatable_result.mojom-webui.js';
-import type {TriggerVerification} from './attribution.mojom-webui.js';
 import {AttributionSupport} from './attribution.mojom-webui.js';
 import type {AttributionDetailTableElement} from './attribution_detail_table.js';
 import type {HandlerInterface, NetworkStatus, ObserverInterface, ReportID, ReportStatus, WebUIAggregatableDebugReport, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
@@ -164,23 +163,6 @@ function asList<V>({render, compare}: Valuable<V>): Valuable<V[]> {
       td.replaceChildren(ul);
     },
   };
-}
-
-function renderDL<T>(
-    td: HTMLElement, row: T, cols: Iterable<DataColumn<T>>): void {
-  const dl = td.ownerDocument.createElement('dl');
-
-  for (const col of cols) {
-    const dt = td.ownerDocument.createElement('dt');
-    dt.innerText = col.label;
-
-    const dd = td.ownerDocument.createElement('dd');
-    col.render(dd, row);
-
-    dl.append(dt, dd);
-  }
-
-  td.append(dl);
 }
 
 function renderUrl(td: HTMLElement, url: string): void {
@@ -345,37 +327,19 @@ function initRegistrationTableModel<T extends Registration>(
 class Trigger extends Registration {
   readonly eventLevelResult: string;
   readonly aggregatableResult: string;
-  readonly verifications: TriggerVerification[];
 
   constructor(mojo: WebUITrigger) {
     super(mojo.registration);
     this.eventLevelResult = eventLevelResultText[mojo.eventLevelResult];
     this.aggregatableResult = aggregatableResultText[mojo.aggregatableResult];
-    this.verifications = mojo.verifications;
   }
 }
-
-const VERIFICATION_COLS: ReadonlyArray<DataColumn<TriggerVerification>> = [
-  valueColumn('Token', 'token', asStringOrBool),
-  valueColumn('Report ID', 'aggregatableReportId', asStringOrBool),
-];
-
-const reportVerificationColumn: DataColumn<Trigger> = {
-  label: 'Report Verification',
-  render: (td: HTMLElement, row: Trigger) => {
-    td.replaceChildren();
-    for (const verification of row.verifications) {
-      renderDL(td, verification, VERIFICATION_COLS);
-    }
-  },
-};
 
 function initTriggerTable(panel: HTMLElement):
     AttributionInternalsTableElement<Trigger> {
   return initRegistrationTableModel(panel, 'Destination', [
     valueColumn('Event-Level Result', 'eventLevelResult', asStringOrBool),
     valueColumn('Aggregatable Result', 'aggregatableResult', asStringOrBool),
-    reportVerificationColumn,
   ]);
 }
 
@@ -485,7 +449,6 @@ class EventLevelReport extends Report {
 
 class AggregatableReport extends Report {
   contributions: string;
-  verificationToken: string;
   aggregationCoordinator: string;
   isNullReport: boolean;
 
@@ -495,9 +458,6 @@ class AggregatableReport extends Report {
     this.contributions = JSON.stringify(
         mojo.data.aggregatableAttributionData!.contributions, bigintReplacer,
         ' ');
-
-    this.verificationToken =
-        mojo.data.aggregatableAttributionData!.verificationToken || '';
 
     this.aggregationCoordinator =
         mojo.data.aggregatableAttributionData!.aggregationCoordinator;
@@ -899,8 +859,6 @@ class AttributionInternals implements ObserverInterface {
     this.aggregatableReports = initReportTable<AggregatableReport>(
         document.querySelector('#aggregatable-report-panel')!, this.handler, [
           valueColumn('Histograms', 'contributions', asCode),
-          valueColumn(
-              'Verification Token', 'verificationToken', asStringOrBool),
           valueColumn(
               'Aggregation Coordinator', 'aggregationCoordinator', asUrl),
           valueColumn('Null', 'isNullReport', asStringOrBool),

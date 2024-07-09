@@ -23,7 +23,6 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "net/http/http_request_headers.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
@@ -95,11 +94,9 @@ AttributionReport::EventLevelData::~EventLevelData() = default;
 AttributionReport::CommonAggregatableData::CommonAggregatableData(
     std::optional<attribution_reporting::SuitableOrigin>
         aggregation_coordinator_origin,
-    std::optional<std::string> verification_token,
     attribution_reporting::AggregatableTriggerConfig
         aggregatable_trigger_config)
     : aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
-      verification_token(std::move(verification_token)),
       aggregatable_trigger_config(std::move(aggregatable_trigger_config)) {}
 
 AttributionReport::CommonAggregatableData::CommonAggregatableData() = default;
@@ -289,11 +286,6 @@ void AttributionReport::set_report_time(base::Time report_time) {
   report_time_ = report_time;
 }
 
-void AttributionReport::set_external_report_id(base::Uuid external_report_id) {
-  DCHECK(external_report_id.is_valid());
-  external_report_id_ = std::move(external_report_id);
-}
-
 // static
 std::optional<base::Time> AttributionReport::MinReportTime(
     std::optional<base::Time> a,
@@ -307,30 +299,6 @@ std::optional<base::Time> AttributionReport::MinReportTime(
   }
 
   return std::min(*a, *b);
-}
-
-void AttributionReport::PopulateAdditionalHeaders(
-    net::HttpRequestHeaders& headers) const {
-  const std::optional<std::string>* verification_token = absl::visit(
-      base::Overloaded{
-          [](const EventLevelData&) -> const std::optional<std::string>* {
-            return nullptr;
-          },
-
-          [](const AggregatableAttributionData& data) {
-            return &data.common_data.verification_token;
-          },
-
-          [](const NullAggregatableData& data) {
-            return &data.common_data.verification_token;
-          },
-      },
-      data_);
-
-  if (verification_token && verification_token->has_value()) {
-    headers.SetHeader("Sec-Attribution-Reporting-Private-State-Token",
-                      **verification_token);
-  }
 }
 
 const StoredSource* AttributionReport::GetStoredSource() const {

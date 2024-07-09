@@ -60,11 +60,6 @@ void SerializeCommonAggregatableData(
         data.aggregation_coordinator_origin->Serialize());
   }
 
-  if (const auto& verification_token = data.verification_token;
-      verification_token.has_value()) {
-    msg.set_verification_token(*verification_token);
-  }
-
   switch (data.aggregatable_trigger_config.source_registration_time_config()) {
     case SourceRegistrationTimeConfig::kInclude:
       msg.set_source_registration_time_config(
@@ -116,10 +111,6 @@ void SerializeCommonAggregatableData(
       break;
     default:
       return false;
-  }
-
-  if (msg.has_verification_token()) {
-    data.verification_token = msg.verification_token();
   }
 
   std::optional<std::string> trigger_context_id;

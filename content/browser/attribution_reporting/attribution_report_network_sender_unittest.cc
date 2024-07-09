@@ -485,26 +485,6 @@ TEST_F(AttributionReportNetworkSenderTest, ManyReports_AllSentSuccessfully) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
-TEST_F(AttributionReportNetworkSenderTest, HeadersPopulated) {
-  AttributionReport report =
-      ReportBuilder(AttributionInfoBuilder().Build(),
-                    SourceBuilder().BuildStored())
-          .SetAggregatableHistogramContributions(
-              {blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)})
-          .BuildAggregatableAttribution();
-
-  network_sender_->SendReport(report, /*is_debug_report=*/false,
-                              base::DoNothing());
-
-  const network::ResourceRequest* pending_request;
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kAggregatableReportUrl,
-                                                 &pending_request));
-  EXPECT_FALSE(pending_request->headers.HasHeader(
-      "Sec-Attribution-Reporting-Private-State-Token"));
-  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kAggregatableReportUrl, ""));
-}
 
 TEST_F(AttributionReportNetworkSenderTest, ReportRedirects) {
   auto report = DefaultEventLevelReport();

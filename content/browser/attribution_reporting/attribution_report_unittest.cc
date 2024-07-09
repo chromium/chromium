@@ -22,7 +22,6 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
-#include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
@@ -237,58 +236,6 @@ TEST(AttributionReportTest, ReportBody_Aggregatable) {
           .BuildAggregatableAttribution();
 
   EXPECT_THAT(report.ReportBody(), IsJson(expected));
-}
-
-TEST(AttributionReportTest, PopulateAdditionalHeaders) {
-  const std::optional<std::string> kTestCases[] = {
-      std::nullopt,
-      "foo",
-  };
-
-  for (const auto& verification_token : kTestCases) {
-    AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
-                                             SourceBuilder().BuildStored())
-                                   .SetVerificationToken(verification_token)
-                                   .BuildAggregatableAttribution();
-
-    net::HttpRequestHeaders headers;
-    report.PopulateAdditionalHeaders(headers);
-
-    if (verification_token.has_value()) {
-      std::string header;
-      headers.GetHeader("Sec-Attribution-Reporting-Private-State-Token",
-                        &header);
-      EXPECT_EQ(header, *verification_token);
-    } else {
-      EXPECT_TRUE(headers.IsEmpty());
-    }
-  }
-}
-
-TEST(AttributionReportTest, PopulateAdditionalHeadersNullAggregatableReport) {
-  const std::optional<std::string> kTestCases[] = {
-      std::nullopt,
-      "foo",
-  };
-
-  for (const auto& verification_token : kTestCases) {
-    AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
-                                             SourceBuilder().BuildStored())
-                                   .SetVerificationToken(verification_token)
-                                   .BuildNullAggregatable();
-
-    net::HttpRequestHeaders headers;
-    report.PopulateAdditionalHeaders(headers);
-
-    if (verification_token.has_value()) {
-      std::string header;
-      headers.GetHeader("Sec-Attribution-Reporting-Private-State-Token",
-                        &header);
-      EXPECT_EQ(header, *verification_token);
-    } else {
-      EXPECT_TRUE(headers.IsEmpty());
-    }
-  }
 }
 
 TEST(AttributionReportTest, NullAggregatableReport) {

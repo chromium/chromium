@@ -10,7 +10,6 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/data_host.mojom-forward.h"
@@ -26,10 +25,6 @@ class GURL;
 namespace net {
 class HttpResponseHeaders;
 }  // namespace net
-
-namespace network {
-class TriggerVerification;
-}  // namespace network
 
 namespace content {
 
@@ -128,8 +123,7 @@ class AttributionDataHostManager {
       BackgroundRegistrationsId id,
       const net::HttpResponseHeaders* headers,
       GURL reporting_url,
-      network::AttributionReportingRuntimeFeatures,
-      const std::vector<network::TriggerVerification>&) = 0;
+      network::AttributionReportingRuntimeFeatures) = 0;
 
   // Notifies the manager that a background attribution request has completed.
   virtual void NotifyBackgroundRegistrationCompleted(

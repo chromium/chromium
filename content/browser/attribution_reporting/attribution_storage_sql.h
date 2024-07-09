@@ -408,19 +408,13 @@ class CONTENT_EXPORT AttributionStorageSql {
   [[nodiscard]] bool StoreAttributionReport(AttributionReport& report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Generates null aggregatable reports for the given trigger, assigns
-  // verification data to null aggregatable reports and the real aggregatable
-  // report if created, and stores all those reports.
+  // Generates null aggregatable reports for the given trigger and stores all
+  // those reports.
   [[nodiscard]] bool GenerateNullAggregatableReportsAndStoreReports(
       const AttributionTrigger&,
       const AttributionInfo&,
       std::optional<AttributionReport>& new_aggregatable_report,
       std::optional<base::Time>& min_null_aggregatable_report_time)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Randomly assigns trigger verification data to the given reports.
-  void AssignTriggerVerificationData(std::vector<AttributionReport>&,
-                                     const AttributionTrigger&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   base::Time GetAggregatableReportTime(const AttributionTrigger&,

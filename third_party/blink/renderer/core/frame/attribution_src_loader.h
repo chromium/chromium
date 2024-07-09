@@ -20,10 +20,6 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
-namespace network {
-class TriggerVerification;
-}  // namespace network
-
 namespace attribution_reporting {
 class SuitableOrigin;
 struct RegistrationInfo;
@@ -156,7 +152,6 @@ class CORE_EXPORT AttributionSrcLoader
       network::mojom::AttributionSupport,
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
-      const Vector<network::TriggerVerification>&,
       const attribution_reporting::RegistrationInfo&,
       bool was_fetched_via_service_worker);
 

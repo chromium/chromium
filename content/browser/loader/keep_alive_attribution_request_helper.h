@@ -10,7 +10,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
@@ -23,10 +22,6 @@
 namespace net {
 class HttpResponseHeaders;
 }  // namespace net
-
-namespace network {
-class TriggerVerification;
-}  // namespace network
 
 namespace content {
 
@@ -61,10 +56,8 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
       const KeepAliveAttributionRequestHelper&) = delete;
 
   void OnReceiveRedirect(const net::HttpResponseHeaders* headers,
-                         const std::vector<network::TriggerVerification>&,
                          const GURL& redirect_url);
-  void OnReceiveResponse(const net::HttpResponseHeaders* headers,
-                         const std::vector<network::TriggerVerification>&);
+  void OnReceiveResponse(const net::HttpResponseHeaders* headers);
 
  private:
   friend class KeepAliveAttributionRequestHelperTestPeer;

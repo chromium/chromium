@@ -38,7 +38,6 @@ struct AggregatableHistogramContribution {
 // Contains aggregatable attribution data to be displayed.
 struct WebUIReportAggregatableAttributionData {
   array<AggregatableHistogramContribution> contributions;
-  string? verification_token;
   string aggregation_coordinator;
   bool is_null_report;
 };
@@ -159,7 +158,6 @@ struct WebUIRegistration {
 
 struct WebUITrigger {
   WebUIRegistration registration;
-  array<network.mojom.TriggerVerification> verifications;
 
   attribution_reporting.mojom.EventLevelResult event_level_result;
   attribution_reporting.mojom.AggregatableResult aggregatable_result;

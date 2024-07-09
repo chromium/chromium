@@ -80,7 +80,6 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/trigger_verification.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -3209,7 +3208,6 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       AttributionReport::AggregatableAttributionData(
           AttributionReport::CommonAggregatableData(
               trigger_registration.aggregation_coordinator_origin,
-              /*verification_token=*/std::nullopt,
               trigger_registration.aggregatable_trigger_config),
           std::move(contributions), source));
 
@@ -3367,7 +3365,6 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
           AttributionReport::NullAggregatableData(
               AttributionReport::CommonAggregatableData(
                   trigger.registration().aggregation_coordinator_origin,
-                  /*verification_token=*/std::nullopt,
                   trigger.registration().aggregatable_trigger_config),
               trigger.reporting_origin(),
               null_aggregatable_report.fake_source_time));
@@ -3377,8 +3374,6 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
   if (reports.empty()) {
     return true;
   }
-
-  AssignTriggerVerificationData(reports, trigger);
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -3400,45 +3395,6 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
   return transaction.Commit();
 }
 
-void AttributionStorageSql::AssignTriggerVerificationData(
-    std::vector<AttributionReport>& reports,
-    const AttributionTrigger& trigger) {
-  DCHECK(!reports.empty());
-
-  // TODO(crbug.com/40267018): Add metric to understand the number of
-  // reports sent with a verification token.
-
-  if (trigger.verifications().empty()) {
-    return;
-  }
-
-  // Assign verification tokens according to:
-  // https://wicg.github.io/attribution-reporting-api/#assign-private-state-tokens
-  delegate_->ShuffleReports(reports);
-
-  std::vector<network::TriggerVerification> verifications =
-      trigger.verifications();
-  delegate_->ShuffleTriggerVerifications(verifications);
-
-  for (size_t i = 0; i < verifications.size() && i < reports.size(); ++i) {
-    const network::TriggerVerification& verification = verifications.at(i);
-    AttributionReport& report = reports.at(i);
-
-    report.set_external_report_id(verification.aggregatable_report_id());
-    absl::visit(
-        base::Overloaded{
-            [](const AttributionReport::EventLevelData&) {
-              NOTREACHED_NORETURN();
-            },
-            [&](AttributionReport::AggregatableAttributionData& data) {
-              data.common_data.verification_token = verification.token();
-            },
-            [&](AttributionReport::NullAggregatableData& data) {
-              data.common_data.verification_token = verification.token();
-            }},
-        report.data());
-  }
-}
 
 base::Time AttributionStorageSql::GetAggregatableReportTime(
     const AttributionTrigger& trigger,

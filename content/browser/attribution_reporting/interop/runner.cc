@@ -75,7 +75,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -364,8 +363,7 @@ void Handle(const AttributionSimulationEvent::Response& event,
             AttributionDataHostManager& data_host_manager) {
   data_host_manager.NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId(event.request_id), event.response_headers.get(),
-      event.url, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      /*trigger_verification=*/{});
+      event.url, {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
 }
 
 void Handle(const AttributionSimulationEvent::EndRequest& event,

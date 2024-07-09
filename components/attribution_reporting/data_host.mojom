@@ -6,7 +6,6 @@ module attribution_reporting.mojom;
 
 import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/registration_header_error.mojom";
-import "services/network/public/mojom/attribution.mojom";
 
 // Browser-process interface responsible for processing attribution
 // configurations registered by the renderer. These configurations may be sent
@@ -22,7 +21,6 @@ interface DataHost {
   // attributionsrc request.
   TriggerDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
                        attribution_reporting.mojom.TriggerRegistration data,
-                       array<network.mojom.TriggerVerification> verifications,
                        bool was_fetched_via_service_worker);
 
   // Called when OS source data from the renderer is available for a given

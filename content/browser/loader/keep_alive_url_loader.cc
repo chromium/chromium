@@ -494,7 +494,6 @@ void KeepAliveURLLoader::EndReceiveRedirect(
 
   if (attribution_request_helper_) {
     attribution_request_helper_->OnReceiveRedirect(head->headers.get(),
-                                                   head->trigger_verifications,
                                                    redirect_info.new_url);
   }
 
@@ -560,8 +559,7 @@ void KeepAliveURLLoader::OnReceiveResponse(
   }
 
   if (attribution_request_helper_) {
-    attribution_request_helper_->OnReceiveResponse(
-        response->headers.get(), response->trigger_verifications);
+    attribution_request_helper_->OnReceiveResponse(response->headers.get());
     attribution_request_helper_.reset();
   }
 

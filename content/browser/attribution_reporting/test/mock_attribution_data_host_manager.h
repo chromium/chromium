@@ -20,7 +20,6 @@
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
-#include "services/network/public/cpp/trigger_verification.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -93,8 +92,7 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
               (BackgroundRegistrationsId id,
                const net::HttpResponseHeaders* headers,
                GURL reporting_url,
-               network::AttributionReportingRuntimeFeatures,
-               const std::vector<network::TriggerVerification>&),
+               network::AttributionReportingRuntimeFeatures),
               (override));
 
   MOCK_METHOD(void,

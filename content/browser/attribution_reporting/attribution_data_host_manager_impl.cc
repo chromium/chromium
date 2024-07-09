@@ -74,7 +74,6 @@
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
@@ -579,20 +578,19 @@ struct AttributionDataHostManagerImpl::HeaderPendingDecode {
   std::string header;
   SuitableOrigin reporting_origin;
   GURL reporting_url;
-  std::optional<std::vector<network::TriggerVerification>> verifications;
   bool report_header_errors;
+  RegistrationType registration_type;
 
-  HeaderPendingDecode(
-      std::string header,
-      SuitableOrigin reporting_origin,
-      GURL reporting_url,
-      std::optional<std::vector<network::TriggerVerification>> verifications,
-      bool report_header_errors)
+  HeaderPendingDecode(std::string header,
+                      SuitableOrigin reporting_origin,
+                      GURL reporting_url,
+                      bool report_header_errors,
+                      RegistrationType registration_type)
       : header(std::move(header)),
         reporting_origin(std::move(reporting_origin)),
         reporting_url(std::move(reporting_url)),
-        verifications(std::move(verifications)),
-        report_header_errors(report_header_errors) {
+        report_header_errors(report_header_errors),
+        registration_type(registration_type) {
     CHECK_EQ(*this->reporting_origin, url::Origin::Create(this->reporting_url),
              base::NotFatalUntil::M128);
   }
@@ -602,11 +600,6 @@ struct AttributionDataHostManagerImpl::HeaderPendingDecode {
 
   HeaderPendingDecode(HeaderPendingDecode&&) = default;
   HeaderPendingDecode& operator=(HeaderPendingDecode&&) = default;
-
-  RegistrationType GetType() const {
-    return verifications.has_value() ? RegistrationType::kTrigger
-                                     : RegistrationType::kSource;
-  }
 };
 
 class AttributionDataHostManagerImpl::Registrations {
@@ -958,21 +951,15 @@ struct AttributionDataHostManagerImpl::PendingRegistrationData {
   RegistrationDataHeaders headers;
   SuitableOrigin reporting_origin;
   GURL reporting_url;
-  std::optional<std::vector<network::TriggerVerification>> verifications;
 
-  PendingRegistrationData(
-      RegistrationDataHeaders headers,
-      SuitableOrigin reporting_origin,
-      GURL reporting_url,
-      std::optional<std::vector<network::TriggerVerification>> verifications)
+  PendingRegistrationData(RegistrationDataHeaders headers,
+                          SuitableOrigin reporting_origin,
+                          GURL reporting_url)
       : headers(std::move(headers)),
         reporting_origin(std::move(reporting_origin)),
-        reporting_url(std::move(reporting_url)),
-        verifications(std::move(verifications)) {
+        reporting_url(std::move(reporting_url)) {
     CHECK_EQ(*this->reporting_origin, url::Origin::Create(this->reporting_url),
              base::NotFatalUntil::M128);
-    CHECK_EQ(this->headers.type == RegistrationType::kTrigger,
-             this->verifications.has_value(), base::NotFatalUntil::M128);
   }
 
   PendingRegistrationData(const PendingRegistrationData&) = delete;
@@ -1157,14 +1144,15 @@ void AttributionDataHostManagerImpl::ParseHeader(
     case RegistrationEligibility::kSourceOrTrigger:
       break;
     case RegistrationEligibility::kSource:
-      CHECK_EQ(pending_decode.GetType(), RegistrationType::kSource);
+      CHECK_EQ(pending_decode.registration_type, RegistrationType::kSource);
       break;
     case RegistrationEligibility::kTrigger:
-      CHECK_EQ(pending_decode.GetType(), RegistrationType::kTrigger);
+      CHECK_EQ(pending_decode.registration_type, RegistrationType::kTrigger);
       break;
   }
 
-  const bool is_source = pending_decode.GetType() == RegistrationType::kSource;
+  const bool is_source =
+      pending_decode.registration_type == RegistrationType::kSource;
 
   switch (registrar) {
     case Registrar::kWeb:
@@ -1332,8 +1320,9 @@ void AttributionDataHostManagerImpl::HandleRegistrationInfo(
       HeaderPendingDecode(std::move(**header),
                           std::move(pending_registration_data.reporting_origin),
                           std::move(pending_registration_data.reporting_url),
-                          std::move(pending_registration_data.verifications),
-                          registration_info.report_header_errors),
+                          registration_info.report_header_errors,
+                          /*registration_type=*/
+                          pending_registration_data.headers.type),
       registrar_info.registrar.value());
 }
 
@@ -1501,8 +1490,7 @@ bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
   HandleRegistrationData(
       it, PendingRegistrationData(std::move(header),
                                   std::move(reporting_origin.value()),
-                                  std::move(reporting_url),
-                                  /*verifications=*/std::nullopt));
+                                  std::move(reporting_url)));
 
   return true;
 }
@@ -1683,8 +1671,7 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
     BackgroundRegistrationsId id,
     const net::HttpResponseHeaders* headers,
     GURL reporting_url,
-    network::AttributionReportingRuntimeFeatures runtime_features,
-    const std::vector<network::TriggerVerification>& trigger_verifications) {
+    network::AttributionReportingRuntimeFeatures runtime_features) {
   CHECK(BackgroundRegistrationsEnabled());
 
   auto it = registrations_.find(id);
@@ -1717,15 +1704,10 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
     return false;
   }
 
-  std::optional<std::vector<network::TriggerVerification>> verifications;
-  if (header.type == RegistrationType::kTrigger) {
-    verifications = trigger_verifications;
-  }
-
   HandleRegistrationData(
-      it, PendingRegistrationData(
-              std::move(header), std::move(suitable_reporting_origin.value()),
-              std::move(reporting_url), std::move(verifications)));
+      it, PendingRegistrationData(std::move(header),
+                                  std::move(suitable_reporting_origin.value()),
+                                  std::move(reporting_url)));
 
   return true;
 }
@@ -1814,7 +1796,6 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data,
-    std::vector<network::TriggerVerification> verifications,
     bool was_fetched_via_service_worker) {
   // This is validated by the Mojo typemapping.
   CHECK(reporting_origin.IsValid(), base::NotFatalUntil::M128);
@@ -1835,7 +1816,6 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   attribution_manager_->HandleTrigger(
       AttributionTrigger(std::move(reporting_origin), std::move(data),
                          /*destination_origin=*/context->context_origin(),
-                         std::move(verifications),
                          context->is_within_fenced_frame()),
       context->render_frame_id());
 }
@@ -1969,8 +1949,7 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
   HandleRegistrationData(
       it, PendingRegistrationData(std::move(header),
                                   std::move(suitable_reporting_origin.value()),
-                                  std::move(reporting_url),
-                                  /*verifications=*/std::nullopt));
+                                  std::move(reporting_url)));
 }
 
 base::WeakPtr<AttributionDataHostManager>
@@ -2053,8 +2032,6 @@ void AttributionDataHostManagerImpl::HandleParsedWebTrigger(
     const Registrations& registrations,
     HeaderPendingDecode& pending_decode,
     data_decoder::DataDecoder::ValueOrError result) {
-  CHECK(pending_decode.verifications.has_value());
-
   auto trigger =
       [&]() -> base::expected<AttributionTrigger, TriggerRegistrationError> {
     if (!result.has_value()) {
@@ -2073,7 +2050,6 @@ void AttributionDataHostManagerImpl::HandleParsedWebTrigger(
     return AttributionTrigger(
         std::move(pending_decode.reporting_origin), std::move(registration),
         /*destination_origin=*/registrations.context_origin(),
-        std::move(*pending_decode.verifications),
         registrations.is_within_fenced_frame());
   }();
 
@@ -2098,7 +2074,7 @@ void AttributionDataHostManagerImpl::OnWebHeaderParsed(
   CHECK(!registrations->pending_web_decodes().empty());
   {
     auto& pending_decode = registrations->pending_web_decodes().front();
-    switch (pending_decode.GetType()) {
+    switch (pending_decode.registration_type) {
       case RegistrationType::kSource: {
         HandleParsedWebSource(*registrations, pending_decode,
                               std::move(result));
@@ -2179,11 +2155,11 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(RegistrationsId id,
       } else {
         SubmitOsRegistrations(*std::move(registration_items),
                               registrations->context(),
-                              pending_decode.GetType());
+                              pending_decode.registration_type);
       }
     } else {
       attribution_reporting::RegistrationHeaderErrorDetails error_details;
-      switch (pending_decode.GetType()) {
+      switch (pending_decode.registration_type) {
         case RegistrationType::kSource:
           error_details = attribution_reporting::OsSourceRegistrationError(
               registration_items.error());

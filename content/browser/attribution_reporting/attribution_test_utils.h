@@ -45,10 +45,6 @@ namespace net {
 class SchemefulSite;
 }  // namespace net
 
-namespace network {
-class TriggerVerification;
-}  // namespace network
-
 namespace content {
 
 class AttributionTrigger;
@@ -212,9 +208,6 @@ class TriggerBuilder {
   TriggerBuilder& SetSourceRegistrationTimeConfig(
       attribution_reporting::mojom::SourceRegistrationTimeConfig);
 
-  TriggerBuilder& SetVerifications(
-      std::vector<network::TriggerVerification> verifications);
-
   TriggerBuilder& SetFilterPair(attribution_reporting::FilterPair filter_pair);
 
   TriggerBuilder& SetTriggerContextId(std::string trigger_context_id);
@@ -241,7 +234,6 @@ class TriggerBuilder {
   bool debug_reporting_ = false;
   std::optional<attribution_reporting::SuitableOrigin>
       aggregation_coordinator_origin_;
-  std::vector<network::TriggerVerification> verifications_;
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config_ =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
@@ -302,9 +294,6 @@ class ReportBuilder {
   ReportBuilder& SetAggregatableFilteringIdsMaxBytes(
       attribution_reporting::AggregatableFilteringIdsMaxBytes);
 
-  ReportBuilder& SetVerificationToken(
-      std::optional<std::string> verification_token);
-
   ReportBuilder& SetTriggerContextId(std::string trigger_context_id);
 
   AttributionReport Build() const;
@@ -328,7 +317,6 @@ class ReportBuilder {
   std::optional<attribution_reporting::SuitableOrigin>
       aggregation_coordinator_origin_;
 
-  std::optional<std::string> verification_token_;
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config_ =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;

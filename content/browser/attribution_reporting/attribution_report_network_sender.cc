@@ -85,11 +85,9 @@ void AttributionReportNetworkSender::SendReport(
     ReportSentCallback sent_callback) {
   GURL url = report.ReportURL(is_debug_report);
   std::string body = SerializeAttributionJson(report.ReportBody());
-  net::HttpRequestHeaders headers;
-  report.PopulateAdditionalHeaders(headers);
 
   url::Origin origin(report.GetReportingOrigin());
-  SendReport(std::move(url), std::move(origin), body, std::move(headers),
+  SendReport(std::move(url), std::move(origin), body,
              base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
                             base::Unretained(this), std::move(report),
                             is_debug_report, std::move(sent_callback)));
@@ -102,7 +100,7 @@ void AttributionReportNetworkSender::SendReport(
   url::Origin origin(report.reporting_origin());
   std::string body = SerializeAttributionJson(report.ReportBody());
   SendReport(
-      std::move(url), std::move(origin), body, net::HttpRequestHeaders(),
+      std::move(url), std::move(origin), body,
       base::BindOnce(&AttributionReportNetworkSender::OnVerboseDebugReportSent,
                      base::Unretained(this),
                      base::BindOnce(std::move(callback), std::move(report))));
@@ -115,7 +113,7 @@ void AttributionReportNetworkSender::SendReport(
   GURL url(report.ReportUrl());
   url::Origin origin(report.reporting_origin());
   std::string body = SerializeAttributionJson(report_body);
-  SendReport(std::move(url), std::move(origin), body, net::HttpRequestHeaders(),
+  SendReport(std::move(url), std::move(origin), body,
              base::BindOnce(
                  &AttributionReportNetworkSender::OnAggregatableDebugReportSent,
                  base::Unretained(this),
@@ -126,11 +124,9 @@ void AttributionReportNetworkSender::SendReport(
 void AttributionReportNetworkSender::SendReport(GURL url,
                                                 url::Origin origin,
                                                 const std::string& body,
-                                                net::HttpRequestHeaders headers,
                                                 UrlLoaderCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(url);
-  resource_request->headers = std::move(headers);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->mode = network::mojom::RequestMode::kSameOrigin;

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -30,7 +31,6 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -117,11 +117,6 @@ class MockDataHost : public attribution_reporting::mojom::blink::DataHost {
     return trigger_data_;
   }
 
-  const Vector<Vector<network::TriggerVerification>>& trigger_verifications()
-      const {
-    return trigger_verifications_;
-  }
-
   const std::vector<std::vector<attribution_reporting::OsRegistrationItem>>&
   os_sources() const {
     return os_sources_;
@@ -154,10 +149,8 @@ class MockDataHost : public attribution_reporting::mojom::blink::DataHost {
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration data,
-      Vector<network::TriggerVerification> verifications,
       bool was_fetched_via_serivce_worker) override {
     trigger_data_.push_back(std::move(data));
-    trigger_verifications_.push_back(std::move(verifications));
   }
 
   void OsSourceDataAvailable(
@@ -183,8 +176,6 @@ class MockDataHost : public attribution_reporting::mojom::blink::DataHost {
   Vector<attribution_reporting::SourceRegistration> source_data_;
 
   Vector<attribution_reporting::TriggerRegistration> trigger_data_;
-
-  Vector<Vector<network::TriggerVerification>> trigger_verifications_;
 
   std::vector<std::vector<attribution_reporting::OsRegistrationItem>>
       os_sources_;
@@ -357,47 +348,6 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
 
   mock_data_host->Flush();
   EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
-}
-
-TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerifications) {
-  KURL test_url = ToKURL("https://example1.com/foo.html");
-
-  ResourceRequest request(test_url);
-  ResourceResponse response(test_url);
-  response.SetHttpStatusCode(200);
-  response.SetHttpHeaderField(
-      http_names::kAttributionReportingRegisterTrigger,
-      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
-
-  response.SetTriggerVerifications(
-      {*network::TriggerVerification::Create(
-           "token-1",
-           base::Uuid::ParseLowercase("11fa6760-8e5c-4ccb-821d-b5d82bef2b37")),
-       *network::TriggerVerification::Create(
-           "token-2", base::Uuid::ParseLowercase(
-                          "22fa6760-8e5c-4ccb-821d-b5d82bef2b37"))});
-
-  MockAttributionHost host(
-      GetFrame().GetRemoteNavigationAssociatedInterfaces());
-  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
-      request, response));
-
-  host.WaitUntilBoundAndFlush();
-
-  auto* mock_data_host = host.mock_data_host();
-  ASSERT_TRUE(mock_data_host);
-  mock_data_host->Flush();
-
-  ASSERT_EQ(mock_data_host->trigger_verifications().size(), 1u);
-  const Vector<network::TriggerVerification>& verifications =
-      mock_data_host->trigger_verifications().at(0);
-  ASSERT_EQ(verifications.size(), 2u);
-  EXPECT_EQ(verifications.at(0).token(), "token-1");
-  EXPECT_EQ(verifications.at(0).aggregatable_report_id().AsLowercaseString(),
-            "11fa6760-8e5c-4ccb-821d-b5d82bef2b37");
-  EXPECT_EQ(verifications.at(1).token(), "token-2");
-  EXPECT_EQ(verifications.at(1).aggregatable_report_id().AsLowercaseString(),
-            "22fa6760-8e5c-4ccb-821d-b5d82bef2b37");
 }
 
 TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsIgnored) {
