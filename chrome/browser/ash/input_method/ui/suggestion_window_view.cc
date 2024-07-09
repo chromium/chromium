@@ -188,11 +188,7 @@ void SuggestionWindowView::OnThemeChanged() {
 SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
                                            AssistiveDelegate* delegate,
                                            Orientation orientation)
-    : BubbleDialogDelegateView(nullptr,
-                               views::BubbleBorder::Arrow::TOP_LEFT,
-                               views::BubbleBorder::DIALOG_SHADOW,
-                               true),
-      delegate_(delegate) {
+    : delegate_(delegate) {
   DCHECK(parent);
   // AccessibleRole determines whether the content is announced on pop-up.
   // Inner content should not be announced when the window appears since this
@@ -327,6 +323,7 @@ void SuggestionWindowView::Reorient(Orientation orientation,
 
 void SuggestionWindowView::MakeVisible() {
   multiple_candidate_area_->SetVisible(true);
+  SizeToContents();
   // Docs can put the cursor offscreen - force it onscreen.
   GetWidget()->SetBoundsConstrained(GetBubbleBounds());
 }

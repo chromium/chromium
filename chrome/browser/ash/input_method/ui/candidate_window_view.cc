@@ -190,11 +190,7 @@ BEGIN_METADATA(InformationTextArea)
 END_METADATA
 
 CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
-    : views::BubbleDialogDelegateView(nullptr,
-                                      views::BubbleBorder::TOP_LEFT,
-                                      views::BubbleBorder::DIALOG_SHADOW,
-                                      true),
-      selected_candidate_index_in_page_(-1) {
+    : selected_candidate_index_in_page_(-1) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCanActivate(false);
   DCHECK(parent);
@@ -260,8 +256,10 @@ void CandidateWindowView::OnThemeChanged() {
 }
 
 void CandidateWindowView::UpdateVisibility() {
-  if (!candidate_area_->GetVisible() && !auxiliary_text_->GetVisible() &&
-      !preedit_->GetVisible()) {
+  if (candidate_area_->GetVisible() || auxiliary_text_->GetVisible() ||
+      preedit_->GetVisible()) {
+    SizeToContents();
+  } else {
     GetWidget()->Close();
   }
 }
