@@ -283,6 +283,8 @@ void SuggestionWindowView::ResizeCandidateArea(
             // Label indexes start from "1", hence we increment index by one.
             /* index_text=*/base::FormatNumber(index + 1),
             use_legacy_candidate));
+    // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+    candidate->SetLayoutManagerUseConstrainedSpace(false);
 
     auto subscription = candidate->AddStateChangedCallback(base::BindRepeating(
         [](SuggestionWindowView* window,
