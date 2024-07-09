@@ -290,7 +290,7 @@ void TabScrubberChromeOS::BeginScrub(BrowserView* browser_view,
         ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
-  tab_strip_->AddObserver(this);
+  tab_strip_->SetTabStripObserver(this);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Capture the event so that the scroll event will not be handled by other
@@ -325,7 +325,7 @@ bool TabScrubberChromeOS::FinishScrub(bool activate) {
           TabStripUserGestureDetails(
               TabStripUserGestureDetails::GestureType::kOther));
     }
-    tab_strip->RemoveObserver(this);
+    tab_strip->SetTabStripObserver(nullptr);
   }
 
   browser_ = nullptr;

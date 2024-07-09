@@ -71,11 +71,11 @@ constexpr TabStripUnittestParams kTabStripUnittestParams[] = {
 class TestTabStripObserver : public TabStripObserver {
  public:
   explicit TestTabStripObserver(TabStrip* tab_strip) : tab_strip_(tab_strip) {
-    tab_strip_->AddObserver(this);
+    tab_strip_->SetTabStripObserver(this);
   }
   TestTabStripObserver(const TestTabStripObserver&) = delete;
   TestTabStripObserver& operator=(const TestTabStripObserver&) = delete;
-  ~TestTabStripObserver() override { tab_strip_->RemoveObserver(this); }
+  ~TestTabStripObserver() override { tab_strip_->SetTabStripObserver(nullptr); }
 
   int last_tab_added() const { return last_tab_added_; }
   int last_tab_removed() const { return last_tab_removed_; }

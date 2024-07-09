@@ -1055,12 +1055,11 @@ int TabStrip::GetSizeNeededForViews(
   return width;
 }
 
-void TabStrip::AddObserver(TabStripObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void TabStrip::RemoveObserver(TabStripObserver* observer) {
-  observers_.RemoveObserver(observer);
+void TabStrip::SetTabStripObserver(TabStripObserver* observer) {
+  // Overwriting a non-null delegate with another delegate is likely a logic
+  // bug.
+  CHECK_NE(!!observer_, !!observer);
+  observer_ = observer;
 }
 
 void TabStrip::SetBackgroundOffset(int background_offset) {
@@ -1121,8 +1120,8 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data) {
   // callbacks.
   tab->SetData(std::move(data));
 
-  for (TabStripObserver& observer : observers_) {
-    observer.OnTabAdded(model_index);
+  if (observer_) {
+    observer_->OnTabAdded(model_index);
   }
 
   // At the start of AddTabAt() the model and tabs are out of sync. Any queries
@@ -1164,8 +1163,8 @@ void TabStrip::MoveTab(int from_model_index,
 
   selected_tabs_.Move(from_model_index, to_model_index, /*length=*/1);
 
-  for (TabStripObserver& observer : observers_) {
-    observer.OnTabMoved(from_model_index, to_model_index);
+  if (observer_) {
+    observer_->OnTabMoved(from_model_index, to_model_index);
   }
 }
 
@@ -1185,8 +1184,8 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
 
   selected_tabs_.DecrementFrom(model_index);
 
-  for (TabStripObserver& observer : observers_) {
-    observer.OnTabRemoved(model_index);
+  if (observer_) {
+    observer_->OnTabRemoved(model_index);
   }
 }
 

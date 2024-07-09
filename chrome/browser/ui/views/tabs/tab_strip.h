@@ -14,8 +14,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/observer_list.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -91,9 +89,8 @@ class TabStrip : public views::View,
   static int GetSizeNeededForViews(
       const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views);
 
-  // Add and remove observers to changes within this TabStrip.
-  void AddObserver(TabStripObserver* observer);
-  void RemoveObserver(TabStripObserver* observer);
+  // Sets the observer to be notified of changes within this TabStrip.
+  void SetTabStripObserver(TabStripObserver* observer);
 
   // Sets |background_offset_| and schedules a paint.
   void SetBackgroundOffset(int background_offset);
@@ -419,7 +416,7 @@ class TabStrip : public views::View,
 
   // -- Member Variables ------------------------------------------------------
 
-  base::ObserverList<TabStripObserver>::Unchecked observers_;
+  raw_ptr<TabStripObserver> observer_;
 
   std::unique_ptr<TabStripController> controller_;
 
