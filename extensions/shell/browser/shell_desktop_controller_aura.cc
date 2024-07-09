@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
@@ -212,7 +213,7 @@ void ShellDesktopControllerAura::CloseRootWindowController(
   const auto it = base::ranges::find(
       root_window_controllers_, root_window_controller,
       [](const auto& candidate_pair) { return candidate_pair.second.get(); });
-  DCHECK(it != root_window_controllers_.end());
+  CHECK(it != root_window_controllers_.end(), base::NotFatalUntil::M130);
   TearDownRootWindowController(it->second.get());
   root_window_controllers_.erase(it);
 

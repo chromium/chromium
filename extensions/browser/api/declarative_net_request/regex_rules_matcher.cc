@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -237,7 +238,7 @@ RegexRulesMatcher::MatchHelper::GetPotentialMatches(
   std::vector<RegexRuleInfo> potential_matches;
   for (int re2_id : potential_re2_ids) {
     auto it = re2_id_to_rules_map_.find(re2_id);
-    DCHECK(it != re2_id_to_rules_map_.end());
+    CHECK(it != re2_id_to_rules_map_.end(), base::NotFatalUntil::M130);
 
     const flat::RegexRule* rule = it->second;
     if (!DoesRuleMetadataMatchRequest(*rule->url_rule(), params)) {

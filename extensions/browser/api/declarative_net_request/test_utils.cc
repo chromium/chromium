@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/not_fatal_until.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
@@ -563,7 +564,7 @@ base::flat_set<int> GetDisabledRuleIdsFromMatcherForTesting(
   const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
       DNRManifestData::GetManifestIDToRulesetMap(extension);
   auto it = public_id_map.find(ruleset_id_string);
-  DCHECK(public_id_map.end() != it);
+  CHECK(public_id_map.end() != it, base::NotFatalUntil::M130);
   RulesetID ruleset_id = it->second->id;
 
   const CompositeMatcher* composite_matcher =
