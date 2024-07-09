@@ -24,8 +24,7 @@ class FileSystemOperationRunner;
 // In short, each subclass should override ProcessFile and ProcessDirectory
 // to process a directory or a file. To start the recursive operation it
 // should also call StartRecursiveOperation.
-class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate
-    : public base::SupportsWeakPtr<RecursiveOperationDelegate> {
+class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate {
  public:
   using StatusCallback = FileSystemOperation::StatusCallback;
   using FileEntryList = FileSystemOperation::FileEntryList;
@@ -62,6 +61,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate
 
   // Cancels the currently running operation.
   void Cancel();
+
+  // This should be implemented by the outermost concrete class.
+  virtual base::WeakPtr<RecursiveOperationDelegate> AsWeakPtr() = 0;
 
  protected:
   explicit RecursiveOperationDelegate(FileSystemContext* file_system_context);

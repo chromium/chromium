@@ -48,7 +48,7 @@ enterprise_connectors::FileTransferAnalysisDelegate::
 // a file, the vector will only contain `root`. If `root` is a directory all
 // files lying in that directory or any descended subdirectory are passed to
 // `callback`.
-class GetFileURLsDelegate : public storage::RecursiveOperationDelegate {
+class GetFileURLsDelegate final : public storage::RecursiveOperationDelegate {
  public:
   using FileURLsCallback =
       base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
@@ -94,6 +94,9 @@ class GetFileURLsDelegate : public storage::RecursiveOperationDelegate {
   void PostProcessDirectory(const storage::FileSystemURL& url,
                             StatusCallback callback) override {
     std::move(callback).Run(base::File::FILE_OK);
+  }
+  base::WeakPtr<storage::RecursiveOperationDelegate> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:

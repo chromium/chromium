@@ -62,7 +62,8 @@ class DlpFilesController {
 
   // Gets all files inside |root| recursively and runs |callback_| with the
   // files list.
-  class FolderRecursionDelegate : public storage::RecursiveOperationDelegate {
+  class FolderRecursionDelegate final
+      : public storage::RecursiveOperationDelegate {
    public:
     using FileURLsCallback =
         base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
@@ -85,6 +86,7 @@ class DlpFilesController {
                           StatusCallback callback) override;
     void PostProcessDirectory(const storage::FileSystemURL& url,
                               StatusCallback callback) override;
+    base::WeakPtr<storage::RecursiveOperationDelegate> AsWeakPtr() override;
 
    private:
     void OnGetMetadata(const storage::FileSystemURL& url,

@@ -206,6 +206,10 @@ void DlpFilesController::FolderRecursionDelegate::PostProcessDirectory(
     StatusCallback callback) {
   std::move(callback).Run(base::File::FILE_OK);
 }
+base::WeakPtr<storage::RecursiveOperationDelegate>
+DlpFilesController::FolderRecursionDelegate::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
 
 void DlpFilesController::FolderRecursionDelegate::OnGetMetadata(
     const storage::FileSystemURL& url,

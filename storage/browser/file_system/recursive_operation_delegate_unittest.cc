@@ -30,7 +30,7 @@ namespace storage {
 
 namespace {
 
-class LoggingRecursiveOperation : public RecursiveOperationDelegate {
+class LoggingRecursiveOperation final : public RecursiveOperationDelegate {
  public:
   struct LogEntry {
     enum Type { PROCESS_FILE, PROCESS_DIRECTORY, POST_PROCESS_DIRECTORY };
@@ -90,6 +90,10 @@ class LoggingRecursiveOperation : public RecursiveOperationDelegate {
                             StatusCallback callback) override {
     RecordLogEntry(LogEntry::POST_PROCESS_DIRECTORY, url);
     std::move(callback).Run(base::File::FILE_OK);
+  }
+
+  base::WeakPtr<RecursiveOperationDelegate> AsWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
   }
 
   void SetEntryToFail(const FileSystemURL& url) { error_url_ = url; }

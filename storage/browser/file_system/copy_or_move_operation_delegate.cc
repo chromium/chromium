@@ -1142,6 +1142,11 @@ void CopyOrMoveOperationDelegate::PostProcessDirectory(
           weak_factory_.GetWeakPtr(), src_url, std::move(callback)));
 }
 
+base::WeakPtr<RecursiveOperationDelegate>
+CopyOrMoveOperationDelegate::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void CopyOrMoveOperationDelegate::PostTask(base::OnceClosure closure) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(closure));

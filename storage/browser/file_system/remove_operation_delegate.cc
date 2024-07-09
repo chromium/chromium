@@ -56,6 +56,10 @@ void RemoveOperationDelegate::PostProcessDirectory(const FileSystemURL& url,
   operation_runner()->RemoveDirectory(url, std::move(callback));
 }
 
+base::WeakPtr<RecursiveOperationDelegate> RemoveOperationDelegate::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void RemoveOperationDelegate::DidTryRemoveFile(base::File::Error error) {
   if (error != base::File::FILE_ERROR_NOT_A_FILE &&
       error != base::File::FILE_ERROR_SECURITY) {

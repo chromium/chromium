@@ -31,7 +31,7 @@ enum class FlushPolicy;
 enum class FlushMode;
 
 // A delegate class for recursive copy or move operations.
-class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
+class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate final
     : public RecursiveOperationDelegate {
  public:
   class CopyOrMoveImpl;
@@ -115,6 +115,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
                         StatusCallback callback) override;
   void PostProcessDirectory(const FileSystemURL& url,
                             StatusCallback callback) override;
+  base::WeakPtr<RecursiveOperationDelegate> AsWeakPtr() override;
 
   void PostTask(base::OnceClosure closure);
 
