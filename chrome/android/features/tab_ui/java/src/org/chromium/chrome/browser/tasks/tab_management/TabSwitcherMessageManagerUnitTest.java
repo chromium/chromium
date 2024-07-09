@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -160,18 +161,23 @@ public class TabSwitcherMessageManagerUnitTest {
     public void testBeforeReset() {
         mMessageManager.beforeReset();
         verify(mPriceMessageService).invalidateMessage();
+        verify(mTabModelFilter).removeObserver(any());
     }
 
     @Test
     @SmallTest
     public void testAfterReset() {
+        verify(mTabModelFilter).addObserver(any());
+
         mMessageManager.afterReset(0);
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
         verify(mMessageUpdateObserver, never()).onAppendedMessage();
+        verify(mTabModelFilter, times(2)).addObserver(any());
 
         mMessageManager.afterReset(1);
         verify(mMessageUpdateObserver, times(2)).onRemoveAllAppendedMessage();
         verify(mMessageUpdateObserver).onAppendedMessage();
+        verify(mTabModelFilter, times(3)).addObserver(any());
     }
 
     @Test

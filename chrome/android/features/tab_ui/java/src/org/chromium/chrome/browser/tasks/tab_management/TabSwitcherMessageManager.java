@@ -330,6 +330,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
     /** Called before resetting the list of tabs. */
     public void beforeReset() {
+        // Unregister and re-register the TabModelObserver along with
+        // TabListCoordinator#resetWithListOfTabs to ensure that the TabList gets observer
+        // calls before the TabSwitcherMessageManager.
+        removeTabModelFilterObservers(mCurrentTabModelFilterSupplier.get());
         // Invalidate price welcome message for every reset so that the stale message won't be
         // restored by mistake (e.g. from tabClosureUndone in TabSwitcherMediator).
         if (mPriceMessageService != null) {
@@ -339,6 +343,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
     /** Called after resetting the list of tabs. */
     public void afterReset(int tabCount) {
+        onTabModelFilterChanged(mCurrentTabModelFilterSupplier.get(), null);
         removeAllAppendedMessage();
         if (tabCount > 0) {
             if (mPriceMessageService != null
@@ -546,6 +551,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                     == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {
                 tabListCoordinator.addSpecialListItemToEnd(
                         TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
+            } else if (messages.get(i).type == MessageService.MessageType.ARCHIVED_TABS_MESSAGE) {
+                tabListCoordinator.addSpecialListItem(
+                        0, TabProperties.UiType.CUSTOM_MESSAGE, messages.get(i).model);
             } else {
                 tabListCoordinator.addSpecialListItemToEnd(
                         TabProperties.UiType.MESSAGE, messages.get(i).model);
