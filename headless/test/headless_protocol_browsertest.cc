@@ -210,22 +210,12 @@ void HeadlessProtocolBrowserTest::FinishTest() {
   FinishAsynchronousTest();
 }
 
-// TODO(crbug.com/40694526): The whole test suite is flaky on Mac ASAN.
-#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
-#define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                        \
-  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, DISABLED_##TEST_NAME) { \
-    test_folder_ = "/protocol/";                                              \
-    script_name_ = SCRIPT_NAME;                                               \
-    RunTest();                                                                \
-  }
-#else
 #define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)             \
   IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, TEST_NAME) { \
     test_folder_ = "/protocol/";                                   \
     script_name_ = SCRIPT_NAME;                                    \
     RunTest();                                                     \
   }
-#endif
 
 // Headless-specific tests
 HEADLESS_PROTOCOL_TEST(VirtualTimeBasics, "emulation/virtual-time-basics.js")
@@ -274,35 +264,17 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigationSameDoc,
                        "emulation/virtual-time-history-navigation-same-doc.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeSVG, "emulation/virtual-time-svg.js")
 
-// Flaky on Mac. TODO(crbug.com/40895343): Re-enable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_VirtualTimeWorkerBasic DISABLED_VirtualTimeWorkerBasic
-#else
-#define MAYBE_VirtualTimeWorkerBasic VirtualTimeWorkerBasic
-#endif
-HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeWorkerBasic,
+HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerBasic,
                        "emulation/virtual-time-worker-basic.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerLockstep,
                        "emulation/virtual-time-worker-lockstep.js")
 
-// Flaky on Mac. TODO(crbug.com/40895343): Re-enable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_VirtualTimeWorkerFetch DISABLED_VirtualTimeWorkerFetch
-#else
-#define MAYBE_VirtualTimeWorkerFetch VirtualTimeWorkerFetch
-#endif
-HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeWorkerFetch,
+HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerFetch,
                        "emulation/virtual-time-worker-fetch.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerTerminate,
                        "emulation/virtual-time-worker-terminate.js")
 
-// Flaky on Mac. TODO(crbug.com/40740587): Re-enable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_VirtualTimeFetchKeepalive DISABLED_VirtualTimeFetchKeepalive
-#else
-#define MAYBE_VirtualTimeFetchKeepalive VirtualTimeFetchKeepalive
-#endif
-HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeFetchKeepalive,
+HEADLESS_PROTOCOL_TEST(VirtualTimeFetchKeepalive,
                        "emulation/virtual-time-fetch-keepalive.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeDisposeWhileRunning,
                        "emulation/virtual-time-dispose-while-running.js")
@@ -478,18 +450,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 HEADLESS_DEVTOOLED_TEST_P(HeadlessAllowedVideoCodecsTest);
 
-// TODO(crbug.com/40694526): The whole test suite is flaky on Mac ASAN.
-#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
-#define MAYBE_IN_PROC_BROWSER_TEST_F(CLASS, TEST_NAME) \
-  IN_PROC_BROWSER_TEST_F(CLASS, DISABLED_##TEST_NAME)
-#else
-#define MAYBE_IN_PROC_BROWSER_TEST_F(CLASS, TEST_NAME) \
-  IN_PROC_BROWSER_TEST_F(CLASS, TEST_NAME)
-#endif
-
 #define HEADLESS_PROTOCOL_TEST_WITHOUT_SITE_ISOLATION(TEST_NAME, SCRIPT_NAME) \
-  MAYBE_IN_PROC_BROWSER_TEST_F(                                               \
-      HeadlessProtocolBrowserTestWithoutSiteIsolation, TEST_NAME) {           \
+  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithoutSiteIsolation,     \
+                         TEST_NAME) {                                         \
     test_folder_ = "/protocol/";                                              \
     script_name_ = SCRIPT_NAME;                                               \
     RunTest();                                                                \
@@ -524,13 +487,12 @@ class HeadlessProtocolBrowserTestWithDataPath
   std::string data_path_;
 };
 
-#define HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(TEST_NAME, SCRIPT_NAME, PATH) \
-  MAYBE_IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithDataPath,     \
-                               TEST_NAME) {                                 \
-    test_folder_ = "/protocol/";                                            \
-    script_name_ = SCRIPT_NAME;                                             \
-    data_path_ = PATH;                                                      \
-    RunTest();                                                              \
+#define HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(TEST_NAME, SCRIPT_NAME, PATH)    \
+  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithDataPath, TEST_NAME) { \
+    test_folder_ = "/protocol/";                                               \
+    script_name_ = SCRIPT_NAME;                                                \
+    data_path_ = PATH;                                                         \
+    RunTest();                                                                 \
   }
 
 // TODO(crbug.com/40883155)  Re-enable after resolving flaky failures.
