@@ -278,7 +278,7 @@ void DirectRenderer::DrawFrame(
       current_frame()->root_render_pass->has_transparent_background;
   gfx::ColorSpace frame_color_space =
       RenderPassColorSpace(current_frame()->root_render_pass);
-  SharedImageFormat frame_si_format = GetSinglePlaneSharedImageFormat(
+  SharedImageFormat frame_si_format = GetSharedImageFormat(
       current_frame()->display_color_spaces.GetOutputBufferFormat(
           current_frame()->root_render_pass->content_color_usage,
           frame_has_alpha));
