@@ -36,8 +36,8 @@ class TabGroupSyncBridgeMediator {
       SavedTabGroupModel* model,
       PrefService* pref_service,
       std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
-      std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
-      std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids);
+      std::unique_ptr<SyncDataTypeConfiguration>
+          shared_tab_group_configuration);
   TabGroupSyncBridgeMediator(const TabGroupSyncBridgeMediator&) = delete;
   TabGroupSyncBridgeMediator& operator=(const TabGroupSyncBridgeMediator&) =
       delete;

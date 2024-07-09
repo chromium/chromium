@@ -20,8 +20,7 @@ TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
     SavedTabGroupModel* model,
     PrefService* pref_service,
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
-    std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
-    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids)
+    std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration)
     : model_(model) {
   CHECK(model_);
   CHECK(saved_tab_group_configuration);
@@ -33,7 +32,7 @@ TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
       model_,
       std::move(saved_tab_group_configuration->model_type_store_factory),
       std::move(saved_tab_group_configuration->change_processor), pref_service,
-      std::move(migrated_android_local_ids),
+      std::map<base::Uuid, LocalTabGroupID>(),
       base::BindOnce(&TabGroupSyncBridgeMediator::OnSavedGroupsWithTabsLoaded,
                      base::Unretained(this)));
   if (shared_tab_group_configuration) {

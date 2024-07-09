@@ -56,12 +56,6 @@ BASE_FEATURE(kTabGroupSyncServiceDesktopMigration,
              "TabGroupSyncServiceDesktopMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature flag on Android to control migration from Java SharedPrefs to
-// ModelTypeStore.
-BASE_FEATURE(kMigrationFromJavaSharedPrefs,
-             "MigrationFromJavaSharedPrefs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature flag to remove any merge logic from saved tab group model.
 BASE_FEATURE(kAlwaysAcceptServerDataInModel,
              "AlwaysAcceptServerDataInModel",
@@ -110,10 +104,6 @@ bool IsTabGroupSyncCoordinatorEnabled() {
 #else
   return true;
 #endif
-}
-
-bool IsMigrationFromJavaSharedPrefsEnabled() {
-  return base::FeatureList::IsEnabled(kMigrationFromJavaSharedPrefs);
 }
 
 bool AlwaysAcceptServerDataInModel() {

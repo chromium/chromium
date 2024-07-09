@@ -17,7 +17,6 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
-#include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #include "components/saved_tab_groups/tab_group_sync_delegate.h"
@@ -43,9 +42,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::unique_ptr<SavedTabGroupModel> model,
       std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
       std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
-      std::unique_ptr<TabGroupStore> tab_group_store,
       PrefService* pref_service,
-      std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids,
       std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger);
   ~TabGroupSyncServiceImpl() override;
 

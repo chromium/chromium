@@ -23,7 +23,6 @@
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/stats.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
-#include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/saved_tab_groups/utils.h"
@@ -41,16 +40,13 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SavedTabGroupModel> model,
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
-    std::unique_ptr<TabGroupStore> tab_group_store,
     PrefService* pref_service,
-    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids,
     std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger)
     : model_(std::move(model)),
       sync_bridge_mediator_(model_.get(),
                             pref_service,
                             std::move(saved_tab_group_configuration),
-                            std::move(shared_tab_group_configuration),
-                            std::move(migrated_android_local_ids)),
+                            std::move(shared_tab_group_configuration)),
       pref_service_(pref_service),
       metrics_logger_(std::move(metrics_logger)) {
   model_->AddObserver(this);

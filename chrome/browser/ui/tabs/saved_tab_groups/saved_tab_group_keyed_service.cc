@@ -101,9 +101,7 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
           std::make_unique<SyncDataTypeConfiguration>(
               CreateSavedTabGroupChangeProcessor(),
               GetStoreFactory()),
-          MaybeCreateSyncConfigurationForSharedTabGroupData(GetStoreFactory()),
-          /*migrated_android_local_ids=*/
-          std::map<base::Uuid, LocalTabGroupID>()),
+          MaybeCreateSyncConfigurationForSharedTabGroupData(GetStoreFactory())),
       metrics_logger_(
           std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker)) {
   model()->AddObserver(this);

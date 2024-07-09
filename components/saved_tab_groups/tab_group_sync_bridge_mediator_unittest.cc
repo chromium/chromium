@@ -48,7 +48,6 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
         mock_saved_processor_.CreateForwardingProcessor(),
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
             saved_tab_group_store_.get()));
-    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids;
 
     base::RunLoop run_loop;
     EXPECT_CALL(mock_saved_processor_, ModelReadyToSync)
@@ -56,7 +55,7 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
         .RetiresOnSaturation();
     bridge_mediator_ = std::make_unique<TabGroupSyncBridgeMediator>(
         model_.get(), &pref_service_, std::move(saved_sync_configuration),
-        /*shared_tab_group_configuration=*/nullptr, migrated_android_local_ids);
+        /*shared_tab_group_configuration=*/nullptr);
     run_loop.Run();
   }
 

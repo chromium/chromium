@@ -9,7 +9,6 @@
 
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/saved_tab_groups/empty_tab_group_store_delegate.h"
 #import "components/saved_tab_groups/sync_data_type_configuration.h"
 #import "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
@@ -73,13 +72,6 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
   CHECK(!browser_state->IsOffTheRecord());
   auto saved_config = CreateSavedTabGroupDataTypeConfiguration(browser_state);
 
-  std::unique_ptr<TabGroupStoreDelegate> tab_group_store_delegate =
-      std::make_unique<EmptyTabGroupStoreDelegate>();
-
-  auto tab_group_store =
-      std::make_unique<TabGroupStore>(std::move(tab_group_store_delegate));
-  std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids;
-
   syncer::DeviceInfoTracker* device_info_tracker =
       DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state)
           ->GetDeviceInfoTracker();
@@ -89,8 +81,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
   std::unique_ptr<TabGroupSyncServiceImpl> sync_service =
       std::make_unique<TabGroupSyncServiceImpl>(
           std::move(model), std::move(saved_config), nullptr,
-          std::move(tab_group_store), browser_state->GetPrefs(),
-          std::move(migrated_android_local_ids), std::move(metrics_logger));
+          browser_state->GetPrefs(), std::move(metrics_logger));
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state);

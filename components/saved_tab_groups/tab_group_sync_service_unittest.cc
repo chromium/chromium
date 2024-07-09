@@ -78,7 +78,6 @@ class TabGroupSyncServiceTest : public testing::Test {
     pref_service_.registry()->RegisterDictionaryPref(prefs::kDeletedTabGroupIds,
                                                      base::Value::Dict());
 
-    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids;
     auto metrics_logger =
         std::make_unique<TabGroupSyncMetricsLogger>(&device_info_tracker_);
 
@@ -88,8 +87,7 @@ class TabGroupSyncServiceTest : public testing::Test {
             processor_.CreateForwardingProcessor(),
             syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())),
-        nullptr, nullptr, &pref_service_, migrated_android_local_ids,
-        std::move(metrics_logger));
+        nullptr, &pref_service_, std::move(metrics_logger));
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(processor_, TrackedCacheGuid())
