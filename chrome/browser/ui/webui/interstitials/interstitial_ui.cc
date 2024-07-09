@@ -26,6 +26,8 @@
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_only_mode_controller_client.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
@@ -372,6 +374,19 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
                                                        kRequestUrl));
 }
 
+std::unique_ptr<SupervisedUserVerificationPage>
+CreateSupervisedUserVerificationPage(content::WebContents* web_contents) {
+  const GURL kRequestUrl("https://supervised-user-verification.example.net");
+  return std::make_unique<SupervisedUserVerificationPage>(
+      web_contents, kRequestUrl,
+      std::make_unique<SupervisedUserVerificationControllerClient>(
+          web_contents,
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->GetPrefs(),
+          g_browser_process->GetApplicationLocale(),
+          GURL(chrome::kChromeUINewTabURL), kRequestUrl));
+}
+
 std::unique_ptr<TestSafeBrowsingBlockingPageQuiet>
 CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SBThreatType threat_type =
@@ -551,6 +566,8 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_delegate = CreateInsecureFormPage(web_contents);
   } else if (path_without_query == "/https_only") {
     interstitial_delegate = CreateHttpsOnlyModePage(web_contents);
+  } else if (path_without_query == "/supervised-user-verify") {
+    interstitial_delegate = CreateSupervisedUserVerificationPage(web_contents);
   }
 
   if (path_without_query == "/quietsafebrowsing") {
@@ -558,7 +575,7 @@ void InterstitialHTMLSource::StartDataRequest(
         CreateSafeBrowsingQuietBlockingPage(web_contents);
     html = blocking_page->GetHTML();
     interstitial_delegate = std::move(blocking_page);
-  } else if (path_without_query == "/supervised_user") {
+  } else if (path_without_query == "/supervised-user-ask-parent") {
     html = GetSupervisedUserInterstitialHTML(path);
   } else if (interstitial_delegate.get()) {
     html = interstitial_delegate.get()->GetHTMLContents();

@@ -1,0 +1,21 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.supervised-user-verify #main-content a {
+  color: var(--google-blue-700);
+  text-decoration: none;
+}
+
+.supervised-user-verify .icon {
+  background-image: url(images/error_page_illustration_light_theme.svg);
+  width: 120px;
+  height: 120px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .supervised-user-verify .icon {
+    background-image: url(images/error_page_illustration_dark_theme.svg);
+  }
+}

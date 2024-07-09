@@ -31,7 +31,8 @@ button {
 .ssl button,
 .enterprise-block button,
 .enterprise-warn button,
-.safe-browsing-billing button {
+.safe-browsing-billing button,
+.supervised-user-verify button {
   background: var(--primary-button-fill-color);
 }
 

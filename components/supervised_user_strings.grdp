@@ -79,5 +79,12 @@
       <message name="IDS_PARENT_BLOCKED_SITE_BANNER_MESSAGE" desc="The banner message for the first time a user is blocked from a website because of parental controls">
         The settings your parent chose are now keeping you safer online
       </message>
-
+      <!-- Supervised user verification interstitial. TODO(b/346264927): replace with final versions -->
+      <message name="IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU" desc="The title used for the supervised user verification interstitial." translateable="false">
+        Verify it's you
+      </message>
+      <!-- Supervised user verification interstitial. TODO(b/346264927): replace with final versions -->
+      <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_PARAGRAPH" desc="The primary paragraph shown in the supervised user verification interstitial." translateable="false">
+        Sign back in with your Google Account to visit this site with Family Link settings to help keep you safer online
+      </message>
 </grit-part>
