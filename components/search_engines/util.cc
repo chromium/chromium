@@ -26,6 +26,7 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -100,7 +101,9 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
     // We started writing the pref while we were not checking the country
     // before. Once the feature flag is removed, we can clean up this pref.
     update_builtin_keywords = true;
-  } else if (should_keywords_use_extended_list &&
+  } else if (!base::FeatureList::IsEnabled(
+                 switches::kSearchEnginesSortingCleanup) &&
+             should_keywords_use_extended_list &&
              keywords_metadata.builtin_keyword_milestone != 0 &&
              keywords_metadata.builtin_keyword_milestone < milestone) {
     // The milestone changed and we need to recompute the list of visible search

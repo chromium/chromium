@@ -46,6 +46,11 @@ BASE_FEATURE(kSearchEngineChoiceAttribution,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kSearchEnginesSortingCleanup,
+             "kSearchEnginesSortingCleanup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPersistentSearchEngineChoiceImport,
              "PersistentSearchEngineChoiceImport",

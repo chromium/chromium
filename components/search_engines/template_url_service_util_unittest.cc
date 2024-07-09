@@ -250,7 +250,9 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData) {
   EXPECT_EQ(url_to_update->keyword(), u"new keyword");
 }
 
-class TemplateURLServiceUtilLoadTest : public testing::Test {
+class TemplateURLServiceUtilLoadParametrizedTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
  public:
   // Type used both as input and output of test helpers, to represent the
   // state of the database from its metadata.
@@ -307,7 +309,15 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
   const int kOtherEeaCountryId = country_codes::CountryStringToCountryID("FR");
   const int kNonEeaCountryId = country_codes::CountryStringToCountryID("US");
 
-  TemplateURLServiceUtilLoadTest() {
+  TemplateURLServiceUtilLoadParametrizedTest() {
+    if (IsSearchEnginesSortingCleanupEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          switches::kSearchEnginesSortingCleanup);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          switches::kSearchEnginesSortingCleanup);
+    }
+
     TemplateURLPrepopulateData::RegisterProfilePrefs(prefs_.registry());
     TemplateURLService::RegisterProfilePrefs(prefs_.registry());
     local_state_.registry()->RegisterBooleanPref(
@@ -316,6 +326,8 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
         std::make_unique<search_engines::SearchEngineChoiceService>(
             prefs_, local_state_);
   }
+
+  bool IsSearchEnginesSortingCleanupEnabled() const { return GetParam(); }
 
   // Simulates how the search providers are loaded during Chrome init by
   // calling `GetSearchProvidersUsingLoadedEngines()`.
@@ -366,10 +378,20 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(TemplateURLServiceUtilLoadTest,
-       GetSearchProvidersUsingLoadedEngines_featureOff) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TemplateURLServiceUtilLoadParametrizedTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "WithSearchEnginesSortingCleanupEnabled"
+                        : "WithSearchEnginesSortingCleanupDisabled";
+    });
+
+TEST_P(TemplateURLServiceUtilLoadParametrizedTest,
+       GetSearchProvidersUsingLoadedEngines_choiceTriggerFeatureOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
   prefs().SetInteger(country_codes::kCountryIDAtInstall, kEeaCountryId);
@@ -436,10 +458,10 @@ TEST_F(TemplateURLServiceUtilLoadTest,
                                          .use_extended_list = true}));
 }
 
-TEST_F(TemplateURLServiceUtilLoadTest,
-       GetSearchProvidersUsingLoadedEngines_featureOnOutOfEea) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
+TEST_P(TemplateURLServiceUtilLoadParametrizedTest,
+       GetSearchProvidersUsingLoadedEngines_choiceTriggerFeatureOnOutOfEea) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kSearchEngineChoiceTrigger};
   prefs().SetInteger(country_codes::kCountryIDAtInstall, kNonEeaCountryId);
 
   const KeywordTestMetadata kDefaultUpdatedState = {
@@ -504,8 +526,8 @@ TEST_F(TemplateURLServiceUtilLoadTest,
                                          .use_extended_list = true}));
 }
 
-TEST_F(TemplateURLServiceUtilLoadTest,
-       GetSearchProvidersUsingLoadedEngines_featureOnInEea) {
+TEST_P(TemplateURLServiceUtilLoadParametrizedTest,
+       GetSearchProvidersUsingLoadedEngines_choiceTriggerFeatureOnInEea) {
   base::test::ScopedFeatureList feature_list{
       switches::kSearchEngineChoiceTrigger};
   prefs().SetInteger(country_codes::kCountryIDAtInstall, kEeaCountryId);
@@ -556,11 +578,14 @@ TEST_F(TemplateURLServiceUtilLoadTest,
                                       .use_extended_list = true});
   EXPECT_EQ(output, kDefaultUpdatedState);
 
-  // Milestone changes trigger updates
+  // Milestone changes trigger updates when the
+  // `kSearchEnginesSortingCleanup` feature is disabled.
   output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion,
                                       .milestone = kCurrentMilestone - 1,
                                       .use_extended_list = true});
-  EXPECT_EQ(output, kDefaultUpdatedState);
+  EXPECT_EQ(output, IsSearchEnginesSortingCleanupEnabled()
+                        ? kNoUpdate
+                        : kDefaultUpdatedState);
 
   // If the short list was previously used, the function will re-run to
   // extend it.
