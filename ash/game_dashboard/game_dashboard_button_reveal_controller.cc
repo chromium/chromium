@@ -46,6 +46,11 @@ GameDashboardButtonRevealController::~GameDashboardButtonRevealController() {
 void GameDashboardButtonRevealController::UpdateVisibility(
     bool target_visibility,
     bool animate) {
+  if (target_visibility ==
+      context_->game_dashboard_button_widget()->IsVisible()) {
+    return;
+  }
+
   context_->SetGameDashboardButtonVisibility(/*visible=*/true);
   views::AnimationBuilder()
       .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::

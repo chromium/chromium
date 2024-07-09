@@ -59,6 +59,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/animation/ink_drop.h"
@@ -1664,6 +1665,55 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
   event_generator->PressTouch(app_bounds.right_center());
   event_generator->ReleaseTouch();
   ASSERT_FALSE(button_widget->IsVisible());
+}
+
+// Verifies that during a snap animation, the Game Dashboard and toolbar widgets
+// are not visible.
+TEST_F(GameDashboardContextTest, UIVisibilityWithWindowSnapAnimation) {
+  // Prevent short-circuit animations in this test.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  // Extract animation layer.
+  ui::LayerAnimator* animator = game_window_->layer()->GetAnimator();
+  // Prevent animation from automatically running.
+  animator->set_disable_timer_for_test(true);
+
+  // Ensure that widgets exist and are visible before animation occurs.
+  const auto* game_dashboard_button_widget =
+      test_api_->GetGameDashboardButtonWidget();
+  ASSERT_TRUE(game_dashboard_button_widget);
+  ASSERT_TRUE(game_dashboard_button_widget->IsVisible());
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+
+  // Snap Left.
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kWindowCycleSnapLeft, {});
+  // Ensure that the animation is occurring.
+  ASSERT_TRUE(animator->is_animating());
+  // Manually take a step through the animation while it is running. The
+  // animation is still incomplete 10 milliseconds in.
+  animator->Step(animator->last_step_time() + base::Milliseconds(10));
+
+  // Verify that the widgets are not visible during the animation.
+  ASSERT_FALSE(game_dashboard_button_widget->IsVisible());
+  const auto* toolbar_widget = test_api_->GetToolbarWidget();
+  ASSERT_FALSE(toolbar_widget->IsVisible());
+
+  // Run the animation to completion.
+  animator->StopAnimating();
+
+  // Verify that the animation is complete.
+  ASSERT_FALSE(animator->is_animating());
+  // Ensure that the widgets are visible at the conclusion of the animation.
+  ASSERT_TRUE(game_dashboard_button_widget->IsVisible());
+  ASSERT_TRUE(toolbar_widget->IsVisible());
+  // Ensure that the window is snapped.
+  ASSERT_TRUE(WindowState::Get(game_window_.get())->IsSnapped());
 }
 
 // Verifies that at startup and with the welcome dialog is visible, opening

@@ -32,6 +32,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
@@ -154,26 +155,17 @@ void GameDashboardContext::EnableFeatures(
       << "Game Dashboard button doesn't exist. Make sure to call Initialize() "
          "before trying to use the context.";
   if (enable) {
-    // Calling `Show()` on a widget activates that given widget, which causes a
-    // crash when Game Dashboard widgets are added to multiple windows while
-    // exiting overview mode. To avoid changing the activated window after a
-    // user has already selected a window in overview mode, show all widgets as
-    // inactive.
     SetGameDashboardButtonVisibility(/*visible=*/true);
-    if (toolbar_widget_) {
-      toolbar_widget_->ShowInactive();
-    }
+    SetToolbarVisibility(/*visible=*/true);
   } else {
     CloseWelcomeDialogIfAny();
-    if (toolbar_widget_) {
-      // Hide `toolbar_widget_` if the system is in the tablet mode.
-      // `toolbar_widget_` is still visible in clamshell overview mode.
-      if (display::Screen::GetScreen()->InTabletMode()) {
-        toolbar_widget_->Hide();
-      } else {
-        toolbar_widget_->ShowInactive();
-      }
-    }
+    // Hide the toolbar if the system is in tablet mode or if the window
+    // is undergoing a resize animation. The toolbar is still visible in
+    // clamshell, overview mode.
+    SetToolbarVisibility(
+        /*visible=*/!(display::Screen::GetScreen()->InTabletMode() ||
+                      main_menu_toggle_method ==
+                          GameDashboardMainMenuToggleMethod::kAnimation));
     if (main_menu_widget_) {
       CloseMainMenu(main_menu_toggle_method);
     }
@@ -225,10 +217,16 @@ void GameDashboardContext::SetGameDashboardToolbarSnapLocation(
   RecordGameDashboardToolbarNewLocation(app_id_, new_location);
 }
 
-void GameDashboardContext::OnWindowBoundsChanged() {
+void GameDashboardContext::OnWindowBoundsChanged(bool from_animation) {
   UpdateGameDashboardButtonWidgetBounds();
   MaybeUpdateToolbarWidgetBounds();
   MaybeUpdateWelcomeDialogBounds();
+
+  if (from_animation) {
+    EnableFeatures(
+        /*enable=*/!game_window_->layer()->GetAnimator()->is_animating(),
+        GameDashboardMainMenuToggleMethod::kAnimation);
+  }
 }
 
 void GameDashboardContext::UpdateForGameControlsFlags() {
@@ -320,7 +318,7 @@ bool GameDashboardContext::ToggleToolbar() {
             IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE));
     MaybeUpdateToolbarWidgetBounds();
 
-    toolbar_widget_->ShowInactive();
+    SetToolbarVisibility(/*visible=*/true);
     game_dashboard_utils::UpdateAccessibilityTree(GetTraversableWidgets());
     // Display the toolbar behind the main menu view.
     EnsureMainMenuAboveToolbar();
@@ -418,6 +416,26 @@ void GameDashboardContext::SetGameDashboardButtonVisibility(bool visible) {
     // Hide the Game Dashboard button if its visible and the main menu is
     // closed.
     game_dashboard_button_widget_->Hide();
+  }
+}
+
+void GameDashboardContext::SetToolbarVisibility(bool visible) {
+  if (!toolbar_widget_) {
+    return;
+  }
+  // If the toolbar should be visible and currently is not, show it. If the
+  // toolbar should not be visible and currently is, hide it. Otherwise, leave
+  // the toolbar in whatever state it is in.
+  const bool is_toolbar_visible = toolbar_widget_->IsVisible();
+  if (visible && !is_toolbar_visible) {
+    // Calling `Show()` on a widget activates that given widget, which causes a
+    // crash when Game Dashboard widgets are added to multiple windows while
+    // exiting overview mode. To avoid changing the activated window after a
+    // user has already selected a window in overview mode, show all widgets as
+    // inactive.
+    toolbar_widget_->ShowInactive();
+  } else if (!visible && is_toolbar_visible) {
+    toolbar_widget_->Hide();
   }
 }
 
@@ -543,10 +561,15 @@ void GameDashboardContext::OnPreWindowStateTypeChange(
   // Hide the Game Dashboard button before the window switches to fullscreen.
   if (window_state->IsFullscreen()) {
     DCHECK(!game_dashboard_button_reveal_controller_);
-    // The `GameDashboardButtonRevealController`'s ctor will hide
-    // `game_dashboard_button_widget_`.
     game_dashboard_button_reveal_controller_ =
         std::make_unique<GameDashboardButtonRevealController>(this);
+
+    if (!chromeos::IsMinimizedWindowStateType(old_type)) {
+      // When the window goes from minimized to fullscreen, hide the Game
+      // Dashboard widget.
+      game_dashboard_button_reveal_controller_->UpdateVisibility(
+          /*target_visibility=*/false, /*animate=*/false);
+    }
   }
 }
 
@@ -555,8 +578,14 @@ void GameDashboardContext::OnPostWindowStateTypeChange(
     chromeos::WindowStateType old_type) {
   if (!window_state->IsFullscreen() &&
       game_dashboard_button_reveal_controller_) {
-    // When exiting fullscreen, GameDashboardButtonRevealController dtor will
-    // make `game_dashboard_button_widget_` visible and reset its position.
+    if (!window_state->IsMinimized()) {
+      // When the window exits fullscreen and goes to any state that is not
+      // minimize, show the Game Dashboard button widget. Otherwise do nothing.
+      // Changing the visibility of the widget when the window is minimized
+      // causes Chrome to crash.
+      game_dashboard_button_reveal_controller_->UpdateVisibility(
+          /*target_visibility=*/true, /*animate=*/false);
+    }
     game_dashboard_button_reveal_controller_.reset();
   }
 }

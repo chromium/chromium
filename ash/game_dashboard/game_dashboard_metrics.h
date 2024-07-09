@@ -59,7 +59,8 @@ enum class GameDashboardMainMenuToggleMethod {
   // button, and game window closing unspecified.
   kOthers,
   kTabletMode,
-  kMaxValue = kTabletMode,
+  kAnimation,
+  kMaxValue = kAnimation,
 };
 
 // This enum should be kept in sync with the `GameDashboardMenu` in

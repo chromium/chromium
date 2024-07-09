@@ -86,7 +86,8 @@ class ASH_EXPORT GameDashboardContext : public ui::EventHandler,
   void MaybeStackAboveWidget(views::Widget* widget);
 
   // Enables the Game Dashboard widgets' UI visibility if `enable` is true.
-  // Otherwise, hide the widgets.
+  // Otherwise, hides the widgets, and uses `main_menu_toggle_method` to
+  // conditionally hide the toolbar.
   void EnableFeatures(
       bool enable,
       GameDashboardMainMenuToggleMethod main_menu_toggle_method);
@@ -97,7 +98,9 @@ class ASH_EXPORT GameDashboardContext : public ui::EventHandler,
       GameDashboardToolbarSnapLocation new_location);
 
   // Called by `GameDashboardController` when the game window bounds change.
-  void OnWindowBoundsChanged();
+  // `from_animation` is true when window bounds are changing due to an
+  // animation.
+  void OnWindowBoundsChanged(bool from_animation);
 
   // Updates for Game Controls flags.
   void UpdateForGameControlsFlags();
@@ -140,6 +143,9 @@ class ASH_EXPORT GameDashboardContext : public ui::EventHandler,
 
   // Controls the Game Dashboard Button visibility.
   void SetGameDashboardButtonVisibility(bool visible);
+
+  // Controls the Toolbar widget visibility.
+  void SetToolbarVisibility(bool visible);
 
   // Conditionally, adds this context to the pre-target handler if it hasn't
   // already been added.

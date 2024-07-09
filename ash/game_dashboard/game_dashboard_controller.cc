@@ -34,6 +34,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/property_change_reason.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/wm/core/window_util.h"
@@ -200,7 +201,8 @@ void GameDashboardController::OnWindowBoundsChanged(
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
   if (auto* context = GetGameDashboardContext(window)) {
-    context->OnWindowBoundsChanged();
+    context->OnWindowBoundsChanged(reason ==
+                                   ui::PropertyChangeReason::FROM_ANIMATION);
   }
 }
 
