@@ -81,13 +81,18 @@ class PLATFORM_EXPORT LayoutUnit {
   // LayoutUnit can represent, the new LayoutUnit is equivalent to
   // LayoutUnit(LayoutUnit::kIntMax) in 32-bit Arm, or is equivalent to
   // LayoutUnit::Max() otherwise.
-  constexpr explicit LayoutUnit(std::signed_integral auto value) : value_(0) {
+  constexpr explicit LayoutUnit(std::signed_integral auto value)
+    requires(sizeof(value) <= sizeof(int))
+      : value_(0) {
     SaturatedSet(static_cast<int>(value));
   }
-  constexpr explicit LayoutUnit(std::unsigned_integral auto value) : value_(0) {
+  constexpr explicit LayoutUnit(std::unsigned_integral auto value)
+    requires(sizeof(value) <= sizeof(int))
+      : value_(0) {
     SaturatedSet(static_cast<unsigned>(value));
   }
-  constexpr explicit LayoutUnit(uint64_t value)
+  constexpr explicit LayoutUnit(std::integral auto value)
+    requires(sizeof(value) > sizeof(int))
       : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
   // The specified `value` is truncated to a multiple of 1/64 near 0, and
   // is clamped by Min() and Max().

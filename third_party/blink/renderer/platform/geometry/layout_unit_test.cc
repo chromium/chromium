@@ -99,6 +99,16 @@ TEST(LayoutUnitTest, LayoutUnitUnsigned) {
             LayoutUnit(kNotOverflowed).RawValue());
 }
 
+TEST(LayoutUnitTest, Int64) {
+  constexpr int raw_min = std::numeric_limits<int>::min();
+  EXPECT_EQ(LayoutUnit(static_cast<int64_t>(raw_min) - 100), LayoutUnit::Min());
+
+  constexpr int raw_max = std::numeric_limits<int>::max();
+  EXPECT_EQ(LayoutUnit(static_cast<int64_t>(raw_max) + 100), LayoutUnit::Max());
+  EXPECT_EQ(LayoutUnit(static_cast<uint64_t>(raw_max) + 100),
+            LayoutUnit::Max());
+}
+
 TEST(LayoutUnitTest, LayoutUnitFloat) {
   const float kTolerance = 1.0f / LayoutUnit::kFixedPointDenominator;
   EXPECT_FLOAT_EQ(1.0f, LayoutUnit(1.0f).ToFloat());
