@@ -76,15 +76,7 @@ class BlobRegistryImplTest : public testing::Test {
         data_dir_.GetPath(), data_dir_.GetPath(),
         base::ThreadPool::CreateTaskRunner({base::MayBlock()}));
     auto storage_policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
-    if (base::FeatureList::IsEnabled(
-            net::features::kSupportPartitionedBlobUrl)) {
-      registry_impl_ =
-          std::make_unique<BlobRegistryImpl>(context_->AsWeakPtr());
-    } else {
-      registry_impl_ = std::make_unique<BlobRegistryImpl>(
-          context_->AsWeakPtr(), url_registry_.AsWeakPtr(),
-          base::SequencedTaskRunner::GetCurrentDefault());
-    }
+    registry_impl_ = std::make_unique<BlobRegistryImpl>(context_->AsWeakPtr());
     auto delegate = std::make_unique<MockBlobRegistryDelegate>();
     delegate_ptr_ = delegate->AsWeakPtr();
     registry_impl_->Bind(registry_.BindNewPipeAndPassReceiver(),
@@ -196,7 +188,6 @@ class BlobRegistryImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::optional<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<BlobStorageContext> context_;
-  BlobUrlRegistry url_registry_;
   std::unique_ptr<BlobRegistryImpl> registry_impl_;
   mojo::Remote<blink::mojom::BlobRegistry> registry_;
   base::WeakPtr<MockBlobRegistryDelegate> delegate_ptr_;

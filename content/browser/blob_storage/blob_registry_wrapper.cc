@@ -41,24 +41,7 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
 
 // static
 scoped_refptr<BlobRegistryWrapper> BlobRegistryWrapper::Create(
-    scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-    base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
-  scoped_refptr<BlobRegistryWrapper> result(new BlobRegistryWrapper());
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BlobRegistryWrapper::InitializeOnIOThreadDeprecated,
-                     result, std::move(blob_storage_context),
-                     std::move(blob_url_registry)));
-  return result;
-}
-
-// static
-scoped_refptr<BlobRegistryWrapper> BlobRegistryWrapper::Create(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context) {
-  DCHECK(
-      base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
   scoped_refptr<BlobRegistryWrapper> result(new BlobRegistryWrapper());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&BlobRegistryWrapper::InitializeOnIOThread,
@@ -81,21 +64,8 @@ void BlobRegistryWrapper::Bind(
 
 BlobRegistryWrapper::~BlobRegistryWrapper() = default;
 
-void BlobRegistryWrapper::InitializeOnIOThreadDeprecated(
-    scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-    base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  blob_registry_ = std::make_unique<storage::BlobRegistryImpl>(
-      blob_storage_context->context()->AsWeakPtr(),
-      std::move(blob_url_registry), GetUIThreadTaskRunner({}));
-}
-
 void BlobRegistryWrapper::InitializeOnIOThread(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context) {
-  DCHECK(
-      base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   blob_registry_ = std::make_unique<storage::BlobRegistryImpl>(
       blob_storage_context->context()->AsWeakPtr());

@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
-#include "net/base/features.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -495,22 +494,8 @@ bool BlobRegistryImpl::BlobUnderConstruction::ContainsCycles(
 }
 #endif
 
-BlobRegistryImpl::BlobRegistryImpl(
-    base::WeakPtr<BlobStorageContext> context,
-    base::WeakPtr<BlobUrlRegistry> url_registry,
-    scoped_refptr<base::TaskRunner> url_registry_runner)
-    : context_(std::move(context)),
-      url_registry_(std::move(url_registry)),
-      url_registry_runner_(std::move(url_registry_runner)) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
-}
-
 BlobRegistryImpl::BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context)
-    : context_(std::move(context)) {
-  DCHECK(
-      base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
-}
+    : context_(std::move(context)) {}
 
 BlobRegistryImpl::~BlobRegistryImpl() {
   // BlobBuilderFromStream needs to be aborted before it can be destroyed, but
@@ -627,56 +612,9 @@ void BlobRegistryImpl::GetBlobFromUUID(
   std::move(callback).Run();
 }
 
-void BlobRegistryImpl::URLStoreForOrigin(
-    const url::Origin& origin,
-    mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
-  Delegate* delegate = receivers_.current_context().get();
-  DCHECK(delegate);
-  if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
-    mojo::ReportBadMessage(
-        "BlobRegistryImpl::URLStoreForOrigin isn't available when the "
-        "kSupportPartitionedBlobUrl flag is enabled");
-    return;
-  }
-  // TODO(crbug.com/40109437, crbug.com/325410297): The opaque origin exception
-  // should ideally be removed, so that ChildProcessSecurityPolicy can also
-  // verify the opaque origin's precursor. This may happen "for free" if/when
-  // kSupportPartitionedBlobUrl becomes the default, since this whole code path
-  // will go away. Otherwise, note that removing the opaque check will need to
-  // be careful about sandboxed frames: CanAccessDataForOrigin() blocks all
-  // access for sandboxed frames, yet sandboxed frames can actually create and
-  // use blob URLs (with opaque origins). So, removing `origin.opaque()` may
-  // necessitate using `ChildProcessSecurityPolicy::HostsOrigin()` instead.
-  if (!origin.opaque() && !delegate->CanAccessDataForOrigin(origin)) {
-    mojo::ReportBadMessage(
-        "Cannot access data for origin passed to "
-        "BlobRegistryImpl::URLStoreForOrigin");
-    return;
-  }
-  url_registry_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](const url::Origin& origin,
-             mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore>
-                 receiver,
-             base::WeakPtr<BlobUrlRegistry> url_registry) {
-            auto self_owned_associated_receiver =
-                mojo::MakeSelfOwnedAssociatedReceiver(
-                    std::make_unique<BlobURLStoreImpl>(
-                        blink::StorageKey::CreateFirstParty(origin),
-                        std::move(url_registry)),
-                    std::move(receiver));
-            if (g_url_store_creation_hook)
-              g_url_store_creation_hook->Run(self_owned_associated_receiver);
-          },
-          origin, std::move(receiver), url_registry_));
-}
-
 // static
 void BlobRegistryImpl::SetURLStoreCreationHookForTesting(
     URLStoreCreationHook* hook) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
   g_url_store_creation_hook = hook;
 }
 

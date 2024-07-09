@@ -52,7 +52,4 @@ interface BlobRegistry {
   // TODO(mek): Remove when crbug.com/740744 is resolved.
   [Sync] GetBlobFromUUID(pending_receiver<Blob> blob, string uuid) => ();
 
-  // Returns a BlobURLStore for a specific origin.
-  URLStoreForOrigin(url.mojom.Origin origin,
-                    pending_associated_receiver<blink.mojom.BlobURLStore> url_store);
 };

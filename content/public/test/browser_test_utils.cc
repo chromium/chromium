@@ -3958,23 +3958,9 @@ void VerifyStaleContentOnFrameEviction(
 #endif  // defined(USE_AURA)
 
 // static
-void BlobURLStoreInterceptor::InterceptDeprecated(
-    GURL target_url,
-    mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::BlobURLStore> receiver) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
-  auto interceptor = base::WrapUnique(new BlobURLStoreInterceptor(target_url));
-  auto* raw_interceptor = interceptor.get();
-  auto impl = receiver->SwapImplForTesting(std::move(interceptor));
-  raw_interceptor->url_store_ = std::move(impl);
-}
-
-// static
 void BlobURLStoreInterceptor::Intercept(GURL target_url,
                                         storage::BlobUrlRegistry* registry,
                                         mojo::ReceiverId receiver_id) {
-  DCHECK(
-      base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
   auto interceptor = base::WrapUnique(new BlobURLStoreInterceptor(target_url));
   auto* raw_interceptor = interceptor.get();
   auto impl = registry->receivers_for_testing().SwapImplForTesting(

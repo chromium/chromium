@@ -331,12 +331,10 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
       base::BindRepeating(&RenderFrameHostImpl::CreateBroadcastChannelProvider,
                           base::Unretained(this)));
 
-  if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
-    associated_registry_->AddInterface<blink::mojom::BlobURLStore>(
-        base::BindRepeating(
-            &RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver,
-            base::Unretained(this)));
-  }
+  associated_registry_->AddInterface<blink::mojom::BlobURLStore>(
+      base::BindRepeating(
+          &RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver,
+          base::Unretained(this)));
 
   if (base::FeatureList::IsEnabled(
           blink::features::kEnableFileBackedBlobFactory)) {

@@ -70,11 +70,7 @@ BlobURLStoreImpl::BlobURLStoreImpl(
     : storage_key_(storage_key),
       registry_(std::move(registry)),
       validity_check_behavior_(validity_check_behavior) {
-  if (validity_check_behavior_ ==
-      BlobURLValidityCheckBehavior::ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH) {
-    DCHECK(base::FeatureList::IsEnabled(
-        net::features::kSupportPartitionedBlobUrl));
-  }
+
 }
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {

@@ -69,9 +69,37 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
     : ExecutionContextLifecycleObserver(execution_context),
       frame_url_store_(execution_context),
       worker_url_store_(execution_context) {
-  if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
-    if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-      LocalFrame* frame = window->GetFrame();
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    LocalFrame* frame = window->GetFrame();
+    if (!frame) {
+      is_stopped_ = true;
+      return;
+    }
+
+    frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+        frame_url_store_.BindNewEndpointAndPassReceiver(
+            execution_context->GetTaskRunner(TaskType::kFileReading)));
+
+  } else if (auto* worker_global_scope =
+                 DynamicTo<WorkerGlobalScope>(execution_context)) {
+    if (worker_global_scope->IsClosing()) {
+      is_stopped_ = true;
+      return;
+    }
+
+    worker_global_scope->GetBrowserInterfaceBroker().GetInterface(
+        worker_url_store_.BindNewPipeAndPassReceiver(
+            execution_context->GetTaskRunner(TaskType::kFileReading)));
+
+  } else if (auto* worklet_global_scope =
+                 DynamicTo<WorkletGlobalScope>(execution_context)) {
+    if (worklet_global_scope->IsClosing()) {
+      is_stopped_ = true;
+      return;
+    }
+
+    if (worklet_global_scope->IsMainThreadWorkletGlobalScope()) {
+      LocalFrame* frame = worklet_global_scope->GetFrame();
       if (!frame) {
         is_stopped_ = true;
         return;
@@ -80,54 +108,19 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
       frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
           frame_url_store_.BindNewEndpointAndPassReceiver(
               execution_context->GetTaskRunner(TaskType::kFileReading)));
-
-    } else if (auto* worker_global_scope =
-                   DynamicTo<WorkerGlobalScope>(execution_context)) {
-      if (worker_global_scope->IsClosing()) {
-        is_stopped_ = true;
-        return;
-      }
-
-      worker_global_scope->GetBrowserInterfaceBroker().GetInterface(
-          worker_url_store_.BindNewPipeAndPassReceiver(
-              execution_context->GetTaskRunner(TaskType::kFileReading)));
-
-    } else if (auto* worklet_global_scope =
-                   DynamicTo<WorkletGlobalScope>(execution_context)) {
-      if (worklet_global_scope->IsClosing()) {
-        is_stopped_ = true;
-        return;
-      }
-
-      if (worklet_global_scope->IsMainThreadWorkletGlobalScope()) {
-        LocalFrame* frame = worklet_global_scope->GetFrame();
-        if (!frame) {
-          is_stopped_ = true;
-          return;
-        }
-
-        frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-            frame_url_store_.BindNewEndpointAndPassReceiver(
-                execution_context->GetTaskRunner(TaskType::kFileReading)));
-      } else {
-        // For threaded worklets we don't have a frame accessible here, so
-        // instead we'll use a PendingRemote provided by the frame that created
-        // this worklet.
-        mojo::PendingRemote<mojom::blink::BlobURLStore> pending_remote =
-            worklet_global_scope->TakeBlobUrlStorePendingRemote();
-        DCHECK(pending_remote.is_valid());
-        worker_url_store_.Bind(
-            std::move(pending_remote),
-            execution_context->GetTaskRunner(TaskType::kFileReading));
-      }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      // For threaded worklets we don't have a frame accessible here, so
+      // instead we'll use a PendingRemote provided by the frame that created
+      // this worklet.
+      mojo::PendingRemote<mojom::blink::BlobURLStore> pending_remote =
+          worklet_global_scope->TakeBlobUrlStorePendingRemote();
+      DCHECK(pending_remote.is_valid());
+      worker_url_store_.Bind(
+          std::move(pending_remote),
+          execution_context->GetTaskRunner(TaskType::kFileReading));
     }
   } else {
-    BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
-        execution_context->GetSecurityOrigin(),
-        frame_url_store_.BindNewEndpointAndPassReceiver(
-            execution_context->GetTaskRunner(TaskType::kFileReading)));
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -149,8 +142,6 @@ mojom::blink::BlobURLStore& PublicURLManager::GetBlobURLStore() {
   if (frame_url_store_.is_bound()) {
     return *frame_url_store_.get();
   } else {
-    DCHECK(base::FeatureList::IsEnabled(
-        net::features::kSupportPartitionedBlobUrl));
     return *worker_url_store_.get();
   }
 }

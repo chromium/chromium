@@ -80,10 +80,4 @@ void FakeBlobRegistry::GetBlobFromUUID(
   std::move(callback).Run();
 }
 
-void FakeBlobRegistry::URLStoreForOrigin(
-    const scoped_refptr<const SecurityOrigin>& origin,
-    mojo::PendingAssociatedReceiver<mojom::blink::BlobURLStore> receiver) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 }  // namespace blink

@@ -11730,12 +11730,6 @@ class BlobRegistryForSaveImageFromDataURL : public mojom::blink::BlobRegistry {
                        GetBlobFromUUIDCallback) override {
     NOTREACHED_IN_MIGRATION();
   }
-
-  void URLStoreForOrigin(
-      const scoped_refptr<const SecurityOrigin>&,
-      mojo::PendingAssociatedReceiver<mojom::blink::BlobURLStore>) override {
-    NOTREACHED_IN_MIGRATION();
-  }
 };
 
 // blink::mojom::LocalFrameHost instance that intecepts DownloadURL() mojo

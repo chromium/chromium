@@ -238,10 +238,6 @@ BASE_FEATURE(kThirdPartyStoragePartitioning,
 // Whether to use the new code paths needed to support partitioning Blob URLs.
 // This exists as a kill-switch in case an issue is identified with the Blob
 // URL implementation that causes breakage.
-BASE_FEATURE(kSupportPartitionedBlobUrl,
-             "SupportPartitionedBlobUrl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTopLevelTpcdOriginTrial,
              "TopLevelTpcdOriginTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);

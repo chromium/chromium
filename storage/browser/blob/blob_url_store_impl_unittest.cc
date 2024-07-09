@@ -59,12 +59,6 @@ class BlobURLStoreImplTestP
     std::vector<base::test::FeatureRef> enabled_features{};
     std::vector<base::test::FeatureRef> disabled_features{};
 
-    if (PartitionedBlobUrlSupported()) {
-      enabled_features.push_back(net::features::kSupportPartitionedBlobUrl);
-    } else {
-      disabled_features.push_back(net::features::kSupportPartitionedBlobUrl);
-    }
-
     if (StoragePartitioningEnabled()) {
       enabled_features.push_back(net::features::kThirdPartyStoragePartitioning);
     } else {
@@ -78,16 +72,6 @@ class BlobURLStoreImplTestP
   bool StoragePartitioningEnabled() {
     switch (test_case_) {
       case PartitionedBlobUrlTestCase::kPartitioningEnabledWithSupportDisabled:
-      case PartitionedBlobUrlTestCase::kPartitioningEnabledWithSupportEnabled:
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  bool PartitionedBlobUrlSupported() {
-    switch (test_case_) {
-      case PartitionedBlobUrlTestCase::kPartitioningDisabledWithSupportEnabled:
       case PartitionedBlobUrlTestCase::kPartitioningEnabledWithSupportEnabled:
         return true;
       default:
@@ -127,15 +111,8 @@ class BlobURLStoreImplTestP
 
   mojo::PendingRemote<BlobURLStore> CreateURLStore() {
     mojo::PendingRemote<BlobURLStore> result;
-    if (base::FeatureList::IsEnabled(
-            net::features::kSupportPartitionedBlobUrl)) {
-      url_registry_.AddReceiver(kStorageKey,
-                                result.InitWithNewPipeAndPassReceiver());
-    } else {
-      mojo::MakeSelfOwnedReceiver(std::make_unique<BlobURLStoreImpl>(
-                                      kStorageKey, url_registry_.AsWeakPtr()),
-                                  result.InitWithNewPipeAndPassReceiver());
-    }
+    url_registry_.AddReceiver(kStorageKey,
+                              result.InitWithNewPipeAndPassReceiver());
     return result;
   }
 
@@ -293,7 +270,7 @@ TEST_P(BlobURLStoreImplTestP, RevokeWrongStorageKey) {
   EXPECT_TRUE(url_registry_.GetBlobFromUrl(kValidUrl));
 
   url_store2.Revoke(kValidUrl);
-  if (StoragePartitioningEnabled() && PartitionedBlobUrlSupported()) {
+  if (StoragePartitioningEnabled()) {
     EXPECT_TRUE(url_registry_.GetBlobFromUrl(kValidUrl));
   } else {
     // The storage keys are either the same or are ignored by the Revoke call.

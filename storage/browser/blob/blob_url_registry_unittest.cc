@@ -34,10 +34,8 @@ std::string UuidFromBlob(mojo::PendingRemote<blink::mojom::Blob> pending_blob) {
 }
 
 enum class PartitionedBlobUrlTestCase {
-  kPartitioningDisabledWithSupportDisabled,
-  kPartitioningDisabledWithSupportEnabled,
-  kPartitioningEnabledWithSupportDisabled,
-  kPartitioningEnabledWithSupportEnabled,
+  kPartitioningDisabled,
+  kPartitioningEnabled,
 };
 
 class BlobUrlRegistryTestP
@@ -50,39 +48,14 @@ class BlobUrlRegistryTestP
   }
 
   void InitializeScopedFeatureList() {
-    std::vector<base::test::FeatureRef> enabled_features{};
-    std::vector<base::test::FeatureRef> disabled_features{};
-
-    if (PartitionedBlobUrlSupported()) {
-      enabled_features.push_back(net::features::kSupportPartitionedBlobUrl);
-    } else {
-      disabled_features.push_back(net::features::kSupportPartitionedBlobUrl);
-    }
-
-    if (StoragePartitioningEnabled()) {
-      enabled_features.push_back(net::features::kThirdPartyStoragePartitioning);
-    } else {
-      disabled_features.push_back(
-          net::features::kThirdPartyStoragePartitioning);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning,
+        StoragePartitioningEnabled());
   }
 
   bool StoragePartitioningEnabled() {
     switch (test_case_) {
-      case PartitionedBlobUrlTestCase::kPartitioningEnabledWithSupportDisabled:
-      case PartitionedBlobUrlTestCase::kPartitioningEnabledWithSupportEnabled:
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  bool PartitionedBlobUrlSupported() {
-    switch (test_case_) {
-      case PartitionedBlobUrlTestCase::kPartitioningDisabledWithSupportEnabled:
-      case PartitionedBlobUrlTestCase::kPartitioningEnabledWithSupportEnabled:
+      case PartitionedBlobUrlTestCase::kPartitioningEnabled:
         return true;
       default:
         return false;
@@ -156,18 +129,11 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   EXPECT_TRUE(registry.RemoveUrlMapping(kURL2, storageKey2));
 
   // Test using a storage key that doesn't correspond to the Blob URL.
-  if (PartitionedBlobUrlSupported()) {
-    EXPECT_NE(storageKey1, storageKey2);
-    EXPECT_FALSE(registry.IsUrlMapped(kURL1, storageKey2));
-    EXPECT_FALSE(registry.RemoveUrlMapping(kURL1, storageKey2));
-    EXPECT_TRUE(registry.IsUrlMapped(kURL1, storageKey1));
-    EXPECT_TRUE(registry.RemoveUrlMapping(kURL1, storageKey1));
-  } else {
-    // Storage key is ignored.
-    EXPECT_TRUE(registry.IsUrlMapped(kURL1, storageKey2));
-    EXPECT_TRUE(registry.RemoveUrlMapping(kURL1, storageKey2));
-    EXPECT_FALSE(registry.IsUrlMapped(kURL1, storageKey1));
-  }
+  EXPECT_NE(storageKey1, storageKey2);
+  EXPECT_FALSE(registry.IsUrlMapped(kURL1, storageKey2));
+  EXPECT_FALSE(registry.RemoveUrlMapping(kURL1, storageKey2));
+  EXPECT_TRUE(registry.IsUrlMapped(kURL1, storageKey1));
+  EXPECT_TRUE(registry.RemoveUrlMapping(kURL1, storageKey1));
 
   EXPECT_EQ(0u, registry.url_count());
 
@@ -187,17 +153,10 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
     EXPECT_EQ(kBlobId1, UuidFromBlob(registry.GetBlobFromUrl(kURL1)));
     EXPECT_TRUE(registry.GetBlobFromUrl(kURL1));
 
-    if (PartitionedBlobUrlSupported()) {
-      EXPECT_FALSE(registry.IsUrlMapped(kURL1, partitionedStorageKey2));
-      EXPECT_FALSE(registry.RemoveUrlMapping(kURL1, partitionedStorageKey2));
-      EXPECT_TRUE(registry.IsUrlMapped(kURL1, partitionedStorageKey1));
-      EXPECT_TRUE(registry.RemoveUrlMapping(kURL1, partitionedStorageKey1));
-    } else {
-      // Storage key is ignored.
-      EXPECT_TRUE(registry.IsUrlMapped(kURL1, partitionedStorageKey2));
-      EXPECT_TRUE(registry.RemoveUrlMapping(kURL1, partitionedStorageKey2));
-      EXPECT_FALSE(registry.IsUrlMapped(kURL1, partitionedStorageKey1));
-    }
+    EXPECT_FALSE(registry.IsUrlMapped(kURL1, partitionedStorageKey2));
+    EXPECT_FALSE(registry.RemoveUrlMapping(kURL1, partitionedStorageKey2));
+    EXPECT_TRUE(registry.IsUrlMapped(kURL1, partitionedStorageKey1));
+    EXPECT_TRUE(registry.RemoveUrlMapping(kURL1, partitionedStorageKey1));
   }
   EXPECT_EQ(0u, registry.url_count());
 }
@@ -205,11 +164,8 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
 INSTANTIATE_TEST_SUITE_P(
     BlobUrlRegistryTests,
     BlobUrlRegistryTestP,
-    ::testing::Values(
-        PartitionedBlobUrlTestCase::kPartitioningDisabledWithSupportDisabled,
-        PartitionedBlobUrlTestCase::kPartitioningDisabledWithSupportEnabled,
-        PartitionedBlobUrlTestCase::kPartitioningEnabledWithSupportDisabled,
-        PartitionedBlobUrlTestCase::kPartitioningEnabledWithSupportEnabled));
+    ::testing::Values(PartitionedBlobUrlTestCase::kPartitioningDisabled,
+                      PartitionedBlobUrlTestCase::kPartitioningEnabled));
 
 }  // namespace
 }  // namespace storage

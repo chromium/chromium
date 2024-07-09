@@ -195,13 +195,8 @@ bool ShouldQueueNavigationsWhenPendingCommitRFHExists() {
 }
 
 bool ShouldRestrictCanAccessDataForOriginToUIThread() {
-  // Only restrict calls to the UI thread if:
-  // - the feature is enabled
-  // - the new blob URL support is enabled
   return base::FeatureList::IsEnabled(
-             features::kRestrictCanAccessDataForOriginToUIThread) &&
-         base::FeatureList::IsEnabled(
-             net::features::kSupportPartitionedBlobUrl);
+      features::kRestrictCanAccessDataForOriginToUIThread);
 }
 
 bool ShouldCreateSiteInstanceForDataUrls() {

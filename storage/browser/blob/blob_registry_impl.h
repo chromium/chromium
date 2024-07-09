@@ -6,6 +6,7 @@
 #define STORAGE_BROWSER_BLOB_BLOB_REGISTRY_IMPL_H_
 
 #include <memory>
+
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -14,7 +15,6 @@
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "storage/browser/blob/blob_url_registry.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 #include "url/origin.h"
 
@@ -39,10 +39,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
     virtual bool CanReadFile(const base::FilePath& file) = 0;
     virtual bool CanAccessDataForOrigin(const url::Origin& origin) = 0;
   };
-
-  BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context,
-                   base::WeakPtr<BlobUrlRegistry> url_registry,
-                   scoped_refptr<base::TaskRunner> url_registry_runner);
 
   explicit BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context);
 
@@ -72,11 +68,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
                        const std::string& uuid,
                        GetBlobFromUUIDCallback callback) override;
 
-  void URLStoreForOrigin(
-      const url::Origin& origin,
-      mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> url_store)
-      override;
-
   size_t BlobsUnderConstructionForTesting() const {
     return blobs_under_construction_.size();
   }
@@ -101,10 +92,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
                          std::unique_ptr<BlobDataHandle> result);
 
   base::WeakPtr<BlobStorageContext> context_;
-
-  // `url_registry_` should only be accessed on `url_registry_runner_`.
-  base::WeakPtr<BlobUrlRegistry> url_registry_;
-  scoped_refptr<base::TaskRunner> url_registry_runner_;
 
   mojo::ReceiverSet<blink::mojom::BlobRegistry, std::unique_ptr<Delegate>>
       receivers_;

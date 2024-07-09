@@ -63,26 +63,13 @@ class FakeURLRegistry : public URLRegistry {
   Vector<Registration> registrations;
 };
 
-enum class PublicURLManagerTestCase {
-  kSupportPartitionedBlobUrlDisabled,
-  kSupportPartitionedBlobUrlEnabled,
-};
-
 }  // namespace
 
-class PublicURLManagerTestP
-    : public testing::Test,
-      public testing::WithParamInterface<PublicURLManagerTestCase> {
+class PublicURLManagerTest : public testing::Test {
  public:
-  PublicURLManagerTestP() : url_store_receiver_(&url_store_) {}
+  PublicURLManagerTest() : url_store_receiver_(&url_store_) {}
 
   void SetUp() override {
-    test_case_ = GetParam();
-    scoped_feature_list_.InitWithFeatureState(
-        net::features::kSupportPartitionedBlobUrl,
-        test_case_ ==
-            PublicURLManagerTestCase::kSupportPartitionedBlobUrlEnabled);
-
     page_holder_ = std::make_unique<DummyPageHolder>();
     // By default this creates a unique origin, which is exactly what this test
     // wants.
@@ -127,7 +114,6 @@ class PublicURLManagerTestP
  protected:
   test::TaskEnvironment task_environment_;
 
-  PublicURLManagerTestCase test_case_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<DummyPageHolder> page_holder_;
@@ -136,7 +122,7 @@ class PublicURLManagerTestP
   mojo::AssociatedReceiver<BlobURLStore> url_store_receiver_;
 };
 
-TEST_P(PublicURLManagerTestP, RegisterNonMojoBlob) {
+TEST_F(PublicURLManagerTest, RegisterNonMojoBlob) {
   FakeURLRegistry registry;
   TestURLRegistrable registrable(&registry);
   String url = url_manager().RegisterURL(&registrable);
@@ -160,7 +146,7 @@ TEST_P(PublicURLManagerTestP, RegisterNonMojoBlob) {
   EXPECT_EQ(url, url_store_.revocations[0]);
 }
 
-TEST_P(PublicURLManagerTestP, RegisterMojoBlob) {
+TEST_F(PublicURLManagerTest, RegisterMojoBlob) {
   FakeURLRegistry registry;
   TestURLRegistrable registrable(&registry, CreateMojoBlob("id"));
   String url = url_manager().RegisterURL(&registrable);
@@ -182,7 +168,7 @@ TEST_P(PublicURLManagerTestP, RegisterMojoBlob) {
   EXPECT_EQ(url, url_store_.revocations[0]);
 }
 
-TEST_P(PublicURLManagerTestP, RevokeValidNonRegisteredURL) {
+TEST_F(PublicURLManagerTest, RevokeValidNonRegisteredURL) {
   SetURL(KURL("http://example.com/foo/bar"));
   SetUpSecurityContextForTesting();
 
@@ -193,7 +179,7 @@ TEST_P(PublicURLManagerTestP, RevokeValidNonRegisteredURL) {
   EXPECT_EQ(url, url_store_.revocations[0]);
 }
 
-TEST_P(PublicURLManagerTestP, RevokeInvalidURL) {
+TEST_F(PublicURLManagerTest, RevokeInvalidURL) {
   SetURL(KURL("http://example.com/foo/bar"));
   SetUpSecurityContextForTesting();
 
@@ -207,12 +193,5 @@ TEST_P(PublicURLManagerTestP, RevokeInvalidURL) {
   // Both should have been silently ignored.
   EXPECT_TRUE(url_store_.revocations.empty());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    PublicURLManagerTest,
-    PublicURLManagerTestP,
-    ::testing::Values(
-        PublicURLManagerTestCase::kSupportPartitionedBlobUrlDisabled,
-        PublicURLManagerTestCase::kSupportPartitionedBlobUrlEnabled));
 
 }  // namespace blink
