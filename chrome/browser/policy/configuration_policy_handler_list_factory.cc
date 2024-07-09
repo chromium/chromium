@@ -1702,6 +1702,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFocusModeSoundsEnabled,
     ash::prefs::kFocusModeSoundsEnabled,
     base::Value::Type::STRING },
+  { key::kDnsOverHttpsExcludedDomains,
+    ash::prefs::kDnsOverHttpsExcludedDomains,
+    base::Value::Type::LIST },
+  { key::kDnsOverHttpsIncludedDomains,
+    ash::prefs::kDnsOverHttpsIncludedDomains,
+    base::Value::Type::LIST },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

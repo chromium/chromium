@@ -1280,6 +1280,8 @@ policies:
   1279: JavaScriptOptimizerBlockedForSites
   1280: PromotionsEnabled
   1281: QRCodeGeneratorEnabled
+  1282: DnsOverHttpsExcludedDomains
+  1283: DnsOverHttpsIncludedDomains
 atomic_groups:
   1: Homepage
   2: RemoteAccess

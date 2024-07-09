@@ -176,6 +176,10 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(::prefs::kLocalUserFilesAllowed, true);
   registry->RegisterStringPref(::prefs::kLocalUserFilesMigrationDestination,
                                "read_only");
+  registry->RegisterListPref(prefs::kDnsOverHttpsExcludedDomains,
+                             base::Value::List());
+  registry->RegisterListPref(prefs::kDnsOverHttpsIncludedDomains,
+                             base::Value::List());
 
   RegisterLocalStatePrefs(registry);
 }

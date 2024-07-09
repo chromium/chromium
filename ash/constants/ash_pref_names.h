@@ -2366,6 +2366,12 @@ inline constexpr char kExtendedUpdatesNotificationDismissed[] =
 inline constexpr char kGlanceablesTimeManagementLastExpandedBubble[] =
     "ash.glanceables_time_management.last_expanded";
 
+// Lists of strings containing excluded and included domains for DNS-over-HTTPs.
+inline constexpr char kDnsOverHttpsExcludedDomains[] =
+    "dns_over_https.excluded_domains";
+inline constexpr char kDnsOverHttpsIncludedDomains[] =
+    "dns_over_https.included_domains";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------
