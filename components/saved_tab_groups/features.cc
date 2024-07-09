@@ -78,6 +78,12 @@ BASE_FEATURE(kDeferMediaLoadInBackgroundTab,
              "DeferMediaLoadInBackgroundTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch to stop notifying observers when user interaction time is
+// updated and storing it to the storage.
+BASE_FEATURE(kSavedTabGroupNotifyOnInteractionTimeChanged,
+             "SavedTabGroupNotifyOnInteractionTimeChanged",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }

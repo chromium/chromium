@@ -283,7 +283,7 @@ void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
   }
 
   UpdateAttributions(group_id);
-  group->SetLastUserInteractionTime(base::Time::Now());
+  model_->UpdateLastUserInteractionTimeLocally(group_id);
   LogEvent(TabGroupEvent::kTabSelected, group_id, tab_id);
 }
 

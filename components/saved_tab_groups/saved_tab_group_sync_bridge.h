@@ -85,6 +85,8 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) override;
   void SavedTabGroupReorderedLocally() override;
   void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override;
+  void SavedTabGroupLastUserInteractionTimeUpdated(
+      const base::Uuid& group_guid) override;
 
   const std::vector<proto::SavedTabGroupData>&
   GetTabsMissingGroupsForTesting() {

@@ -34,6 +34,10 @@ class SavedTabGroupModelObserver {
   // Called when the saved tab group is opened or closed locally.
   virtual void SavedTabGroupLocalIdChanged(const base::Uuid& saved_group_id) {}
 
+  // Called whenever the user is interacted with the group.
+  virtual void SavedTabGroupLastUserInteractionTimeUpdated(
+      const base::Uuid& saved_group_id) {}
+
   // Called when the title, tabs, or color change. `group_guid` denotes the
   // group that is currently being updated. `tab_guid` denotes if a tab in this
   // group was changed (added, removed, updated). Otherwise, only the group is

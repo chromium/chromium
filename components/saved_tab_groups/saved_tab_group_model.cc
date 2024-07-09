@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -442,6 +443,23 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
   for (auto& observer : observers_) {
     // TODO(crbug.com/40919583): Consider further optimizations.
     observer.SavedTabGroupTabsReorderedLocally(group_id);
+  }
+}
+
+void SavedTabGroupModel::UpdateLastUserInteractionTimeLocally(
+    const LocalTabGroupID& local_group_id) {
+  SavedTabGroup* group = Get(local_group_id);
+  CHECK(group);
+
+  group->SetLastUserInteractionTime(base::Time::Now());
+
+  if (!base::FeatureList::IsEnabled(
+          kSavedTabGroupNotifyOnInteractionTimeChanged)) {
+    return;
+  }
+
+  for (SavedTabGroupModelObserver& observer : observers_) {
+    observer.SavedTabGroupLastUserInteractionTimeUpdated(group->saved_guid());
   }
 }
 
