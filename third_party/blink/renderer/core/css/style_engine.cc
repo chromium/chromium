@@ -808,12 +808,16 @@ void StyleEngine::UpdateCounters(const Element& element,
   // Manually update list item ordinals here.
   if (LayoutObject* layout_object = element.GetLayoutObject()) {
     if (auto* ng_list_item = DynamicTo<LayoutListItem>(layout_object)) {
-      ng_list_item->Ordinal().MarkDirty();
-      ng_list_item->OrdinalValueChanged();
+      if (!ng_list_item->Ordinal().ExplicitValue().has_value()) {
+        ng_list_item->Ordinal().MarkDirty();
+        ng_list_item->OrdinalValueChanged();
+      }
     } else if (auto* inline_list_item =
                    DynamicTo<LayoutInlineListItem>(layout_object)) {
-      inline_list_item->Ordinal().MarkDirty();
-      inline_list_item->OrdinalValueChanged();
+      if (!inline_list_item->Ordinal().ExplicitValue().has_value()) {
+        inline_list_item->Ordinal().MarkDirty();
+        inline_list_item->OrdinalValueChanged();
+      }
     }
     if (element.GetComputedStyle() &&
         !element.GetComputedStyle()->ContentBehavesAsNormal()) {
