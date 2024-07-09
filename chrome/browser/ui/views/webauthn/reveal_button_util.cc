@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/webauthn/reveal_button_util.h"
 
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
-#include "ui/views/vector_icons.h"
 
 std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
     views::ImageButton::PressedCallback callback) {
@@ -23,10 +23,10 @@ std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
           .SetToggledTooltipText(
               l10n_util::GetStringUTF16(IDS_WEBAUTHN_HIDE_PIN))
           .Build();
-  SetImageFromVectorIconWithColorId(button.get(), views::kEyeIcon,
+  SetImageFromVectorIconWithColorId(button.get(), vector_icons::kVisibilityIcon,
                                     ui::kColorIcon, ui::kColorIconDisabled);
-  SetToggledImageFromVectorIconWithColorId(button.get(), views::kEyeCrossedIcon,
-                                           ui::kColorIcon,
-                                           ui::kColorIconDisabled);
+  SetToggledImageFromVectorIconWithColorId(
+      button.get(), vector_icons::kVisibilityOffIcon, ui::kColorIcon,
+      ui::kColorIconDisabled);
   return button;
 }

@@ -230,6 +230,8 @@ aggregate_vector_icons("components_vector_icons") {
     "videogame_asset_off_chrome_refresh.icon",
     "view_in_ar_chrome_refresh.icon",
     "view_in_ar_off_chrome_refresh.icon",
+    "visibility.icon",
+    "visibility_off.icon",
     "volume_off_chrome_refresh.icon",
     "volume_up.icon",
     "volume_up_chrome_refresh.icon",
