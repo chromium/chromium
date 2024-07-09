@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/ash/lobster/lobster_client_impl.h"
 
+#include "ash/public/cpp/lobster/lobster_enums.h"
+#include "ash/public/cpp/lobster/lobster_system_state.h"
+#include "chrome/browser/ui/ash/lobster/lobster_system_state_provider.h"
+
 LobsterClientImpl::LobsterClientImpl() = default;
 
 LobsterClientImpl::~LobsterClientImpl() = default;
 
-bool LobsterClientImpl::IsFeatureAllowed() {
-  // TODO(b/348280621): Implement enable / disable module
-  return false;
+ash::LobsterSystemState LobsterClientImpl::GetSystemState() {
+  return system_state_provider_.GetSystemState();
 }

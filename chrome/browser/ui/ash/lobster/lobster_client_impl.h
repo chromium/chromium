@@ -6,6 +6,11 @@
 #define CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/lobster/lobster_client.h"
+#include "chrome/browser/ui/ash/lobster/lobster_system_state_provider.h"
+
+namespace ash {
+struct LobsterSystemState;
+}  // namespace ash
 
 class LobsterClientImpl : public ash::LobsterClient {
  public:
@@ -13,7 +18,10 @@ class LobsterClientImpl : public ash::LobsterClient {
   ~LobsterClientImpl() override;
 
   // LobsterClient overrides
-  bool IsFeatureAllowed() override;
+  ash::LobsterSystemState GetSystemState() override;
+
+ private:
+  LobsterSystemStateProvider system_state_provider_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
