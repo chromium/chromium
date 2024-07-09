@@ -287,7 +287,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             nullptr /* serving_page_metrics_container */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,
             false /* shared_storage_writable */,
-            is_ad_tagged /* is_ad_tagged */));
+            is_ad_tagged /* is_ad_tagged */,
+            false /* force_no_https_upgrade */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
     most_recent_resource_request_ = std::nullopt;
     interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>(

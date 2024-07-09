@@ -330,6 +330,12 @@ class NavigationController {
     // True if the initiator explicitly asked for opener relationships to be
     // preserved, via rel="opener".
     bool has_rel_opener = false;
+
+    // True if the navigation should not be upgraded to HTTPS. This should only
+    // be set in very specific circumstances like navigations to captive portal
+    // login URLs which may be broken by HTTPS Upgrades due to the portal's
+    // unconventional handling of HTTPS URLs.
+    bool force_no_https_upgrade = false;
   };
 
   // Disables checking for a repost and prompting the user. This is used during

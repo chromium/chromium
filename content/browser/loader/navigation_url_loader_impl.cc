@@ -609,6 +609,7 @@ void NavigationURLLoaderImpl::CreateInterceptors() {
           GetContentClient()->browser()->WillCreateURLLoaderRequestInterceptors(
               navigation_ui_data_.get(), frame_tree_node_id_,
               request_info_->navigation_id,
+              request_info_->force_no_https_upgrade,
               GetUIThreadTaskRunner(
                   {BrowserTaskType::kNavigationNetworkResponse}));
   if (!browser_interceptors.empty()) {

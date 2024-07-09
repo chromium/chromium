@@ -138,7 +138,8 @@ class NavigationURLLoaderTest : public testing::Test {
             GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
             nullptr /* serving_page_metrics_container */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,
-            false /* shared_storage_writable */, false /* is_ad_tagged */));
+            false /* shared_storage_writable */, false /* is_ad_tagged */,
+            false /* force_no_https_upgrade */));
     return NavigationURLLoader::Create(
         browser_context_.get(), storage_partition, std::move(request_info),
         nullptr, nullptr, nullptr, delegate,

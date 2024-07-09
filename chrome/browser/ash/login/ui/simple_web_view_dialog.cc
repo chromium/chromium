@@ -144,7 +144,8 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
     web_view_container_ = std::make_unique<views::WebView>(profile_);
   web_view_ = web_view_container_.get();
   web_view_->GetWebContents()->SetDelegate(this);
-  web_view_->LoadInitialURL(url);
+  web_view_->LoadInitialURL(url,
+                            views::WebView::HttpsUpgradePolicy::kNoUpgrade);
 
   WebContents* web_contents = web_view_->GetWebContents();
   DCHECK(web_contents);

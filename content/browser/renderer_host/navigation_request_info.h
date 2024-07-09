@@ -59,7 +59,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       bool allow_cookies_from_browser,
       int64_t navigation_id,
       bool shared_storage_writable,
-      bool is_ad_tagged);
+      bool is_ad_tagged,
+      bool force_no_https_upgrade);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
@@ -168,6 +169,9 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // Whether the embedder indicated this navigation is being used for
   // advertising purposes.
   bool is_ad_tagged;
+
+  // If true, the navigation will not be upgraded to HTTPS.
+  bool force_no_https_upgrade;
 };
 
 }  // namespace content

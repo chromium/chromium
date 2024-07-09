@@ -4081,6 +4081,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.from_download_cross_origin_redirect);
   navigation_request->set_force_new_browsing_instance(
       params.force_new_browsing_instance);
+  if (params.force_no_https_upgrade) {
+    navigation_request->set_force_no_https_upgrade();
+  }
   return navigation_request;
 }
 

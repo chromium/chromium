@@ -6562,6 +6562,7 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
     content::NavigationUIData* navigation_ui_data,
     int frame_tree_node_id,
     int64_t navigation_id,
+    bool force_no_https_upgrade,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
       interceptors;
@@ -6584,11 +6585,13 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   interceptors.push_back(std::make_unique<SearchPrefetchURLLoaderInterceptor>(
       frame_tree_node_id, navigation_id, navigation_response_task_runner));
 
-  auto https_upgrades_interceptor =
-      HttpsUpgradesInterceptor::MaybeCreateInterceptor(frame_tree_node_id,
-                                                       navigation_ui_data);
-  if (https_upgrades_interceptor) {
-    interceptors.push_back(std::move(https_upgrades_interceptor));
+  if (!force_no_https_upgrade) {
+    auto https_upgrades_interceptor =
+        HttpsUpgradesInterceptor::MaybeCreateInterceptor(frame_tree_node_id,
+                                                         navigation_ui_data);
+    if (https_upgrades_interceptor) {
+      interceptors.push_back(std::move(https_upgrades_interceptor));
+    }
   }
 
   return interceptors;

@@ -136,12 +136,16 @@ void WebView::SetBrowserContext(content::BrowserContext* browser_context) {
   browser_context_ = browser_context;
 }
 
-void WebView::LoadInitialURL(const GURL& url) {
+void WebView::LoadInitialURL(const GURL& url,
+                             HttpsUpgradePolicy https_upgrade_policy) {
   // Loading requires a valid WebContents.
   DCHECK(GetWebContents());
-  GetWebContents()->GetController().LoadURL(url, content::Referrer(),
-                                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                            std::string());
+  content::NavigationController::LoadURLParams params(url);
+  params.referrer = content::Referrer();
+  params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  params.force_no_https_upgrade =
+      https_upgrade_policy == HttpsUpgradePolicy::kNoUpgrade;
+  GetWebContents()->GetController().LoadURLWithParams(params);
 }
 
 void WebView::SetFastResize(bool fast_resize) {

@@ -1355,6 +1355,8 @@ class CONTENT_EXPORT NavigationRequest
     navigation_discard_reason_ = navigation_discard_reason;
   }
 
+  void set_force_no_https_upgrade() { force_no_https_upgrade_ = true; }
+
  private:
   friend class NavigationRequestTest;
 
@@ -2897,13 +2899,16 @@ class CONTENT_EXPORT NavigationRequest
   // committing, the resources are destroyed with this request.
   std::unique_ptr<ScopedViewTransitionResources> view_transition_resources_;
 
-  // If true, this means that this navigaiton request was initiated by an
+  // If true, this means that this navigation request was initiated by an
   // animated transition.
   bool was_initiated_by_animated_transition_ = false;
 
   // If the navigation is cancelled/discarded before it commits, the reason
   // for cancellation will be saved.
   std::optional<NavigationDiscardReason> navigation_discard_reason_;
+
+  // If true, HTTPS Upgrades will be disabled on this navigation request.
+  bool force_no_https_upgrade_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

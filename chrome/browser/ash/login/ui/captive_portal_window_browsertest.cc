@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest, OpenPortalDialog) {
   base::RunLoop().RunUntilIdle();
 
   // As we haven't specified the actual captive portal page, redirect won't
-  // happen automatically, but the meesage to open the captive portal login page
+  // happen automatically, but the message to open the captive portal login page
   // must be available.
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kCaptivePortalLink)

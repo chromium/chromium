@@ -1109,6 +1109,7 @@ ContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
     content::NavigationUIData* navigation_ui_data,
     int frame_tree_node_id,
     int64_t navigation_id,
+    bool force_no_https_upgrade,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
   return std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>();
 }
