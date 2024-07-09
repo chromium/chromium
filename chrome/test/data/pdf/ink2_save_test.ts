@@ -41,6 +41,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(saveMessage !== undefined);
     chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ORIGINAL);
     chrome.test.assertFalse(actionMenu.open);
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
     chrome.test.succeed();
   },
 

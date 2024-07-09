@@ -1123,13 +1123,23 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     assert(this.currentController);
 
     // <if expr="enable_ink">
-    if (this.annotationMode_ && requestType === SaveRequestType.ORIGINAL) {
-      // Request type original in annotation mode --> need to exit annotation
-      // mode before saving. See https://crbug.com/919364.
+    // For Ink, request type original in annotation mode --> need to exit
+    // annotation mode before saving. See https://crbug.com/919364.
+    let shouldExitAnnotationMode =
+        this.annotationMode_ && requestType === SaveRequestType.ORIGINAL;
+
+    // Ink2 overrides Ink, and Ink2 does not need to exit annotation mode.
+    // Only exit annotation mode if Ink2 is disabled.
+    // <if expr="enable_pdf_ink2">
+    shouldExitAnnotationMode =
+        shouldExitAnnotationMode && !this.pdfInk2Enabled_;
+    // </if> enable_pdf_ink2
+
+    if (shouldExitAnnotationMode) {
       await this.exitAnnotationMode_();
       assert(!this.annotationMode_);
     }
-    // </if>
+    // </if> enable_ink
 
     const result = await this.currentController.save(requestType);
     if (result === null) {
