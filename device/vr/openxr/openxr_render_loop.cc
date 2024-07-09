@@ -643,9 +643,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   frame_data->mojo_from_viewer = openxr_->GetViewerPose();
 
-  if (openxr_->StageParametersEnabled()) {
-    UpdateStageParameters();
-  }
+  UpdateStageParameters();
 
   if (openxr_->HasFrameState()) {
     OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();

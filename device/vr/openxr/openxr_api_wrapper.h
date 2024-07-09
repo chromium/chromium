@@ -104,7 +104,6 @@ class OpenXrApiWrapper {
   XrTime GetPredictedDisplayTime() const;
   bool GetStageParameters(std::vector<gfx::Point3F>& stage_bounds,
                           gfx::Transform& local_from_stage);
-  bool StageParametersEnabled() const;
 
   device::mojom::XREnvironmentBlendMode PickEnvironmentBlendModeForSession(
       device::mojom::XRSessionMode session_mode);
@@ -127,12 +126,8 @@ class OpenXrApiWrapper {
   void Reset();
   bool Initialize(XrInstance instance, OpenXrGraphicsBinding* graphics_binding);
   void Uninitialize();
-  void EnableSupportedFeatures(
-      const OpenXrExtensionHelper& extension_helper,
-      device::mojom::XRSessionMode mode,
-      const std::vector<device::mojom::XRSessionFeature>& requiredFeatures,
-      const std::vector<device::mojom::XRSessionFeature>& optionalFeatures);
-  bool DisableFeature(device::mojom::XRSessionFeature feature);
+  XrResult EnableSupportedFeatures(
+      const OpenXrExtensionHelper& extension_helper);
 
   XrResult InitializeSystem();
   XrResult InitializeViewConfig(XrViewConfigurationType type,
@@ -165,7 +160,7 @@ class OpenXrApiWrapper {
   bool HasSpace(XrReferenceSpaceType type) const;
 
   uint32_t GetRecommendedSwapchainSampleCount() const;
-  XrResult UpdateStageBounds();
+  void UpdateStageBounds();
 
   device::mojom::XREnvironmentBlendMode GetMojoBlendMode(
       XrEnvironmentBlendMode xr_blend_mode);
@@ -215,7 +210,6 @@ class OpenXrApiWrapper {
   XrSpace stage_space_;
   XrSpace view_space_;
   XrSpace unbounded_space_;
-  bool stage_parameters_enabled_;
   std::unordered_set<mojom::XRSessionFeature> enabled_features_;
   raw_ptr<OpenXrGraphicsBinding> graphics_binding_ = nullptr;
 
