@@ -198,6 +198,7 @@ source_set("browser_tests") {
     "//components/lens/proto/server:proto",
     "//components/permissions:test_support",
     "//components/prefs",
+    "//components/ukm:test_support",
     "//content/public/browser",
     "//content/public/common",
     "//content/test:test_support",

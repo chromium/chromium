@@ -5,8 +5,8 @@
 import 'chrome-untrusted://lens/lens_overlay_app.js';
 
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
+import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens/lens_overlay_app.js';
-import {UserAction} from 'chrome-untrusted://lens/metrics_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
@@ -71,12 +71,15 @@ suite('OverlayFeedbackButton', () => {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.UserAction', UserAction.MY_ACTIVITY));
+            'Lens.Overlay.Overlay.UserAction', UserAction.kMyActivity));
     assertEquals(
         1,
         metrics.count(
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
-            UserAction.MY_ACTIVITY));
+            UserAction.kMyActivity));
+    const action = await testBrowserProxy.handler.whenCalled(
+        'recordUkmLensOverlayInteraction');
+    assertEquals(UserAction.kMyActivity, action);
   });
 
   test('verify clicking learn more calls browser proxy', async () => {
@@ -101,15 +104,18 @@ suite('OverlayFeedbackButton', () => {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.UserAction', UserAction.LEARN_MORE));
+            'Lens.Overlay.Overlay.UserAction', UserAction.kLearnMore));
     assertEquals(
         1,
         metrics.count(
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
-            UserAction.LEARN_MORE));
+            UserAction.kLearnMore));
+    const action = await testBrowserProxy.handler.whenCalled(
+        'recordUkmLensOverlayInteraction');
+    assertEquals(UserAction.kLearnMore, action);
   });
 
-  test('verify clicking send feedback calls browser proxy', () => {
+  test('verify clicking send feedback calls browser proxy', async () => {
     // Send feedback button
     lensOverlayElement.shadowRoot!
         .querySelector<HTMLElement>('[aria-label="Send feedback"]')!.click();
@@ -117,12 +123,15 @@ suite('OverlayFeedbackButton', () => {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.UserAction', UserAction.SEND_FEEDBACK));
+            'Lens.Overlay.Overlay.UserAction', UserAction.kSendFeedback));
     assertEquals(
         1,
         metrics.count(
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
-            UserAction.SEND_FEEDBACK));
+            UserAction.kSendFeedback));
+    const action = await testBrowserProxy.handler.whenCalled(
+        'recordUkmLensOverlayInteraction');
+    assertEquals(UserAction.kSendFeedback, action);
     return testBrowserProxy.handler.whenCalled('feedbackRequestedByOverlay');
   });
 });

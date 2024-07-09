@@ -24,8 +24,9 @@ import {getFallbackTheme} from './color_utils.js';
 import type {CursorTooltipData, CursorTooltipElement} from './cursor_tooltip.js';
 import type {InitialGradientElement} from './initial_gradient.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
+import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
-import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
+import {recordLensOverlayInteraction} from './metrics_utils.js';
 
 export let INVOCATION_SOURCE: string = 'Unknown';
 
@@ -165,7 +166,7 @@ export class LensOverlayAppElement extends PolymerElement {
   private onFeedbackClick() {
     this.browserProxy.handler.feedbackRequestedByOverlay();
     this.moreOptionsMenuVisible = false;
-    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.SEND_FEEDBACK);
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kSendFeedback);
   }
 
   private onLearnMoreClick(event: MouseEvent|KeyboardEvent) {
@@ -177,7 +178,7 @@ export class LensOverlayAppElement extends PolymerElement {
       shiftKey: event.shiftKey,
     });
     this.moreOptionsMenuVisible = false;
-    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.LEARN_MORE);
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kLearnMore);
   }
 
   private onMoreOptionsButtonClick() {
@@ -193,7 +194,7 @@ export class LensOverlayAppElement extends PolymerElement {
       shiftKey: event.shiftKey,
     });
     this.moreOptionsMenuVisible = false;
-    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.MY_ACTIVITY);
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kMyActivity);
   }
 
   private onNotifyResultsPanelOpened() {

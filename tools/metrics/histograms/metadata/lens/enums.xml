@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Send feedback action"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/lens/overlay/metrics_utils.ts:UserAction) -->
+<!-- LINT.ThenChange(//chrome/browser/lens/core/lens.mojom:UserAction) -->
 
 <!-- LINT.IfChange(LensPermissionBubbleUserAction) -->
 

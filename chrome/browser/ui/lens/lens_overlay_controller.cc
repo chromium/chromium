@@ -873,6 +873,11 @@ void LensOverlayController::IssueTextSelectionRequestForTesting(
                             selection_end_index);
 }
 
+void LensOverlayController::RecordUkmLensOverlayInteractionForTesting(
+    lens::mojom::UserAction user_action) {
+  RecordUkmLensOverlayInteraction(user_action);
+}
+
 void LensOverlayController::IssueSearchBoxRequestForTesting(
     const std::string& search_box_text,
     AutocompleteMatchType::Type match_type,
@@ -894,6 +899,15 @@ void LensOverlayController::IssueTranslateSelectionRequestForTesting(
 void LensOverlayController::CopyText(const std::string& text) {
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteText(base::UTF8ToUTF16(text));
+}
+
+void LensOverlayController::RecordUkmLensOverlayInteraction(
+    lens::mojom::UserAction user_action) {
+  ukm::SourceId source_id =
+      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::builders::Lens_Overlay_Overlay_UserAction(source_id)
+      .SetUserAction(static_cast<int64_t>(user_action))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 std::string LensOverlayController::GetInvocationSourceString() {

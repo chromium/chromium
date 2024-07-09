@@ -8,7 +8,7 @@ import type {Point, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
-import {UserAction} from 'chrome-untrusted://lens/metrics_utils.js';
+import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -108,12 +108,15 @@ suite('ManualRegionSelection', function() {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.UserAction', UserAction.REGION_SELECTION));
+            'Lens.Overlay.Overlay.UserAction', UserAction.kRegionSelection));
     assertEquals(
         1,
         metrics.count(
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
-            UserAction.REGION_SELECTION));
+            UserAction.kRegionSelection));
+    const action = await testBrowserProxy.handler.whenCalled(
+        'recordUkmLensOverlayInteraction');
+    assertEquals(UserAction.kRegionSelection, action);
   }
 
   // Does a click and verifies that expectedRect is sent via mojo.
@@ -134,12 +137,15 @@ suite('ManualRegionSelection', function() {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.UserAction', UserAction.REGION_SELECTION));
+            'Lens.Overlay.Overlay.UserAction', UserAction.kRegionSelection));
     assertEquals(
         1,
         metrics.count(
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
-            UserAction.REGION_SELECTION));
+            UserAction.kRegionSelection));
+    const action = await testBrowserProxy.handler.whenCalled(
+        'recordUkmLensOverlayInteraction');
+    assertEquals(UserAction.kRegionSelection, action);
   }
 
   test('ClickShowsRegion', async () => {

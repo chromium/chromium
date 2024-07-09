@@ -14639,6 +14639,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Lens.Overlay.Overlay.UserAction">
+  <owner>jdonnelly@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the user interactions with the Lens Overlay, enumerated
+    by those actions.
+  </summary>
+  <metric name="UserAction" enum="LensOverlayUserAction">
+    <summary>
+      The user interaction with the Lens Overlay.
+    </summary>
+  </metric>
+</event>
+
 <event name="LiteVideo">
   <obsolete>
     Obsoleted December 2021.

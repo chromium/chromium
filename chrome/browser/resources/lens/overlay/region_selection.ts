@@ -6,12 +6,14 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
 import {getFallbackTheme, getShaderLayerColorHexes} from './color_utils.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
+import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
-import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
+import {recordLensOverlayInteraction} from './metrics_utils.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {getTemplate} from './region_selection.html.js';
 import {focusShimmerOnRegion, type GestureEvent, GestureState, getRelativeCoordinate, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
@@ -75,6 +77,7 @@ export class RegionSelectionElement extends PolymerElement {
   private theme: OverlayTheme;
   // Shader hex colors.
   private shaderLayerColorHexes: string[];
+  private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
   // The tap region dimensions are the height and width that the region should
   // have when the user taps instead of drag.
@@ -101,7 +104,7 @@ export class RegionSelectionElement extends PolymerElement {
 
   handleUpGesture(event: GestureEvent): boolean {
     // Issue the Lens request
-    BrowserProxyImpl.getInstance().handler.issueLensRequest(
+    this.browserProxy.handler.issueLensRequest(
         this.getNormalizedCenterRotatedBoxFromGesture(event));
 
     // Relinquish control from the shimmer.
@@ -122,7 +125,7 @@ export class RegionSelectionElement extends PolymerElement {
     }));
 
     recordLensOverlayInteraction(
-        INVOCATION_SOURCE, UserAction.REGION_SELECTION);
+        INVOCATION_SOURCE, UserAction.kRegionSelection);
 
     this.clearCanvas();
     return true;

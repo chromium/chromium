@@ -7,10 +7,12 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
+import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
-import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
+import {recordLensOverlayInteraction} from './metrics_utils.js';
 import {getTemplate} from './post_selection_renderer.html.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
@@ -109,6 +111,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   // The original bounds from the start of a drag.
   private originalBounds:
       PostSelectionBoundingBox = {left: 0, top: 0, width: 0, height: 0};
+  private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -119,15 +122,12 @@ export class PostSelectionRendererElement extends PolymerElement {
         });
     // Set up listener to listen to events from C++.
     this.listenerIds = [
-      BrowserProxyImpl.getInstance()
-          .callbackRouter.clearAllSelections.addListener(
-              this.clearSelection.bind(this)),
-      BrowserProxyImpl.getInstance()
-          .callbackRouter.clearRegionSelection.addListener(
-              this.clearSelection.bind(this)),
-      BrowserProxyImpl.getInstance()
-          .callbackRouter.setPostRegionSelection.addListener(
-              this.setSelection.bind(this)),
+      this.browserProxy.callbackRouter.clearAllSelections.addListener(
+          this.clearSelection.bind(this)),
+      this.browserProxy.callbackRouter.clearRegionSelection.addListener(
+          this.clearSelection.bind(this)),
+      this.browserProxy.callbackRouter.setPostRegionSelection.addListener(
+          this.setSelection.bind(this)),
     ];
   }
 
@@ -135,8 +135,7 @@ export class PostSelectionRendererElement extends PolymerElement {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
     this.listenerIds.forEach(
-        id => assert(
-            BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
+        id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
   }
 
@@ -252,7 +251,7 @@ export class PostSelectionRendererElement extends PolymerElement {
       }));
 
       recordLensOverlayInteraction(
-          INVOCATION_SOURCE, UserAction.REGION_SELECTION_CHANGE);
+          INVOCATION_SOURCE, UserAction.kRegionSelectionChange);
     }
 
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
