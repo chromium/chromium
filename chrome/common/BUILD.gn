@@ -571,7 +571,14 @@ component("chrome_features") {
 }
 
 static_library("url_constants") {
-  visibility = [ "//chrome/common/*" ]
+  visibility = [
+    "//chrome/common/*",
+
+    # TODO: remove this after fixing cyclic dependency between
+    # //chrome/browser/ash/input_method and
+    # //chrome/browser/ash/magic_boost.
+    "//chrome/browser/ash/magic_boost",
+  ]
   sources = [
     "url_constants.h",
     "webui_url_constants.cc",
