@@ -31,11 +31,6 @@ import {$$} from './utils.js';
  * Dragging the element outside of the table cancels drag-and-drop.
  */
 
-interface Position {
-  drop: number;
-  drag: number;
-}
-
 function getColumnByComposedPath(path?: EventTarget[]): HTMLElement|null {
   if (!path) {
     return null;
@@ -55,17 +50,9 @@ function getVisualOrderIndex(col: HTMLElement) {
   return parseInt(col.style.order);
 }
 
-function shouldSwapIndexes(
-    prevIndexes: Position|null, fromIndex: number, toIndex: number) {
-  return !(prevIndexes && prevIndexes.drop === fromIndex &&
-           prevIndexes.drag === toIndex) &&
-      toIndex !== fromIndex;
-}
-
 export class DragAndDropManager {
   private eventTracker_: EventTracker = new EventTracker();
   private tableElement_: TableElement;
-  private prevIndexes_: Position|null = null;
 
   private get columnElements_(): HTMLElement[] {
     const table = $$<HTMLElement>(this.tableElement_, '#table');
@@ -100,17 +87,21 @@ export class DragAndDropManager {
     this.eventTracker_.add(
         document, 'dragover', (e: DragEvent) => this.dragOver_(e));
     this.eventTracker_.add(document, 'drop', (e: DragEvent) => this.drop_(e));
-    this.eventTracker_.add(document, 'dragend', () => this.dragEnd_());
     // Ends drag-and-drop if the dragging column leaves the table. This ensures
     // that 'dragover' events only fire for adjacent columns.
     this.eventTracker_.add(
         this.tableElement_, 'dragleave', () => this.dragEnd_());
+    this.eventTracker_.add(document, 'dragend', () => {
+      this.eventTracker_.remove(document, 'dragover');
+      this.eventTracker_.remove(document, 'drop');
+      this.eventTracker_.remove(this.tableElement_, 'dragleave');
+      this.dragEnd_();
+    });
   }
 
   // Sets up column reordering for drag events.
   private dragStart_(dragElement: HTMLElement) {
     this.tableElement_.draggingColumn = dragElement;
-    this.prevIndexes_ = null;
     const columnElements = this.columnElements_;
     // Set initial column order for later visual reordering.
     columnElements.forEach((column, index) => {
@@ -136,13 +127,12 @@ export class DragAndDropManager {
 
     const fromIndex = getVisualOrderIndex(dragElement);
     const toIndex = getVisualOrderIndex(dropTarget);
-    if (shouldSwapIndexes(this.prevIndexes_, fromIndex, toIndex)) {
+    if (toIndex !== fromIndex) {
       if (e.dataTransfer) {
         e.dataTransfer.dropEffect = 'move';
       }
       dropTarget.style.order = `${fromIndex}`;
       dragElement.style.order = `${toIndex}`;
-      this.prevIndexes_ = {drag: fromIndex, drop: toIndex};
     }
   }
 
@@ -173,7 +163,7 @@ export class DragAndDropManager {
 
   // Called when drag-and-drop is finished (even if the drop was canceled).
   private dragEnd_() {
-    // TODO(b/331955377): Update |this.tableElement_.columns| if a 'dragend'
+    // TODO(b/350958833): Update |this.tableElement_.columns| if a 'dragend'
     // event is fired before a 'drop' event is.
     this.tableElement_.draggingColumn = null;
   }

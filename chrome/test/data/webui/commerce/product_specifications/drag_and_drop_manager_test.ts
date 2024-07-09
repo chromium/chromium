@@ -79,7 +79,7 @@ suite('ProductSpecificationsTableTest', () => {
   }
 
   function assertNotDragging() {
-    assertTrue(!tableElement || !tableElement.draggingColumn);
+    assertTrue(!tableElement.draggingColumn);
     assertFalse(!!$$(tableElement, '.col[is-dragging'));
   }
 
@@ -157,28 +157,89 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals('https://2', images[2]!.autoSrc);
   });
 
-  test('perform the same dragover back-to-back', async () => {
-    initializeColumns({numColumns: 2});
+  test('dragover multiple times before dropping', async () => {
+    initializeColumns({numColumns: 4});
     const columns = tableElement.$.table.querySelectorAll<HTMLElement>('.col');
-    assertEquals(2, columns.length);
+    assertEquals(4, columns.length);
     assertNotDragging();
 
     const first = columns[0]!;
     const second = columns[1]!;
+    const third = columns[2]!;
+    const fourth = columns[3]!;
     dispatchDragStart({origin: first});
     assertDragging(first);
     assertStyle(first, 'order', '0');
     assertStyle(second, 'order', '1');
+    assertStyle(third, 'order', '2');
+    assertStyle(fourth, 'order', '3');
 
     dispatchDragOver({target: second});
-    assertDragging(first);
     assertStyle(first, 'order', '1');
     assertStyle(second, 'order', '0');
+    assertStyle(third, 'order', '2');
+    assertStyle(fourth, 'order', '3');
 
-    dispatchDragOver({target: second});
-    assertDragging(first);
-    assertStyle(first, 'order', '1');
+    dispatchDragOver({target: third});
+    assertStyle(first, 'order', '2');
     assertStyle(second, 'order', '0');
+    assertStyle(third, 'order', '1');
+    assertStyle(fourth, 'order', '3');
+
+    dispatchDragOver({target: fourth});
+    assertStyle(first, 'order', '3');
+    assertStyle(second, 'order', '0');
+    assertStyle(third, 'order', '1');
+    assertStyle(fourth, 'order', '2');
+
+    const images =
+        tableElement.$.table.querySelectorAll<CrAutoImgElement>('.col img');
+    assertEquals(4, images.length);
+    assertEquals('https://0', images[0]!.autoSrc);
+    assertEquals('https://1', images[1]!.autoSrc);
+    assertEquals('https://2', images[2]!.autoSrc);
+    assertEquals('https://3', images[3]!.autoSrc);
+
+    dispatchDrop({origin: first});
+    await waitAfterNextRender(tableElement);
+    assertNotDragging();
+
+    assertEquals('https://1', images[0]!.autoSrc);
+    assertEquals('https://2', images[1]!.autoSrc);
+    assertEquals('https://3', images[2]!.autoSrc);
+    assertEquals('https://0', images[3]!.autoSrc);
+  });
+
+  test('swap the same two columns back-to-back', async () => {
+    initializeColumns({numColumns: 3});
+    const columns = tableElement.$.table.querySelectorAll<HTMLElement>('.col');
+    assertEquals(3, columns.length);
+    assertNotDragging();
+
+    const first = columns[0]!;
+    const second = columns[1]!;
+    dispatchDragStart({origin: second});
+    const images =
+        tableElement.$.table.querySelectorAll<CrAutoImgElement>('.col img');
+    assertEquals(3, images.length);
+    assertEquals('https://0', images[0]!.autoSrc);
+    assertEquals('https://1', images[1]!.autoSrc);
+    assertEquals('https://2', images[2]!.autoSrc);
+
+    dispatchDrop({origin: first});
+
+    await waitAfterNextRender(tableElement);
+    assertEquals('https://1', images[0]!.autoSrc);
+    assertEquals('https://0', images[1]!.autoSrc);
+    assertEquals('https://2', images[2]!.autoSrc);
+
+    dispatchDragStart({origin: second});
+    dispatchDrop({origin: first});
+
+    await waitAfterNextRender(tableElement);
+    assertEquals('https://0', images[0]!.autoSrc);
+    assertEquals('https://1', images[1]!.autoSrc);
+    assertEquals('https://2', images[2]!.autoSrc);
   });
 
   test('leave table mid-drag', async () => {
