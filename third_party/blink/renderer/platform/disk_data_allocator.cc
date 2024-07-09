@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/blink/public/common/features.h"
@@ -170,7 +171,7 @@ void DiskDataAllocator::Read(const DiskDataMetadata& metadata, void* data) {
   {
     base::AutoLock locker(lock_);
     auto it = allocated_chunks_.find(metadata.start_offset());
-    DCHECK(it != allocated_chunks_.end());
+    CHECK(it != allocated_chunks_.end(), base::NotFatalUntil::M130);
     DCHECK_EQ(metadata.size(), it->second);
   }
 #endif
@@ -182,7 +183,7 @@ void DiskDataAllocator::Discard(std::unique_ptr<DiskDataMetadata> metadata) {
 
 #if DCHECK_IS_ON()
   auto it = allocated_chunks_.find(metadata->start_offset());
-  DCHECK(it != allocated_chunks_.end());
+  CHECK(it != allocated_chunks_.end(), base::NotFatalUntil::M130);
   DCHECK_EQ(metadata->size(), it->second);
   allocated_chunks_.erase(it);
 #endif

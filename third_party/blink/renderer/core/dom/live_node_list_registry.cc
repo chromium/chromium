@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_base.h"
@@ -26,7 +27,7 @@ void LiveNodeListRegistry::Remove(const LiveNodeListBase* list,
                                   NodeListInvalidationType type) {
   Entry entry = {list, MaskForInvalidationType(type)};
   auto* it = base::ranges::find(data_, entry);
-  DCHECK(it != data_.end());
+  CHECK(it != data_.end(), base::NotFatalUntil::M130);
   data_.erase(it);
   data_.ShrinkToReasonableCapacity();
   RecomputeMask();

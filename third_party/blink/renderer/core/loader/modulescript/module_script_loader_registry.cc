@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader_registry.h"
 
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader.h"
 
 namespace blink {
@@ -23,7 +24,7 @@ void ModuleScriptLoaderRegistry::ReleaseFinishedLoader(
   DCHECK(loader->HasFinished());
 
   auto it = active_loaders_.find(loader);
-  DCHECK_NE(it, active_loaders_.end());
+  CHECK_NE(it, active_loaders_.end(), base::NotFatalUntil::M130);
   active_loaders_.erase(it);
 }
 

@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
 
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -133,7 +134,7 @@ void RadioButtonGroup::UpdateCheckedState(HTMLInputElement* button) {
 void RadioButtonGroup::RequiredAttributeChanged(HTMLInputElement* button) {
   DCHECK_EQ(button->FormControlType(), FormControlType::kInputRadio);
   auto it = members_.find(button);
-  DCHECK_NE(it, members_.end());
+  CHECK_NE(it, members_.end(), base::NotFatalUntil::M130);
   bool was_valid = IsValid();
   // Synchronize the 'required' flag for the button, along with
   // updating the overall count.

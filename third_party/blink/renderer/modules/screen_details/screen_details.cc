@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/screen_details/screen_details.h"
 
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -36,7 +37,7 @@ ScreenDetailed* ScreenDetails::currentScreen() const {
 
   auto* it = base::ranges::find(screens_, current_display_id_,
                                 &ScreenDetailed::DisplayId);
-  DCHECK(it != screens_.end());
+  CHECK(it != screens_.end(), base::NotFatalUntil::M130);
   return it->Get();
 }
 

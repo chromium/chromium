@@ -15,6 +15,7 @@
 #include "base/containers/adapters.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
@@ -707,7 +708,7 @@ class InlineNodeDataEditor final {
     auto const* end = data_->items.end();
     auto* it = data_->items.begin();
     for (; it != end && it->end_offset_ < start_offset; ++it) {
-      DCHECK(it != data_->items.end());
+      CHECK(it != data_->items.end(), base::NotFatalUntil::M130);
       items.push_back(*it);
     }
 

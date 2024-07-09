@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/debug/stack_trace.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
@@ -410,7 +411,7 @@ void CanvasResourceDispatcher::ReclaimResources(
   for (const auto& resource : resources) {
     auto it = resources_.find(resource.id);
 
-    DCHECK(it != resources_.end());
+    CHECK(it != resources_.end(), base::NotFatalUntil::M130);
     if (it == resources_.end())
       continue;
 

@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -177,7 +178,7 @@ void ImageResourceContent::RemoveObserver(ImageResourceObserver* observer) {
                                                finished_observers_.end();
   } else {
     it = finished_observers_.find(observer);
-    DCHECK(it != finished_observers_.end());
+    CHECK(it != finished_observers_.end(), base::NotFatalUntil::M130);
     fully_erased = finished_observers_.erase(it);
   }
   DidRemoveObserver();

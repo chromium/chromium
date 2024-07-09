@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/column_spanner_path.h"
@@ -1320,7 +1321,7 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
           [](const ContentRun& run1, const ContentRun& run2) {
             return run1.ColumnBlockSize() < run2.ColumnBlockSize();
           });
-      DCHECK(it != runs_.end());
+      CHECK(it != runs_.end(), base::NotFatalUntil::M130);
       return const_cast<ContentRun*>(it);
     }
 

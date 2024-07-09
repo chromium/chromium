@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/state_transitions.h"
@@ -328,7 +329,8 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
 
 void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
   auto* it = base::ranges::remove(rule_sets_, rule_set);
-  DCHECK(it != rule_sets_.end()) << "rule set was removed without existing";
+  CHECK(it != rule_sets_.end(), base::NotFatalUntil::M130)
+      << "rule set was removed without existing";
   rule_sets_.erase(it, rule_sets_.end());
   if (rule_set->has_document_rule()) {
     InvalidateAllLinks();
@@ -935,7 +937,7 @@ void DocumentSpeculationRules::RemoveLink(HTMLAnchorElement* link) {
     return;
   }
   auto it = pending_links_.find(link);
-  DCHECK(it != pending_links_.end());
+  CHECK(it != pending_links_.end(), base::NotFatalUntil::M130);
   pending_links_.erase(it);
 }
 

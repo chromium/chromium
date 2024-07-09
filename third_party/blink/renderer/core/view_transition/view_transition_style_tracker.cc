@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -578,7 +579,7 @@ bool ViewTransitionStyleTracker::MatchForOnlyChild(
       DCHECK(view_transition_name);
 
       auto it = element_data_map_.find(view_transition_name);
-      DCHECK(it != element_data_map_.end());
+      CHECK(it != element_data_map_.end(), base::NotFatalUntil::M130);
       const auto& element_data = it->value;
       return !element_data->new_snapshot_id.IsValid();
     }
@@ -587,7 +588,7 @@ bool ViewTransitionStyleTracker::MatchForOnlyChild(
       DCHECK(view_transition_name);
 
       auto it = element_data_map_.find(view_transition_name);
-      DCHECK(it != element_data_map_.end());
+      CHECK(it != element_data_map_.end(), base::NotFatalUntil::M130);
       const auto& element_data = it->value;
       return !element_data->old_snapshot_id.IsValid();
     }

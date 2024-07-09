@@ -16,6 +16,7 @@
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -617,7 +618,7 @@ bool WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks(
   for (const base::TimeDelta& timestamp : timestamps) {
     auto* it = base::ranges::find(pending_frames_info_, timestamp,
                                   &PendingFrameInfo::timestamp);
-    DCHECK(it != pending_frames_info_.end());
+    CHECK(it != pending_frames_info_.end(), base::NotFatalUntil::M130);
     wall_clock_times->push_back(it->reference_time);
   }
   return true;

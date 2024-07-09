@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/memory/values_equivalent.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -703,7 +704,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
   if (candidate.inline_container.container) {
     const auto it =
         containing_blocks_map_.find(candidate.inline_container.container);
-    DCHECK(it != containing_blocks_map_.end());
+    CHECK(it != containing_blocks_map_.end(), base::NotFatalUntil::M130);
     return it->value;
   }
 
