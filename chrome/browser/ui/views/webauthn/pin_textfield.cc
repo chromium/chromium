@@ -13,6 +13,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/border.h"
 #include "ui/views/style/typography.h"
@@ -146,6 +147,13 @@ void PinTextfield::OnPaint(gfx::Canvas* canvas) {
         base::i18n::IsRTL() ? pin_digits_count_ - i - 1 : i;
     gfx::Rect cell_rect(index_rtl_adjusted * (kCellWidth + kCellSpacing), 0,
                         kCellWidth, kCellHeight);
+
+    // Make sure background is not drawn outside of the rounded cell.
+    SkPath path;
+    path.addRoundRect(gfx::RectToSkRect(cell_rect), kCellRadius, kCellRadius);
+    canvas->Save();
+    canvas->ClipPath(path, /*do_anti_alias=*/true);
+
     // Draw cell background.
     canvas->FillRect(cell_rect, background_color);
     // Draw cell border.
@@ -155,6 +163,8 @@ void PinTextfield::OnPaint(gfx::Canvas* canvas) {
     // Draw cell text.
     render_texts_[i]->SetDisplayRect(cell_rect);
     render_texts_[i]->Draw(canvas);
+
+    canvas->Restore();
   }
 }
 
