@@ -20,6 +20,7 @@ Name: Mocha
 Short Name: mocha
 URL: https://github.com/mochajs/mocha
 Version: 10.0.0
+Revision: 0501b9a278ae40a01f989d70801f4886ee686445
 License: MIT
 License File: LICENSE
 Security Critical: no
