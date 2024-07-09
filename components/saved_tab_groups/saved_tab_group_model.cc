@@ -118,24 +118,6 @@ const SavedTabGroup* SavedTabGroupModel::Get(
   return &saved_tab_groups_[index.value()];
 }
 
-SavedTabGroup* SavedTabGroupModel::Get(const base::Uuid& id) {
-  std::optional<int> index = GetIndexOf(id);
-  if (!index.has_value()) {
-    return nullptr;
-  }
-
-  return &saved_tab_groups_[index.value()];
-}
-
-SavedTabGroup* SavedTabGroupModel::Get(const LocalTabGroupID local_group_id) {
-  std::optional<int> index = GetIndexOf(local_group_id);
-  if (!index.has_value()) {
-    return nullptr;
-  }
-
-  return &saved_tab_groups_[index.value()];
-}
-
 void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   CHECK(!Contains(group_guid));
@@ -323,7 +305,7 @@ void SavedTabGroupModel::AddTabToGroupFromSync(const base::Uuid& group_id,
 
 void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
                                           SavedTabGroupTab tab) {
-  SavedTabGroup* group = Get(group_id);
+  SavedTabGroup* group = GetMutableGroup(group_id);
   CHECK(group);
 
   if (group->GetTab(tab.saved_tab_guid())->url() != tab.url()) {
@@ -432,7 +414,7 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
 
 void SavedTabGroupModel::UpdateLastUserInteractionTimeLocally(
     const LocalTabGroupID& local_group_id) {
-  SavedTabGroup* group = Get(local_group_id);
+  SavedTabGroup* group = GetMutableGroup(local_group_id);
   CHECK(group);
 
   group->SetLastUserInteractionTime(base::Time::Now());
@@ -683,6 +665,15 @@ void SavedTabGroupModel::MigrateTabGroupSavesUIUpdate() {
 SavedTabGroup* SavedTabGroupModel::MutableGroupContainingTab(
     const base::Uuid& saved_tab_guid) {
   return const_cast<SavedTabGroup*>(GetGroupContainingTab(saved_tab_guid));
+}
+
+SavedTabGroup* SavedTabGroupModel::GetMutableGroup(
+    const LocalTabGroupID& local_group_id) {
+  return const_cast<SavedTabGroup*>(Get(local_group_id));
+}
+
+SavedTabGroup* SavedTabGroupModel::GetMutableGroup(const base::Uuid& id) {
+  return const_cast<SavedTabGroup*>(Get(id));
 }
 
 void SavedTabGroupModel::ReorderGroupImpl(const base::Uuid& id, int new_index) {

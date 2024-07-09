@@ -16,6 +16,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/pref_names.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -170,7 +171,7 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
       sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge());
 
   UpdateAttributions(group_id);
-  group->SetLastUserInteractionTime(base::Time::Now());
+  model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->AddTabToGroupLocally(group->saved_guid(), std::move(new_tab));
   LogEvent(TabGroupEvent::kTabAdded, group_id, std::nullopt);
 }
@@ -205,7 +206,7 @@ void TabGroupSyncServiceImpl::UpdateTab(const LocalTabGroupID& group_id,
     updated_tab.SetPosition(position.value());
   }
 
-  group->SetLastUserInteractionTime(base::Time::Now());
+  model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab));
   LogEvent(TabGroupEvent::kTabNavigated, group_id, tab_id);
 }
@@ -228,7 +229,7 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
   base::Uuid sync_id = group->saved_guid();
   UpdateAttributions(group_id);
   LogEvent(TabGroupEvent::kTabRemoved, group_id, tab_id);
-  group->SetLastUserInteractionTime(base::Time::Now());
+  model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->RemoveTabFromGroupLocally(sync_id, tab->saved_tab_guid());
 
   // The group might have deleted if this was the last tab, hence we should
@@ -264,13 +265,13 @@ void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
 void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
                                             const LocalTabID& tab_id) {
   VLOG(2) << __func__;
-  auto* group = model_->Get(group_id);
+  const SavedTabGroup* group = model_->Get(group_id);
   if (!group) {
     LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
-  const auto* tab = group->GetTab(tab_id);
+  const SavedTabGroupTab* tab = group->GetTab(tab_id);
   if (!tab) {
     LOG(WARNING) << __func__ << " Called for a tab that doesn't exist";
     return;

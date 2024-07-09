@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -54,13 +55,6 @@ class SavedTabGroupModel {
   // vector.
   const SavedTabGroup* Get(const LocalTabGroupID local_group_id) const;
   const SavedTabGroup* Get(const base::Uuid& id) const;
-
-  // Non-const getters to get a SavedTabGroup. This is safe since
-  // SavedTabGroupModel is internal only to //components/saved_tab_group. The
-  // external callers will go through TabGroupSyncService which will never
-  // expose a non-const SavedTabGroup.
-  SavedTabGroup* Get(const LocalTabGroupID local_group_id);
-  SavedTabGroup* Get(const base::Uuid& id);
 
   // Methods for checking if a group is in the SavedTabGroupModel.
   bool Contains(const LocalTabGroupID& local_group_id) const {
@@ -192,6 +186,8 @@ class SavedTabGroupModel {
   // Returns mutable group containing tab with ID `saved_tab_guid`, otherwise
   // returns null.
   SavedTabGroup* MutableGroupContainingTab(const base::Uuid& saved_tab_guid);
+  SavedTabGroup* GetMutableGroup(const LocalTabGroupID& local_group_id);
+  SavedTabGroup* GetMutableGroup(const base::Uuid& id);
 
   // Moves the group denoted by `id` to the position `new_index`.
   void ReorderGroupImpl(const base::Uuid& id, int new_index);
