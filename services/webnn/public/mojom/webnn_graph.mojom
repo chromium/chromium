@@ -97,6 +97,8 @@ struct BatchNormalization {
   // A float scalar which specifies a small value to prevent computational
   // error due to divide-by-zero.
   float epsilon = 1e-5;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Clamp the input tensor element-wise within a range specified by the minimum
@@ -201,6 +203,8 @@ struct Conv2d {
   // The additional 1-D tensor with the shape of output channels whose values
   // are added to the convolution result.
   uint64? bias_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents an element-wise binary operation, mathematically equivalent to:

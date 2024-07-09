@@ -186,6 +186,9 @@ webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
   if (options->hasBias()) {
     attributes.bias = options->bias()->Descriptor();
   }
+  if (options->hasLabel()) {
+    attributes.label = options->label().Utf8();
+  }
   attributes.axis = options->axis();
   return attributes;
 }
@@ -228,6 +231,9 @@ base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
       BlinkInputOperandLayoutToComponent(options->inputLayout().AsEnum());
   if (options->hasBias()) {
     attributes.bias_operand = options->bias()->Descriptor();
+  }
+  if (options->hasLabel()) {
+    attributes.label = options->label().Utf8();
   }
 
   return std::move(attributes);

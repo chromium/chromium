@@ -471,14 +471,16 @@ ValidateBatchNormalizationAndInferOutput(
     const OperandDescriptor& variance,
     const BatchNormalizationAttributes& attributes) {
   // Validate input type.
+  const auto label = attributes.label;
   if (!IsFloatingPointType(input.data_type())) {
-    return base::unexpected(
-        "The input type must be one of the floating point types.");
+    return base::unexpected(ErrorWithLabel(
+        label, "The input type must be one of the floating point types."));
   }
   if (attributes.axis >= input.Rank()) {
-    return base::unexpected(
+    return base::unexpected(ErrorWithLabel(
+        label,
         "The value of axis must be in the range [0, N-1] where N is the rank "
-        "of the input tensor.");
+        "of the input tensor."));
   }
 
   uint32_t input_size_on_axis = input.shape()[attributes.axis];
@@ -487,7 +489,8 @@ ValidateBatchNormalizationAndInferOutput(
       ValidateNormalizationOperandIsCompatibleWithInput(mean, input.data_type(),
                                                         input_size_on_axis);
   if (!validation_mean.has_value()) {
-    return base::unexpected("For mean operand: " + validation_mean.error());
+    return base::unexpected(
+        ErrorWithLabel(label, "For mean operand: " + validation_mean.error()));
   }
 
   // Validate variance operand.
@@ -495,8 +498,8 @@ ValidateBatchNormalizationAndInferOutput(
       ValidateNormalizationOperandIsCompatibleWithInput(
           variance, input.data_type(), input_size_on_axis);
   if (!validation_variance.has_value()) {
-    return base::unexpected("For variance operand: " +
-                            validation_variance.error());
+    return base::unexpected(ErrorWithLabel(
+        label, "For variance operand: " + validation_variance.error()));
   }
 
   // Validate scale operand.
@@ -505,7 +508,8 @@ ValidateBatchNormalizationAndInferOutput(
         ValidateNormalizationOperandIsCompatibleWithInput(
             attributes.scale.value(), input.data_type(), input_size_on_axis);
     if (!validation_scale.has_value()) {
-      return base::unexpected("For scale operand: " + validation_scale.error());
+      return base::unexpected(ErrorWithLabel(
+          label, "For scale operand: " + validation_scale.error()));
     }
   }
 
@@ -515,7 +519,8 @@ ValidateBatchNormalizationAndInferOutput(
         ValidateNormalizationOperandIsCompatibleWithInput(
             attributes.bias.value(), input.data_type(), input_size_on_axis);
     if (!validation_bias.has_value()) {
-      return base::unexpected("For bias operand: " + validation_bias.error());
+      return base::unexpected(ErrorWithLabel(
+          label, "For bias operand: " + validation_bias.error()));
     }
   }
 
@@ -546,14 +551,16 @@ base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
   // Validate input operand.
   ASSIGN_OR_RETURN(Conv2dInputOutputInfo input_info,
                    ValidateAndGetConv2dInputInfo(input, attributes));
+  const auto label = attributes.label;
   // Validate filter operand.
   if (filter.data_type() != input.data_type()) {
-    return base::unexpected(
-        "The filter data type doesn't match the input data type.");
+    return base::unexpected(ErrorWithLabel(
+        label, "The filter data type doesn't match the input data type."));
   }
 
   if (filter.Rank() != 4) {
-    return base::unexpected("The filter should be a 4-D tensor.");
+    return base::unexpected(
+        ErrorWithLabel(label, "The filter should be a 4-D tensor."));
   }
 
   const std::vector<uint32_t>& filter_shape = filter.shape();
@@ -592,13 +599,15 @@ base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
 
   // Validate groups and input channels.
   if (attributes.groups == 0) {
-    return base::unexpected("The groups should be greater than 0.");
+    return base::unexpected(
+        ErrorWithLabel(label, "The groups should be greater than 0."));
   }
   if (input_info.channels % attributes.groups != 0 ||
       filter_input_channels != input_info.channels / attributes.groups) {
-    return base::unexpected(
+    return base::unexpected(ErrorWithLabel(
+        label,
         "The groups must evenly divide the input channels to filter input "
-        "channels.");
+        "channels."));
   }
 
   // Validate and calculate output sizes.
@@ -633,18 +642,20 @@ ValidateConvTranspose2dAndInferOutput(
     const OperandDescriptor& filter,
     const ConvTranspose2dAttributes& attributes) {
   // Validate input operand.
+  const auto label = attributes.label;
   const auto input_info = ValidateAndGetConv2dInputInfo(input, attributes);
   if (!input_info.has_value()) {
-    return base::unexpected(input_info.error());
+    return base::unexpected(ErrorWithLabel(label, input_info.error()));
   }
   // Validate filter operand.
   if (filter.data_type() != input.data_type()) {
-    return base::unexpected(
-        "The filter data type doesn't match the input data type.");
+    return base::unexpected(ErrorWithLabel(
+        label, "The filter data type doesn't match the input data type."));
   }
 
   if (filter.Rank() != 4) {
-    return base::unexpected("The filter should be a 4-D tensor.");
+    return base::unexpected(
+        ErrorWithLabel(label, "The filter should be a 4-D tensor."));
   }
 
   const std::vector<uint32_t>& filter_shape = filter.shape();
@@ -675,17 +686,19 @@ ValidateConvTranspose2dAndInferOutput(
   }
   // Validate groups, input channels and calculate output channels.
   if (attributes.groups == 0) {
-    return base::unexpected("The groups should be greater than 0.");
+    return base::unexpected(
+        ErrorWithLabel(label, "The groups should be greater than 0."));
   }
   if (input_info->channels != input_channels) {
-    return base::unexpected(
-        "The input channels should equal to filter input channels.");
+    return base::unexpected(ErrorWithLabel(
+        label, "The input channels should equal to filter input channels."));
   }
   const auto checked_output_channels =
       base::MakeCheckedNum<uint32_t>(filter_output_channels) *
       attributes.groups;
   if (!checked_output_channels.IsValid()) {
-    return base::unexpected("The output channels is too large.");
+    return base::unexpected(
+        ErrorWithLabel(label, "The output channels is too large."));
   }
   const uint32_t output_channels = checked_output_channels.ValueOrDie();
 
@@ -696,7 +709,8 @@ ValidateConvTranspose2dAndInferOutput(
     output_height = output_sizes->height;
     output_width = output_sizes->width;
     if (output_height <= 0 || output_width <= 0) {
-      return base::unexpected("All output sizes should be greater than 0.");
+      return base::unexpected(
+          ErrorWithLabel(label, "All output sizes should be greater than 0."));
     }
     const auto strides = attributes.strides;
     ASSIGN_OR_RETURN(
@@ -714,21 +728,25 @@ ValidateConvTranspose2dAndInferOutput(
         base::MakeCheckedNum<uint32_t>(calculated_output_height) +
         strides.height;
     if (!max_output_height.IsValid()) {
-      return base::unexpected("The checked maximum output height is too large");
+      return base::unexpected(ErrorWithLabel(
+          label, "The checked maximum output height is too large"));
     }
     if (output_height < calculated_output_height ||
         output_height >= max_output_height.ValueOrDie()) {
-      return base::unexpected("The height of output sizes is invalid.");
+      return base::unexpected(
+          ErrorWithLabel(label, "The height of output sizes is invalid."));
     }
     const auto calculated_output_width = calculated_output_sizes.width;
     const auto max_output_width =
         base::MakeCheckedNum<uint32_t>(calculated_output_width) + strides.width;
     if (!max_output_width.IsValid()) {
-      return base::unexpected("The checked maximum output width is too large");
+      return base::unexpected(ErrorWithLabel(
+          label, "The checked maximum output width is too large"));
     }
     if (output_width < calculated_output_width ||
         output_width >= max_output_width.ValueOrDie()) {
-      return base::unexpected("The width of output sizes is invalid.");
+      return base::unexpected(
+          ErrorWithLabel(label, "The width of output sizes is invalid."));
     }
   } else {
     ASSIGN_OR_RETURN(Size2d<uint32_t> output_sizes,

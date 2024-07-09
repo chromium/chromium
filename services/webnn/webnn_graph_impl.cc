@@ -183,6 +183,7 @@ webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
     component_attributes.bias = bias_operand.descriptor;
   }
   component_attributes.axis = batch_normalization.axis;
+  component_attributes.label = batch_normalization.label;
 
   return component_attributes;
 }
@@ -211,6 +212,8 @@ Conv2dAttributesType ConvertToConv2dAttributes(
   attributes_base.groups = conv2d.groups;
   attributes_base.input_layout = context_properties.conv2d_input_layout;
   attributes_base.bias_operand = std::move(bias_operand);
+
+  attributes_base.label = conv2d.label;
 
   return std::move(attributes_base);
 }

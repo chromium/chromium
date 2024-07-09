@@ -1490,14 +1490,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
           activation_dml_desc ? &activation_dml_desc.value() : nullptr,
   };
 
+  const auto label = batch_normalization->label;
   const OperatorNode* batch_normalization_node =
       graph_builder.CreateOperatorNode(DML_OPERATOR_BATCH_NORMALIZATION,
                                        &batch_normalization_operator_desc,
-                                       inputs);
+                                       inputs, label);
   if (!batch_normalization_node) {
     return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to create batch normalization operator."));
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to create batch normalization operator.", label));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -1707,11 +1708,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
           activation_dml_desc ? &activation_dml_desc.value() : nullptr,
   };
 
+  const auto label = conv2d->label;
   const OperatorNode* conv2d_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_CONVOLUTION, &conv2d_operator_desc, inputs);
+      DML_OPERATOR_CONVOLUTION, &conv2d_operator_desc, inputs, label);
   if (!conv2d_node) {
     return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
-                                        "Failed to create conv2d operator."));
+                                        "Failed to create conv2d operator.",
+                                        label));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(

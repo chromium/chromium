@@ -100,6 +100,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) BatchNormalizationAttributes {
   // The number which specifies the index to the feature count dimension of the
   // input shape for which the mean and variance values are.
   uint32_t axis = 1;
+  // The operator label defined by the user.
+  std::string label = "";
 };
 
 // Contains the attributes of conv2d operator.
@@ -128,6 +130,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) Conv2dAttributesBase {
   // The additional 1-D tensor with the shape of [output_channels] whose values
   // are to be added to the convolution result.
   std::optional<OperandDescriptor> bias_operand;
+  // The operator label defined by the user.
+  std::string label = "";
 };
 
 // Contains the attributes of conv2d operator.

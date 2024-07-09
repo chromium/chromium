@@ -574,6 +574,11 @@ OperationPtr CreateBatchNormalizationOperation(
     batch_normalization_mojo->bias_operand_id =
         operand_to_id_map.at(options->bias());
   }
+  if (options->hasLabel()) {
+    batch_normalization_mojo->label = options->label();
+  } else {
+    batch_normalization_mojo->label = "";
+  }
   batch_normalization_mojo->axis = options->axis();
   batch_normalization_mojo->epsilon = options->epsilon();
   return webnn::mojom::blink::Operation::NewBatchNormalization(
@@ -712,6 +717,12 @@ std::optional<String> SerializeConv2dOperation(
   conv2d_mojo->padding = blink_mojom::Padding2d::New(
       /*beginning padding*/ Size2d::New(ml_padding[0], ml_padding[2]),
       /*ending padding*/ Size2d::New(ml_padding[1], ml_padding[3]));
+
+  if (options->hasLabel()) {
+    conv2d_mojo->label = options->label();
+  } else {
+    conv2d_mojo->label = "";
+  }
 
   graph_info->operations.push_back(
       blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo)));

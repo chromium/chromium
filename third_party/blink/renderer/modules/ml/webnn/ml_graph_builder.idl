@@ -32,14 +32,14 @@ dictionary MLArgMinMaxOptions {
 // https://github.com/webmachinelearning/webnn/issues/481.
 // TODO(crbug.com/1502361): Revisit whether the scale and bias operands
 // should be required inputs based on WG's consensus.
-dictionary MLBatchNormalizationOptions {
+dictionary MLBatchNormalizationOptions : MLOperatorOptions{
   MLOperand scale;
   MLOperand bias;
   [EnforceRange] unsigned long axis = 1;
   float epsilon = 1e-5;
 };
 
-dictionary MLConv2dOptions {
+dictionary MLConv2dOptions : MLOperatorOptions{
   sequence<[EnforceRange] unsigned long> padding;
   sequence<[EnforceRange] unsigned long> strides;
   sequence<[EnforceRange] unsigned long> dilations;
@@ -49,7 +49,7 @@ dictionary MLConv2dOptions {
   MLOperand bias;
 };
 
-dictionary MLConvTranspose2dOptions {
+dictionary MLConvTranspose2dOptions : MLOperatorOptions{
   sequence<[EnforceRange] unsigned long> padding;
   sequence<[EnforceRange] unsigned long> strides;
   sequence<[EnforceRange] unsigned long> dilations;
