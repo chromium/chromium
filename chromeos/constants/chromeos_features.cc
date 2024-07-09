@@ -425,7 +425,8 @@ bool IsJellyrollEnabled() {
 
 bool IsMagicBoostEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsMagicBoostEnabled();
+  // Magic Boost does not work in Lacros.
+  return false;
 #else
   return base::FeatureList::IsEnabled(kMagicBoost);
 #endif

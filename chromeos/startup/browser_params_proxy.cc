@@ -377,10 +377,6 @@ bool BrowserParamsProxy::IsCrosMallWebAppEnabled() const {
   return BrowserInitParams::Get()->is_cros_mall_web_app_enabled;
 }
 
-bool BrowserParamsProxy::IsMagicBoostEnabled() const {
-  return BrowserInitParams::Get()->is_magic_boost_enabled;
-}
-
 bool BrowserParamsProxy::IsMahiEnabled() const {
   return BrowserInitParams::Get()->is_mahi_enabled;
 }
