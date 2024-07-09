@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
@@ -297,7 +298,7 @@ void HeadlessBrowserContextImpl::RegisterWebContents(
 void HeadlessBrowserContextImpl::DestroyWebContents(
     HeadlessWebContentsImpl* web_contents) {
   auto it = web_contents_map_.find(web_contents->GetDevToolsAgentHostId());
-  DCHECK(it != web_contents_map_.end());
+  CHECK(it != web_contents_map_.end(), base::NotFatalUntil::M130);
   web_contents_map_.erase(it);
 }
 
