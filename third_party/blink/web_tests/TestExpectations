@@ -5607,11 +5607,6 @@ crbug.com/1369642 [ Mac11 Release ] external/wpt/encoding/unsupported-labels.win
 crbug.com/1369642 [ Mac12 Release ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 crbug.com/1369642 [ Mac13 ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 
-# Temporarily expect timeouts related to post message blocking
-crbug.com/1159586 virtual/post-message-first-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/third-party-to-first-party-cross-partition-same-origin.sub.html [ Timeout ]
-crbug.com/1159586 virtual/post-message-third-party-to-first-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/first-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
-crbug.com/1159586 virtual/post-message-third-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/third-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
-
 crbug.com/1459038 [ Linux ] external/wpt/webmidi/idlharness.https.window.html [ Failure ]
 
 # These tests are optional and not reliably supported in Chrome.

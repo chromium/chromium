@@ -1784,39 +1784,6 @@ BASE_FEATURE(kDedicatedWorkerAblationStudyEnabled,
 const base::FeatureParam<int> kDedicatedWorkerStartDelayInMs = {
     &kDedicatedWorkerAblationStudyEnabled, "DedicatedWorkerStartDelayInMs", 0};
 
-BASE_FEATURE(
-    kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked,
-    "PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked",
-    base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(
-    kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned,
-    "PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorage"
-    "IsPartitioned",
-    base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(
-    kPostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked,
-    "PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked",
-    base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(
-    kPostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned,
-    "PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlockedIfStorage"
-    "IsPartitioned",
-    base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(
-    kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked,
-    "PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked",
-    base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(
-    kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned,
-    "PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorage"
-    "IsPartitioned",
-    base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPreInitializePageAndFrameForSVGImage,
              "PreInitializePageAndFrameForSVGImage",
              base::FEATURE_DISABLED_BY_DEFAULT);

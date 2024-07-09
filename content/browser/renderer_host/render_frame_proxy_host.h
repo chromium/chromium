@@ -22,7 +22,6 @@
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/blink/public/common/metrics/post_message_counter.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
@@ -377,10 +376,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
       remote_main_frame_host_receiver_{this};
 
   blink::RemoteFrameToken frame_token_;
-
-  // Tracks metrics related to postMessage usage.
-  // TODO(crbug.com/40737536): Remove when no longer needed.
-  blink::PostMessageCounter post_message_counter_;
 
   base::WeakPtrFactory<RenderFrameProxyHost> weak_factory_{this};
 };

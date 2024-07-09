@@ -1148,37 +1148,12 @@
       "external/wpt/secure-contexts/shared-worker-insecure-first.https.html",
       "external/wpt/secure-contexts/shared-worker-secure-first.https.html",
       "fast/filesystem",
-      "external/wpt/html/browsers/windows/post-message",
       "http/tests/inspector-protocol/storage/dom-storage-set-items-by-storage-key.js",
       "http/tests/inspector-protocol/storage/indexed-db-set-items-by-storage-key.js",
       "http/tests/storage/partitioned-storage"
     ],
     "args": ["--disable-features=ThirdPartyStoragePartitioning"],
     "expires": "Feb 4, 2025"
-  },
-  {
-    "prefix": "post-message-first-party-to-third-party-different-bucket-same-origin-blocked",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/browsers/windows/post-message"],
-    "args": ["--enable-features=PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked"],
-    "expires": "Jul 1, 2025",
-    "owners": ["arichiv@chromium.org"]
-  },
-  {
-    "prefix": "post-message-third-party-to-first-party-different-bucket-same-origin-blocked",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/browsers/windows/post-message"],
-    "args": ["--enable-features=PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked"],
-    "expires": "Jul 1, 2025",
-    "owners": ["arichiv@chromium.org"]
-  },
-  {
-    "prefix": "post-message-third-party-to-third-party-different-bucket-same-origin-blocked",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/browsers/windows/post-message"],
-    "args": ["--enable-features=PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked"],
-    "expires": "Jul 1, 2025",
-    "owners": ["arichiv@chromium.org"]
   },
 
   "isInputPending requires threaded compositing and layerized iframes",

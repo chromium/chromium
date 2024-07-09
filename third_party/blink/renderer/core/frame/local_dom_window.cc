@@ -249,7 +249,6 @@ LocalDOMWindow::LocalDOMWindow(LocalFrame& frame, WindowAgent* agent)
           MakeGarbageCollected<
               HeapHashMap<int, Member<ContentSecurityPolicy>>>()),
       token_(frame.GetLocalFrameToken()),
-      post_message_counter_(PostMessagePartition::kSameProcess),
       network_state_observer_(MakeGarbageCollected<NetworkStateObserver>(this)),
       closewatcher_stack_(
           MakeGarbageCollected<CloseWatcher::WatcherStack>(this)),
@@ -1155,14 +1154,6 @@ NavigationApi* LocalDOMWindow::navigation() {
 
 void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   LocalDOMWindow* source = posted_message->source;
-
-  // Record UKM metrics for the postMessage event and don't send message if
-  // gating indicates it should be dropped.
-  if (!post_message_counter_.RecordMessageAndCheckIfShouldSend(
-          source->UkmSourceID(), source->GetStorageKey(), UkmSourceID(),
-          GetStorageKey(), UkmRecorder())) {
-    return;
-  };
 
   // Notify the host if the message contained a delegated capability. That state
   // should be tracked by the browser, and messages from remote hosts already

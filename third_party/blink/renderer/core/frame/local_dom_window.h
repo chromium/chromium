@@ -35,7 +35,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/public/common/frame/delegated_capability_request_token.h"
 #include "third_party/blink/public/common/frame/history_user_activation_state.h"
-#include "third_party/blink/public/common/metrics/post_message_counter.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -644,10 +643,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // this document, to avoid reporting duplicates. The value stored comes
   // from |DocumentPolicyViolationReport::MatchId()|.
   mutable HashSet<unsigned> document_policy_violation_reports_sent_;
-
-  // Tracks metrics related to postMessage usage.
-  // TODO(crbug.com/1159586): Remove when no longer needed.
-  PostMessageCounter post_message_counter_;
 
   // The storage key for this LocalDomWindow.
   BlinkStorageKey storage_key_;
