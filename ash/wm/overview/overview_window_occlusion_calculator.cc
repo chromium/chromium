@@ -30,6 +30,11 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeWillStart() {
     return;
   }
   calculator_.emplace();
+  // Compute initial occlusion state of all desk's windows before occlusion
+  // calculations are paused at the end of this method. Without this, the
+  // occlusion state will be unavailable when the desk's `DeskPreviewView`
+  // is built between now and the enter-overview animation's completion.
+  ComputeOcclusionStateForAllDesks();
   aura::Window::Windows active_desk_containers;
   for (const auto& root_window : Shell::GetAllRootWindows()) {
     active_desk_containers.push_back(
@@ -44,10 +49,15 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeWillStart() {
   // windows before they're transformed, it's important to snapshot their
   // occlusion states here before the transformations begin.
   calculator_->SnapshotOcclusionStateForWindows(active_desk_containers);
-  // TODO(esum): Pause occlusion calculations here until the "enter overview"
-  // animation is complete. It's causing lots of computations within
-  // `WindowOcclusionTracker` that have no ultimate user-facing effect and costs
-  // ~10 milliseconds of latency when entering overview.
+  // Entering overview causes lots of occlusion computations that aren't needed
+  // and costs ~10 milliseconds of latency on low-end devices. Occlusion
+  // calculations can resume after the animation is complete.
+  enter_overview_pause_ = calculator_->Pause();
+}
+
+void OverviewWindowOcclusionCalculator::OnOverviewModeStartingAnimationComplete(
+    bool canceled) {
+  enter_overview_pause_.reset();
 }
 
 void OverviewWindowOcclusionCalculator::OnOverviewModeEnding(
@@ -56,7 +66,26 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeEnding(
   // of occlusion calculations and changes. These are unnecessary since the desk
   // bar is going to be destroyed imminently, and they slow down overview exit
   // so the calculator is destroyed early here.
-  calculator_.reset();
+  if (calculator_) {
+    calculator_->RemoveObserver(this);
+    calculator_.reset();
+  }
+}
+
+void OverviewWindowOcclusionCalculator::ComputeOcclusionStateForAllDesks() {
+  aura::Window::Windows all_desk_containers;
+  for (const auto& root_window : Shell::GetAllRootWindows()) {
+    for (const auto& desk : DesksController::Get()->desks()) {
+      all_desk_containers.push_back(desk->GetDeskContainerForRoot(root_window));
+    }
+  }
+  CHECK(calculator_);
+  // `AddObserver()` is just a way of getting the the `calculator_` to do an
+  // initial round of occlusion calculations for all desks (while forcing
+  // inactive desks to be visible internally) and caching the result for future
+  // calls to `GetOcclusionState()`. This class does not actually care about
+  // future changes, so `OnWindowOcclusionChanged()` is intentionally a no-op.
+  calculator_->AddObserver(all_desk_containers, this);
 }
 
 }  // namespace ash

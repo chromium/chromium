@@ -90,6 +90,8 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
                    Observer* observer);
 
   // Removes `observer`; this is a no-op if `observer` has not been added.
+  // Afterwards, `GetOcclusionState()` will still be accurate for the windows
+  // that the `observer` was tracking.
   void RemoveObserver(Observer* observer);
 
   // Internally records a snapshot of the occlusion state for all
@@ -105,6 +107,11 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
   // `OnWindowOcclusionChanged()` calls).
   void SnapshotOcclusionStateForWindows(
       const aura::Window::Windows& parent_windows_to_snapshot);
+
+  // Temporarily pauses all calculations for the duration of the returned
+  // object. `GetOcclusionState()` can still be called while paused; the result
+  // may just not be up-to-date until the `ScopedPause` is destroyed.
+  std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause> Pause();
 
   base::WeakPtr<WindowOcclusionCalculator> AsWeakPtr();
 

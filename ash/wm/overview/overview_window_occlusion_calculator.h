@@ -20,7 +20,9 @@ class OverviewController;
 // Owns the `WindowOcclusionCalculator` used during overview mode sessions.
 // Responsible for creating and destroying it at the start and end of each
 // session.
-class ASH_EXPORT OverviewWindowOcclusionCalculator : public OverviewObserver {
+class ASH_EXPORT OverviewWindowOcclusionCalculator
+    : public OverviewObserver,
+      public WindowOcclusionCalculator::Observer {
  public:
   explicit OverviewWindowOcclusionCalculator(
       OverviewController* overview_controller);
@@ -38,9 +40,18 @@ class ASH_EXPORT OverviewWindowOcclusionCalculator : public OverviewObserver {
  private:
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
+  void OnOverviewModeStartingAnimationComplete(bool canceled) override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
 
+  // WindowOcclusionCalculator::Observer:
+  // Intentionally a no-op. See comments in implementation file.
+  void OnWindowOcclusionChanged(aura::Window* window) override {}
+
+  void ComputeOcclusionStateForAllDesks();
+
   std::optional<WindowOcclusionCalculator> calculator_;
+  std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
+      enter_overview_pause_;
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_controller_observation_{this};
 };

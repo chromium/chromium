@@ -186,6 +186,12 @@ void WindowOcclusionCalculator::SnapshotOcclusionStateForWindows(
   }
 }
 
+std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
+WindowOcclusionCalculator::Pause() {
+  return std::make_unique<aura::WindowOcclusionTracker::ScopedPause>(
+      &occlusion_tracker_);
+}
+
 base::WeakPtr<WindowOcclusionCalculator>
 WindowOcclusionCalculator::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
