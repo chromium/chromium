@@ -6734,12 +6734,15 @@ chromium-metrics-reviews@google.com.
     fetch and then show this data.
 
     This histogram is split by different variants. The &quot;No Delay&quot;
-    variant is the raw query rate, while the 15/30 second delay variants are to
+    variant is the raw query rate, while the other delay variants are to
     experiment with throttling, where the metric will not be recorded more than
-    once within any single 15/30 second time span.
+    once within any single 15/30 second or 5/15/30 minute time span.
   </summary>
   <token key="Delay">
+    <variant name="5MinuteDelay" summary="5 Minute Delay"/>
+    <variant name="15MinuteDelay" summary="15 Minute Delay"/>
     <variant name="15SecondDelay" summary="15 Second Delay"/>
+    <variant name="30MinuteDelay" summary="30 Minute Delay"/>
     <variant name="30SecondDelay" summary="30 Second Delay"/>
     <variant name="NoDelay" summary="No Delay"/>
   </token>

@@ -54,7 +54,10 @@ class PostLoginGlanceablesMetricsRecorderTest : public AshTestBase {
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource source,
       int no_delay_sample_count,
       int fifteen_second_delay_sample_count,
-      int thirty_second_delay_sample_count) {
+      int thirty_second_delay_sample_count,
+      int five_minute_delay_sample_count,
+      int fifteen_minute_delay_sample_count,
+      int thirty_minute_delay_sample_count) {
     histogram_tester_->ExpectBucketCount(
         "Ash.PostLoginGlanceables.HypotheticalFetchEvent.NoDelay", source,
         /*expected_bucket_count=*/no_delay_sample_count);
@@ -64,6 +67,15 @@ class PostLoginGlanceablesMetricsRecorderTest : public AshTestBase {
     histogram_tester_->ExpectBucketCount(
         "Ash.PostLoginGlanceables.HypotheticalFetchEvent.30SecondDelay", source,
         /*expected_bucket_count=*/thirty_second_delay_sample_count);
+    histogram_tester_->ExpectBucketCount(
+        "Ash.PostLoginGlanceables.HypotheticalFetchEvent.5MinuteDelay", source,
+        /*expected_bucket_count=*/five_minute_delay_sample_count);
+    histogram_tester_->ExpectBucketCount(
+        "Ash.PostLoginGlanceables.HypotheticalFetchEvent.15MinuteDelay", source,
+        /*expected_bucket_count=*/fifteen_minute_delay_sample_count);
+    histogram_tester_->ExpectBucketCount(
+        "Ash.PostLoginGlanceables.HypotheticalFetchEvent.30MinuteDelay", source,
+        /*expected_bucket_count=*/thirty_minute_delay_sample_count);
   }
 
  private:
@@ -77,7 +89,10 @@ TEST_F(PostLoginGlanceablesMetricsRecorderTest, OverviewFetch) {
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kOverview,
       /*no_delay_sample_count=*/1,
       /*fifteen_second_delay_sample_count=*/1,
-      /*thirty_second_delay_sample_count=*/1);
+      /*thirty_second_delay_sample_count=*/1,
+      /*five_minute_delay_sample_count=*/1,
+      /*fifteen_minute_delay_sample_count=*/1,
+      /*thirty_minute_delay_sample_count=*/1);
 
   task_environment()->FastForwardBy(base::Seconds(12));
   ToggleOverview();
@@ -86,7 +101,10 @@ TEST_F(PostLoginGlanceablesMetricsRecorderTest, OverviewFetch) {
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kOverview,
       /*no_delay_sample_count=*/2,
       /*fifteen_second_delay_sample_count=*/1,
-      /*thirty_second_delay_sample_count=*/1);
+      /*thirty_second_delay_sample_count=*/1,
+      /*five_minute_delay_sample_count=*/1,
+      /*fifteen_minute_delay_sample_count=*/1,
+      /*thirty_minute_delay_sample_count=*/1);
 
   task_environment()->FastForwardBy(base::Seconds(12));
   ToggleOverview();
@@ -95,7 +113,10 @@ TEST_F(PostLoginGlanceablesMetricsRecorderTest, OverviewFetch) {
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kOverview,
       /*no_delay_sample_count=*/3,
       /*fifteen_second_delay_sample_count=*/2,
-      /*thirty_second_delay_sample_count=*/1);
+      /*thirty_second_delay_sample_count=*/1,
+      /*five_minute_delay_sample_count=*/1,
+      /*fifteen_minute_delay_sample_count=*/1,
+      /*thirty_minute_delay_sample_count=*/1);
 
   task_environment()->FastForwardBy(base::Seconds(12));
   ToggleOverview();
@@ -104,7 +125,45 @@ TEST_F(PostLoginGlanceablesMetricsRecorderTest, OverviewFetch) {
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kOverview,
       /*no_delay_sample_count=*/4,
       /*fifteen_second_delay_sample_count=*/2,
-      /*thirty_second_delay_sample_count=*/2);
+      /*thirty_second_delay_sample_count=*/2,
+      /*five_minute_delay_sample_count=*/1,
+      /*fifteen_minute_delay_sample_count=*/1,
+      /*thirty_minute_delay_sample_count=*/1);
+
+  task_environment()->FastForwardBy(base::Minutes(10));
+  ToggleOverview();
+
+  ExpectBucketCounts(
+      PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kOverview,
+      /*no_delay_sample_count=*/5,
+      /*fifteen_second_delay_sample_count=*/3,
+      /*thirty_second_delay_sample_count=*/3,
+      /*five_minute_delay_sample_count=*/2,
+      /*fifteen_minute_delay_sample_count=*/1,
+      /*thirty_minute_delay_sample_count=*/1);
+  task_environment()->FastForwardBy(base::Minutes(10));
+  ToggleOverview();
+
+  ExpectBucketCounts(
+      PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kOverview,
+      /*no_delay_sample_count=*/6,
+      /*fifteen_second_delay_sample_count=*/4,
+      /*thirty_second_delay_sample_count=*/4,
+      /*five_minute_delay_sample_count=*/3,
+      /*fifteen_minute_delay_sample_count=*/2,
+      /*thirty_minute_delay_sample_count=*/1);
+
+  task_environment()->FastForwardBy(base::Minutes(20));
+  ToggleOverview();
+
+  ExpectBucketCounts(
+      PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kOverview,
+      /*no_delay_sample_count=*/7,
+      /*fifteen_second_delay_sample_count=*/5,
+      /*thirty_second_delay_sample_count=*/5,
+      /*five_minute_delay_sample_count=*/4,
+      /*fifteen_minute_delay_sample_count=*/3,
+      /*thirty_minute_delay_sample_count=*/2);
 }
 
 TEST_F(PostLoginGlanceablesMetricsRecorderTest, FullRestore) {
@@ -112,7 +171,10 @@ TEST_F(PostLoginGlanceablesMetricsRecorderTest, FullRestore) {
                          kPostLoginFullRestore,
                      /*no_delay_sample_count=*/0,
                      /*fifteen_second_delay_sample_count=*/0,
-                     /*thirty_second_delay_sample_count=*/0);
+                     /*thirty_second_delay_sample_count=*/0,
+                     /*five_minute_delay_sample_count=*/0,
+                     /*fifteen_minute_delay_sample_count=*/0,
+                     /*thirty_minute_delay_sample_count=*/0);
 
   Shell::Get()
       ->post_login_glanceables_metrics_reporter()
@@ -122,7 +184,10 @@ TEST_F(PostLoginGlanceablesMetricsRecorderTest, FullRestore) {
                          kPostLoginFullRestore,
                      /*no_delay_sample_count=*/1,
                      /*fifteen_second_delay_sample_count=*/1,
-                     /*thirty_second_delay_sample_count=*/1);
+                     /*thirty_second_delay_sample_count=*/1,
+                     /*five_minute_delay_sample_count=*/1,
+                     /*fifteen_minute_delay_sample_count=*/1,
+                     /*thirty_minute_delay_sample_count=*/1);
 }
 
 class PostLoginGlanceablesMetricsRecorderCalendarTest
@@ -181,7 +246,10 @@ class PostLoginGlanceablesMetricsRecorderCalendarTest
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource source,
       int no_delay_sample_count,
       int fifteen_second_delay_sample_count,
-      int thirty_second_delay_sample_count) {
+      int thirty_second_delay_sample_count,
+      int five_minute_delay_sample_count,
+      int fifteen_minute_delay_sample_count,
+      int thirty_minute_delay_sample_count) {
     histogram_tester_->ExpectBucketCount(
         "Ash.PostLoginGlanceables.HypotheticalFetchEvent.NoDelay", source,
         /*expected_bucket_count=*/no_delay_sample_count);
@@ -191,6 +259,15 @@ class PostLoginGlanceablesMetricsRecorderCalendarTest
     histogram_tester_->ExpectBucketCount(
         "Ash.PostLoginGlanceables.HypotheticalFetchEvent.30SecondDelay", source,
         /*expected_bucket_count=*/thirty_second_delay_sample_count);
+    histogram_tester_->ExpectBucketCount(
+        "Ash.PostLoginGlanceables.HypotheticalFetchEvent.5MinuteDelay", source,
+        /*expected_bucket_count=*/five_minute_delay_sample_count);
+    histogram_tester_->ExpectBucketCount(
+        "Ash.PostLoginGlanceables.HypotheticalFetchEvent.15MinuteDelay", source,
+        /*expected_bucket_count=*/fifteen_minute_delay_sample_count);
+    histogram_tester_->ExpectBucketCount(
+        "Ash.PostLoginGlanceables.HypotheticalFetchEvent.30MinuteDelay", source,
+        /*expected_bucket_count=*/thirty_minute_delay_sample_count);
   }
 
  private:
@@ -211,7 +288,10 @@ TEST_P(PostLoginGlanceablesMetricsRecorderCalendarTest, CalendarFetch) {
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kCalendar,
       /*no_delay_sample_count=*/4,
       /*fifteen_second_delay_sample_count=*/1,
-      /*thirty_second_delay_sample_count=*/1);
+      /*thirty_second_delay_sample_count=*/1,
+      /*five_minute_delay_sample_count=*/1,
+      /*fifteen_minute_delay_sample_count=*/1,
+      /*thirty_minute_delay_sample_count=*/1);
 
   task_environment()->FastForwardBy(base::Seconds(12));
   ToggleDateTray();
@@ -220,7 +300,10 @@ TEST_P(PostLoginGlanceablesMetricsRecorderCalendarTest, CalendarFetch) {
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kCalendar,
       /*no_delay_sample_count=*/8,
       /*fifteen_second_delay_sample_count=*/1,
-      /*thirty_second_delay_sample_count=*/1);
+      /*thirty_second_delay_sample_count=*/1,
+      /*five_minute_delay_sample_count=*/1,
+      /*fifteen_minute_delay_sample_count=*/1,
+      /*thirty_minute_delay_sample_count=*/1);
 
   task_environment()->FastForwardBy(base::Seconds(12));
   ToggleDateTray();
@@ -229,7 +312,10 @@ TEST_P(PostLoginGlanceablesMetricsRecorderCalendarTest, CalendarFetch) {
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kCalendar,
       /*no_delay_sample_count=*/12,
       /*fifteen_second_delay_sample_count=*/2,
-      /*thirty_second_delay_sample_count=*/1);
+      /*thirty_second_delay_sample_count=*/1,
+      /*five_minute_delay_sample_count=*/1,
+      /*fifteen_minute_delay_sample_count=*/1,
+      /*thirty_minute_delay_sample_count=*/1);
 
   task_environment()->FastForwardBy(base::Seconds(12));
   ToggleDateTray();
@@ -238,7 +324,34 @@ TEST_P(PostLoginGlanceablesMetricsRecorderCalendarTest, CalendarFetch) {
       PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kCalendar,
       /*no_delay_sample_count=*/16,
       /*fifteen_second_delay_sample_count=*/2,
-      /*thirty_second_delay_sample_count=*/2);
+      /*thirty_second_delay_sample_count=*/2,
+      /*five_minute_delay_sample_count=*/1,
+      /*fifteen_minute_delay_sample_count=*/1,
+      /*thirty_minute_delay_sample_count=*/1);
+
+  task_environment()->FastForwardBy(base::Minutes(20));
+  ToggleDateTray();
+
+  ExpectBucketCounts(
+      PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kCalendar,
+      /*no_delay_sample_count=*/20,
+      /*fifteen_second_delay_sample_count=*/3,
+      /*thirty_second_delay_sample_count=*/3,
+      /*five_minute_delay_sample_count=*/2,
+      /*fifteen_minute_delay_sample_count=*/2,
+      /*thirty_minute_delay_sample_count=*/1);
+
+  task_environment()->FastForwardBy(base::Minutes(20));
+  ToggleDateTray();
+
+  ExpectBucketCounts(
+      PostLoginGlanceablesMetricsRecorder::DataFetchEventSource::kCalendar,
+      /*no_delay_sample_count=*/24,
+      /*fifteen_second_delay_sample_count=*/4,
+      /*thirty_second_delay_sample_count=*/4,
+      /*five_minute_delay_sample_count=*/3,
+      /*fifteen_minute_delay_sample_count=*/3,
+      /*thirty_minute_delay_sample_count=*/2);
 }
 
 }  // namespace ash

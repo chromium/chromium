@@ -34,27 +34,31 @@ void PostLoginGlanceablesMetricsRecorder::RecordHypotheticalFetchEvent(
   base::UmaHistogramEnumeration(
       "Ash.PostLoginGlanceables.HypotheticalFetchEvent.NoDelay", source);
 
-  if (!fifteen_second_timestamp_.has_value() ||
-      (base::Time::Now() - fifteen_second_timestamp_.value()) >
-          base::Seconds(15)) {
-    // Make sure that it has been at least 15 seconds since the previous
-    // time this metric was recorded.
-    base::UmaHistogramEnumeration(
-        "Ash.PostLoginGlanceables.HypotheticalFetchEvent.15SecondDelay",
-        source);
-    fifteen_second_timestamp_ = base::Time::Now();
-  }
+  auto MaybeRecordUsingTimestamp =
+      [source](std::optional<base::Time>& timestamp, base::TimeDelta time_delay,
+               const char* histogram_name) {
+        if (!timestamp.has_value() ||
+            base::Time::Now() - timestamp.value() > time_delay) {
+          base::UmaHistogramEnumeration(histogram_name, source);
+          timestamp = base::Time::Now();
+        }
+      };
 
-  if (!thirty_second_timestamp_.has_value() ||
-      (base::Time::Now() - thirty_second_timestamp_.value()) >
-          base::Seconds(30)) {
-    // Make sure that it has been at least 30 seconds since the previous
-    // time this metric was recorded.
-    base::UmaHistogramEnumeration(
-        "Ash.PostLoginGlanceables.HypotheticalFetchEvent.30SecondDelay",
-        source);
-    thirty_second_timestamp_ = base::Time::Now();
-  }
+  MaybeRecordUsingTimestamp(
+      fifteen_second_timestamp_, base::Seconds(15),
+      "Ash.PostLoginGlanceables.HypotheticalFetchEvent.15SecondDelay");
+  MaybeRecordUsingTimestamp(
+      thirty_second_timestamp_, base::Seconds(30),
+      "Ash.PostLoginGlanceables.HypotheticalFetchEvent.30SecondDelay");
+  MaybeRecordUsingTimestamp(
+      five_minute_timestamp_, base::Minutes(5),
+      "Ash.PostLoginGlanceables.HypotheticalFetchEvent.5MinuteDelay");
+  MaybeRecordUsingTimestamp(
+      fifteen_minute_timestamp_, base::Minutes(15),
+      "Ash.PostLoginGlanceables.HypotheticalFetchEvent.15MinuteDelay");
+  MaybeRecordUsingTimestamp(
+      thirty_minute_timestamp_, base::Minutes(30),
+      "Ash.PostLoginGlanceables.HypotheticalFetchEvent.30MinuteDelay");
 }
 
 }  // namespace ash
