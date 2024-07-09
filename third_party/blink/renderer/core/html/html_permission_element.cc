@@ -1079,20 +1079,38 @@ bool HTMLPermissionElement::IsStyleValid() {
     return false;
   }
 
-  if (GetComputedStyle()->ComputedFontSize() <
-      FontSizeFunctions::FontSizeForKeyword(
-          &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kSmall),
-          GetComputedStyle()->GetFontDescription().IsMonospace())) {
+  // Compute the font size but reverse browser zoom as it should not affect font
+  // size validation. The same font size value should always pass regardless of
+  // what the user's browser zoom is.
+  // TODO(crbug.com/352046941): This does not currently distinguish between
+  // browser zoom and cross-origin iframe zoom (set via CSS).
+  float font_size_dip = GetComputedStyle()->ComputedFontSize() /
+                        GetComputedStyle()->EffectiveZoom();
+
+  float css_zoom_factor =
+      GetComputedStyle()->EffectiveZoom() /
+      GetDocument().GetFrame()->LocalFrameRoot().LayoutZoomFactor();
+
+  // The min size is what `font-size:small` looks like when rendered in the
+  // document element of the local root frame, without any intervening CSS
+  // zoom factors applied.
+  float min_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
+      &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kSmall),
+      GetComputedStyle()->GetFontDescription().IsMonospace());
+  if (font_size_dip < min_font_size_dip / css_zoom_factor) {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too small",
                        GetType().Utf8().c_str()));
     return false;
   }
 
-  if (GetComputedStyle()->ComputedFontSize() >
-      FontSizeFunctions::FontSizeForKeyword(
-          &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kXxxLarge),
-          GetComputedStyle()->GetFontDescription().IsMonospace())) {
+  // The max size is what `font-size:xxxlarge` looks like when rendered in the
+  // document element of the local root frame, without any intervening CSS
+  // zoom factors applied.
+  float max_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
+      &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kXxxLarge),
+      GetComputedStyle()->GetFontDescription().IsMonospace());
+  if (font_size_dip > max_font_size_dip / css_zoom_factor) {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too large",
                        GetType().Utf8().c_str()));
