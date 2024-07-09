@@ -2072,9 +2072,8 @@ AuthenticatorGPMLockedPinSheetModel::AuthenticatorGPMLockedPinSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
-  // TODO(b/348402866): Add correct illustrations.
-  lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
-                                IDR_WEBAUTHN_PASSKEY_DARK);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PIN_LOCKED_LIGHT,
+                                IDR_WEBAUTHN_GPM_PIN_LOCKED_DARK);
 }
 
 AuthenticatorGPMLockedPinSheetModel::~AuthenticatorGPMLockedPinSheetModel() =
