@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
@@ -80,6 +81,15 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
                         progress_screen.setupView(view.getScreenHolder());
                         view.setNextScreen(progress_screen);
                         model.set(SCREEN_VIEW_MODEL, progress_screen.getModel());
+                        break;
+                    }
+                case ERROR_SCREEN:
+                    {
+                        FacilitatedPaymentsSequenceView error_screen =
+                                new FacilitatedPaymentsErrorScreen();
+                        error_screen.setupView(view.getScreenHolder());
+                        view.setNextScreen(error_screen);
+                        model.set(SCREEN_VIEW_MODEL, error_screen.getModel());
                         break;
                     }
                 default:

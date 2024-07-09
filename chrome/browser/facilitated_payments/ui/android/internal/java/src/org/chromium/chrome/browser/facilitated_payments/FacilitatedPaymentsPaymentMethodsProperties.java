@@ -71,6 +71,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         int FOP_SELECTOR = 1;
         // The screen showing a progress spinner.
         int PROGRESS_SCREEN = 2;
+        // The screen showing an error message.
+        int ERROR_SCREEN = 3;
     }
 
     /**

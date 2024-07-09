@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
@@ -141,7 +142,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                                             BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
                     runOnUiThreadBlocking(() -> mModel.set(VISIBLE_STATE, SHOWN));
                 });
-
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         // Verify that the bottom sheet is opened, and shows the view.
@@ -265,7 +265,24 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         // Verify that the {@link ProgressBar} is shown.
         assertThat(
-                viewElementExists((ViewGroup) mView.getContentView(), ProgressBar.class), is(true));
+                containsViewOfClass((ViewGroup) mView.getContentView(), ProgressBar.class),
+                is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testErrorScreen() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, ERROR_SCREEN);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Verify that the error screen is shown.
+        assertThat(
+                containsViewWithId((ViewGroup) mView.getContentView(), R.id.error_screen),
+                is(true));
     }
 
     @Test
@@ -299,7 +316,8 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         // Verify that the progress screen is shown.
         assertThat(mView.getContentView().isShown(), is(true));
         assertThat(
-                viewElementExists((ViewGroup) mView.getContentView(), ProgressBar.class), is(true));
+                containsViewOfClass((ViewGroup) mView.getContentView(), ProgressBar.class),
+                is(true));
     }
 
     private PropertyModel createBankAccountModel(BankAccount bankAccount) {
@@ -318,14 +336,29 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         return getBankAccounts().getChildAt(index).findViewById(R.id.bank_account_summary);
     }
 
-    private static boolean viewElementExists(ViewGroup parent, Class<?> clazz) {
+    private static boolean containsViewOfClass(ViewGroup parent, Class<?> clazz) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
             if (clazz.isInstance(child)) {
                 return true;
             }
             if (child instanceof ViewGroup) {
-                if (viewElementExists((ViewGroup) child, clazz)) {
+                if (containsViewOfClass((ViewGroup) child, clazz)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsViewWithId(ViewGroup parent, int id) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child.getId() == id) {
+                return true;
+            }
+            if (child instanceof ViewGroup) {
+                if (containsViewWithId((ViewGroup) child, id)) {
                     return true;
                 }
             }

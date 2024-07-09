@@ -1374,7 +1374,8 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 }
 
 // Test that the puchase action is invoked after receiving a success response
-// from the `FacilitatedPaymentsNetworkInterface::InitiatePayment` call.
+// from the `FacilitatedPaymentsNetworkInterface::InitiatePayment` call. The
+// bottom sheet is also closed before invoking purchase action.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered) {
   ON_CALL(*client_, GetCoreAccountInfo)
