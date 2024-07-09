@@ -470,7 +470,19 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
       }
 
       if (!(policy.RestrictCoreSharing)) {
-        return SBOX_TEST_FAILED;
+        // ERROR_NOT_SUPPORTED is returned if the OS doesn't support this
+        // mitigation policy.
+        // If SetProcessMitigationPolicy was able to set the policy then the
+        // test is marked failure since this test sets
+        // |MITIGATION_RESTRICT_CORE_SHARING| which should have enabled the
+        // policy.
+        policy.RestrictCoreSharing = true;
+        bool is_core_sharing_set_successful = ::SetProcessMitigationPolicy(
+            ProcessSideChannelIsolationPolicy, &policy, sizeof(policy));
+        if (is_core_sharing_set_successful ||
+            ::GetLastError() != ERROR_NOT_SUPPORTED) {
+          return SBOX_TEST_FAILED;
+        }
       }
 
       break;
@@ -1367,13 +1379,19 @@ TEST(ProcessMitigationsTest, FsctlDisabled) {
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 }
 
-// This test validates that setting the MITIGATION_RESTRICT_CORE_SHARING will
+// This test validates setting restrict_core_sharing policy which will
 // make sure process threads never share a core with threads outside it's
 // security domain.
-// Note: this should only be run on a physical device OR a VM that has the
-// hypervisorschedulertype set to "core"
+// The policy setting can fail on device which doesn't have the right scheduler
+// as described in
+// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_
+// mitigation_side_channel_isolation_policy
+// This test passes if we are able to set the policy or the policy set fails
+// with ERROR_NOT_SUPPORTED due to incorrect scheduler type.
 TEST(ProcessMitigationsTest, RestrictCoreSharing) {
-  if (base::win::GetVersion() < base::win::Version::WIN11_23H2) {
+  // This feature is enabled starting with build number 25922.
+  const auto& version = base::win::OSInfo::GetInstance()->version_number();
+  if (version.build < 25922) {
     return;
   }
 
