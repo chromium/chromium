@@ -15,8 +15,6 @@ const char* PageNode::ToString(PageNode::EmbeddingType embedding_type) {
       return "kInvalid";
     case PageNode::EmbeddingType::kGuestView:
       return "kGuestView";
-    case PageNode::EmbeddingType::kPortal:
-      return "kPortal";
   }
   NOTREACHED_IN_MIGRATION();
 }

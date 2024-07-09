@@ -649,8 +649,7 @@ void FrameNodeImpl::SeverPageRelationshipsAndMaybeReparent() {
   // We also reparent related pages to this frame's parent to maintain the
   // relationship between the distinct frame trees for bookkeeping. For the
   // relationship to be finally severed one of the frame trees must completely
-  // disappear, or it must be explicitly severed (this can happen with
-  // portals).
+  // disappear.
   NodeSet opened_page_nodes_copy = opened_page_nodes_;
   for (const Node* opened_page_node : opened_page_nodes_copy) {
     PageNodeImpl* opened_page = PageNodeImpl::FromNode(opened_page_node);

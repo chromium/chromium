@@ -651,7 +651,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
 
   // You can't be an embedder for your own frame tree.
   EXPECT_DCHECK_DEATH(pageA->SetEmbedderFrameNodeAndEmbeddingType(
-      frameA1.get(), EmbeddingType::kPortal));
+      frameA1.get(), EmbeddingType::kGuestView));
 
   // You can't set a null embedder or an invalid embedded type.
   EXPECT_DCHECK_DEATH(pageB->SetEmbedderFrameNodeAndEmbeddingType(

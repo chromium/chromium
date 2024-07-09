@@ -40,8 +40,7 @@ enum class PageType {
 };
 
 // A PageNode represents the root of a FrameTree, or equivalently a WebContents.
-// These may correspond to normal tabs, WebViews, Portals, Chrome Apps or
-// Extensions.
+// These may correspond to normal tabs, WebViews, Chrome Apps or Extensions.
 class PageNode : public TypedNode<PageNode> {
  public:
   using NodeSet = base::flat_set<const Node*>;
@@ -58,9 +57,7 @@ class PageNode : public TypedNode<PageNode> {
     kInvalid,
     // This page is a guest view. This can be many things (<webview>, <appview>,
     // etc) but is backed by the same inner/outer WebContents mechanism.
-    kGuestView,
-    // This page is a portal.
-    kPortal,
+    kGuestView
   };
 
   // Returns a string for a PageNode::EmbeddingType enumeration.
@@ -265,8 +262,8 @@ class PageNodeObserver : public base::CheckedObserver {
 
   // Invoked when this page has been assigned an embedder, had the embedder
   // change, or had the embedder removed. This can happen if a page is opened
-  // via webviews, guestviews, portals, etc, or when that relationship is
-  // subsequently severed or reparented.
+  // via webviews, guestviews etc, or when that relationship is subsequently
+  // severed or reparented.
   virtual void OnEmbedderFrameNodeChanged(
       const PageNode* page_node,
       const FrameNode* previous_embedder,

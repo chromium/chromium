@@ -97,7 +97,7 @@ class FrameNode : public TypedNode<FrameNode> {
 
   // Returns the document owning the frame this RenderFrameHost is located in,
   // which will either be a parent (for <iframe>s) or outer document (for
-  // <fencedframe>, <portal> or an embedder (e.g. GuestViews)).
+  // <fencedframe> or an embedder (e.g. GuestViews)).
   // This method is equivalent to
   // RenderFrameHost::GetParentOrOuterDocumentOrEmbedder().
   virtual const FrameNode* GetParentOrOuterDocumentOrEmbedder() const = 0;
@@ -131,7 +131,7 @@ class FrameNode : public TypedNode<FrameNode> {
   //
   // Note that a frame can be considered a main frame without being the
   // outermost frame node. This can happen if this is the main frame of an inner
-  // WebContents (Portal or Guest view), or if this is a <fencedframe>.
+  // WebContents (Guest view), or if this is a <fencedframe>.
   virtual bool IsMainFrame() const = 0;
 
   // Returns the set of child frames associated with this frame.
