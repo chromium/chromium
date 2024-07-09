@@ -940,24 +940,21 @@ bool SharedContextState::OnMemoryDump(
       raster::DumpGrMemoryStatistics(gr_context(), pmd, std::nullopt);
     }
   } else if (graphite_context()) {
-    // TODO(https://crbug.com/337985503): There's no Skia API to get the total
-    // total resource size including unbudgeted (client) allocations so just
-    // emit the per-resource stats for non-background dumps for now. After we
-    // add a Skia API to get total resource allocation size, we can add that to
-    // background dumps which are emitted to UMA.
-    if (!background) {
+    // NOTE: We cannot dump the memory statistics of the Viz compositor
+    // recorder here because it can be called only on the Viz thread.
+    // TODO(https://crbug.com/330806170): Wire up SkiaOutputSurfaceImpl as a
+    // MemoryDumpProvider and dump the statistics of the Viz compositor
+    // recorder there.
+    if (background) {
+      raster::DumpBackgroundGraphiteMemoryStatistics(
+          graphite_context(), gpu_main_graphite_recorder(), pmd);
+    } else {
       // Note: The image provider's allocations are already counted in Skia's
       // unbudgeted (client) resource allocations so we skip emitted them here.
       skia::SkiaTraceMemoryDumpImpl trace_memory_dump(args.level_of_detail,
                                                       pmd);
       graphite_context()->dumpMemoryStatistics(&trace_memory_dump);
       gpu_main_graphite_recorder()->dumpMemoryStatistics(&trace_memory_dump);
-
-      // NOTE: We cannot dump the memory statistics of the Viz compositor
-      // recorder here because it can be called only on the Viz thread.
-      // TODO(https://crbug.com/330806170): Wire up SkiaOutputSurfaceImpl as a
-      // MemoryDumpProvider and dump the statistics of the Viz compositor
-      // recorder there.
     }
   }
 
