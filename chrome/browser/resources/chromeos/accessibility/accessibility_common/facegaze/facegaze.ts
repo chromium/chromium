@@ -5,10 +5,10 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
-import {FaceLandmarkerResultWithLatency, WebCamFaceLandmarker} from './camera_stream.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
+import {FaceLandmarkerResultWithLatency, WebCamFaceLandmarker} from './web_cam_face_landmarker.js';
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
