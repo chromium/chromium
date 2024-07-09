@@ -110,7 +110,7 @@ public class TrackingProtectionNoticeController {
     }
 
     private static boolean shouldShowNotice(TrackingProtectionBridge trackingProtectionBridge) {
-        return trackingProtectionBridge.getRequiredNotice() != NoticeType.NONE;
+        return trackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP) != NoticeType.NONE;
     }
 
     /**
@@ -162,7 +162,7 @@ public class TrackingProtectionNoticeController {
         }
 
         if (getNoticeType() == NoticeType.MODE_B_SILENT_ONBOARDING) {
-            mTrackingProtectionBridge.noticeShown(getNoticeType());
+            mTrackingProtectionBridge.noticeShown(SurfaceType.BR_APP, getNoticeType());
             destroy();
             return;
         }
@@ -201,7 +201,9 @@ public class TrackingProtectionNoticeController {
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
                                     mTrackingProtectionBridge.noticeActionTaken(
-                                            getNoticeType(), NoticeAction.GOT_IT);
+                                            SurfaceType.BR_APP,
+                                            getNoticeType(),
+                                            NoticeAction.GOT_IT);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
                         .with(MessageBannerProperties.ON_DISMISSED, onNoticeDismissed())
@@ -215,7 +217,7 @@ public class TrackingProtectionNoticeController {
     private Callback<Boolean> onNoticeShown() {
         return (shown) -> {
             if (shown) {
-                mTrackingProtectionBridge.noticeShown(getNoticeType());
+                mTrackingProtectionBridge.noticeShown(SurfaceType.BR_APP, getNoticeType());
                 logNoticeControllerEvent(NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN);
             }
         };
@@ -226,7 +228,7 @@ public class TrackingProtectionNoticeController {
             switch (dismissReason) {
                 case DismissReason.GESTURE:
                     mTrackingProtectionBridge.noticeActionTaken(
-                            getNoticeType(), NoticeAction.CLOSED);
+                            SurfaceType.BR_APP, getNoticeType(), NoticeAction.CLOSED);
                     break;
                 case DismissReason.PRIMARY_ACTION:
                 case DismissReason.SECONDARY_ACTION:
@@ -239,7 +241,7 @@ public class TrackingProtectionNoticeController {
                     break;
                 default:
                     mTrackingProtectionBridge.noticeActionTaken(
-                            getNoticeType(), NoticeAction.OTHER);
+                            SurfaceType.BR_APP, getNoticeType(), NoticeAction.OTHER);
             }
         };
     }
@@ -341,11 +343,13 @@ public class TrackingProtectionNoticeController {
                     }
 
                     mTrackingProtectionBridge.noticeActionTaken(
+                            SurfaceType.BR_APP,
                             getNoticeType(),
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.SETTINGS);
                 } else if (clickedItemID == LEARN_MORE_ITEM_ID) {
                     openUrlInCct(TRACKING_PROTECTION_HELP_CENTER);
                     mTrackingProtectionBridge.noticeActionTaken(
+                            SurfaceType.BR_APP,
                             getNoticeType(),
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.LEARN_MORE);
                 }
@@ -369,7 +373,7 @@ public class TrackingProtectionNoticeController {
     }
 
     private @NoticeType int getNoticeType() {
-        return mTrackingProtectionBridge.getRequiredNotice();
+        return mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP);
     }
 
     public void destroy() {

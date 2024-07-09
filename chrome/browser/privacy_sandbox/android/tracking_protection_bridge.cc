@@ -10,27 +10,40 @@
 #include "chrome/browser/privacy_sandbox/android/jni_headers/TrackingProtectionBridge_jni.h"
 
 static jint JNI_TrackingProtectionBridge_GetRequiredNotice(JNIEnv* env,
-                                                           Profile* profile) {
+                                                           Profile* profile,
+                                                           jint surface) {
   return static_cast<int>(
       TrackingProtectionOnboardingFactory::GetForProfile(profile)
-          ->GetRequiredNotice());
+          ->GetRequiredNotice(
+              static_cast<
+                  privacy_sandbox::TrackingProtectionOnboarding::SurfaceType>(
+                  surface)));
 }
 
 static void JNI_TrackingProtectionBridge_NoticeShown(JNIEnv* env,
                                                      Profile* profile,
+                                                     jint surface,
                                                      jint noticeType) {
   return TrackingProtectionOnboardingFactory::GetForProfile(profile)
-      ->NoticeShown(static_cast<
-                    privacy_sandbox::TrackingProtectionOnboarding::NoticeType>(
-          noticeType));
+      ->NoticeShown(
+          static_cast<
+              privacy_sandbox::TrackingProtectionOnboarding::SurfaceType>(
+              surface),
+          static_cast<
+              privacy_sandbox::TrackingProtectionOnboarding::NoticeType>(
+              noticeType));
 }
 
 static void JNI_TrackingProtectionBridge_NoticeActionTaken(JNIEnv* env,
                                                            Profile* profile,
+                                                           jint surface,
                                                            jint noticeType,
                                                            jint action) {
   return TrackingProtectionOnboardingFactory::GetForProfile(profile)
       ->NoticeActionTaken(
+          static_cast<
+              privacy_sandbox::TrackingProtectionOnboarding::SurfaceType>(
+              surface),
           static_cast<
               privacy_sandbox::TrackingProtectionOnboarding::NoticeType>(
               noticeType),

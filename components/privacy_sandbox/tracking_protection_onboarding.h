@@ -78,6 +78,14 @@ class TrackingProtectionOnboarding : public KeyedService {
     kFull3PCDSilentOnboardingWithIPP,
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  enum class SurfaceType {
+    kDesktop = 0,
+    kBrApp = 1,
+    kAGACCT = 2,
+    kMaxValue = kAGACCT,
+  };
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // Enum value to indicate the state of onboarding on startup.
@@ -170,15 +178,18 @@ class TrackingProtectionOnboarding : public KeyedService {
   SilentOnboardingStatus GetSilentOnboardingStatus() const;
 
   // To be Called by UI code when the user has been shown the notice.
-  void NoticeShown(NoticeType notice_type);
+  void NoticeShown(SurfaceType surface, NoticeType notice_type);
 
   // To be called by UI code when the user has taken action on the notice.
-  void NoticeActionTaken(NoticeType notice_type, NoticeAction action);
+  void NoticeActionTaken(SurfaceType surface,
+                         NoticeType notice_type,
+                         NoticeAction action);
 
   // Called by UI code to determine what type of notice is required.
-  NoticeType GetRequiredNotice();
+  NoticeType GetRequiredNotice(SurfaceType surface);
 
-  bool ShouldRunUILogic();
+  // Called by UI code to determine if we should run the 3PCD UI logic.
+  bool ShouldRunUILogic(SurfaceType surface);
 
   // To be called by UI code when the user has taken action on the onboarding
   // notice.

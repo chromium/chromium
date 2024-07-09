@@ -191,6 +191,7 @@ TEST_F(EligibilityServiceTest, VersionChange_OnboardingPrefsReset) {
   onboarding_service_->MaybeMarkEligible();
   onboarding_service_->OnboardingNoticeShown();
   onboarding_service_->NoticeActionTaken(
+      privacy_sandbox::TrackingProtectionOnboarding::SurfaceType::kDesktop,
       privacy_sandbox::TrackingProtectionOnboarding::NoticeType::
           kModeBOnboarding,
       privacy_sandbox::TrackingProtectionOnboarding::NoticeAction::kGotIt);

@@ -15,17 +15,17 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
     private @NoticeType int mNoticeType;
 
     @Override
-    public void noticeShown(Profile profile, int noticeType) {
+    public void noticeShown(Profile profile, int surface, int noticeType) {
         mNoticeShown = true;
     }
 
     @Override
-    public void noticeActionTaken(Profile profile, int noticeType, int action) {
+    public void noticeActionTaken(Profile profile, int surface, int noticeType, int action) {
         mLastNoticeAction = action;
     }
 
     @Override
-    public @NoticeType int getRequiredNotice(Profile profile) {
+    public @NoticeType int getRequiredNotice(Profile profile, int surface) {
         return mNoticeType;
     }
 

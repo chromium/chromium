@@ -33,6 +33,8 @@ using ::privacy_sandbox::tracking_protection::
 using NoticeType = ::privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
 using NoticeAction =
     ::privacy_sandbox::TrackingProtectionOnboarding::NoticeAction;
+using SurfaceType =
+    ::privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
 
 class MockTrackingProtectionObserver
     : public TrackingProtectionOnboarding::Observer {
@@ -1072,7 +1074,8 @@ TEST_F(TrackingProtectionSilentOnboardingTest,
       static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
 
   // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
+                SurfaceType::kDesktop),
             NoticeType::kNone);
 }
 
@@ -1087,7 +1090,8 @@ TEST_F(TrackingProtectionSilentOnboardingTest,
       static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
 
   // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
+                SurfaceType::kDesktop),
             NoticeType::kModeBSilentOnboarding);
 }
 
@@ -1102,7 +1106,8 @@ TEST_F(TrackingProtectionSilentOnboardingTest,
       static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
 
   // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
+                SurfaceType::kDesktop),
             NoticeType::kNone);
 }
 

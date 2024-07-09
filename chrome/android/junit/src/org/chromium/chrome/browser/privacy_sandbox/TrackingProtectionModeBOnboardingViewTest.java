@@ -53,7 +53,7 @@ public class TrackingProtectionModeBOnboardingViewTest {
 
     @Test
     public void testShowNotice_Onboarding() {
-        when(mTrackingProtectionBridge.getRequiredNotice())
+        when(mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP))
                 .thenReturn(NoticeType.MODE_B_ONBOARDING);
         mView.showNotice(
                 mNoticeShownCallback, mNoticeDismissedCallback, mNoticePrimaryActionCallback);

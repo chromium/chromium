@@ -59,7 +59,7 @@ public class TrackingProtectionOnboardingControllerTest {
         when(mTab.isIncognito()).thenReturn(false); // Assume non-incognito tab
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mActivityTabProvider.get()).thenReturn(mTab);
-        when(mTrackingProtectionBridge.getRequiredNotice())
+        when(mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP))
                 .thenReturn(NoticeType.MODE_B_ONBOARDING);
         mController =
                 TrackingProtectionOnboardingController.create(
@@ -103,10 +103,11 @@ public class TrackingProtectionOnboardingControllerTest {
     public void testMaybeOnboard_SilentOnboarding_NoNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
                 .thenReturn(ConnectionSecurityLevel.SECURE);
-        when(mTrackingProtectionBridge.getRequiredNotice())
+        when(mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP))
                 .thenReturn(NoticeType.MODE_B_SILENT_ONBOARDING);
         mController.maybeOnboard(mTab, TrackingProtectionOnboardingType.MODE_B);
-        verify(mTrackingProtectionBridge).noticeShown(NoticeType.MODE_B_SILENT_ONBOARDING);
+        verify(mTrackingProtectionBridge)
+                .noticeShown(SurfaceType.BR_APP, NoticeType.MODE_B_SILENT_ONBOARDING);
         verify(mTrackingProtectionModeBOnboardingView, never()).showNotice(any(), any(), any());
     }
 }

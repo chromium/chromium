@@ -78,7 +78,8 @@ class TrackingProtectionModeBOnboardingView {
             Callback<Integer> noticeDismissedCallback,
             Supplier<Integer> noticePrimaryActioSupplier) {
         Resources resources = mContext.getResources();
-        int noticeType = mTrackingProtectionBridge.getRequiredNotice();
+        // TODO(crbug.com/341968245): pass in surface type through the constructor.
+        int noticeType = mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP);
         mMessage =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
@@ -175,7 +176,7 @@ class TrackingProtectionModeBOnboardingView {
         }
 
         private Delegate onClickDelegate() {
-            int noticeType = mTrackingProtectionBridge.getRequiredNotice();
+            int noticeType = mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP);
             return (clickedItem) -> {
                 int clickedItemID = clickedItem.get(ListMenuItemProperties.MENU_ITEM_ID);
 
@@ -197,13 +198,14 @@ class TrackingProtectionModeBOnboardingView {
                                 mContext, SingleCategorySettings.class, fragmentArguments);
                     }
 
-                    mTrackingProtectionBridge.noticeActionTaken(noticeType, NoticeAction.SETTINGS);
+                    mTrackingProtectionBridge.noticeActionTaken(
+                            SurfaceType.BR_APP, noticeType, NoticeAction.SETTINGS);
                 } else if (clickedItemID == LEARN_MORE_ITEM_ID) {
                     new CctHandler(mContext)
                             .prepareIntent(TRACKING_PROTECTION_HELP_CENTER)
                             .openUrlInCct();
                     mTrackingProtectionBridge.noticeActionTaken(
-                            noticeType, NoticeAction.LEARN_MORE);
+                            SurfaceType.BR_APP, noticeType, NoticeAction.LEARN_MORE);
                 }
 
                 mMessageDispatcher.dismissMessage(mMessage, DismissReason.SECONDARY_ACTION);

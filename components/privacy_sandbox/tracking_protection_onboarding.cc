@@ -489,7 +489,8 @@ void TrackingProtectionOnboarding::SilentOnboardingNoticeShown() {
   RecordSilentOnboardingDidNoticeShownOnboard(true);
 }
 
-void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {
+void TrackingProtectionOnboarding::NoticeShown(SurfaceType surface,
+                                               NoticeType notice_type) {
   switch (notice_type) {
     case NoticeType::kNone:
       return;
@@ -544,7 +545,8 @@ void TrackingProtectionOnboarding::OnboardingNoticeActionTaken(
       true);
 }
 
-void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
+void TrackingProtectionOnboarding::NoticeActionTaken(SurfaceType surface,
+                                                     NoticeType notice_type,
                                                      NoticeAction action) {
   switch (notice_type) {
     case NoticeType::kNone:
@@ -563,17 +565,20 @@ void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
   }
 }
 
+// DEPRECATED. This will be removed in crbug.com/350465760
 bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {
-  return GetRequiredNotice() == NoticeType::kModeBOnboarding;
+  return GetRequiredNotice(SurfaceType::kDesktop) ==
+         NoticeType::kModeBOnboarding;
 }
 
-bool TrackingProtectionOnboarding::ShouldRunUILogic() {
+bool TrackingProtectionOnboarding::ShouldRunUILogic(SurfaceType surface) {
   // TODO(crbug.com/341975190) Remove dependency on GetRequiredNotice for when
   // Full 3PCD logic is implemented.
-  return GetRequiredNotice() != NoticeType::kNone;
+  return GetRequiredNotice(surface) != NoticeType::kNone;
 }
 
-NoticeType TrackingProtectionOnboarding::GetRequiredNotice() {
+NoticeType TrackingProtectionOnboarding::GetRequiredNotice(
+    SurfaceType surface) {
   auto onboarding_status = GetInternalOnboardingStatus(pref_service_);
   switch (onboarding_status) {
     case TrackingProtectionOnboardingStatus::kIneligible:

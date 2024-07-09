@@ -47,6 +47,8 @@ namespace {
 using NoticeType = ::privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
 using NoticeAction =
     ::privacy_sandbox::TrackingProtectionOnboarding::NoticeAction;
+using SurfaceType =
+    ::privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
 
 void CreateHistogramNoticeServiceEvent(
     TrackingProtectionNoticeService::TrackingProtectionNoticeServiceEvent
@@ -213,7 +215,8 @@ void TrackingProtectionNoticeService::BaseIPHNotice::
 
   // If the notice should no longer be shown, then hide it and add metrics.
   if (notice_behavior() &&
-      GetNoticeType() != onboarding_service_->GetRequiredNotice()) {
+      GetNoticeType() !=
+          onboarding_service_->GetRequiredNotice(SurfaceType::kDesktop)) {
     if (notice_behavior()->IsPromoShowing(browser)) {
       CreateHistogramNoticeServiceEvent(
           TrackingProtectionNoticeServiceEvent::kNoticeShowingButShouldnt);
@@ -259,14 +262,14 @@ void TrackingProtectionNoticeService::BaseIPHNotice::
   // the onboarding service that the promo was shown.
   if (notice_behavior() &&
       notice_behavior()->WasPromoPreviouslyDismissed(browser)) {
-    onboarding_service_->NoticeShown(GetNoticeType());
+    onboarding_service_->NoticeShown(SurfaceType::kDesktop, GetNoticeType());
     CreateHistogramNoticeServiceEvent(
         TrackingProtectionNoticeServiceEvent::kPromoPreviouslyDismissed);
     return;
   }
 
   if (notice_behavior() && notice_behavior()->MaybeShowPromo(browser)) {
-    onboarding_service_->NoticeShown(GetNoticeType());
+    onboarding_service_->NoticeShown(SurfaceType::kDesktop, GetNoticeType());
     CreateHistogramNoticeServiceEvent(
         TrackingProtectionNoticeServiceEvent::kNoticeRequestedAndShown);
   } else {
@@ -292,7 +295,8 @@ void TrackingProtectionNoticeService::BaseIPHNotice::MaybeInitNoticeBehavior() {
 
 NoticeType TrackingProtectionNoticeService::BaseIPHNotice::GetNoticeType() {
   if (!notice_type_.has_value()) {
-    notice_type_ = onboarding_service_->GetRequiredNotice();
+    notice_type_ =
+        onboarding_service_->GetRequiredNotice(SurfaceType::kDesktop);
   }
   return *notice_type_;
 }
@@ -310,7 +314,7 @@ void TrackingProtectionNoticeService::BaseIPHNotice::OnNoticeClosed(
   if (!has_been_dismissed) {
     return;
   }
-  onboarding_service_->NoticeActionTaken(GetNoticeType(),
+  onboarding_service_->NoticeActionTaken(SurfaceType::kDesktop, GetNoticeType(),
                                          ToNoticeAction(close_reason));
 }
 
@@ -318,7 +322,7 @@ void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {
   // We only start watching updates on TabStripTracker when we actually need
   // to show a notice. If we no longer need to show the notice, we stop watching
   // so we don't run logic unnecessarily.
-  if (!onboarding_service_->ShouldRunUILogic()) {
+  if (!onboarding_service_->ShouldRunUILogic(SurfaceType::kDesktop)) {
     ResetTabStripTracker();
     return;
   }
@@ -329,7 +333,7 @@ void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {
 }
 
 bool TrackingProtectionNoticeService::IsNoticeNeeded() {
-  return onboarding_service_->ShouldRunUILogic();
+  return onboarding_service_->ShouldRunUILogic(SurfaceType::kDesktop);
 }
 
 bool TrackingProtectionNoticeService::ShouldTrackBrowser(Browser* browser) {

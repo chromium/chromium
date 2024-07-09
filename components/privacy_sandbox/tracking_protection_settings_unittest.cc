@@ -386,6 +386,7 @@ class TrackingProtectionSettingsStartupTest
     // Profiles gets onboarded before the settings service is started.
     onboarding_service()->MaybeMarkEligible();
     onboarding_service()->NoticeShown(
+        TrackingProtectionOnboarding::SurfaceType::kDesktop,
         TrackingProtectionOnboarding::NoticeType::kModeBOnboarding);
     TrackingProtectionSettingsTest::SetUp();
   }

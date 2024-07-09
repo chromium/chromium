@@ -138,7 +138,7 @@ public class TrackingProtectionOnboardingController {
             }
 
             if (getNoticeType() == NoticeType.MODE_B_SILENT_ONBOARDING) {
-                mTrackingProtectionBridge.noticeShown(getNoticeType());
+                mTrackingProtectionBridge.noticeShown(SurfaceType.BR_APP, getNoticeType());
                 return;
             }
 
@@ -207,11 +207,11 @@ public class TrackingProtectionOnboardingController {
     }
 
     private static boolean shouldShowNotice(TrackingProtectionBridge trackingProtectionBridge) {
-        return trackingProtectionBridge.getRequiredNotice() != NoticeType.NONE;
+        return trackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP) != NoticeType.NONE;
     }
 
     private @NoticeType int getNoticeType() {
-        return mTrackingProtectionBridge.getRequiredNotice();
+        return mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP);
     }
 
     private void createActivityTabTabObserver(Callback<Tab> showNoticeCallback) {
@@ -235,7 +235,7 @@ public class TrackingProtectionOnboardingController {
     private Callback<Boolean> getOnNoticeShownCallback() {
         return (shown) -> {
             if (shown) {
-                mTrackingProtectionBridge.noticeShown(getNoticeType());
+                mTrackingProtectionBridge.noticeShown(SurfaceType.BR_APP, getNoticeType());
                 logNoticeControllerEvent(NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN);
             }
         };
@@ -246,7 +246,7 @@ public class TrackingProtectionOnboardingController {
             switch (dismissReason) {
                 case DismissReason.GESTURE:
                     mTrackingProtectionBridge.noticeActionTaken(
-                            getNoticeType(), NoticeAction.CLOSED);
+                            SurfaceType.BR_APP, getNoticeType(), NoticeAction.CLOSED);
                     break;
                 case DismissReason.PRIMARY_ACTION:
                 case DismissReason.SECONDARY_ACTION:
@@ -259,14 +259,15 @@ public class TrackingProtectionOnboardingController {
                     break;
                 default:
                     mTrackingProtectionBridge.noticeActionTaken(
-                            getNoticeType(), NoticeAction.OTHER);
+                            SurfaceType.BR_APP, getNoticeType(), NoticeAction.OTHER);
             }
         };
     }
 
     private Supplier<Integer> getInNoticePrimaryActionSupplier() {
         return () -> {
-            mTrackingProtectionBridge.noticeActionTaken(getNoticeType(), NoticeAction.GOT_IT);
+            mTrackingProtectionBridge.noticeActionTaken(
+                    SurfaceType.BR_APP, getNoticeType(), NoticeAction.GOT_IT);
             return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         };
     }

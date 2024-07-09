@@ -17,16 +17,17 @@ public class TrackingProtectionBridge {
         mProfile = profile;
     }
 
-    public @NoticeType int getRequiredNotice() {
-        return TrackingProtectionBridgeJni.get().getRequiredNotice(mProfile);
+    public @NoticeType int getRequiredNotice(@SurfaceType int surface) {
+        return TrackingProtectionBridgeJni.get().getRequiredNotice(mProfile, surface);
     }
 
-    public void noticeActionTaken(@NoticeType int noticeType, @NoticeAction int action) {
-        TrackingProtectionBridgeJni.get().noticeActionTaken(mProfile, noticeType, action);
+    public void noticeActionTaken(
+            @SurfaceType int surface, @NoticeType int noticeType, @NoticeAction int action) {
+        TrackingProtectionBridgeJni.get().noticeActionTaken(mProfile, surface, noticeType, action);
     }
 
-    public void noticeShown(@NoticeType int noticeType) {
-        TrackingProtectionBridgeJni.get().noticeShown(mProfile, noticeType);
+    public void noticeShown(@SurfaceType int surface, @NoticeType int noticeType) {
+        TrackingProtectionBridgeJni.get().noticeShown(mProfile, surface, noticeType);
     }
 
     public boolean isOffboarded() {
@@ -35,11 +36,12 @@ public class TrackingProtectionBridge {
 
     @NativeMethods
     public interface Natives {
-        void noticeShown(@JniType("Profile*") Profile profile, int noticeType);
+        void noticeShown(@JniType("Profile*") Profile profile, int surface, int noticeType);
 
-        void noticeActionTaken(@JniType("Profile*") Profile profile, int noticeType, int action);
+        void noticeActionTaken(
+                @JniType("Profile*") Profile profile, int surface, int noticeType, int action);
 
-        int getRequiredNotice(@JniType("Profile*") Profile profile);
+        int getRequiredNotice(@JniType("Profile*") Profile profile, int surface);
 
         boolean isOffboarded(@JniType("Profile*") Profile profile);
     }
