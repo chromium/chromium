@@ -225,7 +225,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   service->SetPreference(base::SysUTF8ToNSString(_gaiaID), clientID, false);
 }
 
-// Sends an NAU when any of the settings preferences have been updated..
+// Sends an NAU when any of the settings preferences have been updated.
 - (void)sendNAUForPreferenceChangeWithClientID:
             (PushNotificationClientId)clientID
                                          value:(BOOL)value {
