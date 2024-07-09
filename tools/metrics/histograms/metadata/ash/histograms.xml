@@ -7957,7 +7957,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ShortcutCustomization.CustomizationAction"
-    enum="ShortcutCustomizationAction" expires_after="2024-08-17">
+    enum="ShortcutCustomizationAction" expires_after="2024-12-24">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -7986,7 +7986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ShortcutCustomization.EditAcceleratorSubactions"
-    enum="ShortcutCustomizationSubactions" expires_after="2024-08-17">
+    enum="ShortcutCustomizationSubactions" expires_after="2024-12-24">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
