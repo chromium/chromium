@@ -94,7 +94,7 @@
 
 - (LensOverlayTabHelper*)tabHelper {
   if (!self.browser || !self.browser->GetWebStateList() ||
-      self.browser->GetWebStateList()->GetActiveWebState()) {
+      !self.browser->GetWebStateList()->GetActiveWebState()) {
     return nullptr;
   }
 
