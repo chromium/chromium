@@ -164,6 +164,8 @@ const struct {
     {"photo_aspect_ratio_button", IDS_PHOTO_ASPECT_RATIO_BUTTON},
     {"photo_resolution_button", IDS_PHOTO_RESOLUTION_BUTTON},
     {"photo_settings", IDS_PHOTO_SETTINGS},
+    {"preview_ocr_option", IDS_PREVIEW_OCR_OPTION},
+    {"preview_ocr_option_description", IDS_PREVIEW_OCR_OPTION_DESCRIPTION},
     {"ptz_reset_all_button", IDS_PTZ_RESET_ALL_BUTTON},
     {"record_gif_video_option", IDS_RECORD_GIF_VIDEO_OPTION},
     {"record_normal_video_option", IDS_RECORD_NORMAL_VIDEO_OPTION},

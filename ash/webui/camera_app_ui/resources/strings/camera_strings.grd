@@ -717,6 +717,12 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Toast message notifying preview OCR scanning is available." name="IDS_NEW_PREVIEW_OCR_TOAST">
         Now you can directly copy text in your photo
       </message>
+      <message desc="Text of the settings checkbox to toggle preview OCR scanning." name="IDS_PREVIEW_OCR_OPTION">
+        Text detection in preview
+      </message>
+      <message desc="Description of the settings checkbox to toggle preview OCR scanning." name="IDS_PREVIEW_OCR_OPTION_DESCRIPTION">
+        Displays text and button to copy
+      </message>
     </messages>
   </release>
 </grit>

@@ -11,6 +11,7 @@ import {getChromeFlag} from './models/load_time_data.js';
 import {Ocr, PerformOcrResult} from './ocr.js';
 import {PerfLogger} from './perf.js';
 import * as scannerChip from './scanner_chip.js';
+import * as state from './state.js';
 import {OneShotTimer} from './timer.js';
 import {PerfEvent} from './type.js';
 
@@ -152,9 +153,12 @@ export class PhotoModeAutoScanner {
     const ocrScanner = new Ocr(this.video);
     const perfLogger = PerfLogger.getInstance();
     return new AsyncIntervalRunner(async (stopped) => {
+      if (!state.get(state.State.ENABLE_PREVIEW_OCR)) {
+        return;
+      }
       const startTime = performance.now();
       const result = await ocrScanner.performOcr();
-      if (stopped.isSignaled()) {
+      if (stopped.isSignaled() || !state.get(state.State.ENABLE_PREVIEW_OCR)) {
         return;
       }
       // Use `startTime` here because if `performOcr()` takes too long, another

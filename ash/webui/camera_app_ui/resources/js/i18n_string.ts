@@ -148,6 +148,8 @@ export enum I18nString {
   PHOTO_ASPECT_RATIO_BUTTON = 'photo_aspect_ratio_button',
   PHOTO_RESOLUTION_BUTTON = 'photo_resolution_button',
   PHOTO_SETTINGS = 'photo_settings',
+  PREVIEW_OCR_OPTION = 'preview_ocr_option',
+  PREVIEW_OCR_OPTION_DESCRIPTION = 'preview_ocr_option_description',
   PTZ_RESET_ALL_BUTTON = 'ptz_reset_all_button',
   RECORD_GIF_VIDEO_OPTION = 'record_gif_video_option',
   RECORD_NORMAL_VIDEO_OPTION = 'record_normal_video_option',

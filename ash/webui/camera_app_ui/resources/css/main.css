@@ -1406,3 +1406,11 @@ body.hide-floating-ui-for-testing
     opacity: 0;
   }
 }
+
+body:not(.photo) #settings-preview-ocr {
+  display: none;
+}
+
+#settings-preview-ocr > input {
+  margin-inline: auto 12px;
+}

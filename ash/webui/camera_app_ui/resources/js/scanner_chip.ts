@@ -25,6 +25,7 @@ import {
   WifiEapPhase2Method,
   WifiSecurityType,
 } from './mojo/type.js';
+import {isTopMostView} from './nav.js';
 import * as snackbar from './snackbar.js';
 import {speak} from './spoken_msg.js';
 import * as state from './state.js';
@@ -33,6 +34,7 @@ import {
   ErrorLevel,
   ErrorType,
   LocalStorageKey,
+  ViewName,
 } from './type.js';
 import {getKeyboardShortcut} from './util.js';
 
@@ -530,8 +532,8 @@ function showChip({setupChip, content, source}: ShowChipParams): void {
   dismiss();
   const chipMethods = setupChip();
 
-  // Only focus on chip when newly shown.
-  if (!isShowing) {
+  // Only focus on chip when newly shown and camera view is the top view.
+  if (!isShowing && isTopMostView(ViewName.CAMERA)) {
     chipMethods.focus();
   }
 

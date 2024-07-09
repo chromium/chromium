@@ -51,6 +51,7 @@ in_app_images = [
   "external_link_icon.svg",
   "more_horizontal.svg",
   "new_feature_toast_icon.svg",
+  "preview_ocr_icon.svg",
   "ptz_pan_left.svg",
   "ptz_pan_right.svg",
   "ptz_reset_all.svg",
