@@ -390,7 +390,7 @@ class CONTENT_EXPORT MediaDevicesManager
   using CacheInfos = std::vector<CacheInfo>;
   CacheInfos cache_infos_;
 
-  BoolDeviceTypes has_seen_result_;
+  BoolDeviceTypes cache_is_populated_;
   std::vector<EnumerationRequest> requests_;
   MediaDeviceEnumeration current_snapshot_;
   bool monitoring_started_;

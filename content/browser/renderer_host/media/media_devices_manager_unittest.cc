@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -461,6 +462,11 @@ class MediaDevicesManagerTest : public ::testing::Test {
     render_frame_host_ = web_contents_->GetPrimaryMainFrame();
   }
 
+  void FireDevicesChanged(base::SystemMonitor::DeviceType type) {
+    media_devices_manager_->OnDevicesChanged(type);
+    task_environment_.RunUntilIdle();
+  }
+
   // Must outlive MediaDevicesManager as ~MediaDevicesManager() verifies it's
   // running on the IO thread.
   BrowserTaskEnvironment task_environment_;
@@ -744,7 +750,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAudioWithDeviceChanges) {
 
   audio_manager_->SetNumAudioInputDevices(num_audio_input_devices);
   audio_manager_->SetNumAudioOutputDevices(num_audio_output_devices);
-  media_devices_manager_->OnDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
     media_devices_manager_->EnumerateDevices(
@@ -771,7 +777,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAudioWithDeviceChanges) {
 
   audio_manager_->SetNumAudioInputDevices(num_audio_input_devices);
   audio_manager_->SetNumAudioOutputDevices(num_audio_output_devices);
-  media_devices_manager_->OnDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
     media_devices_manager_->EnumerateDevices(
@@ -828,8 +834,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheVideoWithDeviceChanges) {
   EXPECT_CALL(media_devices_manager_client_, InputDevicesChangedUI(_, _));
   video_capture_device_factory_->SetToDefaultDevicesConfig(
       num_video_input_devices);
-  media_devices_manager_->OnDevicesChanged(
-      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
@@ -855,8 +860,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheVideoWithDeviceChanges) {
   EXPECT_CALL(media_devices_manager_client_, InputDevicesChangedUI(_, _));
   video_capture_device_factory_->SetToDefaultDevicesConfig(
       num_video_input_devices);
-  media_devices_manager_->OnDevicesChanged(
-      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
@@ -893,6 +897,8 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAllWithDeviceChanges) {
   EnableCache(MediaDeviceType::kMediaAudioInput);
   EnableCache(MediaDeviceType::kMediaAudioOuput);
   EnableCache(MediaDeviceType::kMediaVideoInput);
+  task_environment_.RunUntilIdle();
+
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
   devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] =
       true;
@@ -940,9 +946,8 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAllWithDeviceChanges) {
   video_capture_device_factory_->SetToDefaultDevicesConfig(
       num_video_input_devices);
   audio_manager_->SetNumAudioOutputDevices(num_audio_output_devices);
-  media_devices_manager_->OnDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
-  media_devices_manager_->OnDevicesChanged(
-      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
@@ -1090,10 +1095,9 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
   video_capture_device_factory_->SetToDefaultDevicesConfig(
       num_video_input_devices);
   audio_manager_->SetNumAudioOutputDevices(num_audio_output_devices);
-  media_devices_manager_->OnDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
-  media_devices_manager_->OnDevicesChanged(
-      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
-  base::RunLoop().RunUntilIdle();
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+
   EXPECT_EQ(num_audio_input_devices, notification_audio_input.size());
   EXPECT_EQ(num_video_input_devices, notification_video_input.size());
   EXPECT_EQ(num_audio_output_devices, notification_audio_output.size());
@@ -1132,10 +1136,9 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
   video_capture_device_factory_->SetToDefaultDevicesConfig(
       num_video_input_devices);
   audio_manager_->SetNumAudioOutputDevices(num_audio_output_devices);
-  media_devices_manager_->OnDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
-  media_devices_manager_->OnDevicesChanged(
-      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
-  base::RunLoop().RunUntilIdle();
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+
   EXPECT_EQ(num_audio_input_devices, notification_all_audio_input.size());
   EXPECT_EQ(num_video_input_devices, notification_all_video_input.size());
   EXPECT_EQ(num_audio_output_devices, notification_all_audio_output.size());
@@ -1449,10 +1452,8 @@ TEST_F(MediaDevicesManagerTest, DeviceIdSaltReset) {
 
   // Set a new salt and notify MDM.
   salt = "new-device-id-salt";
-  media_devices_manager_->OnDevicesChanged(
-      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(num_video_input_devices, notification_video_input.size());
 }
 
@@ -1571,10 +1572,8 @@ TEST_F(MediaDevicesManagerTest, DevicePropertyChanges) {
   device_config[0].availability =
       media::CameraAvailability::kUnavailableExclusivelyUsedByOtherApplication;
   video_capture_device_factory_->SetToCustomDevicesConfig(device_config);
-  media_devices_manager_->OnDevicesChanged(
-      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(notification_video_input.size(), device_config.size());
   EXPECT_EQ(notification_video_input[0].availability,
             device_config[0].availability);
@@ -1587,9 +1586,7 @@ TEST_F(MediaDevicesManagerTest, DevicePropertyChanges) {
 
   device_config[0].device_id = "new_device_id";
   video_capture_device_factory_->SetToCustomDevicesConfig(device_config);
-  media_devices_manager_->OnDevicesChanged(
-      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
-  base::RunLoop().RunUntilIdle();
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
   EXPECT_EQ(notification_video_input.size(), 1u);
   // Not expecting equality between the configured device ID and the one in the
   // notification because the notification's device ID is hashed.
@@ -1600,9 +1597,7 @@ TEST_F(MediaDevicesManagerTest, DevicePropertyChanges) {
   device_config[0].supported_formats.emplace_back(gfx::Size(100, 100), 10.0f,
                                                   media::PIXEL_FORMAT_I420);
   video_capture_device_factory_->SetToCustomDevicesConfig(device_config);
-  media_devices_manager_->OnDevicesChanged(
-      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
-  base::RunLoop().RunUntilIdle();
+  FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 }
 
 }  // namespace content

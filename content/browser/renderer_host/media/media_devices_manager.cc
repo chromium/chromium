@@ -302,11 +302,10 @@ struct MediaDevicesManager::EnumerationRequest {
                      EnumerationCallback callback)
       : callback(std::move(callback)) {
     requested = requested_types;
-    has_seen_result.fill(false);
   }
 
   BoolDeviceTypes requested;
-  BoolDeviceTypes has_seen_result;
+  BoolDeviceTypes has_seen_result_for_request;
   EnumerationCallback callback;
 };
 
@@ -471,7 +470,6 @@ MediaDevicesManager::MediaDevicesManager(
   DCHECK(!ui_input_device_change_cb_.is_null());
   SendLogMessage("MediaDevicesManager()");
   cache_policies_.fill(CachePolicy::NO_CACHE);
-  has_seen_result_.fill(false);
 }
 
 MediaDevicesManager::~MediaDevicesManager() {
@@ -1076,12 +1074,12 @@ void MediaDevicesManager::DevicesEnumerated(
   DCHECK(blink::IsValidMediaDeviceType(type));
   UpdateSnapshot(type, snapshot);
   cache_infos_[static_cast<size_t>(type)].UpdateCompleted();
-  has_seen_result_[static_cast<size_t>(type)] = true;
+  cache_is_populated_[static_cast<size_t>(type)] = true;
   SendLogMessage(GetDevicesEnumeratedLogString(type, snapshot));
 
   if (cache_policies_[static_cast<size_t>(type)] == CachePolicy::NO_CACHE) {
     for (auto& request : requests_)
-      request.has_seen_result[static_cast<size_t>(type)] = true;
+      request.has_seen_result_for_request[static_cast<size_t>(type)] = true;
   }
 
   // Note that IsLastUpdateValid is always true when policy is NO_CACHE.
@@ -1129,7 +1127,7 @@ void MediaDevicesManager::UpdateSnapshot(
     // Do not notify device-change subscribers after the first enumeration
     // result, since it is not due to an actual device change.
     need_update_device_change_subscribers =
-        has_seen_result_[static_cast<size_t>(type)] &&
+        cache_is_populated_[static_cast<size_t>(type)] &&
         (old_snapshot.size() != 0 || new_snapshot.size() != 0) &&
         (type != MediaDeviceType::kMediaVideoInput ||
          is_video_with_good_group_ids);
@@ -1160,7 +1158,7 @@ void MediaDevicesManager::ProcessRequests() {
   // for device coincidences with audio input devices.
   // TODO(crbug.com/41263713): Remove this once the video-capture subsystem
   // supports group IDs.
-  if (has_seen_result_[static_cast<size_t>(
+  if (cache_is_populated_[static_cast<size_t>(
           MediaDeviceType::kMediaVideoInput)]) {
     blink::WebMediaDeviceInfoArray video_devices =
         current_snapshot_[static_cast<size_t>(
@@ -1187,25 +1185,27 @@ void MediaDevicesManager::ProcessRequests() {
 bool MediaDevicesManager::IsEnumerationRequestReady(
     const EnumerationRequest& request_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  bool is_ready = true;
   for (size_t i = 0;
        i < static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes); ++i) {
-    if (!request_info.requested[i])
+    if (!request_info.requested[i]) {
       continue;
+    }
     switch (cache_policies_[i]) {
       case CachePolicy::SYSTEM_MONITOR:
-        if (!cache_infos_[i].IsLastUpdateValid())
-          is_ready = false;
+        if (!cache_is_populated_[i]) {
+          return false;
+        }
         break;
       case CachePolicy::NO_CACHE:
-        if (!request_info.has_seen_result[i])
-          is_ready = false;
+        if (!request_info.has_seen_result_for_request[i]) {
+          return false;
+        }
         break;
       default:
         NOTREACHED_IN_MIGRATION();
     }
   }
-  return is_ready;
+  return true;
 }
 
 void MediaDevicesManager::HandleDevicesChanged(MediaDeviceType type) {
