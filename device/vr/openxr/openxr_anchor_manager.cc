@@ -174,20 +174,25 @@ OpenXrAnchorManager::GetXrLocationFromReferenceSpace(
     const mojom::VRStageParametersPtr& current_stage_parameters,
     const mojom::XRNativeOriginInformation& native_origin_information,
     const gfx::Transform& native_origin_from_anchor) const {
-  // Floor corresponds to offset_from_local * local, so we must apply the
-  // offset to get the correct pose in the local space.
+  // LocalFloor doesn't have a direct backing XrSpace, it's synthesized based on
+  // the local XrSpace and some computed information about "stage space", so we
+  // have to adjust the supplied native_origin_from_anchor to local_from_anchor.
   auto type = native_origin_information.get_reference_space_type();
   if (type == device::mojom::XRReferenceSpaceType::kLocalFloor) {
     if (!current_stage_parameters) {
       return std::nullopt;
     }
-    // The offset from the floor to mojo (aka local) is encoded in
-    // current_stage_parameters->mojo_from_floor. mojo_from_floor *
-    // native_origin_from_anchor gives us the correct location of the anchor
-    // relative to the local floor reference space.
+    // local_from_mojo is currently identity.
+    gfx::Transform local_from_mojo;
+    // Because we're told that the native origin is local_floor,
+    // native_origin_from_anchor is floor_from_anchor.
+    const auto& floor_from_anchor = native_origin_from_anchor;
+    // We need to generate local_from_anchor to use the local reference space.
+    gfx::Transform local_from_anchor =
+        local_from_mojo * current_stage_parameters->mojo_from_floor *
+        floor_from_anchor;
     return XrLocation{
-        GfxTransformToXrPose(current_stage_parameters->mojo_from_floor *
-                             native_origin_from_anchor),
+        GfxTransformToXrPose(local_from_anchor),
         openxr->GetReferenceSpace(device::mojom::XRReferenceSpaceType::kLocal)};
   }
 

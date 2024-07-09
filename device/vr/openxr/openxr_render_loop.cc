@@ -860,9 +860,12 @@ void OpenXrRenderLoop::UpdateStageParameters() {
   if (openxr_->GetStageParameters(stage_bounds, local_from_stage)) {
     mojom::VRStageParametersPtr stage_parameters =
         mojom::VRStageParameters::New();
-    // mojo_from_local is identity, as is stage_from_floor, so we can directly
-    // assign local_from_stage and mojo_from_floor.
-    stage_parameters->mojo_from_floor = local_from_stage;
+    // mojo_from_local is currently identity.
+    gfx::Transform mojo_from_local;
+    // stage_from_floor is identity.
+    gfx::Transform stage_from_floor;
+    stage_parameters->mojo_from_floor =
+        mojo_from_local * local_from_stage * stage_from_floor;
     stage_parameters->bounds = std::move(stage_bounds);
     SetStageParameters(std::move(stage_parameters));
   } else {
