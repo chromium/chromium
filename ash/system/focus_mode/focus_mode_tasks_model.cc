@@ -189,8 +189,8 @@ void FocusModeTasksModel::SetSelectedTaskFromPrefs(const TaskId& task_id) {
 
   // Preference task is not in the cache. Try to fetch it.
   pref_task_id_ = task_id;
-  FocusModeTasksModel::Delegate::FetchTaskCallback callback =
-      base::BindOnce(&FocusModeTasksModel::OnPrefTaskFetched, AsWeakPtr());
+  FocusModeTasksModel::Delegate::FetchTaskCallback callback = base::BindOnce(
+      &FocusModeTasksModel::OnPrefTaskFetched, weak_ptr_factory_.GetWeakPtr());
   if (delegate_) {
     delegate_->FetchTask(*pref_task_id_, std::move(callback));
   }
@@ -287,9 +287,9 @@ void FocusModeTasksModel::UpdateTask(const TaskUpdate& task_update) {
 
   if (delegate_) {
     if (!task_update.task_id) {
-      delegate_->AddTask(
-          task_update,
-          base::BindOnce(&FocusModeTasksModel::OnTaskAdded, AsWeakPtr()));
+      delegate_->AddTask(task_update,
+                         base::BindOnce(&FocusModeTasksModel::OnTaskAdded,
+                                        weak_ptr_factory_.GetWeakPtr()));
     } else {
       if (!task_update.task_id->pending) {
         // Pending tasks don't exist on the server so this is invalid.

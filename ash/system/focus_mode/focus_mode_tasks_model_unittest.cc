@@ -80,8 +80,7 @@ class RecordingObserver : public FocusModeTasksModel::Observer {
   std::optional<FocusModeTask> last_completed_task_;
 };
 
-class FakeDelegate : public FocusModeTasksModel::Delegate,
-                     public base::SupportsWeakPtr<FakeDelegate> {
+class FakeDelegate final : public FocusModeTasksModel::Delegate {
  public:
   FakeDelegate() = default;
 
@@ -100,6 +99,13 @@ class FakeDelegate : public FocusModeTasksModel::Delegate,
               (const TaskId& task_id,
                FocusModeTasksModel::Delegate::FetchTaskCallback callback),
               (override));
+
+  base::WeakPtr<FakeDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<FakeDelegate> weak_ptr_factory_{this};
 };
 
 class FocusModeTasksModelObserverTest : public testing::Test {

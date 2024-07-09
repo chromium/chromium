@@ -18,8 +18,7 @@
 
 namespace ash {
 
-class ASH_EXPORT FocusModeTasksModel
-    : public base::SupportsWeakPtr<FocusModeTasksModel> {
+class ASH_EXPORT FocusModeTasksModel final {
  public:
   // Options struct used to add or update a task.
   struct TaskUpdate {
@@ -140,6 +139,8 @@ class ASH_EXPORT FocusModeTasksModel
   raw_ptr<FocusModeTask> pending_task_;
 
   base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<FocusModeTasksModel> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
