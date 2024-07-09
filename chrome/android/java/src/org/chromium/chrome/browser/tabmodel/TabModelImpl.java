@@ -279,7 +279,7 @@ public class TabModelImpl extends TabModelJniBridge {
             for (TabModelObserver obs : mObservers) obs.willAddTab(tab, type);
 
             boolean selectTab =
-                    mOrderController.willOpenInForeground(type, isIncognito())
+                    mOrderController.willOpenInForeground(type, isIncognitoBranded())
                             || (mTabs.size() == 0
                                     && type == TabLaunchType.FROM_LONGPRESS_BACKGROUND);
 
