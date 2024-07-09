@@ -20,9 +20,11 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
+#include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -40,6 +42,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/audio_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/video_capture_service.h"
@@ -64,14 +67,48 @@ bool IsScreenCaptureDisabledByPolicy() {
       prefs::kDisableScreenshots);
 }
 
+void CaptureFileFinalized(
+    const base::FilePath& original_path,
+    base::OnceCallback<void(bool, const base::FilePath&)> callback,
+    bool success,
+    storage::FileSystemURL file_url) {
+  std::move(callback).Run(success, file_url.path());
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(base::IgnoreResult(&base::DeleteFile), original_path));
+}
+
+base::ScopedTempDir CreateTempDir() {
+  base::ScopedTempDir temp_dir;
+  CHECK(temp_dir.CreateUniqueTempDir());
+  return temp_dir;
+}
+
 }  // namespace
 
 ChromeCaptureModeDelegate::ChromeCaptureModeDelegate() {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&CreateTempDir),
+      base::BindOnce(&ChromeCaptureModeDelegate::SetOdfsTempDir,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 ChromeCaptureModeDelegate::~ChromeCaptureModeDelegate() {
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                             base::BindOnce(
+                                 [](base::ScopedTempDir) {
+                                   // No-op other than running
+                                   // the base::ScopedTempDir
+                                   // destructor.
+                                 },
+                                 std::move(odfs_temp_dir_)));
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
@@ -341,6 +378,41 @@ void ChromeCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
           base::DoNothing());
 }
 
+void ChromeCaptureModeDelegate::FinalizeSavedFile(
+    base::OnceCallback<void(bool, const base::FilePath&)> callback,
+    const base::FilePath& path) {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  if (!odfs_temp_dir_.GetPath().empty() &&
+      odfs_temp_dir_.GetPath().IsParent(path) && profile) {
+    // TODO(b/348177318): Show notification with progress during upload.
+    ash::cloud_upload::OdfsSkyvaultUploader::Upload(
+        profile, path,
+        ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture,
+        /*progress_callback=*/base::DoNothing(),
+        base::BindOnce(&CaptureFileFinalized, path, std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(/*success=*/true, path);
+}
+
+base::FilePath ChromeCaptureModeDelegate::RedirectFilePath(
+    const base::FilePath& path) {
+  if (!odfs_temp_dir_.GetPath().empty()) {
+    return path;
+  }
+  base::FilePath odfs_path = GetOneDriveMountPointPath();
+  if (!odfs_path.empty() && path.DirName() == odfs_path) {
+    return odfs_temp_dir_.GetPath().Append(path.BaseName());
+  }
+  if (!odfs_path.empty() && odfs_path.IsParent(path)) {
+    base::FilePath ret = path;
+    if (odfs_path.AppendRelativePath(odfs_temp_dir_.GetPath(), &ret)) {
+      return ret;
+    }
+  }
+  return path;
+}
+
 void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
     ash::OnGotDriveFsFreeSpace callback,
     drive::FileError error,
@@ -351,4 +423,9 @@ void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
   }
 
   std::move(callback).Run(usage->free_cloud_bytes);
+}
+
+void ChromeCaptureModeDelegate::SetOdfsTempDir(base::ScopedTempDir temp_dir) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  odfs_temp_dir_ = std::move(temp_dir);
 }

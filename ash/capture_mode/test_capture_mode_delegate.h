@@ -134,6 +134,10 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) override;
   void NotifyDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device) override;
+  void FinalizeSavedFile(
+      base::OnceCallback<void(bool, const base::FilePath&)> callback,
+      const base::FilePath& path) override;
+  base::FilePath RedirectFilePath(const base::FilePath& path) override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;

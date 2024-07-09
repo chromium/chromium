@@ -1571,7 +1571,7 @@ void CaptureModeController::OnImageCaptured(
   }
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&SaveFile, png_bytes, path,
+      base::BindOnce(&SaveFile, png_bytes, delegate_->RedirectFilePath(path),
                      GetFallbackFilePathFromFile(path)),
       base::BindOnce(&CaptureModeController::OnImageFileSaved,
                      weak_ptr_factory_.GetWeakPtr(), png_bytes, behavior));
@@ -1582,6 +1582,22 @@ void CaptureModeController::OnImageFileSaved(
     const CaptureModeBehavior* behavior,
     const base::FilePath& file_saved_path) {
   if (file_saved_path.empty()) {
+    OnImageFileFinalized(png_bytes, behavior, /*success=*/false,
+                         file_saved_path);
+    return;
+  }
+  delegate_->FinalizeSavedFile(
+      base::BindOnce(&CaptureModeController::OnImageFileFinalized,
+                     weak_ptr_factory_.GetWeakPtr(), png_bytes, behavior),
+      file_saved_path);
+}
+
+void CaptureModeController::OnImageFileFinalized(
+    scoped_refptr<base::RefCountedMemory> png_bytes,
+    const CaptureModeBehavior* behavior,
+    bool success,
+    const base::FilePath& file_saved_path) {
+  if (!success) {
     ShowFailureNotification();
     return;
   }
@@ -1605,10 +1621,10 @@ void CaptureModeController::OnImageFileSaved(
 }
 
 void CaptureModeController::OnVideoFileSaved(
-    const base::FilePath& saved_video_file_path,
     const gfx::ImageSkia& video_thumbnail,
+    const CaptureModeBehavior* behavior,
     bool success,
-    const CaptureModeBehavior* behavior) {
+    const base::FilePath& saved_video_file_path) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   if (!success) {
@@ -2076,7 +2092,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
   if (!GetCurrentCaptureFolder().is_default_downloads_folder) {
     blocking_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&SelectFilePathForCapturedFile, current_path,
+        base::BindOnce(&SelectFilePathForCapturedFile,
+                       delegate_->RedirectFilePath(current_path),
                        GetFallbackFilePathFromFile(current_path)),
         base::BindOnce(&CaptureModeController::BeginVideoRecording,
                        weak_ptr_factory_.GetWeakPtr(), *capture_params));
@@ -2163,10 +2180,28 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
 
     DeleteFileAsync(blocking_task_runner_, video_file_path,
                     std::move(on_file_deleted_callback_for_test_));
+    OnVideoFileFinalized(/*should_delete_file=*/true, video_thumbnail);
   } else {
-    OnVideoFileSaved(video_file_path, video_thumbnail, success, behavior);
+    if (!success) {
+      OnVideoFileSaved(video_thumbnail, behavior, success, video_file_path);
+      OnVideoFileFinalized(/*should_delete_file=*/false, video_thumbnail);
+      return;
+    }
+    delegate_->FinalizeSavedFile(
+        base::BindOnce(&CaptureModeController::OnVideoFileSaved,
+                       weak_ptr_factory_.GetWeakPtr(), video_thumbnail,
+                       behavior)
+            .Then(base::BindOnce(&CaptureModeController::OnVideoFileFinalized,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 /*should_delete_file=*/false,
+                                 video_thumbnail)),
+        video_file_path);
   }
+}
 
+void CaptureModeController::OnVideoFileFinalized(
+    bool should_delete_file,
+    const gfx::ImageSkia& video_thumbnail) {
   low_disk_space_threshold_reached_ = false;
   recording_start_time_ = base::TimeTicks();
 

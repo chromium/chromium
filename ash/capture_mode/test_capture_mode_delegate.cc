@@ -198,4 +198,15 @@ void TestCaptureModeDelegate::UpdateVideoConferenceManager(
 void TestCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device) {}
 
+void TestCaptureModeDelegate::FinalizeSavedFile(
+    base::OnceCallback<void(bool, const base::FilePath&)> callback,
+    const base::FilePath& path) {
+  std::move(callback).Run(/*success=*/true, path);
+}
+
+base::FilePath TestCaptureModeDelegate::RedirectFilePath(
+    const base::FilePath& path) {
+  return path;
+}
+
 }  // namespace ash

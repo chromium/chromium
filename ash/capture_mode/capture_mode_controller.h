@@ -472,6 +472,14 @@ class ASH_EXPORT CaptureModeController
                         const CaptureModeBehavior* behavior,
                         const base::FilePath& file_saved_path);
 
+  // Called back after the image file was saved to the final location.
+  // Parameters are same as for `OnImageFileSaved()` with `success` indicating
+  // the result of finalizing the file.
+  void OnImageFileFinalized(scoped_refptr<base::RefCountedMemory> png_bytes,
+                            const CaptureModeBehavior* behavior,
+                            bool success,
+                            const base::FilePath& file_saved_path);
+
   // Called back when the check for custom folder's availability is done in
   // `CheckFolderAvailability`, with `available` indicating whether the custom
   // folder is available or not.
@@ -482,10 +490,12 @@ class ASH_EXPORT CaptureModeController
   // an RGB image provided by the recording service that can be used as a
   // thumbnail of the video in the notification. `behavior` will decide whether
   // the recording will not be shown in tote or notification.
-  void OnVideoFileSaved(const base::FilePath& saved_video_file_path,
-                        const gfx::ImageSkia& video_thumbnail,
+  // `saved_video_file_path` indicates whether the attempt succeeded or failed.
+  // If `saved_video_file_path` is empty, the attempt failed.
+  void OnVideoFileSaved(const gfx::ImageSkia& video_thumbnail,
+                        const CaptureModeBehavior* behavior,
                         bool success,
-                        const CaptureModeBehavior* behavior);
+                        const base::FilePath& saved_video_file_path);
 
   // Shows a preview notification of the newly taken screenshot or screen
   // recording. Customized notification view will be decided based on the
@@ -550,6 +560,11 @@ class ASH_EXPORT CaptureModeController
   // will be set to true if the capture operation should continue, false if it
   // should be aborted.
   void OnDlpRestrictionCheckedAtPerformingCapture(bool proceed);
+
+  // Called after the video recording was written to the final file location.
+  // `should_delete_file` indicates if the file was deleted due to an error.
+  void OnVideoFileFinalized(bool should_delete_file,
+                            const gfx::ImageSkia& video_thumbnail);
 
   // Called by the DLP manager when it's checked again for any on-screen content
   // restriction at the time when the video capture 3-second countdown ends.

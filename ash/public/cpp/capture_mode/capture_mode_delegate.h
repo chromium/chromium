@@ -205,6 +205,18 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // while the device is disabled.
   virtual void NotifyDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device) = 0;
+
+  // Requests to finalize the location for the saved file, e.g. move it to cloud
+  // storage if it was saved to a temporary local location. `callback` will be
+  // called after the file is confirmed to be in the final location with a bool
+  // success flag and the final file path if successful.
+  virtual void FinalizeSavedFile(
+      base::OnceCallback<void(bool, const base::FilePath&)> callback,
+      const base::FilePath& path) = 0;
+
+  // Returns a temporary location where a file with the capture should be saved
+  // instead of `path`, if needed, e.g. to be uploaded to cloud later.
+  virtual base::FilePath RedirectFilePath(const base::FilePath& path) = 0;
 };
 
 }  // namespace ash
