@@ -325,6 +325,13 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // Set to false in unit tests since there is no WebContents.
   bool abort_on_missing_web_contents_in_tests_ = true;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // True if we've called `PictureInPictureWindowManager::OnFileDialogOpened()`
+  // but have not yet called
+  // `PictureInPictureWindowManager::OnFileDialogClosed()`.
+  bool has_notified_picture_in_picture_window_manager_of_open_dialog_ = false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::WeakPtrFactory<FileSelectHelper> weak_ptr_factory_{this};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

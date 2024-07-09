@@ -122,6 +122,13 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
   pip_window_controller_ = pip_window_controller;
 
   pip_window_controller_->Show();
+
+#if !BUILDFLAG(IS_ANDROID)
+  RecordFileDialogOpenMetric(
+      number_of_open_file_dialogs_ > 0
+          ? FileDialogOpenState::kPictureInPictureOpenWithFileDialog
+          : FileDialogOpenState::kPictureInPictureOpenWithoutFileDialog);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -415,6 +422,13 @@ void PictureInPictureWindowManager::CreateWindowInternal(
                          NotifyObserversOnEnterPictureInPicture,
                      base::Unretained(this)));
   pip_window_controller_ = video_pip_window_controller;
+
+#if !BUILDFLAG(IS_ANDROID)
+  RecordFileDialogOpenMetric(
+      number_of_open_file_dialogs_ > 0
+          ? FileDialogOpenState::kPictureInPictureOpenWithFileDialog
+          : FileDialogOpenState::kPictureInPictureOpenWithoutFileDialog);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void PictureInPictureWindowManager::CloseWindowInternal() {
@@ -508,6 +522,19 @@ void PictureInPictureWindowManager::CreateOcclusionTrackerIfNecessary() {
   }
 }
 
+void PictureInPictureWindowManager::OnFileDialogOpened() {
+  number_of_open_file_dialogs_++;
+  RecordFileDialogOpenMetric(
+      pip_window_controller_
+          ? FileDialogOpenState::kFileDialogOpenWithPictureInPicture
+          : FileDialogOpenState::kFileDialogOpenWithoutPictureInPicture);
+}
+
+void PictureInPictureWindowManager::OnFileDialogClosed() {
+  CHECK_NE(number_of_open_file_dialogs_, 0u);
+  number_of_open_file_dialogs_--;
+}
+
 void PictureInPictureWindowManager::
     RecordDocumentPictureInPictureRequestedSizeMetrics(
         const blink::mojom::PictureInPictureWindowOptions& pip_options,
@@ -551,6 +578,13 @@ void PictureInPictureWindowManager::
         recorded_percent);
   }
 }
+
+void PictureInPictureWindowManager::RecordFileDialogOpenMetric(
+    FileDialogOpenState state) {
+  base::UmaHistogramEnumeration("Media.PictureInPicture.FileDialogOpenState",
+                                state);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void PictureInPictureWindowManager::NotifyObserversOnEnterPictureInPicture() {

@@ -188,6 +188,11 @@ class PictureInPictureWindowManager {
   // when a widget has been occluded by a video or document picture-in-picture
   // window.
   PictureInPictureOcclusionTracker* GetOcclusionTracker();
+
+  // Used for `Media.PictureInPicture.FileDialogOpenState` to determine when
+  // file dialogs and picture-in-picture windows are simultaneously open.
+  void OnFileDialogOpened();
+  void OnFileDialogClosed();
 #endif
 
   void set_window_controller_for_testing(
@@ -206,6 +211,30 @@ class PictureInPictureWindowManager {
   class VideoWebContentsObserver;
 #if !BUILDFLAG(IS_ANDROID)
   class DocumentWebContentsObserver;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(FileDialogOpenState)
+  enum class FileDialogOpenState {
+    // A file dialog was opened while a picture-in-picture window was already
+    // open.
+    kFileDialogOpenWithPictureInPicture = 0,
+
+    // A file dialog was opened while no picture-in-picture windows were open.
+    kFileDialogOpenWithoutPictureInPicture = 1,
+
+    // A picture-in-picture window was opened while a file dialog was already
+    // open.
+    kPictureInPictureOpenWithFileDialog = 2,
+
+    // A picture-in-picture window was opened while no file dialogs were already
+    // open.
+    kPictureInPictureOpenWithoutFileDialog = 3,
+
+    kMaxValue = kPictureInPictureOpenWithoutFileDialog,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:FileDialogOpenStateEnum)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Create a Picture-in-Picture window and register it in order to be closed
@@ -239,6 +268,10 @@ class PictureInPictureWindowManager {
   void RecordDocumentPictureInPictureRequestedSizeMetrics(
       const blink::mojom::PictureInPictureWindowOptions& pip_options,
       const display::Display& display);
+
+  // Records whether file dialogs and picture-in-picture windows are open at the
+  // same time.
+  void RecordFileDialogOpenMetric(FileDialogOpenState state);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   PictureInPictureWindowManager();
@@ -252,6 +285,10 @@ class PictureInPictureWindowManager {
   std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
 
   std::unique_ptr<PictureInPictureOcclusionTracker> occlusion_tracker_;
+
+  // The number of currently open file dialogs. Used for the
+  // `Media.PictureInPicture.FileDialogOpenState` metric.
+  uint32_t number_of_open_file_dialogs_ = 0;
 #endif  //! BUILDFLAG(IS_ANDROID)
 
   raw_ptr<content::PictureInPictureWindowController, DanglingUntriaged>

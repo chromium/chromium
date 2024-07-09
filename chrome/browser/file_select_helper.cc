@@ -55,6 +55,10 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 using blink::mojom::FileChooserFileInfo;
 using blink::mojom::FileChooserFileInfoPtr;
 using blink::mojom::FileChooserParams;
@@ -156,6 +160,13 @@ FileSelectHelper::~FileSelectHelper() {
   // away so they don't try and call back to us.
   if (select_file_dialog_)
     select_file_dialog_->ListenerDestroyed();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (has_notified_picture_in_picture_window_manager_of_open_dialog_) {
+    PictureInPictureWindowManager::GetInstance()->OnFileDialogClosed();
+    has_notified_picture_in_picture_window_manager_of_open_dialog_ = false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void FileSelectHelper::FileSelected(const ui::SelectedFileInfo& file,
@@ -563,6 +574,11 @@ void FileSelectHelper::RunFileChooser(
   listener_ = std::move(listener);
   content::WebContentsObserver::Observe(web_contents_);
 
+#if !BUILDFLAG(IS_ANDROID)
+  PictureInPictureWindowManager::GetInstance()->OnFileDialogOpened();
+  has_notified_picture_in_picture_window_manager_of_open_dialog_ = true;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&FileSelectHelper::GetFileTypesInThreadPool, this,
@@ -738,6 +754,14 @@ void FileSelectHelper::RunFileChooserEnd() {
     select_file_dialog_->ListenerDestroyed();
     select_file_dialog_.reset();
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (has_notified_picture_in_picture_window_manager_of_open_dialog_) {
+    PictureInPictureWindowManager::GetInstance()->OnFileDialogClosed();
+    has_notified_picture_in_picture_window_manager_of_open_dialog_ = false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   Release();
 }
 
