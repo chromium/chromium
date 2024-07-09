@@ -27,7 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"

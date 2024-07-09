@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

@@ -8,8 +8,8 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_service.pb.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
 namespace ash {

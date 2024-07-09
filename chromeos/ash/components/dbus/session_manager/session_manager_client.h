@@ -15,7 +15,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 

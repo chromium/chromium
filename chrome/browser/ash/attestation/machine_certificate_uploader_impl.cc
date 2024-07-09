@@ -23,7 +23,7 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/user_manager/known_user.h"

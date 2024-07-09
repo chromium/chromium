@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 
 namespace dbus {
 class Bus;

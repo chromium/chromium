@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "content/public/browser/browser_task_traits.h"

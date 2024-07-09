@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SWAP_MANAGEMENT_SWAP_MANAGEMENT_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SWAP_MANAGEMENT_SWAP_MANAGEMENT_CLIENT_H_
 
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {

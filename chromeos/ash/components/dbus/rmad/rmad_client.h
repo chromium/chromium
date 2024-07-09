@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 
 namespace dbus {
 class Bus;

@@ -12,8 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/spaced/spaced.pb.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace dbus {
 class Bus;

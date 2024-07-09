@@ -7,8 +7,8 @@
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace ash {
 

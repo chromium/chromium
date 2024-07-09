@@ -13,7 +13,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace dbus {

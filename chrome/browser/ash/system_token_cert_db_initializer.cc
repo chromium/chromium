@@ -28,7 +28,7 @@
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/ash/components/tpm/buildflags.h"
 #include "chromeos/ash/components/tpm/tpm_token_loader.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "content/public/browser/browser_task_traits.h"

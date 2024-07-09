@@ -84,7 +84,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/components/onc/certificate_scope.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/account_id/account_id.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/cloud/affiliation.h"

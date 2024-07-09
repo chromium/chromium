@@ -18,7 +18,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_proxy.h"

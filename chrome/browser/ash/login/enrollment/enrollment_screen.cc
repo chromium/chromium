@@ -42,7 +42,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

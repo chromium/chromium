@@ -17,7 +17,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

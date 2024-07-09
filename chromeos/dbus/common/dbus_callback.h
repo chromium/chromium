@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_COMMON_DBUS_METHOD_CALL_STATUS_H_
-#define CHROMEOS_DBUS_COMMON_DBUS_METHOD_CALL_STATUS_H_
-
-// TODO(hidehiko): Rename this file to dbus_callback.h, when we fully
-// get rid of DBusMethodCallStatus enum defined below.
+#ifndef CHROMEOS_DBUS_COMMON_DBUS_CALLBACK_H_
+#define CHROMEOS_DBUS_COMMON_DBUS_CALLBACK_H_
 
 #include <optional>
 #include <string>
@@ -45,4 +42,4 @@ using WaitForServiceToBeAvailableCallback =
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_COMMON_DBUS_METHOD_CALL_STATUS_H_
+#endif  // CHROMEOS_DBUS_COMMON_DBUS_CALLBACK_H_

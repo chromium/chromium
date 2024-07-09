@@ -15,8 +15,8 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/cros_system_api/dbus/cros-disks/dbus-constants.h"
 
 namespace base {

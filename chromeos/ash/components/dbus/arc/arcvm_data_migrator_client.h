@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/arcvm_data_migrator/arcvm_data_migrator.pb.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 

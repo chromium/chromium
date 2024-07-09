@@ -5,19 +5,19 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
 
+#include <cstdint>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/memory_pressure/reclaim_target.h"
 #include "dbus/dbus_result.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/resource_manager/dbus-constants.h"
-
-#include <cstdint>
-#include <vector>
 
 namespace dbus {
 class Bus;

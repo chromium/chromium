@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 
 namespace ash {
 
