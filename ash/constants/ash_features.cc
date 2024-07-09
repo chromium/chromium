@@ -2237,6 +2237,15 @@ BASE_FEATURE(kOrcaRephrase, "OrcaRephrase", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables shorten for Orca.
 BASE_FEATURE(kOrcaShorten, "OrcaShorten", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables French support for Orca.
+BASE_FEATURE(kOrcaFrench, "OrcaFrench", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables German support for Orca.
+BASE_FEATURE(kOrcaGerman, "OrcaGerman", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables Japanese support for Orca.
+BASE_FEATURE(kOrcaJapanese, "OrcaJapanese", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables Orca dragging support.
 BASE_FEATURE(kOrcaDraggingSupport,
              "OrcaDraggingSupport",

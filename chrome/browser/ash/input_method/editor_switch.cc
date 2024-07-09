@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/json/json_reader.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
@@ -93,22 +94,20 @@ constexpr char kExperimentName[] = "OrcaEnabled";
 
 constexpr char kImeAllowlistLabel[] = "ime_allowlist";
 
-std::vector<std::string> Combine(
-    const std::vector<std::vector<std::string>>& vecs) {
-  std::vector<std::string> combined;
-  for (auto& vec : vecs) {
-    combined.insert(combined.end(), vec.begin(), vec.end());
-  }
-  return combined;
-}
+std::vector<std::string> AllowedInputMethods() {
+  std::vector<std::string> input_methods = EnglishInputMethods();
 
-const std::vector<std::string>& AllowedInputMethods() {
-  static const base::NoDestructor<std::vector<std::string>> input_methods(
-      base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)
-          ? Combine({EnglishInputMethods(), FrenchInputMethods(),
-                     GermanInputMethods(), JapaneseInputMethods()})
-          : EnglishInputMethods());
-  return *input_methods;
+  if (base::FeatureList::IsEnabled(features::kOrcaFrench)) {
+    base::Extend(input_methods, FrenchInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaGerman)) {
+    base::Extend(input_methods, GermanInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaJapanese)) {
+    base::Extend(input_methods, JapaneseInputMethods());
+  }
+
+  return input_methods;
 }
 
 manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
