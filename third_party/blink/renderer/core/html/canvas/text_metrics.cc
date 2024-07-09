@@ -90,6 +90,7 @@ void TextMetrics::Update(const Font& font,
 
   font_ = font;
   text_length_ = text.length();
+  direction_ = direction;
   runs_with_offset_.clear();
   shaping_needed_ = true;
 
@@ -346,6 +347,55 @@ const DOMRectReadOnly* TextMetrics::getActualBoundingBox(
   }
   bounding_box.Offset(-text_align_dx_, baseline_y);
   return DOMRectReadOnly::FromRectF(bounding_box);
+}
+
+unsigned TextMetrics::caretPositionFromPoint(double x) {
+  if (runs_with_offset_.empty()) {
+    return 0;
+  }
+
+  // x is visual direction from the alignment point, regardless of the text
+  // direction. Note x can be negative, to enable positions to the left of the
+  // alignment point.
+  float target_x = text_align_dx_ + x;
+
+  // If to the left (or right), return the leftmost (or rightmost) index
+  if (target_x <= 0) {
+    const auto& run_with_offset = runs_with_offset_.front();
+    if (IsLtr(run_with_offset.direction_)) {
+      // The 0 offset within the run is leftmost
+      return run_with_offset.character_offset_;
+    } else {
+      // The highest offset is leftmost.
+      return run_with_offset.num_characters_ +
+             run_with_offset.character_offset_;
+    }
+  }
+  if (target_x >= width_) {
+    const auto& run_with_offset = runs_with_offset_.back();
+    if (IsLtr(run_with_offset.direction_)) {
+      // The max offset within the run is rightmost
+      return run_with_offset.num_characters_ +
+             run_with_offset.character_offset_;
+    } else {
+      // The 0 offset is rightmost.
+      return run_with_offset.character_offset_;
+    }
+  }
+
+  ShapeTextIfNeeded();
+
+  for (HeapVector<RunWithOffset>::reverse_iterator riter =
+           runs_with_offset_.rbegin();
+       riter != runs_with_offset_.rend(); riter++) {
+    if (riter->x_position_ <= target_x) {
+      float run_x = target_x - riter->x_position_;
+      unsigned run_offset = riter->shape_result_->CaretOffsetForHitTest(
+          run_x, StringView(riter->text_), BreakGlyphsOption(true));
+      return run_offset + riter->character_offset_;
+    }
+  }
+  return 0;
 }
 
 }  // namespace blink

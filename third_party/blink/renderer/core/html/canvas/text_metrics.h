@@ -67,6 +67,8 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
   static float GetFontBaseline(const TextBaseline&, const SimpleFontData&);
 
+  unsigned caretPositionFromPoint(double x);
+
   const HeapVector<Member<DOMRectReadOnly>> getSelectionRects(
       uint32_t start,
       uint32_t end,
@@ -116,9 +118,10 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   float baseline_y = 0.0;
   Member<Baselines> baselines_;
 
-  // Needed for selection rects and bounding boxes.
+  // Needed for selection rects, bounding boxes and caret position.
   Font font_;
   uint32_t text_length_ = 0;
+  TextDirection direction_;
 
   // Cache of ShapeResults that is lazily created the first time it's needed.
   HeapVector<RunWithOffset> runs_with_offset_;

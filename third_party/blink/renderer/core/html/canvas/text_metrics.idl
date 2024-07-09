@@ -43,6 +43,9 @@ interface TextMetrics {
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightAscent;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightDescent;
 
+    // For editing, to get the text offset at a point
+    [RuntimeEnabled=ExtendedTextMetrics] unsigned long caretPositionFromPoint(double x);
+
     // For selection
     [RuntimeEnabled=ExtendedTextMetrics, RaisesException] sequence<DOMRectReadOnly> getSelectionRects([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
     // For bounding box
