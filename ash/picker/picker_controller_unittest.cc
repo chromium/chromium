@@ -728,6 +728,36 @@ TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
   EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("abc"));
 }
 
+TEST_F(PickerControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
+  base::test::TestFuture<std::vector<PickerSearchResultsSection>> search_future;
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  controller.ToggleWidget();
+  controller.StartSearch(u"caps", /*category=*/{},
+                         search_future.GetRepeatingCallback());
+
+  EXPECT_THAT(search_future.Take(),
+              Contains(Property(&PickerSearchResultsSection::results,
+                                Contains(PickerSearchResult::CapsLock(true)))));
+}
+
+TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
+  base::test::TestFuture<std::vector<PickerSearchResultsSection>> search_future;
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  GetImeKeyboard()->SetCapsLockEnabled(true);
+
+  controller.ToggleWidget();
+  controller.StartSearch(u"caps", /*category=*/{},
+                         search_future.GetRepeatingCallback());
+
+  EXPECT_THAT(
+      search_future.Take(),
+      Contains(Property(&PickerSearchResultsSection::results,
+                        Contains(PickerSearchResult::CapsLock(false)))));
+}
+
 struct ActionTestCase {
   PickerSearchResult result;
   std::optional<PickerActionType> unfocused_action;

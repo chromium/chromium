@@ -24,6 +24,7 @@ using ::testing::VariantWith;
 
 struct TestCase {
   std::vector<PickerCategory> available_categories;
+  bool caps_lock_state_to_search = false;
   std::u16string query;
   std::vector<PickerSearchResult> expected_results;
 };
@@ -31,10 +32,13 @@ struct TestCase {
 class PickerActionSearchTest : public testing::TestWithParam<TestCase> {};
 
 TEST_P(PickerActionSearchTest, MatchesExpectedCategories) {
-  const auto& [available_categories, query, expected_results] = GetParam();
-  EXPECT_THAT(
-      PickerActionSearch({.available_categories = available_categories}, query),
-      expected_results);
+  const auto& [available_categories, caps_lock_state_to_search, query,
+               expected_results] = GetParam();
+  EXPECT_THAT(PickerActionSearch(
+                  {.available_categories = available_categories,
+                   .caps_lock_state_to_search = caps_lock_state_to_search},
+                  query),
+              expected_results);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -86,6 +90,20 @@ INSTANTIATE_TEST_SUITE_P(
             .available_categories = {PickerCategory::kLinks},
             .query = u"Browsing history1",
             .expected_results = {},
+        },
+        // Caps Lock Off
+        TestCase{
+            .available_categories = {},
+            .caps_lock_state_to_search = false,
+            .query = u"caps",
+            .expected_results = {PickerSearchResult::CapsLock(false)},
+        },
+        // Caps Lock On
+        TestCase{
+            .available_categories = {},
+            .caps_lock_state_to_search = true,
+            .query = u"caps",
+            .expected_results = {PickerSearchResult::CapsLock(true)},
         }));
 
 }  // namespace

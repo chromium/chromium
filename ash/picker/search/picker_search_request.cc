@@ -67,19 +67,20 @@ const char* SearchSourceToHistogram(PickerSearchSource source) {
 
 }  // namespace
 
-PickerSearchRequest::PickerSearchRequest(
-    std::u16string_view query,
-    std::optional<PickerCategory> category,
-    SearchResultsCallback callback,
-    DoneCallback done_callback,
-    PickerClient* client,
-    base::span<const PickerCategory> available_categories)
+PickerSearchRequest::PickerSearchRequest(std::u16string_view query,
+                                         std::optional<PickerCategory> category,
+                                         SearchResultsCallback callback,
+                                         DoneCallback done_callback,
+                                         PickerClient* client,
+                                         const Options& options)
     : is_category_specific_search_(category.has_value()),
       client_(CHECK_DEREF(client)),
       current_callback_(std::move(callback)),
       done_callback_(std::move(done_callback)) {
   CHECK(!current_callback_.is_null());
   CHECK(!done_callback_.is_null());
+  base::span<const PickerCategory> available_categories =
+      options.available_categories;
   std::string utf8_query = base::UTF16ToUTF8(query);
 
   std::vector<PickerSearchSource> cros_search_sources;
@@ -138,7 +139,9 @@ PickerSearchRequest::PickerSearchRequest(
     MarkSearchStarted(PickerSearchSource::kAction);
     // Action results are currently synchronous.
     HandleActionSearchResults(PickerActionSearch(
-        {.available_categories = available_categories}, query));
+        {.available_categories = available_categories,
+         .caps_lock_state_to_search = options.caps_lock_state_to_search},
+        query));
 
     if (base::Contains(available_categories, PickerCategory::kEditorWrite)) {
       // Editor results are currently synchronous.

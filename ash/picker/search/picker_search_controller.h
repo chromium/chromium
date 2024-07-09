@@ -35,7 +35,7 @@ class ASH_EXPORT PickerSearchController {
 
   void StartSearch(std::u16string_view query,
                    std::optional<PickerCategory> category,
-                   base::span<const PickerCategory> available_categories,
+                   PickerSearchRequest::Options search_options,
                    PickerViewDelegate::SearchResultsCallback callback);
 
   void StopSearch();

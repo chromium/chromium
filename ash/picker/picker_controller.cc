@@ -400,9 +400,14 @@ void PickerController::StartSearch(std::u16string_view query,
                                    std::optional<PickerCategory> category,
                                    SearchResultsCallback callback) {
   CHECK(search_controller_);
-  search_controller_->StartSearch(query, std::move(category),
-                                  GetAvailableCategories(),
-                                  std::move(callback));
+  CHECK(model_);
+  search_controller_->StartSearch(
+      query, std::move(category),
+      {
+          .available_categories = GetAvailableCategories(),
+          .caps_lock_state_to_search = !model_->is_caps_lock_enabled(),
+      },
+      std::move(callback));
 }
 
 void PickerController::StopSearch() {

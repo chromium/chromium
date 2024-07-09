@@ -18,6 +18,7 @@ enum class PickerCategory;
 
 struct PickerActionSearchOptions {
   base::span<const PickerCategory> available_categories;
+  bool caps_lock_state_to_search;
 };
 
 ASH_EXPORT std::vector<PickerSearchResult> PickerActionSearch(
