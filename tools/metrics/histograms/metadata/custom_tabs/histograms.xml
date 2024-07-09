@@ -290,6 +290,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.GoogleBottomBar.LensSupportStatus"
+    enum="LensSupportStatus" expires_after="2025-07-01">
+  <owner>tivi@google.com</owner>
+  <owner>gbb-cct@google.com</owner>
+  <summary>
+    Whether the user supports the Google Lens entrypoint in Google Bottom Bar
+    and if not, the reason why. Recorded when user clicks on Lens button in
+    Google Bottom bar, that is visible only if the GoogleBottomBarVariantLayouts
+    feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.GoogleBottomBar.Variant.Created"
     enum="GoogleBottomBarVariantCreatedEvent" expires_after="2025-05-16">
   <owner>tivi@google.com</owner>
