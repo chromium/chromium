@@ -840,7 +840,7 @@ BASE_FEATURE(kV4L2FlatVideoDecoder,
 //         stateless decoders.
 BASE_FEATURE(kV4L2FlatStatefulVideoDecoder,
              "V4L2FlatStatefulVideoDecoder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Inform video blitter of video color space.
