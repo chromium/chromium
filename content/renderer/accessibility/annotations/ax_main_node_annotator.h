@@ -24,6 +24,13 @@ namespace content {
 
 class CONTENT_EXPORT AXMainNodeAnnotator : public AXAnnotator {
  public:
+  enum AXMainNodeAnnotatorAuthorStatus {
+    kUnconfirmed = 0,
+    kAuthorProvidedMain = 1,
+    kAuthorDidNotProvideMain = 2,
+    kMaxValue = kUnconfirmed
+  };
+
   explicit AXMainNodeAnnotator(
       RenderAccessibilityImpl* const render_accessibility);
   AXMainNodeAnnotator(const AXMainNodeAnnotator&) = delete;
@@ -50,6 +57,8 @@ class CONTENT_EXPORT AXMainNodeAnnotator : public AXAnnotator {
   void ProcessScreen2xResult(const blink::WebDocument& document,
                              ui::AXNodeID main_node_id);
 
+  void ComputeAuthorStatus(ui::AXTreeUpdate* update);
+
   // Weak, owns us.
   const raw_ptr<RenderAccessibilityImpl> render_accessibility_;
 
@@ -60,6 +69,10 @@ class CONTENT_EXPORT AXMainNodeAnnotator : public AXAnnotator {
 
   // The id of the main node identified.
   ui::AXNodeID main_node_id_ = ui::kInvalidAXNodeID;
+
+  // Whether a main node was provided by the author.
+  AXMainNodeAnnotatorAuthorStatus author_status_ =
+      AXMainNodeAnnotatorAuthorStatus::kUnconfirmed;
 
   base::WeakPtrFactory<AXMainNodeAnnotator> weak_ptr_factory_{this};
 };

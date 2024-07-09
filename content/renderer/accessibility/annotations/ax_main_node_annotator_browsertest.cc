@@ -146,4 +146,21 @@ TEST_F(AXMainNodeAnnotatorTest, AnnotateMainNode) {
   ASSERT_EQ(mock_annotator_service().main_, expected_main.AxID());
 }
 
+TEST_F(AXMainNodeAnnotatorTest, DoesNothingIfAuthorProvidedNode) {
+  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
+      <body>
+        <div role="main">
+          <div>Heading</div>
+          <div>Paragraph</div>
+          <div>Paragraph</div>
+        </div>
+      </body>
+      )HTML");
+
+  // Expect mock annotator service did not run.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0u, mock_annotator_service().content_nodes_.size());
+  EXPECT_EQ(ui::kInvalidAXNodeID, mock_annotator_service().main_);
+}
+
 }  // namespace content
