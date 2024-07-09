@@ -248,6 +248,7 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
   host_helper.WaitForHostCompletedFirstLoad();
 
   WaitForJSReady();
+  SkipInitializeWebCamFaceLandmarker();
   SetUpJSTestSupport();
   CancelMouseControllerInterval();
   CreateFaceLandmarker();
@@ -322,6 +323,17 @@ void FaceGazeTestUtils::WaitForJSReady() {
           () => {
             chrome.test.sendScriptResult('ready');
           });
+    })();
+  )JS");
+  ExecuteAccessibilityCommonScript(script);
+}
+
+void FaceGazeTestUtils::SkipInitializeWebCamFaceLandmarker() {
+  std::string script = base::StringPrintf(R"JS(
+    (function() {
+      window.accessibilityCommon.getFaceGazeForTest()
+          .setSkipInitializeWebCamFaceLandmarkerForTesting(true);
+      chrome.test.sendScriptResult('ready');
     })();
   )JS");
   ExecuteAccessibilityCommonScript(script);

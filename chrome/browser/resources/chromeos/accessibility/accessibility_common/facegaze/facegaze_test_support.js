@@ -41,6 +41,14 @@ class FaceGazeTestSupport {
     return this.getFaceGaze_().gestureHandler_;
   }
 
+  /**
+   * @return {!WebCamFaceLandmarker}
+   * @private
+   */
+  getWebCamFaceLandmarker_() {
+    return this.getFaceGaze_().webCamFaceLandmarker_;
+  }
+
   /** Cancels the MouseController interval to increase stability in tests. */
   cancelMouseControllerInterval() {
     clearInterval(this.getMouseController_().mouseInterval_);
@@ -58,21 +66,9 @@ class FaceGazeTestSupport {
     this.notifyCcTests_();
   }
 
-  /**
-   * Gets the WebCamFaceLandmarker object off of the camera stream window.
-   * @return {!webCamFaceLandmarker}
-   * @private
-   */
-  async waitForWebCamFaceLandmarker_() {
-    await this.getFaceGaze_().cameraStreamReadyPromise_;
-    const window = chrome.extension.getViews().find(
-        view => view.location.href.includes('camera_stream.html'));
-    return window.webCamFaceLandmarker;
-  }
-
   /** Instantiates the FaceLandmarker. */
   async createFaceLandmarker() {
-    const webCamFaceLandmarker = await this.waitForWebCamFaceLandmarker_();
+    const webCamFaceLandmarker = this.getWebCamFaceLandmarker_();
     await webCamFaceLandmarker.createFaceLandmarker_();
     if (webCamFaceLandmarker.faceLandmarker_) {
       this.notifyCcTests_();

@@ -21,31 +21,10 @@ FaceGazeMediaPipeTest = class extends FaceGazeTestBase {
         /*extensionIdName=*/ 'kAccessibilityCommonExtensionId',
         /*failOnConsoleError=*/ false);
   }
-
-  /**
-   * Installs mock accessibility private into the camera stream context, as
-   * the default setup only installs it into the background context.
-   */
-  installMockAccessibilityPrivate() {
-    const window = chrome.extension.getViews().find(
-        view => view.location.href.includes('camera_stream.html'));
-    assertTrue(!!window);
-
-    window.chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
-  }
-
-  /** @return {!webCamFaceLandmarker} */
-  async waitForWebCamFaceLandmarker() {
-    await this.getFaceGaze().cameraStreamReadyPromise_;
-    const window = chrome.extension.getViews().find(
-        view => view.location.href.includes('camera_stream.html'));
-    return window.webCamFaceLandmarker;
-  }
 };
 
 AX_TEST_F('FaceGazeMediaPipeTest', 'CreateFaceLandmarker', async function() {
-  const webCamFaceLandmarker = await this.waitForWebCamFaceLandmarker();
-  this.installMockAccessibilityPrivate();
+  const webCamFaceLandmarker = this.getFaceGaze().webCamFaceLandmarker_;
   await this.mockAccessibilityPrivate.initializeFaceGazeAssets();
   await webCamFaceLandmarker.createFaceLandmarker_();
   assertTrue(!!webCamFaceLandmarker.faceLandmarker_);

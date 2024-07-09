@@ -193,9 +193,16 @@ FaceGazeTestBase = class extends E2ETestBase {
     assertNotNullNorUndefined(MediapipeFacialGesture);
     assertNotNullNorUndefined(MetricsUtils);
     assertNotNullNorUndefined(MouseController);
+    assertNotNullNorUndefined(WebCamFaceLandmarker);
     await new Promise(resolve => {
       accessibilityCommon.setFeatureLoadCallbackForTest('facegaze', resolve);
     });
+
+    // We don't want to initialize the WebCamFaceLandmarker during tests
+    // because it will try to connect to the built-in webcam. There is a
+    // separate codepath for initializing just the FaceLandmarker API (see
+    // FaceGazeMediaPipeTest).
+    this.getFaceGaze().setSkipInitializeWebCamFaceLandmarkerForTesting(true);
   }
 
   /** @override */

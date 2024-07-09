@@ -5,6 +5,7 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
+import {FaceLandmarkerResultWithLatency, WebCamFaceLandmarker} from './camera_stream.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
@@ -17,34 +18,29 @@ export class FaceGaze {
   private gestureHandler_: GestureHandler;
   private onInitCallbackForTest_: (() => void)|undefined;
   private initialized_ = false;
-  declare private cameraStreamReadyPromise_: Promise<void>;
-  declare private cameraStreamClosedPromise_: Promise<void>;
-  private cameraStreamReadyResolver_?: () => void;
-  private cameraStreamClosedResolver_?: () => void;
-  private cameraStreamWindowId_ = -1;
   private cursorControlEnabled_ = false;
   private actionsEnabled_ = false;
   private prefsListener_: (prefs: PrefObject[]) => void;
   private metricsUtils_: MetricsUtils;
+  private webCamFaceLandmarker_: WebCamFaceLandmarker;
+  private skipInitializeWebCamFaceLandmarkerForTesting_ = false;
 
   constructor() {
+    this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
+        (resultWithLatency: FaceLandmarkerResultWithLatency) => {
+          const {result, latency} = resultWithLatency;
+          this.processFaceLandmarkerResult_(result, latency);
+        });
+
     this.mouseController_ = new MouseController();
     this.gestureHandler_ = new GestureHandler(this.mouseController_);
     this.metricsUtils_ = new MetricsUtils();
-    this.cameraStreamReadyPromise_ = new Promise(resolve => {
-      this.cameraStreamReadyResolver_ = resolve;
-    });
-    this.cameraStreamClosedPromise_ = new Promise(resolve => {
-      this.cameraStreamClosedResolver_ = resolve;
-    });
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init_();
   }
 
   /** Initializes FaceGaze. */
-  private async init_(): Promise<void> {
-    this.connectToWebCam_();
-
+  private init_(): void {
     // TODO(b/309121742): Listen to magnifier bounds changed so as to update
     // cursor relative position logic when magnifier is running.
 
@@ -56,6 +52,25 @@ export class FaceGaze {
       this.onInitCallbackForTest_ = undefined;
     }
     this.initialized_ = true;
+
+    // Use a timeout to defer the initialization of the WebCamFaceLandmarker.
+    // For tests, we can guard the initialization using a testing-specific
+    // variable. For production, this will initialize the WebCamFaceLandmarker
+    // after the timeout has elapsed.
+    setTimeout(() => {
+      this.maybeInitializeWebCamFaceLandmarker_();
+    }, FaceGaze.INITIALIZE_WEB_CAM_FACE_LANDMARKER_TIMEOUT);
+
+    // TODO(b/309121742): Add logic to open the camera stream page so that
+    // developers can quickly customize weights.
+  }
+
+  private maybeInitializeWebCamFaceLandmarker_(): void {
+    if (this.skipInitializeWebCamFaceLandmarkerForTesting_) {
+      return;
+    }
+
+    this.webCamFaceLandmarker_.init();
   }
 
   private updateFromPrefs_(prefs: PrefObject[]): void {
@@ -97,36 +112,6 @@ export class FaceGaze {
     }
   }
 
-  private connectToWebCam_(): void {
-    // Open camera_stream.html, which will connect to the webcam and pass
-    // FaceLandmarker results back to the background page. Use chrome.windows
-    // API to ensure page is opened in Ash-chrome.
-    const params = {
-      url: chrome.runtime.getURL(
-          'accessibility_common/facegaze/camera_stream.html'),
-      type: chrome.windows.CreateType.PANEL,
-    };
-    chrome.windows.create(params, (win) => {
-      if (!win || win.id === undefined) {
-        return;
-      }
-
-      this.cameraStreamWindowId_ = win.id;
-      chrome.runtime.onMessage.addListener(message => {
-        if (message.type === 'faceLandmarkerResult') {
-          this.processFaceLandmarkerResult_(message.result, message.latency);
-        } else if (message.type === 'cameraStreamReadyForTesting') {
-          this.cameraStreamReadyResolver_!();
-        } else if (message.type === 'updateLandmarkWeights') {
-          this.mouseController_.updateLandmarkWeights(
-              new Map(Object.entries(message.weights)));
-        }
-
-        return false;
-      });
-    });
-  }
-
   private processFaceLandmarkerResult_(
       result: FaceLandmarkerResult, latency?: number): void {
     if (!result) {
@@ -140,6 +125,7 @@ export class FaceGaze {
     if (this.cursorControlEnabled_) {
       this.mouseController_.onFaceLandmarkerResult(result);
     }
+
     if (this.actionsEnabled_) {
       const macros = this.gestureHandler_.detectMacros(result);
       for (const macro of macros) {
@@ -164,11 +150,6 @@ export class FaceGaze {
   onFaceGazeDisabled(): void {
     this.mouseController_.reset();
     this.gestureHandler_.stop();
-    if (this.cameraStreamWindowId_ !== -1) {
-      chrome.windows.remove(this.cameraStreamWindowId_, () => {
-        this.cameraStreamClosedResolver_!();
-      });
-    }
   }
 
   /** Allows tests to wait for FaceGaze to be fully initialized. */
@@ -177,11 +158,23 @@ export class FaceGaze {
       this.onInitCallbackForTest_ = callback;
       return;
     }
+
     callback();
+  }
+
+  /**
+   * Used to set the value of `skipInitializeWebCamFaceLandmarkerForTesting_`.
+   * We want to use this method in tests because tests will want to avoid
+   * initializing the WebCamFaceLandmarker, since it starts the webcam stream
+   * and causes errors.
+   */
+  setSkipInitializeWebCamFaceLandmarkerForTesting(skip: boolean): void {
+    this.skipInitializeWebCamFaceLandmarkerForTesting_ = skip;
   }
 }
 
 export namespace FaceGaze {
+  export const INITIALIZE_WEB_CAM_FACE_LANDMARKER_TIMEOUT = 5 * 1000;
   // Pref names. Should be in sync with with values at ash_pref_names.h.
   export const PREF_CURSOR_CONTROL_ENABLED =
       'settings.a11y.face_gaze.cursor_control_enabled';

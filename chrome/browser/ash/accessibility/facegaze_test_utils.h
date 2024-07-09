@@ -245,6 +245,7 @@ class FaceGazeTestUtils {
   // Setup-related methods.
   void SetUpMediapipeDir();
   void WaitForJSReady();
+  void SkipInitializeWebCamFaceLandmarker();
   void SetUpJSTestSupport();
   void CancelMouseControllerInterval();
   // Creates and initializes the FaceLandmarker API within the extension.

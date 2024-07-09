@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/shell.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
@@ -13,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
@@ -50,6 +52,14 @@ class MockEventHandler : public ui::EventHandler {
   }
 
   void OnMouseEvent(ui::MouseEvent* event) override {
+    if (!event->IsSynthesized() ||
+        event->source_device_id() != ui::EventDeviceId::ED_UNKNOWN_DEVICE) {
+      // FaceGaze will only send synthesized events. Since this class is meant
+      // to verify events sent by FaceGaze, we can ignore all non-synthesized
+      // events.
+      return;
+    }
+
     ui::EventType type = event->type();
     if (type == ui::EventType::ET_MOUSE_PRESSED ||
         type == ui::EventType::ET_MOUSE_RELEASED ||
@@ -66,6 +76,17 @@ class MockEventHandler : public ui::EventHandler {
   const std::vector<ui::KeyEvent>& key_events() const { return key_events_; }
   const std::vector<ui::MouseEvent>& mouse_events() const {
     return mouse_events_;
+  }
+
+  std::vector<ui::MouseEvent> mouse_events(ui::EventType type) const {
+    std::vector<ui::MouseEvent> events;
+    for (const auto& event : mouse_events_) {
+      if (event.type() == type) {
+        events.push_back(event);
+      }
+    }
+
+    return events;
   }
 
  private:
@@ -316,23 +337,22 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MousePressAndReleaseEvents) {
   // Move mouth right to trigger mouse press event.
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_PUCKER, 60));
-  std::vector<ui::MouseEvent> mouse_events = event_handler().mouse_events();
-  ASSERT_EQ(2u, mouse_events.size());
-  ASSERT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
-  ASSERT_TRUE(mouse_events[0].IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), mouse_events[0].root_location());
-  ASSERT_TRUE(mouse_events[0].IsSynthesized());
-  ASSERT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
-  ASSERT_TRUE(mouse_events[1].IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), mouse_events[1].root_location());
-  ASSERT_TRUE(mouse_events[1].IsSynthesized());
+  auto press_events =
+      event_handler().mouse_events(ui::EventType::ET_MOUSE_PRESSED);
+  auto release_events =
+      event_handler().mouse_events(ui::EventType::ET_MOUSE_RELEASED);
+  ASSERT_EQ(1u, press_events.size());
+  ASSERT_EQ(1u, release_events.size());
+  ASSERT_TRUE(press_events.back().IsOnlyLeftMouseButton());
+  ASSERT_EQ(gfx::Point(600, 400), press_events[0].root_location());
+  ASSERT_TRUE(release_events.back().IsOnlyLeftMouseButton());
+  ASSERT_EQ(gfx::Point(600, 400), release_events[0].root_location());
 
   // Release doesn't trigger anything else.
   event_handler().ClearEvents();
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_PUCKER, 30));
-  mouse_events = event_handler().mouse_events();
-  ASSERT_EQ(0u, mouse_events.size());
+  ASSERT_EQ(0u, event_handler().mouse_events().size());
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
@@ -348,23 +368,24 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   // Move mouth right to trigger mouse press event.
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_RIGHT, 40));
-  std::vector<ui::MouseEvent> mouse_events = event_handler().mouse_events();
+  std::vector<ui::MouseEvent> mouse_events =
+      event_handler().mouse_events(ui::EventType::ET_MOUSE_PRESSED);
   ASSERT_EQ(1u, mouse_events.size());
-  ASSERT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
-  ASSERT_TRUE(mouse_events[0].IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), mouse_events[0].root_location());
-  ASSERT_TRUE(mouse_events[0].IsSynthesized());
+  ASSERT_EQ(ui::ET_MOUSE_PRESSED, mouse_events.back().type());
+  ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
+  ASSERT_EQ(gfx::Point(600, 400), mouse_events.back().root_location());
+  ASSERT_TRUE(mouse_events.back().IsSynthesized());
 
   // Release mouth right to trigger mouse release event.
   event_handler().ClearEvents();
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_RIGHT, 20));
-  mouse_events = event_handler().mouse_events();
+  mouse_events = event_handler().mouse_events(ui::EventType::ET_MOUSE_RELEASED);
   ASSERT_EQ(1u, mouse_events.size());
-  ASSERT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[0].type());
-  ASSERT_TRUE(mouse_events[0].IsOnlyLeftMouseButton());
-  ASSERT_EQ(gfx::Point(600, 400), mouse_events[0].root_location());
-  ASSERT_TRUE(mouse_events[0].IsSynthesized());
+  ASSERT_EQ(ui::ET_MOUSE_RELEASED, mouse_events.back().type());
+  ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
+  ASSERT_EQ(gfx::Point(600, 400), mouse_events.back().root_location());
+  ASSERT_TRUE(mouse_events.back().IsSynthesized());
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, PerformanceHistogram) {
