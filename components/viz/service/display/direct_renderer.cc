@@ -13,6 +13,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/circular_deque.h"
+#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -417,6 +418,15 @@ void DirectRenderer::DrawFrame(
   UMA_HISTOGRAM_CUSTOM_COUNTS("Compositing.DirectRenderer.TotalPixelsRendered",
                               total_pixels_rendered_this_frame_, kMinPixelCount,
                               kMaxPixelCount, kNumBucketsPixelCount);
+
+  // Data focused on pixel counts closer to screen resolution sizes.
+  constexpr base::Histogram::Sample kHistogramScale = 100 * 1024;
+  constexpr uint64_t kNumberOfBucketsLinear = 100;
+  UMA_HISTOGRAM_SCALED_EXACT_LINEAR(
+      "Compositing.DirectRenderer.TotalPixelsRenderedNarrow",
+      total_pixels_rendered_this_frame_, 1, kNumberOfBucketsLinear + 1,
+      kHistogramScale);
+
   DBG_LOG("direct.renderer.total_pixels", "Total Pixels: %" PRIu64,
           total_pixels_rendered_this_frame_);
 
@@ -997,6 +1007,8 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   if (use_render_pass_drawn_rect_) {
     if (GetRenderPassBackingDrawnRect(render_pass->id) ==
         render_pass->output_rect) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Compositing.DirectRenderer.RenderPassDrawnRectMatch", true);
       return render_pass->damage_rect;
     } else {
       // This is the first time we are drawing to this backing but it might not
@@ -1007,6 +1019,8 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
       // the drawn area by only fully drawing the visible portion of this render
       // pass and not the entire output rect. This information is available in
       // surface aggregator as root parent clip for render passes.
+      UMA_HISTOGRAM_BOOLEAN(
+          "Compositing.DirectRenderer.RenderPassDrawnRectMatch", false);
       return render_pass->output_rect;
     }
   }

@@ -243,6 +243,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.DirectRenderer.RenderPassDrawnRectMatch"
+    enum="Boolean" expires_after="2025-06-09">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Whether a render pass drawn rect matches the expected output rect. Record
+    for each non-root render pass every time it is drawn.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.DirectRenderer.SkipAllNonRootRenderPassesPerFrame"
     enum="BooleanSkipped" expires_after="2025-01-05">
   <owner>magchen@chromium.org</owner>
@@ -265,13 +275,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.DirectRenderer.TotalPixelsRendered" units="pixels"
+<histogram name="Compositing.DirectRenderer.{FocusType}" units="pixels"
     expires_after="2025-06-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Record every frame the sum of all rendered pixels from all render passes.
+    The buckets are {FocusType}
   </summary>
+  <token key="FocusType">
+    <variant name="TotalPixelsRendered" summary="Full Linear view of count."/>
+    <variant name="TotalPixelsRenderedNarrow"
+        summary="Narrowed bucket sampling selected based on common screen
+                 resolutions"/>
+  </token>
 </histogram>
 
 <histogram name="Compositing.Display.AdpfHintUs" units="microseconds"
