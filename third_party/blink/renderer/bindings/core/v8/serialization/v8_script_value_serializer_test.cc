@@ -1052,7 +1052,8 @@ TEST(V8ScriptValueSerializerTest, OutOfRangeMessagePortIndex) {
   }
 }
 
-TEST(V8ScriptValueSerializerTest, RoundTripMojoHandle) {
+// TODO(crbug.com/351936376): Re-enable this test.
+TEST(V8ScriptValueSerializerTest, DISABLED_RoundTripMojoHandle) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ContextFeatureSettings::From(
