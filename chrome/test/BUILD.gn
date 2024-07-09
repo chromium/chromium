@@ -8597,6 +8597,7 @@ test("unit_tests") {
       "../browser/nearby_sharing/instantmessaging/receive_messages_express_unittest.cc",
       "../browser/nearby_sharing/instantmessaging/send_message_express_unittest.cc",
       "../browser/nearby_sharing/instantmessaging/stream_parser_unittest.cc",
+      "../browser/nearby_sharing/mdns/nearby_connections_mdns_manager_unittest.cc",
       "../browser/nearby_sharing/mock_nearby_sharing_service.cc",
       "../browser/nearby_sharing/mock_nearby_sharing_service.h",
       "../browser/nearby_sharing/nearby_confirmation_manager_unittest.cc",

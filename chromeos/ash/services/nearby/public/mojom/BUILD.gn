@@ -25,6 +25,7 @@ mojom("nearby_share_settings") {
 mojom("mojom") {
   sources = [
     "firewall_hole.mojom",
+    "mdns.mojom",
     "nearby_connections.mojom",
     "nearby_connections_types.mojom",
     "nearby_decoder.mojom",

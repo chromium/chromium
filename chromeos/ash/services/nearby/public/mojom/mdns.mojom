@@ -1,0 +1,49 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sharing.mojom;
+
+// Network discovery service information. This object is used for both
+// ServiceFound and ServiceLost events; any combination of optional fields
+// should be handled by the caller. ServiceLost events do not need to provide
+// any optional fields.
+// Note that this object is based on and will be used to create the object
+// defined in third_party/nearby/src/internal/platform/nsd_service_info.h.
+struct NsdServiceInfo {
+  string service_name;
+  string service_type;
+  map<string, string>? txt_records;
+  string? ip_address;
+  int16? port;
+};
+
+// Listener on Mdns discovery events. Register as an observer via AddObserver().
+interface MdnsObserver {
+  // Called when a new service is discovered.
+  ServiceFound(NsdServiceInfo service_info);
+  // Called when a new service is lost.
+  ServiceLost(NsdServiceInfo service_info);
+};
+
+// Manages scanning and advertising over mDNS. Implementation lives
+// in the Browser process, and it is expected to be called by a mojo
+// remote that lives in the Nearby Utility process.
+interface MdnsManager {
+  // Adds an observer that listens for service discovery events.
+  AddObserver(pending_remote<MdnsObserver> observer);
+
+  // Requests the MdnsManager to start a new discovery session. Returns false if
+  // session not created successfully. Must be sync as the calling function
+  // is sync.
+  [Sync]
+  StartDiscoverySession(string service_type)
+    => (bool result);
+
+  // Requests the MdnsManager to stop a discovery session. Returns false if
+  // the given |service_type| has no associated discovery session. Must
+  // be sync as the calling function is sync.
+  [Sync]
+  StopDiscoverySession(string service_type)
+    => (bool result);
+};
