@@ -332,6 +332,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Curious" summary="Template Curious world"/>
   <variant name="Dreamscapes" summary="Template Dreamscape"/>
   <variant name="Flower" summary="Template Airbrushed"/>
+  <variant name="Freeform" summary="Wallpaper Freeform"/>
   <variant name="Glowscapes" summary="Template Glowscapes"/>
   <variant name="Landscape"
       summary="Template Landscape (OBSOLETE: Use Terrain instead)"/>
@@ -352,6 +353,7 @@ chromium-metrics-reviews@google.com.
                VcBackgroundDreamscapesVc instead)"/>
   <variant name="VcBackgroundDreamscapesVc"
       summary="VcBackground Template Dreamscapes"/>
+  <variant name="VcBackgroundFreeform" summary="VcBackground Freeform"/>
   <variant name="VcBackgroundGlowscapes"
       summary="VcBackground Template Glowscapes"/>
   <variant name="VcBackgroundOffice"
