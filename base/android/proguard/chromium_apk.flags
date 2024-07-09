@@ -24,7 +24,7 @@
 # If we annotated all Parcelables that get put into Bundles other than
 # for saveInstanceState (e.g. PendingIntents), then we could actually keep the
 # names of just those ones. For now, we'll just keep them all.
--keepnames class !cr_allowunused,** implements android.os.Parcelable {}
+-keepnames,allowaccessmodification class !cr_allowunused,** implements android.os.Parcelable {}
 
 # Keep all default constructors for used Fragments. Required since they are
 # called reflectively when fragments are reinflated after the app is killed.
@@ -67,7 +67,7 @@
 # Keep the names of exception types, to make it easier to understand stack
 # traces in contexts where it's not trivial to deobfuscate them - for example
 # when reported to app developers who are using WebView.
--keepnames class ** extends java.lang.Throwable {}
+-keepnames,allowaccessmodification class ** extends java.lang.Throwable {}
 
 # Should be removed once we use Android V SDK. b/336753747
 -keep class !cr_allowunused,androidx.privacysandbox.ads.adservices.internal.ContinuationOutcomeReceiver {
