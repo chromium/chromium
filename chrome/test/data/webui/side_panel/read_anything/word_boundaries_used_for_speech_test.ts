@@ -77,35 +77,28 @@ suite('WordBoundariesUsedForSpeech', () => {
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   });
 
-  suite('by default', () => {
-    test('wordBoundaryState in default state', () => {
-      const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
-      assertEquals(0, state.previouslySpokenIndex);
-      assertEquals(0, state.speechUtteranceStartIndex);
-    });
+  test('by default wordBoundaryState in default state', () => {
+    const state: WordBoundaryState = app.wordBoundaryState;
+    assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
+    assertEquals(0, state.previouslySpokenIndex);
+    assertEquals(0, state.speechUtteranceStartIndex);
   });
 
-  suite('during speech with no word boundaries ', () => {
-    setup(() => {
-      app.playSpeech();
-    });
+  test(
+      'during speech with no boundaries wordBoundaryState in default state',
+      () => {
+        app.playSpeech();
+        const state: WordBoundaryState = app.wordBoundaryState;
+        assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
+        assertEquals(0, state.previouslySpokenIndex);
+        assertEquals(0, state.speechUtteranceStartIndex);
+      });
 
-    test('wordBoundaryState in default state during speech', () => {
-      const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
-      assertEquals(0, state.previouslySpokenIndex);
-      assertEquals(0, state.speechUtteranceStartIndex);
-    });
-  });
-
-  suite('by default', () => {
-    test('wordBoundaryState in default state', () => {
-      const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
-      assertEquals(0, state.previouslySpokenIndex);
-      assertEquals(0, state.speechUtteranceStartIndex);
-    });
+  test('by default, wordBoundaryState in default state', () => {
+    const state: WordBoundaryState = app.wordBoundaryState;
+    assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
+    assertEquals(0, state.previouslySpokenIndex);
+    assertEquals(0, state.speechUtteranceStartIndex);
   });
 
   suite('during speech with one initial word boundary ', () => {
@@ -159,7 +152,8 @@ suite('WordBoundariesUsedForSpeech', () => {
       assertEquals(20, state.speechUtteranceStartIndex);
     });
 
-    test('sentence highlight used without flag', () => {
+    test('sentence highlight used with fast rate', () => {
+      chrome.readingMode.onSpeechRateChange(2);
       app.playSpeech();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -168,20 +162,18 @@ suite('WordBoundariesUsedForSpeech', () => {
     });
   });
 
-  suite('during speech with multiple word boundaries ', () => {
-    setup(() => {
-      app.playSpeech();
-      app.updateBoundary(10);
-      app.updateBoundary(15);
-      app.updateBoundary(25);
-      app.updateBoundary(40);
-    });
+  test(
+      'with multiple word boundaries wordBoundaryState in default state during speech',
+      () => {
+        app.playSpeech();
+        app.updateBoundary(10);
+        app.updateBoundary(15);
+        app.updateBoundary(25);
+        app.updateBoundary(40);
 
-    test('wordBoundaryState in default state during speech', () => {
-      const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-      assertEquals(40, state.previouslySpokenIndex);
-      assertEquals(0, state.speechUtteranceStartIndex);
-    });
+        const state: WordBoundaryState = app.wordBoundaryState;
+        assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
+        assertEquals(40, state.previouslySpokenIndex);
+        assertEquals(0, state.speechUtteranceStartIndex);
+      });
   });
-});
