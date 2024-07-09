@@ -664,10 +664,6 @@ class WebTestDirMerger(DirMerger):
         self.add_helper(FilenameRegexMatch(r'chromedriver\.log$'),
                         MergeFilesKeepFiles(self.filesystem))
 
-        # keep system log for tests on fuchsia platform. See ./port/fuchsia.py
-        self.add_helper(FilenameRegexMatch(r'system_log$'),
-                        MergeFilesKeepFiles(self.filesystem))
-
         # Despite the extension, wptreport files are not true JSON files. They
         # actually contain newline-delimited JSON objects (one per retry/repeat
         # iteration). These reports are already uploaded to ResultDB, so there's
@@ -755,19 +751,6 @@ def ensure_empty_dir(fs, directory, allow_existing, remove_existing):
         output_json_fullpath = fs.join(directory, output_json)
         if fs.exists(output_json_fullpath):
             fs.remove(output_json_fullpath)
-
-    # Fuchsia specific additional logs to be cleaned. Check if 'ffx_log' exists
-    # or not first, otherwise webgpu_blink_web_tests will hang forever.
-    # TODO: work with fuchsia team to remove this special case
-    if fs.exists(fs.join(directory, 'ffx_log')):
-        fuchsia_log_files = [
-            f for f in fs.listdir(directory)
-            if fs.isfile(fs.join(directory, f))
-        ]
-        for file_name in fuchsia_log_files:
-            path = fs.join(directory, file_name)
-            if fs.exists(path):
-                fs.remove(path)
 
 
 def mark_missing_shards(summary_json,
