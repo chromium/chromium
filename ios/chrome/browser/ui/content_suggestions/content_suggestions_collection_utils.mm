@@ -245,8 +245,7 @@ CGFloat HeightForLogoHeader(BOOL logo_is_showing,
     // Returns sufficient vertical space for the Identity Disc to be
     // displayed.
     return ntp_home::kIdentityAvatarDimension +
-           2 * (ntp_home::kIdentityAvatarMargin +
-                ntp_home::kIdentityAvatarPadding);
+           2 * (ntp_home::kHeaderIconMargin + ntp_home::kIdentityAvatarPadding);
   }
 
   header_height += kTopSpacingMaterial;

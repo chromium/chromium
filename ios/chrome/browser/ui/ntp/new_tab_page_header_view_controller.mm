@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/material_timing.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -285,6 +287,10 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
     // needs to respond to user taps first.
     [self addIdentityDisc];
 
+    if (IsHomeCustomizationEnabled()) {
+      [self addCustomizationMenu];
+    }
+
     UIEdgeInsets safeAreaInsets = self.baseViewController.view.safeAreaInsets;
     width = std::max<CGFloat>(
         0, width - safeAreaInsets.left - safeAreaInsets.right);
@@ -461,6 +467,37 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
     [self updateIdentityDiscState];
   }
   [self.headerView setIdentityDiscView:self.identityDiscButton];
+}
+
+// Creates the Home customization menu and adds it to the header view.
+- (void)addCustomizationMenu {
+  UIButton* customizationMenuButton =
+      [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.image = DefaultSymbolTemplateWithPointSize(
+      kPencilSymbol, ntp_home::kCustomizationMenuIconSize);
+  buttonConfiguration.background.backgroundColor =
+      [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+          colorWithAlphaComponent:0.8];
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kTextSecondaryColor];
+  customizationMenuButton.layer.cornerRadius =
+      ntp_home::kCustomizationMenuButtonCornerRadius;
+  customizationMenuButton.pointerInteractionEnabled = YES;
+  customizationMenuButton.clipsToBounds = YES;
+
+  customizationMenuButton.accessibilityIdentifier =
+      kNTPCustomizationMenuButtonIdentifier;
+
+  // TODO(crbug.com/350990359): Add a11y label.
+
+  customizationMenuButton.configuration = buttonConfiguration;
+  [customizationMenuButton addTarget:self.commandHandler
+                              action:@selector(customizationMenuWasTapped:)
+                    forControlEvents:UIControlEventTouchUpInside];
+
+  [self.headerView setCustomizationMenuView:customizationMenuButton];
 }
 
 // Configures `identityDiscButton` with the current state of
@@ -706,7 +743,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 - (void)setSignedOutAccountImage {
   self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
-      kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
+      kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconSize);
 
   self.identityDiscAccessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL);

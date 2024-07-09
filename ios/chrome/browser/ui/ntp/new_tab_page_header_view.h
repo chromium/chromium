@@ -26,6 +26,9 @@
 // The Identity Disc showing the current user's avatar on NTP.
 @property(nonatomic, strong) UIView* identityDiscView;
 
+// The entrypoint for the Home customization menu.
+@property(nonatomic, strong) UIView* customizationMenuView;
+
 // Voice search button.
 @property(nonatomic, strong, readonly) UIButton* voiceSearchButton;
 

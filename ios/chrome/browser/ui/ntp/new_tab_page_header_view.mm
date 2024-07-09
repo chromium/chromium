@@ -241,7 +241,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Sets the layout constraints for size of Identity Disc and toolbar.
   self.identityDiscView.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat dimension =
-      ntp_home::kIdentityAvatarDimension + 2 * ntp_home::kIdentityAvatarMargin;
+      ntp_home::kIdentityAvatarDimension + 2 * ntp_home::kHeaderIconMargin;
   [NSLayoutConstraint activateConstraints:@[
     [self.identityDiscView.heightAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.widthAnchor constraintEqualToConstant:dimension],
@@ -252,6 +252,30 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
         constraintEqualToAnchor:self.toolBarView.topAnchor
                        constant:ntp_home::kIdentityAvatarPadding],
   ]];
+}
+
+- (void)setCustomizationMenuView:(UIView*)customizationMenuView {
+  if (_customizationMenuView) {
+    [_customizationMenuView removeFromSuperview];
+  }
+
+  customizationMenuView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [self.toolBarView addSubview:customizationMenuView];
+  [NSLayoutConstraint activateConstraints:@[
+    [customizationMenuView.centerYAnchor
+        constraintEqualToAnchor:self.toolBarView.centerYAnchor],
+    [customizationMenuView.heightAnchor
+        constraintEqualToConstant:ntp_home::kCustomizationMenuButtonDimension],
+    [customizationMenuView.widthAnchor
+        constraintEqualToAnchor:customizationMenuView.heightAnchor],
+    [customizationMenuView.leadingAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor
+                       constant:(ntp_home::kIdentityAvatarPadding +
+                                 ntp_home::kHeaderIconMargin)],
+  ]];
+
+  _customizationMenuView = customizationMenuView;
 }
 
 - (void)addViewsToSearchField:(UIView*)searchField {

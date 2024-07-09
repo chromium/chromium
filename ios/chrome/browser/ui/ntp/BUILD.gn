@@ -189,6 +189,7 @@ source_set("ntp_internal") {
     "new_tab_page_header_consumer.h",
     "new_tab_page_header_view.h",
     "new_tab_page_header_view.mm",
+    "new_tab_page_header_view_controller+Testing.h",
     "new_tab_page_header_view_controller.h",
     "new_tab_page_header_view_controller.mm",
     "new_tab_page_header_view_controller_delegate.h",
@@ -304,6 +305,7 @@ source_set("unit_tests") {
   sources = [
     "feed_menu_coordinator_unittest.mm",
     "new_tab_page_coordinator_unittest.mm",
+    "new_tab_page_header_view_controller_unittest.mm",
     "new_tab_page_mediator_unittest.mm",
   ]
   deps = [
@@ -347,6 +349,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/start_surface/ui_bundled",
     "//ios/chrome/browser/ui/content_suggestions",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
@@ -365,6 +368,7 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base:test_support",
     "//ui/strings",
   ]
 }

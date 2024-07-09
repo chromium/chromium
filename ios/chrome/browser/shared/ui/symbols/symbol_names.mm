@@ -255,6 +255,7 @@ NSString* const kMultiIdentitySymbol = @"person.2.fill";
 NSString* const kStarBubbleFillSymbol = @"star.bubble.fill";
 NSString* const kTurnUpRightDiamondFillSymbol =
     @"arrow.triangle.turn.up.right.diamond.fill";
+NSString* const kPencilSymbol = @"pencil";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

@@ -19,6 +19,9 @@
 // Informs the receiver that the identity disc was tapped.
 - (void)identityDiscWasTapped:(UIView*)identityDisc;
 
+// Informs the receiver that the customization menu entrypoint was tapped.
+- (void)customizationMenuWasTapped:(UIView*)customizationMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_COMMANDS_H_

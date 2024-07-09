@@ -36,12 +36,18 @@ extern const CGFloat kSuggestionPeekingHeight;
 
 // Dimension of user's identity avatar as a square image.
 extern const CGFloat kIdentityAvatarDimension;
-// Margin around user's identity avatar.
-extern const CGFloat kIdentityAvatarMargin;
+// Margin around identity avatar and customization menu.
+extern const CGFloat kHeaderIconMargin;
 // Padding around user's identity avatar and its margin.
 extern const CGFloat kIdentityAvatarPadding;
 // Dimension of signed-out identity icon.
-extern const CGFloat kSignedOutIdentityIconDimension;
+extern const CGFloat kSignedOutIdentityIconSize;
+// Dimension of the customization menu button's icon.
+extern const CGFloat kCustomizationMenuIconSize;
+// Dimension of the customization menu button.
+extern const CGFloat kCustomizationMenuButtonDimension;
+// The corner radius of the customization menu button.
+extern const CGFloat kCustomizationMenuButtonCornerRadius;
 
 // The background color of the NTP.
 UIColor* NTPBackgroundColor();

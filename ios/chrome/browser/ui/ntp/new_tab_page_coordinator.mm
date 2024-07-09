@@ -865,6 +865,10 @@
   }
 }
 
+- (void)customizationMenuWasTapped:(UIView*)customizationMenu {
+  // TODO(crbug.com/350990359): Handle customization menu.
+}
+
 #pragma mark - FeedMenuCoordinatorDelegate
 
 - (void)didSelectFeedMenuItem:(FeedMenuItemType)item {

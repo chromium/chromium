@@ -21,4 +21,7 @@ NSString* const kNTPFeedHeaderSegmentedControlIdentifier =
 
 NSString* const kNTPFeedHeaderIdentityDisc = @"kNTPFeedHeaderIdentityDisc";
 
+NSString* const kNTPCustomizationMenuButtonIdentifier =
+    @"NTPCustomizationMenuButtonIdentifier";
+
 const CGFloat kHomeModuleContainerCornerRadius = 24.0f;
