@@ -19,6 +19,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 
