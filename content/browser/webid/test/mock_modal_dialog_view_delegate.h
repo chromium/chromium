@@ -23,11 +23,11 @@ class MockModalDialogViewDelegate
   MockModalDialogViewDelegate& operator=(const MockModalDialogViewDelegate&) =
       delete;
 
-  MOCK_METHOD0(OnClose, void());
-  MOCK_METHOD3(OnResolve,
-               bool(GURL,
-                    const std::optional<std::string>&,
-                    const std::string&));
+  MOCK_METHOD(void, OnClose, (), (override));
+  MOCK_METHOD(bool,
+              OnResolve,
+              (GURL, const std::optional<std::string>&, const std::string&),
+              (override));
 };
 
 }  // namespace content

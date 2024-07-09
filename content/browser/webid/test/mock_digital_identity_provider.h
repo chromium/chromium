@@ -21,11 +21,13 @@ class MockDigitalIdentityProvider : public DigitalIdentityProvider {
   MockDigitalIdentityProvider& operator=(const MockDigitalIdentityProvider&) =
       delete;
 
-  MOCK_METHOD4(Request,
-               void(WebContents*,
-                    const url::Origin& origin,
-                    const std::string& request,
-                    DigitalIdentityCallback));
+  MOCK_METHOD(void,
+              Request,
+              (WebContents*,
+               const url::Origin& origin,
+               const std::string& request,
+               DigitalIdentityCallback),
+              (override));
 };
 
 }  // namespace content

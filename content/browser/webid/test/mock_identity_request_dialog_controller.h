@@ -23,50 +23,62 @@ class MockIdentityRequestDialogController
   MockIdentityRequestDialogController& operator=(
       const MockIdentityRequestDialogController&) = delete;
 
-  MOCK_METHOD10(ShowAccountsDialog,
-                bool(const std::string&,
-                     const std::optional<std::string>&,
-                     const std::vector<content::IdentityProviderData>&,
-                     IdentityRequestAccount::SignInMode,
-                     blink::mojom::RpMode rp_mode,
-                     const std::optional<content::IdentityProviderData>&,
-                     AccountSelectionCallback,
-                     LoginToIdPCallback,
-                     DismissCallback,
-                     AccountsDisplayedCallback));
-  MOCK_METHOD0(DestructorCalled, void());
-  MOCK_METHOD8(ShowFailureDialog,
-               bool(const std::string&,
-                    const std::optional<std::string>&,
-                    const std::string&,
-                    blink::mojom::RpContext rp_context,
-                    blink::mojom::RpMode rp_mode,
-                    const content::IdentityProviderMetadata&,
-                    DismissCallback,
-                    LoginToIdPCallback));
-  MOCK_METHOD9(ShowErrorDialog,
-               bool(const std::string&,
-                    const std::optional<std::string>&,
-                    const std::string&,
-                    blink::mojom::RpContext rp_context,
-                    blink::mojom::RpMode rp_mode,
-                    const content::IdentityProviderMetadata&,
-                    const std::optional<IdentityCredentialTokenError>&,
-                    DismissCallback,
-                    MoreDetailsCallback));
-  MOCK_METHOD5(ShowLoadingDialog,
-               bool(const std::string&,
-                    const std::string&,
-                    blink::mojom::RpContext rp_context,
-                    blink::mojom::RpMode rp_mode,
-                    DismissCallback));
-  MOCK_METHOD2(ShowModalDialog, WebContents*(const GURL&, DismissCallback));
-  MOCK_METHOD0(CloseModalDialog, void());
+  MOCK_METHOD(bool,
+              ShowAccountsDialog,
+              (const std::string&,
+               const std::optional<std::string>&,
+               const std::vector<content::IdentityProviderData>&,
+               IdentityRequestAccount::SignInMode,
+               blink::mojom::RpMode rp_mode,
+               const std::optional<content::IdentityProviderData>&,
+               AccountSelectionCallback,
+               LoginToIdPCallback,
+               DismissCallback,
+               AccountsDisplayedCallback),
+              (override));
+  MOCK_METHOD(void, DestructorCalled, ());
+  MOCK_METHOD(bool,
+              ShowFailureDialog,
+              (const std::string&,
+               const std::optional<std::string>&,
+               const std::string&,
+               blink::mojom::RpContext rp_context,
+               blink::mojom::RpMode rp_mode,
+               const content::IdentityProviderMetadata&,
+               DismissCallback,
+               LoginToIdPCallback),
+              (override));
+  MOCK_METHOD(bool,
+              ShowErrorDialog,
+              (const std::string&,
+               const std::optional<std::string>&,
+               const std::string&,
+               blink::mojom::RpContext rp_context,
+               blink::mojom::RpMode rp_mode,
+               const content::IdentityProviderMetadata&,
+               const std::optional<IdentityCredentialTokenError>&,
+               DismissCallback,
+               MoreDetailsCallback),
+              (override));
+  MOCK_METHOD(bool,
+              ShowLoadingDialog,
+              (const std::string&,
+               const std::string&,
+               blink::mojom::RpContext rp_context,
+               blink::mojom::RpMode rp_mode,
+               DismissCallback),
+              (override));
+  MOCK_METHOD(WebContents*,
+              ShowModalDialog,
+              (const GURL&, DismissCallback),
+              (override));
+  MOCK_METHOD(void, CloseModalDialog, (), (override));
 
   // Request the IdP Registration permission.
-  MOCK_METHOD2(RequestIdPRegistrationPermision,
-               void(const url::Origin&,
-                    base::OnceCallback<void(bool accepted)>));
+  MOCK_METHOD(void,
+              RequestIdPRegistrationPermision,
+              (const url::Origin&, base::OnceCallback<void(bool accepted)>),
+              (override));
 };
 
 }  // namespace content

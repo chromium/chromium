@@ -20,33 +20,52 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
   MockIdpNetworkRequestManager& operator=(const MockIdpNetworkRequestManager&) =
       delete;
 
-  MOCK_METHOD2(FetchWellKnown, void(const GURL&, FetchWellKnownCallback));
-  MOCK_METHOD5(
+  MOCK_METHOD(void,
+              FetchWellKnown,
+              (const GURL&, FetchWellKnownCallback),
+              (override));
+  MOCK_METHOD(
+      void,
       FetchConfig,
-      void(const GURL&, blink::mojom::RpMode, int, int, FetchConfigCallback));
-  MOCK_METHOD3(FetchClientMetadata,
-               void(const GURL&,
-                    const std::string&,
-                    FetchClientMetadataCallback));
-  MOCK_METHOD3(SendAccountsRequest,
-               void(const GURL&, const std::string&, AccountsRequestCallback));
-  MOCK_METHOD6(SendTokenRequest,
-               void(const GURL&,
-                    const std::string&,
-                    const std::string&,
-                    TokenRequestCallback,
-                    ContinueOnCallback,
-                    RecordErrorMetricsCallback));
-  MOCK_METHOD5(SendSuccessfulTokenRequestMetrics,
-               void(const GURL&,
-                    base::TimeDelta,
-                    base::TimeDelta,
-                    base::TimeDelta,
-                    base::TimeDelta));
-  MOCK_METHOD2(SendFailedTokenRequestMetrics,
-               void(const GURL&, MetricsEndpointErrorCode code));
-  MOCK_METHOD2(SendLogout, void(const GURL& logout_url, LogoutCallback));
-  MOCK_METHOD2(DownloadAndDecodeImage, void(const GURL&, ImageCallback));
+      (const GURL&, blink::mojom::RpMode, int, int, FetchConfigCallback),
+      (override));
+  MOCK_METHOD(void,
+              FetchClientMetadata,
+              (const GURL&, const std::string&, FetchClientMetadataCallback),
+              (override));
+  MOCK_METHOD(void,
+              SendAccountsRequest,
+              (const GURL&, const std::string&, AccountsRequestCallback),
+              (override));
+  MOCK_METHOD(void,
+              SendTokenRequest,
+              (const GURL&,
+               const std::string&,
+               const std::string&,
+               TokenRequestCallback,
+               ContinueOnCallback,
+               RecordErrorMetricsCallback),
+              (override));
+  MOCK_METHOD(void,
+              SendSuccessfulTokenRequestMetrics,
+              (const GURL&,
+               base::TimeDelta,
+               base::TimeDelta,
+               base::TimeDelta,
+               base::TimeDelta),
+              (override));
+  MOCK_METHOD(void,
+              SendFailedTokenRequestMetrics,
+              (const GURL&, MetricsEndpointErrorCode code),
+              (override));
+  MOCK_METHOD(void,
+              SendLogout,
+              (const GURL& logout_url, LogoutCallback),
+              (override));
+  MOCK_METHOD(void,
+              DownloadAndDecodeImage,
+              (const GURL&, ImageCallback),
+              (override));
 };
 
 }  // namespace content

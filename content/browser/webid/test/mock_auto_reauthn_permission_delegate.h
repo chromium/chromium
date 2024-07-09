@@ -22,13 +22,25 @@ class MockAutoReauthnPermissionDelegate
   MockAutoReauthnPermissionDelegate& operator=(
       const MockAutoReauthnPermissionDelegate&) = delete;
 
-  MOCK_METHOD0(IsAutoReauthnSettingEnabled, bool());
-  MOCK_METHOD1(IsAutoReauthnEmbargoed, bool(const url::Origin&));
-  MOCK_METHOD1(GetAutoReauthnEmbargoStartTime, base::Time(const url::Origin&));
-  MOCK_METHOD1(RecordEmbargoForAutoReauthn, void(const url::Origin&));
-  MOCK_METHOD1(RemoveEmbargoForAutoReauthn, void(const url::Origin&));
-  MOCK_METHOD2(SetRequiresUserMediation, void(const url::Origin&, bool));
-  MOCK_METHOD1(RequiresUserMediation, bool(const url::Origin&));
+  MOCK_METHOD(bool, IsAutoReauthnSettingEnabled, (), (override));
+  MOCK_METHOD(bool, IsAutoReauthnEmbargoed, (const url::Origin&), (override));
+  MOCK_METHOD(base::Time,
+              GetAutoReauthnEmbargoStartTime,
+              (const url::Origin&),
+              (override));
+  MOCK_METHOD(void,
+              RecordEmbargoForAutoReauthn,
+              (const url::Origin&),
+              (override));
+  MOCK_METHOD(void,
+              RemoveEmbargoForAutoReauthn,
+              (const url::Origin&),
+              (override));
+  MOCK_METHOD(void,
+              SetRequiresUserMediation,
+              (const url::Origin&, bool),
+              (override));
+  MOCK_METHOD(bool, RequiresUserMediation, (const url::Origin&), (override));
 };
 
 }  // namespace content

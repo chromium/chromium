@@ -24,7 +24,13 @@ class MockIdentityRegistry : public IdentityRegistry {
   MockIdentityRegistry(const MockIdentityRegistry&) = delete;
   MockIdentityRegistry& operator=(const MockIdentityRegistry&) = delete;
 
-  MOCK_METHOD1(Notify, void(const url::Origin&));
+  MOCK_METHOD(void, NotifyClose, (const url::Origin&), (override));
+  MOCK_METHOD(bool,
+              NotifyResolve,
+              (const url::Origin&,
+               const std::optional<std::string>&,
+               const std::string&),
+              (override));
 };
 
 }  // namespace content
