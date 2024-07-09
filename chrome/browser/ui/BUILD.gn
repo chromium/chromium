@@ -2095,6 +2095,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/tab_search:mojo_bindings",
       "//chrome/browser/ui/webui/tab_strip:mojo_bindings",
       "//chrome/browser/ui/webui/web_app_internals:mojo_bindings",
+      "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",

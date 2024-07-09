@@ -3,17 +3,21 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
+
+#include <numeric>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -21,6 +25,8 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_version.h"
+#include "components/user_education/common/user_education_features.h"
+#include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
@@ -33,9 +39,35 @@
 
 namespace whats_new {
 const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
-const char kChromeWhatsNewURLShort[] = "google.com/chrome/whats-new/";
+const char kChromeWhatsNewV2URL[] =
+    "https://www.google.com/chrome/v2/whats-new/";
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
+
+GURL GetV2ServerURL() {
+  return net::AppendQueryParameter(GURL(kChromeWhatsNewV2URL), "version",
+                                   base::NumberToString(CHROME_VERSION_MAJOR));
+}
+
+GURL GetV2ServerURLForRender() {
+  auto* registry = g_browser_process->GetFeatures()->whats_new_registry();
+  CHECK(registry);
+
+  GURL url = GetV2ServerURL();
+  auto active_features = registry->GetActiveFeatureNames();
+  if (active_features.size() > 0) {
+    url = net::AppendQueryParameter(
+        url, "enabled", base::JoinString(active_features, std::string(",")));
+  }
+
+  auto rolled_features = registry->GetRolledFeatureNames();
+  if (rolled_features.size() > 0) {
+    url = net::AppendQueryParameter(
+        url, "rolled", base::JoinString(rolled_features, std::string(",")));
+  }
+
+  return net::AppendQueryParameter(url, "internal", "true");
+}
 
 GURL GetServerURL(bool may_redirect) {
   const GURL url =
@@ -55,7 +87,12 @@ class WhatsNewFetcher : public BrowserListObserver {
   explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
     BrowserList::AddObserver(this);
 
-    GURL server_url = GetServerURL(false);
+    GURL server_url;
+    if (user_education::features::IsWhatsNewV2()) {
+      server_url = GetV2ServerURL();
+    } else {
+      server_url = GetServerURL(false);
+    }
     startup_url_ = GetWebUIStartupURL();
 
     if (IsRemoteContentDisabled()) {
@@ -137,8 +174,9 @@ class WhatsNewFetcher : public BrowserListObserver {
 
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override {
-    if (browser != browser_)
+    if (browser != browser_) {
       return;
+    }
 
     browser_closed_or_inactive_ = true;
     BrowserList::RemoveObserver(this);
@@ -146,13 +184,15 @@ class WhatsNewFetcher : public BrowserListObserver {
   }
 
   void OnBrowserNoLongerActive(Browser* browser) override {
-    if (browser == browser_)
+    if (browser == browser_) {
       browser_closed_or_inactive_ = true;
+    }
   }
 
   void OnBrowserSetLastActive(Browser* browser) override {
-    if (browser == browser_)
+    if (browser == browser_) {
       browser_closed_or_inactive_ = false;
+    }
   }
 
  private:
@@ -167,8 +207,9 @@ class WhatsNewFetcher : public BrowserListObserver {
   }
 
   void OpenWhatsNewTabForTest() {
-    if (browser_closed_or_inactive_)
+    if (browser_closed_or_inactive_) {
       return;
+    }
 
     AddWhatsNewTab(browser_);
     delete this;
@@ -192,16 +233,18 @@ class WhatsNewFetcher : public BrowserListObserver {
 
     // If the browser was closed or moved to the background while What's New was
     // loading, return early before recording that the user saw the page.
-    if (browser_closed_or_inactive_)
+    if (browser_closed_or_inactive_) {
       return;
+    }
 
     DCHECK(browser_);
 
     LogLoadEvent(success ? LoadEvent::kLoadSuccess
                          : LoadEvent::kLoadFailAndDoNotShow);
 
-    if (success)
+    if (success) {
       AddWhatsNewTab(browser_);
+    }
     delete this;
   }
 

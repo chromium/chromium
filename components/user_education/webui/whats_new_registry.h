@@ -66,10 +66,10 @@ class WhatsNewRegistry {
   const std::vector<BrowserCommand> GetActiveCommands() const;
 
   // Used to send enabled flags to server-side router.
-  const std::vector<const char*> GetActiveFeatureNames() const;
+  const std::vector<std::string_view> GetActiveFeatureNames() const;
 
   // Used to send enabled-by-default flags to server-side router.
-  const std::vector<const char*> GetRolledFeatureNames() const;
+  const std::vector<std::string_view> GetRolledFeatureNames() const;
 
  private:
   std::vector<WhatsNewModule> modules_;

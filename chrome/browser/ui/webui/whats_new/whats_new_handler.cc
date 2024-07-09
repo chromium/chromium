@@ -93,7 +93,11 @@ void WhatsNewHandler::RecordModuleLinkClicked(const std::string& module_name) {
 void WhatsNewHandler::GetServerUrl(GetServerUrlCallback callback) {
   GURL result = GURL("");
   if (!whats_new::IsRemoteContentDisabled()) {
-    result = whats_new::GetServerURL(true);
+    if (user_education::features::IsWhatsNewV2()) {
+      result = whats_new::GetV2ServerURLForRender();
+    } else {
+      result = whats_new::GetServerURL(true);
+    }
   }
   std::move(callback).Run(result);
 

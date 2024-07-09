@@ -43,6 +43,7 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile) {
       {"title", IDS_WHATS_NEW_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
+  source->AddBoolean("isWhatsNewV2", user_education::features::IsWhatsNewV2());
 
   // Allow embedding of iframe from chrome.com
   source->OverrideContentSecurityPolicy(

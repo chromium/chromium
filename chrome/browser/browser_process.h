@@ -27,6 +27,7 @@ class BrowserProcessPlatformPart;
 class BuildState;
 class DownloadRequestLimiter;
 class DownloadStatusUpdater;
+class GlobalFeatures;
 class GpuModeManager;
 class IconManager;
 class MediaFileSystemRegistry;
@@ -299,6 +300,9 @@ class BrowserProcess {
       std::unique_ptr<os_crypt_async::KeyProvider> provider) = 0;
 
   virtual BuildState* GetBuildState() = 0;
+
+  // Returns the feature controllers scoped to this browser process.
+  virtual GlobalFeatures* GetFeatures() = 0;
 };
 
 extern BrowserProcess* g_browser_process;

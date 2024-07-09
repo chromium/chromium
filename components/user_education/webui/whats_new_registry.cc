@@ -43,8 +43,9 @@ const std::vector<BrowserCommand> WhatsNewRegistry::GetActiveCommands() const {
   return commands;
 }
 
-const std::vector<const char*> WhatsNewRegistry::GetActiveFeatureNames() const {
-  std::vector<const char*> feature_names;
+const std::vector<std::string_view> WhatsNewRegistry::GetActiveFeatureNames()
+    const {
+  std::vector<std::string_view> feature_names;
   base::ranges::for_each(
       modules_, [&feature_names](const WhatsNewModule& module) {
         if (module.HasActiveFeature()) {
@@ -54,8 +55,9 @@ const std::vector<const char*> WhatsNewRegistry::GetActiveFeatureNames() const {
   return feature_names;
 }
 
-const std::vector<const char*> WhatsNewRegistry::GetRolledFeatureNames() const {
-  std::vector<const char*> feature_names;
+const std::vector<std::string_view> WhatsNewRegistry::GetRolledFeatureNames()
+    const {
+  std::vector<std::string_view> feature_names;
   base::ranges::for_each(
       modules_, [&feature_names](const WhatsNewModule& module) {
         if (module.HasRolledFeature()) {

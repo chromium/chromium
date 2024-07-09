@@ -8,6 +8,7 @@ import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.
 import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -189,6 +190,8 @@ export class WhatsNewAppElement extends CrLitElement {
     super();
 
     const queryParams = new URLSearchParams(window.location.search);
+
+    // Indicates this tab was added automatically by the browser.
     this.isAutoOpen_ = queryParams.has('auto');
 
     // There are no subpages in What's New. Also remove the query param here
@@ -229,7 +232,14 @@ export class WhatsNewAppElement extends CrLitElement {
 
     const latest = this.isAutoOpen_ && !isChromeOS ? 'true' : 'false';
     url += url.includes('?') ? '&' : '?';
-    this.url_ = url.concat(`latest=${latest}`);
+    if (loadTimeData.getBoolean('isWhatsNewV2')) {
+      // The browser has auto-opened the page due to an upgrade.
+      // Let the embedded page know to display the "up to date" banner.
+      this.url_ = url.concat(`updated=${latest}`);
+    } else {
+      // The latest version of the page is being shown. Do not redirect.
+      this.url_ = url.concat(`latest=${latest}`);
+    }
 
     this.eventTracker_.add(
         window, 'message',

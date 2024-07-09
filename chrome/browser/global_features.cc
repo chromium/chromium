@@ -49,9 +49,16 @@ void GlobalFeatures::ReplaceGlobalFeaturesForTesting(
 void GlobalFeatures::Init() {
 #if !BUILDFLAG(IS_ANDROID)
   if (user_education::features::IsWhatsNewV2()) {
-    whats_new_registry_ = std::make_unique<whats_new::WhatsNewRegistry>();
+    whats_new_registry_ = CreateWhatsNewRegistry();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+std::unique_ptr<whats_new::WhatsNewRegistry>
+GlobalFeatures::CreateWhatsNewRegistry() {
+  return std::make_unique<whats_new::WhatsNewRegistry>();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 GlobalFeatures::GlobalFeatures() = default;

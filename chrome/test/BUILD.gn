@@ -2113,6 +2113,7 @@ if (!is_android) {
       "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
       "//components/user_education/common",
       "//components/user_education/test",
+      "//components/user_education/webui:webui",
       "//components/user_manager",
       "//components/user_notes:features",
       "//components/user_prefs",
@@ -5495,6 +5496,12 @@ if (!is_android) {
     if (is_chromeos) {
       sources += [ "../browser/webauthn/chromeos/passkey_browsertest.cc" ]
       deps += [ "//chrome/browser/webauthn:test_support" ]
+    }
+
+    if (!is_chromeos) {
+      sources +=
+          [ "../browser/ui/webui/whats_new/whats_new_fetcher_browsertest.cc" ]
+      deps += [ "//chrome/browser/ui/webui/whats_new:mojo_bindings" ]
     }
   }
 }

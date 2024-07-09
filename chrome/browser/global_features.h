@@ -34,12 +34,22 @@ class GlobalFeatures {
   // Public accessors for features, e.g.
   // FooFeature* foo_feature() { return foo_feature_.get(); }
 
+#if !BUILDFLAG(IS_ANDROID)
+  whats_new::WhatsNewRegistry* whats_new_registry() {
+    return whats_new_registry_.get();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  protected:
   GlobalFeatures();
 
   // Override these methods to stub out individual feature controllers for
   // testing. e.g.
   // virtual std::unique_ptr<FooFeature> CreateFooFeature();
+
+#if !BUILDFLAG(IS_ANDROID)
+  virtual std::unique_ptr<whats_new::WhatsNewRegistry> CreateWhatsNewRegistry();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   // Features will each have a controller. e.g.

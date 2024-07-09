@@ -12,7 +12,7 @@ class Browser;
 namespace whats_new {
 
 extern const char kChromeWhatsNewURL[];
-extern const char kChromeWhatsNewURLShort[];
+extern const char kChromeWhatsNewV2URL[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -32,10 +32,20 @@ enum class LoadEvent {
 // version, which may return 404 if there is no page for this milestone.
 GURL GetServerURL(bool may_redirect);
 
+// Whats New V2 API
+// Gets the server side URL for the What's New page for the current version
+// of Chrome.
+GURL GetV2ServerURL();
+
+// Whats New V2 API
+// Gets the server side URL for the What's New page including all
+// query parameters necessary to render the page.
+GURL GetV2ServerURLForRender();
+
 // Starts fetching the What's New page and will open the page in |browser| if
 // it exists.
 void StartWhatsNewFetch(Browser* browser);
 
 }  // namespace whats_new
 
-#endif  // CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UTIL_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_FETCHER_H_

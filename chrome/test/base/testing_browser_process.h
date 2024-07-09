@@ -173,6 +173,7 @@ class TestingBrowserProcess : public BrowserProcess {
       std::unique_ptr<os_crypt_async::KeyProvider> provider) override;
 
   BuildState* GetBuildState() override;
+  GlobalFeatures* GetFeatures() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).
@@ -286,6 +287,7 @@ class TestingBrowserProcess : public BrowserProcess {
 
   std::unique_ptr<StatusTray> status_tray_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::unique_ptr<GlobalFeatures> features_;
 };
 
 // RAII (resource acquisition is initialization) for TestingBrowserProcess.

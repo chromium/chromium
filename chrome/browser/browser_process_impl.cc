@@ -1102,6 +1102,10 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingAllowed, true);
 }
 
+GlobalFeatures* BrowserProcessImpl::GetFeatures() {
+  return features_.get();
+}
+
 DownloadRequestLimiter* BrowserProcessImpl::download_request_limiter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!download_request_limiter_.get()) {

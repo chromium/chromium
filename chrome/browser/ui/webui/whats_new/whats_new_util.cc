@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
-#include "base/notreached.h"
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
