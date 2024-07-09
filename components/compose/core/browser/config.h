@@ -51,6 +51,9 @@ struct Config {
   // The maximum number of bytes allowed in the inner text.
   unsigned int trimmed_inner_text_header_length = 4000;
 
+  // The maximum number of AX nodes to gather for page context.
+  unsigned int max_ax_node_count_for_page_context = 5000;
+
   // Whether to send a compose when the dialog is first opened,
   // if there is an acceptable input text selected.
   bool auto_submit_with_selection = false;

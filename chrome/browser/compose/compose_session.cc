@@ -52,6 +52,8 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -209,6 +211,8 @@ ComposeSession::ComposeSession(
       observer_(observer),
       collect_inner_text_(
           base::FeatureList::IsEnabled(compose::features::kComposeInnerText)),
+      collect_ax_snapshot_(
+          base::FeatureList::IsEnabled(compose::features::kComposeAXSnapshot)),
       inner_text_caller_(inner_text),
       ukm_source_id_(web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()),
       node_id_(node_id),
@@ -436,7 +440,7 @@ void ComposeSession::MakeRequest(
     return;
   }
 
-  if (!collect_inner_text_ || got_inner_text_) {
+  if (HasNecessaryPageContext()) {
     RequestWithSession(std::move(request), request_reason, is_input_edited);
   } else {
     // Prepare the compose call, which will be invoked when inner text
@@ -445,6 +449,11 @@ void ComposeSession::MakeRequest(
         &ComposeSession::RequestWithSession, weak_ptr_factory_.GetWeakPtr(),
         std::move(request), request_reason, is_input_edited);
   }
+}
+
+bool ComposeSession::HasNecessaryPageContext() const {
+  return (!collect_inner_text_ || got_inner_text_) &&
+         (!collect_ax_snapshot_ || got_ax_snapshot_);
 }
 
 void ComposeSession::RequestWithSession(
@@ -986,10 +995,10 @@ void ComposeSession::InitializeWithText(std::string_view selected_text) {
   initial_input_ = std::string(selected_text);
   session_events_.has_initial_text = !selected_text.empty();
 
-  MaybeRefreshInnerText(!initial_input_.empty());
+  MaybeRefreshPageContext(!initial_input_.empty());
 }
 
-void ComposeSession::MaybeRefreshInnerText(bool has_selection) {
+void ComposeSession::MaybeRefreshPageContext(bool has_selection) {
   // Update dialog state based on the current selection which can change while
   // the dialog is hidden.
   currently_has_selection_ = has_selection;
@@ -1009,6 +1018,7 @@ void ComposeSession::MaybeRefreshInnerText(bool has_selection) {
   ++session_events_.compose_prompt_view_count;
 
   RefreshInnerText();
+  RefreshAXSnapshot();
 
   // We should only autocompose once per session
   if (has_checked_autocompose_) {
@@ -1082,9 +1092,28 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
   }
   AddPageContentToSession(std::move(inner_text), node_offset,
                           std::move(trimmed_inner_text));
-  if (!continue_compose_.is_null()) {
+  TryContinueCompose();
+}
+
+void ComposeSession::TryContinueCompose() {
+  if (HasNecessaryPageContext() && !continue_compose_.is_null()) {
     std::move(continue_compose_).Run();
   }
+}
+
+void ComposeSession::UpdateAXSnapshotAndContinueComposeIfNecessary(
+    int request_id,
+    const ui::AXTreeUpdate& update) {
+  if (current_ax_snapshot_request_id_ != request_id) {
+    return;
+  }
+
+  got_ax_snapshot_ = true;
+
+  // TODO(crbug.com/350946976): Serialize and populate the necessary fields from
+  // `update` to `session_`.
+
+  TryContinueCompose();
 }
 
 void ComposeSession::RefreshInnerText() {
@@ -1097,13 +1126,30 @@ void ComposeSession::RefreshInnerText() {
 
   inner_text_caller_->GetInnerText(
       *web_contents_->GetPrimaryMainFrame(),
-      // This unsafeValue call is acceptable ehre because node_id is a
+      // This unsafeValue call is acceptable here because node_id is a
       // FieldRendererId which while being an U64 type is based one the int
       // DOMid which we are querying here.
       node_id_.renderer_id.GetUnsafeValue(),
       base::BindOnce(
           &ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary,
           weak_ptr_factory_.GetWeakPtr(), current_inner_text_request_id_));
+}
+
+void ComposeSession::RefreshAXSnapshot() {
+  got_ax_snapshot_ = false;
+  if (!collect_ax_snapshot_) {
+    return;
+  }
+
+  ++current_ax_snapshot_request_id_;
+
+  web_contents_->RequestAXTreeSnapshot(
+      base::BindOnce(
+          &ComposeSession::UpdateAXSnapshotAndContinueComposeIfNecessary,
+          weak_ptr_factory_.GetWeakPtr(), current_ax_snapshot_request_id_),
+      ui::kAXModeWebContentsOnly,
+      compose::GetComposeConfig().max_ax_node_count_for_page_context,
+      /*timeout=*/{});
 }
 
 void ComposeSession::SetFirstRunCloseReason(
@@ -1129,7 +1175,7 @@ void ComposeSession::SetFirstRunCompleted() {
   fre_complete_ = true;
 
   // Start inner text capture which was skipped until FRE was complete.
-  MaybeRefreshInnerText(currently_has_selection_);
+  MaybeRefreshPageContext(currently_has_selection_);
 }
 
 void ComposeSession::SetMSBBCloseReason(

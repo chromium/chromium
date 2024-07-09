@@ -19,6 +19,9 @@ BASE_DECLARE_FEATURE(kComposeInputParams);
 // Enables/disables inner text context gathering.
 BASE_DECLARE_FEATURE(kComposeInnerText);
 
+// Enables/disables inner text context gathering.
+BASE_DECLARE_FEATURE(kComposeAXSnapshot);
+
 // Enables Auto-submit of compose with a valid selection.
 BASE_DECLARE_FEATURE(kComposeAutoSubmit);
 

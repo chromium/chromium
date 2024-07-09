@@ -39,6 +39,10 @@ namespace content_extraction {
 struct InnerTextResult;
 }  // namespace content_extraction
 
+namespace ui {
+struct AXTreeUpdate;
+}
+
 // A simple interface to reroute inner text calls to allow for test mocks.
 class InnerTextProvider {
  public:
@@ -169,10 +173,10 @@ class ComposeSession
   // |selected_text| for use as an initial prompt and refreshes innertext.
   void InitializeWithText(const std::string_view selected_text);
 
-  // If all pre-conditions are acknowledged starts refreshing inner text. If
+  // If all pre-conditions are acknowledged starts refreshing page context. If
   // autocompose is enabled and has not been tried yet this session will also
   // start a compose request.
-  void MaybeRefreshInnerText(bool has_selection);
+  void MaybeRefreshPageContext(bool has_selection);
 
   // Returns true if the feedback page can be shown. If
   // |skip_feedback_ui_for_testing_| is true then this always returns false and
@@ -211,9 +215,6 @@ class ComposeSession
   }
 
   void SetFirstRunCompleted();
-
-  // Refresh the inner text on session resumption.
-  void RefreshInnerText();
 
   void SetFirstRunCloseReason(
       compose::ComposeFreOrMsbbSessionCloseReason close_reason);
@@ -272,10 +273,27 @@ class ComposeSession
       int request_id,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
+  void UpdateAXSnapshotAndContinueComposeIfNecessary(
+      int request_id,
+      const ui::AXTreeUpdate& update);
+
+  // Continues the compose request if all page context has been received.
+  void TryContinueCompose();
+
+  // Returns true if the necessary page context has been received.
+  bool HasNecessaryPageContext() const;
+
   void SetQualityLogEntryUponError(
       std::unique_ptr<optimization_guide::ModelQualityLogEntry>,
       base::TimeDelta request_time,
       bool was_input_edited);
+
+  // TODO(crbug.com/351040914): We should refactor different context pieces into
+  // a common flow.
+  // Refresh the inner text on session resumption.
+  void RefreshInnerText();
+  // Refresh the ax tree on session resumption.
+  void RefreshAXSnapshot();
 
   // Returns a reference to the ComposeState at `history_current_index`, or at
   // `offset` from the current index if `offset` is specified, if it exists.
@@ -361,8 +379,12 @@ class ComposeSession
 
   // Increasing counter used to identify most recent request for inner-text.
   int current_inner_text_request_id_ = 0;
+  // Increasing counter used to identify most recent request for ax snapshot.
+  int current_ax_snapshot_request_id_ = 0;
 
   bool collect_inner_text_;
+
+  bool collect_ax_snapshot_ = false;
 
   // This pointer is to a class that owns and creates this class, so will
   // outlive the session.
@@ -376,6 +398,9 @@ class ComposeSession
 
   // If true, the inner-text was received.
   bool got_inner_text_ = false;
+
+  // If true, the ax snapshot was received.
+  bool got_ax_snapshot_ = false;
 
   autofill::FieldGlobalId node_id_;
 

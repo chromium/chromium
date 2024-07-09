@@ -454,7 +454,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
   current_session->set_current_msbb_state(GetMSBBStateFromPrefs());
 
   if (resume_current_session) {
-    current_session->MaybeRefreshInnerText(
+    current_session->MaybeRefreshPageContext(
         /*has_selection=*/!selected_text.empty());
   } else {
     current_session->InitializeWithText(selected_text);
