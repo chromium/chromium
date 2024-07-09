@@ -138,11 +138,7 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickFirstTabInDialog(cta);
         assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
-                        isCompletelyDisplayed()));
+        onView(withId(R.id.bottom_controls)).check(matches(isDisplayed()));
         verifyTabStripFaviconCount(cta, 2);
     }
 
@@ -226,11 +222,6 @@ public class TabGroupUiTest {
         // Select the first tab in group and add one new tab to group.
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 0);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
-                        isCompletelyDisplayed()));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
@@ -282,11 +273,6 @@ public class TabGroupUiTest {
                     filter.mergeListOfTabsToGroup(
                             List.of(tab), filter.getTabAt(0), /* notify= */ false);
                 });
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
-                        isCompletelyDisplayed()));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);

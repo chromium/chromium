@@ -114,13 +114,12 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiOneshotSupplier;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
@@ -305,7 +304,7 @@ public class ToolbarManager
     private OneshotSupplierImpl<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier =
             new OneshotSupplierImpl<>();
 
-    private @Nullable TabGroupUiOneshotSupplier mTabGroupUiOneshotSupplier;
+    private TabGroupUi mTabGroupUi;
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
@@ -1488,28 +1487,23 @@ public class ToolbarManager
     /** Enable the bottom controls. */
     public void enableBottomControls() {
         View root = ((ViewStub) mActivity.findViewById(R.id.bottom_controls_stub)).inflate();
-        assert mTabGroupUiOneshotSupplier == null;
-        mTabGroupUiOneshotSupplier =
-                new TabGroupUiOneshotSupplier(
-                        mActivityTabProvider,
-                        mTabModelSelector,
-                        mActivity,
-                        root.findViewById(R.id.bottom_container_slot),
-                        mBrowserControlsVisibilityManager,
-                        mIncognitoStateProvider,
-                        mScrimCoordinator,
-                        mOmniboxFocusStateSupplier,
-                        mBottomSheetController,
-                        mTabContentManager,
-                        mCompositorViewHolder,
-                        mTabCreatorManager,
-                        mLayoutStateProviderSupplier,
-                        mSnackbarManager,
-                        mModalDialogManagerSupplier.get());
-        var bottomControlsContentDelegateSupplier =
-                (OneshotSupplier<BottomControlsContentDelegate>)
-                        ((OneshotSupplier<? extends BottomControlsContentDelegate>)
-                                mTabGroupUiOneshotSupplier);
+        mTabGroupUi =
+                TabManagementDelegateProvider.getDelegate()
+                        .createTabGroupUi(
+                                mActivity,
+                                root.findViewById(R.id.bottom_container_slot),
+                                mBrowserControlsVisibilityManager,
+                                mIncognitoStateProvider,
+                                mScrimCoordinator,
+                                mOmniboxFocusStateSupplier,
+                                mBottomSheetController,
+                                mTabModelSelector,
+                                mTabContentManager,
+                                mCompositorViewHolder,
+                                mTabCreatorManager,
+                                mLayoutStateProviderSupplier,
+                                mSnackbarManager,
+                                mModalDialogManagerSupplier.get());
         var bottomControlsCoordinator =
                 new BottomControlsCoordinator(
                         mActivity,
@@ -1520,7 +1514,7 @@ public class ToolbarManager
                         mFullscreenManager,
                         mEdgeToEdgeControllerSupplier,
                         (ScrollingBottomViewResourceFrameLayout) root,
-                        bottomControlsContentDelegateSupplier,
+                        mTabGroupUi,
                         mTabObscuringHandler,
                         mOverlayPanelVisibilitySupplier,
                         mConstraintsProxy,
@@ -1536,13 +1530,12 @@ public class ToolbarManager
     }
 
     /**
-     * TODO(https://crbug.com/1164216): Remove this getter in favor of extracting tab group feature
-     * details from ChromeTabbedActivity directly.
-     *
+     * TODO(https://crbug.com/1164216): Remove this getter in favor of extracting tab group
+     * feature details from ChromeTabbedActivity directly.
      * @return The coordinator for the tab group UI if it exists.
      */
-    public @Nullable TabGroupUi getTabGroupUi() {
-        return mTabGroupUiOneshotSupplier != null ? mTabGroupUiOneshotSupplier.get() : null;
+    public TabGroupUi getTabGroupUi() {
+        return mTabGroupUi;
     }
 
     /**
@@ -1735,10 +1728,6 @@ public class ToolbarManager
         }
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-        }
-        if (mTabGroupUiOneshotSupplier != null) {
-            mTabGroupUiOneshotSupplier.destroy();
-            mTabGroupUiOneshotSupplier = null;
         }
         if (mBookmarkModelSupplier != null) {
             BookmarkModel bridge = mBookmarkModelSupplier.get();
