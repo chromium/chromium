@@ -270,6 +270,7 @@ public class RootUiCoordinator
     @Nullable private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private ContextualPageActionController mContextualPageActionController;
     private IdentityDiscController mIdentityDiscController;
+    private CurrentTabPriceTrackingStateSupplier mCurrentTabPriceTrackingStateSupplier;
     private ChromeActionModeHandler mChromeActionModeHandler;
     private final ToolbarActionModeCallback mActionModeControllerCallback;
     private ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
@@ -638,6 +639,11 @@ public class RootUiCoordinator
             }
             mToolbarManager.destroy();
             mToolbarManager = null;
+        }
+
+        if (mCurrentTabPriceTrackingStateSupplier != null) {
+            mCurrentTabPriceTrackingStateSupplier.destroy();
+            mCurrentTabPriceTrackingStateSupplier = null;
         }
 
         if (mContextualPageActionController != null) {
@@ -1333,7 +1339,7 @@ public class RootUiCoordinator
             mIdentityDiscController =
                     new IdentityDiscController(
                             mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
-            CurrentTabPriceTrackingStateSupplier currentTabPriceTrackingStateSupplier =
+            mCurrentTabPriceTrackingStateSupplier =
                     new CurrentTabPriceTrackingStateSupplier(
                             mActivityTabProvider, mProfileSupplier);
             PriceInsightsButtonController priceInsightsButtonController =
@@ -1355,7 +1361,7 @@ public class RootUiCoordinator
                             mTabBookmarkerSupplier,
                             mProfileSupplier,
                             mBookmarkModelSupplier,
-                            currentTabPriceTrackingStateSupplier);
+                            mCurrentTabPriceTrackingStateSupplier);
             ReaderModeToolbarButtonController readerModeToolbarButtonController =
                     new ReaderModeToolbarButtonController(
                             mActivity,

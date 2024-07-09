@@ -95,8 +95,10 @@ public class CurrentTabPriceTrackingStateSupplier implements ObservableSupplier<
 
         mProfileSupplier.removeObserver(this::onProfileUpdated);
 
-        mShoppingService.removeSubscriptionsObserver(mSubscriptionObserver);
-        mShoppingService = null;
+        if (mShoppingService != null) {
+            mShoppingService.removeSubscriptionsObserver(mSubscriptionObserver);
+            mShoppingService = null;
+        }
     }
 
     private void onProfileUpdated(Profile profile) {
