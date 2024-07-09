@@ -50,7 +50,7 @@ bool HasEnoughTimePassed(base::Time onboarded_timestamp) {
   return base::Time::Now() >= onboarded_timestamp + reminder_delay;
 }
 
-tracking_protection::TrackingProtectionReminderStatus GetReminderStatus(
+tracking_protection::TrackingProtectionReminderStatus GetReminderStatusInternal(
     PrefService* pref_service) {
   return static_cast<tracking_protection::TrackingProtectionReminderStatus>(
       pref_service->GetInteger(prefs::kTrackingProtectionReminderStatus));
@@ -59,7 +59,7 @@ tracking_protection::TrackingProtectionReminderStatus GetReminderStatus(
 void MaybeUpdateReminderStatus(PrefService* pref_service,
                                bool was_silently_onboarded = false) {
   // Do not overwrite the current reminder status if it's already set.
-  if (GetReminderStatus(pref_service) !=
+  if (GetReminderStatusInternal(pref_service) !=
       tracking_protection::TrackingProtectionReminderStatus::kUnset) {
     return;
   }
@@ -112,7 +112,7 @@ TrackingProtectionReminderService::~TrackingProtectionReminderService() =
     default;
 
 ReminderType TrackingProtectionReminderService::GetReminderType() {
-  if (GetReminderStatus(pref_service_) !=
+  if (GetReminderStatusInternal(pref_service_) !=
       tracking_protection::TrackingProtectionReminderStatus::kPendingReminder) {
     return ReminderType::kNone;
   }
@@ -134,6 +134,29 @@ ReminderType TrackingProtectionReminderService::GetReminderType() {
                                   : ReminderType::kActive;
 }
 
+void TrackingProtectionReminderService::OnReminderExperienced() {
+  if (GetReminderStatus() !=
+      tracking_protection::TrackingProtectionReminderStatus::kPendingReminder) {
+    return;
+  }
+  // TODO(crbug.com/349122141): Record the timestamp when this function is
+  // called to be passed as PSD with the HaTS survey.
+  SetReminderStatus(pref_service_,
+                    tracking_protection::TrackingProtectionReminderStatus::
+                        kExperiencedReminder);
+}
+
+bool TrackingProtectionReminderService::IsPendingReminder() {
+  return GetReminderStatus() ==
+         tracking_protection::TrackingProtectionReminderStatus::
+             kPendingReminder;
+}
+
+tracking_protection::TrackingProtectionReminderStatus
+TrackingProtectionReminderService::GetReminderStatus() {
+  return GetReminderStatusInternal(pref_service_);
+}
+
 void TrackingProtectionReminderService::Shutdown() {
   observers_.Clear();
   pref_change_registrar_.Reset();
@@ -150,7 +173,7 @@ void TrackingProtectionReminderService::RemoveObserver(Observer* observer) {
 void TrackingProtectionReminderService::OnReminderStatusChanged() {
   for (auto& observer : observers_) {
     observer.OnTrackingProtectionReminderStatusChanged(
-        GetReminderStatus(pref_service_));
+        GetReminderStatusInternal(pref_service_));
   }
 }
 
