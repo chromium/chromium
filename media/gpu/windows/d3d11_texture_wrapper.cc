@@ -30,7 +30,7 @@ namespace media {
 // Mailbox) to access shared images.
 BASE_FEATURE(kUseClientSharedImageForD3D11Video,
              "UseClientSharedImageForD3D11Video",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
