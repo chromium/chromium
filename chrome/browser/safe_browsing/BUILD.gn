@@ -458,6 +458,9 @@ static_library("safe_browsing") {
           "//components/messages/android:android",
           "//components/safe_browsing/android:remote_database_manager",
           "//ui/android:android",
+
+          # TODO: Use //chrome/browser after fixing cyclic dependency.
+          "//chrome/browser/page_info:page_info_buildflags",
         ]
       }
       deps += [
