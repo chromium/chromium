@@ -469,6 +469,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   selectOrUnselectAll() {
+    if (this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS) {
+      const productSpecsListElement =
+          this.shadowRoot!.querySelector('product-specifications-lists');
+      assert(productSpecsListElement);
+      productSpecsListElement.selectOrUnselectAll();
+      this.$.toolbar.count = productSpecsListElement.getSelectedItemCount();
+      return;
+    }
     this.$.history.selectOrUnselectAll();
     this.$.toolbar.count = this.$.history.getSelectedItemCount();
   }
@@ -478,8 +486,24 @@ export class HistoryAppElement extends HistoryAppElementBase {
    * checkbox to be unselected.
    */
   private unselectAll() {
+    if (this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS) {
+      this.productSpecificationsUnselectAll_();
+      return;
+    }
     this.$.history.unselectAllItems();
     this.$.toolbar.count = 0;
+  }
+
+  private productSpecificationsUnselectAll_() {
+    const productSpecsListElement =
+        this.shadowRoot!.querySelector('product-specifications-lists');
+
+    // This method is also called on selectedPageChanged, so it is possible
+    // for the list element to be empty.
+    if (productSpecsListElement) {
+      productSpecsListElement.unselectAllItems();
+      this.$.toolbar.count = 0;
+    }
   }
 
   deleteSelected() {

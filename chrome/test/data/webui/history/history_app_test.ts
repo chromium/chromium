@@ -8,6 +8,8 @@ import type {HistoryAppElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, CrRouter, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isMac} from 'chrome://resources/js/platform.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -373,4 +375,35 @@ suite('HistoryAppTest', function() {
 
     assertEquals(1, element.$.toolbar.count);
   });
+
+  test('ProductSpecsSelectUnselectAll', async () => {
+    // Reset the app with product spec lists feature enabled.
+    document.body.removeChild(element);
+    loadTimeData.overrideValues({productSpecificationsListsEnabled: true});
+    element = document.createElement('history-app');
+    document.body.appendChild(element);
+    element.$.router.selectedPage = 'productSpecificationsLists';
+    await flushTasks();
+    assertEquals(0, element.$.toolbar.count);
+
+    // Stub the selectOrUnselectAll method in the list element.
+    let selectAllCalled = false;
+    const productSpecificationsList =
+        element.shadowRoot!.querySelector('product-specifications-lists');
+    assert(!!productSpecificationsList);
+    productSpecificationsList.selectOrUnselectAll = function() {
+      selectAllCalled = true;
+    };
+
+    // Mock ctrl+A.
+    productSpecificationsList.selectedItems.add('uuid1');
+    productSpecificationsList.selectedItems.add('uuid2');
+    const modifier = isMac ? 'meta' : 'ctrl';
+    pressAndReleaseKeyOn(document.body, 65, modifier, 'a');
+    await flushTasks();
+
+    assertEquals(true, selectAllCalled);
+    assertEquals(2, element.$.toolbar.count);
+  });
+
 });

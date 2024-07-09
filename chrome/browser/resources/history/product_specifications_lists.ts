@@ -47,12 +47,17 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   static get properties() {
     return {
       selectedItems: Object,
+      pendingDelete_: {
+        notify: true,
+        type: Boolean,
+      },
       allItems_: Array,
       uuidOfOpenMenu_: Object,
     };
   }
 
   selectedItems: Set<string> = new Set();
+  private pendingDelete_: boolean = false;
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
   private allItems_: ProductSpecificationsSet[] = [];
@@ -117,24 +122,61 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     }
   }
 
+  /**
+   * Deselect each item in |selectedItems|.
+   */
+  unselectAllItems() {
+    this.selectedItems.clear();
+    const items =
+        this.shadowRoot!.querySelectorAll('product-specifications-item');
+    for (const el of items) {
+      el.checked = false;
+    }
+  }
+
   private onOpenMenu_(e: ItemMenuOpenEvent) {
     this.$.sharedMenu.get().showAt(e.detail.target);
     this.uuidOfOpenMenu_ = e.detail.uuid;
   }
 
+  /**
+   * Helper method to delete multiple items.
+   */
   private deleteItems_(items: Set<string>): Promise<void[]> {
+    // pendingDelete_ disables the delete button while a delete call
+    // is being made. It waits for the call to the proxy.
+    assert(!this.pendingDelete_);
     const promises: void[] = [];
     for (const uuid of items) {
       promises.push(
           this.shoppingApi_.deleteProductSpecificationsSet({value: uuid}));
     }
+    this.pendingDelete_ = true;
     return Promise.all(promises);
+  }
+
+  private fire_(eventName: string, detail?: any) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
   private onRemoveItemClick_() {
     if (this.uuidOfOpenMenu_ !== null) {
       this.deleteItems_(new Set([this.uuidOfOpenMenu_.value]));
-      // TODO: b/335670350 - remove items from the UI.
+      this.closeMenu_();
+      this.pendingDelete_ = false;
+      this.fire_('unselect-all');
+    }
+  }
+
+  /**
+   * Closes the overflow menu.
+   */
+  private closeMenu_() {
+    const menu = this.$.sharedMenu.getIfExists();
+    if (menu && menu.open) {
+      this.uuidOfOpenMenu_ = null;
+      menu.close();
     }
   }
 
@@ -143,7 +185,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   }
 
   /**
-   * Deletes selected items via the toolbar, which opens up a dialog.
+   * Opens up a delete dialog from toolbar.
    */
   deleteSelectedWithPrompt() {
     // TODO: b/335670350 - add check for deleting history
@@ -155,12 +197,12 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   }
 
   private onDialogConfirmClick_() {
-    this.deleteItems_(this.selectedItems);
-
-    // TODO: b/335670350 - set deleting state in progress.
     const deleteItemDialog = this.$.deleteItemDialog.getIfExists();
     assert(deleteItemDialog);
+    this.deleteItems_(this.selectedItems);
     deleteItemDialog.close();
+    this.pendingDelete_ = false;
+    this.fire_('unselect-all');
   }
 
   private onDialogCancelClick_() {
@@ -197,6 +239,24 @@ export class ProductSpecificationsListsElement extends PolymerElement {
       return;
     }
     this.splice('allItems_', setIndex, 1);
+  }
+
+  selectOrUnselectAll() {
+    if (this.allItems_.length === this.getSelectedItemCount()) {
+      this.unselectAllItems();
+    } else {
+      this.selectAllItems();
+    }
+  }
+
+  selectAllItems() {
+    const items =
+        this.shadowRoot!.querySelectorAll('product-specifications-item');
+    items.forEach((item) => {
+      item.checked = true;
+      this.selectedItems.add(item.item.uuid.value);
+    });
+    assert(this.selectedItems.size === this.allItems_.length);
   }
 }
 

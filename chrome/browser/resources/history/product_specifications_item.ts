@@ -49,13 +49,13 @@ export class ProductSpecificationsItemElement extends PolymerElement {
     return {
       item: Object,
 
-      checked_: Boolean,
+      checked: Boolean,
     };
   }
 
   item: ProductSpecificationsSet;
 
-  private checked_: boolean;
+  checked: boolean;
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
@@ -82,7 +82,7 @@ export class ProductSpecificationsItemElement extends PolymerElement {
     }
     this.fire_(
         'product-spec-item-select',
-        {checked: this.checked_, uuid: this.item.uuid.value});
+        {checked: this.checked, uuid: this.item.uuid.value});
   }
 
   private getItemTitle_(): string {

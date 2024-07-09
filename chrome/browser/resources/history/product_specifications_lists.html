@@ -44,7 +44,8 @@
   <cr-lazy-render id="sharedMenu">
     <template>
       <cr-action-menu>
-        <button class="dropdown-item" on-click="onRemoveItemClick_">
+        <button class="dropdown-item" on-click="onRemoveItemClick_"
+            disabled="[[pendingDelete_]]">
           $i18n{productSpecificationsHistoryRemove}
         </button>
       </cr-action-menu>
