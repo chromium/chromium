@@ -48,8 +48,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
  public:
   // Create a backing wrapping given D3D11 texture, optionally with a shared
   // handle and keyed mutex state. Array slice is used to specify index in
-  // texture array used by video decoder and plane index is used to specify the
-  // plane (Y/0 or UV/1) in NV12/P010 video textures.
+  // texture array used by video decoder.
   static std::unique_ptr<D3DImageBacking> Create(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -64,7 +63,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       const GLFormatCaps& gl_format_caps,
       GLenum texture_target,
       size_t array_slice,
-      size_t plane_index,
       bool use_update_subresource1 = false);
 
   static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffer(
@@ -226,7 +224,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   const GLFormatCaps& gl_format_caps,
                   GLenum texture_target = GL_TEXTURE_2D,
                   size_t array_slice = 0u,
-                  size_t plane_index = 0u,
                   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
                   bool is_back_buffer = false,
                   bool use_update_subresource1 = false);
@@ -292,9 +289,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Index of texture slice in texture array e.g. those used by video decoder.
   const size_t array_slice_;
-
-  // Texture plane index corresponding to this image.
-  const size_t plane_index_;
 
   // Swap chain corresponding to this backing.
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;

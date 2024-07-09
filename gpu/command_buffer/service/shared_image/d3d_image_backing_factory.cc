@@ -8,7 +8,6 @@
 
 #include "base/memory/shared_memory_mapping.h"
 #include "base/win/scoped_handle.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
@@ -463,7 +462,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
       std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
-      /*array_slice=*/0u, /*plane_index=*/0u, use_update_subresource1_);
+      /*array_slice=*/0u, use_update_subresource1_);
   if (backing && !pixel_data.empty()) {
     backing->SetCleared();
   }
@@ -483,37 +482,65 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle) {
   // Windows does not support external sampler.
   CHECK(!format.PrefersExternalSampler());
-  return CreateSharedImageGMBs(
-      mailbox, std::move(handle), format, gfx::BufferPlane::DEFAULT, size,
-      color_space, surface_origin, alpha_type, usage, std::move(debug_label));
-}
 
-std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat buffer_format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label) {
-  if (!IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
-    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane)
-               << " for format " << gfx::BufferFormatToString(buffer_format);
+  // TOOD(hitawala): Move this size check to IsSupported.
+  const gfx::BufferFormat buffer_format = gpu::ToBufferFormat(format);
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
+    LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
+               << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }
 
-  auto format = viz::GetSinglePlaneSharedImageFormat(buffer_format);
-  // Format cannot be using external sampling due to checks in
-  // `IsPlaneValidForGpuMemoryBufferFormat`.
-  if (format.IsLegacyMultiplanar()) {
-    CHECK_NE(plane, gfx::BufferPlane::DEFAULT);
+  if (handle.type != gfx::DXGI_SHARED_HANDLE || !handle.dxgi_handle.IsValid()) {
+    LOG(ERROR) << "Invalid handle with type: " << handle.type;
+    return nullptr;
   }
-  return CreateSharedImageGMBs(mailbox, std::move(handle), format, plane, size,
-                               color_space, surface_origin, alpha_type, usage,
-                               std::move(debug_label));
+
+  if (!handle.dxgi_token.has_value()) {
+    LOG(ERROR) << "Missing token for DXGI handle";
+    return nullptr;
+  }
+
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
+          std::move(handle.dxgi_token.value()), std::move(handle.dxgi_handle),
+          d3d11_device_);
+  if (!dxgi_shared_handle_state) {
+    LOG(ERROR) << "Failed to retrieve matching DXGI shared handle state";
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture =
+      dxgi_shared_handle_state->GetOrCreateD3D11Texture(d3d11_device_);
+  CHECK(d3d11_texture);
+
+  D3D11_TEXTURE2D_DESC d3d11_texture_desc = {};
+  d3d11_texture->GetDesc(&d3d11_texture_desc);
+
+  // TODO: Add checks for device specific limits.
+  if (d3d11_texture_desc.Width != static_cast<UINT>(size.width()) ||
+      d3d11_texture_desc.Height != static_cast<UINT>(size.height())) {
+    LOG(ERROR) << "Size must match texture being opened";
+    return nullptr;
+  }
+
+  if ((d3d11_texture_desc.Format != GetDXGIFormatForGMB(format)) &&
+      (d3d11_texture_desc.Format != GetDXGITypelessFormat(format))) {
+    LOG(ERROR) << "Format must match texture being opened";
+    return nullptr;
+  }
+
+  std::unique_ptr<D3DImageBacking> backing = D3DImageBacking::Create(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), std::move(d3d11_texture),
+      std::move(dxgi_shared_handle_state), gl_format_caps_,
+      /*texture_target=*/GL_TEXTURE_2D,
+      /*array_slice=*/0u, use_update_subresource1_);
+
+  if (backing) {
+    backing->SetCleared();
+  }
+  return backing;
 }
 
 bool D3DImageBackingFactory::SupportsBGRA8UnormStorage() {
@@ -573,100 +600,6 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
   }
 
   return true;
-}
-
-std::unique_ptr<SharedImageBacking>
-D3DImageBackingFactory::CreateSharedImageGMBs(
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    viz::SharedImageFormat format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label) {
-  const gfx::BufferFormat buffer_format = gpu::ToBufferFormat(format);
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
-    LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
-               << gfx::BufferFormatToString(buffer_format);
-    return nullptr;
-  }
-
-  if (plane != gfx::BufferPlane::DEFAULT && plane != gfx::BufferPlane::Y &&
-      plane != gfx::BufferPlane::UV) {
-    LOG(ERROR) << "Invalid buffer plane " << gfx::BufferPlaneToString(plane);
-    return nullptr;
-  }
-
-  if (handle.type != gfx::DXGI_SHARED_HANDLE || !handle.dxgi_handle.IsValid()) {
-    LOG(ERROR) << "Invalid handle with type: " << handle.type;
-    return nullptr;
-  }
-
-  if (!handle.dxgi_token.has_value()) {
-    LOG(ERROR) << "Missing token for DXGI handle";
-    return nullptr;
-  }
-
-  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
-      dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
-          std::move(handle.dxgi_token.value()), std::move(handle.dxgi_handle),
-          d3d11_device_);
-  if (!dxgi_shared_handle_state) {
-    LOG(ERROR) << "Failed to retrieve matching DXGI shared handle state";
-    return nullptr;
-  }
-
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture =
-      dxgi_shared_handle_state->GetOrCreateD3D11Texture(d3d11_device_);
-  CHECK(d3d11_texture);
-
-  D3D11_TEXTURE2D_DESC d3d11_texture_desc = {};
-  d3d11_texture->GetDesc(&d3d11_texture_desc);
-
-  // TODO: Add checks for device specific limits.
-  if (d3d11_texture_desc.Width != static_cast<UINT>(size.width()) ||
-      d3d11_texture_desc.Height != static_cast<UINT>(size.height())) {
-    LOG(ERROR) << "Size must match texture being opened";
-    return nullptr;
-  }
-
-  if ((d3d11_texture_desc.Format != GetDXGIFormatForGMB(format)) &&
-      (d3d11_texture_desc.Format != GetDXGITypelessFormat(format))) {
-    LOG(ERROR) << "Format must match texture being opened";
-    return nullptr;
-  }
-
-  const GLenum texture_target = GL_TEXTURE_2D;
-  std::unique_ptr<D3DImageBacking> backing;
-  if (format.IsLegacyMultiplanar()) {
-    // Get format and size per plane. For multiplanar formats, `plane_format` is
-    // R/RG based on channels in plane.
-    const gfx::Size plane_size = GetPlaneSize(plane, size);
-    const viz::SharedImageFormat plane_format =
-        viz::GetSinglePlaneSharedImageFormat(
-            GetPlaneBufferFormat(plane, buffer_format));
-    const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
-    backing = D3DImageBacking::Create(
-        mailbox, plane_format, plane_size, color_space, surface_origin,
-        alpha_type, usage, std::move(debug_label), std::move(d3d11_texture),
-        std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
-        /*array_slice=*/0u, plane_index, use_update_subresource1_);
-  } else {
-    backing = D3DImageBacking::Create(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        std::move(debug_label), std::move(d3d11_texture),
-        std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
-        /*array_slice=*/0u, /*plane_index=*/0,
-        use_update_subresource1_);
-  }
-
-  if (backing) {
-    backing->SetCleared();
-  }
-  return backing;
 }
 
 SharedImageBackingType D3DImageBackingFactory::GetBackingType() {

@@ -222,8 +222,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       "SwapChainBuffer", std::move(d3d11_texture),
       /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
-      /*array_slice=*/0u, /*plane_index=*/0u, std::move(swap_chain),
-      is_back_buffer));
+      /*array_slice=*/0u, std::move(swap_chain), is_back_buffer));
 }
 
 // static
@@ -241,7 +240,6 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
     size_t array_slice,
-    size_t plane_index,
     bool use_update_subresource1) {
   const bool has_webgpu_usage = !!(usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
                                             SHARED_IMAGE_USAGE_WEBGPU_WRITE));
@@ -251,7 +249,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
       std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
-      array_slice, plane_index, /*swap_chain=*/nullptr,
+      array_slice, /*swap_chain=*/nullptr,
       /*is_back_buffer=*/false, use_update_subresource1));
   return backing;
 }
@@ -270,7 +268,6 @@ D3DImageBacking::D3DImageBacking(
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
     size_t array_slice,
-    size_t plane_index,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     bool is_back_buffer,
     bool use_update_subresource1)
@@ -289,7 +286,6 @@ D3DImageBacking::D3DImageBacking(
       gl_format_caps_(gl_format_caps),
       texture_target_(texture_target),
       array_slice_(array_slice),
-      plane_index_(plane_index),
       swap_chain_(std::move(swap_chain)),
       is_back_buffer_(is_back_buffer),
       use_update_subresource1_(use_update_subresource1),
@@ -972,15 +968,11 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
     }
 
     gfx::Size plane_size = format().GetPlaneSize(plane, size());
-    // For legacy multiplanar formats, format() is plane format (eg. RED, RG)
-    // which is_single_plane(), but the real plane is in plane_index_ so we
-    // pass that.
-    unsigned plane_id = format().is_single_plane() ? plane_index_ : plane;
     // Creating the GL texture doesn't require exclusive access to the
     // underlying D3D11 texture.
     holder = CreateGLTexture(gl_format_desc, plane_size, color_space(),
                              d3d11_texture, texture_target_, array_slice_,
-                             plane_id, swap_chain_);
+                             plane, swap_chain_);
     if (!holder) {
       LOG(ERROR) << "Failed to create GL texture for plane: " << plane;
       return nullptr;
@@ -1028,7 +1020,7 @@ D3DImageBacking::ProduceSkiaGraphite(
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-      is_yuv_plane, plane_index_, array_slice_);
+      is_yuv_plane, /*legacy_plane_index=*/0, array_slice_);
 }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 

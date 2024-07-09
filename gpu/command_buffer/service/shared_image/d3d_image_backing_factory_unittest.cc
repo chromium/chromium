@@ -1171,10 +1171,8 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromPixelData) {
 void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
     DXGI_FORMAT dxgi_format) {
   auto mailbox = Mailbox::Generate();
-  const auto buffer_format = gfx::BufferFormat::RGBA_8888;
-  const auto format = viz::GetSinglePlaneSharedImageFormat(buffer_format);
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
-  const auto plane = gfx::BufferPlane::DEFAULT;
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   // This function tests concurrent GL reads of two SharedImages created from
   // the underlying handle.
@@ -1226,8 +1224,8 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   auto dup_handle = gpu_memory_buffer_handle.Clone();
 
   auto backing = shared_image_factory_->CreateSharedImage(
-      mailbox, std::move(gpu_memory_buffer_handle), buffer_format, plane, size,
-      color_space, surface_origin, alpha_type, usage, "TestLabel");
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", std::move(gpu_memory_buffer_handle));
   ASSERT_NE(backing, nullptr);
 
   EXPECT_EQ(backing->format(), format);
@@ -1247,8 +1245,8 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   // shared handle state and texture with the first backing.
   auto dup_mailbox = Mailbox::Generate();
   auto dup_backing = shared_image_factory_->CreateSharedImage(
-      dup_mailbox, std::move(dup_handle), buffer_format, plane, size,
-      color_space, surface_origin, alpha_type, usage, "TestLabel");
+      dup_mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", std::move(dup_handle));
   ASSERT_NE(dup_backing, nullptr);
 
   EXPECT_EQ(dup_backing->format(), format);

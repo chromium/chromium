@@ -137,7 +137,7 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
           mailbox, metadata.format, metadata.size, metadata.color_space,
           metadata.surface_origin, metadata.alpha_type, metadata.usage,
           si_info.debug_label, texture, std::move(dxgi_shared_handle_state),
-          caps, GL_TEXTURE_EXTERNAL_OES, array_slice, /*plane_index=*/0u);
+          caps, GL_TEXTURE_EXTERNAL_OES, array_slice);
 
   if (!backing) {
     return nullptr;
