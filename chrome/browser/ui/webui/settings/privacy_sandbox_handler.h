@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 class PrivacySandboxService;
@@ -23,6 +24,7 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
 
  private:
   friend class PrivacySandboxHandlerTest;
+  friend class PrivacySandboxHandlerPrivacyGuideAdTopicsTest;
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            SetFledgeJoiningAllowed);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
@@ -33,6 +35,10 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
                            GetTopicsState);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            TopicsToggleChanged);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
+                           AdTopicsCardShownForUserInConsentCountry);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
+                           AdTopicsCardNotShownForUserNotInConsentCountry);
 
   void HandleSetFledgeJoiningAllowed(const base::Value::List& args);
   void HandleGetFledgeState(const base::Value::List& args);
@@ -43,6 +49,7 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
   void HandleGetChildTopicsCurrentlyAssigned(const base::Value::List& args);
   void HandleShouldShowAdTopicsCard(const base::Value::List& args);
 
+  virtual PrivacySandboxCountries* GetPrivacySandboxCountries();
   PrivacySandboxService* GetPrivacySandboxService();
 
   void OnFledgeJoiningSitesRecieved(const std::string& callback_id,

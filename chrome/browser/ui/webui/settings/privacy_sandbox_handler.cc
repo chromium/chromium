@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -197,11 +199,16 @@ void PrivacySandboxHandler::HandleGetChildTopicsCurrentlyAssigned(
 void PrivacySandboxHandler::HandleShouldShowAdTopicsCard(
     const base::Value::List& args) {
   AllowJavascript();
-  // TODO(crbug.com/331970504): Add country filtering logic & check if logic
-  // needs to be added for managed topics pref.
-  bool should_show_ad_topics_card = base::FeatureList::IsEnabled(
-      privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+  bool should_show_ad_topics_card =
+      GetPrivacySandboxCountries()->IsConsentCountry() &&
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
   ResolveJavascriptCallback(args[0], should_show_ad_topics_card);
+}
+
+PrivacySandboxCountries* PrivacySandboxHandler::GetPrivacySandboxCountries() {
+  static PrivacySandboxCountriesImpl instance;
+  return &instance;
 }
 
 PrivacySandboxService* PrivacySandboxHandler::GetPrivacySandboxService() {

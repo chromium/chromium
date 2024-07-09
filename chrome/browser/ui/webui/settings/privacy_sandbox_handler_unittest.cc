@@ -6,10 +6,12 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -22,6 +24,7 @@
 namespace {
 
 using Topic = browsing_topics::Topic;
+using ::testing::Return;
 
 constexpr char kCallbackId1[] = "test-callback-id";
 constexpr char kCallbackId2[] = "test-callback-id-2";
@@ -240,6 +243,111 @@ TEST_F(PrivacySandboxHandlerTestMockService, TopicsToggleChanged) {
     args.Append(state);
     handler()->HandleTopicsToggleChanged(args);
   }
+}
+
+// A mock implementation of the PrivacySandboxCountries interface for testing.
+class MockPrivacySandboxCountries : public PrivacySandboxCountries {
+ public:
+  MockPrivacySandboxCountries() = default;
+  ~MockPrivacySandboxCountries() override = default;
+  MOCK_METHOD(bool, IsConsentCountry, (), (override));
+  MOCK_METHOD(bool, IsRestOfWorldCountry, (), (override));
+};
+
+// A fake implementation of PrivacySandboxHandler that uses a mock for testing
+// country-related functionality.
+class FakePrivacySandboxHandler : public PrivacySandboxHandler {
+ public:
+  FakePrivacySandboxHandler() {
+    mock_privacy_sandbox_countries_ =
+        std::make_unique<MockPrivacySandboxCountries>();
+  }
+
+  ~FakePrivacySandboxHandler() override {
+    mock_privacy_sandbox_countries_.reset();
+  }
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
+                           AdTopicsCardShownForUserInConsentCountry);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
+                           AdTopicsCardNotShownForUserNotInConsentCountry);
+
+  MockPrivacySandboxCountries* GetPrivacySandboxCountries() override {
+    return mock_privacy_sandbox_countries_.get();
+  }
+
+  std::unique_ptr<MockPrivacySandboxCountries> mock_privacy_sandbox_countries_;
+};
+
+class PrivacySandboxHandlerPrivacyGuideAdTopicsTest : public testing::Test {
+ public:
+  PrivacySandboxHandlerPrivacyGuideAdTopicsTest()
+      : browser_task_environment_(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+    auto handler = std::make_unique<FakePrivacySandboxHandler>();
+    handler_ = handler.get();
+    web_ui_.AddMessageHandler(std::move(handler));
+    static_cast<content::WebUIMessageHandler*>(handler_)
+        ->AllowJavascriptForTesting();
+  }
+
+  content::TestWebUI* web_ui() { return &web_ui_; }
+  FakePrivacySandboxHandler* handler() { return handler_.get(); }
+
+ private:
+  content::BrowserTaskEnvironment browser_task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  content::TestWebUI web_ui_;
+  raw_ptr<FakePrivacySandboxHandler> handler_;
+};
+
+// Verifies that the WebUI correctly responds to show the Ad Topics card when
+// the user is in a consent country.
+TEST_F(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
+       AdTopicsCardShownForUserInConsentCountry) {
+  ON_CALL(*handler()->GetPrivacySandboxCountries(), IsConsentCountry())
+      .WillByDefault(Return(true));
+
+  base::Value::List args;
+  args.Append(kCallbackId1);
+  web_ui()->ProcessWebUIMessage(
+      GURL(), "privacySandboxPrivacyGuideShouldShowAdTopicsCard",
+      std::move(args));
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);
+  EXPECT_EQ(data.function_name(), "cr.webUIResponse");
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_TRUE(data.arg3()->GetBool());
+}
+
+// Verifies that the WebUI correctly responds to NOT show the Ad Topics card
+// when the user is NOT in a consent country.
+TEST_F(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
+       AdTopicsCardNotShownForUserNotInConsentCountry) {
+  ON_CALL(*handler()->GetPrivacySandboxCountries(), IsConsentCountry())
+      .WillByDefault(Return(false));
+
+  base::Value::List args;
+  args.Append(kCallbackId1);
+  web_ui()->ProcessWebUIMessage(
+      GURL(), "privacySandboxPrivacyGuideShouldShowAdTopicsCard",
+      std::move(args));
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);
+  EXPECT_EQ(data.function_name(), "cr.webUIResponse");
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_FALSE(data.arg3()->GetBool());
 }
 
 }  // namespace settings
