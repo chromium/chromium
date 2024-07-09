@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/instrumented_video_encoder_wrapper.h"
 
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer.h"
@@ -155,6 +156,8 @@ class InstrumentedVideoEncoderWrapperTest : public ::testing::Test {
 
  protected:
   using EncodeResult = EncoderStateObserver::EncodeResult;
+
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<MockEncoderStateObserver> mock_state_observer_;
 

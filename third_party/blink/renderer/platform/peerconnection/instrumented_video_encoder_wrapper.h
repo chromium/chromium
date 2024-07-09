@@ -8,11 +8,15 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
+#include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 
 namespace blink {
-class EncoderStateObserver;
 
 // InstrumentedVideoEncoderWrapper is webrtc::VideoEncoder that
 // - delegates webrtc::VideoEncoder call to |wrapped_encoder_|,
@@ -29,8 +33,6 @@ class PLATFORM_EXPORT InstrumentedVideoEncoderWrapper
   ~InstrumentedVideoEncoderWrapper() override;
 
   // webrtc::VideoEncoder implementations.
-  void SetFecControllerOverride(
-      webrtc::FecControllerOverride* fec_controller_override) override;
   int InitEncode(const webrtc::VideoCodec* codec_settings,
                  const webrtc::VideoEncoder::Settings& settings) override;
   int32_t RegisterEncodeCompleteCallback(
@@ -40,6 +42,8 @@ class PLATFORM_EXPORT InstrumentedVideoEncoderWrapper
       const webrtc::VideoFrame& frame,
       const std::vector<webrtc::VideoFrameType>* frame_types) override;
   void SetRates(const RateControlParameters& parameters) override;
+  void SetFecControllerOverride(
+      webrtc::FecControllerOverride* fec_controller_override) override;
   void OnPacketLossRateUpdate(float packet_loss_rate) override;
   void OnRttUpdate(int64_t rtt_ms) override;
   void OnLossNotification(const LossNotification& loss_notification) override;
@@ -52,10 +56,22 @@ class PLATFORM_EXPORT InstrumentedVideoEncoderWrapper
   void OnDroppedFrame(webrtc::EncodedImageCallback::DropReason reason) override;
 
  private:
+  void ReportEncodeResult(const EncoderStateObserver::EncodeResult& result);
+
   const int id_;
+  const raw_ptr<EncoderStateObserver> state_observer_
+      GUARDED_BY_CONTEXT(encoder_sequence_);
+  const scoped_refptr<base::SequencedTaskRunner> encoder_sequence_runner_;
   const std::unique_ptr<webrtc::VideoEncoder> wrapped_encoder_;
-  const raw_ptr<EncoderStateObserver> state_observer_;
+
   raw_ptr<webrtc::EncodedImageCallback> callback_;
+
+  // WebRTC encoder sequence.
+  SEQUENCE_CHECKER(encoder_sequence_);
+
+  // WeakPtr of this, bound to |encoder_sequence_runner_|.
+  base::WeakPtrFactory<InstrumentedVideoEncoderWrapper> weak_this_factory_{
+      this};
 };
 
 }  // namespace blink
