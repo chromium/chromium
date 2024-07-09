@@ -996,7 +996,7 @@ void NativeThemeBase::PaintMenuSeparator(
     const MenuSeparatorExtraParams& menu_separator) const {
   DCHECK(color_provider);
   cc::PaintFlags flags;
-  flags.setColor(color_provider->GetColor(kColorMenuSeparator));
+  flags.setColor(color_provider->GetColor(menu_separator.color_id));
   canvas->drawRect(gfx::RectToSkRect(*menu_separator.paint_rect), flags);
 }
 

@@ -270,6 +270,9 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
     return rounded_corners_;
   }
 
+  // Returns the separator color ID according to the menu layout type.
+  ui::ColorId GetSeparatorColorId() const;
+
   // Notifies |this| that |menu_item| is being destroyed.
   void OnMenuItemDestroying(MenuItemView* menu_item);
 

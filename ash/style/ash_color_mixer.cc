@@ -721,7 +721,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)
           : kColorAshInkDrop};
 
-  mixer[ui::kColorAshSystemUIMenuSeparator] = {kColorAshSeparatorColor};
+  mixer[ui::kColorAshSystemUIMenuSeparator] = {cros_tokens::kCrosSysSeparator};
 
   mixer[kColorAshDialogBackgroundColor] =
       use_dark_color ? ui::ColorTransform(SkColorSetRGB(0x32, 0x33, 0x36))

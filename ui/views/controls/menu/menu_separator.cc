@@ -13,6 +13,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
+#include "ui/views/controls/menu/menu_controller.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
@@ -61,6 +62,8 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
 
   ui::NativeTheme::MenuSeparatorExtraParams menu_separator;
   menu_separator.paint_rect = &paint_rect;
+  menu_separator.color_id =
+      MenuController::GetActiveInstance()->GetSeparatorColorId();
   menu_separator.type = type_;
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           ui::NativeTheme::kMenuPopupSeparator,

@@ -1446,6 +1446,15 @@ void MenuController::TurnOffMenuSelectionHoldForTest() {
   menu_selection_hold_time = base::TimeDelta();
 }
 
+ui::ColorId MenuController::GetSeparatorColorId() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (use_ash_system_ui_layout_) {
+    return ui::kColorAshSystemUIMenuSeparator;
+  }
+#endif
+  return ui::kColorMenuSeparator;
+}
+
 void MenuController::OnMenuItemDestroying(MenuItemView* menu_item) {
 #if BUILDFLAG(IS_MAC)
   if (menu_closure_animation_ && menu_closure_animation_->item() == menu_item)
