@@ -9,14 +9,15 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/controls/rich_hover_button.h"
-#include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "chrome/browser/ui/webauthn/passkey_saved_confirmation_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 
+// TODO(rgod): Clean up leftover code for passing username from
+// PasswordsModelDelegate once it's confirmed it's not needed anymore.
 PasskeySavedConfirmationView::PasskeySavedConfirmationView(
     content::WebContents* web_contents,
     views::View* anchor_view)
@@ -31,24 +32,25 @@ PasskeySavedConfirmationView::PasskeySavedConfirmationView(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  AddChildView(CreatePasskeyIconWithLabelRow(vector_icons::kPasskeyIcon,
-                                             controller_.GetUsername()));
+  // TODO(rgod): Add correct strings once they're finalised.
+  size_t offset;
+  const std::u16string link = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT);
+  std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_PASSWORD_GENERATION_CONFIRMATION_GOOGLE_PASSWORD_MANAGER, link,
+      &offset);
 
-  std::u16string button_label =
-      l10n_util::GetStringUTF16(IDS_WEBAUTHN_MANAGE_PASSWORDS_AND_PASSKEYS);
-  SetFootnoteView(std::make_unique<RichHoverButton>(
-      base::BindRepeating(
+  auto label = std::make_unique<views::StyledLabel>();
+  label->SetText(text);
+  label->SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER);
+  label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->AddStyleRange(
+      gfx::Range(offset, offset + link.length()),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &PasskeySavedConfirmationView::OnManagePasswordsAndPasskeysClicked,
-          base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
-                                     ui::kColorIcon),
-      button_label,
-      /*secondary_text=*/std::u16string(), button_label,
-      /*subtitle_text=*/std::u16string(),
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                     ui::kColorIconSecondary),
-      /*state_icon=*/std::nullopt));
-  set_footnote_margins(gfx::Insets());
+          base::Unretained(this))));
+  AddChildView(std::move(label));
 }
 
 PasskeySavedConfirmationView::~PasskeySavedConfirmationView() = default;
