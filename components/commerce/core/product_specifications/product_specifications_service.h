@@ -97,8 +97,13 @@ class ProductSpecificationsService
                                   sync_pb::ProductComparisonSpecifics>>
           before_after_specifics) override;
 
+  void OnSpecificsRemoved(const std::vector<sync_pb::ProductComparisonSpecifics>
+                              specifics) override;
+
   void NotifyProductSpecificationsUpdate(const ProductSpecificationsSet& before,
                                          const ProductSpecificationsSet& after);
+
+  void NotifyProductSpecificationsRemoval(const ProductSpecificationsSet& set);
 
   base::WeakPtrFactory<ProductSpecificationsService> weak_ptr_factory_{this};
 };

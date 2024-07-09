@@ -213,8 +213,8 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     return bridge().AddSpecifics(specifics);
   }
 
-  void DeleteProductSpecifications(const std::string& uuid) {
-    bridge().DeleteProductSpecificationsSet(uuid);
+  void DeleteSpecifics(const sync_pb::ProductComparisonSpecifics& specifics) {
+    bridge().DeleteSpecifics(specifics);
   }
 
   void CommitToStoreAndWait(
@@ -528,7 +528,7 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestUpdate) {
 TEST_F(ProductSpecificationsSyncBridgeTest,
        TestDeleteProductSpecificationsSet) {
   VerifySpecificsExists(kInitCompareSpecifics[0]);
-  DeleteProductSpecifications(kInitCompareSpecifics[0].uuid());
+  DeleteSpecifics(kInitCompareSpecifics[0]);
   base::RunLoop().RunUntilIdle();
   VerifySpecificsNonExistence(kInitCompareSpecifics[0]);
 }
@@ -540,7 +540,7 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
   for (const auto& product_comparison_specifics : kInitCompareSpecifics) {
     VerifySpecificsExists(product_comparison_specifics);
   }
-  DeleteProductSpecifications(kInitCompareSpecifics[0].uuid());
+  DeleteSpecifics(kInitCompareSpecifics[0]);
   // Delete operation should be ineffectual because we're not tracking metadata
   VerifyEntriesAndStoreSize(3);
   for (const auto& product_comparison_specifics : kInitCompareSpecifics) {

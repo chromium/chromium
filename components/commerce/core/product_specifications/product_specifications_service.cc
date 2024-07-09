@@ -284,7 +284,14 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
 
 void ProductSpecificationsService::DeleteProductSpecificationsSet(
     const std::string& uuid) {
-  bridge_->DeleteProductSpecificationsSet(uuid);
+  auto it = bridge_->entries().find(uuid);
+  if (it == bridge_->entries().end()) {
+    return;
+  }
+  sync_pb::ProductComparisonSpecifics to_remove = it->second;
+  bridge_->DeleteSpecifics(to_remove);
+  NotifyProductSpecificationsRemoval(
+      ProductSpecificationsSet::FromProto(to_remove));
 }
 
 void ProductSpecificationsService::AddObserver(
@@ -348,6 +355,21 @@ void ProductSpecificationsService::OnSpecificsUpdated(
   // TODO(crbug.com/350983597) Handle new multi specifics format.
 }
 
+void ProductSpecificationsService::OnSpecificsRemoved(
+    const std::vector<sync_pb::ProductComparisonSpecifics> removed_specifics) {
+  for (auto& specifics : removed_specifics) {
+    for (auto& observer : observers_) {
+      if (!specifics.has_product_comparison() &&
+          !specifics.has_product_comparison_item()) {
+        observer.OnProductSpecificationsSetRemoved(
+            ProductSpecificationsSet::FromProto(specifics));
+      }
+    }
+  }
+
+  // TODO(crbug.com/351003028) Handle multi specifics format.
+}
+
 void ProductSpecificationsService::NotifyProductSpecificationsUpdate(
     const ProductSpecificationsSet& before,
     const ProductSpecificationsSet& after) {
@@ -358,6 +380,13 @@ void ProductSpecificationsService::NotifyProductSpecificationsUpdate(
       observer.OnProductSpecificationsSetNameUpdate(before.name(),
                                                     after.name());
     }
+  }
+}
+
+void ProductSpecificationsService::NotifyProductSpecificationsRemoval(
+    const ProductSpecificationsSet& set) {
+  for (auto& observer : observers_) {
+    observer.OnProductSpecificationsSetRemoved(set);
   }
 }
 

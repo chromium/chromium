@@ -45,7 +45,9 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
                                     sync_pb::ProductComparisonSpecifics>>
             specifics) {}
 
-    // TODO(crbug.com/350345285) Implement OnSpecificsRemoved
+    // Specifics were removed
+    virtual void OnSpecificsRemoved(
+        const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {}
   };
 
   ProductSpecificationsSyncBridge(
@@ -96,7 +98,7 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void UpdateSpecifics(
       const sync_pb::ProductComparisonSpecifics& new_specifics);
 
-  void DeleteProductSpecificationsSet(const std::string& uuid);
+  void DeleteSpecifics(const sync_pb::ProductComparisonSpecifics specifics);
 
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
@@ -112,8 +114,6 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void AddObserver(commerce::ProductSpecificationsSet::Observer* observer);
   void RemoveObserver(commerce::ProductSpecificationsSet::Observer* observer);
-
-  void OnSpecificsRemoved(const ProductSpecificationsSet& removed_set);
 
   const sync_pb::ProductComparisonSpecifics&
   GetPossiblyTrimmedPasswordSpecificsData(const std::string& storage_key);

@@ -107,11 +107,11 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
         if (it == entries_.end()) {
           break;
         }
-        ProductSpecificationsSet deleted_set =
-            ProductSpecificationsSet::FromProto(it->second);
+        sync_pb::ProductComparisonSpecifics deleted_specifics = it->second;
+
         entries_.erase(change->storage_key());
         batch->DeleteData(change->storage_key());
-        OnSpecificsRemoved(deleted_set);
+        delegate_->OnSpecificsRemoved({deleted_specifics});
         break;
     }
   }
@@ -201,30 +201,23 @@ void ProductSpecificationsSyncBridge::UpdateSpecifics(
   Commit(std::move(batch));
 }
 
-void ProductSpecificationsSyncBridge::DeleteProductSpecificationsSet(
-    const std::string& uuid) {
+void ProductSpecificationsSyncBridge::DeleteSpecifics(
+    const sync_pb::ProductComparisonSpecifics to_remove) {
   if (!change_processor()->IsTrackingMetadata()) {
     return;
   }
 
-  auto it = entries_.find(uuid);
-  if (it == entries_.end()) {
-    return;
-  }
-  ProductSpecificationsSet deleted_set =
-      ProductSpecificationsSet::FromProto(it->second);
-
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
-  change_processor()->Delete(uuid, syncer::DeletionOrigin::Unspecified(),
+  change_processor()->Delete(to_remove.uuid(),
+                             syncer::DeletionOrigin::Unspecified(),
                              batch->GetMetadataChangeList());
 
-  entries_.erase(uuid);
-  batch->DeleteData(uuid);
+  entries_.erase(to_remove.uuid());
+  batch->DeleteData(to_remove.uuid());
 
   Commit(std::move(batch));
-  OnSpecificsRemoved(deleted_set);
 }
 
 void ProductSpecificationsSyncBridge::OnStoreCreated(
@@ -324,13 +317,6 @@ void ProductSpecificationsSyncBridge::AddObserver(
 void ProductSpecificationsSyncBridge::RemoveObserver(
     commerce::ProductSpecificationsSet::Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void ProductSpecificationsSyncBridge::OnSpecificsRemoved(
-    const ProductSpecificationsSet& removed_set) {
-  for (auto& observer : observers_) {
-    observer.OnProductSpecificationsSetRemoved(removed_set);
-  }
 }
 
 const sync_pb::ProductComparisonSpecifics&
