@@ -21,6 +21,7 @@
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_delegate.h"
 #include "net/reporting/reporting_service.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_uploader.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -350,7 +351,8 @@ class TestReportingService : public ReportingService {
       const std::string& group,
       const std::string& type,
       base::Value::Dict body,
-      int depth) override;
+      int depth,
+      ReportingTargetType target_type) override;
 
   void ProcessReportToHeader(
       const url::Origin& url,

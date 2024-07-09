@@ -29,6 +29,7 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_report.h"
+#include "net/reporting/reporting_target_type.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -53,7 +54,8 @@ class ReportingCacheImpl : public ReportingCache {
                  base::Value::Dict body,
                  int depth,
                  base::TimeTicks queued,
-                 int attempts) override;
+                 int attempts,
+                 ReportingTargetType target_type) override;
   void GetReports(
       std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*
           reports_out) const override;

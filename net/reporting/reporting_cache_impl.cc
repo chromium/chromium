@@ -39,7 +39,8 @@ void ReportingCacheImpl::AddReport(
     base::Value::Dict body,
     int depth,
     base::TimeTicks queued,
-    int attempts) {
+    int attempts,
+    ReportingTargetType target_type) {
   // If |reporting_source| is present, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
   // Drop the report if its reporting source is already marked as expired.
@@ -53,7 +54,7 @@ void ReportingCacheImpl::AddReport(
 
   auto report = std::make_unique<ReportingReport>(
       reporting_source, network_anonymization_key, url, user_agent, group_name,
-      type, std::move(body), depth, queued, attempts);
+      type, std::move(body), depth, queued, attempts, target_type);
 
   auto inserted = reports_.insert(std::move(report));
   DCHECK(inserted.second);

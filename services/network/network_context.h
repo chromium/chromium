@@ -43,6 +43,7 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/net_buildflags.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
@@ -466,6 +467,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const std::optional<std::string>& user_agent,
       base::Value::Dict body) override;
+  void QueueEnterpriseReport(
+      const std::string& type,
+      const std::string& group,
+      const GURL& url,
+      const std::optional<base::UnguessableToken>& reporting_source,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const std::optional<std::string>& user_agent,
+      base::Value::Dict body) override;
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
@@ -780,6 +789,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const url::SchemeHostPort& scheme_host_port);
 
   void InitializePrefetchURLLoaderFactory();
+
+  void QueueReportInternal(
+      const std::string& type,
+      const std::string& group,
+      const GURL& url,
+      const std::optional<base::UnguessableToken>& reporting_source,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const std::optional<std::string>& user_agent,
+      base::Value::Dict body,
+      ReportingTargetType target_type);
 
   const raw_ptr<NetworkService> network_service_;
 

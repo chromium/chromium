@@ -70,6 +70,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_chain.h"
@@ -115,6 +116,8 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/reporting/reporting_report.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/test/cert_test_util.h"
@@ -198,6 +201,16 @@ constexpr char kFrameOriginForFetchRequest[] = "https://xyz.com";
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::FilePath::CharType kFilename[] =
     FILE_PATH_LITERAL("TempReportingAndNelStore");
+const GURL kUrl_ = GURL("https://origin/path");
+const url::Origin kOrigin_ = url::Origin::Create(kUrl_);
+const GURL kEndpoint_ = GURL("https://endpoint/");
+const std::string kUserAgent_ = "Mozilla/1.0";
+const std::string kGroup_ = "group";
+const std::string kType_ = "type";
+const std::optional<base::UnguessableToken> kReportingSource_ =
+    base::UnguessableToken::Create();
+const net::NetworkAnonymizationKey kNak_ =
+    net::NetworkAnonymizationKey::CreateTransient();
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 void StoreValue(base::Value::Dict* result,
@@ -914,6 +927,28 @@ TEST_F(NetworkContextTest, EnableReportingWithStore) {
                   ->reporting_service()
                   ->GetContextForTesting()
                   ->store());
+}
+
+TEST_F(NetworkContextTest, QueueEnterpriseReport) {
+  auto reporting_context = std::make_unique<net::TestReportingContext>(
+      base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
+      net::ReportingPolicy());
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
+
+  network_context->QueueEnterpriseReport(kType_, kGroup_, kUrl_,
+                                         kReportingSource_, kNak_, kUserAgent_,
+                                         base::Value::Dict());
+
+  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
+      network_context->url_request_context()->reporting_service()->GetReports();
+  ASSERT_EQ(1u, reports.size());
+  EXPECT_EQ(kUrl_, reports[0]->url);
+  EXPECT_EQ(kUserAgent_, reports[0]->user_agent);
+  EXPECT_EQ(kGroup_, reports[0]->group);
+  EXPECT_EQ(kType_, reports[0]->type);
+  EXPECT_EQ(ReportingTargetType::kEnterprise, reports[0]->target_type);
 }
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -2549,11 +2584,14 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
   GURL domain("http://google.com");
   network_context->url_request_context()->reporting_service()->QueueReport(
       domain, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
-      "group", "type", base::Value::Dict(), 0);
+      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
+  network_context->QueueEnterpriseReport("type", "group", domain, std::nullopt,
+                                         net::NetworkAnonymizationKey(),
+                                         "Mozilla/1.0", base::Value::Dict());
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
   reporting_cache->GetReports(&reports);
-  ASSERT_EQ(1u, reports.size());
+  ASSERT_EQ(2u, reports.size());
 
   base::RunLoop run_loop;
   network_context->ClearReportingCacheReports(nullptr /* filter */,
@@ -2576,13 +2614,13 @@ TEST_F(NetworkContextTest, ClearReportingCacheReportsWithFilter) {
   net::ReportingService* reporting_service =
       network_context->url_request_context()->reporting_service();
   GURL url1("http://google.com");
-  reporting_service->QueueReport(url1, std::nullopt,
-                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
-                                 "group", "type", base::Value::Dict(), 0);
+  reporting_service->QueueReport(
+      url1, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
+      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
   GURL url2("http://chromium.org");
-  reporting_service->QueueReport(url2, std::nullopt,
-                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
-                                 "group", "type", base::Value::Dict(), 0);
+  reporting_service->QueueReport(
+      url2, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
+      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
   reporting_cache->GetReports(&reports);
@@ -2615,13 +2653,13 @@ TEST_F(NetworkContextTest,
   net::ReportingService* reporting_service =
       network_context->url_request_context()->reporting_service();
   GURL url1("http://192.168.0.1");
-  reporting_service->QueueReport(url1, std::nullopt,
-                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
-                                 "group", "type", base::Value::Dict(), 0);
+  reporting_service->QueueReport(
+      url1, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
+      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
   GURL url2("http://192.168.0.2");
-  reporting_service->QueueReport(url2, std::nullopt,
-                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
-                                 "group", "type", base::Value::Dict(), 0);
+  reporting_service->QueueReport(
+      url2, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
+      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
   reporting_cache->GetReports(&reports);

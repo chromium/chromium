@@ -16,6 +16,7 @@
 #include "net/base/net_export.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_cache_observer.h"
+#include "net/reporting/reporting_target_type.h"
 
 class GURL;
 
@@ -79,7 +80,8 @@ class NET_EXPORT ReportingService {
       const std::string& group,
       const std::string& type,
       base::Value::Dict body,
-      int depth) = 0;
+      int depth,
+      ReportingTargetType target_type) = 0;
 
   // Processes a Report-To header. |origin| is the Origin of the URL that the
   // header came from; |header_value| is the normalized value of the Report-To

@@ -1134,6 +1134,7 @@ component("net") {
       "reporting/reporting_report.h",
       "reporting/reporting_service.cc",
       "reporting/reporting_service.h",
+      "reporting/reporting_target_type.h",
       "reporting/reporting_uploader.cc",
       "reporting/reporting_uploader.h",
     ]

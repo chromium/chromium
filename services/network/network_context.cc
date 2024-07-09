@@ -1384,6 +1384,33 @@ void NetworkContext::QueueReport(
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const std::optional<std::string>& user_agent,
     base::Value::Dict body) {
+  QueueReportInternal(type, group, url, reporting_source,
+                      network_anonymization_key, user_agent, std::move(body),
+                      ReportingTargetType::kDeveloper);
+}
+
+void NetworkContext::QueueEnterpriseReport(
+    const std::string& type,
+    const std::string& group,
+    const GURL& url,
+    const std::optional<base::UnguessableToken>& reporting_source,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    const std::optional<std::string>& user_agent,
+    base::Value::Dict body) {
+  QueueReportInternal(type, group, url, reporting_source,
+                      network_anonymization_key, user_agent, std::move(body),
+                      ReportingTargetType::kEnterprise);
+}
+
+void NetworkContext::QueueReportInternal(
+    const std::string& type,
+    const std::string& group,
+    const GURL& url,
+    const std::optional<base::UnguessableToken>& reporting_source,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    const std::optional<std::string>& user_agent,
+    base::Value::Dict body,
+    ReportingTargetType target_type) {
 #if BUILDFLAG(ENABLE_REPORTING)
   // If |reporting_source| is provided, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
@@ -1407,9 +1434,9 @@ void NetworkContext::QueueReport(
         request_context->http_user_agent_settings()->GetUserAgent();
   }
 
-  reporting_service->QueueReport(url, reporting_source,
-                                 network_anonymization_key, reported_user_agent,
-                                 group, type, std::move(body), 0 /* depth */);
+  reporting_service->QueueReport(
+      url, reporting_source, network_anonymization_key, reported_user_agent,
+      group, type, std::move(body), 0 /* depth */, target_type);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 }
 

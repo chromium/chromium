@@ -29,6 +29,7 @@
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "net/reporting/reporting_service.h"
+#include "net/reporting/reporting_target_type.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -493,7 +494,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
         details.user_agent, policy->report_to, kReportType,
         CreateReportBody(phase_string, type_string, sampling_fraction.value(),
                          details),
-        details.reporting_upload_depth);
+        details.reporting_upload_depth, ReportingTargetType::kDeveloper);
   }
 
   void DoQueueSignedExchangeReport(SignedExchangeReportDetails details,
@@ -542,7 +543,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
         details.outer_url, std::nullopt, details.network_anonymization_key,
         details.user_agent, policy->report_to, kReportType,
         CreateSignedExchangeReportBody(details, sampling_fraction.value()),
-        0 /* depth */);
+        0 /* depth */, ReportingTargetType::kDeveloper);
     RecordSignedExchangeRequestOutcome(RequestOutcome::kQueued);
   }
 

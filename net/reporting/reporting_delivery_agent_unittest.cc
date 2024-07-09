@@ -70,7 +70,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     cache()->AddReport(reporting_source, network_anonymization_key, url,
                        kUserAgent_, group, kType_, std::move(report_body),
                        0 /* depth */, tick_clock()->NowTicks() /* queued */,
-                       0 /* attempts */);
+                       0 /* attempts */, ReportingTargetType::kDeveloper);
   }
 
   // The first report added to the cache is uploaded immediately, and a timer is

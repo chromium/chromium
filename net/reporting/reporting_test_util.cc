@@ -346,7 +346,8 @@ void TestReportingService::QueueReport(
     const std::string& group,
     const std::string& type,
     base::Value::Dict body,
-    int depth) {
+    int depth,
+    ReportingTargetType target_type) {
   reports_.emplace_back(
       Report(url, network_anonymization_key, user_agent, group, type,
              std::make_unique<base::Value>(std::move(body)), depth));

@@ -193,6 +193,7 @@
 #include "net/http/http_auth_cache.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/net_buildflags.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
@@ -1034,7 +1035,8 @@ class MockReportingService : public net::ReportingService {
       const std::string& group,
       const std::string& type,
       base::Value::Dict body,
-      int depth) override {
+      int depth,
+      ReportingTargetType target_type) override {
     NOTREACHED_IN_MIGRATION();
   }
 

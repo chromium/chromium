@@ -87,7 +87,8 @@ class ReportingServiceImpl : public ReportingService {
       const std::string& group,
       const std::string& type,
       base::Value::Dict body,
-      int depth) override {
+      int depth,
+      ReportingTargetType target_type) override {
     DCHECK(context_);
     DCHECK(context_->delegate());
     // If |reporting_source| is provided, it must not be empty.
@@ -110,7 +111,7 @@ class ReportingServiceImpl : public ReportingService {
                        base::Unretained(this), reporting_source,
                        FixupNetworkAnonymizationKey(network_anonymization_key),
                        std::move(sanitized_url), user_agent, group, type,
-                       std::move(body), depth, queued_ticks));
+                       std::move(body), depth, queued_ticks, target_type));
   }
 
   void ProcessReportToHeader(
@@ -213,11 +214,13 @@ class ReportingServiceImpl : public ReportingService {
       const std::string& type,
       base::Value::Dict body,
       int depth,
-      base::TimeTicks queued_ticks) {
+      base::TimeTicks queued_ticks,
+      ReportingTargetType target_type) {
     DCHECK(initialized_);
-    context_->cache()->AddReport(
-        reporting_source, network_anonymization_key, sanitized_url, user_agent,
-        group, type, std::move(body), depth, queued_ticks, 0 /* attempts */);
+    context_->cache()->AddReport(reporting_source, network_anonymization_key,
+                                 sanitized_url, user_agent, group, type,
+                                 std::move(body), depth, queued_ticks,
+                                 0 /* attempts */, target_type);
   }
 
   void DoProcessReportToHeader(

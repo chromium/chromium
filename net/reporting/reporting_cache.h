@@ -22,6 +22,7 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_report.h"
+#include "net/reporting/reporting_target_type.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -77,7 +78,8 @@ class NET_EXPORT ReportingCache {
       base::Value::Dict body,
       int depth,
       base::TimeTicks queued,
-      int attempts) = 0;
+      int attempts,
+      ReportingTargetType target_type) = 0;
 
   // Gets all reports in the cache. The returned pointers are valid as long as
   // either no calls to |RemoveReports| have happened or the reports' |pending|
