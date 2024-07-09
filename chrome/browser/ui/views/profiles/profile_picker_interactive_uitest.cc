@@ -238,7 +238,6 @@ class ProfilePickerParametrizedInteractiveUiTest
     button_enabled.where = button_query;
     button_enabled.type = StateChange::Type::kExistsAndConditionTrue;
     button_enabled.test_function = "(btn) => !btn.disabled";
-    LOG(INFO) << "b/330201475: Waiting for button to be enabled";
     return WaitForStateChange(web_contents_id, button_enabled);
   }
 
@@ -249,14 +248,12 @@ class ProfilePickerParametrizedInteractiveUiTest
     button_disabled.where = button_query;
     button_disabled.type = StateChange::Type::kExistsAndConditionTrue;
     button_disabled.test_function = "(btn) => btn.disabled";
-    LOG(INFO) << "b/330201475 Waiting for button to be disabled";
     return WaitForStateChange(web_contents_id, button_disabled);
   }
 
   auto PressJsButton(const ui::ElementIdentifier web_contents_id,
                      const DeepQuery& button_query) {
     // This can close/navigate the current page, so don't wait for success.
-    LOG(INFO) << "b/330201475 Pressing button";
     return ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()",
                        ExecuteJsMode::kFireAndForget);
   }
@@ -270,7 +267,6 @@ class ProfilePickerParametrizedInteractiveUiTest
     const DeepQuery searchEngineChoiceList{"search-engine-choice-app",
                                            "#choiceList"};
 
-    LOG(INFO) << "b/330201475 CompleteSearchEngineChoiceStep";
     return Steps(
         WaitForWebContentsNavigation(
             kPickerWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
