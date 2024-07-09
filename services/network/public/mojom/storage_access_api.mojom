@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// This mirrors the C++ type defined in //net/storage_access_api/status.h. This
+// enum conveys information about if/how the context has opted into accessing
+// unpartitioned cookies via the Storage Access API.
+enum StorageAccessApiStatus {
+  kNone,
+  kAccessViaAPI,
+};

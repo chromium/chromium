@@ -768,7 +768,8 @@ URLLoader::URLLoader(
         request.net_log_reference_info.value());
   }
 
-  url_request_->set_has_storage_access(request.has_storage_access);
+  url_request_->set_storage_access_api_status(
+      request.storage_access_api_status);
 
   url_request_->cookie_setting_overrides().PutAll(cookie_setting_overrides);
   if (request.is_outermost_main_frame &&

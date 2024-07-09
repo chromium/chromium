@@ -72,6 +72,7 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -5008,7 +5009,8 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_RedirectWithLoad) {
 
 class URLLoaderCookieSettingOverridesTest
     : public URLLoaderTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public ::testing::WithParamInterface<
+          std::tuple<bool, bool, net::StorageAccessApiStatus, bool>> {
  public:
   ~URLLoaderCookieSettingOverridesTest() override = default;
 
@@ -5020,7 +5022,7 @@ class URLLoaderCookieSettingOverridesTest
       EXPECT_EQ(request.mode, network::mojom::RequestMode::kNoCors);
     }
     request.is_outermost_main_frame = IsOuterMostFrame();
-    request.has_storage_access = HasStorageAccess();
+    request.storage_access_api_status = StorageAccessApiStatus();
     if (!InitiatorIsOtherOrigin()) {
       request.request_initiator =
           url::Origin::Create(GURL("http://other-origin.test/"));
@@ -5033,8 +5035,15 @@ class URLLoaderCookieSettingOverridesTest
       overrides.Put(
           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
     }
-    if (HasStorageAccess() && InitiatorIsOtherOrigin()) {
-      overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+    switch (StorageAccessApiStatus()) {
+      case net::StorageAccessApiStatus::kNone:
+        break;
+      case net::StorageAccessApiStatus::kAccessViaAPI:
+        if (InitiatorIsOtherOrigin()) {
+          overrides.Put(
+              net::CookieSettingOverride::kStorageAccessGrantEligible);
+        }
+        break;
     }
     return overrides;
   }
@@ -5049,7 +5058,9 @@ class URLLoaderCookieSettingOverridesTest
  private:
   bool IsCors() const { return std::get<0>(GetParam()); }
   bool IsOuterMostFrame() const { return std::get<1>(GetParam()); }
-  bool HasStorageAccess() const { return std::get<2>(GetParam()); }
+  net::StorageAccessApiStatus StorageAccessApiStatus() const {
+    return std::get<2>(GetParam());
+  }
   bool InitiatorIsOtherOrigin() const { return std::get<3>(GetParam()); }
 };
 
@@ -5168,12 +5179,15 @@ TEST_P(URLLoaderCookieSettingOverridesTest,
                           ExpectedCookieSettingOverrides(),
                           ExpectedCookieSettingOverrides()));
 }
-INSTANTIATE_TEST_SUITE_P(All,
-                         URLLoaderCookieSettingOverridesTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    URLLoaderCookieSettingOverridesTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(net::StorageAccessApiStatus::kNone,
+                        net::StorageAccessApiStatus::kAccessViaAPI),
+        testing::Bool()));
 
 namespace {
 

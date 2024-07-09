@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
@@ -641,11 +642,12 @@ void LocalFrameClientImpl::BeginNavigation(
 
   // Allow cookie access via Storage Access API during the navigation, if the
   // initiator has obtained storage access. Note that the network service still
-  // applies cookie semantics and user settings, and that this bool is not
+  // applies cookie semantics and user settings, and that this value is not
   // trusted by the browser process. (The Storage Access API is only relevant
   // when third-party cookies are blocked.)
-  navigation_info->has_storage_access =
-      origin_window && origin_window->HasStorageAccess();
+  navigation_info->storage_access_api_status =
+      origin_window ? origin_window->GetStorageAccessApiStatus()
+                    : net::StorageAccessApiStatus::kNone;
 
   // Can be null.
   LocalFrame* local_parent_frame = GetLocalParentFrame(web_frame_);

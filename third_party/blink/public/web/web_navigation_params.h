@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/link_header.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -196,8 +197,9 @@ struct BLINK_EXPORT WebNavigationInfo {
   CrossVariantMojoRemote<mojom::NavigationStateKeepAliveHandleInterfaceBase>
       initiator_navigation_state_keep_alive_handle;
 
-  // The initiator frame's LocalDOMWindow's has_storage_access state.
-  bool has_storage_access = false;
+  // The initiator frame's LocalDOMWindow's Storage Access API status.
+  net::StorageAccessApiStatus storage_access_api_status =
+      net::StorageAccessApiStatus::kNone;
 
   // Whether this navigation was initiated by the container, e.g. iframe changed
   // src. Only container-initiated navigation report resource timing to the
@@ -540,8 +542,9 @@ struct BLINK_EXPORT WebNavigationParams {
   base::flat_map<::blink::mojom::RuntimeFeature, bool>
       modified_runtime_features;
 
-  // Whether the document should be loaded with the has_storage_access bit set.
-  bool load_with_storage_access = false;
+  // The Storage Access API status that the document should be loaded with.
+  net::StorageAccessApiStatus load_with_storage_access =
+      net::StorageAccessApiStatus::kNone;
 
   // Indicates which browsing context group this frame belongs to. This starts
   // as nullopt and is only set when we commit a main frame in another browsing

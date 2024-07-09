@@ -35,6 +35,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
@@ -266,7 +267,8 @@ void WebSharedWorkerImpl::StartWorkerContext(
       /*interface_registry=*/nullptr,
       /*agent_group_scheduler_compositor_task_runner=*/nullptr,
       /*top_level_frame_security_origin=*/nullptr,
-      /*parent_has_storage_access=*/false,
+      /*parent_storage_access_api_status=*/
+      net::StorageAccessApiStatus::kNone,
       require_cross_site_request_for_cookies);
 
   auto thread_startup_data = WorkerBackingThreadStartupData::CreateDefault();

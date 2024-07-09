@@ -21,6 +21,7 @@
 #include "media/base/pipeline.h"
 #include "media/base/pipeline_status.h"
 #include "media/filters/chunk_demuxer.h"
+#include "net/storage_access_api/status.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -121,7 +122,7 @@ class MEDIA_EXPORT DemuxerManager {
                  MediaLog* log,
                  net::SiteForCookies site_for_cookies,
                  url::Origin top_frame_origin,
-                 bool has_storage_access,
+                 net::StorageAccessApiStatus storage_access_api_status,
                  bool enable_instant_source_buffer_gc,
                  std::unique_ptr<Demuxer> demuxer_override);
   ~DemuxerManager();
@@ -229,7 +230,7 @@ class MEDIA_EXPORT DemuxerManager {
   net::SiteForCookies site_for_cookies_;
   url::Origin top_frame_origin_;
 #if BUILDFLAG(IS_ANDROID)
-  bool has_storage_access_;
+  net::StorageAccessApiStatus storage_access_api_status_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // When MSE memory pressure based garbage collection is enabled, the

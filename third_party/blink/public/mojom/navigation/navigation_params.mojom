@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/source_location.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_request.mojom";
@@ -183,12 +184,12 @@ struct BeginNavigationParams {
   // TODO(https://github.com/whatwg/html/issues/8846): clarify this further.
   bool is_container_initiated = false;
 
-  // Whether this navigation can include cookies via the Storage Access API,
-  // according to the renderer. Note that this is not trusted; cookies will not
-  // actually be attached unless there is also a matching permission grant
+  // The renderer's Storage Access API status (e.g. whether it has opted into
+  // accessing cross-site cookies). Note that this is not trusted; cookies will
+  // not actually be attached unless there is also a matching permission grant
   // created by the browser process. (Also note that the Storage Access API is
   // only relevant when third-party cookies are blocked.)
-  bool has_storage_access = false;
+  network.mojom.StorageAccessApiStatus storage_access_api_status = kNone;
 
   // True if the initiator explicitly asked for opener relationships to be
   // preserved, via rel="opener".
@@ -607,9 +608,9 @@ struct CommitNavigationParams {
   // cross-document main frame history navigations.
   blink.mojom.BackForwardCacheNotRestoredReasons? not_restored_reasons;
 
-  // Indicates whether the target document of this navigation should load with
-  // the `has_storage_access` bit set.
-  bool load_with_storage_access = false;
+  // The StorageAccessApiStatus value that the target document of this
+  // navigation should be loaded with.
+  network.mojom.StorageAccessApiStatus load_with_storage_access = kNone;
 
   // Indicates which browsing context group this frame belongs to. This starts
   // as nullopt and is only set when we commit a main frame in another browsing

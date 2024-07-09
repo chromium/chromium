@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "content/public/browser/content_browser_client.h"
 #include "net/base/isolation_info.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom.h"
@@ -42,7 +43,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
                const std::vector<std::string>& requested_protocols,
                const net::SiteForCookies& site_for_cookies,
                const std::optional<std::string>& user_agent,
-               bool has_storage_access,
+               net::StorageAccessApiStatus storage_access_api_status,
                mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
                    handshake_client,
                const std::optional<base::UnguessableToken>&
@@ -52,7 +53,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
   static void ConnectCalledByContentBrowserClient(
       const std::vector<std::string>& requested_protocols,
       const net::SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       int process_id,
       int frame_id,

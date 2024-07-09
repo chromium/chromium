@@ -60,6 +60,7 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/ssl/ssl_server_config.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -353,7 +354,7 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
                                                   context_.get());
     channel_->SendAddChannelRequest(
         GURL(socket_url), sub_protocols_, origin, site_for_cookies,
-        /*has_storage_access=*/false, isolation_info, HttpRequestHeaders(),
+        StorageAccessApiStatus::kNone, isolation_info, HttpRequestHeaders(),
         TRAFFIC_ANNOTATION_FOR_TESTS);
     event_interface_->WaitForResponse();
     return !event_interface_->failed();

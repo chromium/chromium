@@ -65,7 +65,7 @@ void CookieJar::SetCookie(const String& value) {
   RequestRestrictedCookieManagerIfNeeded();
   backend_->SetCookieFromString(
       cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
-      document_->GetExecutionContext()->HasStorageAccess(), value);
+      document_->GetExecutionContext()->GetStorageAccessApiStatus(), value);
   last_operation_was_set_ = true;
   base::UmaHistogramTimes("Blink.SetCookieTime", timer.Elapsed());
   if (is_first_operation_) {
@@ -108,7 +108,7 @@ String CookieJar::Cookies() {
     if (!backend_->GetCookiesString(
             cookie_url, document_->SiteForCookies(),
             document_->TopFrameOrigin(),
-            document_->GetExecutionContext()->HasStorageAccess(),
+            document_->GetExecutionContext()->GetStorageAccessApiStatus(),
             get_version_shared_memory, is_ad_tagged,
             /*force_disable_third_party_cookies=*/false, &new_version,
             &new_mapped_region, &value)) {
@@ -143,7 +143,8 @@ bool CookieJar::CookiesEnabled() {
   bool cookies_enabled = false;
   backend_->CookiesEnabledFor(
       cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
-      document_->GetExecutionContext()->HasStorageAccess(), &cookies_enabled);
+      document_->GetExecutionContext()->GetStorageAccessApiStatus(),
+      &cookies_enabled);
   base::UmaHistogramTimes("Blink.CookiesEnabledTime", timer.Elapsed());
   if (is_first_operation_) {
     LogFirstCookieRequest(FirstCookieRequest::kFirstOperationWasCookiesEnabled);

@@ -7,6 +7,7 @@ module network.mojom;
 import "services/network/public/mojom/cookie_manager.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
 
@@ -66,7 +67,7 @@ interface RestrictedCookieManager {
   // used to determine if a cookie is accessed in a third-party context.
   // |top_frame_origin| is used to check for content settings. |is_ad_tagged|
   // indicates whether this cookie access is being used for advertising.
-  // |has_storage_access| is used to opt-in to using Storage Access API
+  // |storage_access_api_status| is used to opt-in to using Storage Access API
   // permission grants. (Note: it does *not* grant access on its own, but rather
   // allows an existing permission grant to be used, if one exists.)
   // |options| filters the returned list of cookies. The returned cookies
@@ -77,7 +78,7 @@ interface RestrictedCookieManager {
   GetAllForUrl(
       url.mojom.Url url, SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin,
-      bool has_storage_access,
+      StorageAccessApiStatus storage_access_api_status,
       CookieManagerGetOptions options,
       bool is_ad_tagged,
       // Proxied restricted cookie managers need a way to signal to the
@@ -96,7 +97,7 @@ interface RestrictedCookieManager {
                      url.mojom.Url url,
                      SiteForCookies site_for_cookies,
                      url.mojom.Origin top_frame_origin,
-                     bool has_storage_access,
+                     StorageAccessApiStatus storage_access_api_status,
                      CookieInclusionStatus status) => (bool success);
 
   // Subscribes to changes in the cookies transmitted in a request to an URL.
@@ -104,7 +105,7 @@ interface RestrictedCookieManager {
   // The subscription is canceled by closing the pipe.
   AddChangeListener(url.mojom.Url url, SiteForCookies site_for_cookies,
                     url.mojom.Origin top_frame_origin,
-                    bool has_storage_access,
+                    StorageAccessApiStatus storage_access_api_status,
                     pending_remote<CookieChangeListener> listener) => ();
 
   // Sets a cookie.  If setting of this cookie is not permitted either by web
@@ -118,7 +119,7 @@ interface RestrictedCookieManager {
   [Sync]
   SetCookieFromString(url.mojom.Url url, SiteForCookies site_for_cookies,
                       url.mojom.Origin top_frame_origin,
-                      bool has_storage_access,
+                      StorageAccessApiStatus storage_access_api_status,
                       string cookie) => ();
 
   // Used to get cookies for the given URL. Cookies that are blocked by user
@@ -144,7 +145,8 @@ interface RestrictedCookieManager {
   GetCookiesString(url.mojom.Url url,
                    SiteForCookies site_for_cookies,
                    url.mojom.Origin top_frame_origin,
-                   bool has_storage_access, bool get_version_shared_memory,
+                   StorageAccessApiStatus storage_access_api_status,
+                   bool get_version_shared_memory,
                    bool is_ad_tagged,
                    // Proxied restricted cookie managers need a way to signal to
                    // the restricted cookie manager that we need to filter out
@@ -168,5 +170,6 @@ interface RestrictedCookieManager {
       url.mojom.Url url,
       SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin,
-      bool has_storage_access) => (bool cookies_enabled);
+      StorageAccessApiStatus storage_access_api_status)
+      => (bool cookies_enabled);
 };

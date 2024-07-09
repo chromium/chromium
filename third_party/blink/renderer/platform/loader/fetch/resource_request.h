@@ -36,6 +36,7 @@
 #include "base/unguessable_token.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/filter/source_stream.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
@@ -576,10 +577,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
     return render_blocking_behavior_;
   }
 
-  void SetHasStorageAccess(bool has_storage_access) {
-    has_storage_access_ = has_storage_access;
+  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status) {
+    storage_access_api_status_ = status;
   }
-  bool GetHasStorageAccess() const { return has_storage_access_; }
+  net::StorageAccessApiStatus GetStorageAccessApiStatus() const {
+    return storage_access_api_status_;
+  }
 
   network::mojom::AttributionSupport GetAttributionReportingSupport() const {
     return attribution_reporting_support_;
@@ -778,7 +781,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
       base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>
       devtools_accepted_stream_types_;
 
-  bool has_storage_access_ = false;
+  net::StorageAccessApiStatus storage_access_api_status_ =
+      net::StorageAccessApiStatus::kNone;
 
   network::mojom::AttributionSupport attribution_reporting_support_ =
       network::mojom::AttributionSupport::kWeb;

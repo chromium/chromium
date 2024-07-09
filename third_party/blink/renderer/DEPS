@@ -91,6 +91,7 @@ include_rules = [
     "+net/base/features.h",
     "+net/cookies",
     "+net/http/structured_headers.h",
+    "+net/storage_access_api/status.h",
     "+services/network/public/mojom",
     "+skia/ext",
     "+testing/gmock/include/gmock",

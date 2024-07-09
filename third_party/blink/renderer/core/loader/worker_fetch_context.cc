@@ -195,7 +195,8 @@ void WorkerFetchContext::PrepareRequest(
       RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
           GetExecutionContext()));
 
-  request.SetHasStorageAccess(GetExecutionContext()->HasStorageAccess());
+  request.SetStorageAccessApiStatus(
+      GetExecutionContext()->GetStorageAccessApiStatus());
 
   WrappedResourceRequest webreq(request);
   web_context_->WillSendRequest(webreq);

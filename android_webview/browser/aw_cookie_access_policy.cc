@@ -17,6 +17,7 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
+#include "net/storage_access_api/status.h"
 #include "url/gurl.h"
 
 using base::AutoLock;
@@ -71,19 +72,19 @@ PrivacySetting AwCookieAccessPolicy::AllowCookies(
     const net::SiteForCookies& site_for_cookies,
     base::optional_ref<const content::GlobalRenderFrameHostToken>
         global_frame_token,
-    bool has_storage_access) {
+    net::StorageAccessApiStatus storage_access_api_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   bool third_party = GetShouldAcceptThirdPartyCookies(
       global_frame_token, content::RenderFrameHost::kNoFrameTreeNodeId);
   return CanAccessCookies(url, site_for_cookies, third_party,
-                          has_storage_access);
+                          storage_access_api_status);
 }
 
 PrivacySetting AwCookieAccessPolicy::CanAccessCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     bool accept_third_party_cookies,
-    bool has_storage_access) {
+    net::StorageAccessApiStatus storage_access_api_status) {
   if (!accept_cookies_)
     return PrivacySetting::kStateDisallowed;
 
@@ -97,8 +98,11 @@ PrivacySetting AwCookieAccessPolicy::CanAccessCookies(
   if (url.SchemeIsFile())
     return PrivacySetting::kStateAllowed;
 
-  if (has_storage_access) {
-    return PrivacySetting::kStateAllowed;
+  switch (storage_access_api_status) {
+    case net::StorageAccessApiStatus::kNone:
+      break;
+    case net::StorageAccessApiStatus::kAccessViaAPI:
+      return PrivacySetting::kStateAllowed;
   }
 
   // Otherwise, block third-party cookies.

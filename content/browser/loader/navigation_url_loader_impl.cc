@@ -331,8 +331,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
         *request_info.begin_params->trust_token_params;
   }
 
-  new_request->has_storage_access =
-      request_info.begin_params->has_storage_access;
+  new_request->storage_access_api_status =
+      request_info.begin_params->storage_access_api_status;
 
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromFrameTreeNodeId(frame_tree_node->frame_tree_node_id()));

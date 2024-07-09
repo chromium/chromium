@@ -37,6 +37,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/alternative_service.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-test-utils.h"
@@ -378,28 +379,29 @@ class RestrictedCookieManagerInterceptor
     override_url_ = std::move(maybe_url);
   }
 
-  void SetCookieFromString(const GURL& url,
-                           const net::SiteForCookies& site_for_cookies,
-                           const url::Origin& top_frame_origin,
-                           bool has_storage_access,
-                           const std::string& cookie,
-                           SetCookieFromStringCallback callback) override {
+  void SetCookieFromString(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      net::StorageAccessApiStatus storage_access_api_status,
+      const std::string& cookie,
+      SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
-        URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
-        std::move(cookie), std::move(callback));
+        URLToUse(url), site_for_cookies, top_frame_origin,
+        storage_access_api_status, std::move(cookie), std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
-                        bool has_storage_access,
+                        net::StorageAccessApiStatus storage_access_api_status,
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
                         bool force_disable_third_party_cookies,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
-        URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
-        get_version_shared_memory, is_ad_tagged,
+        URLToUse(url), site_for_cookies, top_frame_origin,
+        storage_access_api_status, get_version_shared_memory, is_ad_tagged,
         force_disable_third_party_cookies, std::move(callback));
   }
 

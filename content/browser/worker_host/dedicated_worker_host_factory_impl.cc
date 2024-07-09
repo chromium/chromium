@@ -16,6 +16,7 @@
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -131,7 +132,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
         outside_fetch_client_settings_object,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
     mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient> client,
-    bool has_storage_access) {
+    net::StorageAccessApiStatus storage_access_api_status) {
   TRACE_EVENT(
       "loading",
       "DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad",
@@ -156,7 +157,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
 
   // If the renderer claims it has storage access but the browser has no record
   // of granting the permission then deny the request.
-  if (has_storage_access) {
+  if (storage_access_api_status != net::StorageAccessApiStatus::kNone) {
     RenderFrameHostImpl* ancestor_render_frame_host =
         RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
     if (!ancestor_render_frame_host ||
@@ -191,7 +192,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
           &DedicatedWorkerHost::StartScriptLoad, host->GetWeakPtr(), script_url,
           credentials_mode, std::move(outside_fetch_client_settings_object),
           std::move(blob_url_token), std::move(remote_client),
-          has_storage_access));
+          storage_access_api_status));
 
   // We are about to start fetching from the browser process and we want
   // devtools to be able to instrument the URLLoaderFactory. This call will

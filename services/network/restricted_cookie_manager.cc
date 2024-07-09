@@ -39,6 +39,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/public/cpp/features.h"
@@ -291,7 +292,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
            const GURL& url,
            const net::SiteForCookies& site_for_cookies,
            const url::Origin& top_frame_origin,
-           bool has_storage_access,
+           net::StorageAccessApiStatus storage_access_api_status,
            const std::optional<net::CookiePartitionKey>& cookie_partition_key,
            net::CookieOptions options,
            mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener)
@@ -300,7 +301,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
         url_(url),
         site_for_cookies_(site_for_cookies),
         top_frame_origin_(top_frame_origin),
-        has_storage_access_(has_storage_access),
+        storage_access_api_status_(storage_access_api_status),
         options_(options),
         mojo_listener_(std::move(mojo_listener)) {
     // TODO(pwnall): add a constructor w/options to net::CookieChangeDispatcher.
@@ -355,7 +356,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
             change.cookie, url_, site_for_cookies_, top_frame_origin_,
             restricted_cookie_manager_->first_party_set_metadata_,
             restricted_cookie_manager_->GetCookieSettingOverrides(
-                has_storage_access_, /*is_ad_tagged=*/false,
+                storage_access_api_status_, /*is_ad_tagged=*/false,
                 /*force_disable_third_party_cookies=*/false),
             /*cookie_inclusion_status=*/nullptr)) {
       return;
@@ -388,7 +389,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
   // from a document that has not called `document.requestStorageAccess()`, and
   // the script later calls `document.requestStorageAccess()` to obtain storage
   // access, this listener's state will not be updated.
-  const bool has_storage_access_;
+  const net::StorageAccessApiStatus storage_access_api_status_;
 
   // CanonicalCookie::IncludeForRequestURL options for this listener's interest.
   const net::CookieOptions options_;
@@ -516,7 +517,7 @@ void RestrictedCookieManager::GetAllForUrl(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     mojom::CookieManagerGetOptionsPtr options,
     bool is_ad_tagged,
     bool force_disable_third_party_cookies,
@@ -544,7 +545,7 @@ void RestrictedCookieManager::GetAllForUrl(
           top_frame_origin,
           isolation_info_.top_frame_origin().value_or(url::Origin()),
           is_ad_tagged,
-          GetCookieSettingOverrides(has_storage_access, is_ad_tagged,
+          GetCookieSettingOverrides(storage_access_api_status, is_ad_tagged,
                                     force_disable_third_party_cookies),
           net_options, std::move(options), std::move(callback)));
 }
@@ -665,7 +666,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     net::CookieInclusionStatus status,
     SetCanonicalCookieCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -688,7 +689,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   bool blocked = !cookie_settings_->IsCookieAccessible(
       cookie, url, site_for_cookies, top_frame_origin,
       first_party_set_metadata_,
-      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false,
+      GetCookieSettingOverrides(storage_access_api_status,
+                                /*is_ad_tagged=*/false,
                                 /*force_disable_third_party_cookies=*/false),
       &status);
 
@@ -714,7 +716,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   url::Origin isolated_top_frame_origin =
       isolation_info_.top_frame_origin().value_or(url::Origin());
   net::CookieSettingOverrides cookie_setting_overrides =
-      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false,
+      GetCookieSettingOverrides(storage_access_api_status,
+                                /*is_ad_tagged=*/false,
                                 /*force_disable_third_party_cookies=*/false);
   if (!status.IsInclude()) {
     if (cookie_observer_) {
@@ -856,7 +859,7 @@ void RestrictedCookieManager::AddChangeListener(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener,
     AddChangeListenerCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -869,7 +872,7 @@ void RestrictedCookieManager::AddChangeListener(
       MakeOptionsForGet(role_, url, site_for_cookies, cookie_settings());
   auto listener = std::make_unique<Listener>(
       cookie_store_, this, url, site_for_cookies, top_frame_origin,
-      has_storage_access, cookie_partition_key_, net_options,
+      storage_access_api_status, cookie_partition_key_, net_options,
       std::move(mojo_listener));
 
   listener->mojo_listener().set_disconnect_handler(
@@ -889,7 +892,7 @@ void RestrictedCookieManager::SetCookieFromString(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     const std::string& cookie,
     SetCookieFromStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -922,7 +925,7 @@ void RestrictedCookieManager::SetCookieFromString(
           /*count=*/1,
           /*is_ad_tagged=*/false,
           GetCookieSettingOverrides(
-              has_storage_access,
+              storage_access_api_status,
               /*is_ad_tagged=*/false,
               /*force_disable_third_party_cookies=*/false)));
     }
@@ -933,14 +936,14 @@ void RestrictedCookieManager::SetCookieFromString(
   // Further checks (origin_, settings), as well as logging done by
   // SetCanonicalCookie()
   SetCanonicalCookie(*parsed_cookie, url, site_for_cookies, top_frame_origin,
-                     has_storage_access, status, base::DoNothing());
+                     storage_access_api_status, status, base::DoNothing());
 }
 
 void RestrictedCookieManager::GetCookiesString(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     bool get_version_shared_memory,
     bool is_ad_tagged,
     bool force_disable_third_party_cookies,
@@ -988,9 +991,9 @@ void RestrictedCookieManager::GetCookiesString(
   auto match_options = mojom::CookieManagerGetOptions::New();
   match_options->name = "";
   match_options->match_type = mojom::CookieMatchType::STARTS_WITH;
-  GetAllForUrl(url, site_for_cookies, top_frame_origin, has_storage_access,
-               std::move(match_options), is_ad_tagged,
-               force_disable_third_party_cookies,
+  GetAllForUrl(url, site_for_cookies, top_frame_origin,
+               storage_access_api_status, std::move(match_options),
+               is_ad_tagged, force_disable_third_party_cookies,
                base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
                                      cookies) {
                  return net::CanonicalCookie::BuildCookieLine(cookies);
@@ -1001,7 +1004,7 @@ void RestrictedCookieManager::CookiesEnabledFor(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     CookiesEnabledForCallback callback) {
   if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin)) {
     std::move(callback).Run(false);
@@ -1010,7 +1013,8 @@ void RestrictedCookieManager::CookiesEnabledFor(
 
   std::move(callback).Run(cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
-      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false,
+      GetCookieSettingOverrides(storage_access_api_status,
+                                /*is_ad_tagged=*/false,
                                 /*force_disable_third_party_cookies=*/false)));
 }
 
@@ -1069,12 +1073,16 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 }
 
 net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     bool is_ad_tagged,
     bool force_disable_third_party_cookies) const {
   net::CookieSettingOverrides overrides = cookie_setting_overrides_;
-  if (has_storage_access) {
-    overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+  switch (storage_access_api_status) {
+    case net::StorageAccessApiStatus::kNone:
+      break;
+    case net::StorageAccessApiStatus::kAccessViaAPI:
+      overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+      break;
   }
   if (force_disable_third_party_cookies) {
     overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);

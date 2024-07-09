@@ -91,6 +91,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/clear_site_data.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
@@ -443,7 +444,9 @@ void URLRequestHttpJob::Start() {
   // benefit from each other's storage access API grants.
   request()->cookie_setting_overrides().PutOrRemove(
       CookieSettingOverride::kStorageAccessGrantEligible,
-      request()->has_storage_access() && request_initiator_site().has_value() &&
+      request()->storage_access_api_status() ==
+              StorageAccessApiStatus::kAccessViaAPI &&
+          request_initiator_site().has_value() &&
           IsSameSiteIgnoringWebSocketProtocol(request_initiator_site().value(),
                                               request()->url()));
   CookieStore* cookie_store = request()->context()->cookie_store();

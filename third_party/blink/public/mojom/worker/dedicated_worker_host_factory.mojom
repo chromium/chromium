@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
@@ -107,7 +108,7 @@ interface DedicatedWorkerHostFactory {
   // `blob_url_token` should be non-null when `script_url` is a blob URL.
   // `client` is used for notifying the renderer process of results of worker
   // host creation and script loading.
-  // `has_storage_access` notifies the browser process that unpartitioned cookie
+  // `storage_access_api_status` notifies the browser process if unpartitioned cookie
   // access should be granted to the worker. The browser process verifies this
   // by checking if it has a record of the STORAGE_ACCESS permission grant.
   CreateWorkerHostAndStartScriptLoad(
@@ -118,5 +119,5 @@ interface DedicatedWorkerHostFactory {
           outside_fetch_client_settings_object,
       pending_remote<blink.mojom.BlobURLToken>? blob_url_token,
       pending_remote<DedicatedWorkerHostFactoryClient> client,
-      bool has_storage_access);
+      network.mojom.StorageAccessApiStatus storage_access_api_status);
 };

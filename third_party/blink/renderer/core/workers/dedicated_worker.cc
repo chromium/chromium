@@ -231,7 +231,8 @@ void DedicatedWorker::Start() {
     factory_client_->CreateWorkerHost(
         token_, script_request_url_, credentials_mode,
         WebFetchClientSettingsObject(*outside_fetch_client_settings_object_),
-        std::move(blob_url_token), GetExecutionContext()->HasStorageAccess());
+        std::move(blob_url_token),
+        GetExecutionContext()->GetStorageAccessApiStatus());
     // Continue in OnScriptLoadStarted() or OnScriptLoadStartFailed().
     return;
   }
@@ -596,7 +597,8 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->IsIsolatedContext(),
       /*interface_registry=*/nullptr,
       std::move(agent_group_scheduler_compositor_task_runner),
-      top_level_frame_security_origin, execution_context->HasStorageAccess());
+      top_level_frame_security_origin,
+      execution_context->GetStorageAccessApiStatus());
   params->dedicated_worker_start_time = start_time_;
   return params;
 }

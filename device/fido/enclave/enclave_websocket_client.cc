@@ -11,6 +11,7 @@
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/network_context_factory.h"
 #include "net/http/http_request_headers.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace device::enclave {
@@ -130,7 +131,7 @@ void EnclaveWebSocketClient::Connect() {
 
   network_context_factory_.Run()->CreateWebSocket(
       service_url_, {kEnclaveWebSocketProtocol}, net::SiteForCookies(),
-      /*has_storage_access=*/false,
+      net::StorageAccessApiStatus::kNone,
       net::IsolationInfo::CreateForInternalRequest(
           url::Origin::Create(service_url_)),
       std::move(additional_headers), network::mojom::kBrowserProcessId,

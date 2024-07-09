@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "net/storage_access_api/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -694,7 +695,8 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation) {
                 SecurityOrigin::Create(same_origin_url)),
             local_frame->DomWindow()->GetStorageKey());
 
-  EXPECT_FALSE(local_frame->DomWindow()->HasStorageAccess());
+  EXPECT_EQ(local_frame->DomWindow()->GetStorageAccessApiStatus(),
+            net::StorageAccessApiStatus::kNone);
 
   EXPECT_TRUE(local_frame->Loader()
                   .GetDocumentLoader()
@@ -712,13 +714,14 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation_WithStorageAccess) {
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(same_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
-  params->load_with_storage_access = true;
+  params->load_with_storage_access = net::StorageAccessApiStatus::kAccessViaAPI;
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   base::HistogramTester histogram_tester;
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_TRUE(local_frame->DomWindow()->HasStorageAccess());
+  EXPECT_EQ(local_frame->DomWindow()->GetStorageAccessApiStatus(),
+            net::StorageAccessApiStatus::kAccessViaAPI);
 
   EXPECT_TRUE(local_frame->Loader()
                   .GetDocumentLoader()

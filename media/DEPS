@@ -12,6 +12,7 @@ include_rules = [
   "+mojo/public/cpp/bindings/callback_helpers.h",
   "+mojo/public/cpp/system/platform_handle.h",
   "+net/cookies/site_for_cookies.h",
+  "+net/storage_access_api/status.h",
   "+services/device/public",
   "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
   "+skia/ext",

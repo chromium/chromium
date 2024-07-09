@@ -336,6 +336,7 @@ mojom("mojom_platform") {
       "//services/network/public/mojom:mojom_attribution",
       "//services/network/public/mojom:mojom_network_param",
       "//services/network/public/mojom:mojom_schemeful_site",
+      "//services/network/public/mojom:mojom_storage_access_api",
       "//ui/accessibility:ax_enums_mojo",
       "//ui/latency/mojom",
     ]
@@ -1417,6 +1418,7 @@ mojom("mojom_core") {
     public_deps += [
       "//services/network/public/mojom:cookies_mojom",
       "//services/network/public/mojom:mojom_attribution",
+      "//services/network/public/mojom:mojom_storage_access_api",
       "//services/network/public/mojom:url_loader_base",
       "//third_party/blink/public/mojom/tokens",
       "//ui/base/ime/mojom",

@@ -6,11 +6,13 @@
 #define CONTENT_RENDERER_WORKER_DEDICATED_WORKER_HOST_FACTORY_CLIENT_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
@@ -57,7 +59,7 @@ class DedicatedWorkerHostFactoryClient final
       const blink::WebFetchClientSettingsObject& fetch_client_settings_object,
       blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
           blob_url_token,
-      bool has_storage_access) override;
+      net::StorageAccessApiStatus storage_access_api_status) override;
   scoped_refptr<blink::WebWorkerFetchContext> CloneWorkerFetchContext(
       blink::WebWorkerFetchContext* web_worker_fetch_context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;

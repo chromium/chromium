@@ -20,6 +20,7 @@
 #include "media/base/android/media_resource_getter.h"
 #include "media/base/android/media_url_interceptor.h"
 #include "media/base/timestamp_constants.h"
+#include "net/storage_access_api/status.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/MediaPlayerBridge_jni.h"
@@ -70,7 +71,7 @@ MediaPlayerBridge::MediaPlayerBridge(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     const std::string& user_agent,
     bool hide_url_log,
     Client* client,
@@ -84,7 +85,7 @@ MediaPlayerBridge::MediaPlayerBridge(
       url_(url),
       site_for_cookies_(site_for_cookies),
       top_frame_origin_(top_frame_origin),
-      has_storage_access_(has_storage_access),
+      storage_access_api_status_(storage_access_api_status),
       pending_retrieve_cookies_(false),
       should_prepare_on_retrieved_cookies_(false),
       user_agent_(user_agent),
@@ -136,7 +137,7 @@ void MediaPlayerBridge::Initialize() {
 
     pending_retrieve_cookies_ = true;
     resource_getter->GetCookies(
-        url_, site_for_cookies_, top_frame_origin_, has_storage_access_,
+        url_, site_for_cookies_, top_frame_origin_, storage_access_api_status_,
         base::BindOnce(&MediaPlayerBridge::OnCookiesRetrieved,
                        weak_factory_.GetWeakPtr()));
   }

@@ -19,6 +19,7 @@
 #include "services/network/public/cpp/isolation_info_mojom_traits.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/storage_access_api_mojom_traits.h"
 #include "services/network/public/cpp/url_request_param_mojom_traits.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
@@ -180,7 +181,8 @@ bool StructTraits<
       !data.ReadAttributionReportingRuntimeFeatures(
           &out->attribution_reporting_runtime_features) ||
       !data.ReadAttributionReportingSrcToken(
-          &out->attribution_reporting_src_token)) {
+          &out->attribution_reporting_src_token) ||
+      !data.ReadStorageAccessApiStatus(&out->storage_access_api_status)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }
@@ -220,7 +222,6 @@ bool StructTraits<
   out->is_favicon = data.is_favicon();
   out->original_destination = data.original_destination();
   out->target_ip_address_space = data.target_ip_address_space();
-  out->has_storage_access = data.has_storage_access();
   out->attribution_reporting_support = data.attribution_reporting_support();
   out->attribution_reporting_eligibility =
       data.attribution_reporting_eligibility();

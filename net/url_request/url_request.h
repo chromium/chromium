@@ -54,6 +54,7 @@
 #include "net/shared_dictionary/shared_dictionary_getter.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
@@ -853,12 +854,15 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void SetSharedDictionaryGetter(
       SharedDictionaryGetter shared_dictionary_getter);
 
-  void set_has_storage_access(bool has_storage_access) {
+  void set_storage_access_api_status(
+      StorageAccessApiStatus storage_access_api_status) {
     DCHECK(!is_pending_);
     DCHECK(!has_notified_completion_);
-    has_storage_access_ = has_storage_access;
+    storage_access_api_status_ = storage_access_api_status;
   }
-  bool has_storage_access() const { return has_storage_access_; }
+  StorageAccessApiStatus storage_access_api_status() const {
+    return storage_access_api_status_;
+  }
 
   // Returns true if the corresponding `URLResponseHead`'s
   // `load_with_storage_access` field should be set.
@@ -1020,7 +1024,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Whether the request is eligible for using storage access permission grant
   // if one exists. Only set by caller when constructed and will not change
   // during redirects.
-  bool has_storage_access_ = false;
+  StorageAccessApiStatus storage_access_api_status_ =
+      StorageAccessApiStatus::kNone;
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
 
   CookieAccessResultList maybe_sent_cookies_;

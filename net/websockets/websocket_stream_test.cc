@@ -45,6 +45,7 @@
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_info.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -193,7 +194,8 @@ class WebSocketStreamCreateTest
       const WebSocketExtraHeaders& send_additional_request_headers,
       const WebSocketExtraHeaders& extra_request_headers,
       const WebSocketExtraHeaders& extra_response_headers,
-      bool has_storage_access = false) {
+      StorageAccessApiStatus storage_access_api_status =
+          StorageAccessApiStatus::kNone) {
     const GURL socket_url(url);
     const std::string socket_host = GetHostAndOptionalPort(socket_url);
     const std::string socket_path = socket_url.path();
@@ -207,7 +209,7 @@ class WebSocketStreamCreateTest
               WebSocketExtraHeadersToString(extra_response_headers)) +
               additional_data_);
       CreateAndConnectStream(socket_url, sub_protocols, Origin(),
-                             SiteForCookies(), has_storage_access,
+                             SiteForCookies(), storage_access_api_status,
                              CreateIsolationInfo(),
                              WebSocketExtraHeadersToHttpRequestHeaders(
                                  send_additional_request_headers),
@@ -343,7 +345,7 @@ class WebSocketStreamCreateTest
     EXPECT_FALSE(request->is_pending());
 
     CreateAndConnectStream(socket_url, sub_protocols, Origin(),
-                           SiteForCookies(), has_storage_access,
+                           SiteForCookies(), storage_access_api_status,
                            CreateIsolationInfo(),
                            WebSocketExtraHeadersToHttpRequestHeaders(
                                send_additional_request_headers),
@@ -358,7 +360,8 @@ class WebSocketStreamCreateTest
       const WebSocketExtraHeaders& send_additional_request_headers,
       const WebSocketExtraHeaders& extra_request_headers,
       const std::string& response_body,
-      bool has_storage_access = false) {
+      StorageAccessApiStatus storage_access_api_status =
+          StorageAccessApiStatus::kNone) {
     ASSERT_EQ(BASIC_HANDSHAKE_STREAM, stream_type_);
 
     const GURL socket_url(url);
@@ -371,7 +374,7 @@ class WebSocketStreamCreateTest
                                  extra_request_headers),
         response_body);
     CreateAndConnectStream(socket_url, sub_protocols, Origin(),
-                           SiteForCookies(), has_storage_access,
+                           SiteForCookies(), storage_access_api_status,
                            CreateIsolationInfo(),
                            WebSocketExtraHeadersToHttpRequestHeaders(
                                send_additional_request_headers),
@@ -385,7 +388,8 @@ class WebSocketStreamCreateTest
       std::string_view url,
       const std::vector<std::string>& sub_protocols,
       const std::string& extra_response_headers,
-      bool has_storage_access = false) {
+      StorageAccessApiStatus storage_access_api_status =
+          StorageAccessApiStatus::kNone) {
     ASSERT_EQ(BASIC_HANDSHAKE_STREAM, stream_type_);
 
     const GURL socket_url(url);
@@ -398,7 +402,7 @@ class WebSocketStreamCreateTest
                                  /*extra_headers=*/{}),
         WebSocketStandardResponse(extra_response_headers));
     CreateAndConnectStream(socket_url, sub_protocols, Origin(),
-                           SiteForCookies(), has_storage_access,
+                           SiteForCookies(), storage_access_api_status,
                            CreateIsolationInfo(), HttpRequestHeaders(),
                            nullptr);
   }
@@ -409,12 +413,13 @@ class WebSocketStreamCreateTest
       const std::vector<std::string>& sub_protocols,
       const HttpRequestHeaders& additional_headers,
       std::unique_ptr<SequencedSocketData> socket_data,
-      bool has_storage_access = false) {
+      StorageAccessApiStatus storage_access_api_status =
+          StorageAccessApiStatus::kNone) {
     ASSERT_EQ(BASIC_HANDSHAKE_STREAM, stream_type_);
 
     AddRawExpectations(std::move(socket_data));
     CreateAndConnectStream(GURL(url), sub_protocols, Origin(), SiteForCookies(),
-                           has_storage_access, CreateIsolationInfo(),
+                           storage_access_api_status, CreateIsolationInfo(),
                            additional_headers, std::move(timer_));
   }
 
@@ -750,7 +755,7 @@ TEST_P(WebSocketStreamCreateTest, HandshakeOverrideHeaders) {
 
 TEST_P(WebSocketStreamCreateTest, OmitsHasStorageAccess) {
   CreateAndConnectStandard("ws://www.example.org/", NoSubProtocols(), {}, {},
-                           {}, /*has_storage_access=*/false);
+                           {}, StorageAccessApiStatus::kNone);
   WaitUntilConnectDone();
 
   EXPECT_THAT(
@@ -761,7 +766,7 @@ TEST_P(WebSocketStreamCreateTest, OmitsHasStorageAccess) {
 
 TEST_P(WebSocketStreamCreateTest, PlumbsHasStorageAccess) {
   CreateAndConnectStandard("ws://www.example.org/", NoSubProtocols(), {}, {},
-                           {}, /*has_storage_access=*/true);
+                           {}, StorageAccessApiStatus::kAccessViaAPI);
   WaitUntilConnectDone();
 
   CookieSettingOverrides expected_overrides;

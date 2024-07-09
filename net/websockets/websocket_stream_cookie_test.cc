@@ -33,6 +33,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/socket/socket_test_util.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/url_request_context.h"
 #include "net/websockets/websocket_stream.h"
 #include "net/websockets/websocket_stream_create_test_base.h"
@@ -64,7 +65,7 @@ class TestBase : public WebSocketStreamCreateTestBase {
             /*send_additional_request_headers=*/{}, /*extra_headers=*/{}),
         response_body);
     CreateAndConnectStream(url, NoSubProtocols(), origin, site_for_cookies,
-                           /*has_storage_access=*/false, isolation_info,
+                           StorageAccessApiStatus::kNone, isolation_info,
                            HttpRequestHeaders(), nullptr);
   }
 };

@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
+#include "net/storage_access_api/status.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_frame.h"
 #include "net/websockets/websocket_stream.h"
@@ -63,7 +64,7 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>&,
       const url::Origin&,
       const SiteForCookies&,
-      bool,
+      StorageAccessApiStatus,
       const IsolationInfo&,
       const HttpRequestHeaders&,
       URLRequestContext*,
@@ -94,7 +95,7 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       NetworkTrafficAnnotationTag traffic_annotation);
@@ -139,7 +140,7 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       NetworkTrafficAnnotationTag traffic_annotation,
@@ -193,7 +194,7 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       NetworkTrafficAnnotationTag traffic_annotation,

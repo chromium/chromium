@@ -39,6 +39,7 @@
 #include "base/uuid.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
@@ -843,9 +844,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   std::optional<FencedFrame::RedactedFencedFrameProperties>
       fenced_frame_properties_;
 
-  // Indicates whether the document should be loaded with its has_storage_access
-  // bit set.
-  const bool load_with_storage_access_;
+  // The StorageAccessApiStatus that the document should be loaded with.
+  const net::StorageAccessApiStatus storage_access_api_status_;
 
   // Only container-initiated navigations (e.g. iframe change src) report
   // their resource timing to the parent.

@@ -411,7 +411,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
     dest->load_flags |= net::LOAD_DO_NOT_USE_EMBEDDED_IDENTITY;
   }
 
-  dest->has_storage_access = src.GetHasStorageAccess();
+  dest->storage_access_api_status = src.GetStorageAccessApiStatus();
 
   dest->attribution_reporting_support = src.GetAttributionReportingSupport();
 

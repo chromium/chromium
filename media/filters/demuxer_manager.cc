@@ -20,6 +20,7 @@
 #include "media/base/media_url_demuxer.h"
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/ffmpeg_demuxer.h"
+#include "net/storage_access_api/status.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -130,7 +131,7 @@ DemuxerManager::DemuxerManager(
     MediaLog* log,
     net::SiteForCookies site_for_cookies,
     url::Origin top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     bool enable_instant_source_buffer_gc,
     std::unique_ptr<Demuxer> demuxer_override)
     : client_(client),
@@ -139,7 +140,7 @@ DemuxerManager::DemuxerManager(
       site_for_cookies_(std::move(site_for_cookies)),
       top_frame_origin_(std::move(top_frame_origin)),
 #if BUILDFLAG(IS_ANDROID)
-      has_storage_access_(has_storage_access),
+      storage_access_api_status_(storage_access_api_status),
 #endif  // BUILDFLAG(IS_ANDROID)
       enable_instant_source_buffer_gc_(enable_instant_source_buffer_gc),
       demuxer_override_(std::move(demuxer_override)) {
@@ -653,7 +654,7 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateMediaUrlDemuxer(
   std::unique_ptr<MediaUrlDemuxer> media_url_demuxer =
       std::make_unique<MediaUrlDemuxer>(
           media_task_runner_, loaded_url_, site_for_cookies_, top_frame_origin_,
-          has_storage_access_, allow_media_player_renderer_credentials_,
+          storage_access_api_status_, allow_media_player_renderer_credentials_,
           expect_hls_content);
   media_url_demuxer->SetHeaders(std::move(headers));
   return media_url_demuxer;

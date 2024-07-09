@@ -130,6 +130,7 @@
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/ssl/test_ssl_config_service.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -1547,7 +1548,7 @@ TEST_F(URLRequestTest, WssRequestsAreEligibleForStorageAccess) {
   req->SetUserData(kWebSocketHandshakeUserDataKey,
                    std::move(websocket_stream_create_helper));
 
-  req->set_has_storage_access(true);
+  req->set_storage_access_api_status(StorageAccessApiStatus::kAccessViaAPI);
   req->set_initiator(url::Origin::Create(https_url));
 
   req->Start();

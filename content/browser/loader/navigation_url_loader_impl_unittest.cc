@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/loader/navigation_url_loader_impl.h"
-#include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 
 #include <memory>
 #include <string>
@@ -12,10 +10,12 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/navigation_url_loader.h"
@@ -39,6 +39,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
@@ -244,8 +245,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             base::TimeTicks() /* renderer_before_unload_end */,
             blink::mojom::NavigationInitiatorActivationAndAdStatus::
                 kDidNotStartWithTransientActivation,
-            false /* is_container_initiated */, false /* has_storage_access */,
-            false /* has_rel_opener */);
+            false /* is_container_initiated */,
+            net::StorageAccessApiStatus::kNone, false /* has_rel_opener */);
 
     auto common_params = blink::CreateCommonNavigationParams();
     common_params->url = url;

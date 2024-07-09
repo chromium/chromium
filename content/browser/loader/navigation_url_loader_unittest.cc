@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/loader/navigation_url_loader.h"
+
 #include <memory>
 #include <utility>
 
@@ -10,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/unguessable_token.h"
-#include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
@@ -28,6 +29,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
@@ -98,8 +100,8 @@ class NavigationURLLoaderTest : public testing::Test {
             base::TimeTicks() /* renderer_before_unload_end */,
             blink::mojom::NavigationInitiatorActivationAndAdStatus::
                 kDidNotStartWithTransientActivation,
-            false /* is_container_initiated */, false /* has_storage_access */,
-            false /* has_rel_opener */);
+            false /* is_container_initiated */,
+            net::StorageAccessApiStatus::kNone, false /* has_rel_opener */);
     auto common_params = blink::CreateCommonNavigationParams();
     common_params->url = url;
     common_params->initiator_origin = url::Origin::Create(url);

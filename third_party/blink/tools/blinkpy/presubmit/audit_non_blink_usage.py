@@ -667,6 +667,9 @@ _CONFIG = [
             'net::SchemefulSite',
             'net::SiteForCookies',
 
+            # Storage Access API metadata
+            'net::StorageAccessApiStatus',
+
             # PartitionAlloc
             'partition_alloc::.+',
 
@@ -1107,7 +1110,7 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/public',
+            'third_party/blink/public/',
         ],
         'allowed': [
             'base::FeatureParam',
@@ -1127,6 +1130,9 @@ _CONFIG = [
             # The Blink public API is shared between non-Blink and Blink code
             # and must use the regular variants.
             'mojom::.+',
+
+            # Metadata for the Storage Access API.
+            'net::StorageAccessApiStatus',
 
             # Prefer WebString over std::string in the public API. Other STL
             # types are generally allowed for interop with non-Blink code, as

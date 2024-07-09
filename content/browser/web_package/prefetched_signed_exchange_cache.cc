@@ -195,7 +195,7 @@ class PrefetchedNavigationLoaderInterceptor
     cookie_manager_->GetAllForUrl(
         request.url, request.trusted_params->isolation_info.site_for_cookies(),
         *request.trusted_params->isolation_info.top_frame_origin(),
-        request.has_storage_access, std::move(match_options),
+        request.storage_access_api_status, std::move(match_options),
         request.is_ad_tagged,
         /*force_disable_third_party_cookies=*/false,
         base::BindOnce(&PrefetchedNavigationLoaderInterceptor::OnGetCookies,

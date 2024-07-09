@@ -14,6 +14,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_delegate.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 
 class GURL;
@@ -55,7 +56,7 @@ class AwProxyingRestrictedCookieManager
   void GetAllForUrl(const GURL& url,
                     const net::SiteForCookies& site_for_cookies,
                     const url::Origin& top_frame_origin,
-                    bool has_storage_access,
+                    net::StorageAccessApiStatus storage_access_api_status,
                     network::mojom::CookieManagerGetOptionsPtr options,
                     bool is_ad_tagged,
                     bool force_disable_third_party_cookies,
@@ -64,28 +65,29 @@ class AwProxyingRestrictedCookieManager
                           const GURL& url,
                           const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
-                          bool has_storage_access,
+                          net::StorageAccessApiStatus storage_access_api_status,
                           net::CookieInclusionStatus status,
                           SetCanonicalCookieCallback callback) override;
   void AddChangeListener(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
-      bool has_storage_access,
+      net::StorageAccessApiStatus storage_access_api_status,
       mojo::PendingRemote<network::mojom::CookieChangeListener> listener,
       AddChangeListenerCallback callback) override;
 
-  void SetCookieFromString(const GURL& url,
-                           const net::SiteForCookies& site_for_cookies,
-                           const url::Origin& top_frame_origin,
-                           bool has_storage_access,
-                           const std::string& cookie,
-                           SetCookieFromStringCallback callback) override;
+  void SetCookieFromString(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      net::StorageAccessApiStatus storage_access_api_status,
+      const std::string& cookie,
+      SetCookieFromStringCallback callback) override;
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
-                        bool has_storage_access,
+                        net::StorageAccessApiStatus storage_access_api_status,
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
                         bool force_disable_third_party_cookies,
@@ -94,14 +96,14 @@ class AwProxyingRestrictedCookieManager
   void CookiesEnabledFor(const GURL& url,
                          const net::SiteForCookies& site_for_cookies,
                          const url::Origin& top_frame_origin,
-                         bool has_storage_access,
+                         net::StorageAccessApiStatus storage_access_api_status,
                          CookiesEnabledForCallback callback) override;
 
   // This one is internal.
   net::NetworkDelegate::PrivacySetting AllowCookies(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      bool has_storage_access) const;
+      net::StorageAccessApiStatus storage_access_api_status) const;
 
  private:
   AwProxyingRestrictedCookieManager(

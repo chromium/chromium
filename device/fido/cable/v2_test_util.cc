@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_network_context.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -54,7 +55,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
       const net::SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       std::vector<network::mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
@@ -669,7 +670,7 @@ class LateLinkingDevice : public authenticator::Transaction {
 
     network_context_factory_.Run()->CreateWebSocket(
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
-        /*has_storage_access=*/false, net::IsolationInfo(),
+        net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
         url::Origin::Create(target),
         network::mojom::kWebSocketOptionBlockAllCookies,
@@ -888,7 +889,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
 
     network_context_factory_.Run()->CreateWebSocket(
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
-        /*has_storage_access=*/false, net::IsolationInfo(),
+        net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
         url::Origin::Create(target),
         network::mojom::kWebSocketOptionBlockAllCookies,

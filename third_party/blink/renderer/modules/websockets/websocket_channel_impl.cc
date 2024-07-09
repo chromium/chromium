@@ -357,7 +357,8 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
 
   connector->Connect(
       url, protocols, GetBaseFetchContext()->GetSiteForCookies(),
-      execution_context_->UserAgent(), execution_context_->HasStorageAccess(),
+      execution_context_->UserAgent(),
+      execution_context_->GetStorageAccessApiStatus(),
       handshake_client_receiver_.BindNewPipeAndPassRemote(
           execution_context_->GetTaskRunner(TaskType::kWebSocket)),
       /*throttling_profile_id=*/devtools_token);

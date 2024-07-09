@@ -26,6 +26,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/http/http_auth.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -145,7 +146,7 @@ void MediaResourceGetterImpl::GetCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     GetCookieCB callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -166,7 +167,7 @@ void MediaResourceGetterImpl::GetCookies(
   network::mojom::RestrictedCookieManager* cookie_manager_ptr =
       cookie_manager.get();
   cookie_manager_ptr->GetCookiesString(
-      url, site_for_cookies, top_frame_origin, has_storage_access,
+      url, site_for_cookies, top_frame_origin, storage_access_api_status,
       /*get_version_shared_memory=*/false, /*is_ad_tagged=*/false,
       /*force_disable_third_party_cookies=*/false,
       base::BindOnce(&ReturnResultOnUIThreadAndClosePipe,

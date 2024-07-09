@@ -33,6 +33,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "services/network/public/mojom/storage_access_api.mojom-blink.h"
 #include "third_party/blink/public/common/frame/delegated_capability_request_token.h"
 #include "third_party/blink/public/common/frame/history_user_activation_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -202,7 +203,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       // current JS file would be used as source_file instead.
       const String& source_file = g_empty_string) const final;
   void SetIsInBackForwardCache(bool) final;
-  bool HasStorageAccess() const final;
+  net::StorageAccessApiStatus GetStorageAccessApiStatus() const final;
 
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
 
@@ -528,9 +529,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     is_picture_in_picture_window_ = is_picture_in_picture;
   }
 
-  // Sets the HasStorageAccess member. Note that it can only be granted for a
-  // given window, it cannot be taken away.
-  void SetHasStorageAccess();
+  // Sets the StorageAccessApiStatus. Calls to this method must not downgrade
+  // the status.
+  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status);
 
   // https://html.spec.whatwg.org/multipage/browsing-the-web.html#has-been-revealed
   bool HasBeenRevealed() const { return has_been_revealed_; }
@@ -670,9 +671,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // of these types occur.
   String navigation_id_;
 
-  // Records whether this window has obtained storage access. It cannot be
-  // revoked once set to true.
-  bool has_storage_access_ = false;
+  // Records this window's Storage Access API status. It cannot be downgraded.
+  net::StorageAccessApiStatus storage_access_api_status_ =
+      net::StorageAccessApiStatus::kNone;
 
   // Tracks whether this window has shown a payment request without a user
   // activation. It cannot be revoked once set to true.

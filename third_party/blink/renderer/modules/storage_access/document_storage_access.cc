@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/storage_access/document_storage_access.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -374,7 +375,8 @@ void DocumentStorageAccess::ProcessStorageAccessPermissionState(
     FireRequestStorageAccessHistogram(
         RequestStorageResult::APPROVED_NEW_OR_EXISTING_GRANT);
     if (request_unpartitioned_cookie_access) {
-      GetSupplementable()->dom_window_->SetHasStorageAccess();
+      GetSupplementable()->dom_window_->SetStorageAccessApiStatus(
+          net::StorageAccessApiStatus::kAccessViaAPI);
     }
     std::move(on_resolve).Run(resolver);
   } else {

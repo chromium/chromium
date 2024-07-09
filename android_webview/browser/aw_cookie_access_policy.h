@@ -10,6 +10,7 @@
 #include "base/types/optional_ref.h"
 #include "content/public/browser/global_routing_id.h"
 #include "net/base/network_delegate.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
@@ -51,13 +52,13 @@ class AwCookieAccessPolicy {
       const net::SiteForCookies& site_for_cookies,
       base::optional_ref<const content::GlobalRenderFrameHostToken>
           global_frame_token,
-      bool has_storage_access);
+      net::StorageAccessApiStatus storage_access_api_status);
 
   net::NetworkDelegate::PrivacySetting CanAccessCookies(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       bool accept_third_party_cookies,
-      bool has_storage_access);
+      net::StorageAccessApiStatus storage_access_api_status);
 
  private:
   friend class AwCookieAccessPolicyTest;

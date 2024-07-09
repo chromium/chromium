@@ -38,6 +38,7 @@
 #include "build/build_config.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -2535,12 +2536,14 @@ void LocalDOMWindow::SetIsPictureInPictureWindow() {
   is_picture_in_picture_window_ = true;
 }
 
-bool LocalDOMWindow::HasStorageAccess() const {
-  return has_storage_access_;
+net::StorageAccessApiStatus LocalDOMWindow::GetStorageAccessApiStatus() const {
+  return storage_access_api_status_;
 }
 
-void LocalDOMWindow::SetHasStorageAccess() {
-  has_storage_access_ = true;
+void LocalDOMWindow::SetStorageAccessApiStatus(
+    net::StorageAccessApiStatus status) {
+  CHECK_GE(status, storage_access_api_status_);
+  storage_access_api_status_ = status;
 }
 
 void LocalDOMWindow::GenerateNewNavigationId() {

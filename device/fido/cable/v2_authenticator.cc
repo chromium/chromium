@@ -33,6 +33,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -368,7 +369,7 @@ class TunnelTransport : public Transport {
 
     network_context_factory_.Run()->CreateWebSocket(
         target_, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
-        /*has_storage_access=*/false, net::IsolationInfo(),
+        net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
         url::Origin::Create(target_),
         network::mojom::kWebSocketOptionBlockAllCookies,

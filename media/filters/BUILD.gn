@@ -79,6 +79,7 @@ source_set("filters") {
     "//media/formats",
     "//media/parsers",
     "//media/video",
+    "//net",
     "//third_party/libyuv",
     "//ui/gfx/geometry:geometry",
   ]

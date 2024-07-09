@@ -39,6 +39,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -139,8 +140,8 @@ DedicatedWorkerGlobalScope::ParseCreationParams(
   // WorkerGlobalScope.
   parsed_creation_params.parent_context_token =
       creation_params->parent_context_token.value();
-  parsed_creation_params.parent_has_storage_access =
-      creation_params->parent_has_storage_access;
+  parsed_creation_params.parent_storage_access_api_status =
+      creation_params->parent_storage_access_api_status;
 
   parsed_creation_params.creation_params = std::move(creation_params);
   return parsed_creation_params;
@@ -199,7 +200,8 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           MakeGarbageCollected<WorkerAnimationFrameProvider>(
               this,
               begin_frame_provider_params)),
-      has_storage_access_(parsed_creation_params.parent_has_storage_access),
+      storage_access_api_status_(
+          parsed_creation_params.parent_storage_access_api_status),
       dedicated_worker_start_time_(dedicated_worker_start_time) {
   // https://html.spec.whatwg.org/C/#run-a-worker
   // Step 14.10 "If shared is false and owner's cross-origin isolated
@@ -604,8 +606,9 @@ void DedicatedWorkerGlobalScope::SetIsInBackForwardCache(
   }
 }
 
-bool DedicatedWorkerGlobalScope::HasStorageAccess() const {
-  return has_storage_access_;
+net::StorageAccessApiStatus
+DedicatedWorkerGlobalScope::GetStorageAccessApiStatus() const {
+  return storage_access_api_status_;
 }
 
 void DedicatedWorkerGlobalScope::WorkerScriptFetchFinished(

@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/storage_access_api/status.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -18,7 +19,9 @@ MediaResource::~MediaResource() = default;
 const MediaUrlParams& MediaResource::GetMediaUrlParams() const {
   NOTREACHED_IN_MIGRATION();
   static base::NoDestructor<MediaUrlParams> instance{
-      GURL(), net::SiteForCookies(), url::Origin(), false, false, false};
+      GURL(),        net::SiteForCookies(),
+      url::Origin(), net::StorageAccessApiStatus::kNone,
+      false,         false};
   return *instance;
 }
 

@@ -32,6 +32,7 @@
 
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -477,9 +478,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     ExecutionContext* context_;
   };
 
-  // Returns true if this execution context has obtained storage access via the
-  // Storage Access API.
-  virtual bool HasStorageAccess() const { return false; }
+  // Returns the context's Storage Access API status.
+  virtual net::StorageAccessApiStatus GetStorageAccessApiStatus() const {
+    return net::StorageAccessApiStatus::kNone;
+  }
 
  protected:
   ExecutionContext(v8::Isolate* isolate, Agent* agent, bool is_window = false);

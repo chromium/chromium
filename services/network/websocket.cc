@@ -35,6 +35,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/url_request_context.h"
 #include "net/websockets/websocket_basic_stream.h"
 #include "net/websockets/websocket_channel.h"
@@ -424,7 +425,7 @@ WebSocket::WebSocket(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
     const url::Origin& origin,
@@ -482,13 +483,14 @@ WebSocket::WebSocket(
         FROM_HERE,
         base::BindOnce(&WebSocket::AddChannel, weak_ptr_factory_.GetWeakPtr(),
                        url, requested_protocols, site_for_cookies,
-                       has_storage_access, isolation_info,
+                       storage_access_api_status, isolation_info,
                        std::move(additional_headers)),
         delay_);
     return;
   }
-  AddChannel(url, requested_protocols, site_for_cookies, has_storage_access,
-             isolation_info, std::move(additional_headers));
+  AddChannel(url, requested_protocols, site_for_cookies,
+             storage_access_api_status, isolation_info,
+             std::move(additional_headers));
 }
 
 WebSocket::~WebSocket() {
@@ -635,7 +637,7 @@ void WebSocket::AddChannel(
     const GURL& socket_url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers) {
   DVLOG(3) << "WebSocket::AddChannel @" << reinterpret_cast<void*>(this)
@@ -643,7 +645,8 @@ void WebSocket::AddChannel(
            << base::JoinString(requested_protocols, ", ") << "\" origin=\""
            << origin_ << "\" site_for_cookies=\""
            << site_for_cookies.ToDebugString()
-           << "\" has_storage_access=" << has_storage_access;
+           << "\" storage_access_api_status="
+           << static_cast<int>(storage_access_api_status);
 
   DCHECK(!channel_);
 
@@ -665,9 +668,10 @@ void WebSocket::AddChannel(
       headers_to_pass.SetHeader(header->name, header->value);
     }
   }
-  channel_->SendAddChannelRequest(
-      socket_url, requested_protocols, origin_, site_for_cookies,
-      has_storage_access, isolation_info, headers_to_pass, traffic_annotation_);
+  channel_->SendAddChannelRequest(socket_url, requested_protocols, origin_,
+                                  site_for_cookies, storage_access_api_status,
+                                  isolation_info, headers_to_pass,
+                                  traffic_annotation_);
 }
 
 void WebSocket::OnWritable(MojoResult result,

@@ -45,6 +45,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/isolation_info.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -216,7 +217,7 @@ void DedicatedWorkerHost::StartScriptLoad(
         outside_fetch_client_settings_object,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactoryClient> client,
-    bool has_storage_access) {
+    net::StorageAccessApiStatus storage_access_api_status) {
   script_request_url_ = script_url;
   TRACE_EVENT("loading", "DedicatedWorkerHost::StartScriptLoad", "script_url",
               script_url);
@@ -335,7 +336,8 @@ void DedicatedWorkerHost::StartScriptLoad(
       service_worker_handle_.get(), std::move(blob_url_loader_factory), nullptr,
       storage_partition_impl, partition_domain,
       DedicatedWorkerDevToolsAgentHost::GetFor(this), token_.value(),
-      /*require_cross_site_request_for_cookies=*/false, has_storage_access,
+      /*require_cross_site_request_for_cookies=*/false,
+      storage_access_api_status,
       base::BindOnce(&DedicatedWorkerHost::DidStartScriptLoad,
                      weak_factory_.GetWeakPtr()));
 }

@@ -4,18 +4,21 @@
 
 #include "media/base/media_url_params.h"
 
+#include "net/storage_access_api/status.h"
+
 namespace media {
 
-MediaUrlParams::MediaUrlParams(const GURL& media_url,
-                               const net::SiteForCookies& site_for_cookies,
-                               const url::Origin& top_frame_origin,
-                               bool has_storage_access,
-                               bool allow_credentials,
-                               bool is_hls)
+MediaUrlParams::MediaUrlParams(
+    const GURL& media_url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    net::StorageAccessApiStatus storage_access_api_status,
+    bool allow_credentials,
+    bool is_hls)
     : media_url(media_url),
       site_for_cookies(site_for_cookies),
       top_frame_origin(top_frame_origin),
-      has_storage_access(has_storage_access),
+      storage_access_api_status(storage_access_api_status),
       allow_credentials(allow_credentials),
       is_hls(is_hls) {}
 

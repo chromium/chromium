@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -67,7 +68,7 @@ class MockDedicatedWorker
           blink::mojom::FetchClientSettingsObject::New(),
           mojo::PendingRemote<blink::mojom::BlobURLToken>(),
           receiver_.BindNewPipeAndPassRemote(),
-          /*has_storage_access=*/false);
+          net::StorageAccessApiStatus::kNone);
     } else {
       factory_->CreateWorkerHost(
           blink::DedicatedWorkerToken(), /*script_url=*/GURL(),

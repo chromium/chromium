@@ -23,6 +23,7 @@
 #include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_source.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
@@ -219,7 +220,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   std::optional<net::NetLogSource> net_log_reference_info;
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
-  bool has_storage_access = false;
+  net::StorageAccessApiStatus storage_access_api_status =
+      net::StorageAccessApiStatus::kNone;
   network::mojom::AttributionSupport attribution_reporting_support =
       network::mojom::AttributionSupport::kWeb;
   mojom::AttributionReportingEligibility attribution_reporting_eligibility =

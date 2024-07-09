@@ -27,6 +27,7 @@ import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/trust_token_access_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
@@ -518,7 +519,7 @@ struct URLRequest {
   // compromised renderer would be able to access unpartitioned cookies. But by
   // assumption, the browser process has already determined that this access is
   // ok.
-  bool has_storage_access;
+  StorageAccessApiStatus storage_access_api_status;
 
  // Indicates whether web or OS-level Attribution Reporting is supported.
   AttributionSupport attribution_reporting_support;

@@ -9,6 +9,7 @@ import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -18,7 +19,7 @@ struct MediaUrlParams {
   url.mojom.Url media_url;
   network.mojom.SiteForCookies site_for_cookies;
   url.mojom.Origin top_frame_origin;
-  bool has_storage_access;
+  network.mojom.StorageAccessApiStatus storage_access_api_status;
   bool allow_credentials;
   bool is_hls;
   map<string, string> headers;

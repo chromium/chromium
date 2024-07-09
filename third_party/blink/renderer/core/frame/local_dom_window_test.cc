@@ -334,10 +334,13 @@ TEST_F(LocalDOMWindowTest, NavigationId) {
   EXPECT_NE(navigation_id2, navigation_id3);
 }
 
-TEST_F(LocalDOMWindowTest, HasStorageAccess) {
-  EXPECT_FALSE(GetFrame().DomWindow()->HasStorageAccess());
-  GetFrame().DomWindow()->SetHasStorageAccess();
-  EXPECT_TRUE(GetFrame().DomWindow()->HasStorageAccess());
+TEST_F(LocalDOMWindowTest, StorageAccessApiStatus) {
+  EXPECT_EQ(GetFrame().DomWindow()->GetStorageAccessApiStatus(),
+            net::StorageAccessApiStatus::kNone);
+  GetFrame().DomWindow()->SetStorageAccessApiStatus(
+      net::StorageAccessApiStatus::kAccessViaAPI);
+  EXPECT_EQ(GetFrame().DomWindow()->GetStorageAccessApiStatus(),
+            net::StorageAccessApiStatus::kAccessViaAPI);
 }
 
 }  // namespace blink

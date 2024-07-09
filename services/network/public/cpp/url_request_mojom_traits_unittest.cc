@@ -16,6 +16,7 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/http_request_headers_mojom_traits.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
@@ -112,7 +113,8 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
            net::SourceStream::SourceType::TYPE_GZIP,
            net::SourceStream::SourceType::TYPE_DEFLATE});
   original.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
-  original.has_storage_access = false;
+  original.storage_access_api_status =
+      net::StorageAccessApiStatus::kAccessViaAPI;
 
   original.trusted_params = ResourceRequest::TrustedParams();
   original.trusted_params->isolation_info = net::IsolationInfo::Create(

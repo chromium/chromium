@@ -6121,7 +6121,7 @@ void RenderFrameImpl::BeginNavigationInternal(
               : nullptr,
           info->impression, renderer_before_unload_start,
           renderer_before_unload_end, initiator_activation_and_ad_status,
-          info->is_container_initiated, info->has_storage_access,
+          info->is_container_initiated, info->storage_access_api_status,
           info->has_rel_opener);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>

@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_delegate.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "services/network/network_service.h"
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
       const net::SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       const url::Origin& origin,
@@ -152,7 +153,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   void AddChannel(const GURL& socket_url,
                   const std::vector<std::string>& requested_protocols,
                   const net::SiteForCookies& site_for_cookies,
-                  bool has_storage_access,
+                  net::StorageAccessApiStatus storage_access_api_status,
                   const net::IsolationInfo& isolation_info,
                   std::vector<mojom::HttpHeaderPtr> additional_headers);
   void OnSSLCertificateErrorResponse(

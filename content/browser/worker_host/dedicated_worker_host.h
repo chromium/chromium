@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -173,7 +174,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
           outside_fetch_client_settings_object,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::Remote<blink::mojom::DedicatedWorkerHostFactoryClient> client,
-      bool has_storage_access);
+      net::StorageAccessApiStatus storage_access_api_status);
 
   void ReportNoBinderForInterface(const std::string& error);
 

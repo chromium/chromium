@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
+#include "net/storage_access_api/status.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -49,7 +50,7 @@ class MEDIA_EXPORT MediaResourceGetter {
   virtual void GetCookies(const GURL& url,
                           const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
-                          bool has_storage_access,
+                          net::StorageAccessApiStatus storage_access_api_status,
                           GetCookieCB callback) = 0;
 };
 

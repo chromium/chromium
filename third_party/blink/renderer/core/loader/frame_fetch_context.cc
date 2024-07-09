@@ -353,8 +353,8 @@ void FrameFetchContext::PrepareRequest(
     return;
 
   request.SetUkmSourceId(document_->UkmSourceID());
-  request.SetHasStorageAccess(
-      document_->GetExecutionContext()->HasStorageAccess());
+  request.SetStorageAccessApiStatus(
+      document_->GetExecutionContext()->GetStorageAccessApiStatus());
 
   if (document_loader_->ForceFetchCacheMode())
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());

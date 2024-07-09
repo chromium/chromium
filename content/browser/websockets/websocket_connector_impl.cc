@@ -13,6 +13,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
@@ -75,7 +76,7 @@ void WebSocketConnectorImpl::Connect(
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
     const std::optional<std::string>& user_agent,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client,
     const std::optional<base::UnguessableToken>& throttling_profile_id) {
@@ -93,9 +94,9 @@ void WebSocketConnectorImpl::Connect(
     GetContentClient()->browser()->CreateWebSocket(
         frame,
         base::BindOnce(ConnectCalledByContentBrowserClient, requested_protocols,
-                       site_for_cookies, has_storage_access, isolation_info_,
-                       process_id_, frame_id_, origin_, options,
-                       std::move(throttling_profile_id)),
+                       site_for_cookies, storage_access_api_status,
+                       isolation_info_, process_id_, frame_id_, origin_,
+                       options, std::move(throttling_profile_id)),
         url, site_for_cookies, user_agent, std::move(handshake_client));
     return;
   }
@@ -105,7 +106,7 @@ void WebSocketConnectorImpl::Connect(
         net::HttpRequestHeaders::kUserAgent, *user_agent));
   }
   process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
-      url, requested_protocols, site_for_cookies, has_storage_access,
+      url, requested_protocols, site_for_cookies, storage_access_api_status,
       isolation_info_, std::move(headers), process_id_, origin_, options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
@@ -117,7 +118,7 @@ void WebSocketConnectorImpl::Connect(
 void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     int process_id,
     int frame_id,
@@ -138,7 +139,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     return;
   }
   process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
-      url, requested_protocols, site_for_cookies, has_storage_access,
+      url, requested_protocols, site_for_cookies, storage_access_api_status,
       isolation_info, std::move(additional_headers), process_id, origin,
       options, net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),

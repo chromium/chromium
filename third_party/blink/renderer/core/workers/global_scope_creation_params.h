@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -84,7 +85,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       scoped_refptr<base::SingleThreadTaskRunner>
           agent_group_scheduler_compositor_task_runner = nullptr,
       const SecurityOrigin* top_level_frame_security_origin = nullptr,
-      bool parent_has_storage_access = false,
+      net::StorageAccessApiStatus parent_storage_access_api_status =
+          net::StorageAccessApiStatus::kNone,
       bool require_cross_site_request_for_cookies = false);
   GlobalScopeCreationParams(const GlobalScopeCreationParams&) = delete;
   GlobalScopeCreationParams& operator=(const GlobalScopeCreationParams&) =
@@ -228,9 +230,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // i.e. when DedicatedWorkerStart() was called.
   std::optional<base::TimeTicks> dedicated_worker_start_time;
 
-  // Whether the parent ExecutionContext has storage access (via the Storage
-  // Access API).
-  const bool parent_has_storage_access;
+  // The parent ExecutionContext's Storage Access API status.
+  const net::StorageAccessApiStatus parent_storage_access_api_status;
 
   // Late initialized on thread creation. This signals whether the world created
   // is the default world for an isolate.

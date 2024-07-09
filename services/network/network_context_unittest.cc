@@ -121,6 +121,7 @@
 #include "net/reporting/reporting_target_type.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/transport_client_socket_pool.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -9656,7 +9657,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
 
   ResourceRequest request;
   request.url = test_server()->GetURL("/defaultresponse");
-  request.has_storage_access = true;
+  request.storage_access_api_status =
+      net::StorageAccessApiStatus::kAccessViaAPI;
   const url::Origin top_frame_origin =
       url::Origin::Create(GURL("https://b.test"));
   request.request_initiator = url::Origin::Create(request.url);

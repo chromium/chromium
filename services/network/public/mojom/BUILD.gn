@@ -1079,6 +1079,36 @@ mojom("mojom_first_party_sets") {
   blink_cpp_typemaps = shared_typemaps
 }
 
+mojom("mojom_storage_access_api") {
+  generate_java = true
+  sources = [ "storage_access_api.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  shared_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.StorageAccessApiStatus"
+          cpp = "::net::StorageAccessApiStatus"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/storage_access_api_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:storage_access_api_mojom_support" ]
+    },
+  ]
+  cpp_typemaps = shared_typemaps
+  blink_cpp_typemaps = shared_typemaps
+}
+
 mojom("mojom_structured_headers") {
   generate_java = true
   sources = [ "structured_headers.mojom" ]
@@ -1149,6 +1179,7 @@ mojom("cookies_mojom") {
   public_deps = [
     ":mojom_first_party_sets",
     ":mojom_schemeful_site",
+    ":mojom_storage_access_api",
     "//components/content_settings/core/common:content_settings_enums",
     "//components/content_settings/core/common:content_settings_types",
     "//components/content_settings/core/common:mojo_bindings",
@@ -1438,6 +1469,7 @@ mojom("mojom") {
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
     ":mojom_shared_dictionary",
+    ":mojom_storage_access_api",
     ":mojom_structured_headers",
     ":url_loader_base",
     ":websocket_mojom",

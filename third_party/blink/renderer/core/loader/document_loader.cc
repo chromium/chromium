@@ -40,11 +40,13 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/types/optional_util.h"
 #include "base/uuid.h"
 #include "build/chromeos_buildflags.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/header_util.h"
@@ -339,7 +341,7 @@ struct SameSizeAsDocumentLoader
   std::optional<ViewTransitionState> view_transition_state;
   std::optional<FencedFrame::RedactedFencedFrameProperties>
       fenced_frame_properties;
-  bool has_storage_access;
+  net::StorageAccessApiStatus storage_access_api_status;
   mojom::blink::ParentResourceTimingAccess parent_resource_timing_access;
   const std::optional<BrowsingContextGroupInfo> browsing_context_group_info;
   const base::flat_map<mojom::blink::RuntimeFeature, bool>
@@ -560,7 +562,7 @@ DocumentLoader::DocumentLoader(
       reduced_accept_language_(params_->reduced_accept_language),
       navigation_delivery_type_(params_->navigation_delivery_type),
       view_transition_state_(std::move(params_->view_transition_state)),
-      load_with_storage_access_(params_->load_with_storage_access),
+      storage_access_api_status_(params_->load_with_storage_access),
       browsing_context_group_info_(params_->browsing_context_group_info),
       modified_runtime_features_(std::move(params_->modified_runtime_features)),
       cookie_deprecation_label_(params_->cookie_deprecation_label),
@@ -717,7 +719,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   }
   params->reduced_accept_language = reduced_accept_language_;
   params->navigation_delivery_type = navigation_delivery_type_;
-  params->load_with_storage_access = load_with_storage_access_;
+  params->load_with_storage_access = storage_access_api_status_;
   params->modified_runtime_features = modified_runtime_features_;
   params->cookie_deprecation_label = cookie_deprecation_label_;
   params->visited_link_salt = visited_link_salt_;
@@ -2576,10 +2578,16 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       agent->ForceOriginKeyedBecauseOfInheritance();
     }
 
-    if (load_with_storage_access_) {
-      frame_->DomWindow()->SetHasStorageAccess();
-      inherited_has_storage_access = true;
-    }
+    frame_->DomWindow()->SetStorageAccessApiStatus(storage_access_api_status_);
+    inherited_has_storage_access = [this]() -> bool {
+      switch (storage_access_api_status_) {
+        case net::StorageAccessApiStatus::kNone:
+          return false;
+        case net::StorageAccessApiStatus::kAccessViaAPI:
+          return true;
+      }
+      NOTREACHED_NORETURN();
+    }();
   } else {
     if (frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
         frame_->IsMainFrame()) {
@@ -2613,7 +2621,15 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
           frame_->DomWindow());
 
   base::UmaHistogramBoolean("API.StorageAccess.DocumentLoadedWithStorageAccess",
-                            frame_->DomWindow()->HasStorageAccess());
+                            [this]() -> bool {
+                              switch (storage_access_api_status_) {
+                                case net::StorageAccessApiStatus::kNone:
+                                  return false;
+                                case net::StorageAccessApiStatus::kAccessViaAPI:
+                                  return true;
+                              }
+                              NOTREACHED_NORETURN();
+                            }());
   base::UmaHistogramBoolean("API.StorageAccess.DocumentInheritedStorageAccess",
                             inherited_has_storage_access);
 

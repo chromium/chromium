@@ -147,6 +147,7 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/redirect_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -1150,7 +1151,7 @@ bool MaybeEvictFromBackForwardCacheBySubframeNavigation(
   return false;
 }
 
-bool ShouldLoadWithStorageAccess(
+net::StorageAccessApiStatus ShouldLoadWithStorageAccess(
     const blink::mojom::BeginNavigationParams& begin_params,
     const blink::mojom::CommonNavigationParams& common_params,
     const RenderFrameHostImpl* previous_document_rfh,
@@ -1167,7 +1168,9 @@ bool ShouldLoadWithStorageAccess(
   // Note: As of today, `about:blank`, `about:srcdoc`, and MHTML-iframe do not
   // have a response.
   if (response && response->load_with_storage_access) {
-    return true;
+    // TODO(https://crbug.com/344608182): this ought to use a dedicated status,
+    // since the JS API was *not* used to get storage access here.
+    return net::StorageAccessApiStatus::kAccessViaAPI;
   }
 
   // Storage Access API: https://privacycg.github.io/storage-access/#navigation
@@ -1180,12 +1183,20 @@ bool ShouldLoadWithStorageAccess(
   //
   // Note: `begin_params` and `common_params` are not trusted, so we have to
   // check the frame token.
-  return begin_params.has_storage_access && common_params.initiator_origin &&
-         common_params.initiator_origin->IsSameOriginWith(response_url) &&
-         begin_params.initiator_frame_token &&
-         begin_params.initiator_frame_token ==
-             previous_document_rfh->GetFrameToken() &&
-         !did_encounter_cross_origin_redirect;
+  switch (begin_params.storage_access_api_status) {
+    case net::StorageAccessApiStatus::kNone:
+      return net::StorageAccessApiStatus::kNone;
+    case net::StorageAccessApiStatus::kAccessViaAPI:
+      return common_params.initiator_origin &&
+                     common_params.initiator_origin->IsSameOriginWith(
+                         response_url) &&
+                     begin_params.initiator_frame_token &&
+                     begin_params.initiator_frame_token ==
+                         previous_document_rfh->GetFrameToken() &&
+                     !did_encounter_cross_origin_redirect
+                 ? begin_params.storage_access_api_status
+                 : net::StorageAccessApiStatus::kNone;
+  }
 }
 
 // The sampling rate for UKM.
@@ -1269,7 +1280,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
       initiator_activation_and_ad_status, is_container_initiated,
-      false /* has_storage_access */, has_rel_opener);
+      net::StorageAccessApiStatus::kNone, has_rel_opener);
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==
@@ -1405,7 +1416,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           base::flat_map<::blink::mojom::RuntimeFeature, bool>(),
           /*fenced_frame_properties=*/std::nullopt,
           /*not_restored_reasons=*/nullptr,
-          /*load_with_storage_access=*/false,
+          /*load_with_storage_access=*/
+          net::StorageAccessApiStatus::kNone,
           /*browsing_context_group_info=*/std::nullopt,
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
           /*cookie_deprecation_label=*/std::nullopt,
@@ -1552,7 +1564,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           base::flat_map<::blink::mojom::RuntimeFeature, bool>(),
           /*fenced_frame_properties=*/std::nullopt,
           /*not_restored_reasons=*/nullptr,
-          /*load_with_storage_access=*/false,
+          /*load_with_storage_access=*/
+          net::StorageAccessApiStatus::kNone,
           /*browsing_context_group_info=*/std::nullopt,
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
           /*cookie_deprecation_label=*/std::nullopt,

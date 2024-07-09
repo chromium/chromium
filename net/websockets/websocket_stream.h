@@ -18,6 +18,7 @@
 #include "net/base/net_export.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/log/net_log_with_source.h"
+#include "net/storage_access_api/status.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
@@ -168,7 +169,7 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       const std::vector<std::string>& requested_subprotocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       URLRequestContext* url_request_context,
@@ -186,7 +187,7 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       const std::vector<std::string>& requested_subprotocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       URLRequestContext* url_request_context,

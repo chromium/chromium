@@ -248,7 +248,7 @@ class FakeWebDedicatedWorkerHostFactoryClient
       const WebFetchClientSettingsObject& fetch_client_settings_object,
       CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
           blob_url_token,
-      bool has_storage_access) override {}
+      net::StorageAccessApiStatus storage_access_api_status) override {}
   scoped_refptr<blink::WebWorkerFetchContext> CloneWorkerFetchContext(
       WebWorkerFetchContext* web_worker_fetch_context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {

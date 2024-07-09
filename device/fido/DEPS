@@ -10,6 +10,7 @@ include_rules = [
   "+net/cert",
   "+net/cookies",
   "+net/http",
+  "+net/storage_access_api/status.h",
   "+net/traffic_annotation",
   "+services/data_decoder",
   "+services/network",

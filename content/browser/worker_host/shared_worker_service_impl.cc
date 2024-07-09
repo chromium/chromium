@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
@@ -222,7 +223,9 @@ void SharedWorkerServiceImpl::ConnectToWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,
       message_port, std::move(blob_url_loader_factory),
-      storage_key_override.has_value());
+      storage_key_override.has_value()
+          ? net::StorageAccessApiStatus::kAccessViaAPI
+          : net::StorageAccessApiStatus::kNone);
   if (!host) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
@@ -311,7 +314,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     const std::string& storage_domain,
     const blink::MessagePortChannel& message_port,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    bool has_storage_access) {
+    net::StorageAccessApiStatus storage_access_api_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!blob_url_loader_factory || instance.url().SchemeIsBlob());
 
@@ -411,7 +414,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       storage_partition_, storage_domain,
       SharedWorkerDevToolsAgentHost::GetFor(host), host->GetDevToolsToken(),
       host->instance().DoesRequireCrossSiteRequestForCookies(),
-      has_storage_access,
+      storage_access_api_status,
       base::BindOnce(&SharedWorkerServiceImpl::StartWorker,
                      weak_factory_.GetWeakPtr(), weak_host, message_port,
                      std::move(cloned_outside_fetch_client_settings_object)));

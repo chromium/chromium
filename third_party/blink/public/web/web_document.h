@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_
 
 #include "net/cookies/site_for_cookies.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -107,11 +108,11 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // cookie blocking.
   net::SiteForCookies SiteForCookies() const;
 
-  // The `HasStorageAccess` boolean is used to determine whether this document
-  // has opted into using the Storage Access API. This is relevant when
-  // attempting to access cookies in a context where third-party cookies may be
-  // blocked.
-  bool HasStorageAccess() const;
+  // `StorageAccessApiStatus` is used to describe how/if this document has opted
+  // into accessing cross-site cookies using the Storage Access API. This is
+  // relevant when attempting to access cookies in a context where third-party
+  // cookies may be blocked.
+  net::StorageAccessApiStatus StorageAccessApiStatus() const;
 
   WebSecurityOrigin TopFrameOrigin() const;
   WebElement DocumentElement() const;

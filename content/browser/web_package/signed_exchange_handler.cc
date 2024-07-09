@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/web_package/signed_exchange_handler.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "content/browser/web_package/signed_exchange_handler.h"
 
 #include <memory>
 #include <string_view>
@@ -52,6 +52,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream.h"
 #include "net/ssl/ssl_info.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -734,15 +735,16 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
   auto match_options = network::mojom::CookieManagerGetOptions::New();
   match_options->name = "";
   match_options->match_type = network::mojom::CookieMatchType::STARTS_WITH;
-  // We set `has_storage_access` to true below in order to use any Storage
-  // Access grant that exists, since a frame might go through this code path and
-  // then obtain storage access in order to access cookies. Using true instead
-  // of false here means we are being conservative, since this runs an error
-  // callback if any cookies were retrieved.
+  // We set `storage_access_api_status` to kAccessViaAPI below in order to use
+  // any Storage Access grant that exists, since a frame might go through this
+  // code path and then obtain storage access in order to access cookies. Using
+  // true instead of false here means we are being conservative, since this runs
+  // an error callback if any cookies were retrieved.
   cookie_manager_->GetAllForUrl(
       envelope_->request_url().url, isolation_info.site_for_cookies(),
-      *isolation_info.top_frame_origin(), /*has_storage_access=*/true,
-      std::move(match_options), /*is_ad_tagged=*/false,
+      *isolation_info.top_frame_origin(),
+      net::StorageAccessApiStatus::kAccessViaAPI, std::move(match_options),
+      /*is_ad_tagged=*/false,
       /*force_disable_third_party_cookies=*/false,
       base::BindOnce(&SignedExchangeHandler::OnGetCookies,
                      weak_factory_.GetWeakPtr(), std::move(callback)));

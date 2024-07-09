@@ -39,6 +39,7 @@
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request_context.h"
@@ -1031,7 +1032,7 @@ void URLRequest::RetryWithStorageAccess() {
       CookieSettingOverride::kStorageAccessGrantEligibleViaHeader));
   CHECK(!cookie_setting_overrides().Has(
       CookieSettingOverride::kStorageAccessGrantEligible));
-  CHECK(!has_storage_access());
+  CHECK_EQ(storage_access_api_status(), StorageAccessApiStatus::kNone);
 
   net_log_.AddEvent(NetLogEventType::URL_REQUEST_RETRY_WITH_STORAGE_ACCESS);
   if (network_delegate()) {

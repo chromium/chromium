@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "net/storage_access_api/status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -218,7 +219,7 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
         const Vector<String>& requested_protocols,
         const net::SiteForCookies& site_for_cookies,
         const String& user_agent,
-        bool has_storage_access,
+        net::StorageAccessApiStatus storage_access_api_status,
         mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
             handshake_client,
         const std::optional<base::UnguessableToken>& throttling_profile_id)
@@ -1640,7 +1641,7 @@ class MockWebSocketConnector : public mojom::blink::WebSocketConnector {
        const Vector<String>&,
        const net::SiteForCookies&,
        const String&,
-       bool,
+       net::StorageAccessApiStatus,
        mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>,
        const std::optional<base::UnguessableToken>&));
 };

@@ -470,7 +470,8 @@ void CookieStore::DoRead(ScriptState* script_state,
     }
   }
   backend_->GetAllForUrl(cookie_url, default_site_for_cookies_,
-                         default_top_frame_origin_, context->HasStorageAccess(),
+                         default_top_frame_origin_,
+                         context->GetStorageAccessApiStatus(),
                          std::move(backend_options), is_ad_tagged,
                          /*force_disable_third_party_cookies=*/false,
                          std::move(backend_result_converter));
@@ -555,7 +556,7 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
   backend_->SetCanonicalCookie(
       *std::move(canonical_cookie), default_cookie_url_,
       default_site_for_cookies_, default_top_frame_origin_,
-      context->HasStorageAccess(), status,
+      context->GetStorageAccessApiStatus(), status,
       WTF::BindOnce(&CookieStore::OnSetCanonicalCookieResult,
                     WrapPersistent(resolver)));
   return resolver->Promise();
@@ -583,7 +584,7 @@ void CookieStore::StartObserving() {
       GetExecutionContext()->GetTaskRunner(TaskType::kDOMManipulation);
   backend_->AddChangeListener(
       default_cookie_url_, default_site_for_cookies_, default_top_frame_origin_,
-      GetExecutionContext()->HasStorageAccess(),
+      GetExecutionContext()->GetStorageAccessApiStatus(),
       change_listener_receiver_.BindNewPipeAndPassRemote(task_runner), {});
 }
 
