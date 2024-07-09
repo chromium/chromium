@@ -22,8 +22,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -38,11 +38,14 @@ import org.chromium.chrome.test.transit.NewTabPageStation;
 import org.chromium.chrome.test.transit.PageAppMenuFacility;
 import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
+import org.chromium.ui.test.util.UiRestriction;
 
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+// TODO(crbug.com/351378295): Remove this restriction once tablets stop flaking.
+@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 public class HubLayoutPublicTransitTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -54,7 +57,6 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/350699105")
     public void testEnterAndExitHub() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
@@ -67,7 +69,6 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/350699105")
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
@@ -82,7 +83,6 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/350699105")
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
@@ -97,7 +97,6 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/350699105")
     public void testChangeTabSwitcherPanes() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
