@@ -123,13 +123,14 @@ class TestRegistrationCallback {
     run_loop.Run();
   }
 
-  std::optional<SessionParams> outcome() {
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> outcome() {
     EXPECT_TRUE(called_);
     return std::move(outcome_);
   }
 
  private:
-  void OnRegistrationComplete(std::optional<SessionParams> params) {
+  void OnRegistrationComplete(
+      std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {
     EXPECT_FALSE(called_);
 
     called_ = true;
@@ -142,7 +143,8 @@ class TestRegistrationCallback {
   }
 
   bool called_ = false;
-  std::optional<SessionParams> outcome_ = std::nullopt;
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> outcome_ =
+      std::nullopt;
 
   bool waiting_ = false;
   base::OnceClosure closure_;
@@ -185,15 +187,16 @@ TEST_F(RegistrationTest, BasicSuccess) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_TRUE(out_params);
-  EXPECT_TRUE(out_params->scope.include_site);
-  EXPECT_THAT(out_params->scope.specifications,
+  EXPECT_TRUE(out_params->params.scope.include_site);
+  EXPECT_THAT(out_params->params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kInclude,
                   "trusted.example.com", "/only_trusted_path")));
   EXPECT_THAT(
-      out_params->credentials,
+      out_params->params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -218,12 +221,13 @@ TEST_F(RegistrationTest, NoScopeJson) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_TRUE(out_params);
-  EXPECT_FALSE(out_params->scope.include_site);
-  EXPECT_TRUE(out_params->scope.specifications.empty());
+  EXPECT_FALSE(out_params->params.scope.include_site);
+  EXPECT_TRUE(out_params->params.scope.specifications.empty());
   EXPECT_THAT(
-      out_params->credentials,
+      out_params->params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -247,7 +251,8 @@ TEST_F(RegistrationTest, NoSessionIdJson) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_FALSE(out_params);
 }
 
@@ -278,12 +283,13 @@ TEST_F(RegistrationTest, SpecificationNotDictJson) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_TRUE(out_params);
-  EXPECT_TRUE(out_params->scope.include_site);
-  EXPECT_TRUE(out_params->scope.specifications.empty());
+  EXPECT_TRUE(out_params->params.scope.include_site);
+  EXPECT_TRUE(out_params->params.scope.specifications.empty());
   EXPECT_THAT(
-      out_params->credentials,
+      out_params->params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -323,16 +329,17 @@ TEST_F(RegistrationTest, OneMissingPath) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_TRUE(out_params);
-  EXPECT_TRUE(out_params->scope.include_site);
+  EXPECT_TRUE(out_params->params.scope.include_site);
 
-  EXPECT_THAT(out_params->scope.specifications,
+  EXPECT_THAT(out_params->params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kExclude,
                   "new.example.com", "/only_trusted_path")));
 
-  EXPECT_THAT(out_params->credentials,
+  EXPECT_THAT(out_params->params.credentials,
               ElementsAre(SessionParams::Credential(
                   "other_cookie",
                   "Domain=example.com; Path=/; Secure; SameSite=None")));
@@ -374,17 +381,18 @@ TEST_F(RegistrationTest, OneSpecTypeInvalid) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_TRUE(out_params);
-  EXPECT_TRUE(out_params->scope.include_site);
+  EXPECT_TRUE(out_params->params.scope.include_site);
 
-  EXPECT_THAT(out_params->scope.specifications,
+  EXPECT_THAT(out_params->params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kExclude,
                   "new.example.com", "/only_trusted_path")));
 
   EXPECT_THAT(
-      out_params->credentials,
+      out_params->params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -414,10 +422,11 @@ TEST_F(RegistrationTest, InvalidTypeSpecList) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_TRUE(out_params);
-  EXPECT_TRUE(out_params->scope.include_site);
-  EXPECT_TRUE(out_params->scope.specifications.empty());
+  EXPECT_TRUE(out_params->params.scope.include_site);
+  EXPECT_TRUE(out_params->params.scope.specifications.empty());
 }
 
 TEST_F(RegistrationTest, TypeIsNotCookie) {
@@ -441,7 +450,8 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   EXPECT_EQ(callback.outcome(), std::nullopt);
 }
 
@@ -473,10 +483,11 @@ TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_TRUE(out_params);
   EXPECT_THAT(
-      out_params->credentials,
+      out_params->params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -509,10 +520,11 @@ TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_TRUE(out_params);
   EXPECT_THAT(
-      out_params->credentials,
+      out_params->params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -539,10 +551,11 @@ TEST_F(RegistrationTest, CredEntryWithoutDict) {
       GetBasicParam(), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  std::optional<SessionParams> out_params = callback.outcome();
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
   ASSERT_TRUE(out_params);
   EXPECT_THAT(
-      out_params->credentials,
+      out_params->params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }

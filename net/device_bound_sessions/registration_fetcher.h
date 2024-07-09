@@ -6,6 +6,7 @@
 #define NET_DEVICE_BOUND_SESSIONS_REGISTRATION_FETCHER_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -30,15 +31,18 @@ namespace net::device_bound_sessions {
 // instructions.
 class NET_EXPORT RegistrationFetcher {
  public:
+  struct RegistrationCompleteParams {
+    SessionParams params;
+    unexportable_keys::UnexportableKeyId key_id;
+  };
+
   using RegistrationCompleteCallback =
-      base::OnceCallback<void(std::optional<SessionParams>)>;
+      base::OnceCallback<void(std::optional<RegistrationCompleteParams>)>;
 
   // TODO(kristianm): Add more parameters when the returned JSON is parsed.
   struct NET_EXPORT RegistrationTokenResult {
-    explicit RegistrationTokenResult(std::string registration_token)
-        : registration_token(std::move(registration_token)) {}
-
     std::string registration_token;
+    unexportable_keys::UnexportableKeyId key_id;
   };
 
   // Creates an unexportable key from the key service, creates a registration

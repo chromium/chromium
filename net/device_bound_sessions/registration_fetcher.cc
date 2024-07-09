@@ -4,6 +4,8 @@
 
 #include "net/device_bound_sessions/registration_fetcher.h"
 
+#include <utility>
+
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/io_buffer.h"
@@ -83,8 +85,8 @@ void OnDataSigned(
     return;
   }
 
-  std::move(callback).Run(
-      RegistrationFetcher::RegistrationTokenResult(registration_token.value()));
+  std::move(callback).Run(RegistrationFetcher::RegistrationTokenResult(
+      registration_token.value(), key_id));
 }
 
 void OnKeyGenerated(
@@ -222,12 +224,13 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   void OnRegistrationTokenCreated(
       std::optional<RegistrationFetcher::RegistrationTokenResult> result) {
-    if (!result.has_value()) {
+    if (!result) {
       RunCallbackAndDeleteSelf(std::nullopt);
       return;
     }
 
-    StartFetchingRegistration(result.value().registration_token);
+    key_id_ = result->key_id;
+    StartFetchingRegistration(result->registration_token);
   }
 
  private:
@@ -251,7 +254,15 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   void OnResponseCompleted() {
     if (!data_received_.empty()) {
-      RunCallbackAndDeleteSelf(ParseSessionInstructionJson(data_received_));
+      std::optional<SessionParams> params =
+          ParseSessionInstructionJson(data_received_);
+      if (params) {
+        RunCallbackAndDeleteSelf(
+            RegistrationFetcher::RegistrationCompleteParams(std::move(*params),
+                                                            *key_id_));
+      } else {
+        RunCallbackAndDeleteSelf(std::nullopt);
+      }
     } else {
       RunCallbackAndDeleteSelf(std::nullopt);
     }
@@ -260,7 +271,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   // Running callback when fetching is complete or on error.
   // Deletes `this` afterwards.
-  void RunCallbackAndDeleteSelf(std::optional<SessionParams> params) {
+  void RunCallbackAndDeleteSelf(
+      std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {
     std::move(callback_).Run(std::move(params));
     delete this;
   }
@@ -271,6 +283,11 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   raw_ptr<const URLRequestContext> context_;
   IsolationInfo isolation_info_;
   RegistrationFetcher::RegistrationCompleteCallback callback_;
+
+  // Set during key creation, before sending request to fetch data.
+  // Should always be nullopt before that, and always a valid key after key
+  // creation.
+  std::optional<unexportable_keys::UnexportableKeyId> key_id_ = std::nullopt;
 
   // Created to fetch data
   std::unique_ptr<URLRequest> request_;

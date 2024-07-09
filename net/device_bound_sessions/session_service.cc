@@ -35,7 +35,8 @@ class SessionServiceImpl : public SessionService {
 
   // TODO(kristianm): Parse the registration params and create a session
   // in the service.
-  void OnRegistrationComplete(std::optional<SessionParams> params) {}
+  void OnRegistrationComplete(
+      std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {}
 
   std::optional<std::string> GetAnySessionRequiringDeferral(
       URLRequest* request) override {
