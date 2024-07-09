@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -57,6 +58,13 @@ void SpareRenderProcessHostManager::WarmupSpareRenderProcessHost(
     // any problematic callers.
     base::debug::DumpWithoutCrashing();
 
+    return;
+  }
+
+  if (BrowserMainRunner::ExitedMainMessageLoop()) {
+    // Don't create a new process when the browser is shutting down. No
+    // DumpWithoutCrashing here since there are known cases in the wild. See
+    // https://crbug.com/40274462 for details.
     return;
   }
 
