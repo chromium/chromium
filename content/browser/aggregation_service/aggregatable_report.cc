@@ -26,6 +26,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -362,6 +363,21 @@ std::optional<AggregatableReportRequest> ConvertReportRequestFromProto(
     return std::nullopt;
   }
 
+  std::optional<AggregatableReportRequest::DelayType> delay_type;
+  if (request_proto.has_delay_type()) {
+    // Protos read from disk may be corrupted and proto3 enums are permitted to
+    // contain unrecognized values.
+    if (!proto::AggregatableReportRequest::DelayType_IsValid(
+            request_proto.delay_type())) {
+      return std::nullopt;
+    }
+    delay_type = static_cast<AggregatableReportRequest::DelayType>(
+        request_proto.delay_type());
+    // The `Unscheduled` enumerator is not defined in the proto's version of
+    // the enum, and we already know that the value was valid.
+    CHECK_NE(*delay_type, AggregatableReportRequest::DelayType::Unscheduled);
+  }
+
   std::optional<AggregatableReportSharedInfo> shared_info(
       ConvertSharedInfoFromProto(request_proto.shared_info()));
   if (!shared_info.has_value()) {
@@ -380,7 +396,7 @@ std::optional<AggregatableReportRequest> ConvertReportRequestFromProto(
 
   return AggregatableReportRequest::Create(
       std::move(payload_contents.value()), std::move(shared_info.value()),
-      std::move(*request_proto.mutable_reporting_path()), debug_key,
+      delay_type, std::move(*request_proto.mutable_reporting_path()), debug_key,
       std::move(additional_fields), request_proto.failed_send_attempts());
 }
 
@@ -463,6 +479,14 @@ proto::AggregatableReportRequest ConvertReportRequestToProto(
       /*out=*/request_proto.mutable_payload_contents());
   ConvertSharedInfoToProto(request.shared_info(),
                            /*out=*/request_proto.mutable_shared_info());
+
+  CHECK(request.delay_type().has_value());
+  CHECK(proto::AggregatableReportRequest::DelayType_IsValid(
+      static_cast<int>(*request.delay_type())));
+  request_proto.set_delay_type(
+      static_cast<proto::AggregatableReportRequest::DelayType>(
+          *request.delay_type()));
+
   *request_proto.mutable_reporting_path() = request.reporting_path();
   if (request.debug_key().has_value()) {
     request_proto.set_debug_key(request.debug_key().value());
@@ -630,6 +654,7 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
 std::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
+    std::optional<AggregatableReportRequest::DelayType> delay_type,
     std::string reporting_path,
     std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
@@ -638,9 +663,9 @@ std::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
       GetDefaultProcessingUrls(payload_contents.aggregation_mode,
                                payload_contents.aggregation_coordinator_origin);
   return CreateInternal(std::move(processing_urls), std::move(payload_contents),
-                        std::move(shared_info), std::move(reporting_path),
-                        debug_key, std::move(additional_fields),
-                        failed_send_attempts);
+                        std::move(shared_info), delay_type,
+                        std::move(reporting_path), debug_key,
+                        std::move(additional_fields), failed_send_attempts);
 }
 
 // static
@@ -649,14 +674,15 @@ AggregatableReportRequest::CreateForTesting(
     std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
+    std::optional<AggregatableReportRequest::DelayType> delay_type,
     std::string reporting_path,
     std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts) {
   return CreateInternal(std::move(processing_urls), std::move(payload_contents),
-                        std::move(shared_info), std::move(reporting_path),
-                        debug_key, std::move(additional_fields),
-                        failed_send_attempts);
+                        std::move(shared_info), delay_type,
+                        std::move(reporting_path), debug_key,
+                        std::move(additional_fields), failed_send_attempts);
 }
 
 // static
@@ -665,6 +691,7 @@ AggregatableReportRequest::CreateInternal(
     std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
+    std::optional<AggregatableReportRequest::DelayType> delay_type,
     std::string reporting_path,
     std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
@@ -739,7 +766,7 @@ AggregatableReportRequest::CreateInternal(
 
   return AggregatableReportRequest(
       std::move(processing_urls), std::move(payload_contents),
-      std::move(shared_info), std::move(reporting_path), debug_key,
+      std::move(shared_info), delay_type, std::move(reporting_path), debug_key,
       std::move(additional_fields), failed_send_attempts);
 }
 
@@ -747,6 +774,7 @@ AggregatableReportRequest::AggregatableReportRequest(
     std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
+    std::optional<AggregatableReportRequest::DelayType> delay_type,
     std::string reporting_path,
     std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
@@ -757,7 +785,8 @@ AggregatableReportRequest::AggregatableReportRequest(
       reporting_path_(std::move(reporting_path)),
       debug_key_(debug_key),
       additional_fields_(std::move(additional_fields)),
-      failed_send_attempts_(failed_send_attempts) {}
+      failed_send_attempts_(failed_send_attempts),
+      delay_type_(delay_type) {}
 
 AggregatableReportRequest::AggregatableReportRequest(
     AggregatableReportRequest&& other) = default;
@@ -785,7 +814,7 @@ std::optional<AggregatableReportRequest> AggregatableReportRequest::Deserialize(
   return ConvertReportRequestFromProto(std::move(request_proto));
 }
 
-std::vector<uint8_t> AggregatableReportRequest::Serialize() {
+std::vector<uint8_t> AggregatableReportRequest::Serialize() const {
   proto::AggregatableReportRequest request_proto =
       ConvertReportRequestToProto(*this);
 

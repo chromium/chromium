@@ -63,16 +63,20 @@ class CONTENT_EXPORT AggregationService {
   // TODO(alexmt): Consider removing `SendReport()`.
 
   // Sends an aggregatable report to the reporting endpoint `url`.
-  virtual void SendReport(const GURL& url,
-                          const AggregatableReport& report,
-                          SendCallback callback) = 0;
+  virtual void SendReport(
+      const GURL& url,
+      const AggregatableReport& report,
+      std::optional<AggregatableReportRequest::DelayType> delay_type,
+      SendCallback callback) = 0;
 
   // Sends the contents of an aggregatable report to the reporting endpoint
   // `url`. This allows a caller to modify the report's JSON serialization as
   // needed.
-  virtual void SendReport(const GURL& url,
-                          const base::Value& contents,
-                          SendCallback callback) = 0;
+  virtual void SendReport(
+      const GURL& url,
+      const base::Value& contents,
+      std::optional<AggregatableReportRequest::DelayType> delay_type,
+      SendCallback callback) = 0;
 
   // Deletes all data in storage that were fetched/stored between `delete_begin`
   // and `delete_end` time (inclusive). Null times are treated as unbounded

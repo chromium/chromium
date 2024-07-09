@@ -188,6 +188,7 @@ TEST_F(PrivateAggregationHostTest,
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"1.0",
               /*api_identifier=*/"protected-audience"),
+          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/
           "/.well-known/private-aggregation/report-protected-audience");
   ASSERT_TRUE(expected_request);
