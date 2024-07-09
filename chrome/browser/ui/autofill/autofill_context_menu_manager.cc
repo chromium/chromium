@@ -599,7 +599,9 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
       !IsAddressType(field ? field->Type().GetStorableType() : UNKNOWN_TYPE);
   const bool payments_option_shown_for_field_not_classified_as_payments =
       payments_option_shown &&
-      (!field || field->Type().group() != FieldTypeGroup::kCreditCard);
+      (!field || !FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
+                                     FieldTypeGroup::kStandaloneCvcField})
+                      .contains(field->Type().group()));
   CHECK(!select_passwords_option_shown || password_manager_driver)
       << "No password entries should be shown if there is no driver.";
   const bool

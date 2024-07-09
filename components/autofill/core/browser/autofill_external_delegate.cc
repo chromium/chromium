@@ -1185,7 +1185,9 @@ bool AutofillExternalDelegate::IsPaymentsManualFallbackOnNonPaymentsField()
   if (trigger_source_ ==
       AutofillSuggestionTriggerSource::kManualFallbackPayments) {
     const AutofillField* field = GetQueriedAutofillField();
-    return !field || field->Type().group() != FieldTypeGroup::kCreditCard;
+    return !field || !FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
+                                         FieldTypeGroup::kStandaloneCvcField})
+                          .contains(field->Type().group());
   }
   return false;
 }

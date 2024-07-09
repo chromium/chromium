@@ -807,7 +807,9 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   FieldType field_type = autofill_field
                              ? autofill_field->Type().GetStorableType()
                              : CREDIT_CARD_NUMBER;
-  DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfFieldType(field_type));
+  DCHECK(FieldTypeGroupSet(
+             {FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField})
+             .contains(GroupTypeOfFieldType(field_type)));
 
   auto cards = GetCreditCardSuggestions(
       form, field_data, field_type,

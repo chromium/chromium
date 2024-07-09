@@ -236,7 +236,9 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
   if ((filling_product == FillingProduct::kAddress &&
        !IsAddressType(autofill_field.Type().GetStorableType())) ||
       (filling_product == FillingProduct::kCreditCard &&
-       autofill_field.Type().group() != FieldTypeGroup::kCreditCard)) {
+       !FieldTypeGroupSet(
+            {FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField})
+            .contains(autofill_field.Type().group()))) {
     return FieldFillingSkipReason::kFieldTypeUnrelated;
   }
 
