@@ -137,9 +137,6 @@ struct ProcessManager::BackgroundPageData {
   // if the IDs ever differ due to new activity.
   uint64_t close_sequence_id = 0ull;
 
-  // Keeps track of when this page was last suspended. Used for perf metrics.
-  std::unique_ptr<base::ElapsedTimer> since_suspended;
-
   ActivitiesMultiset activities;
 };
 
@@ -672,14 +669,6 @@ void ProcessManager::OnBackgroundHostCreated(ExtensionHost* host) {
   background_hosts_.insert(host);
   host->AddObserver(this);
 
-  if (BackgroundInfo::HasLazyBackgroundPage(host->extension())) {
-    std::unique_ptr<base::ElapsedTimer> since_suspended = std::move(
-        background_page_data_[host->extension()->id()].since_suspended);
-    if (since_suspended.get()) {
-      UMA_HISTOGRAM_LONG_TIMES("Extensions.EventPageIdleTime",
-                               since_suspended->Elapsed());
-    }
-  }
   for (auto& observer : observer_list_)
     observer.OnBackgroundHostCreated(host);
 }
@@ -1047,8 +1036,6 @@ void ProcessManager::OnExtensionHostDestroyed(ExtensionHost* host) {
   background_hosts_.erase(host);
   // Note: |host->extension()| may be null at this point.
   ClearBackgroundPageData(host->extension_id());
-  background_page_data_[host->extension_id()].since_suspended =
-      std::make_unique<base::ElapsedTimer>();
 }
 
 void ProcessManager::HandleCloseExtensionHost(ExtensionHost* host) {

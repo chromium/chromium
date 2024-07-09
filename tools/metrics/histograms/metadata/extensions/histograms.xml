@@ -1567,13 +1567,6 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
-<histogram name="Extensions.EventPageIdleTime" units="ms"
-    expires_after="2024-06-30">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>The time an extension's event page has spent unloaded.</summary>
-</histogram>
-
 <histogram name="Extensions.EventPageLoadTime2" units="ms"
     expires_after="never">
 <!-- expires-never: Monitoring core extensions platform behavior. -->
