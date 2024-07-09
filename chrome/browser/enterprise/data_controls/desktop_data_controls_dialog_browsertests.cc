@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,26 +16,26 @@ namespace data_controls {
 
 namespace {
 
-class DataControlsDialogUiTest
+class DesktopDataControlsDialogUiTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<DataControlsDialog::Type> {
  public:
-  DataControlsDialogUiTest() = default;
-  ~DataControlsDialogUiTest() override = default;
+  DesktopDataControlsDialogUiTest() = default;
+  ~DesktopDataControlsDialogUiTest() override = default;
 
   DataControlsDialog::Type type() const { return GetParam(); }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    DataControlsDialog::Show(
+    DesktopDataControlsDialog::Show(
         browser()->tab_strip_model()->GetActiveWebContents(), type());
   }
 };
 
-class DataControlsDialogTest : public InProcessBrowserTest,
-                               public DataControlsDialog::TestObserver {
+class DesktopDataControlsDialogTest : public InProcessBrowserTest,
+                               public DesktopDataControlsDialog::TestObserver {
  public:
-  void OnConstructed(data_controls::DataControlsDialog* dialog) override {
+  void OnConstructed(DesktopDataControlsDialog* dialog) override {
     ++constructor_called_count_;
 
     ASSERT_TRUE(dialog);
@@ -48,7 +48,7 @@ class DataControlsDialogTest : public InProcessBrowserTest,
         dialog_close_loops_[dialog]->QuitClosure();
   }
 
-  void OnDestructed(data_controls::DataControlsDialog* dialog) override {
+  void OnDestructed(DesktopDataControlsDialog* dialog) override {
     ASSERT_TRUE(dialog);
     ASSERT_TRUE(base::Contains(dialog_close_loops_, dialog));
     ASSERT_TRUE(base::Contains(dialog_close_callbacks_, dialog));
@@ -66,7 +66,7 @@ class DataControlsDialogTest : public InProcessBrowserTest,
       // asynchronously.
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(&data_controls::DataControlsDialog::AcceptDialog,
+          base::BindOnce(&DesktopDataControlsDialog::AcceptDialog,
                          base::Unretained(dialog_and_loop.first)));
     }
 
@@ -78,29 +78,30 @@ class DataControlsDialogTest : public InProcessBrowserTest,
  protected:
   size_t constructor_called_count_ = 0;
 
-  std::map<DataControlsDialog*, base::OnceClosure> dialog_close_callbacks_;
-  std::map<DataControlsDialog*, std::unique_ptr<base::RunLoop>>
+  std::map<DesktopDataControlsDialog*, base::OnceClosure>
+      dialog_close_callbacks_;
+  std::map<DesktopDataControlsDialog*, std::unique_ptr<base::RunLoop>>
       dialog_close_loops_;
 };
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(DataControlsDialogUiTest, DefaultUi) {
+IN_PROC_BROWSER_TEST_P(DesktopDataControlsDialogUiTest, DefaultUi) {
   ShowAndVerifyUi();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    DataControlsDialogUiTest,
+    DesktopDataControlsDialogUiTest,
     testing::Values(DataControlsDialog::Type::kClipboardPasteBlock,
                     DataControlsDialog::Type::kClipboardCopyBlock,
                     DataControlsDialog::Type::kClipboardPasteWarn,
                     DataControlsDialog::Type::kClipboardCopyWarn));
 
-IN_PROC_BROWSER_TEST_F(DataControlsDialogTest, ShowDialogMultipleTimes) {
+IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest, ShowDialogMultipleTimes) {
   // Only 1 dialog should be shown for the same WebContents-Type pair.
   for (int i = 0; i < 100; ++i) {
-    DataControlsDialog::Show(
+    DesktopDataControlsDialog::Show(
         browser()->tab_strip_model()->GetActiveWebContents(),
         DataControlsDialog::Type::kClipboardCopyBlock);
   }
@@ -109,20 +110,20 @@ IN_PROC_BROWSER_TEST_F(DataControlsDialogTest, ShowDialogMultipleTimes) {
   CloseDialogsAndWait();
 }
 
-IN_PROC_BROWSER_TEST_F(DataControlsDialogTest,
+IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
                        ShowDialogMultipleTimes_DifferentTypes) {
   // Distinct dialogs should be created for different types.
   for (int i = 0; i < 100; ++i) {
-    DataControlsDialog::Show(
+    DesktopDataControlsDialog::Show(
         browser()->tab_strip_model()->GetActiveWebContents(),
         DataControlsDialog::Type::kClipboardCopyBlock);
-    DataControlsDialog::Show(
+    DesktopDataControlsDialog::Show(
         browser()->tab_strip_model()->GetActiveWebContents(),
         DataControlsDialog::Type::kClipboardPasteBlock);
-    DataControlsDialog::Show(
+    DesktopDataControlsDialog::Show(
         browser()->tab_strip_model()->GetActiveWebContents(),
         DataControlsDialog::Type::kClipboardPasteWarn);
-    DataControlsDialog::Show(
+    DesktopDataControlsDialog::Show(
         browser()->tab_strip_model()->GetActiveWebContents(),
         DataControlsDialog::Type::kClipboardCopyWarn);
   }
@@ -131,14 +132,16 @@ IN_PROC_BROWSER_TEST_F(DataControlsDialogTest,
   CloseDialogsAndWait();
 }
 
-IN_PROC_BROWSER_TEST_F(DataControlsDialogTest,
+IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
                        ShowDialogMultipleTimes_DifferentWebContents) {
   // Distinct dialogs should be created for different WebContents.
-  DataControlsDialog::Show(browser()->tab_strip_model()->GetActiveWebContents(),
-                           DataControlsDialog::Type::kClipboardCopyBlock);
+  DesktopDataControlsDialog::Show(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      DataControlsDialog::Type::kClipboardCopyBlock);
   chrome::NewTab(browser());
-  DataControlsDialog::Show(browser()->tab_strip_model()->GetActiveWebContents(),
-                           DataControlsDialog::Type::kClipboardCopyBlock);
+  DesktopDataControlsDialog::Show(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      DataControlsDialog::Type::kClipboardCopyBlock);
 
   ASSERT_EQ(constructor_called_count_, 2u);
   CloseDialogsAndWait();

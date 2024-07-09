@@ -2,30 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DATA_CONTROLS_DIALOG_TEST_HELPER_H_
-#define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DATA_CONTROLS_DIALOG_TEST_HELPER_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DESKTOP_DATA_CONTROLS_DIALOG_TEST_HELPER_H_
+#define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DESKTOP_DATA_CONTROLS_DIALOG_TEST_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 
 namespace data_controls {
 
-// Helper class to interact with a DataControlsDialog that might be shown during
-// a test.
-class DataControlsDialogTestHelper : public DataControlsDialog::TestObserver {
+// Helper class to interact with a DesktopDataControlsDialog that might be shown
+// during a test.
+class DesktopDataControlsDialogTestHelper
+    : public DesktopDataControlsDialog::TestObserver {
  public:
-  explicit DataControlsDialogTestHelper(
+  explicit DesktopDataControlsDialogTestHelper(
       DataControlsDialog::Type expected_dialog_type);
-  ~DataControlsDialogTestHelper();
+  ~DesktopDataControlsDialogTestHelper();
 
-  // DataControlsDialog::TestObserver:
-  void OnConstructed(DataControlsDialog* dialog) override;
-  void OnWidgetInitialized(DataControlsDialog* dialog) override;
-  void OnDestructed(DataControlsDialog* dialog) override;
+  // DesktopDataControlsDialog::TestObserver:
+  void OnConstructed(DesktopDataControlsDialog* dialog) override;
+  void OnWidgetInitialized(DesktopDataControlsDialog* dialog) override;
+  void OnDestructed(DesktopDataControlsDialog* dialog) override;
 
   // Returns null if no dialog is currently being shown.
-  DataControlsDialog* dialog();
+  DesktopDataControlsDialog* dialog();
 
   // Mimics the user pressing either of the available dialog buttons.
   void BypassWarning();
@@ -38,7 +39,7 @@ class DataControlsDialogTestHelper : public DataControlsDialog::TestObserver {
   void WaitForDialogToClose();
 
  private:
-  raw_ptr<DataControlsDialog> dialog_ = nullptr;
+  raw_ptr<DesktopDataControlsDialog> dialog_ = nullptr;
   DataControlsDialog::Type expected_dialog_type_;
 
   // Members used to track the dialog being initialized.
@@ -52,4 +53,4 @@ class DataControlsDialogTestHelper : public DataControlsDialog::TestObserver {
 
 }  // namespace data_controls
 
-#endif  // CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DATA_CONTROLS_DIALOG_TEST_HELPER_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DESKTOP_DATA_CONTROLS_DIALOG_TEST_HELPER_H_

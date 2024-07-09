@@ -12,8 +12,8 @@ source_set("data_controls") {
     "chrome_dlp_rules_manager.h",
     "chrome_rules_service.cc",
     "chrome_rules_service.h",
-    "data_controls_dialog.cc",
-    "data_controls_dialog.h",
+    "desktop_data_controls_dialog.cc",
+    "desktop_data_controls_dialog.h",
     "dlp_reporting_manager.cc",
     "dlp_reporting_manager.h",
     "reporting_service.cc",
@@ -60,8 +60,8 @@ source_set("data_controls") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "data_controls_dialog_test_helper.cc",
-    "data_controls_dialog_test_helper.h",
+    "desktop_data_controls_dialog_test_helper.cc",
+    "desktop_data_controls_dialog_test_helper.h",
     "dlp_reporting_manager_test_helper.cc",
     "dlp_reporting_manager_test_helper.h",
   ]

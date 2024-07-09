@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
-
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/enterprise/data_controls/data_controls_dialog_test_helper.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -549,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
                                      {"class": "CLIPBOARD", "level": "BLOCK"}
                                    ]
                                  })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
 
   content::BrowserTestClipboardScope test_clipboard_scope;
@@ -584,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
                                      {"class": "CLIPBOARD", "level": "WARN"}
                                    ]
                                  })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
   content::BrowserTestClipboardScope test_clipboard_scope;
@@ -619,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
                                      {"class": "CLIPBOARD", "level": "WARN"}
                                    ]
                                  })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
   content::BrowserTestClipboardScope test_clipboard_scope;

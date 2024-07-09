@@ -13,8 +13,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
-#include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
-#include "chrome/browser/enterprise/data_controls/data_controls_dialog_test_helper.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.ExpectNoReport();
 
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   // By making a new profile for this test, we ensure we can prevent pasting to
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   // By making a new profile for this test, we ensure we can prevent pasting to
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   // By making a new profile for this test, we ensure we can prevent pasting to
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   // By making a new profile for this test, we ensure we can prevent pasting to
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
 
   base::test::TestFuture<const ui::ClipboardFormatType&,
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
   base::test::TestFuture<const ui::ClipboardFormatType&,
@@ -922,7 +922,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
   base::test::TestFuture<const ui::ClipboardFormatType&,
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
   base::test::TestFuture<const ui::ClipboardFormatType&,
@@ -1079,7 +1079,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    ]
                                  })"},
                                  machine_scope());
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
   base::test::TestFuture<const ui::ClipboardFormatType&,

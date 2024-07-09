@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
-#include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "components/enterprise/common/files_scan_data.h"
@@ -331,14 +331,16 @@ void PasteIfAllowedByDataControls(
 
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     MaybeReportDataControlsPaste(source, destination, metadata, verdict);
-    data_controls::DataControlsDialog::Show(
+    // TODO(b/351342878): Replace this with a factory method call.
+    data_controls::DesktopDataControlsDialog::Show(
         destination.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
     std::move(callback).Run(std::nullopt);
     return;
   } else if (verdict.level() == data_controls::Rule::Level::kWarn) {
     MaybeReportDataControlsPaste(source, destination, metadata, verdict);
-    data_controls::DataControlsDialog::Show(
+    // TODO(b/351342878): Replace this with a factory method call.
+    data_controls::DesktopDataControlsDialog::Show(
         destination.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
         base::BindOnce(&OnDataControlsPasteWarning, source, destination,
@@ -447,7 +449,8 @@ void IsCopyRestrictedByDialog(
 
   if (source_only_verdict.level() == data_controls::Rule::Level::kBlock) {
     MaybeReportDataControlsCopy(source, metadata, source_only_verdict);
-    data_controls::DataControlsDialog::Show(
+    // TODO(b/351342878): Replace this with a factory method call.
+    data_controls::DesktopDataControlsDialog::Show(
         source.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
     return;
@@ -466,7 +469,8 @@ void IsCopyRestrictedByDialog(
     auto verdict = data_controls::Verdict::MergeCopyWarningVerdicts(
         std::move(source_only_verdict), std::move(os_clipboard_verdict));
     MaybeReportDataControlsCopy(source, metadata, verdict);
-    data_controls::DataControlsDialog::Show(
+    // TODO(b/351342878): Replace this with a factory method call.
+    data_controls::DesktopDataControlsDialog::Show(
         source.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
         base::BindOnce(&OnDataControlsCopyWarning, source, metadata, data,

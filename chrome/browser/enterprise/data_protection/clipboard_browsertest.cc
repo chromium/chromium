@@ -9,8 +9,8 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
-#include "chrome/browser/enterprise/data_controls/data_controls_dialog_test_helper.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                       {"class": "CLIPBOARD", "level": "BLOCK"}
                     ]
                   })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                       {"class": "CLIPBOARD", "level": "WARN"}
                     ]
                   })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                       {"class": "CLIPBOARD", "level": "WARN"}
                     ]
                   })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                       {"class": "CLIPBOARD", "level": "WARN"}
                     ]
                   })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                       {"class": "CLIPBOARD", "level": "BLOCK"}
                     ]
                   })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                       {"class": "CLIPBOARD", "level": "WARN"}
                     ]
                   })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                       {"class": "CLIPBOARD", "level": "WARN"}
                     ]
                   })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                       {"class": "CLIPBOARD", "level": "BLOCK"}
                     ]
                   })"});
-  data_controls::DataControlsDialogTestHelper helper(
+  data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));

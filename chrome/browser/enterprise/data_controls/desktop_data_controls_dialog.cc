@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -23,13 +23,15 @@ namespace {
 constexpr int kSpacingBetweenIconAndMessage = 8;
 constexpr int kBusinessIconSize = 16;
 
-DataControlsDialog::TestObserver* observer_for_testing_ = nullptr;
+DesktopDataControlsDialog::TestObserver* observer_for_testing_ = nullptr;
 
+// TODO(b/351342878): Move the current dialog tracking logic to
+// `DataControlsDialogFactory` once it exists.
 // Helper that keeps track of dialogs currently showing for given
 // WebContents-type pair.  These are used to determine if a call to
-// `DataControlsDialog::Show` is redundant or not. Keyed with `void*` instead of
-// `content::WebContents*` to avoid accidental bugs from dereferencing that
-// pointer.
+// `DesktopDataControlsDialog::Show` is redundant or not. Keyed with `void*`
+// instead of `content::WebContents*` to avoid accidental bugs from
+// dereferencing that pointer.
 std::map<std::pair<void*, DataControlsDialog::Type>, DataControlsDialog*>&
 CurrentDialogsStorage() {
   static std::map<std::pair<void*, DataControlsDialog::Type>,
@@ -49,16 +51,16 @@ DataControlsDialog* GetCurrentDialog(content::WebContents* web_contents,
 
 }  // namespace
 
-DataControlsDialog::TestObserver::TestObserver() {
-  DataControlsDialog::SetObserverForTesting(this);
+DesktopDataControlsDialog::TestObserver::TestObserver() {
+  DesktopDataControlsDialog::SetObserverForTesting(this);
 }
 
-DataControlsDialog::TestObserver::~TestObserver() {
-  DataControlsDialog::SetObserverForTesting(nullptr);
+DesktopDataControlsDialog::TestObserver::~TestObserver() {
+  DesktopDataControlsDialog::SetObserverForTesting(nullptr);
 }
 
 // static
-void DataControlsDialog::SetObserverForTesting(TestObserver* observer) {
+void DesktopDataControlsDialog::SetObserverForTesting(TestObserver* observer) {
   // These checks add safety that tests are only setting one observer at a time.
   if (observer_for_testing_) {
     DCHECK_EQ(observer, nullptr);
@@ -70,7 +72,7 @@ void DataControlsDialog::SetObserverForTesting(TestObserver* observer) {
 }
 
 // static
-void DataControlsDialog::Show(
+void DesktopDataControlsDialog::Show(
     content::WebContents* web_contents,
     Type type,
     base::OnceCallback<void(bool bypassed)> callback) {
@@ -81,17 +83,17 @@ void DataControlsDialog::Show(
   // it to the currently showing dialog.
   if (auto* dialog = GetCurrentDialog(web_contents, type)) {
     if (callback) {
-      dialog->callbacks_.push_back(std::move(callback));
+      dialog->AddCallback(std::move(callback));
     }
     return;
   }
 
   constrained_window::ShowWebModalDialogViews(
-      new DataControlsDialog(type, web_contents, std::move(callback)),
+      new DesktopDataControlsDialog(type, web_contents, std::move(callback)),
       web_contents);
 }
 
-DataControlsDialog::~DataControlsDialog() {
+DesktopDataControlsDialog::~DesktopDataControlsDialog() {
   CurrentDialogsStorage().erase({web_contents(), type_});
 
   if (observer_for_testing_) {
@@ -99,7 +101,9 @@ DataControlsDialog::~DataControlsDialog() {
   }
 }
 
-std::u16string DataControlsDialog::GetWindowTitle() const {
+std::u16string DesktopDataControlsDialog::GetWindowTitle() const {
+  // TODO(b/351342878): Move this title string selection logic to common code as
+  // needed.
   int id;
   switch (type_) {
     case Type::kClipboardPasteBlock:
@@ -121,7 +125,7 @@ std::u16string DataControlsDialog::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(id);
 }
 
-views::View* DataControlsDialog::GetContentsView() {
+views::View* DesktopDataControlsDialog::GetContentsView() {
   if (!contents_view_) {
     contents_view_ = new views::BoxLayoutView();  // Owned by caller
 
@@ -140,56 +144,56 @@ views::View* DataControlsDialog::GetContentsView() {
   return contents_view_;
 }
 
-views::Widget* DataControlsDialog::GetWidget() {
+views::Widget* DesktopDataControlsDialog::GetWidget() {
   return contents_view_->GetWidget();
 }
 
-ui::ModalType DataControlsDialog::GetModalType() const {
+ui::ModalType DesktopDataControlsDialog::GetModalType() const {
   return ui::MODAL_TYPE_CHILD;
 }
 
-bool DataControlsDialog::ShouldShowCloseButton() const {
+bool DesktopDataControlsDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-void DataControlsDialog::OnWidgetInitialized() {
+void DesktopDataControlsDialog::OnWidgetInitialized() {
   if (observer_for_testing_) {
     observer_for_testing_->OnWidgetInitialized(this);
   }
 }
 
-void DataControlsDialog::WebContentsDestroyed() {
+void DesktopDataControlsDialog::WebContentsDestroyed() {
   // If the WebContents the dialog is showing on gets destroyed, then the dialog
   // was neither bypassed or accepted so it should close without calling
-  // anything in `callbacks_`.
-  callbacks_.clear();
+  // any callback.
+  ClearCallbacks();
   AcceptDialog();
 }
 
-void DataControlsDialog::PrimaryPageChanged(content::Page& page) {
+void DesktopDataControlsDialog::PrimaryPageChanged(content::Page& page) {
   // If the primary page is changed, the triggered Data Controls rules that lead
   // to this current dialog showing are not necessarily still applicable. Data
   // shouldn't be allowed through since there might be higher severity rules
-  // that trigger on the new page, so `callbacks_` must be cleared before
-  // closing the dialog.
-  callbacks_.clear();
+  // that trigger on the new page, so callbacks must be cleared before closing
+  // the dialog.
+  ClearCallbacks();
   AcceptDialog();
 }
 
-DataControlsDialog::DataControlsDialog(
+DesktopDataControlsDialog::DesktopDataControlsDialog(
     Type type,
     content::WebContents* contents,
     base::OnceCallback<void(bool bypassed)> callback)
-    : content::WebContentsObserver(contents), type_(type) {
+    : DataControlsDialog(type, std::move(callback)),
+      content::WebContentsObserver(contents) {
   SetOwnedByWidget(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   CurrentDialogsStorage()[{web_contents(), type_}] = this;
-  if (callback) {
-    callbacks_.push_back(std::move(callback));
-  }
 
+  // TODO(b/351342878): Move shared logic for dialog button styling to
+  // `DataControlsDialog`.
   // For warning dialogs, "cancel" means "ignore the warning and bypass" and
   // "accept" means "accept the warning and stop copying/pasting".
   switch (type_) {
@@ -231,12 +235,14 @@ DataControlsDialog::DataControlsDialog(
   if (!callbacks_.empty()) {
     DCHECK(type_ == Type::kClipboardPasteWarn ||
            type_ == Type::kClipboardCopyWarn);
-    SetAcceptCallback(base::BindOnce(&DataControlsDialog::OnDialogButtonClicked,
-                                     base::Unretained(this),
-                                     /*bypassed=*/false));
-    SetCancelCallback(base::BindOnce(&DataControlsDialog::OnDialogButtonClicked,
-                                     base::Unretained(this),
-                                     /*bypassed=*/true));
+    SetAcceptCallback(
+        base::BindOnce(&DesktopDataControlsDialog::OnDialogButtonClicked,
+                       base::Unretained(this),
+                       /*bypassed=*/false));
+    SetCancelCallback(
+        base::BindOnce(&DesktopDataControlsDialog::OnDialogButtonClicked,
+                       base::Unretained(this),
+                       /*bypassed=*/true));
   }
 
   if (observer_for_testing_) {
@@ -244,7 +250,8 @@ DataControlsDialog::DataControlsDialog(
   }
 }
 
-std::unique_ptr<views::View> DataControlsDialog::CreateEnterpriseIcon() const {
+std::unique_ptr<views::View> DesktopDataControlsDialog::CreateEnterpriseIcon()
+    const {
   auto enterprise_icon = std::make_unique<views::ImageView>();
   enterprise_icon->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kBusinessIcon, ui::kColorSysOnSurfaceSubtle,
@@ -252,7 +259,7 @@ std::unique_ptr<views::View> DataControlsDialog::CreateEnterpriseIcon() const {
   return enterprise_icon;
 }
 
-std::unique_ptr<views::Label> DataControlsDialog::CreateMessage() const {
+std::unique_ptr<views::Label> DesktopDataControlsDialog::CreateMessage() const {
   int id;
   switch (type_) {
     case Type::kClipboardPasteBlock:
@@ -265,19 +272,6 @@ std::unique_ptr<views::Label> DataControlsDialog::CreateMessage() const {
       break;
   }
   return std::make_unique<views::Label>(l10n_util::GetStringUTF16(id));
-}
-
-DataControlsDialog::Type DataControlsDialog::type() const {
-  return type_;
-}
-
-void DataControlsDialog::OnDialogButtonClicked(bool bypassed) {
-  for (auto& callback : callbacks_) {
-    if (callback) {
-      std::move(callback).Run(bypassed);
-    }
-  }
-  callbacks_.clear();
 }
 
 }  // namespace data_controls
