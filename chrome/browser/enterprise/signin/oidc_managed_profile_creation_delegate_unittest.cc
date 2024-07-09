@@ -68,6 +68,7 @@ TEST_P(OidcManagedProfileCreationDelegateTest,
       entry->GetProfileManagementOidcTokens();
   EXPECT_EQ(kOAuthToken, oidc_tokens.auth_token);
   EXPECT_EQ(kIdToken, oidc_tokens.id_token);
+  EXPECT_EQ(base::UTF16ToUTF8(entry->GetGAIAName()), kSampleName);
 }
 
 TEST_P(OidcManagedProfileCreationDelegateTest, OnManagedProfileInitialized) {

@@ -42,9 +42,11 @@ enum class NameForm {
 struct ProfileManagementOicdTokens {
   std::string auth_token;
   std::string id_token;
+  std::u16string identity_name;
 
   bool operator==(const ProfileManagementOicdTokens& other) const {
-    return auth_token == other.auth_token && id_token == other.id_token;
+    return identity_name == other.identity_name &&
+           auth_token == other.auth_token && id_token == other.id_token;
   }
 };
 
@@ -98,6 +100,8 @@ class ProfileAttributesEntry {
   // results is the same in both cases (thus far).
   bool GetBackgroundStatus() const;
   // Gets the GAIA full name associated with this profile if it's signed in.
+  // If GAIA full name is empty, gets the full name from the 3P identity
+  // associated with this profile, currently only available for OIDC profiles.
   std::u16string GetGAIAName() const;
   // Gets the GAIA given name associated with this profile if it's signed in.
   std::u16string GetGAIAGivenName() const;

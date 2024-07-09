@@ -516,6 +516,8 @@ class OidcAuthenticationSigninInterceptorTest
               .GetProfileAttributesWithPath(added_profile_->GetPath());
 
       EXPECT_EQ(entry->GetProfileManagementOidcTokens(), oidc_tokens);
+      EXPECT_EQ(base::UTF16ToUTF8(entry->GetGAIAName()),
+                kExampleUserDisplayName);
       EXPECT_EQ(entry->GetProfileManagementId(),
                 base::StringPrintf(kUniqueIdentifierTemplate, issuer_id.c_str(),
                                    subject_id.c_str()));

@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/signin/oidc_managed_profile_creation_delegate.h"
 
 #include "base/check.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/prefs/pref_service.h"
@@ -47,7 +48,9 @@ void OidcManagedProfileCreationDelegate::SetManagedAttributesForProfile(
   CHECK(entry);
   if (!id_token_.empty() && !auth_token_.empty()) {
     entry->SetProfileManagementOidcTokens(ProfileManagementOicdTokens{
-        .auth_token = auth_token_, .id_token = id_token_});
+        .auth_token = auth_token_,
+        .id_token = id_token_,
+        .identity_name = base::UTF8ToUTF16(user_display_name_)});
     entry->SetDasherlessManagement(!dasher_based_);
   }
 }

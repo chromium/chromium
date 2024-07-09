@@ -346,9 +346,7 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
   // Unretained is fine because the profile creator is owned by this.
   profile_creator_ = std::make_unique<ManagedProfileCreator>(
       profile_, unique_user_identifier_,
-      (user_display_name_.empty())
-          ? profiles::GetDefaultNameForNewEnterpriseProfile()
-          : base::UTF8ToUTF16(user_display_name_),
+      profiles::GetDefaultNameForNewEnterpriseProfile(),
       std::make_unique<OidcManagedProfileCreationDelegate>(
           oidc_tokens_.auth_token, oidc_tokens_.id_token, dasher_based_,
           user_display_name_, user_email_),

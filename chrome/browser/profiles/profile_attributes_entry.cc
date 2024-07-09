@@ -51,6 +51,7 @@ const char kActiveTimeKey[] = "active_time";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
+const char kOIDCIdentityNameKey[] = "oidc_identity_name";
 const char kProfileManagementEnrollmentToken[] =
     "profile_management_enrollment_token";
 const char kDasherlessManagement[] = "dasherless_management";
@@ -374,7 +375,8 @@ bool ProfileAttributesEntry::GetBackgroundStatus() const {
 }
 
 std::u16string ProfileAttributesEntry::GetGAIAName() const {
-  return GetString16(kGAIANameKey);
+  std::u16string gaia_name = GetString16(kGAIANameKey);
+  return gaia_name.empty() ? GetString16(kOIDCIdentityNameKey) : gaia_name;
 }
 
 std::u16string ProfileAttributesEntry::GetGAIAGivenName() const {
@@ -775,6 +777,9 @@ void ProfileAttributesEntry::SetProfileManagementOidcTokens(
     const ProfileManagementOicdTokens& oidc_tokens) {
   CHECK(SetString(kProfileManagementOidcAuthToken, oidc_tokens.auth_token));
   CHECK(SetString(kProfileManagementOidcIdToken, oidc_tokens.id_token));
+  if (SetString16(kOIDCIdentityNameKey, oidc_tokens.identity_name)) {
+    profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
+  }
 }
 
 void ProfileAttributesEntry::SetProfileManagementId(const std::string& id) {
