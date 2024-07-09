@@ -5439,7 +5439,6 @@
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
                         "enable_price_tracking": "true",
-                        "price_tracking_with_optimization_guide": "true",
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
@@ -5484,7 +5483,6 @@
                     "params": {
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_tracking": "true",
-                        "price_tracking_with_optimization_guide": "true",
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
@@ -5497,7 +5495,6 @@
                     "params": {
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_tracking": "true",
-                        "price_tracking_with_optimization_guide": "true",
                         "use_cct": "false",
                         "use_root_bookmark_as_default": "true"
                     },
@@ -5513,7 +5510,6 @@
                         "autodismiss_enabled": "true",
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_tracking": "true",
-                        "price_tracking_with_optimization_guide": "true",
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
@@ -5529,7 +5525,6 @@
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
                         "enable_price_tracking": "true",
-                        "price_tracking_with_optimization_guide": "true",
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
@@ -5560,7 +5555,6 @@
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
                         "enable_price_tracking": "true",
-                        "price_tracking_with_optimization_guide": "true",
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
@@ -5579,7 +5573,6 @@
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
                         "enable_price_tracking": "true",
-                        "price_tracking_with_optimization_guide": "true",
                         "use_cct": "false",
                         "use_root_bookmark_as_default": "true"
                     },

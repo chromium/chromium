@@ -141,6 +141,7 @@ import org.chromium.url.GURL;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -717,22 +718,17 @@ public class ProcessInitializationHandler {
 
         tasks.add(
                 () -> {
-                    // OptimizationTypes which we give a guarantee will be registered when we pass
-                    // the onDeferredStartup() signal to OptimizationGuide.
-                    List<HintsProto.OptimizationType> registeredTypesAllowList = new ArrayList<>();
-                    registeredTypesAllowList.addAll(
-                            ShoppingPersistedTabData.getShoppingHintsToRegisterOnDeferredStartup(
-                                    profile));
                     OptimizationGuideBridge optimizationGuideBridge =
                             OptimizationGuideBridgeFactory.getForProfile(profile);
                     if (optimizationGuideBridge != null) {
-                        optimizationGuideBridge.registerOptimizationTypes(registeredTypesAllowList);
+                        // OptimizationTypes which we give a guarantee will be registered when we
+                        // pass the onDeferredStartup() signal to OptimizationGuide.
+                        optimizationGuideBridge.registerOptimizationTypes(
+                                Arrays.asList(HintsProto.OptimizationType.PRICE_TRACKING));
                         optimizationGuideBridge.onDeferredStartup();
                     }
                     // TODO(crbug.com/40236066) Move to PersistedTabData.onDeferredStartup
-                    if (PriceTrackingFeatures.isPriceTrackingEligible(profile)
-                            && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled(
-                                    profile)) {
+                    if (PriceTrackingFeatures.isPriceTrackingEligible(profile)) {
                         ShoppingPersistedTabData.onDeferredStartup();
                     }
                 });

@@ -91,8 +91,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
-                + "return_empty_price_drops_until_init/false"
+        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/false"
     })
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testDeferredStartup() {
@@ -128,8 +127,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
-                + "return_empty_price_drops_until_init/true"
+        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
     })
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testReturnEmptyPriceDropsUntilInit() {
@@ -180,11 +178,10 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
-                + "return_empty_price_drops_until_init/true"
-    })
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
+    @CommandLineFlags.Add({
+        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
+    })
     public void testSkipDelayedInitialization_NotSkip() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -209,11 +206,10 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
-                + "return_empty_price_drops_until_init/true"
-    })
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
+    @CommandLineFlags.Add({
+        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
+    })
     public void testSkipDelayedInitialization_Skip() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -245,11 +241,10 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
-                + "return_empty_price_drops_until_init/true"
-    })
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
+    @CommandLineFlags.Add({
+        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
+    })
     public void testSkipDelayedInitialization_SkipForNullTab() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -273,11 +268,10 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
-                + "return_empty_price_drops_until_init/true"
-    })
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
+    @CommandLineFlags.Add({
+        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
+    })
     public void testSkipDelayedInitialization_SkipForDestroyedTab() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,

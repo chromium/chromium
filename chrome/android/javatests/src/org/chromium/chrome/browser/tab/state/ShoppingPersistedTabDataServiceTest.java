@@ -210,8 +210,7 @@ public class ShoppingPersistedTabDataServiceTest {
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
-                + "return_empty_price_drops_until_init/false"
+        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/false"
     })
     public void testGetAllShoppingPersistedTabDataWithPriceDrop() throws TimeoutException {
         // tab1 is not eligible as there is no price drop.

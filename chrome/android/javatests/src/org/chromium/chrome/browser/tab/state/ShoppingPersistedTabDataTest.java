@@ -215,8 +215,7 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400/"
-                + "price_tracking_with_optimization_guide/true"
+        "force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400"
     })
     public void test2DayTabWithStaleOverride1day() {
         MockTab tab =
@@ -240,8 +239,7 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400/"
-                + "price_tracking_with_optimization_guide/true"
+        "force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400"
     })
     public void testHalfDayTabWithStaleOverride1day() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
@@ -406,9 +404,6 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testNewUrlResetSPTD() {
         Tab tab =
                 ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
@@ -446,9 +441,6 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testDontResetSPTDOnRefresh() {
         MockTab tab =
                 ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
@@ -489,9 +481,6 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testOmniBoxSearchResetSPTD() {
         Tab tab =
                 ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
@@ -525,9 +514,6 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testSPTDSavingEnabledUponSuccessfulProductUpdateResponse() {
         final Semaphore semaphore = new Semaphore(0);
         Tab tab =
@@ -553,9 +539,6 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testSPTDNullUponUnsuccessfulResponse() {
         final Semaphore semaphore = new Semaphore(0);
         MockTab tab =
@@ -639,9 +622,6 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testOptimizationGuideNavigationIntegration() {
         Tab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
@@ -658,9 +638,6 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testOptGuidePrefetching() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseAsync(
@@ -695,9 +672,6 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testOptGuidePrefetchingNoResponse() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseAsync(
@@ -727,9 +701,6 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testOptGuidePrefetchingUnparseable() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseAsync(
@@ -760,9 +731,6 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testPriceDropURLTabURLMisMatch() {
         MockTab tab =
                 ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
@@ -821,9 +789,6 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testTabDestroyedSupplier() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -867,9 +832,6 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testTabDestroyed1() {
         final Semaphore semaphore = new Semaphore(0);
         MockTab tab = getDefaultTab();
@@ -899,9 +861,6 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testTabDestroyed2() {
         final Semaphore semaphore = new Semaphore(0);
         MockTab tab = getDefaultTab();
@@ -924,9 +883,6 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testTabDestroyed3() {
         final Semaphore semaphore0 = new Semaphore(0);
         MockTab tab = getDefaultTab();
@@ -968,9 +924,6 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testTabDestroyed4() {
         final Semaphore semaphore0 = new Semaphore(0);
         MockTab tab = getDefaultTab();
@@ -1013,9 +966,6 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
     public void testCheckPriceDropUrlForUpdateWhenItExists() {
         final Semaphore semaphore = new Semaphore(0);
         MockTab tab = getDefaultTab();
@@ -1170,10 +1120,7 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"
-                + "/price_tracking_with_optimization_guide/true"
-    })
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"})
     public void testIsCurrentPriceDropSeen_PriceChange() throws TimeoutException {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -1214,10 +1161,7 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"
-                + "/price_tracking_with_optimization_guide/true"
-    })
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"})
     public void testIsCurrentPriceDropSeen_CurrencyChange() throws TimeoutException {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -1258,10 +1202,7 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"
-                + "/price_tracking_with_optimization_guide/true"
-    })
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"})
     public void testIsCurrentPriceDropSeen_NoPriceChange() throws TimeoutException {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,

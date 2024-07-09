@@ -15,7 +15,6 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
-#import "components/commerce/core/commerce_feature_list.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
@@ -62,8 +61,6 @@ const char kDraggedUrl[] = "https://dragged_url.com";
 // mediator.
 enum GridMediatorType { TEST_REGULAR_MEDIATOR, TEST_INCOGNITO_MEDIATOR };
 
-const char kPriceTrackingWithOptimizationGuideParam[] =
-    "price_tracking_with_optimization_guide";
 const char kHasPriceDropUserAction[] = "Commerce.TabGridSwitched.HasPriceDrop";
 const char kHasNoPriceDropUserAction[] = "Commerce.TabGridSwitched.NoPriceDrop";
 
@@ -112,12 +109,6 @@ class BaseGridMediatorTest
 class BaseGridMediatorWithPriceDropIndicatorsTest
     : public BaseGridMediatorTest {
  protected:
-  void InitializeFeatureFlags() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{commerce::kCommercePriceTracking,
-          {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
-        {});
-  }
 
   void SetFakePriceDrop(web::WebState* web_state) {
     ShoppingPersistedDataTabHelper::PriceDrop price_drop;

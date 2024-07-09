@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -64,8 +63,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             "price_tracking_stale_tab_threshold_seconds";
     private static final String TIME_TO_LIVE_MS_PARAM = "price_tracking_time_to_live_ms";
     private static final String DISPLAY_TIME_MS_PARAM = "price_tracking_display_time_ms";
-    private static final String PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM =
-            "price_tracking_with_optimization_guide";
     private static final String RETURN_EMPTY_PRICE_DROPS_UNTIL_INIT_PARAM =
             "return_empty_price_drops_until_init";
     private static final String CHECK_IF_PRICE_DROP_IS_SEEN_PARAM = "check_if_price_drop_is_seen";
@@ -114,18 +111,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         static {
             List<HintsProto.OptimizationType> optimizationTypes;
             Profile profile = ProfileManager.getLastUsedRegularProfile();
-            if (isPriceTrackingWithOptimizationGuideEnabled(profile)) {
-                optimizationTypes =
-                        Arrays.asList(
-                                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
-                                HintsProto.OptimizationType.PRICE_TRACKING);
-            } else {
-                optimizationTypes =
-                        Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR);
-            }
             sOptimizationGuideBridge = OptimizationGuideBridgeFactory.getForProfile(profile);
             if (sOptimizationGuideBridge != null) {
-                sOptimizationGuideBridge.registerOptimizationTypes(optimizationTypes);
+                sOptimizationGuideBridge.registerOptimizationTypes(
+                        Arrays.asList(
+                                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
+                                HintsProto.OptimizationType.PRICE_TRACKING));
             }
         }
     }
@@ -376,10 +367,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                             resetPriceData();
                         }
 
-                        if (isPriceTrackingWithOptimizationGuideEnabled(
-                                ProfileManager.getLastUsedRegularProfile())) {
-                            prefetchOnNewNavigation(tab, navigationHandle);
-                        }
+                        prefetchOnNewNavigation(tab, navigationHandle);
                     }
                 };
         tab.addObserver(mUrlUpdatedObserver);
@@ -1064,22 +1052,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     /**
-     * @return true is acquiring pricing data using OptimizationGuide is enabled.
-     */
-    public static boolean isPriceTrackingWithOptimizationGuideEnabled(Profile profile) {
-        if (sPriceTrackingWithOptimizationGuideForTesting) {
-            return true;
-        }
-        if (FeatureList.isInitialized()) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM,
-                    PriceTrackingFeatures.isPriceTrackingEnabled(profile));
-        }
-        return PriceTrackingFeatures.isPriceTrackingEnabled(profile);
-    }
-
-    /**
      * @return true if checking if a price drop is spotted is enabled.
      */
     public static boolean isCheckIfPriceDropIsSeenEnabled() {
@@ -1174,17 +1146,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     shoppingDataRequest.callback.onResult(res);
                     processNextItemOnQueue();
                 });
-    }
-
-    /**
-     * @return a list of Shopping Hints needed to be registered on deferred startup
-     */
-    public static List<HintsProto.OptimizationType> getShoppingHintsToRegisterOnDeferredStartup(
-            Profile profile) {
-        if (ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled(profile)) {
-            return Arrays.asList(HintsProto.OptimizationType.PRICE_TRACKING);
-        }
-        return Arrays.asList();
     }
 
     private static ShoppingPersistedTabData getEmptyShoppingPersistedTabData(Tab tab) {

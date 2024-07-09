@@ -29,29 +29,17 @@ BASE_DECLARE_FEATURE(kCommercePriceTrackingRegionLaunched);
 
 // Price tracking variations for Android.
 constexpr flags_ui::FeatureEntry::FeatureParam
-    kCommercePriceTracking_PriceAlerts[] = {
-        {"enable_price_tracking", "true"},
-        {"price_tracking_with_optimization_guide", "false"}};
-
-constexpr flags_ui::FeatureEntry::FeatureParam
-    kCommercePriceTracking_PriceAlerts_WithOptimizationGuide[] = {
-        {"enable_price_tracking", "true"},
-        {"price_tracking_with_optimization_guide", "true"}};
+    kCommercePriceTracking_PriceAlerts[] = {{"enable_price_tracking", "true"}};
 
 constexpr flags_ui::FeatureEntry::FeatureParam
     kCommercePriceTracking_PriceNotifications[] = {
         {"enable_price_tracking", "true"},
-        {"price_tracking_with_optimization_guide", "true"},
         {"enable_price_notification", "true"}};
 
 constexpr flags_ui::FeatureEntry::FeatureVariation
     kCommercePriceTrackingAndroidVariations[] = {
         {"Price alerts", kCommercePriceTracking_PriceAlerts,
          std::size(kCommercePriceTracking_PriceAlerts), nullptr},
-        {"Price alerts with OptimizationGuide",
-         kCommercePriceTracking_PriceAlerts_WithOptimizationGuide,
-         std::size(kCommercePriceTracking_PriceAlerts_WithOptimizationGuide),
-         nullptr},
         {"Price notifications", kCommercePriceTracking_PriceNotifications,
          std::size(kCommercePriceTracking_PriceNotifications), nullptr},
 };
