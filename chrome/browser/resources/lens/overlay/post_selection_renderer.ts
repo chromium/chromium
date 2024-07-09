@@ -14,7 +14,7 @@ import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import {getTemplate} from './post_selection_renderer.html.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
-import {toPercent} from './values_converter.js';
+import {toPercent, toPixels} from './values_converter.js';
 
 // Bounding box send to PostSelectionRendererElement to render a bounding box.
 // The numbers should be normalized to the image dimensions, between 0 and 1
@@ -37,10 +37,17 @@ enum DragTarget {
 // The amount of pixels around the edge leave as a buffer so user can't drag too
 // far. Exported for testing.
 export const PERIMETER_SELECTION_PADDING_PX = 4;
-
-// The value for the corner length when the animation finishes and the box is
-// in a resting state. Exported for testing.
-export const RESTING_CORNER_LENGTH_PX = 22;
+// The maximum length of a corner. Exported for testing.
+export const MAX_CORNER_LENGTH_PX = 22;
+// The maximum radius of a corner. Exported for testing.
+export const MAX_CORNER_RADIUS_PX = 14;
+// Cutout radius used with larger corner radii. Exported for testing.
+export const CUTOUT_RADIUS_PX = 5;
+// A cutout radius will only be used when the corner radius is above this
+// threshold.
+const CUTOUT_RADIUS_THRESHOLD_PX = 12;
+// Minimum box size allowed. Exported for testing.
+export const MIN_BOX_SIZE_PX = 12;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -50,6 +57,12 @@ export interface PostSelectionRendererElement {
   $: {
     postSelection: HTMLElement,
   };
+}
+
+interface CornerDimensions {
+  length: number;
+  radius: number;
+  cutoutRadius: number;
 }
 
 /*
@@ -157,8 +170,8 @@ export class PostSelectionRendererElement extends PolymerElement {
     const imageBounds = this.getBoundingClientRect();
     const normalizedX = (event.clientX - imageBounds.left) / imageBounds.width;
     const normalizedY = (event.clientY - imageBounds.top) / imageBounds.height;
-    const normalizedMinBoxWidth = this.getMinBoxSize() / imageBounds.width;
-    const normalizedMinBoxHeight = this.getMinBoxSize() / imageBounds.height;
+    const normalizedMinBoxWidth = MIN_BOX_SIZE_PX / imageBounds.width;
+    const normalizedMinBoxHeight = MIN_BOX_SIZE_PX / imageBounds.height;
     const normalizedPerimeterPaddingWidth =
         PERIMETER_SELECTION_PADDING_PX / imageBounds.width;
     const normalizedPerimeterPaddingHeight =
@@ -282,6 +295,19 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.style.setProperty('--selection-top', toPercent(this.top));
     this.style.setProperty('--selection-left', toPercent(this.left));
 
+    const cornerDimensions = this.getCornerDimensions();
+    this.style.setProperty(
+        '--post-selection-corner-horizontal-length',
+        toPixels(cornerDimensions.length));
+    this.style.setProperty(
+        '--post-selection-corner-vertical-length',
+        toPixels(cornerDimensions.length));
+    this.style.setProperty(
+        '--post-selection-corner-radius', toPixels(cornerDimensions.radius));
+    this.style.setProperty(
+        '--post-selection-cutout-corner-radius',
+        toPixels(cornerDimensions.cutoutRadius));
+
     // Focus the shimmer on the new post selection region.
     focusShimmerOnRegion(
         this, this.top, this.left, this.width, this.height,
@@ -292,6 +318,7 @@ export class PostSelectionRendererElement extends PolymerElement {
 
   private triggerNewBoxAnimation() {
     const parentBoundingRect = this.getBoundingClientRect();
+    const cornerDimensions = this.getCornerDimensions();
     this.animate(
         [
           {
@@ -302,9 +329,9 @@ export class PostSelectionRendererElement extends PolymerElement {
           },
           {
             [`--post-selection-corner-horizontal-length`]:
-                `${RESTING_CORNER_LENGTH_PX}px`,
+                `${cornerDimensions.length}px`,
             [`--post-selection-corner-vertical-length`]:
-                `${RESTING_CORNER_LENGTH_PX}px`,
+                `${cornerDimensions.length}px`,
           },
         ],
         {
@@ -324,6 +351,19 @@ export class PostSelectionRendererElement extends PolymerElement {
         height: this.height,
       },
     }));
+  }
+
+  private getCornerDimensions(): CornerDimensions {
+    const imageBounds = this.getBoundingClientRect();
+    const shortestSide = Math.min(
+        this.width * imageBounds.width, this.height * imageBounds.height);
+    const length = Math.min(shortestSide / 2, MAX_CORNER_LENGTH_PX);
+    const radius = Math.min(shortestSide / 3, MAX_CORNER_RADIUS_PX);
+    // Do not use a cutout radius at small radii to prevent gaps.
+    const cutoutRadius =
+        radius > CUTOUT_RADIUS_THRESHOLD_PX ? CUTOUT_RADIUS_PX : 0;
+
+    return {length, radius, cutoutRadius};
   }
 
   // Returns if the current bounds are being updated.
@@ -390,11 +430,6 @@ export class PostSelectionRendererElement extends PolymerElement {
   private hasSelection(): boolean {
     return this.width > 0 && this.height > 0;
   }
-
-  // Gets the minimum size the selected region can be. Public for testing.
-  private getMinBoxSize(): number {
-    return RESTING_CORNER_LENGTH_PX * 2;
-  }
 }
 
 declare global {
@@ -432,5 +467,5 @@ CSS.registerProperty({
   name: '--post-selection-corner-radius',
   syntax: '<length>',
   inherits: true,
-  initialValue: '12px',
+  initialValue: '14px',
 });
