@@ -29,6 +29,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -1716,6 +1717,53 @@ TEST_F(GameDashboardContextTest, UIVisibilityWithWindowSnapAnimation) {
   ASSERT_TRUE(WindowState::Get(game_window_.get())->IsSnapped());
 }
 
+// Verifies that during a float animation, the Game Dashboard and toolbar
+// widgets are not visible.
+TEST_F(GameDashboardContextTest, UIVisibilityWithWindowFloatAnimation) {
+  // Do not short-circuit animations in this test.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  // Extract animation layer.
+  ui::LayerAnimator* animator = game_window_->layer()->GetAnimator();
+
+  // Prevent animation from automatically running.
+  animator->set_disable_timer_for_test(true);
+
+  const auto* game_dashboard_button_widget =
+      test_api_->GetGameDashboardButtonWidget();
+  ASSERT_TRUE(game_dashboard_button_widget);
+  ASSERT_TRUE(game_dashboard_button_widget->IsVisible());
+
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+
+  // Trigger the float animation.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+
+  // Ensure that the animation is occurring.
+  ASSERT_TRUE(animator->is_animating());
+
+  // Manually take a step through the animation.
+  animator->Step(animator->last_step_time() + base::Milliseconds(10));
+
+  // Verify that the widgets are not visible.
+  ASSERT_FALSE(game_dashboard_button_widget->IsVisible());
+  ASSERT_FALSE(test_api_->GetToolbarWidget()->IsVisible());
+
+  // Run the animation to completion.
+  ShellTestApi().WaitForWindowFinishAnimating(game_window_.get());
+
+  // Ensure that the widgets are visible at the conclusion of the animation.
+  EXPECT_TRUE(game_dashboard_button_widget->IsVisible());
+  ASSERT_TRUE(test_api_->GetToolbarWidget()->IsVisible());
+
+  ASSERT_TRUE(WindowState::Get(game_window_.get())->IsFloated());
+}
+
 // Verifies that at startup and with the welcome dialog is visible, opening
 // the main menu dismisses the welcome dialog and shows the toolbar.
 TEST_F(GameDashboardContextTest, MainMenuAndToolbarAndWelcomeDialogStartup) {
@@ -2789,7 +2837,7 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewModeWithTabletMode) {
   test_api_->OpenTheToolbar();
   const auto* overview_controller = OverviewController::Get();
 
-  // 1. Clamshell -> overrview -> tablet-> exit overview.
+  // 1. Clamshell -> overview -> tablet-> exit overview.
   ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EnterOverview();
   ASSERT_TRUE(overview_controller->InOverviewSession());

@@ -211,6 +211,20 @@ void GameDashboardController::OnWindowDestroying(aura::Window* window) {
   game_window_contexts_.erase(window);
 }
 
+void GameDashboardController::OnWindowTransformed(
+    aura::Window* window,
+    ui::PropertyChangeReason reason) {
+  if (auto* context = GetGameDashboardContext(window);
+      context && game_dashboard_utils::ShouldEnableFeatures()) {
+    // Enable the features if the window is not minimized or undergoing an
+    // animation. Otherwise, disable them.
+    const bool enable = (reason == ui::PropertyChangeReason::FROM_ANIMATION) &&
+                        !(WindowState::Get(window)->IsMinimized());
+    context->EnableFeatures(enable,
+                            GameDashboardMainMenuToggleMethod::kAnimation);
+  }
+}
+
 void GameDashboardController::OnRecordingStarted(aura::Window* current_root) {
   // Update any needed game dashboard UIs if and only if this recording started
   // from a request by a game dashboard entry point.

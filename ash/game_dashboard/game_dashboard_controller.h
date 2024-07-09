@@ -103,6 +103,8 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowTransformed(aura::Window* window,
+                           ui::PropertyChangeReason reason) override;
 
   // CaptureModeObserver:
   void OnRecordingStarted(aura::Window* current_root) override;
