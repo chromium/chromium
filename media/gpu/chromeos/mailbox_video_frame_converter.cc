@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -629,7 +630,7 @@ void MailboxVideoFrameConverter::UnregisterSharedImage(
   DVLOGF(4);
 
   auto it = shared_images_.find(origin_frame_id);
-  DCHECK(it != shared_images_.end());
+  CHECK(it != shared_images_.end(), base::NotFatalUntil::M130);
   DCHECK(it->second == scoped_shared_image.get());
   shared_images_.erase(it);
 }

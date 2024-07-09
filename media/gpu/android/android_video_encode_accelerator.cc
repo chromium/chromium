@@ -14,6 +14,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -475,7 +476,7 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
   }
 
   const auto it = frame_timestamp_map_.find(presentaion_timestamp);
-  DCHECK(it != frame_timestamp_map_.end());
+  CHECK(it != frame_timestamp_map_.end(), base::NotFatalUntil::M130);
   const base::TimeDelta frame_timestamp = it->second;
   frame_timestamp_map_.erase(it);
 

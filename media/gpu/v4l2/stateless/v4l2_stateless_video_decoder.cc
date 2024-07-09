@@ -4,6 +4,8 @@
 
 #include "media/gpu/v4l2/stateless/v4l2_stateless_video_decoder.h"
 
+#include "base/not_fatal_until.h"
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/v4l2/stateless/av1_delegate.h"
 #endif
@@ -538,7 +540,7 @@ void V4L2StatelessVideoDecoder::SurfaceReady(
   // with the frame. This is an ugly way to push the timestamp into a cache
   // when it first comes in, then pull it out here.
   const auto it = bitstream_id_to_timestamp_.Peek(bitstream_id);
-  DCHECK(it != bitstream_id_to_timestamp_.end());
+  CHECK(it != bitstream_id_to_timestamp_.end(), base::NotFatalUntil::M130);
   dec_surface->SetVideoFrameTimestamp(it->second);
 
   // push and let the dequeue handle frame output.

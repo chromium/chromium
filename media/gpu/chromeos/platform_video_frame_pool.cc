@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -344,7 +345,7 @@ void PlatformVideoFramePool::OnFrameReleased(
 
   gfx::GenericSharedMemoryId frame_id = origin_frame->GetSharedMemoryId();
   auto it = frames_in_use_.find(frame_id);
-  DCHECK(it != frames_in_use_.end());
+  CHECK(it != frames_in_use_.end(), base::NotFatalUntil::M130);
   frames_in_use_.erase(it);
 
   if (IsSameFormat_Locked(origin_frame->format(), origin_frame->coded_size(),

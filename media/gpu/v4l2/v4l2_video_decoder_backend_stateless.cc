@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/sequenced_task_runner.h"
@@ -350,7 +351,7 @@ void V4L2StatelessVideoDecoderBackend::SurfaceReady(
   // produces multiple surfaces with the same |bitstream_id|, so we shouldn't
   // remove the timestamp from the cache.
   const auto it = bitstream_id_to_timestamp_.Peek(bitstream_id);
-  DCHECK(it != bitstream_id_to_timestamp_.end());
+  CHECK(it != bitstream_id_to_timestamp_.end(), base::NotFatalUntil::M130);
   base::TimeDelta timestamp = it->second;
 
   dec_surface->SetVisibleRect(visible_rect);

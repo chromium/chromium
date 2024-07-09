@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/cast/cast_environment.h"
@@ -132,7 +133,7 @@ void LogEventDispatcher::Impl::Subscribe(RawEventSubscriber* subscriber) {
 
 void LogEventDispatcher::Impl::Unsubscribe(RawEventSubscriber* subscriber) {
   const auto it = base::ranges::find(subscribers_, subscriber);
-  DCHECK(it != subscribers_.end());
+  CHECK(it != subscribers_.end(), base::NotFatalUntil::M130);
   subscribers_.erase(it);
 }
 

@@ -13,6 +13,7 @@
 #include <sys/mman.h>
 
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
@@ -1467,7 +1468,7 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
   }
 
   auto it = queued_buffers_.find(v4l2_buffer.index);
-  DCHECK(it != queued_buffers_.end());
+  CHECK(it != queued_buffers_.end(), base::NotFatalUntil::M130);
   scoped_refptr<FrameResource> queued_frame = std::move(it->second);
   queued_buffers_.erase(it);
 

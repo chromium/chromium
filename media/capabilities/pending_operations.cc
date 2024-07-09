@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace media {
@@ -102,7 +103,7 @@ void PendingOperations::Complete(Id op_id) {
 void PendingOperations::OnTimeout(Id op_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = pending_ops_.find(op_id);
-  DCHECK(it != pending_ops_.end());
+  CHECK(it != pending_ops_.end(), base::NotFatalUntil::M130);
 
   it->second->OnTimeout();
   pending_ops_.erase(it);

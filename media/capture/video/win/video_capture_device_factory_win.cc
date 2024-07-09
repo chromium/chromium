@@ -31,6 +31,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
@@ -974,7 +975,7 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP(
                                 std::move(result_callback)));
 
   auto it = async_ops_.find(operation);
-  DCHECK(it != async_ops_.end());
+  CHECK(it != async_ops_.end(), base::NotFatalUntil::M130);
   (*it)->Release();
   async_ops_.erase(it);
 }

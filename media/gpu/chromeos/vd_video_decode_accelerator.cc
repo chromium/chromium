@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -634,7 +635,7 @@ void VdVideoDecodeAccelerator::OnFrameReleased(
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   auto it = frame_id_to_picture_id_.find(origin_frame->GetSharedMemoryId());
-  DCHECK(it != frame_id_to_picture_id_.end());
+  CHECK(it != frame_id_to_picture_id_.end(), base::NotFatalUntil::M130);
   int32_t picture_buffer_id = it->second;
   frame_id_to_picture_id_.erase(it);
 

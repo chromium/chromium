@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/threading/thread_checker.h"
 
 namespace media {
@@ -79,7 +80,7 @@ AudioDebugRecordingManager::RegisterDebugRecordingSource(
 void AudioDebugRecordingManager::UnregisterDebugRecordingSource(uint32_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = debug_recording_helpers_.find(id);
-  DCHECK(it != debug_recording_helpers_.end());
+  CHECK(it != debug_recording_helpers_.end(), base::NotFatalUntil::M130);
   debug_recording_helpers_.erase(id);
 }
 

@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -549,7 +550,7 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
   // produces multiple surfaces with the same |buffer_id|, so we shouldn't
   // remove the timestamp from the cache.
   const auto it = buffer_id_to_timestamp_.Peek(buffer_id);
-  DCHECK(it != buffer_id_to_timestamp_.end());
+  CHECK(it != buffer_id_to_timestamp_.end(), base::NotFatalUntil::M130);
   base::TimeDelta timestamp = it->second;
 
   // Find the frame associated with the surface. We won't erase it from

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/cast/logging/proto/proto_utils.h"
 
@@ -327,7 +328,7 @@ void EncodingEventSubscriber::IncrementStoredProtoCount(
 void EncodingEventSubscriber::DecrementStoredProtoCount(
     uint32_t relative_rtp_timestamp_lower_32_bits) {
   auto it = stored_proto_counts_.find(relative_rtp_timestamp_lower_32_bits);
-  DCHECK(it != stored_proto_counts_.end())
+  CHECK(it != stored_proto_counts_.end(), base::NotFatalUntil::M130)
       << "no event protos for " << relative_rtp_timestamp_lower_32_bits;
   if (it->second > 1)
     it->second--;

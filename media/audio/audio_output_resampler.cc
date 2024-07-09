@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -437,7 +438,7 @@ void AudioOutputResampler::StopStream(AudioOutputProxy* stream_proxy) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
 
   auto it = callbacks_.find(stream_proxy);
-  DCHECK(it != callbacks_.end());
+  CHECK(it != callbacks_.end(), base::NotFatalUntil::M130);
   StopStreamInternal(*it);
 }
 
