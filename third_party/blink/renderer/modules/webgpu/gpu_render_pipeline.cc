@@ -59,6 +59,21 @@ wgpu::BlendState AsDawnType(const GPUBlendState* webgpu_desc) {
   return dawn_desc;
 }
 
+bool ValidateBlendComponent(GPUDevice* device,
+                            const GPUBlendComponent* webgpu_desc,
+                            ExceptionState& exception_state) {
+  DCHECK(webgpu_desc);
+
+  return device->ValidateBlendFactor(
+             webgpu_desc->getSrcFactorOr(
+                 V8GPUBlendFactor(V8GPUBlendFactor::Enum::kOne)),
+             exception_state) &&
+         device->ValidateBlendFactor(
+             webgpu_desc->getDstFactorOr(
+                 V8GPUBlendFactor(V8GPUBlendFactor::Enum::kZero)),
+             exception_state);
+}
+
 }  // anonymous namespace
 
 wgpu::ColorTargetState AsDawnType(const GPUColorTargetState* webgpu_desc) {
@@ -310,6 +325,14 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
         device->AddConsoleWarning(String::Format(
             kGPUBlendComponentPartiallySpecifiedMessage, i, "alpha"));
       }
+
+      if (!ValidateBlendComponent(device, blend_state->color(),
+                                  exception_state) ||
+          !ValidateBlendComponent(device, blend_state->alpha(),
+                                  exception_state)) {
+        return;
+      }
+
       dawn_fragment->blend_states[i] = AsDawnType(blend_state);
       dawn_fragment->targets[i].blend = &dawn_fragment->blend_states[i];
     }

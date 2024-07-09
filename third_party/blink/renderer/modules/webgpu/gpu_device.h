@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_blend_factor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -198,6 +199,9 @@ class GPUDevice final : public EventTarget,
 
   bool ValidateTextureFormatUsage(V8GPUTextureFormat format,
                                   ExceptionState& exception_state);
+  bool ValidateBlendFactor(V8GPUBlendFactor blend_factor,
+                           ExceptionState& exception_state);
+
   std::string formattedLabel() const;
 
   // Store the buffer in a weak hash set so we can unmap it when the

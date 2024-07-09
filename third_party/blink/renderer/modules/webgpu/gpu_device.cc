@@ -119,6 +119,19 @@ std::optional<V8GPUFeatureName::Enum> RequiredFeatureForTextureFormat(
   }
 }
 
+std::optional<V8GPUFeatureName::Enum> RequiredFeatureForBlendFactor(
+    V8GPUBlendFactor::Enum blend_factor) {
+  switch (blend_factor) {
+    case V8GPUBlendFactor::Enum::kSrc1:
+    case V8GPUBlendFactor::Enum::kOneMinusSrc1:
+    case V8GPUBlendFactor::Enum::kSrc1Alpha:
+    case V8GPUBlendFactor::Enum::kOneMinusSrc1Alpha:
+      return V8GPUFeatureName::Enum::kDualSourceBlending;
+    default:
+      return std::nullopt;
+  }
+}
+
 }  // anonymous namespace
 
 GPUDevice::GPUDevice(ExecutionContext* execution_context,
@@ -275,6 +288,33 @@ std::string GPUDevice::formattedLabel() const {
   return deviceLabel;
 }
 
+// Validates that any features required for the given blend factor are enabled
+// for this device. If not, throw a TypeError to ensure consistency with
+// browsers that haven't yet implemented the feature.
+bool GPUDevice::ValidateBlendFactor(V8GPUBlendFactor blend_factor,
+                                    ExceptionState& exception_state) {
+  auto requiredFeatureOptional =
+      RequiredFeatureForBlendFactor(blend_factor.AsEnum());
+
+  if (!requiredFeatureOptional) {
+    return true;
+  }
+
+  V8GPUFeatureName::Enum requiredFeatureEnum = requiredFeatureOptional.value();
+
+  if (features_->has(requiredFeatureEnum)) {
+    return true;
+  }
+
+  V8GPUFeatureName requiredFeature = V8GPUFeatureName(requiredFeatureEnum);
+
+  exception_state.ThrowTypeError(
+      String::Format("Use of the '%s' blend factor requires the '%s' feature "
+                     "to be enabled on %s.",
+                     blend_factor.AsCStr(), requiredFeature.AsCStr(),
+                     formattedLabel().c_str()));
+  return false;
+}
 
 void GPUDevice::OnLogging(WGPULoggingType cLoggingType, const char* message) {
   wgpu::LoggingType loggingType = static_cast<wgpu::LoggingType>(cLoggingType);
