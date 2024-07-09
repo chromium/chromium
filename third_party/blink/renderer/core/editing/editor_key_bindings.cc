@@ -88,11 +88,12 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
   if (auto* edit_context =
           GetFrame().GetInputMethodController().GetActiveEditContext()) {
     if (DispatchBeforeInputInsertText(evt->target()->ToNode(),
-                                      key_event->text) !=
-        DispatchEventResult::kNotCanceled)
+                                      key_event->text.data()) !=
+        DispatchEventResult::kNotCanceled) {
       return true;
+    }
 
-    WebString text(WTF::String(key_event->text));
+    WebString text(WTF::String(key_event->text.data()));
     edit_context->InsertText(text);
     return true;
   }
@@ -112,11 +113,13 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
     return false;
 
   // Return true to prevent default action. e.g. Space key scroll.
-  if (DispatchBeforeInputInsertText(evt->target()->ToNode(), key_event->text) !=
-      DispatchEventResult::kNotCanceled)
+  if (DispatchBeforeInputInsertText(evt->target()->ToNode(),
+                                    key_event->text.data()) !=
+      DispatchEventResult::kNotCanceled) {
     return true;
+  }
 
-  return InsertText(key_event->text, evt);
+  return InsertText(key_event->text.data(), evt);
 }
 
 void Editor::HandleKeyboardEvent(KeyboardEvent* evt) {

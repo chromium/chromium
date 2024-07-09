@@ -30,8 +30,9 @@ void ApppendEventDetails(const WebKeyboardEvent& event, std::string* result) {
                 "{\n WinCode: %d\n NativeCode: %d\n IsSystem: %d\n"
                 " Text: %s\n UnmodifiedText: %s\n}",
                 event.windows_key_code, event.native_key_code,
-                event.is_system_key, reinterpret_cast<const char*>(event.text),
-                reinterpret_cast<const char*>(event.unmodified_text));
+                event.is_system_key,
+                reinterpret_cast<const char*>(event.text.data()),
+                reinterpret_cast<const char*>(event.unmodified_text.data()));
 }
 
 void ApppendEventDetails(const WebMouseEvent& event, std::string* result) {
