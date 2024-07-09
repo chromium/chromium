@@ -1060,8 +1060,8 @@ void AutofillAgent::ApplyFieldAction(
         // disconnected element.
         form_control = form_util::GetFormControlByRendererId(
             form_util::GetFieldRendererId(form_control));
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillUnifyAndFixFormTracking)) {
+        if (form_control && base::FeatureList::IsEnabled(
+                                features::kAutofillUnifyAndFixFormTracking)) {
           if (WebFormElement form_element =
                   form_util::GetOwningForm(form_control)) {
             UpdateLastInteractedElement(
