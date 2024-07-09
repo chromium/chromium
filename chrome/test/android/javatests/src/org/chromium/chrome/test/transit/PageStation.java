@@ -12,6 +12,7 @@ import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
@@ -128,7 +129,7 @@ public class PageStation extends Station {
             unscopedViewElement(withId(R.id.tab_switcher_button));
     public static final ViewElement MENU_BUTTON = unscopedViewElement(withId(R.id.menu_button));
 
-    protected Supplier<ChromeTabbedActivity> mActivitySupplier;
+    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
     protected Supplier<Tab> mActivityTabSupplier;
     protected Supplier<Tab> mSelectedTabSupplier;
     protected Supplier<Tab> mPageLoadedSupplier;
@@ -171,27 +172,27 @@ public class PageStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mActivitySupplier = elements.declareActivity(ChromeTabbedActivity.class);
+        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
         elements.declareView(HOME_BUTTON);
         elements.declareView(TAB_SWITCHER_BUTTON);
         elements.declareView(MENU_BUTTON);
 
         if (mNumTabsBeingOpened > 0) {
             elements.declareEnterCondition(
-                    new TabAddedCondition(mNumTabsBeingOpened, mActivitySupplier));
+                    new TabAddedCondition(mNumTabsBeingOpened, mActivityElement));
         }
 
         if (mIsEntryPoint) {
             // In entry points we just match the first ActivityTab we see, instead of waiting for
             // callbacks.
             mActivityTabSupplier =
-                    elements.declareEnterCondition(new AnyActivityTabCondition(mActivitySupplier));
+                    elements.declareEnterCondition(new AnyActivityTabCondition(mActivityElement));
         } else {
             if (mNumTabsBeingSelected > 0) {
                 // The last tab of N opened is the Tab that mSelectedTabSupplier will supply.
                 mSelectedTabSupplier =
                         elements.declareEnterCondition(
-                                new TabSelectedCondition(mNumTabsBeingSelected, mActivitySupplier));
+                                new TabSelectedCondition(mNumTabsBeingSelected, mActivityElement));
             } else {
                 // The Tab already created and provided to the constructor is the one that is
                 // expected to be the activityTab.
@@ -201,7 +202,7 @@ public class PageStation extends Station {
             mActivityTabSupplier =
                     elements.declareEnterCondition(
                             new CorrectActivityTabCondition(
-                                    mActivitySupplier, mSelectedTabSupplier));
+                                    mActivityElement, mSelectedTabSupplier));
         }
         mPageLoadedSupplier =
                 elements.declareEnterCondition(
@@ -334,7 +335,7 @@ public class PageStation extends Station {
      */
     public ChromeTabbedActivity getActivity() {
         assertSuppliersCanBeUsed();
-        return mActivitySupplier.get();
+        return mActivityElement.get();
     }
 
     public Tab getLoadedTab() {

@@ -14,7 +14,6 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.test.transit.ntp.MvtsFacility;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 
@@ -41,16 +40,17 @@ public class NewTabPageStation extends PageStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        boolean isTablet = DeviceFormFactor.isTablet();
-
-        // TODO(crbug.com/40267786): On android_32_google_apis_x64_foldable these elements do not
-        // appear or appear unreliably when a keyboard is attached, which is the case for local
-        // development and in bots.
-        if (!isTablet) {
-            elements.declareView(SEARCH_LOGO);
-            elements.declareView(SEARCH_BOX);
-            elements.declareView(MOST_VISITED_TILES_CONTAINER);
-        }
+        elements.declareElementFactory(
+                mActivityElement.getEnterCondition(),
+                delayedElements -> {
+                    // TODO(crbug.com/40267786): On android_32_google_apis_x64_foldable these
+                    // elements do not appear or appear unreliably.
+                    if (!mActivityElement.get().isTablet()) {
+                        delayedElements.declareView(SEARCH_LOGO);
+                        delayedElements.declareView(SEARCH_BOX);
+                        delayedElements.declareView(MOST_VISITED_TILES_CONTAINER);
+                    }
+                });
 
         elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
     }

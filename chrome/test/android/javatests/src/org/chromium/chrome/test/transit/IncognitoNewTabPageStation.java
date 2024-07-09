@@ -32,7 +32,15 @@ public class IncognitoNewTabPageStation extends PageStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
         elements.declareView(ICON);
-        elements.declareView(GONE_INCOGNITO_TEXT);
+        elements.declareElementFactory(
+                mActivityElement.getEnterCondition(),
+                delayedElements -> {
+                    if (!mActivityElement.get().isTablet()) {
+                        // TODO(crbug.com/351378295): The text is hidden in tablets because the soft
+                        // keyboard might open, particularly in landscape mode.
+                        delayedElements.declareView(GONE_INCOGNITO_TEXT);
+                    }
+                });
         elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
     }
 
