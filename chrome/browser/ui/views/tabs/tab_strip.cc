@@ -189,7 +189,16 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   void OnMouseReleased(const ui::MouseEvent& event) override {
-    EndDrag(END_DRAG_COMPLETE);
+    // When using a system DnD session for tab dragging, we might receive the
+    // mouse release event that signals we should end the drag, even though
+    // a different tab strip owns `TabDragController`. `EndDrag()` exits early
+    // if `drag_controller_` is null, so we use this dedicated method to notify
+    // `TabDragController`.
+    if (TabDragController::IsSystemDragAndDropSessionRunning()) {
+      TabDragController::OnSystemDragAndDropEnded();
+    } else {
+      EndDrag(END_DRAG_COMPLETE);
+    }
   }
 
   void OnMouseCaptureLost() override { EndDrag(END_DRAG_CAPTURE_LOST); }

@@ -26,11 +26,11 @@ void RunShellDrag(gfx::NativeView view,
   }
 }
 
-void CancelShellDrag(gfx::NativeView view) {
+void CancelShellDrag(gfx::NativeView view, bool allow_widget_mismatch) {
   aura::Window* root_window = view->GetRootWindow();
   aura::client::DragDropClient* client =
       aura::client::GetDragDropClient(root_window);
-  CHECK(client && client->IsDragDropInProgress());
+  CHECK(client && (client->IsDragDropInProgress() || allow_widget_mismatch));
   client->DragCancel();
 }
 

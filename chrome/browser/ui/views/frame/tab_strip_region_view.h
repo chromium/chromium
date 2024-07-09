@@ -68,6 +68,8 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // These system drag & drop methods forward the events to TabDragController to
   // support its fallback tab dragging mode in the case where the platform
   // can't support the usual run loop based mode.
+  // We need to handle this here instead of in TabStrip, because TabStrip's
+  // bounds don't contain the empty space to the right of the last tab.
   bool CanDrop(const OSExchangeData& data) override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
