@@ -81,6 +81,19 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishLoad(
       validated_url, render_frame_host->GetPageUkmSourceId());
 }
 
+void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
+    content::RenderFrameHost* render_frame_host,
+    const std::u16string& copied_text) {
+  if (render_frame_host != render_frame_host->GetOutermostMainFrame() ||
+      !render_frame_host->IsActive()) {
+    return;
+  }
+
+  auto& driver = GetOrCreateForFrame(render_frame_host);
+
+  driver.OnTextCopiedToClipboard(copied_text);
+}
+
 ContentFacilitatedPaymentsDriver&
 ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
     content::RenderFrameHost* render_frame_host) {

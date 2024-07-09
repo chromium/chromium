@@ -16209,6 +16209,11 @@ void RenderFrameHostImpl::IsClipboardPasteAllowedByPolicy(
                                              std::move(callback));
 }
 
+void RenderFrameHostImpl::OnTextCopiedToClipboard(
+    const std::u16string& copied_text) {
+  delegate_->OnTextCopiedToClipboard(this, copied_text);
+}
+
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() const {
   return frame_tree_node()->GetParentOrOuterDocumentHelper(
       /*escape_guest_view=*/false, /*include_prospective=*/true);

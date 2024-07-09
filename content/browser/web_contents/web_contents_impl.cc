@@ -10293,6 +10293,15 @@ void WebContentsImpl::IsClipboardPasteAllowedByPolicy(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void WebContentsImpl::OnTextCopiedToClipboard(
+    RenderFrameHostImpl* render_frame_host,
+    const std::u16string& copied_text) {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnTextCopiedToClipboard",
+                        "render_frame_host", render_frame_host);
+  observers_.NotifyObservers(&WebContentsObserver::OnTextCopiedToClipboard,
+                             render_frame_host, copied_text);
+}
+
 void WebContentsImpl::IsClipboardPasteAllowedWrapperCallback(
     IsClipboardPasteAllowedCallback callback,
     std::optional<ClipboardPasteData> clipboard_paste_data) {

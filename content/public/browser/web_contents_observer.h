@@ -855,6 +855,16 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // Invoked when a paste event occurs.
   virtual void OnPaste() {}
 
+  // Called when `copied_text` was copied to the clipboard from a given
+  // `render_frame_host` within this WebContents. Use this observer instead of
+  // ui::ClipboardObserver if you care about the source RenderFrameHost where
+  // the copy operation took place.
+  // Note: If clipboard copy events for other types of data are later needed by
+  // other WebContentsObservers, it'd be okay to generalize this method to
+  // support content::ClipboardPasteData directly.
+  virtual void OnTextCopiedToClipboard(RenderFrameHost* render_frame_host,
+                                       const std::u16string& copied_text) {}
+
   // Invoked if an IPC message is coming from a specific RenderFrameHost.
   virtual bool OnMessageReceived(const IPC::Message& message,
                                  RenderFrameHost* render_frame_host);

@@ -633,6 +633,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteAllowedCallback callback);
 
+  // Called when `copied_text` has been copied from this RenderFrameHost to the
+  // clipboard. The implementation delegates to
+  // RenderFrameHostDelegate::OnTextCopiedToClipboard.
+  void OnTextCopiedToClipboard(const std::u16string& copied_text);
+
   // This is called when accessibility events arrive from renderer to browser.
   // This could cause eviction if the page is in back/forward cache. Returns
   // true if the eviction happens, and otherwise calls

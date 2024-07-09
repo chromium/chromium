@@ -1429,6 +1429,9 @@ namespace {
 class MockWebContentsDelegate : public WebContentsDelegate {
  public:
   MOCK_METHOD(void, CloseContents, (WebContents*));
+  MOCK_METHOD(void,
+              OnTextCopiedToClipboard,
+              (RenderFrameHost*, std::u16string));
 };
 
 }  // namespace
@@ -1490,6 +1493,30 @@ TEST_F(RenderFrameHostImplTest,
   // The page should close regardless of it not being primary since the browser
   // requested it.
   testing::Mock::VerifyAndClearExpectations(&delegate);
+}
+
+// A mock WebContentsObserver for listening to text copy events.
+class TextCopiedEventObserver : public WebContentsObserver {
+ public:
+  explicit TextCopiedEventObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  MOCK_METHOD(void,
+              OnTextCopiedToClipboard,
+              (RenderFrameHost*, const std::u16string&),
+              (override));
+};
+
+// Test that the WebContentObserver is notified when text is copied to the
+// clipboard for a RenderFrameHost.
+TEST_F(RenderFrameHostImplTest, OnTextCopiedToClipboard) {
+  testing::StrictMock<TextCopiedEventObserver> observer(contents());
+  std::u16string copied_text = u"copied_text";
+
+  RenderFrameHostImpl* rfh = main_test_rfh();
+  EXPECT_CALL(observer, OnTextCopiedToClipboard(rfh, copied_text));
+
+  rfh->OnTextCopiedToClipboard(copied_text);
 }
 
 // Test if `LoadedWithCacheControlNoStoreHeader()` behaves

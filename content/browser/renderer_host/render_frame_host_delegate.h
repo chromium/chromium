@@ -571,6 +571,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteAllowedCallback callback);
 
+  // Notifies the delegate that `copied_text` has been
+  // copied to the clipboard from the `render_frame_host`.
+  virtual void OnTextCopiedToClipboard(RenderFrameHostImpl* render_frame_host,
+                                       const std::u16string& copied_text) {}
+
   // Notified when the main frame of `source` adjusts the page scale.
   virtual void OnPageScaleFactorChanged(PageImpl& source) {}
 

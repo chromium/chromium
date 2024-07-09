@@ -177,6 +177,11 @@ class TestWebContentsObserver : public WebContentsObserver {
     expected_capture_handle_config_ = nullptr;
   }
 
+  void OnTextCopiedToClipboard(RenderFrameHost* render_frame_host,
+                               const std::u16string& copied_text) override {
+    text_copied_to_clipboard_ = copied_text;
+  }
+
   void ExpectOnCaptureHandleConfigUpdate(
       blink::mojom::CaptureHandleConfigPtr config) {
     CHECK(config) << "Malformed test.";
@@ -200,6 +205,10 @@ class TestWebContentsObserver : public WebContentsObserver {
     return last_is_connected_to_bluetooth_device_;
   }
 
+  const std::u16string text_copied_to_clipboard() const {
+    return text_copied_to_clipboard_;
+  }
+
  private:
   GURL last_url_;
   int theme_color_change_calls_ = 0;
@@ -208,6 +217,7 @@ class TestWebContentsObserver : public WebContentsObserver {
   int num_is_connected_to_bluetooth_device_changed_ = 0;
   bool last_is_connected_to_bluetooth_device_ = false;
   blink::mojom::CaptureHandleConfigPtr expected_capture_handle_config_;
+  std::u16string text_copied_to_clipboard_;
 };
 
 class MockWebContentsDelegate : public WebContentsDelegate {
@@ -2536,6 +2546,18 @@ TEST_F(WebContentsImplTest, MediaWakeLock) {
 
   // Verify that all the wake locks have been released.
   EXPECT_FALSE(has_audio_wake_lock());
+}
+
+// Test that the WebContentsObserver is notified when text is copied to the
+// clipboard for a given RenderFrameHost.
+TEST_F(WebContentsImplTest, OnTextCopiedToClipboard) {
+  TestWebContentsObserver observer(contents());
+  TestRenderFrameHost* rfh = main_test_rfh();
+  const std::u16string copied_text = u"copied_text";
+
+  rfh->OnTextCopiedToClipboard(copied_text);
+
+  EXPECT_EQ(copied_text, observer.text_copied_to_clipboard());
 }
 
 TEST_F(WebContentsImplTest, ThemeColorChangeDependingOnFirstVisiblePaint) {

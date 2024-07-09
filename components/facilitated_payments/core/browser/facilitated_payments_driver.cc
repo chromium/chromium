@@ -26,4 +26,9 @@ void FacilitatedPaymentsDriver::OnContentLoadedInThePrimaryMainFrame(
   manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url, ukm_source_id);
 }
 
+void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(
+    const std::u16string& copied_text) {
+  // TODO(siashah): Notify the manager of the copied text.
+}
+
 }  // namespace payments::facilitated

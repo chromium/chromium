@@ -801,6 +801,14 @@ void ClipboardHostImpl::OnCopyAllowedResult(
   if (pending_commit_write_) {
     CommitWrite();
   }
+
+  // Notify the observer that the write was committed to the clipboard. We do
+  // this only for text copies but it can be extended to other types if needed.
+  if (!replacement_data &&
+      data_type == ui::ClipboardFormatType::PlainTextType()) {
+    static_cast<RenderFrameHostImpl&>(render_frame_host())
+        .OnTextCopiedToClipboard(data.text);
+  }
 }
 
 std::unique_ptr<ui::DataTransferEndpoint>

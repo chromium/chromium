@@ -48,6 +48,10 @@ class FacilitatedPaymentsDriver {
       base::OnceCallback<void(mojom::PixCodeDetectionResult,
                               const std::string&)> callback) = 0;
 
+  // Inform the `FacilitatedPaymentsManager` about `copied_text` being copied to
+  // the clipboard. It is invoked only for the primary main frame.
+  virtual void OnTextCopiedToClipboard(const std::u16string& copied_text);
+
  private:
   std::unique_ptr<FacilitatedPaymentsManager> manager_;
 };
