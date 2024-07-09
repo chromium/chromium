@@ -1359,9 +1359,9 @@ See your search engine’s instructions for deleting your search history, if app
           other {# sites (more on synced devices)}}**
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS" translateable="false" desc="Summary of the suggestions to be deleted when deleting browsing data. [iOS only]">
-       {COUNT, plural,
+       **{COUNT, plural,
           =1 {1 suggestion}
-          other {# suggestion}}
+          other {# suggestions}}**
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS" translateable="false" desc="Summary of the tabs to be deleted when deleting browsing data. [iOS only]">
        **{COUNT, plural,

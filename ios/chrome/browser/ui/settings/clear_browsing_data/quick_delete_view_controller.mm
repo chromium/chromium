@@ -203,7 +203,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     heightForFooterInSection:(NSInteger)section {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].integerValue);
-  if (sectionIdentifier == SectionIdentifierFooter) {
+  if (sectionIdentifier == SectionIdentifierFooter && _shouldShowFooter) {
     return UITableViewAutomaticDimension;
   }
   return kSectionFooterHeight;
