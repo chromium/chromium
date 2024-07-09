@@ -205,10 +205,10 @@ export class PostSelectionRendererElement extends PolymerElement {
       default:
         assertNotReached();
     }
-    assert(newLeft);
-    assert(newTop);
-    assert(newRight);
-    assert(newBottom);
+    assert(newLeft !== undefined);
+    assert(newTop !== undefined);
+    assert(newRight !== undefined);
+    assert(newBottom !== undefined);
 
     // Ensure the new region is within the image bounds.
     newLeft = clamp(newLeft, minXValue, maxXValue - normalizedMinBoxWidth);
