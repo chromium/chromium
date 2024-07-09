@@ -261,42 +261,48 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
                       VAImplementation::kMesaGallium);
 #endif
   }
-
+  DCHECK_EQ(IsConfiguredForTesting(), !!vaapi_wrapper_);
   const VideoCodecProfile profile = config.profile();
-  auto vaapi_wrapper_or_error = VaapiWrapper::CreateForVideoCodec(
+  if (!IsConfiguredForTesting()) {
+    auto vaapi_wrapper_or_error = VaapiWrapper::CreateForVideoCodec(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      (!cdm_context_ref_ || transcryption_) ? VaapiWrapper::kDecode
-                                            : VaapiWrapper::kDecodeProtected,
+        (!cdm_context_ref_ || transcryption_) ? VaapiWrapper::kDecode
+                                              : VaapiWrapper::kDecodeProtected,
 #else
-      VaapiWrapper::kDecode,
+        VaapiWrapper::kDecode,
 #endif
-      profile,
-      transcryption_ ? EncryptionScheme::kUnencrypted
-                     : config.encryption_scheme(),
-      base::BindRepeating(&ReportVaapiErrorToUMA,
-                          "Media.VaapiVideoDecoder.VAAPIError"));
-  UMA_HISTOGRAM_BOOLEAN("Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess",
-                        vaapi_wrapper_or_error.has_value());
-  if (!vaapi_wrapper_or_error.has_value()) {
-    SetErrorState(
-        base::StringPrintf("failed initializing VaapiWrapper for profile %s, ",
-                           GetProfileName(profile).c_str()));
-    std::move(init_cb).Run(vaapi_wrapper_or_error.error());
-    return;
+        profile,
+        transcryption_ ? EncryptionScheme::kUnencrypted
+                       : config.encryption_scheme(),
+        base::BindRepeating(&ReportVaapiErrorToUMA,
+                            "Media.VaapiVideoDecoder.VAAPIError"));
+    UMA_HISTOGRAM_BOOLEAN("Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess",
+                          vaapi_wrapper_or_error.has_value());
+    if (!vaapi_wrapper_or_error.has_value()) {
+      SetErrorState(base::StringPrintf(
+          "failed initializing VaapiWrapper for profile %s, ",
+          GetProfileName(profile).c_str()));
+      std::move(init_cb).Run(vaapi_wrapper_or_error.error());
+      return;
+    }
+    vaapi_wrapper_ = std::move(vaapi_wrapper_or_error.value());
   }
-  vaapi_wrapper_ = std::move(vaapi_wrapper_or_error.value());
 
   profile_ = profile;
   color_space_ = config.color_space_info();
   hdr_metadata_ = config.hdr_metadata();
   encryption_scheme_ = transcryption_ ? EncryptionScheme::kUnencrypted
                                       : config.encryption_scheme();
-  auto accel_status = CreateAcceleratedVideoDecoder();
-  if (!accel_status.is_ok()) {
-    SetErrorState("failed to create decoder delegate");
-    std::move(init_cb).Run(DecoderStatus(DecoderStatus::Codes::kFailed)
-                               .AddCause(std::move(accel_status)));
-    return;
+
+  DCHECK_EQ(IsConfiguredForTesting(), !!decoder_);
+  if (!IsConfiguredForTesting()) {
+    auto accel_status = CreateAcceleratedVideoDecoder();
+    if (!accel_status.is_ok()) {
+      SetErrorState("failed to create decoder delegate");
+      std::move(init_cb).Run(DecoderStatus(DecoderStatus::Codes::kFailed)
+                                 .AddCause(std::move(accel_status)));
+      return;
+    }
   }
 
   aspect_ratio_ = config.aspect_ratio();

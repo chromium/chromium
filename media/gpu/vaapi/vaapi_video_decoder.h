@@ -88,8 +88,11 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
 
   // Must be called before Initialize().
   void set_ignore_resolution_changes_to_smaller_vp9_for_testing(bool value);
+  ~VaapiVideoDecoder() override;
 
  private:
+  friend class VaapiVideoDecoderTest;
+
   // Decode task holding single decode request.
   struct DecodeTask {
     DecodeTask(scoped_refptr<DecoderBuffer> buffer,
@@ -128,7 +131,6 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       std::unique_ptr<MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
-  ~VaapiVideoDecoder() override;
 
   // Schedule the next decode task in the queue to be executed.
   void ScheduleNextDecodeTask();
@@ -199,6 +201,10 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       bool use_linear_buffers,
       bool needs_detiling,
       base::TimeDelta timestamp);
+
+  bool IsConfiguredForTesting() const {
+    return !supported_vaapi_configs_for_testing_.empty();
+  }
 
   // The video decoder's state.
   State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kUninitialized;
@@ -290,6 +296,8 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   bool ignore_resolution_changes_to_smaller_for_testing_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  using SupportedVideoDecoderConfigs = std::vector<SupportedVideoDecoderConfig>;
+  SupportedVideoDecoderConfigs supported_vaapi_configs_for_testing_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   // WeakPtr of *|this| and its factory, bound to |decoder_task_runner_|.
