@@ -250,6 +250,10 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
   if (step_specific_header) {
     child_views_.step_specific_header_ = step_specific_header.get();
     contents->AddChildView(step_specific_header.release());
+
+    auto insets = contents->GetBorder()->GetInsets();
+    insets.set_top(0);
+    contents->SetBorder(views::CreateEmptyBorder(insets));
   }
 
   std::u16string description = model()->GetStepDescription();
