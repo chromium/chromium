@@ -135,6 +135,12 @@ constexpr uint8_t kTestProtobuf[] = {
     0x70, 0x33, 0xF7, 0x80, 0x75, 0x1D, 0x22, 0x13, 0x37, 0xCD, 0x1F, 0x24,
     0x40, 0xDA, 0x70, 0xA1, 0x03};
 
+static constexpr char kIsUVPAA[] = R"((() => {
+  window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().
+    then(result => window.domAutomationController.send('IsUVPAA: ' + result),
+         error  => window.domAutomationController.send('error '    + error));
+})())";
+
 static constexpr char kMakeCredentialUvDiscouraged[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { name: "www.example.com" },
@@ -568,7 +574,9 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 #if BUILDFLAG(IS_WIN)
         webauthn_dll_override_(&fake_webauthn_dll_),
 #endif
-        recovery_key_store_(FakeRecoveryKeyStore::New()) {
+        recovery_key_store_(FakeRecoveryKeyStore::New()),
+        mock_hw_provider_(
+            std::make_unique<crypto::ScopedMockUnexportableKeyProvider>()) {
 #if BUILDFLAG(IS_WIN)
     // Make webauthn.dll unavailable to ensure a consistent test environment on
     // Windows. Otherwise the version of webauthn.dll can differ between
@@ -809,6 +817,22 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     fake_uv_provider_.emplace<crypto::ScopedFakeUserVerifyingKeyProvider>();
   }
 
+  bool IsUVPAA() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::DOMMessageQueue message_queue(web_contents);
+    content::ExecuteScriptAsync(web_contents, kIsUVPAA);
+
+    std::string script_result;
+    CHECK(message_queue.WaitForMessage(&script_result));
+    if (script_result == "\"IsUVPAA: true\"") {
+      return true;
+    } else if (script_result == "\"IsUVPAA: false\"") {
+      return false;
+    }
+    NOTREACHED_NORETURN() << "unexpected IsUVPAA result: " << script_result;
+  }
+
  protected:
   base::SimpleTestClock clock_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -828,7 +852,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       biometrics_override_;
 #endif
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
-  crypto::ScopedMockUnexportableKeyProvider mock_hw_provider_;
+  std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<DelegateObserver> delegate_observer_;
   std::unique_ptr<ModelObserver> model_observer_;
@@ -2872,6 +2896,44 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
       dialog_model()->mechanisms,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
 }
+
+#if BUILDFLAG(IS_LINUX)
+// These tests are run on Linux because Linux has no platform authenticator
+// that can effect whether IsUVPAA returns true or not.
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest, IsUVPAA) {
+  // We don't know, at IsUVPAA time, whether there's an Android LSKF on the
+  // account and, without GPM PIN support, that means that we have to assume
+  // that the enclave authenticator isn't available.
+  EXPECT_FALSE(IsUVPAA());
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, IsUVPAA) {
+  // With the enclave authenticator in place, IsUVPAA should return true.
+  EXPECT_TRUE(IsUVPAA());
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       IsUVPAA_GoogleSite) {
+  // With the enclave authenticator in place, IsUVPAA should return false for
+  // google.com sites because we won't create a credential for an account in
+  // that same account. But since we don't know the user.id value at IsUVPAA
+  // time, the result has to be conservative.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("accounts.google.com", "/title1.html")));
+  EXPECT_FALSE(IsUVPAA());
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       IsUVPAA_NoUnexportableKeys) {
+  // Without support for unexportable keys, IsUVPAA should return false because
+  // the enclave cannot be used.
+  mock_hw_provider_.reset();
+  crypto::ScopedNullUnexportableKeyProvider no_hw_key_support;
+  EXPECT_FALSE(IsUVPAA());
+}
+
+#endif  // IS_LINUX
 
 }  // namespace
 
