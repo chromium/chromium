@@ -122,14 +122,14 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         mSwipeRefreshLayout = new SwipeRefreshLayout(context);
         mSwipeRefreshLayout.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        final boolean incognito = mTab.isIncognito();
+        final boolean incognitoBranded = mTab.isIncognitoBranded();
         final @ColorInt int backgroundColor =
-                incognito
+                incognitoBranded
                         ? context.getColor(R.color.default_bg_color_dark_elev_2_baseline)
                         : ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(backgroundColor);
         final @ColorInt int iconColor =
-                incognito
+                incognitoBranded
                         ? context.getColor(R.color.default_icon_color_blue_light)
                         : SemanticColorUtils.getDefaultIconColorAccent1(context);
         mSwipeRefreshLayout.setColorSchemeColors(iconColor);
