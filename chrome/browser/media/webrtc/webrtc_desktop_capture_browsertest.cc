@@ -402,8 +402,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Flaky on ASan bots. See https://crbug.com/40270173.
-// Crashes on some Macs. See https://crbug.com/351095634.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_RunP2PScreenshareWhileSharingScreen \
   DISABLED_RunP2PScreenshareWhileSharingScreen
 #else
