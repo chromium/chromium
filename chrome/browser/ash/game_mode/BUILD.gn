@@ -15,6 +15,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/borealis:test_support",
+    "//chrome/browser/ash/borealis/testing:test_support",
     "//chrome/browser/ash/game_mode/testing",
     "//chrome/test:test_support_unit",
     "//chromeos/ash/components/dbus/resourced",

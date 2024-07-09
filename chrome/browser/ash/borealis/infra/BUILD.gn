@@ -7,21 +7,26 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash)
 
 static_library("infra") {
-  sources = [ "cached_callback.h" ]
+  sources = [
+    "described.h",
+    "transition.h",
+  ]
 
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "cached_callback_unittest.cc" ]
+  sources = [
+    "described_unittest.cc",
+    "transition_unittest.cc",
+  ]
 
   deps = [
     ":infra",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/borealis/testing:test_support",
     "//testing/gmock",
     "//testing/gtest",

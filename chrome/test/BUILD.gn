@@ -5098,6 +5098,8 @@ if (!is_android) {
         "//chrome/browser/ash/attestation",
         "//chrome/browser/ash/attestation:test_support",
         "//chrome/browser/ash/bluetooth",
+        "//chrome/browser/ash/borealis:test_support",
+        "//chrome/browser/ash/borealis/testing:test_support",
         "//chrome/browser/ash/bruschetta",
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",

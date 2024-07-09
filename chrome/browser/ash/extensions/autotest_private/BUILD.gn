@@ -25,6 +25,7 @@ static_library("autotest_private") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crosapi",
