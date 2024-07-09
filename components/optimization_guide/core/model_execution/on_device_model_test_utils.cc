@@ -218,6 +218,8 @@ void FakeOnDeviceModelService::LoadModel(
 void FakeOnDeviceModelService::LoadPlatformModel(
     const base::Uuid& uuid,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+    mojo::PendingRemote<on_device_model::mojom::PlatformModelProgressObserver>
+        progress_observer,
     LoadModelCallback callback) {
   if (settings_->drop_connection_request) {
     std::move(callback).Run(settings_->load_model_result);

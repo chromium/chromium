@@ -45,6 +45,12 @@ struct LoadModelParams {
   bool support_multiple_sessions;
 };
 
+// An observer to report the current platform model loading progress.
+interface PlatformModelProgressObserver {
+  // The progress value is between 0.0 and 1.0.
+  Progress(double progress);
+};
+
 // A service which allows loading trusted models which are stored on-device and
 // which may process untrustworthy data.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
@@ -60,9 +66,11 @@ interface OnDeviceModelService {
   // a base model or a base model with an adaptation layer. If the model can
   // not be created the model pipe will be reset.
   [EnableIf=is_chromeos_ash]
-  LoadPlatformModel(mojo_base.mojom.Uuid uuid,
-                    pending_receiver<OnDeviceModel> model) =>
-      (LoadModelResult result);
+  LoadPlatformModel(
+      mojo_base.mojom.Uuid uuid,
+      pending_receiver<OnDeviceModel> model,
+      pending_remote<PlatformModelProgressObserver>? progress_observer)
+      => (LoadModelResult result);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() => (PerformanceClass performance_class);

@@ -147,8 +147,8 @@ void RecorderAppUI::LoadModel(
     LoadModelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GetOnDeviceModelService().LoadPlatformModel(uuid, std::move(model),
-                                              std::move(callback));
+  GetOnDeviceModelService().LoadPlatformModel(
+      uuid, std::move(model), mojo::NullRemote(), std::move(callback));
 }
 
 mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>&

@@ -400,6 +400,7 @@ void OnDeviceModelService::LoadModel(
 void OnDeviceModelService::LoadPlatformModel(
     const base::Uuid& uuid,
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
+    mojo::PendingRemote<mojom::PlatformModelProgressObserver> progress_observer,
     LoadModelCallback callback) {
   if (!platform_model_loader_) {
     LOG(ERROR) << "No valid platform model loader.";
@@ -408,6 +409,7 @@ void OnDeviceModelService::LoadPlatformModel(
   }
 
   platform_model_loader_->LoadModelWithUuid(uuid, std::move(model),
+                                            std::move(progress_observer),
                                             std::move(callback));
 }
 #endif

@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
@@ -74,6 +75,12 @@ constexpr int kDefaultMaxTokens = 1024;
 constexpr char kLoadStatusHistogramName[] =
     "OnDeviceModel.LoadPlatformModelStatus";
 
+constexpr double kFinishProgress = 1.0;
+// The DLC download progress will consume the 50% of the progress bar.
+constexpr double kDlcProgressRatio = 0.5;
+// Remaining 1% for the model loading time.
+constexpr double kBaseModelProgressRatio = 0.49;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class LoadStatus {
@@ -91,6 +98,32 @@ enum class LoadStatus {
   kInvalidModelVersion = 11,
   kMaxValue = kInvalidModelVersion,
 };
+
+class BaseModelProgressObserver
+    : public on_device_model::mojom::PlatformModelProgressObserver {
+ public:
+  BaseModelProgressObserver(
+      base::RepeatingCallback<void(double progress)> callback)
+      : callback_(std::move(callback)) {}
+  ~BaseModelProgressObserver() override = default;
+
+  // Creates the pending remote.
+  mojo::PendingRemote<on_device_model::mojom::PlatformModelProgressObserver>
+  BindRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  // The progress of the adaptation model.
+  void Progress(double progress) override {
+    callback_.Run(kDlcProgressRatio + progress * kBaseModelProgressRatio);
+  }
+
+ private:
+  mojo::Receiver<on_device_model::mojom::PlatformModelProgressObserver>
+      receiver_{this};
+  base::RepeatingCallback<void(double progress)> callback_;
+};
+
 }  // namespace
 
 namespace on_device_model {
@@ -113,8 +146,11 @@ ChromeosPlatformModelLoader::PlatformModelRefTraits::GetRawPointer(
 
 ChromeosPlatformModelLoader::PendingLoad::PendingLoad(
     mojo::PendingReceiver<mojom::OnDeviceModel> p,
+    mojo::PendingRemote<mojom::PlatformModelProgressObserver> o,
     LoadModelCallback c)
-    : pending(std::move(p)), callback(std::move(c)) {}
+    : pending(std::move(p)),
+      progress_observer(std::move(o)),
+      callback(std::move(c)) {}
 ChromeosPlatformModelLoader::PendingLoad::PendingLoad(PendingLoad&&) = default;
 ChromeosPlatformModelLoader::PendingLoad::~PendingLoad() = default;
 
@@ -140,6 +176,8 @@ bool ChromeosPlatformModelLoader::ReplyModelAlreadyLoaded(
   }
 
   PlatformModelRecord& record = it->second;
+
+  UpdateProgress(uuid, kFinishProgress);
 
   std::vector<PendingLoad> pending_loads = std::move(record.pending_loads);
   record.pending_loads.clear();
@@ -175,6 +213,7 @@ void ChromeosPlatformModelLoader::ReplyError(const base::Uuid& uuid,
 void ChromeosPlatformModelLoader::LoadModelWithUuid(
     const base::Uuid& uuid,
     mojo::PendingReceiver<mojom::OnDeviceModel> pending,
+    mojo::PendingRemote<mojom::PlatformModelProgressObserver> progress_observer,
     LoadModelCallback callback) {
   if (!uuid.is_valid()) {
     LOG(ERROR) << "Invalid model UUID";
@@ -184,8 +223,8 @@ void ChromeosPlatformModelLoader::LoadModelWithUuid(
     return;
   }
 
-  platform_models_[uuid].pending_loads.push_back(
-      PendingLoad(std::move(pending), std::move(callback)));
+  platform_models_[uuid].pending_loads.push_back(PendingLoad(
+      std::move(pending), std::move(progress_observer), std::move(callback)));
 
   if (ReplyModelAlreadyLoaded(uuid)) {
     base::UmaHistogramEnumeration(kLoadStatusHistogramName,
@@ -211,12 +250,12 @@ void ChromeosPlatformModelLoader::LoadModelWithUuid(
     return;
   }
 
-  // TODO(b/331050878): Add another interface to report the progress.
   client->Install(
       request,
       base::BindOnce(&ChromeosPlatformModelLoader::OnInstallDlcComplete,
                      weak_ptr_factory_.GetWeakPtr(), uuid),
-      /*ProgressCallback=*/base::DoNothing());
+      base::BindRepeating(&ChromeosPlatformModelLoader::OnDlcProgress,
+                          weak_ptr_factory_.GetWeakPtr(), uuid));
   return;
 }
 
@@ -279,12 +318,21 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
       return;
     }
 
+    PlatformModelRecord& record = platform_models_[uuid];
     base::Uuid base_model_uuid = base::Uuid::ParseLowercase(*base_uuid);
+
+    auto progress_observer = std::make_unique<BaseModelProgressObserver>(
+        base::BindRepeating(&ChromeosPlatformModelLoader::UpdateProgress,
+                            weak_ptr_factory_.GetWeakPtr(), uuid));
+    mojo::PendingRemote<mojom::PlatformModelProgressObserver> pending_remote =
+        progress_observer->BindRemote();
+    record.base_model_observer = std::move(progress_observer);
 
     auto platform_model = base::MakeRefCounted<PlatformModel>();
     LoadModelWithUuid(
         base_model_uuid,
         platform_model->base_model().BindNewPipeAndPassReceiver(),
+        std::move(pending_remote),
         base::BindOnce(
             &ChromeosPlatformModelLoader::LoadAdaptationPlatformModel,
             weak_ptr_factory_.GetWeakPtr(), base_model_uuid, *base_version,
@@ -335,6 +383,20 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
       base::BindOnce(&ChromeosPlatformModelLoader::FinishLoadModel,
                      weak_ptr_factory_.GetWeakPtr(), uuid, *version,
                      std::move(platform_model)));
+}
+
+void ChromeosPlatformModelLoader::OnDlcProgress(const base::Uuid& uuid,
+                                                double progress) {
+  UpdateProgress(uuid, progress * kDlcProgressRatio);
+}
+
+void ChromeosPlatformModelLoader::UpdateProgress(const base::Uuid& uuid,
+                                                 double progress) {
+  for (const auto& pending_load : platform_models_[uuid].pending_loads) {
+    if (pending_load.progress_observer) {
+      pending_load.progress_observer->Progress(progress);
+    }
+  }
 }
 
 void ChromeosPlatformModelLoader::FinishLoadModel(

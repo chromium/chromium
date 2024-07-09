@@ -31,6 +31,8 @@ class PlatformModelLoader {
   virtual void LoadModelWithUuid(
       const base::Uuid& uuid,
       mojo::PendingReceiver<mojom::OnDeviceModel> model,
+      mojo::PendingRemote<mojom::PlatformModelProgressObserver>
+          progress_observer,
       LoadModelCallback callback) = 0;
 };
 

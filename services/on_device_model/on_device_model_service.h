@@ -54,9 +54,12 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
                  mojo::PendingReceiver<mojom::OnDeviceModel> model,
                  LoadModelCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void LoadPlatformModel(const base::Uuid& uuid,
-                         mojo::PendingReceiver<mojom::OnDeviceModel> model,
-                         LoadPlatformModelCallback callback) override;
+  void LoadPlatformModel(
+      const base::Uuid& uuid,
+      mojo::PendingReceiver<mojom::OnDeviceModel> model,
+      mojo::PendingRemote<mojom::PlatformModelProgressObserver>
+          progress_observer,
+      LoadPlatformModelCallback callback) override;
 #endif
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;

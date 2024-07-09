@@ -73,7 +73,8 @@ void OnDeviceInternalsUI::LoadModel(
         on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
-  GetService().LoadPlatformModel(uuid, std::move(model), std::move(callback));
+  GetService().LoadPlatformModel(uuid, std::move(model), mojo::NullRemote(),
+                                 std::move(callback));
 #else
   // Warm the service while assets load in the background.
   std::ignore = GetService();
