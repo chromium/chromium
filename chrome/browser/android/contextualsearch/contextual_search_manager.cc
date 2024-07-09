@@ -20,6 +20,8 @@
 #include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
+#include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -28,6 +30,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
+#include "chrome/android/chrome_jni_headers/ContextualSearchPolicy_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -163,4 +166,28 @@ jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
   ContextualSearchManager* manager =
       new ContextualSearchManager(env, obj, profile);
   return reinterpret_cast<intptr_t>(manager);
+}
+
+jboolean JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
+    JNIEnv* env,
+    Profile* profile) {
+  // Attempt to resolve a (empty) query. Return whether resulting URL is
+  // navigable.
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  if (!template_url_service) {
+    return false;
+  }
+
+  auto* template_url = template_url_service->GetDefaultSearchProvider();
+  if (!template_url) {
+    return false;
+  }
+
+  auto contextual_search_url_ref = template_url->contextual_search_url_ref();
+
+  GURL url(contextual_search_url_ref.ReplaceSearchTerms(
+      {}, template_url_service->search_terms_data(), NULL));
+
+  return url.is_valid();
 }

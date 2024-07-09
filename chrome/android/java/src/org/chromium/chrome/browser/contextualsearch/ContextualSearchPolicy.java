@@ -13,6 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.version_info.VersionInfo;
@@ -59,6 +62,7 @@ class ContextualSearchPolicy {
     private Integer mTapTriggeredPromoLimitForTesting;
     private boolean mDidOverrideAllowSendingPageUrlForTesting;
     private boolean mAllowSendingPageUrlForTesting;
+    private Boolean mContextualSearchResolutionUrlValid;
 
     /** ContextualSearchPolicy constructor. */
     public ContextualSearchPolicy(
@@ -525,7 +529,23 @@ class ContextualSearchPolicy {
     boolean isContextualSearchFullyEnabled() {
         if (mDidOverrideFullyEnabledForTesting) return mFullyEnabledForTesting;
 
-        return isContextualSearchEnabled(mProfile);
+        return isContextualSearchResolutionUrlValid() && isContextualSearchEnabled(mProfile);
+    }
+
+    /**
+     * @return Whether the contextual search resolution URL is valid and can be used to resolve
+     *     highlight.
+     */
+    boolean isContextualSearchResolutionUrlValid() {
+        // This function is needed because certain DMA implementations supply a persistent set of
+        // Template URL overrides. These overrides are in effect until the user performs a factory
+        // data reset of their device, and occasionally miss relevant information, such as - in this
+        // particular case - "contextual_search_url" value.
+        if (mContextualSearchResolutionUrlValid == null) {
+            mContextualSearchResolutionUrlValid =
+                    ContextualSearchPolicyJni.get().isContextualSearchResolutionUrlValid(mProfile);
+        }
+        return mContextualSearchResolutionUrlValid;
     }
 
     /**
@@ -563,5 +583,10 @@ class ContextualSearchPolicy {
     @VisibleForTesting
     public void setNetworkCommunicator(ContextualSearchNetworkCommunicator networkCommunicator) {
         mNetworkCommunicator = networkCommunicator;
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean isContextualSearchResolutionUrlValid(@JniType("Profile*") Profile profile);
     }
 }
