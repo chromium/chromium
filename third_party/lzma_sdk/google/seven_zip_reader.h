@@ -35,20 +35,18 @@ struct EntryInfo {
   bool is_encrypted;
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class Result {
-  kUnknownError = 0,
-  kSuccess = 1,
-  kFailedToAllocate = 2,
-  kBadCrc = 3,
-  kMemoryMappingFailed = 4,
-  kMalformedArchive = 5,
-  kIoError = 6,
-  kDiskFull = 7,
-  kNoFilename = 8,
-  kUnsupported = 9,
-  kMaxValue = kUnsupported,
+  kUnknownError,
+  kSuccess,
+  kFailedToAllocate,
+  kBadCrc,
+  kMemoryMappingFailed,
+  kMalformedArchive,
+  kIoError,
+  kDiskFull,
+  kNoFilename,
+  kUnsupported,
+  kEncryptedHeaders,
 };
 
 class Delegate {

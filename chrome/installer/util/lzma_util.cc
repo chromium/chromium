@@ -88,6 +88,7 @@ void SevenZipDelegateImpl::OnOpenError(seven_zip::Result result) {
     case seven_zip::Result::kSuccess:
     case seven_zip::Result::kMemoryMappingFailed:
     case seven_zip::Result::kNoFilename:
+    case seven_zip::Result::kEncryptedHeaders:
       NOTREACHED_IN_MIGRATION();
       return;
   }
@@ -215,6 +216,7 @@ bool SevenZipDelegateImpl::EntryDone(seven_zip::Result result,
       case seven_zip::Result::kMemoryMappingFailed:
       case seven_zip::Result::kMalformedArchive:
       case seven_zip::Result::kUnsupported:
+      case seven_zip::Result::kEncryptedHeaders:
         unpack_error_ = UNPACK_EXTRACT_ERROR;
         break;
     }
