@@ -30,7 +30,10 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
     : sync_service_(sync_service),
       model_type_(model_type),
       timeout_duration_(base::Seconds(10)) {
-  sync_service_observer_.Observe(sync_service);
+  // `sync_service` can be null, for example when disabled via flags.
+  if (sync_service) {
+    sync_service_observer_.Observe(sync_service);
+  }
 }
 
 ImageServiceConsentHelper::~ImageServiceConsentHelper() = default;
