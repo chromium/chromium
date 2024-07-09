@@ -90,6 +90,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/follow/model:service",
     "//ios/chrome/browser/follow/model:tab_helper",
     "//ios/chrome/browser/geolocation/model",
+    "//ios/chrome/browser/home_customization/coordinator",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/iph_for_new_chrome_user/model",
