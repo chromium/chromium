@@ -550,6 +550,7 @@ class TabImpl implements Tab {
     }
 
     @CalledByNative
+    @Deprecated
     @Override
     public boolean isIncognito() {
         return mProfile.isOffTheRecord();
@@ -743,7 +744,7 @@ class TabImpl implements Tab {
                         // Policy will be ignored for null referrer url, 0 is just a placeholder.
                         referrer != null ? referrer.getPolicy() : 0,
                         params.getInitiatorOrigin(),
-                        isIncognito());
+                        isOffTheRecord());
         mUrl = new GURL(mWebContentsState.getVirtualUrlFromState());
         while (observers.hasNext()) {
             observers.next().onUrlUpdated(this);
@@ -1757,7 +1758,7 @@ class TabImpl implements Tab {
             TabImplJni.get()
                     .initWebContents(
                             mNativeTabAndroid,
-                            isIncognito(),
+                            isOffTheRecord(),
                             isBackgroundTab,
                             webContents,
                             mWebContentsDelegate,
@@ -2310,7 +2311,7 @@ class TabImpl implements Tab {
 
         void initWebContents(
                 long nativeTabAndroid,
-                boolean incognito,
+                boolean isOffTheRecord,
                 boolean isBackgroundTab,
                 WebContents webContents,
                 TabWebContentsDelegateAndroidImpl delegate,

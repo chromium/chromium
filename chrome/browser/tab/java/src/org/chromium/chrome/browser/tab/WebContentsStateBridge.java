@@ -93,7 +93,8 @@ public class WebContentsStateBridge {
      * @param referrerUrl URL for the referrer.
      * @param referrerPolicy Policy for the referrer.
      * @param initiatorOrigin Initiator of the navigation.
-     * @param isIncognito Whether or not the state is meant to be incognito (e.g. encrypted).
+     * @param isOffTheRecord Whether or not the state is meant to be off the record (e.g.
+     *     encrypted).
      * @return ByteBuffer that represents a state with the pending navigation attached.
      */
     public static WebContentsState appendPendingNavigation(
@@ -103,7 +104,7 @@ public class WebContentsStateBridge {
             String referrerUrl,
             int referrerPolicy,
             @Nullable Origin initiatorOrigin,
-            boolean isIncognito) {
+            boolean isOffTheRecord) {
         ByteBuffer buffer =
                 WebContentsStateBridgeJni.get()
                         .appendPendingNavigation(
@@ -114,7 +115,7 @@ public class WebContentsStateBridge {
                                 referrerUrl,
                                 referrerPolicy,
                                 initiatorOrigin,
-                                isIncognito);
+                                isOffTheRecord);
         return newWebContentsStateFromByteBuffer(buffer);
     }
 
