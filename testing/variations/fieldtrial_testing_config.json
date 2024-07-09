@@ -15178,6 +15178,18 @@
                         "ReadAloudTapToSeek",
                         "SegmentationPlatformAdaptiveToolbarV2Feature"
                     ]
+                },
+                {
+                    "name": "Segmentation_Fixed_Random_6_Button_Forced_Refresh_60_Days_20240703",
+                    "enable_features": [
+                        "AdaptiveButtonInTopToolbarAddToBookmarks",
+                        "AdaptiveButtonInTopToolbarCustomizationV2",
+                        "AdaptiveButtonInTopToolbarTranslate",
+                        "IPH_ReadAloudExpandedPlayerFeature",
+                        "ReadAloudBackgroundPlayback",
+                        "ReadAloudInMultiWindow",
+                        "SegmentationPlatformAdaptiveToolbarV2Feature"
+                    ]
                 }
             ]
         }
