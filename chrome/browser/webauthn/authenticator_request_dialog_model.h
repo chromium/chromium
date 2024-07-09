@@ -529,6 +529,7 @@ struct AuthenticatorRequestDialogModel {
 #endif  // BUILDFLAG(IS_MAC)
 
  private:
+  Step previous_step_ = Step::kNotStarted;
   Step step_ = Step::kNotStarted;
 };
 

@@ -100,8 +100,7 @@ void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
 void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
   CHECK(rapt_.has_value() && (model_->step() == Step::kGPMChangePin ||
                               model_->step() == Step::kGPMChangeArbitraryPin));
-  model_->ui_disabled_ = true;
-  model_->OnSheetModelChanged();
+  model_->SetStep(Step::kGPMConnecting);
   enclave_manager_->ChangePIN(
       base::UTF16ToUTF8(pin), std::move(*rapt_),
       base::BindOnce(&ChangePinControllerImpl::OnGpmPinChanged,
@@ -129,7 +128,6 @@ void ChangePinControllerImpl::Reset(bool success) {
   }
 
   rapt_.reset();
-  model_->ui_disabled_ = false;
   model_->SetStep(Step::kNotStarted);
 }
 

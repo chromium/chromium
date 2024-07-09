@@ -876,15 +876,10 @@ void GPMEnclaveController::OnGPMSelected() {
     case AccountState::kChecking:
       waiting_for_account_state_ = base::BindOnce(
           &GPMEnclaveController::OnGPMSelected, weak_ptr_factory_.GetWeakPtr());
-      if (model_->step() == Step::kNotStarted) {
-        // No UI is visible yet, display a loading dialog after a delay, so it
-        // doesn't flicker in case the account state is fetched quickly.
-        // TODO(rgod): Add delay.
-        model_->SetStep(Step::kGPMConnecting);
-      } else {
-        model_->ui_disabled_ = true;
-        model_->OnSheetModelChanged();
-      }
+      // TODO(rgod): If the model step is `kNotStarted`, no UI is visible yet.
+      // Display a loading dialog after a delay, so it doesn't flicker in case
+      // the account state is fetched quickly.
+      model_->SetStep(Step::kGPMConnecting);
       break;
 
     case AccountState::kNone:
@@ -1070,8 +1065,7 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
   pin_ = base::UTF16ToUTF8(pin);
 
   // Disable the pin entry view while waiting for the response from enclave.
-  model_->ui_disabled_ = true;
-  model_->OnSheetModelChanged();
+  model_->SetStep(Step::kGPMConnecting);
 
   if (model_->step() == Step::kGPMChangeArbitraryPin ||
       model_->step() == Step::kGPMChangePin ||
