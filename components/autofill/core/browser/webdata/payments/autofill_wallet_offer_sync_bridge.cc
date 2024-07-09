@@ -110,7 +110,7 @@ AutofillWalletOfferSyncBridge::ApplyIncrementalSyncChanges(
 std::unique_ptr<syncer::DataBatch>
 AutofillWalletOfferSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
   // This data type is never synced "up" so this doesn't need to be implemented.
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 std::unique_ptr<syncer::DataBatch>

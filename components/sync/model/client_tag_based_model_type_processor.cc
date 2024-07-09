@@ -667,11 +667,10 @@ void ClientTagBasedModelTypeProcessor::GetLocalChanges(
     // The `GetDataForCommit` call may have produced a `model_error_` (if the
     // bridge called `ReportError`), in which case the `data_batch` should also
     // be null.
-    // TODO(crbug.com/347649753): CHECK that the batch is null exactly when
-    // there is a model error.
-    if (model_error_ || !data_batch) {
+    if (model_error_) {
       return;
     }
+    CHECK(data_batch);
     ConsumeDataBatch(std::move(storage_keys_to_load), std::move(data_batch));
   }
 

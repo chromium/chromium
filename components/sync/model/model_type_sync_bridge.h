@@ -103,9 +103,10 @@ class ModelTypeSyncBridge {
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) = 0;
 
-  // Retrieves the corresponding sync data for `storage_keys`. In case of
-  // errors, the processor's ReportError method should be called, and this
-  // should return nullptr. Used only to commit the data.
+  // Retrieves the corresponding sync data for `storage_keys`. This must return
+  // a non-null result, except if a model error occurred, in which case the
+  // processor's ReportError() method must be called.
+  // Used only to commit the data.
   virtual std::unique_ptr<DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) = 0;
 
