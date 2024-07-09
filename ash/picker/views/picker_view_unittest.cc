@@ -553,7 +553,31 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
 }
 
-TEST_F(PickerViewTest, SearchingShowEmptyResultsWhenNoResultsArriveYet) {
+TEST_F(PickerViewTest,
+       SearchingFromZeroStateDoesNotImmediatelySwitchToResults) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(std::move(callback));
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  FakePickerViewDelegate::SearchResultsCallback callback = future.Take();
+
+  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+  callback.Run({{PickerSearchResultsSection(
+      PickerSectionType::kSuggestions, {{PickerSearchResult::Text(u"result")}},
+      /*has_more_results=*/false)}});
+  EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest,
+       SearchingFromZeroStateSwitchesToEmptyResultsAfterTimeout) {
   base::test::TestFuture<void> search_called;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
@@ -563,12 +587,82 @@ TEST_F(PickerViewTest, SearchingShowEmptyResultsWhenNoResultsArriveYet) {
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
-
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(search_called.Wait());
 
-  // Results page should be empty until results arrive.
+  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+  task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
+  EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
+  EXPECT_THAT(picker_view->search_results_view_for_testing()
+                  .section_list_view_for_testing()
+                  ->children(),
+              IsEmpty());
+}
+
+TEST_F(PickerViewTest, SearchingFromCategoryDoesNotImmediatelySwitchToResults) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks},
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(std::move(callback));
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+
+  category_item_view->ScrollViewToVisible();
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  ASSERT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
+  ASSERT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
+  ASSERT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  FakePickerViewDelegate::SearchResultsCallback callback = future.Take();
+
+  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+  callback.Run({{PickerSearchResultsSection(
+      PickerSectionType::kLinks, {{PickerSearchResult::Text(u"result")}},
+      /*has_more_results=*/false)}});
+  EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest,
+       SearchingFromCategorySwitchesToEmptyResultsAfterTimeout) {
+  base::test::TestFuture<void> search_called;
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks},
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            search_called.SetValue();
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+
+  category_item_view->ScrollViewToVisible();
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  ASSERT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
+  ASSERT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
+  ASSERT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search_called.Wait());
+
+  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+  task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
   EXPECT_THAT(picker_view->search_results_view_for_testing()
                   .section_list_view_for_testing()
@@ -985,6 +1079,74 @@ TEST_F(PickerViewTest, StopsSearchWhenBackButtonPressed) {
   ViewDrawnWaiter().Wait(&search_field_view.back_button_for_testing());
   LeftClickOn(&search_field_view.back_button_for_testing());
 
+  EXPECT_TRUE(stop_search_future.Wait());
+}
+
+TEST_F(PickerViewTest, StopsSearchWhenCategorySelectedOnZeroStateDuringSearch) {
+  base::test::TestFuture<void> search_future;
+  base::test::TestFuture<void> stop_search_future;
+  FakePickerViewDelegate delegate(
+      {.available_categories = {PickerCategory::kLinks},
+       .search_function = base::BindLambdaForTesting(
+           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+             search_future.SetValue();
+           }),
+       .stop_search_function = stop_search_future.GetRepeatingCallback()});
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search_future.Wait());
+  ASSERT_FALSE(stop_search_future.IsReady());
+
+  ASSERT_FALSE(picker_view->category_results_view_for_testing().GetVisible());
+  ASSERT_TRUE(picker_view->zero_state_view_for_testing().GetVisible());
+  ASSERT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+
+  category_item_view->ScrollViewToVisible();
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  EXPECT_TRUE(stop_search_future.Wait());
+}
+
+TEST_F(PickerViewTest, StopsSearchWhenCategorySelectedInSearchResults) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback>
+      search_future;
+  base::test::TestFuture<void> stop_search_future;
+  FakePickerViewDelegate delegate(
+      {.search_function = base::BindLambdaForTesting(
+           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+             search_future.SetValue(std::move(callback));
+           }),
+       .stop_search_function = stop_search_future.GetRepeatingCallback()});
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  FakePickerViewDelegate::SearchResultsCallback callback = search_future.Take();
+  callback.Run({
+      PickerSearchResultsSection(
+          PickerSectionType::kCategories,
+          {{PickerSearchResult::Category(PickerCategory::kLinks)}},
+          /*has_more_results=*/false),
+  });
+
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  views::View* category_result = view->search_results_view_for_testing()
+                                     .section_list_view_for_testing()
+                                     ->GetTopItem();
+  ASSERT_TRUE(category_result);
+  ViewDrawnWaiter().Wait(category_result);
+  ASSERT_FALSE(stop_search_future.IsReady());
+  LeftClickOn(category_result);
+
+  ASSERT_TRUE(view->category_results_view_for_testing().GetVisible());
+  ASSERT_FALSE(view->zero_state_view_for_testing().GetVisible());
+  ASSERT_FALSE(view->search_results_view_for_testing().GetVisible());
   EXPECT_TRUE(stop_search_future.Wait());
 }
 

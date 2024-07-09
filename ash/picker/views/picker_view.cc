@@ -416,7 +416,6 @@ void PickerView::StartSearch() {
   }
 
   delegate_->GetSessionMetrics().UpdateSearchQuery(query);
-  SetActivePage(search_results_view_);
   clear_results_timer_.Start(
       FROM_HERE, kClearResultsTimeout,
       base::BindOnce(&PickerView::OnClearResultsTimerFired,
@@ -449,6 +448,11 @@ void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
 }
 
 void PickerView::OnClearResultsTimerFired() {
+  // `PickerView::StopSearch` ensures that if the active page was set to the
+  // zero state or category view, the timer that this is called from is
+  // cancelled - which guarantees that this can't be called.
+  SetActivePage(search_results_view_);
+
   search_results_view_->ClearSearchResults();
   performance_metrics_.MarkSearchResultsUpdated(
       PickerPerformanceMetrics::SearchResultsUpdate::kClear);
@@ -456,6 +460,11 @@ void PickerView::OnClearResultsTimerFired() {
 
 void PickerView::PublishSearchResults(
     std::vector<PickerSearchResultsSection> results) {
+  // `PickerView::StopSearch` ensures that if the active page was set to the
+  // zero state or category view, the delegate's search is stopped - which
+  // guarantees that this can't be called.
+  SetActivePage(search_results_view_);
+
   bool clear_stale_results = clear_results_timer_.IsRunning();
   if (clear_stale_results) {
     clear_results_timer_.Stop();

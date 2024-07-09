@@ -229,8 +229,8 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
       ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"today"),
-      WaitForShow(ash::kPickerSearchResultsListItemElementId),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantView(
           ash::kPickerSearchResultsPageElementId, kDateResultName,
           base::BindLambdaForTesting([kExpectedDate](const views::View* view) {
@@ -267,8 +267,8 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertMath) {
       ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"1 + 1"),
-      WaitForShow(ash::kPickerSearchResultsListItemElementId),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantView(
           ash::kPickerSearchResultsPageElementId, kMathResultName,
           base::BindLambdaForTesting(
@@ -414,8 +414,9 @@ IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
       WaitForState(kSearchFieldFocusedState, true),
       // Enter a query that is guaranteed to have some results.
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"a"),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
-      WaitForShow(ash::kPickerSearchResultsPageElementId), Do([&sm = sm_]() {
+      Do([&sm = sm_]() {
         SendKeyPress(ui::VKEY_DOWN);
         sm.ExpectSpeechPattern("*");
         // TODO: b/338142316 - Use correct role for result items.
