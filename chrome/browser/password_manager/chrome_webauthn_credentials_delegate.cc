@@ -121,6 +121,14 @@ ChromeWebAuthnCredentialsDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+bool ChromeWebAuthnCredentialsDelegate::HasPendingPasskeySelection() {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return !passkey_selected_callback_.is_null();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeWebAuthnCredentialsDelegate::OnStepTransition() {
   AuthenticatorRequestDialogModel* model =

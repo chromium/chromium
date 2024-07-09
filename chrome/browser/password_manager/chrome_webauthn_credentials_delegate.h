@@ -53,6 +53,7 @@ class ChromeWebAuthnCredentialsDelegate final :
   GetPasskeys() const override;
   bool OfferPasskeysFromAnotherDeviceOption() const override;
   void RetrievePasskeys(base::OnceClosure callback) override;
+  bool HasPendingPasskeySelection() override;
   base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() override;
 
 #if !BUILDFLAG(IS_ANDROID)

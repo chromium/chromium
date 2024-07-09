@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -135,6 +134,16 @@ std::vector<autofill::Suggestion> PrepareLoadingStateSuggestions(
   return current_suggestions;
 }
 
+bool AreNewSuggestionsTheSame(
+    const std::vector<autofill::Suggestion>& new_suggestions,
+    const std::vector<autofill::Suggestion>& old_suggestions) {
+  return base::ranges::equal(
+      new_suggestions, old_suggestions, [](const auto& lhs, const auto& rhs) {
+        return lhs.main_text == rhs.main_text && lhs.type == rhs.type &&
+               lhs.icon == rhs.icon && lhs.payload == rhs.payload;
+      });
+}
+
 void LogAccountStoredPasswordsCountInFillDataAfterUnlock(
     const autofill::PasswordFormFillData& fill_data) {
   int account_store_passwords_count =
@@ -230,7 +239,6 @@ void PasswordAutofillManager::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
   using metrics_util::PasswordDropdownSelectedOption;
-  bool should_hide_popup = true;
   switch (suggestion.type) {
     case autofill::SuggestionType::kGeneratePasswordEntry:
       password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
@@ -274,7 +282,6 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kWebAuthn,
           password_client_->IsOffTheRecord());
-      should_hide_popup = false;
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
           ->SelectPasskey(GetBackendId(suggestion),
@@ -336,7 +343,9 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       break;
   }
 
-  if (should_hide_popup) {
+  if (!password_client_
+           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
+           ->HasPendingPasskeySelection()) {
     autofill_client_->HideAutofillSuggestions(
         autofill::SuggestionHidingReason::kAcceptSuggestion);
   }
@@ -540,12 +549,18 @@ bool PasswordAutofillManager::ShowPopup(
         autofill::SuggestionHidingReason::kNoSuggestions);
     return false;
   }
-  LogMetricsForSuggestions(suggestions);
-  // TODO(crbug.com/41474723): Set the right `form_control_ax_id`.
-  last_popup_open_args_ = autofill::AutofillClient::PopupOpenArgs(
-      bounds, text_direction, suggestions,
-      autofill::AutofillSuggestionTriggerSource::kPasswordManager,
-      /*form_control_ax_id=*/0, autofill::PopupAnchorType::kField);
+  if (!password_client_
+           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
+           ->HasPendingPasskeySelection() ||
+      !AreNewSuggestionsTheSame(suggestions,
+                                last_popup_open_args_.suggestions)) {
+    LogMetricsForSuggestions(suggestions);
+    // TODO(crbug.com/41474723): Set the right `form_control_ax_id`.
+    last_popup_open_args_ = autofill::AutofillClient::PopupOpenArgs(
+        bounds, text_direction, suggestions,
+        autofill::AutofillSuggestionTriggerSource::kPasswordManager,
+        /*form_control_ax_id=*/0, autofill::PopupAnchorType::kField);
+  }
   autofill_client_->ShowAutofillSuggestions(last_popup_open_args_,
                                             weak_ptr_factory_.GetWeakPtr());
   return true;

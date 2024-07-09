@@ -49,6 +49,10 @@ class WebAuthnCredentialsDelegate {
   // immediately.
   virtual void RetrievePasskeys(base::OnceCallback<void()> callback) = 0;
 
+  // Returns true iff a passkey was selected via `SelectPasskey` and
+  // `OnPasskeySelectedCallback` has not been called yet.
+  virtual bool HasPendingPasskeySelection() = 0;
+
 #if BUILDFLAG(IS_ANDROID)
   // Called to start the hybrid sign-in flow in Play Services.
   virtual void ShowAndroidHybridSignIn() = 0;
