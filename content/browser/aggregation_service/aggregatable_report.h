@@ -288,22 +288,32 @@ class CONTENT_EXPORT AggregatableReport {
 // processing URL.
 class CONTENT_EXPORT AggregatableReportRequest {
  public:
-  // Returns `std::nullopt` if `payload_contents.contributions.size()` is not
-  // valid for the `payload_contents.aggregation_mode` (see
-  // `IsNumberOfHistogramContributionsValid()` above). Also returns
-  // `std::nullopt` if any contribution has a negative value, if
-  // `shared_info.report_id` is not valid, or if `debug_key.has_value()` but
-  // `shared_info.debug_mode` is `kDisabled`. Also returns `std::nullopt` if
-  // `failed_send_attempts` is negative or if
-  // `payload_contents.max_contributions_allowed` is less than the number of
-  // contributions. Also returns `std::nullopt` if
-  // `payload_contents.filtering_id_max_bytes` is non-null and either
-  // non-positive or greater than `kMaximumFilteringIdMaxBytes`. Also returns
-  // `std::nullopt` if any contribution's filtering ID does not fit in the given
-  // `payload_contents.filtering_id_max_bytes`; if the given max bytes is null,
-  // only null filtering IDs are considered to 'fit', i.e. any non-null value
-  // will mean this returns `std::nullopt`.
-  // TODO(alexmt): Add validation for scheduled_report_time being non-null/inf.
+  // Returns `std::nullopt` if any of the following are true:
+  //
+  //   * The number of contributions within `payload_contents` is invalid for
+  //     the `payload_contents.aggregation_mode` (see
+  //     `IsNumberOfHistogramContributionsValid()`).
+  //
+  //   * `payload_contents.max_contributions_allowed` is less than the number of
+  //     contributions.
+  //
+  //   * Any contribution in `payload_contents` has a negative value.
+  //
+  //   * Any contribution's filtering ID does not fit in the given
+  //     `payload_contents.filtering_id_max_bytes`. (If the given max bytes is
+  //     null, only null filtering IDs are considered to 'fit'.)
+  //
+  //   * `payload_contents.filtering_id_max_bytes` contains a value that is
+  //     either non-positive or greater than `kMaximumFilteringIdMaxBytes`.
+  //
+  //   * `shared_info.report_id` is invalid.
+  //
+  //   * `shared_info.debug_mode == kDisabled` and `debug_key` contains a value.
+  //
+  //   * `failed_send_attempts` is negative.
+  //
+  // TODO(alexmt): Add validation for `payload_contents.scheduled_report_time`
+  // being non-null/inf.
   static std::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info,
