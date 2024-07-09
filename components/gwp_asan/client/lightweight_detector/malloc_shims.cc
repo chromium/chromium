@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "components/gwp_asan/client/lightweight_detector/random_eviction_quarantine.h"
@@ -57,7 +58,7 @@ void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
     return;
   }
 
-  self->next->free_function(self->next, address, context);
+  MUSTTAIL return self->next->free_function(self->next, address, context);
 }
 
 void FreeDefiniteSizeFn(const AllocatorDispatch* self,
@@ -69,7 +70,8 @@ void FreeDefiniteSizeFn(const AllocatorDispatch* self,
     return;
   }
 
-  self->next->free_definite_size_function(self->next, address, size, context);
+  MUSTTAIL return self->next->free_definite_size_function(self->next, address,
+                                                          size, context);
 }
 
 void TryFreeDefaultFn(const AllocatorDispatch* self,
@@ -80,7 +82,8 @@ void TryFreeDefaultFn(const AllocatorDispatch* self,
     return;
   }
 
-  self->next->try_free_default_function(self->next, address, context);
+  MUSTTAIL return self->next->try_free_default_function(self->next, address,
+                                                        context);
 }
 
 static void AlignedFreeFn(const AllocatorDispatch* self,
@@ -91,7 +94,8 @@ static void AlignedFreeFn(const AllocatorDispatch* self,
     return;
   }
 
-  self->next->aligned_free_function(self->next, address, context);
+  MUSTTAIL return self->next->aligned_free_function(self->next, address,
+                                                    context);
 }
 
 AllocatorDispatch g_allocator_dispatch = {

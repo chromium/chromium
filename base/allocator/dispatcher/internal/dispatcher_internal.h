@@ -207,7 +207,7 @@ struct DispatcherImpl {
     // the address becomes available and can be allocated by another thread.
     // That would be racy otherwise.
     DoNotifyFreeForShim(address);
-    self->next->free_function(self->next, address, context);
+    MUSTTAIL return self->next->free_function(self->next, address, context);
   }
 
   static unsigned BatchMallocFn(const AllocatorDispatch* self,
@@ -231,8 +231,8 @@ struct DispatcherImpl {
       DoNotifyFreeForShim(to_be_freed[i]);
     }
 
-    self->next->batch_free_function(self->next, to_be_freed, num_to_be_freed,
-                                    context);
+    MUSTTAIL return self->next->batch_free_function(self->next, to_be_freed,
+                                                    num_to_be_freed, context);
   }
 
   static void FreeDefiniteSizeFn(const AllocatorDispatch* self,
@@ -240,14 +240,16 @@ struct DispatcherImpl {
                                  size_t size,
                                  void* context) {
     DoNotifyFreeForShim(address);
-    self->next->free_definite_size_function(self->next, address, size, context);
+    MUSTTAIL return self->next->free_definite_size_function(self->next, address,
+                                                            size, context);
   }
 
   static void TryFreeDefaultFn(const AllocatorDispatch* self,
                                void* address,
                                void* context) {
     DoNotifyFreeForShim(address);
-    self->next->try_free_default_function(self->next, address, context);
+    MUSTTAIL return self->next->try_free_default_function(self->next, address,
+                                                          context);
   }
 
   static void* AlignedMallocFn(const AllocatorDispatch* self,
@@ -308,7 +310,8 @@ struct DispatcherImpl {
                             void* address,
                             void* context) {
     DoNotifyFreeForShim(address);
-    self->next->aligned_free_function(self->next, address, context);
+    MUSTTAIL return self->next->aligned_free_function(self->next, address,
+                                                      context);
   }
 
   ALWAYS_INLINE static void DoNotifyAllocationForShim(void* address,

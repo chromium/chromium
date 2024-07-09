@@ -128,8 +128,9 @@ struct AllocatorDispatch {
   // which is more efficient than having {this_alloc, this_free} where
   // this_free is a function just calls next_free.
   //
-  // Note that it's hard for toolchains to apply TCO (tail-call optimization)
-  // because the allocator shim chain is built runtime.
+  // Given its performance sensitivity, it is recommended to use tail-call
+  // optimizations wherever possible. Use MUSTTAIL on return statements in
+  // AllocatorDispatch.
   //
   // Note that this optimization works well because there is no case to remove
   // a shim in the middle of the allocator shim chain nor to reorder the shims

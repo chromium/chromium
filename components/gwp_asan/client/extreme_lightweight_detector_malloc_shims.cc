@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/malloc_dump_provider.h"
@@ -177,7 +178,7 @@ void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
       return;
     }
   }
-  self->next->free_function(self->next, address, context);
+  MUSTTAIL return self->next->free_function(self->next, address, context);
 }
 
 void FreeDefiniteSizeFn(const AllocatorDispatch* self,
@@ -189,7 +190,8 @@ void FreeDefiniteSizeFn(const AllocatorDispatch* self,
       return;
     }
   }
-  self->next->free_definite_size_function(self->next, address, size, context);
+  MUSTTAIL return self->next->free_definite_size_function(self->next, address,
+                                                          size, context);
 }
 
 AllocatorDispatch allocator_dispatch = {
