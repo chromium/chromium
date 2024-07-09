@@ -262,8 +262,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     // of the tab, encompassing the top padding. This makes it easy to click on
     // tabs by moving the mouse to the top of the screen.
     if (path_type == TabStyle::PathType::kHitTest &&
-        (tab()->GetWidget()->IsMaximized() ||
-         tab()->GetWidget()->IsFullscreen())) {
+        tab()->controller()->IsFrameCondensed()) {
       top -= GetLayoutConstant(TAB_STRIP_PADDING) * scale;
       // Don't round the top corners to avoid creating dead space between tabs.
       top_content_corner_radius = 0;

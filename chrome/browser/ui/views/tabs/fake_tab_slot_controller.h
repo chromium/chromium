@@ -95,6 +95,7 @@ class FakeTabSlotController : public TabSlotController {
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override {}
   const Browser* GetBrowser() const override;
   int GetInactiveTabWidth() const override;
+  bool IsFrameCondensed() const override;
 
   void SetTabColors(SkColor fg_color_active, SkColor fg_color_inactive) {
     tab_fg_color_active_ = fg_color_active;

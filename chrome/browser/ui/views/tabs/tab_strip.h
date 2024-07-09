@@ -311,6 +311,7 @@ class TabStrip : public views::View,
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
   const Browser* GetBrowser() const override;
   int GetInactiveTabWidth() const override;
+  bool IsFrameCondensed() const override;
 
   // views::View:
   views::SizeBounds GetAvailableSize(const View* child) const override;

@@ -1924,6 +1924,10 @@ int TabStrip::GetInactiveTabWidth() const {
   return tab_container_->GetInactiveTabWidth();
 }
 
+bool TabStrip::IsFrameCondensed() const {
+  return controller_->IsFrameCondensed();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // TabStrip, views::View overrides:
 

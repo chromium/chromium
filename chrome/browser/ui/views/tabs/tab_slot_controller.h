@@ -238,6 +238,9 @@ class TabSlotController {
   // differ from this width slightly due to rounding.
   virtual int GetInactiveTabWidth() const = 0;
 
+  // See BrowserNonClientFrameView::IsFrameCondensed().
+  virtual bool IsFrameCondensed() const = 0;
+
  protected:
   virtual ~TabSlotController() = default;
 };

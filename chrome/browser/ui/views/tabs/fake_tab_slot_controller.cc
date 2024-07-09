@@ -145,3 +145,7 @@ const Browser* FakeTabSlotController::GetBrowser() const {
 int FakeTabSlotController::GetInactiveTabWidth() const {
   return inactive_tab_width_;
 }
+
+bool FakeTabSlotController::IsFrameCondensed() const {
+  return false;
+}
