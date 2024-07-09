@@ -8184,6 +8184,28 @@
             ]
         }
     ],
+    "DropUnrecognizedTemplateUrlParameters": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DropUnrecognizedTemplateUrlParameters"
+                    ]
+                }
+            ]
+        }
+    ],
     "DynamicCrxDownloaderPriority": [
         {
             "platforms": [
@@ -14355,28 +14377,6 @@
                         "OmniboxSteadyStateTextColor",
                         "OmniboxSuggestionHoverFillShape",
                         "kOmniboxCR23SteadyStateIcons"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxDropUnrecogninzedTemplateUrlParameters": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DropUnrecognizedTemplateUrlParameters"
                     ]
                 }
             ]
