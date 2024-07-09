@@ -64,6 +64,18 @@ chrome.test.getConfig(function(config) {
               function(response) {
                 chrome.test.assertEq(undefined, response);
               }));
+    },
+
+    function invalidMessage() {
+      // Create a special message that's not valid JSON.
+      var message = {sendInvalidResponse: true};
+      chrome.runtime.sendNativeMessage(
+          appName, message,
+          chrome.test.callbackFail(
+              'The sender sent an invalid JSON message; message ignored.',
+              function(response) {
+                chrome.test.assertEq(undefined, response);
+              }));
     }
   ]);
 });

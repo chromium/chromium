@@ -143,6 +143,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   gin::Handle<GinPort> CreatePortForTesting(
       ScriptContext* script_context,
       const std::string& channel_name,
+      const mojom::ChannelType channel_type,
       const PortId& port_id,
       mojo::PendingAssociatedRemote<mojom::MessagePort>& message_port_remote,
       mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
@@ -230,6 +231,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   // and |port_id|. Assumes no such port exists.
   gin::Handle<GinPort> CreatePort(ScriptContext* script_context,
                                   const std::string& channel_name,
+                                  const mojom::ChannelType channel_type,
                                   const PortId& port_id);
 
   // Returns the port with the given |port_id| in the given |script_context|;

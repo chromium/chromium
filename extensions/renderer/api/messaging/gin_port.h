@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8-forward.h"
@@ -49,6 +50,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
   GinPort(v8::Local<v8::Context> context,
           const PortId& port_id,
           const std::string& name,
+          const mojom::ChannelType channel_type,
           APIEventHandler* event_handler,
           Delegate* delegate);
 
@@ -133,6 +135,9 @@ class GinPort final : public gin::Wrappable<GinPort> {
 
   // The port's name.
   const std::string name_;
+
+  // The type of the associated channel.
+  const mojom::ChannelType channel_type_;
 
   // The associated APIEventHandler. Guaranteed to outlive this object.
   const raw_ptr<APIEventHandler> event_handler_;

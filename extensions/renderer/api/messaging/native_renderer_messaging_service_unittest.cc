@@ -202,11 +202,11 @@ TEST_F(NativeRendererMessagingServiceTest, DeliverMessageToPort) {
       message_port_host_receiver2;
 
   gin::Handle<GinPort> port1 = messaging_service()->CreatePortForTesting(
-      script_context(), "channel1", port_id1, message_port_remote1,
-      message_port_host_receiver1);
+      script_context(), "channel1", mojom::ChannelType::kSendMessage, port_id1,
+      message_port_remote1, message_port_host_receiver1);
   gin::Handle<GinPort> port2 = messaging_service()->CreatePortForTesting(
-      script_context(), "channel2", port_id2, message_port_remote2,
-      message_port_host_receiver2);
+      script_context(), "channel2", mojom::ChannelType::kSendMessage, port_id2,
+      message_port_remote2, message_port_host_receiver2);
   message_port_remote1.EnableUnassociatedUsage();
   message_port_host_receiver1.EnableUnassociatedUsage();
   message_port_remote2.EnableUnassociatedUsage();
@@ -275,11 +275,11 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectMessagePort) {
   mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
       message_port_host_receiver2;
   gin::Handle<GinPort> port1 = messaging_service()->CreatePortForTesting(
-      script_context(), "channel1", port_id1, message_port_remote1,
-      message_port_host_receiver1);
+      script_context(), "channel1", mojom::ChannelType::kSendMessage, port_id1,
+      message_port_remote1, message_port_host_receiver1);
   gin::Handle<GinPort> port2 = messaging_service()->CreatePortForTesting(
-      script_context(), "channel2", port_id2, message_port_remote2,
-      message_port_host_receiver2);
+      script_context(), "channel2", mojom::ChannelType::kSendMessage, port_id2,
+      message_port_remote2, message_port_host_receiver2);
   message_port_remote1.EnableUnassociatedUsage();
   message_port_host_receiver1.EnableUnassociatedUsage();
   message_port_remote2.EnableUnassociatedUsage();
@@ -338,8 +338,8 @@ TEST_F(NativeRendererMessagingServiceTest, PostMessageFromJS) {
   mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
       message_port_host_receiver;
   gin::Handle<GinPort> port = messaging_service()->CreatePortForTesting(
-      script_context(), "channel", port_id, message_port_remote,
-      message_port_host_receiver);
+      script_context(), "channel", mojom::ChannelType::kSendMessage, port_id,
+      message_port_remote, message_port_host_receiver);
   message_port_remote.EnableUnassociatedUsage();
   message_port_host_receiver.EnableUnassociatedUsage();
   mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));
@@ -377,8 +377,8 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectFromJS) {
   mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
       message_port_host_receiver;
   gin::Handle<GinPort> port = messaging_service()->CreatePortForTesting(
-      script_context(), "channel", port_id, message_port_remote,
-      message_port_host_receiver);
+      script_context(), "channel", mojom::ChannelType::kSendMessage, port_id,
+      message_port_remote, message_port_host_receiver);
   message_port_remote.EnableUnassociatedUsage();
   message_port_host_receiver.EnableUnassociatedUsage();
   mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));

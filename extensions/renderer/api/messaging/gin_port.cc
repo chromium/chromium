@@ -10,10 +10,13 @@
 #include "base/functional/bind.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_event_handler.h"
 #include "extensions/renderer/bindings/event_emitter.h"
+#include "extensions/renderer/console.h"
+#include "extensions/renderer/get_script_context.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/object_template_builder.h"
@@ -35,10 +38,12 @@ constexpr char kContextInvalidatedError[] = "Extension context invalidated.";
 GinPort::GinPort(v8::Local<v8::Context> context,
                  const PortId& port_id,
                  const std::string& name,
+                 const mojom::ChannelType channel_type,
                  APIEventHandler* event_handler,
                  Delegate* delegate)
     : port_id_(port_id),
       name_(name),
+      channel_type_(channel_type),
       event_handler_(event_handler),
       delegate_(delegate),
       accessed_sender_(false) {
@@ -74,16 +79,22 @@ void GinPort::DispatchOnMessage(v8::Local<v8::Context> context,
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(context);
 
-  v8::Local<v8::Value> parsed_message =
-      messaging_util::MessageToV8(context, message);
-  if (parsed_message.IsEmpty()) {
-    DUMP_WILL_BE_NOTREACHED();
-    return;
-  }
+  // Parsing should be fail-safe for kNative channel type as native messaging
+  // hosts can send malformed messages.
+  std::string error;
+  v8::Local<v8::Value> parsed_message = messaging_util::MessageToV8(
+      context, message, channel_type_ == mojom::ChannelType::kNative, &error);
 
   v8::Local<v8::Object> self = GetWrapper(isolate).ToLocalChecked();
   v8::LocalVector<v8::Value> args(isolate, {parsed_message, self});
-  DispatchEvent(context, &args, kOnMessageEvent);
+
+  if (error.empty()) {
+    DispatchEvent(context, &args, kOnMessageEvent);
+  } else {
+    ScriptContext* script_context = GetScriptContextFromV8Context(context);
+    console::AddMessage(script_context,
+                        blink::mojom::ConsoleMessageLevel::kError, error);
+  }
 }
 
 void GinPort::DispatchOnDisconnect(v8::Local<v8::Context> context) {

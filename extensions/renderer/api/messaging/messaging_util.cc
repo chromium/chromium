@@ -42,6 +42,9 @@ constexpr char kExtensionIdRequiredErrorTemplate[] =
 
 constexpr char kErrorCouldNotSerialize[] = "Could not serialize message.";
 
+constexpr char kErrorMalformedJSONMessage[] =
+    "The sender sent an invalid JSON message; message ignored.";
+
 std::unique_ptr<Message> MessageFromJSONString(v8::Isolate* isolate,
                                                v8::Local<v8::Context> context,
                                                v8::Local<v8::String> json,
@@ -162,7 +165,9 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
 }
 
 v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
-                                 const Message& message) {
+                                 const Message& message,
+                                 bool is_parsing_fail_safe,
+                                 std::string* error) {
   // TODO(crbug.com/40321352): Incorporate `message.format` while deserializing
   // the message.
 
@@ -174,9 +179,10 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
   v8::Local<v8::Value> parsed_message;
   v8::TryCatch try_catch(isolate);
   if (!v8::JSON::Parse(context, v8_message_string).ToLocal(&parsed_message)) {
-    // TODO(crbug.com/40265714): Replace the above with a CHECK that parsing
-    // should always succeed here. This should be trusted data.
-    DUMP_WILL_BE_NOTREACHED();
+    CHECK(is_parsing_fail_safe);
+    if (error) {
+      *error = kErrorMalformedJSONMessage;
+    }
     return v8::Local<v8::Value>();
   }
   return parsed_message;
