@@ -18,6 +18,7 @@ tracing_dir = (pathlib.Path(__file__).absolute().parents[2] /
 sys.path.append(str(tracing_dir))
 from tracing.value import histogram, histogram_set
 from tracing.value.diagnostics import generic_set
+from tracing.value.diagnostics import reserved_infos
 
 
 def _get_crossbench_json_path(out_dir: pathlib.Path) -> pathlib.Path:
@@ -71,7 +72,8 @@ def _get_crossbench_json_path(out_dir: pathlib.Path) -> pathlib.Path:
 def convert(crossbench_out_dir: pathlib.Path,
             out_filename: pathlib.Path,
             benchmark: Optional[str] = None,
-            story: Optional[str] = None) -> None:
+            story: Optional[str] = None,
+            results_label: Optional[str] = None) -> None:
   """Do the conversion of crossbench output into histogram format.
 
   Args: See the help strings passed to argparse.ArgumentParser.
@@ -107,10 +109,13 @@ def convert(crossbench_out_dir: pathlib.Path,
 
   if benchmark:
     results.AddSharedDiagnosticToAllHistograms(
-        'benchmarks', generic_set.GenericSet([benchmark]))
+        reserved_infos.BENCHMARKS.name, generic_set.GenericSet([benchmark]))
   if story:
-    results.AddSharedDiagnosticToAllHistograms('stories',
-                                               generic_set.GenericSet([story]))
+    results.AddSharedDiagnosticToAllHistograms(
+        reserved_infos.STORIES.name, generic_set.GenericSet([story]))
+  if results_label:
+    results.AddSharedDiagnosticToAllHistograms(
+        reserved_infos.LABELS.name, generic_set.GenericSet([results_label]))
 
   with out_filename.open('w') as f:
     json.dump(results.AsDicts(), f)

@@ -770,7 +770,7 @@ class CrossbenchTest(object):
         crossbench_result_converter.convert(
             pathlib.Path(working_dir) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,
-            self.STORY_LABEL)
+            self.STORY_LABEL, self.options.results_label)
     except Exception:
       print('The following exception may have prevented the code from '
             'outputing structured test results and perf results output:')
