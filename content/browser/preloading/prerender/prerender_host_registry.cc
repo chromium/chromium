@@ -320,6 +320,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kJavaScriptInterfaceAdded:
     case PrerenderFinalStatus::kJavaScriptInterfaceRemoved:
     case PrerenderFinalStatus::kAllPrerenderingCanceled:
+    case PrerenderFinalStatus::kWindowClosed:
       NOTREACHED_NORETURN();
   }
 

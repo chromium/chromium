@@ -12916,6 +12916,63 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(current_frame_host()->GetRenderWidgetHost(), render_widget_host);
 }
 
+// Tests that window.close() can cancel speculation rules.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, WindowClosedSpeculationRules) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  WaitForPrerenderLoadCompletion(host_id);
+
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(ExecJs(prerender_rfh, "window.close()"));
+  host_observer.WaitForDestroyed();
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kWindowClosed);
+
+  // The initiator page should not be closed by window.closed().
+  EXPECT_TRUE(ExecJs(web_contents(), ""));
+}
+
+// Tests that window.close() can cancel speculation rules whose target_hint is
+// "_blank" (i.e., prerender into new tab).
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       WindowClosedSpeculationRules_WithTargetHintBlank) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderingUrl, /*eagerness=*/std::nullopt, "_blank");
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  ASSERT_NE(prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
+  RenderFrameHost* prerender_rfh =
+      test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+          *prerender_web_contents, host_id);
+  ASSERT_TRUE(ExecJs(prerender_rfh, "window.close()"));
+  host_observer.WaitForDestroyed();
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kWindowClosed);
+
+  // The initiator page should not be closed by window.closed().
+  EXPECT_TRUE(ExecJs(web_contents(), ""));
+}
+
 // Many of these tests navigate away from a page and then test whether the back
 // navigation entry can be prerendered. This is parameterized on whether the
 // navigation away from the original page is browser or renderer initiated.

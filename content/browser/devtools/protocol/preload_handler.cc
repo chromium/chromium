@@ -183,6 +183,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::JavaScriptInterfaceRemoved;
     case PrerenderFinalStatus::kAllPrerenderingCanceled:
       return Preload::PrerenderFinalStatusEnum::AllPrerenderingCanceled;
+    case PrerenderFinalStatus::kWindowClosed:
+      return Preload::PrerenderFinalStatusEnum::WindowClosed;
   }
 }
 

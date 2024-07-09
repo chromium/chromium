@@ -12227,6 +12227,7 @@ experimental domain Preload
       JavaScriptInterfaceAdded
       JavaScriptInterfaceRemoved
       AllPrerenderingCanceled
+      WindowClosed
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

@@ -6267,6 +6267,13 @@ void RenderFrameHostImpl::ClosePageIgnoringUnloadEvents(
     close_timeout_.reset();
   }
 
+  // For prerendered pages, if window.close is called, it should be cancelled.
+  if (lifecycle_state_ == LifecycleStateImpl::kPrerendering &&
+      source == ClosePageSource::kRenderer) {
+    CancelPrerendering(
+        PrerenderCancellationReason(PrerenderFinalStatus::kWindowClosed));
+  }
+
   // If this RenderFrameHost is no longer the primary main frame (e.g., if it
   // was replaced by another frame while waiting for the ClosePage ACK or
   // timeout), there's no need to close the active tab if the request to close
