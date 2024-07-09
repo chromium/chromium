@@ -2042,6 +2042,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.Pref.Daily.PasswordLeakToggle" enum="Boolean"
+    expires_after="2024-12-08">
+  <owner>awado@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the current state of the password leak toggle under standard
+    protection on the chrome://settings/security page. Recorded for all
+    non-Incognito profiles every 24 hours and at startup, if the last recording
+    was more than 24 hours ago.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged"
     enum="BooleanManagedPref" expires_after="2024-11-30">
   <owner>xinghuilu@chromium.org</owner>

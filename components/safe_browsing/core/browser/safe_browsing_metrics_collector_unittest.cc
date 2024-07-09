@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -94,6 +95,8 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
         prefs::kSafeBrowsingEventTimestamps);
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kPasswordLeakDetectionEnabled, false);
     // Registration is normally handled by the safebrowsing preference module
     pref_service_.registry()->RegisterTimePref(
         prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime, base::Time());
