@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <set>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -77,20 +76,6 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   // `pref_name` must be a previously registered preference.
   void SetDefaultPrefValue(const std::string& pref_name, base::Value value);
 
-  // Registers a pref owned by another service for use with the current service.
-  // The owning service must register that pref with the `PUBLIC` flag.
-  void RegisterForeignPref(const std::string& path);
-
-  // Sets the default value and flags of a previously-registered foreign pref
-  // value.
-  void SetDefaultForeignPrefValue(const std::string& path,
-                                  base::Value default_value,
-                                  uint32_t flags);
-
-  const std::set<std::string>& foreign_pref_keys() const {
-    return foreign_pref_keys_;
-  }
-
  protected:
   friend class base::RefCounted<PrefRegistry>;
   virtual ~PrefRegistry();
@@ -108,8 +93,6 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
 
   // A map of pref name to a bitmask of PrefRegistrationFlags.
   PrefRegistrationFlagsMap registration_flags_;
-
-  std::set<std::string> foreign_pref_keys_;
 };
 
 #endif  // COMPONENTS_PREFS_PREF_REGISTRY_H_

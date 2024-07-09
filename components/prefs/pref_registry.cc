@@ -50,14 +50,6 @@ void PrefRegistry::SetDefaultPrefValue(const std::string& pref_name,
   defaults_->ReplaceDefaultValue(pref_name, std::move(value));
 }
 
-void PrefRegistry::SetDefaultForeignPrefValue(const std::string& path,
-                                              base::Value default_value,
-                                              uint32_t flags) {
-  auto erased = foreign_pref_keys_.erase(path);
-  DCHECK_EQ(1u, erased);
-  RegisterPreference(path, std::move(default_value), flags);
-}
-
 void PrefRegistry::RegisterPreference(std::string_view path,
                                       base::Value default_value,
                                       uint32_t flags) {
@@ -76,11 +68,6 @@ void PrefRegistry::RegisterPreference(std::string_view path,
   }
 
   OnPrefRegistered(path, flags);
-}
-
-void PrefRegistry::RegisterForeignPref(const std::string& path) {
-  bool inserted = foreign_pref_keys_.insert(path).second;
-  DCHECK(inserted);
 }
 
 void PrefRegistry::OnPrefRegistered(std::string_view path, uint32_t flags) {}
