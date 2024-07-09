@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -1148,7 +1149,7 @@ void BatchUploadRequest::OnChildRequestPrepared(RequestID request_id,
                                                 ApiErrorCode result) {
   DCHECK(CalledOnValidThread());
   auto const child = GetChildEntry(request_id);
-  DCHECK(child != child_requests_.end());
+  CHECK(child != child_requests_.end(), base::NotFatalUntil::M130);
   if (IsSuccessfulDriveApiErrorCode(result)) {
     (*child)->prepared = true;
   } else {
