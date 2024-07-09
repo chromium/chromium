@@ -30,9 +30,12 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
     const gfx::Rect& anchor_view_bounds,
     const views::View* target,
     const gfx::Rect screen_work_area,
-    const gfx::Point cursor_point) {
-  const int width_on_top_or_bottom =
-      std::max(kEditorMenuMinWidthDip, anchor_view_bounds.width());
+    const gfx::Point cursor_point,
+    const CardType& card_type) {
+  const int width_on_top_or_bottom = std::max(
+      card_type == CardType::kMahiDefaultMenu ? kMahiMenuTopBottomMinWidthDip
+                                              : kEditorMenuMinWidthDip,
+      anchor_view_bounds.width());
   const int height_on_top_or_bottom =
       target->GetHeightForWidth(width_on_top_or_bottom);
 
@@ -208,14 +211,15 @@ gfx::Rect PickBestEditorMenuBounds(std::vector<gfx::Rect> candidates,
 }  // namespace
 
 gfx::Rect GetEditorMenuBounds(const gfx::Rect& anchor_view_bounds,
-                              const views::View* target) {
+                              const views::View* target,
+                              const CardType card_type) {
   display::Screen* screen = display::Screen::GetScreen();
   const gfx::Rect screen_work_area =
       screen->GetDisplayMatching(anchor_view_bounds).work_area();
   const gfx::Point cursor_point = screen->GetCursorScreenPoint();
 
   std::vector<gfx::Rect> candidates = GetEditorMenuBoundsCandidates(
-      anchor_view_bounds, target, screen_work_area, cursor_point);
+      anchor_view_bounds, target, screen_work_area, cursor_point, card_type);
   return PickBestEditorMenuBounds(candidates, screen_work_area, cursor_point);
 }
 

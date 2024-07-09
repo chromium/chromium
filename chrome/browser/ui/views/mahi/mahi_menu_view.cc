@@ -303,8 +303,8 @@ void MahiMenuView::RequestFocus() {
 void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   // TODO(b/318733414): Move `editor_menu::GetEditorMenuBounds` to a common
   // place for use
-  GetWidget()->SetBounds(
-      editor_menu::GetEditorMenuBounds(anchor_view_bounds, this));
+  GetWidget()->SetBounds(editor_menu::GetEditorMenuBounds(
+      anchor_view_bounds, this, editor_menu::CardType::kMahiDefaultMenu));
 }
 
 void MahiMenuView::OnButtonPressed(::chromeos::mahi::ButtonType button_type) {

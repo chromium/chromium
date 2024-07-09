@@ -27,6 +27,7 @@ inline constexpr int kEditorMenuMarginDip = 8;
 
 // Minimum width of the editor menu.
 inline constexpr int kEditorMenuMinWidthDip = 320;
+inline constexpr int kMahiMenuTopBottomMinWidthDip = 240;
 inline constexpr int kBigEditorMenuMinWidthDip = 480;
 
 // Helper to compute editor menu bounds that for the provided anchor view
@@ -78,7 +79,8 @@ inline constexpr int kBigEditorMenuMinWidthDip = 480;
 // +------------------------------------------------------------------------+
 //
 gfx::Rect GetEditorMenuBounds(const gfx::Rect& anchor_view_bounds,
-                              const views::View* target);
+                              const views::View* target,
+                              const CardType card_type = CardType::kDefault);
 
 }  // namespace chromeos::editor_menu
 

@@ -156,17 +156,19 @@ TEST_P(MahiMenuControllerTest, BoundsChanged) {
   auto* widget = menu_controller()->menu_widget_for_test();
   EXPECT_TRUE(widget);
 
-  EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
-                                             widget->GetContentsView()),
-            widget->GetRestoredBounds());
+  EXPECT_EQ(
+      editor_menu::GetEditorMenuBounds(anchor_bounds, widget->GetContentsView(),
+                                       editor_menu::CardType::kMahiDefaultMenu),
+      widget->GetRestoredBounds());
 
   anchor_bounds = gfx::Rect(0, 50, 55, 80);
 
   // Widget should change bounds accordingly.
   menu_controller()->OnAnchorBoundsChanged(anchor_bounds);
-  EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
-                                             widget->GetContentsView()),
-            widget->GetRestoredBounds());
+  EXPECT_EQ(
+      editor_menu::GetEditorMenuBounds(anchor_bounds, widget->GetContentsView(),
+                                       editor_menu::CardType::kMahiDefaultMenu),
+      widget->GetRestoredBounds());
 }
 
 // Tests the behavior of the controller when there's text selected when
