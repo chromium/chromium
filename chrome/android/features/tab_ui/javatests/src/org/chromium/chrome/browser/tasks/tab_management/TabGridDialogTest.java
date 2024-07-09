@@ -197,7 +197,7 @@ public class TabGridDialogTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(9)
+                    .setRevision(10)
                     .build();
 
     // Must force tab re-creation to ensure tab group names make sense.
@@ -2108,7 +2108,7 @@ public class TabGridDialogTest {
 
     private void showDialogFromStrip(ChromeTabbedActivity cta) {
         assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        onView(
+        onViewWaiting(
                         allOf(
                                 withId(R.id.toolbar_left_button),
                                 isDescendantOfA(withId(R.id.bottom_controls))))
@@ -2399,7 +2399,7 @@ public class TabGridDialogTest {
 
     private void verifyDialogBackButtonContentDescription(ChromeTabbedActivity cta, String s) {
         assertTrue(isDialogFullyVisible(cta));
-        onView(
+        onViewWaiting(
                         allOf(
                                 withId(R.id.toolbar_left_button),
                                 isDescendantOfA(withId(R.id.dialog_container_view))))
