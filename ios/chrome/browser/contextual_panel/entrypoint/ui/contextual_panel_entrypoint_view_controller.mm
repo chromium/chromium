@@ -31,10 +31,12 @@ const CGFloat kLabelTrailingSpaceMultiplier = 0.375;
 const CGFloat kLabelLeadingSpaceMultiplier = 0.095;
 
 // Amount of time animating the entrypoint into the location bar should take.
-const NSTimeInterval kEntrypointDisplayingAnimationTime = 0.8;
+const NSTimeInterval kEntrypointDisplayingAnimationTime = 0.3;
 
-// Amount of time animating the large entrypoint (label) appearance.
-const NSTimeInterval kLargeEntrypointDisplayingAnimationTime = 0.3;
+// Amount of time animating the large entrypoint (label)
+// appearance/disappearance.
+const NSTimeInterval kLargeEntrypointAppearingAnimationTime = 0.2;
+const NSTimeInterval kLargeEntrypointDisappearingAnimationTime = 0.3;
 
 // Entrypoint container shadow constants.
 const float kEntrypointContainerShadowOpacity = 0.09f;
@@ -346,13 +348,13 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   // Animate the entrypoint appearance.
   self.view.alpha = 0;
-  self.view.transform = CGAffineTransformMakeScale(0.85, 0.85);
+  self.view.transform = CGAffineTransformMakeScale(0.95, 0.95);
 
   self.view.hidden = !_entrypointDisplayed;
 
   [UIView animateWithDuration:kEntrypointDisplayingAnimationTime
                         delay:0
-                      options:UIViewAnimationOptionCurveEaseOut
+                      options:UIViewAnimationOptionCurveEaseIn
                    animations:^{
                      self.view.alpha = 1;
                      self.view.transform = CGAffineTransformIdentity;
@@ -391,7 +393,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     [strongSelf.view layoutIfNeeded];
   };
 
-  [UIView animateWithDuration:kLargeEntrypointDisplayingAnimationTime
+  [UIView animateWithDuration:kLargeEntrypointAppearingAnimationTime
                         delay:0
                       options:(UIViewAnimationOptionCurveEaseOut |
                                UIViewAnimationOptionAllowUserInteraction)
@@ -418,7 +420,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     [strongSelf.view layoutIfNeeded];
   };
 
-  [UIView animateWithDuration:kLargeEntrypointDisplayingAnimationTime
+  [UIView animateWithDuration:kLargeEntrypointDisappearingAnimationTime
                         delay:0
                       options:(UIViewAnimationOptionCurveEaseOut |
                                UIViewAnimationOptionAllowUserInteraction)
