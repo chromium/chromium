@@ -15,8 +15,13 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
       webnn::InputOperandLayout::kNchw,
       webnn::SupportedDataTypes::All(),
       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+      {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
       {webnn::OperandDataType::kFloat16},
-      {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64}};
+      {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+      {webnn::OperandDataType::kUint8},
+      {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+      {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+  };
 
   webnn::ContextProperties output = webnn::ContextProperties();
   EXPECT_TRUE(

@@ -544,7 +544,8 @@ base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateConcatAndInferOutput(const std::vector<OperandDescriptor>& input,
+    ValidateConcatAndInferOutput(const ContextProperties& context_properties,
+                                 const std::vector<OperandDescriptor>& input,
                                  const uint32_t axis);
 
 // Validate prelu operator defined in WebIDL here:
@@ -588,7 +589,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-where.
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateWhereAndInferOutput(const OperandDescriptor& condition,
+    ValidateWhereAndInferOutput(const ContextProperties& context_properties,
+                                const OperandDescriptor& condition,
                                 const OperandDescriptor& true_value,
                                 const OperandDescriptor& false_value);
 

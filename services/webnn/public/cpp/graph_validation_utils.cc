@@ -1765,6 +1765,7 @@ ValidateLstmCellAndInferOutput(const OperandDescriptor& input,
 }
 
 base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
+    const ContextProperties& context_properties,
     const std::vector<OperandDescriptor>& inputs,
     const uint32_t axis) {
   if (inputs.empty()) {
@@ -1783,7 +1784,16 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
         "The axis must be in the range [0, N-1] where N is the rank of input "
         "tensor.");
   }
+
   const auto output_type = inputs[0].data_type();
+
+  static constexpr char kInputsParam[] = "inputs";
+  if (!context_properties.concat_inputs_supported_data_types.Has(output_type)) {
+    return base::unexpected(NotSupportedArgumentTypeError(
+        kInputsParam, output_type,
+        context_properties.concat_inputs_supported_data_types));
+  }
+
   // The loop skips the first input to avoid repeated checks.
   for (size_t i = 1; i < inputs.size(); ++i) {
     if (inputs[i].data_type() != output_type) {
@@ -1992,23 +2002,44 @@ base::expected<OperandDescriptor, std::string> ValidateTriangularAndInferOutput(
 }
 
 base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& condition,
     const OperandDescriptor& true_value,
     const OperandDescriptor& false_value) {
-  if (condition.data_type() != OperandDataType::kUint8) {
-    return base::unexpected("The condition data type must be uint8.");
+  static constexpr char kConditionParam[] = "condition";
+  if (!context_properties.where_condition_supported_data_types.Has(
+          condition.data_type())) {
+    return base::unexpected(NotSupportedArgumentTypeError(
+        kConditionParam, condition.data_type(),
+        context_properties.where_condition_supported_data_types));
+  }
+
+  static constexpr char kTrueValueParam[] = "trueValue";
+  if (!context_properties.where_true_value_supported_data_types.Has(
+          true_value.data_type())) {
+    return base::unexpected(NotSupportedArgumentTypeError(
+        kTrueValueParam, true_value.data_type(),
+        context_properties.where_true_value_supported_data_types));
+  }
+
+  static constexpr char kFalseValueParam[] = "falseValue";
+  if (!context_properties.where_false_value_supported_data_types.Has(
+          false_value.data_type())) {
+    return base::unexpected(NotSupportedArgumentTypeError(
+        kFalseValueParam, false_value.data_type(),
+        context_properties.where_false_value_supported_data_types));
   }
 
   if (true_value.data_type() != false_value.data_type()) {
     return base::unexpected(
-        "The data types of true_value and false_value don't match.");
+        "The data types of trueValue and falseValue don't match.");
   }
 
   const std::optional<std::vector<uint32_t>> value_shape = BroadcastShapes(
       true_value.shape(), false_value.shape(), /*bidirectional=*/true);
   if (!value_shape) {
     return base::unexpected(
-        "The shapes of true_value and false_value are not broadcastable.");
+        "The shapes of trueValue and falseValue are not broadcastable.");
   }
 
   std::optional<std::vector<uint32_t>> output_shape = BroadcastShapes(
@@ -2016,7 +2047,7 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
   if (!output_shape) {
     return base::unexpected(
         "The condition shape is not broadcastable to the shape broadcasted "
-        "from true_value and false_value.");
+        "from trueValue and falseValue.");
   }
   return OperandDescriptor::Create(true_value.data_type(),
                                    *std::move(output_shape));

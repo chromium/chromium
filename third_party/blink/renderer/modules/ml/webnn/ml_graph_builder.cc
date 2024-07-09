@@ -990,7 +990,8 @@ MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateConcatAndInferOutput(input_component_operands, axis));
+      webnn::ValidateConcatAndInferOutput(ml_context_->GetProperties(),
+                                          input_component_operands, axis));
 
   auto* concat = MakeGarbageCollected<MLConcatOperator>(this, axis);
   MLOperand* output =
@@ -2172,9 +2173,9 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateWhereAndInferOutput(condition->Descriptor(),
-                                         true_value->Descriptor(),
-                                         false_value->Descriptor()));
+      webnn::ValidateWhereAndInferOutput(
+          ml_context_->GetProperties(), condition->Descriptor(),
+          true_value->Descriptor(), false_value->Descriptor()));
 
   auto* where = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kWhere);

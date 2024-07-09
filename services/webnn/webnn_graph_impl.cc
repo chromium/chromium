@@ -660,7 +660,8 @@ bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateConcat(const IdToOperandMap& id_to_operand_map,
+bool ValidateConcat(const ContextProperties& context_properties,
+                    const IdToOperandMap& id_to_operand_map,
                     const mojom::Concat& concat,
                     base::flat_set<uint64_t>& processed_operands) {
   auto* output = GetMojoOperand(id_to_operand_map, concat.output_operand_id);
@@ -683,7 +684,8 @@ bool ValidateConcat(const IdToOperandMap& id_to_operand_map,
     inputs.push_back(input->descriptor);
   }
 
-  auto validated_output = ValidateConcatAndInferOutput(inputs, concat.axis);
+  auto validated_output =
+      ValidateConcatAndInferOutput(context_properties, inputs, concat.axis);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1812,7 +1814,8 @@ bool ValidateTriangular(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateWhere(const IdToOperandMap& id_to_operand_map,
+bool ValidateWhere(const ContextProperties& context_properties,
+                   const IdToOperandMap& id_to_operand_map,
                    const mojom::Where& where,
                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(where.condition_operand_id) ||
@@ -1836,7 +1839,8 @@ bool ValidateWhere(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output_descriptor = ValidateWhereAndInferOutput(
-      condition->descriptor, true_value->descriptor, false_value->descriptor);
+      context_properties, condition->descriptor, true_value->descriptor,
+      false_value->descriptor);
   if (!validated_output_descriptor.has_value()) {
     return false;
   }
@@ -1891,8 +1895,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateClamp(id_to_operand_map, *operation.get_clamp(),
                            processed_operands);
     case mojom::Operation::Tag::kConcat:
-      return ValidateConcat(id_to_operand_map, *operation.get_concat(),
-                            processed_operands);
+      return ValidateConcat(context_properties, id_to_operand_map,
+                            *operation.get_concat(), processed_operands);
     case mojom::Operation::Tag::kConv2d:
       return ValidateConv2d(context_properties, id_to_operand_map,
                             *operation.get_conv2d(), processed_operands);
@@ -2010,8 +2014,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateTriangular(id_to_operand_map, *operation.get_triangular(),
                                 processed_operands);
     case mojom::Operation::Tag::kWhere:
-      return ValidateWhere(id_to_operand_map, *operation.get_where(),
-                           processed_operands);
+      return ValidateWhere(context_properties, id_to_operand_map,
+                           *operation.get_where(), processed_operands);
   }
   NOTREACHED_NORETURN();
 }

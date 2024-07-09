@@ -362,7 +362,7 @@ dictionary MLTriangularOptions {
 
   [RaisesException] MLOperand triangular(MLOperand input, optional MLTriangularOptions options = {});
 
-  [RaisesException] MLOperand where(MLOperand condition, MLOperand true_value, MLOperand false_value);
+  [RaisesException] MLOperand where(MLOperand condition, MLOperand trueValue, MLOperand falseValue);
 
   [
     CallWith=ScriptState,

@@ -22,8 +22,12 @@ struct ContextProperties {
   InputOperandLayout conv2d_input_layout;
   SupportedDataTypes input_supported_data_types;
   SupportedDataTypes constant_supported_data_types;
+  SupportedDataTypes concat_inputs_supported_data_types;
   SupportedDataTypes gather_input_supported_data_types;
   SupportedDataTypes gather_indices_supported_data_types;
+  SupportedDataTypes where_condition_supported_data_types;
+  SupportedDataTypes where_true_value_supported_data_types;
+  SupportedDataTypes where_false_value_supported_data_types;
 };
 
 inline bool operator==(const ContextProperties& lhs,
@@ -32,10 +36,18 @@ inline bool operator==(const ContextProperties& lhs,
          lhs.input_supported_data_types == rhs.input_supported_data_types &&
          lhs.constant_supported_data_types ==
              rhs.constant_supported_data_types &&
+         lhs.concat_inputs_supported_data_types ==
+             rhs.concat_inputs_supported_data_types &&
          lhs.gather_input_supported_data_types ==
              rhs.gather_input_supported_data_types &&
          lhs.gather_indices_supported_data_types ==
-             rhs.gather_indices_supported_data_types;
+             rhs.gather_indices_supported_data_types &&
+         lhs.where_condition_supported_data_types ==
+             rhs.where_condition_supported_data_types &&
+         lhs.where_true_value_supported_data_types ==
+             rhs.where_true_value_supported_data_types &&
+         lhs.where_false_value_supported_data_types ==
+             rhs.where_false_value_supported_data_types;
 }
 
 }  // namespace webnn

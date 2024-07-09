@@ -28,7 +28,13 @@ dictionary MLOpSupportLimits {
   MLSupportLimits constant;
   MLSupportLimits output;
 
+  MLConcatSupportLimits concat;
   MLGatherSupportLimits gather;
+  MLWhereSupportLimits where;
+};
+
+dictionary MLConcatSupportLimits {
+  MLSupportLimits inputs;
 };
 
 dictionary MLGatherSupportLimits {
@@ -36,8 +42,14 @@ dictionary MLGatherSupportLimits {
   MLSupportLimits indices;
 };
 
+dictionary MLWhereSupportLimits {
+  MLSupportLimits condition;
+  MLSupportLimits trueValue;
+  MLSupportLimits falseValue;
+};
+
 dictionary MLSupportLimits {
-    sequence<DOMString> dataTypes;
+  sequence<DOMString> dataTypes;
 };
 
 typedef record<DOMString, MLBuffer> MLNamedBuffers;

@@ -33,6 +33,10 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
       const webnn::ContextProperties& context_properties) {
     return context_properties.constant_supported_data_types;
   }
+  static webnn::SupportedDataTypes concat_inputs_supported_data_types(
+      const webnn::ContextProperties& context_properties) {
+    return context_properties.concat_inputs_supported_data_types;
+  }
   static webnn::SupportedDataTypes gather_input_supported_data_types(
       const webnn::ContextProperties& context_properties) {
     return context_properties.gather_input_supported_data_types;
@@ -40,6 +44,18 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
   static webnn::SupportedDataTypes gather_indices_supported_data_types(
       const webnn::ContextProperties& context_properties) {
     return context_properties.gather_indices_supported_data_types;
+  }
+  static webnn::SupportedDataTypes where_condition_supported_data_types(
+      const webnn::ContextProperties& context_properties) {
+    return context_properties.where_condition_supported_data_types;
+  }
+  static webnn::SupportedDataTypes where_true_value_supported_data_types(
+      const webnn::ContextProperties& context_properties) {
+    return context_properties.where_true_value_supported_data_types;
+  }
+  static webnn::SupportedDataTypes where_false_value_supported_data_types(
+      const webnn::ContextProperties& context_properties) {
+    return context_properties.where_false_value_supported_data_types;
   }
 
   static bool Read(webnn::mojom::ContextPropertiesDataView data,
@@ -55,10 +71,18 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
     return data.ReadInputSupportedDataTypes(&out->input_supported_data_types) &&
            data.ReadConstantSupportedDataTypes(
                &out->constant_supported_data_types) &&
+           data.ReadConcatInputsSupportedDataTypes(
+               &out->concat_inputs_supported_data_types) &&
            data.ReadGatherInputSupportedDataTypes(
                &out->gather_input_supported_data_types) &&
            data.ReadGatherIndicesSupportedDataTypes(
-               &out->gather_indices_supported_data_types);
+               &out->gather_indices_supported_data_types) &&
+           data.ReadWhereConditionSupportedDataTypes(
+               &out->where_condition_supported_data_types) &&
+           data.ReadWhereTrueValueSupportedDataTypes(
+               &out->where_true_value_supported_data_types) &&
+           data.ReadWhereFalseValueSupportedDataTypes(
+               &out->where_false_value_supported_data_types);
   }
 };
 

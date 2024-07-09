@@ -245,8 +245,12 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
       {InputOperandLayout::kNhwc,
        /*input_supported_data_types=*/SupportedDataTypes::All(),
        /*constant_supported_data_types=*/SupportedDataTypes::All(),
+       /*cocnat_inputs_supported_data_types=*/SupportedDataTypes::All(),
        /*gather_input_supported_data_types=*/SupportedDataTypes::All(),
-       /*gather_indices_supported_data_types=*/SupportedDataTypes::All()});
+       /*gather_indices_supported_data_types=*/SupportedDataTypes::All(),
+       /*where_condition_supported_data_types=*/{OperandDataType::kUint8},
+       /*where_input_supported_data_types=*/SupportedDataTypes::All(),
+       /*where_other_supported_data_types=*/SupportedDataTypes::All()});
 }
 
 GraphBuilderTflite::GraphBuilderTflite(const mojom::GraphInfo& graph_info)

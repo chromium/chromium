@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_lost_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
@@ -182,12 +184,26 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   op_support_limits->setOutput(SupportedDataTypesToSupportLimits(
       properties_.OutputSupportedDataTypes()));
 
+  MLConcatSupportLimits* concat = MLConcatSupportLimits::Create();
+  concat->setInputs(SupportedDataTypesToSupportLimits(
+      properties_.concat_inputs_supported_data_types));
+  op_support_limits->setConcat(concat);
+
   MLGatherSupportLimits* gather = MLGatherSupportLimits::Create();
   gather->setInput(SupportedDataTypesToSupportLimits(
       properties_.gather_input_supported_data_types));
   gather->setIndices(SupportedDataTypesToSupportLimits(
       properties_.gather_indices_supported_data_types));
   op_support_limits->setGather(gather);
+
+  MLWhereSupportLimits* where = MLWhereSupportLimits::Create();
+  where->setCondition(SupportedDataTypesToSupportLimits(
+      properties_.where_condition_supported_data_types));
+  where->setTrueValue(SupportedDataTypesToSupportLimits(
+      properties_.where_true_value_supported_data_types));
+  where->setFalseValue(SupportedDataTypesToSupportLimits(
+      properties_.where_false_value_supported_data_types));
+  op_support_limits->setWhere(where);
 
   return op_support_limits;
 }

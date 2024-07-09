@@ -140,6 +140,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   // `SupportedDataTypes::All()`.
   backend_context_properties.gather_indices_supported_data_types.RetainAll(
       DataTypeConstraint::kGatherOperatorIndexDataTypes);
+  backend_context_properties.where_condition_supported_data_types.RetainAll(
+      {OperandDataType::kUint8});
   return backend_context_properties;
 }
 

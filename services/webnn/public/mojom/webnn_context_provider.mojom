@@ -56,6 +56,17 @@ struct CreateContextOptions {
   uint8 thread_count_hint;
 };
 
+struct SupportedDataTypes {
+  bool float32;
+  bool float16;
+  bool int32;
+  bool uint32;
+  bool int64;
+  bool uint64;
+  bool int8;
+  bool uint8;
+};
+
 // Represents properties of the `WebNNContext` implementation that has been
 // provided.
 struct ContextProperties {
@@ -67,19 +78,12 @@ struct ContextProperties {
   SupportedDataTypes input_supported_data_types;
   SupportedDataTypes constant_supported_data_types;
 
+  SupportedDataTypes concat_inputs_supported_data_types;
   SupportedDataTypes gather_input_supported_data_types;
   SupportedDataTypes gather_indices_supported_data_types;
-};
-
-struct SupportedDataTypes {
-  bool float32;
-  bool float16;
-  bool int32;
-  bool uint32;
-  bool int64;
-  bool uint64;
-  bool int8;
-  bool uint8;
+  SupportedDataTypes where_condition_supported_data_types;
+  SupportedDataTypes where_true_value_supported_data_types;
+  SupportedDataTypes where_false_value_supported_data_types;
 };
 
 // Represents a successful call to `WebNNContextProvider::CreateWebNNContext`.

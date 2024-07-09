@@ -609,9 +609,13 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
       {InputOperandLayout::kNchw,
        /*input_supported_data_types=*/kFloatsAndInt32,
        /*constant_supported_data_types=*/kFloatsAndInt32,
+       /*concat_inputs_supported_data_types=*/kFloatsAndInt32,
        /*gather_input_supported_data_types=*/kGatherInputSupportedDataTypes,
        /*gather_indices_supported_data_types=*/
-       kGatherIndicesSupportedDataTypes});
+       kGatherIndicesSupportedDataTypes,
+       /*where_condition_supported_data_types=*/{},
+       /*where_true_value_supported_data_types=*/{},
+       /*where_false_value_supported_data_types=*/{}});
 }
 
 GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
@@ -1243,19 +1247,12 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForClamp(
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConcat(
     const mojom::Concat& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  // Note that BOOL is also supported by CoreML, but WebNN does not have a
-  // corresponding BOOL type. See docs here:
-  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.concat
-  if (base::ranges::any_of(
-          operation.input_operand_ids, [&](uint64_t input_operand_id) {
-            return !kFloatsAndInt32DataTypes.contains(
-                GetOperandInfo(input_operand_id).mil_data_type);
-          })) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        ops::kConcat, MILDataTypeToOperandType(
-                          GetOperandInfo(operation.input_operand_ids.front())
-                              .mil_data_type)));
-  }
+  CHECK(base::ranges::all_of(
+      operation.input_operand_ids, [&](uint64_t input_operand_id) {
+        return context_properties_.concat_inputs_supported_data_types.Has(
+            MILDataTypeToOperandType(
+                GetOperandInfo(input_operand_id).mil_data_type));
+      }));
 
   static constexpr char kParamValues[] = "values";
   static constexpr char kParamInterleave[] = "interleave";

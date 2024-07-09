@@ -43,8 +43,12 @@ ContextProperties GetProperties() {
       InputOperandLayout::kNchw,
       /*input_supported_data_types=*/SupportedDataTypes::All(),
       /*constant_supported_data_types=*/SupportedDataTypes::All(),
+      /*concat_inputs_supported_data_types=*/SupportedDataTypes::All(),
       /*gather_input_supported_data_types=*/SupportedDataTypes::All(),
-      /*gather_indices_supported_data_types=*/kGatherIndicesSupportedDataTypes};
+      /*gather_indices_supported_data_types=*/kGatherIndicesSupportedDataTypes,
+      /*where_condition_supported_data_types=*/{OperandDataType::kUint8},
+      /*where_true_value_supported_data_types=*/SupportedDataTypes::All(),
+      /*where_false_value_supported_data_types=*/SupportedDataTypes::All()};
 }
 
 }  // namespace
