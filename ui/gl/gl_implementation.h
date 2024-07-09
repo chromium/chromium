@@ -227,12 +227,6 @@ GL_EXPORT gfx::ExtensionSet GetRequestableGLExtensionsFromCurrentContext();
 GL_EXPORT gfx::ExtensionSet GetRequestableGLExtensionsFromCurrentContext(
     GLApi* api);
 
-// Helper for the GL bindings implementation to understand whether
-// glGetString(GL_EXTENSIONS) or glGetStringi(GL_EXTENSIONS, i) will
-// be used in the function above.
-GL_EXPORT bool WillUseGLGetStringForExtensions();
-GL_EXPORT bool WillUseGLGetStringForExtensions(GLApi* api);
-
 // Helpers to load a library and log error on failure.
 GL_EXPORT base::NativeLibrary LoadLibraryAndPrintError(
     const base::FilePath::CharType* filename);

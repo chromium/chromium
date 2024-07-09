@@ -3259,14 +3259,6 @@ GLenum TextureManager::AdjustTexInternalFormat(
 // static
 GLenum TextureManager::AdjustTexFormat(const gles2::FeatureInfo* feature_info,
                                        GLenum format) {
-  // TODO(bajones): GLES 3 allows for internal format and format to differ.
-  // This logic may need to change as a result.
-  if (!feature_info->gl_version_info().is_es) {
-    if (format == GL_SRGB_EXT)
-      return GL_RGB;
-    if (format == GL_SRGB_ALPHA_EXT)
-      return GL_RGBA;
-  }
   if (feature_info->gl_version_info().NeedsLuminanceAlphaEmulation()) {
     const Texture::CompatibilitySwizzle* swizzle =
         GetCompatibilitySwizzleInternal(format);

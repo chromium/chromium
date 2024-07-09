@@ -105,18 +105,6 @@ static inline GLenum GetTexInternalFormat(const GLVersionInfo* version,
       case GL_RGB:
         gl_internal_format = GL_RGB32F;
         break;
-      case GL_LUMINANCE_ALPHA:
-        if (!version->is_es)
-          gl_internal_format = GL_LUMINANCE_ALPHA32F_ARB;
-        break;
-      case GL_LUMINANCE:
-        if (!version->is_es)
-          gl_internal_format = GL_LUMINANCE32F_ARB;
-        break;
-      case GL_ALPHA:
-        if (!version->is_es)
-          gl_internal_format = GL_ALPHA32F_ARB;
-        break;
       default:
         // We can't assert here because if the client context is ES3,
         // all sized internal_format will reach here.
@@ -129,18 +117,6 @@ static inline GLenum GetTexInternalFormat(const GLVersionInfo* version,
         break;
       case GL_RGB:
         gl_internal_format = GL_RGB16F;
-        break;
-      case GL_LUMINANCE_ALPHA:
-        if (!version->is_es)
-          gl_internal_format = GL_LUMINANCE_ALPHA16F_ARB;
-        break;
-      case GL_LUMINANCE:
-        if (!version->is_es)
-          gl_internal_format = GL_LUMINANCE16F_ARB;
-        break;
-      case GL_ALPHA:
-        if (!version->is_es)
-          gl_internal_format = GL_ALPHA16F_ARB;
         break;
       default:
         break;
@@ -172,20 +148,15 @@ static inline GLenum GetTexFormat(const GLVersionInfo* version, GLenum format) {
 static inline GLenum GetPixelType(const GLVersionInfo* version,
                                   GLenum type,
                                   GLenum format) {
-  if (!version->is_es2) {
-    if (type == GL_HALF_FLOAT_OES) {
-      if (version->is_es) {
-        // For ES3+, use HALF_FLOAT instead of HALF_FLOAT_OES whenever possible.
-        switch (format) {
-          case GL_LUMINANCE:
-          case GL_LUMINANCE_ALPHA:
-          case GL_ALPHA:
-            return type;
-          default:
-            break;
-        }
-      }
-      return GL_HALF_FLOAT;
+  if (!version->is_es2 && type == GL_HALF_FLOAT_OES) {
+    // For ES3+, use HALF_FLOAT instead of HALF_FLOAT_OES whenever possible.
+    switch (format) {
+      case GL_LUMINANCE:
+      case GL_LUMINANCE_ALPHA:
+      case GL_ALPHA:
+        return type;
+      default:
+        return GL_HALF_FLOAT;
     }
   }
   return type;
@@ -194,10 +165,6 @@ static inline GLenum GetPixelType(const GLVersionInfo* version,
 }  // anonymous namespace
 
 GLenum GetInternalFormat(const GLVersionInfo* version, GLenum internal_format) {
-  if (!version->is_es) {
-    if (internal_format == GL_BGRA_EXT || internal_format == GL_BGRA8_EXT)
-      return GL_RGBA8;
-  }
   if (version->is_es3 && version->is_mesa) {
     // Mesa bug workaround: Mipmapping does not work when using GL_BGRA_EXT
     if (internal_format == GL_BGRA_EXT)
@@ -443,7 +410,7 @@ void RealGLApi::glClearDepthFn(GLclampd depth) {
   // OpenGL ES only has glClearDepthf, forward the parameters from glClearDepth.
   // Many mock tests expect only glClearDepth is called so don't make the
   // interception when testing with mocks.
-  if (version_->is_es && GetGLImplementation() != kGLImplementationMockGL) {
+  if (GetGLImplementation() != kGLImplementationMockGL) {
     DCHECK(driver_->fn.glClearDepthfFn);
     GLApiBase::glClearDepthfFn(static_cast<GLclampf>(depth));
   } else {
@@ -456,7 +423,7 @@ void RealGLApi::glDepthRangeFn(GLclampd z_near, GLclampd z_far) {
   // OpenGL ES only has glDepthRangef, forward the parameters from glDepthRange.
   // Many mock tests expect only glDepthRange is called so don't make the
   // interception when testing with mocks.
-  if (version_->is_es && GetGLImplementation() != kGLImplementationMockGL) {
+  if (GetGLImplementation() != kGLImplementationMockGL) {
     DCHECK(driver_->fn.glDepthRangefFn);
     GLApiBase::glDepthRangefFn(static_cast<GLclampf>(z_near),
                                static_cast<GLclampf>(z_far));
@@ -498,24 +465,11 @@ void RealGLApi::InitializeFilteredExtensionsIfNeeded() {
   if (filtered_exts_.size())
     return;
   DCHECK(filtered_exts_str_.empty());
-  if (WillUseGLGetStringForExtensions(this)) {
-    filtered_exts_str_ = FilterGLExtensionList(
-        reinterpret_cast<const char*>(GLApiBase::glGetStringFn(GL_EXTENSIONS)),
-        disabled_exts_);
-    filtered_exts_ = base::SplitString(
-        filtered_exts_str_, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  } else {
-    GLint num_extensions = 0;
-    GLApiBase::glGetIntegervFn(GL_NUM_EXTENSIONS, &num_extensions);
-    for (GLint i = 0; i < num_extensions; ++i) {
-      const char* gl_extension = reinterpret_cast<const char*>(
-          GLApiBase::glGetStringiFn(GL_EXTENSIONS, i));
-      DCHECK(gl_extension);
-      if (!base::Contains(disabled_exts_, gl_extension))
-        filtered_exts_.push_back(gl_extension);
-    }
-    filtered_exts_str_ = base::JoinString(filtered_exts_, " ");
-  }
+  filtered_exts_str_ = FilterGLExtensionList(
+      reinterpret_cast<const char*>(GLApiBase::glGetStringFn(GL_EXTENSIONS)),
+      disabled_exts_);
+  filtered_exts_ = base::SplitString(
+      filtered_exts_str_, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 }
 
 void RealGLApi::SetDisabledExtensions(const std::string& disabled_extensions) {

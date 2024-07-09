@@ -147,29 +147,12 @@ class GPUInfoCollectorTest
     EXPECT_CALL(*gl_, GetString(GL_VERSION))
         .WillRepeatedly(Return(
             reinterpret_cast<const GLubyte*>(test_values_.gl_version.c_str())));
-
     EXPECT_CALL(*gl_, GetString(GL_RENDERER))
         .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
             test_values_.gl_renderer.c_str())));
-
-    // Now that that expectation is set up, we can call this helper function.
-    if (gl::WillUseGLGetStringForExtensions()) {
-      EXPECT_CALL(*gl_, GetString(GL_EXTENSIONS))
-          .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
-              test_values_.gl_extensions.c_str())));
-    } else {
-      split_extensions_.clear();
-      split_extensions_ =
-          base::SplitString(test_values_.gl_extensions, " ",
-                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      EXPECT_CALL(*gl_, GetIntegerv(GL_NUM_EXTENSIONS, _))
-          .WillRepeatedly(SetArgPointee<1>(split_extensions_.size()));
-      for (size_t ii = 0; ii < split_extensions_.size(); ++ii) {
-        EXPECT_CALL(*gl_, GetStringi(GL_EXTENSIONS, ii))
-            .WillRepeatedly(Return(reinterpret_cast<const uint8_t*>(
-                split_extensions_[ii].c_str())));
-      }
-    }
+    EXPECT_CALL(*gl_, GetString(GL_EXTENSIONS))
+        .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
+            test_values_.gl_extensions.c_str())));
     EXPECT_CALL(*gl_, GetString(GL_SHADING_LANGUAGE_VERSION))
         .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
             gl_shading_language_version_)));

@@ -333,8 +333,7 @@ void TestHelper::SetupContextGroupInitExpectations(
   EXPECT_CALL(*gl, GetIntegerv(GL_MAX_RENDERBUFFER_SIZE, _))
       .WillOnce(SetArgPointee<1>(kMaxRenderbufferSize))
       .RetiresOnSaturation();
-  if (gfx::HasExtension(extension_set, "GL_ARB_framebuffer_object") ||
-      gfx::HasExtension(extension_set, "GL_EXT_framebuffer_multisample") ||
+  if (gfx::HasExtension(extension_set, "GL_EXT_framebuffer_multisample") ||
       gfx::HasExtension(extension_set,
                         "GL_EXT_multisampled_render_to_texture") ||
       gl_info.is_es3) {
@@ -351,7 +350,6 @@ void TestHelper::SetupContextGroupInitExpectations(
   if (enable_es3 ||
       (!enable_es3 &&
        (gfx::HasExtension(extension_set, "GL_EXT_draw_buffers") ||
-        gfx::HasExtension(extension_set, "GL_ARB_draw_buffers") ||
         (gl_info.is_es3 &&
          gfx::HasExtension(extension_set, "GL_NV_draw_buffers"))))) {
     EXPECT_CALL(*gl, GetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, _))
@@ -464,34 +462,14 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
   bool enable_es3 = context_type == CONTEXT_TYPE_WEBGL2 ||
       context_type == CONTEXT_TYPE_OPENGLES3;
 
-  EXPECT_CALL(*gl, GetString(GL_VERSION))
-      .WillOnce(Return(reinterpret_cast<const uint8_t*>(gl_version)))
-      .RetiresOnSaturation();
-
-  EXPECT_CALL(*gl, GetString(GL_RENDERER))
-      .WillOnce(Return(reinterpret_cast<const uint8_t*>(gl_renderer)))
-      .RetiresOnSaturation();
-
   gfx::ExtensionSet extension_set(gfx::MakeExtensionSet(extensions));
   // Persistent storage is needed for the split extension string.
   split_extensions_ =
       std::vector<std::string>(extension_set.begin(), extension_set.end());
   gl::GLVersionInfo gl_info(gl_version, gl_renderer, extension_set);
-  if (!gl_info.is_es && gl_info.major_version >= 3) {
-    EXPECT_CALL(*gl, GetIntegerv(GL_NUM_EXTENSIONS, _))
-        .WillOnce(SetArgPointee<1>(split_extensions_.size()))
-        .RetiresOnSaturation();
-    for (size_t ii = 0; ii < split_extensions_.size(); ++ii) {
-      EXPECT_CALL(*gl, GetStringi(GL_EXTENSIONS, ii))
-          .WillOnce(Return(
-              reinterpret_cast<const uint8_t*>(split_extensions_[ii].c_str())))
-          .RetiresOnSaturation();
-    }
-  } else {
-    EXPECT_CALL(*gl, GetString(GL_EXTENSIONS))
-        .WillOnce(Return(reinterpret_cast<const uint8_t*>(extensions)))
-        .RetiresOnSaturation();
-  }
+  EXPECT_CALL(*gl, GetString(GL_EXTENSIONS))
+      .WillOnce(Return(reinterpret_cast<const uint8_t*>(extensions)))
+      .RetiresOnSaturation();
 
   EXPECT_CALL(*gl, GetString(GL_VERSION))
       .WillOnce(Return(reinterpret_cast<const uint8_t*>(gl_version)))

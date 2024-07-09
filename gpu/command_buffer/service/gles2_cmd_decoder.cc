@@ -3737,11 +3737,8 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   // Initialize uninitialized locals by default
   driver_bug_workarounds.initializeUninitializedLocals = true;
 
-  ShShaderOutput shader_output_language =
-      ShaderTranslator::GetShaderOutputLanguageForContext(gl_version_info());
-
   vertex_translator_ = shader_translator_cache()->GetTranslator(
-      GL_VERTEX_SHADER, shader_spec, &resources, shader_output_language,
+      GL_VERTEX_SHADER, shader_spec, &resources, SH_ESSL_OUTPUT,
       driver_bug_workarounds);
   if (!vertex_translator_.get()) {
     LOG(ERROR) << "Could not initialize vertex shader translator.";
@@ -3750,7 +3747,7 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   }
 
   fragment_translator_ = shader_translator_cache()->GetTranslator(
-      GL_FRAGMENT_SHADER, shader_spec, &resources, shader_output_language,
+      GL_FRAGMENT_SHADER, shader_spec, &resources, SH_ESSL_OUTPUT,
       driver_bug_workarounds);
   if (!fragment_translator_.get()) {
     LOG(ERROR) << "Could not initialize fragment shader translator.";
