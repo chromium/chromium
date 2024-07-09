@@ -55,6 +55,7 @@ class BottomBarConfig {
         ButtonId.PIH_EXPANDED,
         ButtonId.CUSTOM,
         ButtonId.SEARCH,
+        ButtonId.HOME,
         ButtonId.MAX_BUTTON_ID,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -68,7 +69,8 @@ class BottomBarConfig {
         int PIH_EXPANDED = 7;
         int CUSTOM = 8;
         int SEARCH = 9;
-        int MAX_BUTTON_ID = SEARCH;
+        int HOME = 10;
+        int MAX_BUTTON_ID = HOME;
     }
 
     private final @GoogleBottomBarVariantLayoutType int mVariantLayoutType;

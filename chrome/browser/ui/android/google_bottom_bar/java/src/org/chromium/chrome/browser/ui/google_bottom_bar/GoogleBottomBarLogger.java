@@ -55,6 +55,7 @@ class GoogleBottomBarLogger {
      * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
      * should never be reused.
      */
+    // LINT.IfChange
     @IntDef({
         GoogleBottomBarButtonEvent.UNKNOWN,
         GoogleBottomBarButtonEvent.PIH_CHROME,
@@ -66,6 +67,7 @@ class GoogleBottomBarLogger {
         GoogleBottomBarButtonEvent.CUSTOM_EMBEDDER,
         GoogleBottomBarButtonEvent.SEARCH_EMBEDDER,
         GoogleBottomBarButtonEvent.SEARCH_CHROME,
+        GoogleBottomBarButtonEvent.HOME_EMBEDDER,
         GoogleBottomBarButtonEvent.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -80,11 +82,14 @@ class GoogleBottomBarLogger {
         int CUSTOM_EMBEDDER = 7;
         int SEARCH_EMBEDDER = 8;
         int SEARCH_CHROME = 9;
+        int HOME_EMBEDDER = 10;
 
-        int COUNT = 10;
+        int COUNT = 11;
         // NOTE: This must be kept in sync with the definition |GoogleBottomBarButtonEvent|
         // in tools/metrics/histograms/metadata/custom_tabs/enums.xml.
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/custom_tabs/enums.xml)
 
     /**
      * Logs an event indicating the type of layout used for the Google Bottom Bar.
@@ -163,6 +168,11 @@ class GoogleBottomBarLogger {
             case ButtonId.CUSTOM -> {
                 return buttonConfig.getPendingIntent() != null
                         ? GoogleBottomBarButtonEvent.CUSTOM_EMBEDDER
+                        : GoogleBottomBarButtonEvent.UNKNOWN;
+            }
+            case ButtonId.HOME -> {
+                return buttonConfig.getPendingIntent() != null
+                        ? GoogleBottomBarButtonEvent.HOME_EMBEDDER
                         : GoogleBottomBarButtonEvent.UNKNOWN;
             }
         }

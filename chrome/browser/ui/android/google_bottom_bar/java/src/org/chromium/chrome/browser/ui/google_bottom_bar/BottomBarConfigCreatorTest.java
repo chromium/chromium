@@ -177,7 +177,7 @@ public class BottomBarConfigCreatorTest {
     public void invalidButtonIdInList_returnsDefaultConfig() {
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
-                        .addAllEncodedButton(List.of(0, 10, 1))
+                        .addAllEncodedButton(List.of(0, 15, 1))
                         .build();
 
         assertDefaultConfig(mConfigCreator.create(params, List.of()), NO_VARIANT);
@@ -187,7 +187,7 @@ public class BottomBarConfigCreatorTest {
     public void invalidSpotlightButton_returnsDefaultConfig() {
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
-                        .addAllEncodedButton(List.of(10, 1, 2, 3))
+                        .addAllEncodedButton(List.of(15, 1, 2, 3))
                         .build();
 
         assertDefaultConfig(mConfigCreator.create(params, List.of()), NO_VARIANT);
@@ -328,6 +328,32 @@ public class BottomBarConfigCreatorTest {
                         UiUtils.getTintedDrawable(
                                 mContext,
                                 R.drawable.ic_search,
+                                R.color.default_icon_color_baseline));
+        Bitmap actualBitmap = drawableToBitmap(buttonConfig.getButtonList().get(0).getIcon());
+        // the button has the expected custom button params set
+        assertTrue(expectedBitmap.sameAs(actualBitmap));
+    }
+
+    @Test
+    public void hasHomeCustomParams_usesChromeHomeIconInButtonConfig() {
+        Drawable drawable = mock(Drawable.class);
+        when(mCustomButtonParams.getId()).thenReturn(107); // HOME
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
+        var pendingIntent = mock(PendingIntent.class);
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
+        // HOME, SHARE, SAVE
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 10, 2, 3))
+                        .build();
+
+        BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of(mCustomButtonParams));
+
+        Bitmap expectedBitmap =
+                drawableToBitmap(
+                        UiUtils.getTintedDrawable(
+                                mContext,
+                                R.drawable.bottom_bar_home_icon,
                                 R.color.default_icon_color_baseline));
         Bitmap actualBitmap = drawableToBitmap(buttonConfig.getButtonList().get(0).getIcon());
         // the button has the expected custom button params set

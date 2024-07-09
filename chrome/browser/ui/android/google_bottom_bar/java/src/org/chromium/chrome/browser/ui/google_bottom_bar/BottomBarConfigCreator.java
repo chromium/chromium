@@ -58,7 +58,9 @@ public class BottomBarConfigCreator {
                     105,
                     ButtonId.CUSTOM,
                     106,
-                    ButtonId.SEARCH);
+                    ButtonId.SEARCH,
+                    107,
+                    ButtonId.HOME);
     private static final List<Integer> DEFAULT_BUTTON_ID_LIST =
             List.of(ButtonId.SAVE, ButtonId.SHARE);
     private static final List<Integer> DEFAULT_RIGHT_BUTTON_ID_LIST = List.of(ButtonId.SHARE);
@@ -561,6 +563,8 @@ public class BottomBarConfigCreator {
             // Always use search icon provided by Chrome
             UiUtils.getTintedDrawable(
                     context, R.drawable.ic_search, R.color.default_icon_color_baseline);
+            case ButtonId.HOME -> UiUtils.getTintedDrawable(
+                    context, R.drawable.bottom_bar_home_icon, R.color.default_icon_color_baseline);
             default -> getTintedIcon(
                     context, params.getIcon(context), R.color.default_icon_color_baseline);
         };

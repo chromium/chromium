@@ -67,14 +67,15 @@ class GoogleBottomBarActionsHandler {
             case ButtonId.SHARE -> {
                 return v -> onShareButtonClick(buttonConfig);
             }
-            case ButtonId.PIH_BASIC, ButtonId.PIH_EXPANDED, ButtonId.PIH_COLORED -> {
-                return v -> onPageInsightsButtonClick(buttonConfig);
-            }
             case ButtonId.SEARCH -> {
                 return v -> onSearchButtonClick(buttonConfig);
             }
-            case ButtonId.CUSTOM -> {
-                return v -> onCustomButtonClick(buttonConfig);
+            case ButtonId.PIH_BASIC,
+                    ButtonId.PIH_EXPANDED,
+                    ButtonId.PIH_COLORED,
+                    ButtonId.CUSTOM,
+                    ButtonId.HOME -> {
+                return v -> startPendingIntentIfPresentOrThrowError(buttonConfig);
             }
             case ButtonId.ADD_NOTES, ButtonId.REFRESH -> {
                 Log.e(TAG, "Unsupported action: %s", buttonConfig.getId());
@@ -166,23 +167,17 @@ class GoogleBottomBarActionsHandler {
         }
     }
 
-    private void onCustomButtonClick(ButtonConfig buttonConfig) {
+    private void startPendingIntentIfPresentOrThrowError(ButtonConfig buttonConfig) {
         PendingIntent pendingIntent = buttonConfig.getPendingIntent();
         if (pendingIntent != null) {
             sendPendingIntentWithUrl(pendingIntent);
-            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.CUSTOM_EMBEDDER);
+            GoogleBottomBarLogger.logButtonClicked(
+                    GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(buttonConfig));
         } else {
-            Log.e(TAG, "Can't perform custom action as pending intent is null.");
-        }
-    }
-
-    private void onPageInsightsButtonClick(ButtonConfig buttonConfig) {
-        PendingIntent pendingIntent = buttonConfig.getPendingIntent();
-        if (pendingIntent != null) {
-            sendPendingIntentWithUrl(pendingIntent);
-            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.PIH_EMBEDDER);
-        } else {
-            Log.e(TAG, "Can't perform page insights action as pending intent is null.");
+            Log.e(
+                    TAG,
+                    "Can't perform action with id: %s as pending intent is null.",
+                    buttonConfig.getId());
         }
     }
 
