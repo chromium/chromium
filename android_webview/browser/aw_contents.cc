@@ -155,35 +155,6 @@ std::string* g_locale_list() {
   return locale_list.get();
 }
 
-std::vector<std::string>* g_app_defined_domains() {
-  // This list of domains doesn't change between app launches.
-  // For that reason, it is better to cache it for every navigation.
-  static base::NoDestructor<std::vector<std::string>> app_defined_domains(
-      GetAppDefinedDomains(
-          AppDefinedDomainCriteria::kAndroidAssetStatementsAndWebLinks));
-
-  return app_defined_domains.get();
-}
-
-void LogSiteVisit(std::string etld_plus1, jlong site_hash) {
-  JNIEnv* env = AttachCurrentThread();
-
-  auto* app_defined_domains = g_app_defined_domains();
-
-  bool site_related =
-      std::find_if(app_defined_domains->begin(), app_defined_domains->end(),
-                   [&etld_plus1](const std::string& domain) {
-                     std::string domain_etld =
-                         net::registry_controlled_domains::GetDomainAndRegistry(
-                             domain, net::registry_controlled_domains::
-                                         INCLUDE_PRIVATE_REGISTRIES);
-
-                     return etld_plus1 == domain_etld;
-                   }) != app_defined_domains->end();
-
-  Java_AwSiteVisitLogger_logVisit(env, site_hash, site_related);
-}
-
 const void* const kAwContentsUserDataKey = &kAwContentsUserDataKey;
 const void* const kComputedRendererPriorityUserDataKey =
     &kComputedRendererPriorityUserDataKey;
@@ -1497,6 +1468,13 @@ void AwContents::ResumeLoadingCreatedPopupWebContents(JNIEnv* env) {
 
 void JNI_AwContents_SetShouldDownloadFavicons(JNIEnv* env) {
   g_should_download_favicons = true;
+}
+
+void LogSiteVisit(std::string etld_plus1, jlong site_hash) {
+  bool site_related = IsAppDefined(std::move(etld_plus1));
+
+  JNIEnv* env = AttachCurrentThread();
+  Java_AwSiteVisitLogger_logVisit(env, site_hash, site_related);
 }
 
 void AwContents::PrimaryPageChanged(content::Page& page) {

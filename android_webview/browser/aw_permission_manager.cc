@@ -9,11 +9,14 @@
 #include <unordered_map>
 #include <utility>
 
+#include "android_webview/browser/aw_app_defined_websites.h"
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/thread_pool.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/permission_controller.h"
@@ -21,6 +24,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
@@ -235,6 +239,23 @@ AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused
+enum class StorageAccessAppDefinedType {
+  kAppDefined = 0,
+  kExternal = 1,
+  kMaxValue = kExternal,
+};
+
+void LogStorageAccessRequest(std::string etld_plus1) {
+  bool is_defined = IsAppDefined(std::move(etld_plus1));
+
+  base::UmaHistogramEnumeration("Android.WebView.StorageAccessRelation",
+                                is_defined
+                                    ? StorageAccessAppDefinedType::kAppDefined
+                                    : StorageAccessAppDefinedType::kExternal);
+}
+
 void AwPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
@@ -338,8 +359,6 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::NFC:
       case PermissionType::VR:
       case PermissionType::AR:
-      case PermissionType::STORAGE_ACCESS_GRANT:
-      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       case PermissionType::CAMERA_PAN_TILT_ZOOM:
       case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
@@ -356,6 +375,29 @@ void AwPermissionManager::RequestPermissions(
         pending_request_raw->SetPermissionStatus(permissions[i],
                                                  PermissionStatus::DENIED);
         break;
+      // The only reason we separate these request types out is to measure the
+      // calls for these requests. We are interested in the top level origin
+      // source for storage access requests.
+      case PermissionType::STORAGE_ACCESS_GRANT:
+      case PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
+        NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
+                         << static_cast<int>(permissions[i]);
+        pending_request_raw->SetPermissionStatus(permissions[i],
+                                                 PermissionStatus::DENIED);
+
+        const url::Origin& outer_origin =
+            render_frame_host->GetOutermostMainFrame()
+                ->GetLastCommittedOrigin();
+        std::string etld_plus1 =
+            net::registry_controlled_domains::GetDomainAndRegistry(
+                outer_origin,
+                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+        base::ThreadPool::PostTask(
+            FROM_HERE,
+            base::BindOnce(&LogStorageAccessRequest, std::move(etld_plus1)));
+        break;
+      }
       case PermissionType::MIDI:
       case PermissionType::SENSORS:
       case PermissionType::WAKE_LOCK_SCREEN:
