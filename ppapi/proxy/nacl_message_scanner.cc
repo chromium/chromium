@@ -561,7 +561,7 @@ void NaClMessageScanner::AuditNestedMessage(PP_Resource resource,
       if (ppapi::UnpackMessage<PpapiPluginMsg_FileSystem_ReserveQuotaReply>(
           msg, &amount, &file_sizes)) {
         FileSystemMap::iterator it = file_systems_.find(resource);
-        DCHECK(it != file_systems_.end());
+        CHECK(it != file_systems_.end(), base::NotFatalUntil::M130);
         it->second->UpdateReservedQuota(amount);
 
         FileSizeMap::const_iterator offset_it = file_sizes.begin();
