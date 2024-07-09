@@ -14,6 +14,8 @@
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/icon_button.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
@@ -68,11 +70,10 @@ PickerSearchFieldView::PickerSearchFieldView(
       .SetProperty(views::kMarginsKey, kSearchFieldVerticalPadding)
       .AddChildren(
           views::Builder<views::ImageButton>(
-              views::ImageButton::CreateIconButton(
-                  std::move(back_callback), vector_icons::kArrowBackIcon,
-                  l10n_util::GetStringUTF16(
-                      IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT),
-                  views::ImageButton::MaterialIconStyle::kSmall))
+              std::make_unique<IconButton>(
+                  std::move(back_callback), IconButton::Type::kSmallFloating,
+                  &vector_icons::kArrowBackIcon,
+                  IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT))
               .CopyAddressTo(&back_button_)
               .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
               .SetVisible(false),
@@ -88,20 +89,25 @@ PickerSearchFieldView::PickerSearchFieldView(
               .SetProperty(views::kBoxLayoutFlexKey,
                            views::BoxLayoutFlexSpecification().WithWeight(1)))
       .AddChild(views::Builder<views::ImageButton>(
-                    views::ImageButton::CreateIconButton(
+                    std::make_unique<IconButton>(
                         // `base::Unretained` is safe here since the search
                         // field is owned by this class.
                         base::BindRepeating(
                             &PickerSearchFieldView::ClearButtonPressed,
                             base::Unretained(this)),
-                        views::kIcCloseIcon,
-                        l10n_util::GetStringUTF16(
-                            IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT),
-                        views::ImageButton::MaterialIconStyle::kSmall))
+                        IconButton::Type::kSmallFloating, &views::kIcCloseIcon,
+                        IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT))
                     .CopyAddressTo(&clear_button_)
                     .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
                     .SetVisible(false))
       .BuildChildren();
+
+  StyleUtil::SetUpInkDropForButton(back_button_, gfx::Insets(),
+                                   /*highlight_on_hover=*/true,
+                                   /*highlight_on_focus=*/true);
+  StyleUtil::SetUpInkDropForButton(clear_button_, gfx::Insets(),
+                                   /*highlight_on_hover=*/true,
+                                   /*highlight_on_focus=*/true);
 
   UpdateTextfieldBorder();
 }

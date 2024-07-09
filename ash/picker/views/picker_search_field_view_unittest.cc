@@ -12,6 +12,7 @@
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -28,7 +29,10 @@
 namespace ash {
 namespace {
 
-using PickerSearchFieldViewTest = views::ViewsTestBase;
+class PickerSearchFieldViewTest : public views::ViewsTestBase {
+ private:
+  AshColorProvider ash_color_provider_;
+};
 
 TEST_F(PickerSearchFieldViewTest, HasTextFieldRole) {
   PickerKeyEventHandler key_event_handler;
