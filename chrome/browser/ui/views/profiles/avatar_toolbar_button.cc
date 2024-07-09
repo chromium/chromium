@@ -202,22 +202,39 @@ void AvatarToolbarButton::UpdateText() {
 void AvatarToolbarButton::UpdateAccessibilityLabel() {
   std::optional<std::u16string> accessibility_label =
       delegate_->GetAccessibilityLabel();
-  // Setting std::nullopt is needed. Setting an empty string will suppress the
-  // messages.
-  std::optional<std::u16string> name;
-  std::optional<std::u16string> description;
 
-  // In order not to override the content of the view, set the accessibility
-  // label as the description. If the view text is empty, set the accessibility
-  // label as the main name in order be read first and not to override reading
-  // the tooltip as the description.
-  if (GetText().empty()) {
-    name = accessibility_label;
+  std::u16string name;
+  std::u16string description;
+
+  // The button content text as well as the button action are modified
+  // dynamically with very different contexts. The accessibility label is not
+  // always present, but when it is, it is either used as the main text (through
+  // name) or as the secondary text (through description) if the button content
+  // exists. Adapt the description to match it's default when it is not the
+  // accessibility label: the tooltip or no text if the button content has no
+  // text initially. All the values needs to be overridden every time in order
+  // clear the previous state effect.
+  std::u16string button_content = GetText();
+  if (accessibility_label.has_value()) {
+    if (button_content.empty()) {
+      name = accessibility_label.value();
+      description = delegate_->GetAvatarTooltipText();
+    } else {
+      name = button_content;
+      description = accessibility_label.value();
+    }
   } else {
-    description = accessibility_label;
+    if (button_content.empty()) {
+      name = delegate_->GetAvatarTooltipText();
+      description = std::u16string();
+    } else {
+      name = button_content;
+      description = delegate_->GetAvatarTooltipText();
+    }
   }
 
-  SetAccessibilityProperties(ax::mojom::Role::kButton, name, description);
+  GetViewAccessibility().SetName(name);
+  GetViewAccessibility().SetDescription(description);
 }
 
 std::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {

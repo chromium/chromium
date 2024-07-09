@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -302,8 +304,9 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
   }
 
   // Sign in and wait for the name to stop showing.
-  AccountInfo SigninAndWait(const std::u16string& email) {
-    AccountInfo account_info = Signin(email, u"account_name");
+  AccountInfo SigninAndWait(const std::u16string& email,
+                            const std::u16string& name = u"account_name") {
+    AccountInfo account_info = Signin(email, name);
 
     AvatarToolbarButtonTestObserver observer(GetAvatarToolbarButton(browser()));
     AddSignedInImage(account_info.account_id);
@@ -1598,6 +1601,76 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
   Signout();
 
   EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
+                       AccessibilityLabels) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+
+  const std::u16string profile_name(u"new_profile_name");
+  profiles::UpdateProfileName(browser()->profile(), profile_name);
+
+  const views::ViewAccessibility& accessibility =
+      avatar->GetViewAccessibility();
+
+  EXPECT_EQ(accessibility.GetCachedName(), profile_name);
+  EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
+
+  const std::u16string account_name(u"Test Name");
+  SigninAndWait(u"test@gmail.com", account_name);
+
+  const std::u16string expected_profile_name_with_account =
+      account_name + u" (" + profile_name + u")";
+  EXPECT_EQ(accessibility.GetCachedName(), expected_profile_name_with_account);
+  EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
+
+  const std::u16string explicit_text(u"explicit_text");
+  const std::u16string explicit_accessibility_text(u"explicit_text_acc");
+  base::ScopedClosureRunner clear_explicit_text_callback =
+      avatar->ShowExplicitText(explicit_text, explicit_accessibility_text);
+
+  EXPECT_EQ(accessibility.GetCachedName(), explicit_text);
+  EXPECT_EQ(accessibility.GetCachedDescription(), explicit_accessibility_text);
+
+  clear_explicit_text_callback.RunAndReset();
+
+  EXPECT_EQ(accessibility.GetCachedName(), expected_profile_name_with_account);
+  EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
+
+  // This will trigger the immediate button content text change. Accessibility
+  // text should adapt as well.
+  SimulateSigninError(/*web_sign_out=*/false);
+
+  EXPECT_EQ(accessibility.GetCachedName(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+  EXPECT_EQ(accessibility.GetCachedDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_AVATAR_BUTTON_SIGNIN_PENDING_ACCESSIBILITY_LABEL));
+
+  ClearSigninError();
+
+  EXPECT_EQ(accessibility.GetCachedName(), expected_profile_name_with_account);
+  EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
+
+  // This will not trigger the immediate button content text change.
+  // Accessibility text should adapt as well.
+  SimulateSigninError(/*web_sign_out=*/true);
+
+  EXPECT_EQ(accessibility.GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_AVATAR_BUTTON_SIGNIN_PENDING_ACCESSIBILITY_LABEL));
+  EXPECT_EQ(accessibility.GetCachedDescription(),
+            expected_profile_name_with_account);
+
+  ClearSigninError();
+
+  EXPECT_EQ(accessibility.GetCachedName(), expected_profile_name_with_account);
+  EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
+
+  Signout();
+
+  EXPECT_EQ(accessibility.GetCachedName(), profile_name);
+  EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
