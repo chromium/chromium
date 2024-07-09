@@ -125,8 +125,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void SavedTabGroupLocalIdChanged(const base::Uuid& saved_group_id) override;
   void SavedTabGroupModelLoaded() override;
 
-  // Called on reading ID mapping from tab group store.
-  void OnReadTabGroupStore();
+  // Called to notify the observers that service initialization is complete.
+  void NotifyServiceInitialized();
 
   // Consolidation methods for adapting to observer signals from either
   // direction (local -> remote or remote -> local).
@@ -175,9 +175,6 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // The UI coordinator to apply changes between local tab groups and the
   // TabGroupSyncService.
   std::unique_ptr<TabGroupSyncCoordinator> coordinator_;
-
-  // Stores tab group ID mapping (Sync ID -> Local ID) and some local metadata.
-  std::unique_ptr<TabGroupStore> tab_group_store_;
 
   // The pref service for storing migration status.
   raw_ptr<PrefService> pref_service_;
