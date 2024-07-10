@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -37,6 +38,13 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PolicyBlocklistNavigationThrottleTest, Blocklist);
+  FRIEND_TEST_ALL_PREFIXES(PolicyBlocklistNavigationThrottleTest, Allowlist);
+  FRIEND_TEST_ALL_PREFIXES(PolicyBlocklistNavigationThrottleTest,
+                           SafeSites_Safe);
+  FRIEND_TEST_ALL_PREFIXES(PolicyBlocklistNavigationThrottleTest,
+                           SafeSites_Porn);
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //

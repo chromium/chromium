@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/policy/content/policy_blocklist_navigation_throttle.h"
+
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/content/safe_search_service.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
@@ -22,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -177,6 +180,8 @@ class PolicyBlocklistNavigationThrottleTest
 };
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, Blocklist) {
+  base::HistogramTester histogram_tester;
+
   SetBlocklistUrlPattern("example.com");
 
   // Block a blocklisted site.
@@ -184,9 +189,24 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Blocklist) {
   ASSERT_FALSE(navigation_simulator->IsDeferred());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
             navigation_simulator->GetLastThrottleCheckResult());
+
+  // Call WebContents::Stop() to reset the main rfh's navigation state. It
+  // results in destructing the navigation throttles to flush metrics.
+  RenderViewHostTestHarness::web_contents()->Stop();
+
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction",
+      PolicyBlocklistNavigationThrottle::RequestThrottleAction::kBlock, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime",
+      base::TimeDelta(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime", 0);
 }
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, Allowlist) {
+  base::HistogramTester histogram_tester;
+
   SetAllowlistUrlPattern("www.example.com");
   SetBlocklistUrlPattern("example.com");
 
@@ -195,9 +215,24 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Allowlist) {
   ASSERT_FALSE(navigation_simulator->IsDeferred());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             navigation_simulator->GetLastThrottleCheckResult());
+
+  // Call WebContents::Stop() to reset the main rfh's navigation state. It
+  // results in destructing the navigation throttles to flush metrics.
+  RenderViewHostTestHarness::web_contents()->Stop();
+
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction",
+      PolicyBlocklistNavigationThrottle::RequestThrottleAction::kProceed, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime",
+      base::TimeDelta(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime", 0);
 }
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Safe) {
+  base::HistogramTester histogram_tester;
+
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
   stub_url_checker_.SetUpValidResponse(false /* is_porn */);
 
@@ -207,9 +242,23 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Safe) {
   navigation_simulator->Wait();
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             navigation_simulator->GetLastThrottleCheckResult());
+
+  // Call WebContents::Stop() to reset the main rfh's navigation state. It
+  // results in destructing the navigation throttles to flush metrics.
+  RenderViewHostTestHarness::web_contents()->Stop();
+
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction",
+      PolicyBlocklistNavigationThrottle::RequestThrottleAction::kDefer, 1);
+  histogram_tester.ExpectTotalCount(
+      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime", 0);
 }
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Porn) {
+  base::HistogramTester histogram_tester;
+
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
   stub_url_checker_.SetUpValidResponse(true /* is_porn */);
 
@@ -219,6 +268,18 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Porn) {
   navigation_simulator->Wait();
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             navigation_simulator->GetLastThrottleCheckResult());
+
+  // Call WebContents::Stop() to reset the main rfh's navigation state. It
+  // results in destructing the navigation throttles to flush metrics.
+  RenderViewHostTestHarness::web_contents()->Stop();
+
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction",
+      PolicyBlocklistNavigationThrottle::RequestThrottleAction::kDefer, 1);
+  histogram_tester.ExpectTotalCount(
+      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime", 0);
 }
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Allowlisted) {
