@@ -711,10 +711,5 @@ test("test_libvpx") {
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    # TODO(wtc): Remove ":libvpx_config" when the unused function warnings in
-    # test/vp9_ethread_test.cc have been fixed.
-    ":libvpx_config",
-  ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
 }
