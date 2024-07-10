@@ -122,39 +122,51 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   // Element-wise binary operations
   MLOperand* add(const MLOperand* a,
                  const MLOperand* b,
+                 const MLOperatorOptions* options,
                  ExceptionState& exception_state);
   MLOperand* sub(const MLOperand* a,
                  const MLOperand* b,
+                 const MLOperatorOptions* options,
                  ExceptionState& exception_state);
   MLOperand* mul(const MLOperand* a,
                  const MLOperand* b,
+                 const MLOperatorOptions* options,
                  ExceptionState& exception_state);
   MLOperand* div(const MLOperand* a,
                  const MLOperand* b,
+                 const MLOperatorOptions* options,
                  ExceptionState& exception_state);
   MLOperand* max(const MLOperand* a,
                  const MLOperand* b,
+                 const MLOperatorOptions* options,
                  ExceptionState& exception_state);
   MLOperand* min(const MLOperand* a,
                  const MLOperand* b,
+                 const MLOperatorOptions* options,
                  ExceptionState& exception_state);
   MLOperand* pow(const MLOperand* a,
                  const MLOperand* b,
+                 const MLOperatorOptions* options,
                  ExceptionState& exception_state);
   MLOperand* equal(const MLOperand* a,
                    const MLOperand* b,
+                   const MLOperatorOptions* options,
                    ExceptionState& exception_state);
   MLOperand* greater(const MLOperand* a,
                      const MLOperand* b,
+                     const MLOperatorOptions* options,
                      ExceptionState& exception_state);
   MLOperand* greaterOrEqual(const MLOperand* a,
                             const MLOperand* b,
+                            const MLOperatorOptions* options,
                             ExceptionState& exception_state);
   MLOperand* lesser(const MLOperand* a,
                     const MLOperand* b,
+                    const MLOperatorOptions* options,
                     ExceptionState& exception_state);
   MLOperand* lesserOrEqual(const MLOperand* a,
                            const MLOperand* b,
+                           const MLOperatorOptions* options,
                            ExceptionState& exception_state);
 
   // Element-wise unary operations

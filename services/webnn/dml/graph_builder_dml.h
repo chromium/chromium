@@ -161,7 +161,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderDml final {
   // stored in `GraphBuilderDml::operator_nodes_` and returns its pointer. When
   // it fails to create IDMLOperator, a nullptr is returned.
   //
-  // TODO(crbug.com/330051532): change `label` to `std::string_view`.
+  // TODO(crbug.com/350540987): Remove the default value of `label` after all
+  // operators have labels.
   const OperatorNode* CreateOperatorNode(DML_OPERATOR_TYPE type,
                                          const void* operator_desc,
                                          base::span<const NodeOutput*> inputs,

@@ -186,9 +186,7 @@ webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
   if (options->hasBias()) {
     attributes.bias = options->bias()->Descriptor();
   }
-  if (options->hasLabel()) {
-    attributes.label = options->label().Utf8();
-  }
+  attributes.label = options->label().Utf8();
   attributes.axis = options->axis();
   return attributes;
 }
@@ -232,9 +230,7 @@ base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
   if (options->hasBias()) {
     attributes.bias_operand = options->bias()->Descriptor();
   }
-  if (options->hasLabel()) {
-    attributes.label = options->label().Utf8();
-  }
+  attributes.label = options->label().Utf8();
 
   return std::move(attributes);
 }
@@ -534,14 +530,20 @@ MLOperand* BuildElementWiseBinary(
     webnn::mojom::blink::ElementWiseBinary::Kind kind,
     const MLOperand* a,
     const MLOperand* b,
+    const MLOperatorOptions* options,
     ExceptionState& exception_state) {
+  const std::string label = options->label().Utf8();
   if (a->DataType() != b->DataType()) {
-    exception_state.ThrowTypeError("The input operand data types don't match.");
+    exception_state.ThrowTypeError(
+        String::Format("%s: The input operand data types don't match.",
+                       webnn::GetLabelErrorSuffix(label).c_str()));
     return nullptr;
   }
   auto output_shape = webnn::BroadcastShapes(a->Shape(), b->Shape());
   if (!output_shape) {
-    exception_state.ThrowTypeError("The input shapes are not broadcastable.");
+    exception_state.ThrowTypeError(
+        String::Format("%s: The input shapes are not broadcastable.",
+                       webnn::GetLabelErrorSuffix(label).c_str()));
     return nullptr;
   }
 
@@ -557,7 +559,7 @@ MLOperand* BuildElementWiseBinary(
 
   auto* binary = MakeGarbageCollected<MLOperator>(
       builder, /*kind=*/webnn::mojom::blink::Operation::Tag::kElementWiseBinary,
-      /*sub_kind=*/kind);
+      /*sub_kind=*/kind, options);
   MLOperand* output =
       MLOperand::CreateOutput(builder, std::move(output_descriptor), binary);
 
@@ -1087,11 +1089,12 @@ MLOperand* MLGraphBuilder::convTranspose2d(
 
 #define BUILD_ELEMENTWISE_BINARY_OP(op, op_kind)                           \
   MLOperand* MLGraphBuilder::op(const MLOperand* a, const MLOperand* b,    \
+                                const MLOperatorOptions* options,          \
                                 ExceptionState& exception_state) {         \
     THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs({a, b}), nullptr);       \
     return BuildElementWiseBinary(                                         \
         this, webnn::mojom::blink::ElementWiseBinary::Kind::op_kind, a, b, \
-        exception_state);                                                  \
+        options, exception_state);                                         \
   }
 
 BUILD_ELEMENTWISE_BINARY_OP(add, kAdd)
@@ -1798,7 +1801,7 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
   HeapVector<Member<const MLOperand>> inputs = {input, slope};
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
-  std::string label = options->hasLabel() ? options->label().Utf8() : "";
+  const std::string label = options->label().Utf8();
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
@@ -1888,7 +1891,7 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
                                       ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  std::string label = options->hasLabel() ? options->label().Utf8() : "";
+  const std::string label = options->label().Utf8();
 
   absl::variant<base::span<const float>, base::span<const uint32_t>>
       scales_or_sizes;

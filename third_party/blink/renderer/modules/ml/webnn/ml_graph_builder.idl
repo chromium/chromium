@@ -19,7 +19,7 @@ enum MLLstmWeightLayout { "iofg", "ifgo" };
 enum MLGruWeightLayout { "zrn", "rzn" };
 
 dictionary MLOperatorOptions {
-  USVString label;
+  USVString label = "";
 };
 
 dictionary MLArgMinMaxOptions {
@@ -226,18 +226,18 @@ dictionary MLTriangularOptions {
   [RaisesException] MLOperand convTranspose2d(MLOperand input, MLOperand filter, optional MLConvTranspose2dOptions options = {});
 
   // Element-wise binary operations
-  [RaisesException] MLOperand add(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand sub(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand mul(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand div(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand max(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand min(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand pow(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand equal(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand greater(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand greaterOrEqual(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand lesser(MLOperand a, MLOperand b);
-  [RaisesException] MLOperand lesserOrEqual(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand add(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand sub(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand mul(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand div(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand max(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand min(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand pow(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand equal(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand greater(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand greaterOrEqual(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand lesser(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand lesserOrEqual(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
 
   // Element-wise unary operations
   [RaisesException] MLOperand abs(MLOperand x);

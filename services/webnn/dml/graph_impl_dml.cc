@@ -1490,7 +1490,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
           activation_dml_desc ? &activation_dml_desc.value() : nullptr,
   };
 
-  const auto label = batch_normalization->label;
+  const std::string& label = batch_normalization->label;
   const OperatorNode* batch_normalization_node =
       graph_builder.CreateOperatorNode(DML_OPERATOR_BATCH_NORMALIZATION,
                                        &batch_normalization_operator_desc,
@@ -1708,7 +1708,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
           activation_dml_desc ? &activation_dml_desc.value() : nullptr,
   };
 
-  const auto label = conv2d->label;
+  const std::string& label = conv2d->label;
   const OperatorNode* conv2d_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_CONVOLUTION, &conv2d_operator_desc, inputs, label);
   if (!conv2d_node) {
@@ -1725,19 +1725,22 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   return base::ok();
 }
 
+// TODO(crbug.com/350540987): Remove the default value of `label` after all
+// operators have labels.
 template <typename DML_OPERATOR_DESC>
 const OperatorNode* CreateBinaryOperator(const TensorDesc& a_tensor,
                                          const TensorDesc& b_tensor,
                                          const TensorDesc& output_tensor,
                                          GraphBuilderDml& graph_builder,
                                          DML_OPERATOR_TYPE operator_type,
-                                         base::span<const NodeOutput*> inputs) {
+                                         base::span<const NodeOutput*> inputs,
+                                         std::string_view label = "") {
   DML_OPERATOR_DESC binary_operator_desc{
       .ATensor = &a_tensor.GetDMLTensorDesc(),
       .BTensor = &b_tensor.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor.GetDMLTensorDesc()};
   return graph_builder.CreateOperatorNode(operator_type, &binary_operator_desc,
-                                          inputs);
+                                          inputs, label);
 }
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
@@ -1768,6 +1771,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
     input_b_tensor_desc.BroadcastTo(output_dimensions);
   }
 
+  const std::string& label = binary->label;
   const OperatorNode* binary_node = nullptr;
   std::array<const NodeOutput*, 2> inputs = {input_a, input_b};
   switch (binary->kind) {
@@ -1789,7 +1793,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
             .FusedActivation = &activation_dml_desc,
         };
         binary_node = graph_builder.CreateOperatorNode(
-            DML_OPERATOR_ELEMENT_WISE_ADD1, &add1_operator_desc, inputs);
+            DML_OPERATOR_ELEMENT_WISE_ADD1, &add1_operator_desc, inputs, label);
         output_id =
             GetFusibleActivationOutputId(*fusible_activation.value()).value();
       }
@@ -1799,40 +1803,40 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
       else {
         binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_ADD_OPERATOR_DESC>(
             input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-            graph_builder, DML_OPERATOR_ELEMENT_WISE_ADD, inputs);
+            graph_builder, DML_OPERATOR_ELEMENT_WISE_ADD, inputs, label);
       }
       break;
     }
     case mojom::ElementWiseBinary::Kind::kDiv: {
       binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_DIVIDE_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-          graph_builder, DML_OPERATOR_ELEMENT_WISE_DIVIDE, inputs);
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_DIVIDE, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMax: {
       binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_MAX_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-          graph_builder, DML_OPERATOR_ELEMENT_WISE_MAX, inputs);
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_MAX, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMin: {
       binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_MIN_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-          graph_builder, DML_OPERATOR_ELEMENT_WISE_MIN, inputs);
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_MIN, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMul: {
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-              graph_builder, DML_OPERATOR_ELEMENT_WISE_MULTIPLY, inputs);
+              graph_builder, DML_OPERATOR_ELEMENT_WISE_MULTIPLY, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kSub: {
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_SUBTRACT_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-              graph_builder, DML_OPERATOR_ELEMENT_WISE_SUBTRACT, inputs);
+              graph_builder, DML_OPERATOR_ELEMENT_WISE_SUBTRACT, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kPow: {
@@ -1841,22 +1845,24 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
           .ExponentTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
           .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
       binary_node = graph_builder.CreateOperatorNode(
-          DML_OPERATOR_ELEMENT_WISE_POW, &element_wise_operator_desc, inputs);
+          DML_OPERATOR_ELEMENT_WISE_POW, &element_wise_operator_desc, inputs,
+          label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kEqual: {
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_EQUALS_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-              graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_EQUALS, inputs);
+              graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_EQUALS, inputs,
+              label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreater: {
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_GREATER_THAN_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-          graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_GREATER_THAN,
-          inputs);
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_GREATER_THAN, inputs,
+          label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
@@ -1864,14 +1870,16 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
           DML_ELEMENT_WISE_LOGICAL_GREATER_THAN_OR_EQUAL_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder,
-          DML_OPERATOR_ELEMENT_WISE_LOGICAL_GREATER_THAN_OR_EQUAL, inputs);
+          DML_OPERATOR_ELEMENT_WISE_LOGICAL_GREATER_THAN_OR_EQUAL, inputs,
+          label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesser: {
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_LESS_THAN_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-          graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_LESS_THAN, inputs);
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_LESS_THAN, inputs,
+          label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
@@ -1879,7 +1887,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
           DML_ELEMENT_WISE_LOGICAL_LESS_THAN_OR_EQUAL_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_LESS_THAN_OR_EQUAL,
-          inputs);
+          inputs, label);
       break;
     }
   }
@@ -1887,7 +1895,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
     std::string error_message =
         "Failed to create " + OpKindToString(binary->kind) + " operator.";
     return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
-                                        std::move(error_message)));
+                                        std::move(error_message), label));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -2151,7 +2159,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPrelu(
       .SlopeTensor = &slope_tensor_desc.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
 
-  const auto label = prelu->label;
+  const std::string& label = prelu->label;
   std::array<const NodeOutput*, 2> inputs = {input, slope};
   const OperatorNode* prelu_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_ACTIVATION_PARAMETERIZED_RELU, &prelu_desc, inputs, label);
@@ -2520,7 +2528,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
       .ScaleCount = static_cast<uint32_t>(full_scales.size()),
       .Scales = full_scales.data()};
 
-  const auto label = resample2d->label;
+  const std::string& label = resample2d->label;
   std::array<const NodeOutput*, 1> inputs = {input};
   const OperatorNode* resample2d_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_RESAMPLE, &resample2d_operator_desc, inputs, label);

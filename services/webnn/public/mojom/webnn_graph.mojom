@@ -239,6 +239,8 @@ struct ElementWiseBinary {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents an element-wise unary operation, mathematically equivalent to:

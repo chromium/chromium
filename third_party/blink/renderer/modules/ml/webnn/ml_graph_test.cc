@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -286,32 +287,33 @@ MLOperand* BuildElementWiseBinaryOperator(
     V8TestingScope& scope,
     const MLOperand* a,
     const MLOperand* b,
-    webnn::mojom::blink::ElementWiseBinary::Kind kind) {
+    webnn::mojom::blink::ElementWiseBinary::Kind kind,
+    const MLOperatorOptions* options) {
   switch (kind) {
     case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
-      return builder->add(a, b, scope.GetExceptionState());
+      return builder->add(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
-      return builder->sub(a, b, scope.GetExceptionState());
+      return builder->sub(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
-      return builder->mul(a, b, scope.GetExceptionState());
+      return builder->mul(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
-      return builder->div(a, b, scope.GetExceptionState());
+      return builder->div(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
-      return builder->min(a, b, scope.GetExceptionState());
+      return builder->min(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
-      return builder->max(a, b, scope.GetExceptionState());
+      return builder->max(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
-      return builder->pow(a, b, scope.GetExceptionState());
+      return builder->pow(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
-      return builder->equal(a, b, scope.GetExceptionState());
+      return builder->equal(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
-      return builder->greater(a, b, scope.GetExceptionState());
+      return builder->greater(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
-      return builder->greaterOrEqual(a, b, scope.GetExceptionState());
+      return builder->greaterOrEqual(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
-      return builder->lesser(a, b, scope.GetExceptionState());
+      return builder->lesser(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
-      return builder->lesserOrEqual(a, b, scope.GetExceptionState());
+      return builder->lesserOrEqual(a, b, options, scope.GetExceptionState());
   }
 }
 
@@ -320,9 +322,10 @@ MLOperand* BuildElementWiseBinary(
     MLGraphBuilder* builder,
     webnn::mojom::blink::ElementWiseBinary::Kind kind,
     const MLOperand* a,
-    const MLOperand* b) {
+    const MLOperand* b,
+    const MLOperatorOptions* options = MLOperatorOptions::Create()) {
   MLOperand* output =
-      BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
+      BuildElementWiseBinaryOperator(builder, scope, a, b, kind, options);
   EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
 
@@ -634,8 +637,9 @@ ScriptPromise<MLGraph> BuildSimpleGraph(V8TestingScope& scope,
   auto* rhs_operand =
       BuildInput(builder, "rhs", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                  scope.GetExceptionState());
-  auto* output =
-      builder->add(lhs_operand, rhs_operand, scope.GetExceptionState());
+  const MLOperatorOptions* options = MLOperatorOptions::Create();
+  auto* output = builder->add(lhs_operand, rhs_operand, options,
+                              scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
   return builder->build(scope.GetScriptState(), {{"output", output}},
                         scope.GetExceptionState());
@@ -770,7 +774,8 @@ TEST_F(MLGraphTest, BuildTest) {
     auto* b =
         BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
-    auto* c = builder->add(a, b, scope.GetExceptionState());
+    const MLOperatorOptions* options = MLOperatorOptions::Create();
+    auto* c = builder->add(a, b, options, scope.GetExceptionState());
     ASSERT_THAT(c, testing::NotNull());
 
     auto [graph, error_name, error_message] =
@@ -790,7 +795,8 @@ TEST_F(MLGraphTest, BuildTest) {
     auto* a =
         BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
-    auto* output = builder->add(a, a, scope.GetExceptionState());
+    const MLOperatorOptions* options = MLOperatorOptions::Create();
+    auto* output = builder->add(a, a, options, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"b", output}});
@@ -861,7 +867,8 @@ TEST_F(MLGraphTest, BuildTest) {
     auto* bias =
         BuildConstant(builder, {1}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
-    auto* add = builder->add(conv2d, bias, scope.GetExceptionState());
+    const MLOperatorOptions* options = MLOperatorOptions::Create();
+    auto* add = builder->add(conv2d, bias, options, scope.GetExceptionState());
     ASSERT_THAT(add, testing::NotNull());
     auto* output = builder->relu(add, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());

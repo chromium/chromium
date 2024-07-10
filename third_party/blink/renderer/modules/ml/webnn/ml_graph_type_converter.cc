@@ -574,13 +574,9 @@ OperationPtr CreateBatchNormalizationOperation(
     batch_normalization_mojo->bias_operand_id =
         operand_to_id_map.at(options->bias());
   }
-  if (options->hasLabel()) {
-    batch_normalization_mojo->label = options->label();
-  } else {
-    batch_normalization_mojo->label = "";
-  }
   batch_normalization_mojo->axis = options->axis();
   batch_normalization_mojo->epsilon = options->epsilon();
+  batch_normalization_mojo->label = options->label();
   return webnn::mojom::blink::Operation::NewBatchNormalization(
       std::move(batch_normalization_mojo));
 }
@@ -718,11 +714,7 @@ std::optional<String> SerializeConv2dOperation(
       /*beginning padding*/ Size2d::New(ml_padding[0], ml_padding[2]),
       /*ending padding*/ Size2d::New(ml_padding[1], ml_padding[3]));
 
-  if (options->hasLabel()) {
-    conv2d_mojo->label = options->label();
-  } else {
-    conv2d_mojo->label = "";
-  }
+  conv2d_mojo->label = options->label();
 
   graph_info->operations.push_back(
       blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo)));
@@ -758,6 +750,10 @@ OperationPtr CreateElementWiseBinaryOperator(
   operator_mojo->lhs_operand_id = lhs_operand_id;
   operator_mojo->rhs_operand_id = rhs_operand_id;
   operator_mojo->output_operand_id = output_operand_id;
+
+  const auto* options =
+      static_cast<const blink::MLOperatorOptions*>(binary->Options());
+  operator_mojo->label = options->label();
   return webnn::mojom::blink::Operation::NewElementWiseBinary(
       std::move(operator_mojo));
 }
@@ -1236,11 +1232,7 @@ OperationPtr CreatePreluOperation(const OperandToIdMap& operand_to_id_map,
   prelu_mojo->output_operand_id = GetOperatorOutputId(prelu, operand_to_id_map);
   const auto* options =
       static_cast<const blink::MLOperatorOptions*>(prelu->Options());
-  if (options->hasLabel()) {
-    prelu_mojo->label = options->label();
-  } else {
-    prelu_mojo->label = "";
-  }
+  prelu_mojo->label = options->label();
   return blink_mojom::Operation::NewPrelu(std::move(prelu_mojo));
 }
 
@@ -1300,11 +1292,7 @@ OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
   auto axes = options->getAxesOr({2, 3});
   CHECK_EQ(axes.size(), 2u);
   resample2d_mojo->axes = {axes[0], axes[1]};
-  if (options->hasLabel()) {
-    resample2d_mojo->label = options->label();
-  } else {
-    resample2d_mojo->label = "";
-  }
+  resample2d_mojo->label = options->label();
 
   return blink_mojom::Operation::NewResample2d(std::move(resample2d_mojo));
 }
