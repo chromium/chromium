@@ -26,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
@@ -230,16 +231,26 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   clock.Advance(base::Days(70));
   safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
 
+  // Assert there are revoked permission only for one origin.
+  ContentSettingsForOneType revoked_permissions =
+      GetRevokedUnusedPermissions(map);
+  EXPECT_EQ(revoked_permissions.size(), 1u);
+
+  // Get the revoked permission types for the origin.
+  const base::Value::Dict& permission_types_by_values =
+      revoked_permissions[0].setting_value.GetDict();
+  const base::Value::List revoked_permission_types =
+      permission_types_by_values.FindList(permissions::kRevokedKey)->Clone();
+
   // Assert all the allowed permissions are revoked.
-  ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
-  const auto revoked_permission_types_size = GetRevokedUnusedPermissions(map)[0]
-                                                 .setting_value.GetDict()
-                                                 .Find("revoked")
-                                                 ->GetList()
-                                                 .size();
-  ASSERT_EQ(allowed_permission_types.size(), revoked_permission_types_size);
-  // TODO(b/40267370): Add an assertion that contents of
-  // allowed_permission_types and revoked permissions list are the same.
+  EXPECT_EQ(allowed_permission_types.size(), revoked_permission_types.size());
+
+  for (int i = 0; i < (int)revoked_permission_types.size(); i++) {
+    ContentSettingsType revoked_permission_type =
+        UnusedSitePermissionsService::ConvertKeyToContentSettingsType(
+            revoked_permission_types[i].GetString());
+    EXPECT_EQ(allowed_permission_types[i], revoked_permission_type);
+  }
 
   // Assert all auto-revocations are recorded in UMA metrics.
   EXPECT_EQ(allowed_permission_types.size(),
