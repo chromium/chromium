@@ -529,6 +529,10 @@ SetFaviconsResult FaviconBackend::SetFavicons(
   bool favicon_created = false;
   if (!icon_id) {
     icon_id = db_->AddFavicon(icon_url, icon_type);
+    if (!icon_id) {
+      // The database write failed. Abort operation.
+      return SetFaviconsResult();
+    }
     favicon_created = true;
   }
 
@@ -556,6 +560,8 @@ FaviconBackend::FaviconBackend(std::unique_ptr<FaviconDatabase> db,
 bool FaviconBackend::SetFaviconBitmaps(favicon_base::FaviconID icon_id,
                                        const std::vector<SkBitmap>& bitmaps,
                                        FaviconBitmapType type) {
+  CHECK(icon_id);
+
   std::vector<FaviconBitmapIDSize> bitmap_id_sizes;
   db_->GetFaviconBitmapIDSizes(icon_id, &bitmap_id_sizes);
 
