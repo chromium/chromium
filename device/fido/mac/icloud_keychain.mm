@@ -291,7 +291,12 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
       FIDO_LOG(ERROR) << "iCKC: makeCredential failed, domain: " << domain
                       << " code: " << error.code
                       << " msg: " << error.localizedDescription.UTF8String;
-      if (domain == "WKErrorDomain" && error.code == 8) {
+      if ((domain == "WKErrorDomain" && error.code == 8) ||
+          // As of macOS 15, this error is expressed differently. The value
+          // 1006 is ASAuthorizationErrorMatchedExcludedCredential but this
+          // change is being made before the macOS 15 SDK is available in
+          // Chromium.
+          (domain == "ASAuthorizationErrorDomain" && error.code == 1006)) {
         std::move(callback).Run(
             MakeCredentialStatus::kUserConsentButCredentialExcluded,
             std::nullopt);
