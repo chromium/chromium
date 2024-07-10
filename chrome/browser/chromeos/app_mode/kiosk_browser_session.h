@@ -105,6 +105,7 @@ class KioskBrowserSession {
   std::unique_ptr<KioskBrowserWindowHandler> browser_window_handler_;
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<PluginHandlerDelegateImpl> plugin_handler_delegate_;
+  // Initialized only for Chrome app kiosks in `InitForChromeAppKiosk`.
   std::unique_ptr<KioskSessionPluginHandler> plugin_handler_;
 #endif
 

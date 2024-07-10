@@ -309,7 +309,10 @@ void KioskBrowserSession::OnGuestAdded(
   }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  plugin_handler_->Observe(guest_web_contents);
+  // Plugin handler is initialized only for Chrome app Kiosks.
+  if (plugin_handler_) {
+    plugin_handler_->Observe(guest_web_contents);
+  }
 #endif
 }
 
