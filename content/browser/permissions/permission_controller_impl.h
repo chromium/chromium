@@ -86,7 +86,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool should_include_device_status,
-      const base::RepeatingCallback<void(PermissionStatus)>& callback);
+      const base::RepeatingCallback<void(PermissionStatus)>& callback) override;
   SubscriptionId SubscribeToPermissionStatusChange(
       PermissionType permission,
       RenderProcessHost* render_process_host,
@@ -178,19 +178,23 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       PermissionType permission,
       RenderFrameHost* render_frame_host);
 
-  struct Subscription;
-  using SubscriptionsMap =
-      base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;
   using SubscriptionsStatusMap =
       base::flat_map<SubscriptionsMap::KeyType, PermissionStatus>;
 
   PermissionStatus GetSubscriptionCurrentValue(
-      const Subscription& subscription);
+      const content::PermissionStatusSubscription& subscription);
   SubscriptionsStatusMap GetSubscriptionsStatuses(
       const std::optional<GURL>& origin = std::nullopt);
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
-  void OnDelegatePermissionStatusChange(SubscriptionId subscription_id,
-                                        PermissionStatus status);
+  // Notifies the callback of the new permission status.
+  // If `ignore_status_override` is true, the status override is not applied,
+  // which means that the permission status change will be notified to
+  // subscribed users even the status has been overridden.
+  void PermissionStatusChange(
+      const base::RepeatingCallback<void(PermissionStatus)>& callback,
+      SubscriptionId subscription_id,
+      PermissionStatus status,
+      bool ignore_status_override = false);
   bool IsSubscribedToPermissionChangeEvent(
       blink::PermissionType permission,
       RenderFrameHost* render_frame_host) override;

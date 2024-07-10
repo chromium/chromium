@@ -109,22 +109,15 @@ WebEnginePermissionDelegate::GetPermissionStatusForEmbeddedRequester(
                                                             overridden_origin);
 }
 
-WebEnginePermissionDelegate::SubscriptionId
-WebEnginePermissionDelegate::SubscribeToPermissionStatusChange(
-    blink::PermissionType permission,
-    content::RenderProcessHost* render_process_host,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool should_include_device_status,
-    base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
+void WebEnginePermissionDelegate::OnPermissionStatusChangeSubscriptionAdded(
+    content::PermissionController::SubscriptionId subscription_id) {
   // TODO(crbug.com/40680523): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.
   NOTIMPLEMENTED_LOG_ONCE();
-  return SubscriptionId();
 }
 
 void WebEnginePermissionDelegate::UnsubscribeFromPermissionStatusChange(
-    SubscriptionId subscription_id) {
+    content::PermissionController::SubscriptionId subscription_id) {
   // TODO(crbug.com/40680523): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.
   NOTIMPLEMENTED_LOG_ONCE();
