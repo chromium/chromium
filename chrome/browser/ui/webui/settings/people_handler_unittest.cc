@@ -1811,13 +1811,10 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
   ASSERT_NE(current_choice, user_choice);
   SimulateHandleSetChromeSigninUserChoiceInfo(account.email, user_choice);
 
-  // Simulate declining the bubble time stored.
-  signin_prefs.SetChromeSigninInterceptionFirstDeclinedChoiceTime(
+  // Simulate a last bubble decline time as well.
+  signin_prefs.SetChromeSigninInterceptionLastBubbleDeclineTime(
       account.gaia, base::Time::Now());
-  ASSERT_TRUE(
-      signin_prefs
-          .GetChromeSigninInterceptionFirstDeclinedChoiceTime(account.gaia)
-          .has_value());
+  signin_prefs.IncrementChromeSigninBubbleRepromptCount(account.gaia);
 
   // Simulates a second selection within the same settings session.
   ChromeSigninUserChoice user_choice2 = ChromeSigninUserChoice::kDoNotSignin;
@@ -1827,8 +1824,9 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
   // time.
   EXPECT_FALSE(
       signin_prefs
-          .GetChromeSigninInterceptionFirstDeclinedChoiceTime(account.gaia)
+          .GetChromeSigninInterceptionLastBubbleDeclineTime(account.gaia)
           .has_value());
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(account.gaia), 0);
 
   // Enforcing changing the value to the same previous one should not record a
   // new modification.

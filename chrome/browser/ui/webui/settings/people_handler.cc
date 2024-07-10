@@ -1358,8 +1358,9 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
   // If the user explicitly set the `kDoNotSignin` choice from the settings,
   // suppress any bubble interaction time that could lead to re-prompts.
   if (user_choice == ChromeSigninUserChoice::kDoNotSignin) {
-    signin_prefs.ClearChromeSigninInterceptionFirstDeclinedChoiceTime(
+    signin_prefs.ClearChromeSigninInterceptionLastBubbleDeclineTime(
         account.gaia);
+    signin_prefs.ClearChromeSigninBubbleRepromptCount(account.gaia);
   }
 
   // Set for metrics purposes.
@@ -1374,6 +1375,15 @@ void PeopleHandler::UpdateChromeSigninUserChoiceInfo() {
     FireWebUIListener("chrome-signin-user-choice-info-change",
                       GetChromeSigninUserChoiceInfo());
   }
+}
+
+void PeopleHandler::HandleSetChromeSigninUserChoiceForTesting(
+    const std::string& email,
+    ChromeSigninUserChoice choice) {
+  base::Value::List args;
+  args.Append(static_cast<int>(choice));
+  args.Append(email);
+  HandleSetChromeSigninUserChoice(args);
 }
 #endif
 

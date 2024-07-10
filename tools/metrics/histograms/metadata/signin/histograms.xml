@@ -1131,6 +1131,30 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram name="Signin.Intercept.ChromeSignin.NumberOfDaysSinceLastDecline"
+    units="Days" expires_after="2025-07-03">
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the number of days that passed since the last time Chrome Signin
+    Bubble was declined. This value is recorded when a reprompt is displayed.
+    The value is not recorded if the Chrome Signin setting is explicitly set by
+    the user.
+  </summary>
+</histogram>
+
+<histogram name="Signin.Intercept.ChromeSignin.RepromptCount" units="reprompts"
+    expires_after="2025-07-03">
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the number of reprompts for the Chrome Signin Bubble. This value is
+    recorded when a reprompt is displayed. The first bubble impression is not
+    recorded here. The first reprompt (follow up impression) will first be
+    recorded as 1.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.ChromeSignin.ResponseTime{Result}" units="ms"
     expires_after="2025-01-05">
   <owner>rsult@google.com</owner>

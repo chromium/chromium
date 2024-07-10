@@ -157,6 +157,10 @@ class DiceWebSigninInterceptor : public KeyedService,
         std::move(value);
   }
 
+  static base::TimeDelta GetTimeSinceLastChromeSigninDeclineForTesting(
+      const SigninPrefs& signin_prefs,
+      const std::string& gaia_id);
+
   // KeyedService:
   void Shutdown() override;
 

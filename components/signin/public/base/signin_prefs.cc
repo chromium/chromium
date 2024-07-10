@@ -28,13 +28,21 @@ constexpr char kSigninAccountPrefs[] = "signin.accounts_metadata_dict";
 constexpr char kChromeSigninInterceptionUserChoice[] =
     "ChromeSigninInterceptionUserChoice";
 
-// Pref used to track the first declined choice of the Chrome Signin intercept.
-// It will be used together with the reprompt timing logic to know when to
-// trigger Chrome Signin intercept reprompts after declines. It is tied to an
-// account, stored as the content of a dictionary mapped by the gaia id of the
-// account.
-constexpr char kChromeSigninInterceptionFirstDeclinedChoiceTime[] =
-    "ChromeSigninInterceptionFirstDeclinedChoiceTime";
+// Pref used to track the last time the Chrome Signin bubble was declined. It is
+// used to know when to allow future reprompts if the conditions are met. The
+// pref will be cleared if the Chrome Signin setting equivalent to showing the
+// bubble upon web signin is set to `ChromeSigninUserChoice::kDoNotSignin`, in
+// order not to consider the bubble decline interaction anymore.
+constexpr char kChromeSigninInterceptionLastBubbleDeclineTime[] =
+    "ChromeSigninInterceptionLastBubbleDeclineTime";
+
+// Pref used to track the number of times the Chrome Signin bubble was
+// reprompted. It is used to know when the allow future reprompts.
+// The pref will be cleared if the Chrome Signin setting equivalent to showing
+// the bubble upon web signin is set to `ChromeSigninUserChoice::kDoNotSignin`,
+// in order not to consider the bubble decline interaction anymore.
+constexpr char kChromeSigninInterceptionRepromptCount[] =
+    "ChromeSigninInterceptionRepromptCount";
 
 // Pref used to store the number of dismisses of the Chrome Signin Bubble. It
 // is tied to an account, stored as the content of a dictionary mapped by the
@@ -126,47 +134,35 @@ ChromeSigninUserChoice SigninPrefs::GetChromeSigninInterceptionUserChoice(
       account_dict->FindInt(kChromeSigninInterceptionUserChoice).value_or(0));
 }
 
-void SigninPrefs::SetChromeSigninInterceptionFirstDeclinedChoiceTime(
+void SigninPrefs::SetChromeSigninInterceptionLastBubbleDeclineTime(
     GaiaId gaia_id,
-    base::Time first_declined_time) {
-  if (GetChromeSigninInterceptionFirstDeclinedChoiceTime(gaia_id).has_value()) {
-    return;
-  }
-
-  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
-  // `EnsureDict` gets or create the dictionary.
-  base::Value::Dict* account_dict = scoped_update->EnsureDict(gaia_id);
-  // `Set` will add an entry if it doesn't already exists, or if it does, it
-  // will overwrite it.
-  account_dict->Set(kChromeSigninInterceptionFirstDeclinedChoiceTime,
-                    base::TimeToValue(first_declined_time));
+    base::Time reprompt_time) {
+  SetTimePref(reprompt_time, gaia_id,
+              kChromeSigninInterceptionLastBubbleDeclineTime);
 }
 
-void SigninPrefs::ClearChromeSigninInterceptionFirstDeclinedChoiceTime(
+void SigninPrefs::ClearChromeSigninInterceptionLastBubbleDeclineTime(
     GaiaId gaia_id) {
-  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
-  // Do not create a dictionary if this not already exist.
-  base::Value::Dict* account_dict = scoped_update->FindDict(gaia_id);
-  if (!account_dict) {
-    return;
-  }
-
-  account_dict->Remove(kChromeSigninInterceptionFirstDeclinedChoiceTime);
+  ClearPref(gaia_id, kChromeSigninInterceptionLastBubbleDeclineTime);
 }
 
 std::optional<base::Time>
-SigninPrefs::GetChromeSigninInterceptionFirstDeclinedChoiceTime(
+SigninPrefs::GetChromeSigninInterceptionLastBubbleDeclineTime(
     GaiaId gaia_id) const {
-  const base::Value::Dict* account_dict =
-      pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id);
-  // If the account dict does not exist yet; return no time.
-  if (!account_dict) {
-    return std::nullopt;
-  }
-  // Return the pref value if it exists, otherwise return no time.
-  const base::Value* value =
-      account_dict->Find(kChromeSigninInterceptionFirstDeclinedChoiceTime);
-  return value ? base::ValueToTime(value) : std::nullopt;
+  return GetTimePref(gaia_id, kChromeSigninInterceptionLastBubbleDeclineTime);
+}
+
+int SigninPrefs::IncrementChromeSigninBubbleRepromptCount(GaiaId gaia_id) {
+  return IncrementIntPrefForAccount(gaia_id,
+                                    kChromeSigninInterceptionRepromptCount);
+}
+
+int SigninPrefs::GetChromeSigninBubbleRepromptCount(GaiaId gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kChromeSigninInterceptionRepromptCount);
+}
+
+void SigninPrefs::ClearChromeSigninBubbleRepromptCount(GaiaId gaia_id) {
+  ClearPref(gaia_id, kChromeSigninInterceptionRepromptCount);
 }
 
 int SigninPrefs::IncrementChromeSigninInterceptionDismissCount(GaiaId gaia_id) {
@@ -222,4 +218,40 @@ int SigninPrefs::GetIntPrefForAccount(GaiaId gaia_id,
 
   // Return the pref value if it exists, otherwise return the default value.
   return account_dict->FindInt(pref).value_or(0);
+}
+
+void SigninPrefs::SetTimePref(base::Time time,
+                              GaiaId gaia_id,
+                              std::string_view pref) {
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+  // `EnsureDict` gets or create the dictionary.
+  base::Value::Dict* account_dict = scoped_update->EnsureDict(gaia_id);
+  // `Set` will add an entry if it doesn't already exists, or if it does, it
+  // will overwrite it.
+  account_dict->Set(pref, base::TimeToValue(time));
+}
+
+std::optional<base::Time> SigninPrefs::GetTimePref(
+    GaiaId gaia_id,
+    std::string_view pref) const {
+  const base::Value::Dict* account_dict =
+      pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id);
+  // If the account dict does not exist yet; return no time.
+  if (!account_dict) {
+    return std::nullopt;
+  }
+  // Return the pref value if it exists, otherwise return no time.
+  const base::Value* value = account_dict->Find(pref);
+  return value ? base::ValueToTime(value) : std::nullopt;
+}
+
+void SigninPrefs::ClearPref(GaiaId gaia_id, std::string_view pref) {
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+  // Do not create an account dictionary if it does not already exist.
+  base::Value::Dict* account_dict = scoped_update->FindDict(gaia_id);
+  if (!account_dict) {
+    return;
+  }
+
+  account_dict->Remove(pref);
 }

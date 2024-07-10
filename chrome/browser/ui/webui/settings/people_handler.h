@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 class LoginUIService;
+enum class ChromeSigninUserChoice;
 
 namespace content {
 class WebUI;
@@ -58,6 +59,11 @@ class PeopleHandler : public SettingsPageUIHandler,
   PeopleHandler& operator=(const PeopleHandler&) = delete;
 
   ~PeopleHandler() override;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void HandleSetChromeSigninUserChoiceForTesting(const std::string& email,
+                                                 ChromeSigninUserChoice choice);
+#endif
 
  protected:
   // Terminates the sync setup flow.

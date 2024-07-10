@@ -71,6 +71,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -86,6 +87,15 @@
 namespace {
 
 constexpr size_t kMaxChromeSigninInterceptionDismissCount = 5;
+
+// The user will only see the Chrome Signin bubble reprompt a maximum of 4 times
+// (not including the initial time the bubble was declined).
+static constexpr int kMaxChromeSigninBubbleRepromptCountAllowed = 4;
+// The Chrome Signin bubble can be reprompted only if a minimum duration time
+// has passed since the last bubble was shown (either initial bubble or a
+// reprompt).
+static constexpr base::TimeDelta kMinimumDurationForChromeSigninBubbleReprompt =
+    base::Days(60);
 
 // Helper function to return the primary account info. The returned info is
 // empty if there is no primary account, and non-empty otherwise. Extended
@@ -126,6 +136,87 @@ bool IsFirstAccount(signin::IdentityManager* manager,
           gaia::AreEmailsSame(email, accounts_in_chrome[0].email));
 }
 
+// Returns the time elapsed since the last Chrome Signin Bubble decline. It is
+// expected that a first decline was made and that the setting was not manually
+// overridden by the user to do not sign in automatically. In case the
+// conditions are not met to retrieve a proper delta time, a default value of 0
+// is returned.
+base::TimeDelta GetTimeSinceLastChromeSigninDecline(
+    const SigninPrefs& signin_prefs,
+    const std::string& gaia_id) {
+  std::optional<base::Time> last_bubble_decline_time =
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(gaia_id);
+  // If the value does not exist, this means that the user is either not in the
+  // `ChromeSigninUserChoice::kDoNotSignin` or they explicitly changed the
+  // setting from the settings page.
+  if (!last_bubble_decline_time.has_value()) {
+    return base::TimeDelta();
+  }
+
+  return base::Time::Now() - last_bubble_decline_time.value();
+}
+
+// When a user declines the bubble, potential reprompts are allowed in future
+// based on the time that passes since the bubble decline and the last
+// reprompts, with a fixed amount of allowed reprompts per account.
+// Reprompts are not allowed if the user explicitly set the Chrome Signin
+// setting to do not signin.
+bool ShouldAllowChromeSigninBubbleReprompt(const SigninPrefs& signin_prefs,
+                                           const std::string& gaia_id) {
+  // Reprompts are only allowed if the user choice is to not sign in
+  // automatically.
+  if (signin_prefs.GetChromeSigninInterceptionUserChoice(gaia_id) !=
+      ChromeSigninUserChoice::kDoNotSignin) {
+    return false;
+  }
+
+  // Maximum reprompt count check.
+  int reprompt_count = signin_prefs.GetChromeSigninBubbleRepromptCount(gaia_id);
+  if (reprompt_count >= kMaxChromeSigninBubbleRepromptCountAllowed) {
+    return false;
+  }
+
+  // If the user has set the setting manually, this value will be 0, making sure
+  // it does not satisfy the minimum requirement for repromts.
+  base::TimeDelta time_since_last_decline =
+      GetTimeSinceLastChromeSigninDecline(signin_prefs, gaia_id);
+
+  // Minimum duration since last chrome signin decline check.
+  return time_since_last_decline >=
+         kMinimumDurationForChromeSigninBubbleReprompt;
+}
+
+// Set showing the bubble as a reprompt if the user previously declined the
+// bubble and did not override the choice in the settings page (having a
+// declined choice time).
+void MaybeUpdateRepromptInfoAfterDecline(SigninPrefs& signin_prefs,
+                                         const std::string& gaia_id) {
+  // Check if this is was a reprompt.
+  if (!ShouldAllowChromeSigninBubbleReprompt(signin_prefs, gaia_id)) {
+    return;
+  }
+
+  // Record this value before updating the new decline time.
+  // There is no need to record values with less than the minimum duration, and
+  // recording max values with up to 1 year (365 days). There is no need for
+  // more granularity.
+  base::UmaHistogramCustomCounts(
+      "Signin.Intercept.ChromeSignin.NumberOfDaysSinceLastDecline",
+      GetTimeSinceLastChromeSigninDecline(signin_prefs, gaia_id).InDays(),
+      /*min=*/kMinimumDurationForChromeSigninBubbleReprompt.InDays(),
+      /*exclusive_max=*/365 /*days*/,
+      /*buckets=*/50);
+
+  signin_prefs.SetChromeSigninInterceptionLastBubbleDeclineTime(
+      gaia_id, base::Time::Now());
+  int new_reprompt_count =
+      signin_prefs.IncrementChromeSigninBubbleRepromptCount(gaia_id);
+
+  base::UmaHistogramExactLinear("Signin.Intercept.ChromeSignin.RepromptCount",
+                                new_reprompt_count,
+                                kMaxChromeSigninBubbleRepromptCountAllowed + 1);
+}
+
 // Returns `ShouldShowChromeSigninBubbleWithReason::kShouldShow` if sign in
 // happens through the web and Chrome isn't already signed in.
 ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
@@ -159,14 +250,28 @@ ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
         kShouldNotShowAlreadySignedIn;
   }
 
+  // Check for the Chrome Signin setting value and possible reprompts.
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    SigninPrefs signin_prefs(pref_service);
     ChromeSigninUserChoice user_choice =
-        SigninPrefs(pref_service)
-            .GetChromeSigninInterceptionUserChoice(gaia_id);
-
-    if (user_choice != ChromeSigninUserChoice::kAlwaysAsk &&
-        user_choice != ChromeSigninUserChoice::kNoChoice) {
-      return ShouldShowChromeSigninBubbleWithReason::kShouldNotShowUserChoice;
+        signin_prefs.GetChromeSigninInterceptionUserChoice(gaia_id);
+    switch (user_choice) {
+      case ChromeSigninUserChoice::kNoChoice:
+      case ChromeSigninUserChoice::kAlwaysAsk:
+        break;
+      case ChromeSigninUserChoice::kSignin:
+        // This should not happen in a regular case, but rather an edge case; if
+        // the user changed their preference while the interception is in
+        // progress. Might also happen during tests that do not test the full
+        // flow; mainly the early flow that automatically signs in and do not
+        // get to this point.
+        return ShouldShowChromeSigninBubbleWithReason::kShouldNotShowUserChoice;
+      case ChromeSigninUserChoice::kDoNotSignin:
+        if (!ShouldAllowChromeSigninBubbleReprompt(signin_prefs, gaia_id)) {
+          return ShouldShowChromeSigninBubbleWithReason::
+              kShouldNotShowUserChoice;
+        }
+        break;
     }
   }
 
@@ -1049,11 +1154,19 @@ DiceWebSigninInterceptor::ProcessChromeSigninUserChoice(
   }
 
   if (processed_result == SigninInterceptionResult::kDeclined) {
+    // If the user had no explicit interaction with the bubble or the Chrome
+    // Signin setting previously, then set it's first decline time.
+    if (signin_prefs.GetChromeSigninInterceptionUserChoice(gaia_id) ==
+        ChromeSigninUserChoice::kNoChoice) {
+      signin_prefs.SetChromeSigninInterceptionLastBubbleDeclineTime(
+          gaia_id, base::Time::Now());
+    }
+
+    MaybeUpdateRepromptInfoAfterDecline(signin_prefs, gaia_id);
+
     // Save user choice as do not sign in automatically.
     signin_prefs.SetChromeSigninInterceptionUserChoice(
         gaia_id, ChromeSigninUserChoice::kDoNotSignin);
-    signin_prefs.SetChromeSigninInterceptionFirstDeclinedChoiceTime(
-        gaia_id, base::Time::Now());
   }
 
   return processed_result;
@@ -1393,4 +1506,12 @@ bool DiceWebSigninInterceptor::IsFullExtendedAccountInfoAvailable(
            signin::Tribool::kUnknown;
   }
   return true;
+}
+
+// static
+base::TimeDelta
+DiceWebSigninInterceptor::GetTimeSinceLastChromeSigninDeclineForTesting(
+    const SigninPrefs& signin_prefs,
+    const std::string& gaia_id) {
+  return GetTimeSinceLastChromeSigninDecline(signin_prefs, gaia_id);
 }

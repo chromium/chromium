@@ -77,16 +77,21 @@ class SigninPrefs {
 
   // This pref is expected to be used with the reprompt logic for the Chrome
   // Signin bubble. The reprompt should only be possible after bubble declines,
-  // meaning that this pref will be cleared when the user explicitly sets the
-  // setting to not signin to chrome automatically. For the reprompt cases, only
-  // the first declined time is needed as it will be used as a basis for the
-  // rest of the reprompts.
-  void SetChromeSigninInterceptionFirstDeclinedChoiceTime(
+  // meaning that this pref and other related prefs will be cleared when the
+  // user explicitly sets the setting to not signin to chrome automatically.
+  //
+  // Last Chrome Signin Bubble Decline time.
+  void SetChromeSigninInterceptionLastBubbleDeclineTime(
       GaiaId gaia_id,
-      base::Time first_declined_time);
-  void ClearChromeSigninInterceptionFirstDeclinedChoiceTime(GaiaId gaia_id);
-  std::optional<base::Time> GetChromeSigninInterceptionFirstDeclinedChoiceTime(
+      base::Time last_repromt_time);
+  void ClearChromeSigninInterceptionLastBubbleDeclineTime(GaiaId gaia_id);
+  std::optional<base::Time> GetChromeSigninInterceptionLastBubbleDeclineTime(
       GaiaId gaia_id) const;
+
+  // Chrome Signin reprompt count.
+  int IncrementChromeSigninBubbleRepromptCount(GaiaId gaia_id);
+  int GetChromeSigninBubbleRepromptCount(GaiaId gaia_id) const;
+  void ClearChromeSigninBubbleRepromptCount(GaiaId gaia_id);
 
   int IncrementChromeSigninInterceptionDismissCount(GaiaId gaia_id);
   int GetChromeSigninInterceptionDismissCount(GaiaId gaia_id) const;
@@ -121,6 +126,15 @@ class SigninPrefs {
   // Gets any specified `pref` of type int for the given `gaia_id`.
   // Returns 0 if the corresponding `pref` doesn't exist for `gaia_id`.
   int GetIntPrefForAccount(GaiaId gaia_id, std::string_view pref) const;
+
+  // Time pref related, returns by default std::nullopt if the pref is not
+  // created yet for the given `gaia_id`.
+  void SetTimePref(base::Time time, GaiaId gaia_id, std::string_view pref);
+  std::optional<base::Time> GetTimePref(GaiaId gaia_id,
+                                        std::string_view pref) const;
+
+  // Clear any given account pref for the given `gaia_id`.
+  void ClearPref(GaiaId gaia_id, std::string_view pref);
 
   const raw_ref<PrefService> pref_service_;
 };

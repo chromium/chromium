@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/webui/settings/people_handler.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/pref_names.h"
@@ -57,6 +58,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -593,6 +595,41 @@ class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
 // Test to sign in to Chrome from the Chrome Signin Bubble Intercept.
 class DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
+ public:
+  // This function is specific to ChromeSigninDecline reprompt logic, as it does
+  // not really advance time, but marks the prefs of interest in the past in
+  // order to satisfy the `delta` given.
+  void SimulateChromeSigninDeclinedAdvanceTime(const std::string& gaia,
+                                               base::TimeDelta delta) {
+    SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
+    std::optional<base::Time> last_bubble_decline_time =
+        signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(gaia);
+    if (last_bubble_decline_time.has_value()) {
+      signin_prefs.SetChromeSigninInterceptionLastBubbleDeclineTime(
+          gaia, last_bubble_decline_time.value() - delta);
+    }
+  }
+
+  base::TimeDelta time_since_last_reprompt(const std::string& gaia) {
+    return DiceWebSigninInterceptor::
+        GetTimeSinceLastChromeSigninDeclineForTesting(
+            SigninPrefs(*GetProfile()->GetPrefs()), gaia);
+  }
+
+  // Simulate setting the ChromeSigninUserChoice through settings explicitly to
+  // Do not signin.
+  void SimulateSettingExplicitChromeSigninUserChoiceToDoNotSignin(
+      const std::string& email) {
+    settings::PeopleHandler handler(browser()->profile());
+    // The only for the value to take effect is to choose another one first.
+    // Choose always ask first in case the value is already set to
+    // `ChromeSigninUserChoice::kDoNotSignin`.
+    handler.HandleSetChromeSigninUserChoiceForTesting(
+        email, ChromeSigninUserChoice::kAlwaysAsk);
+    handler.HandleSetChromeSigninUserChoiceForTesting(
+        email, ChromeSigninUserChoice::kDoNotSignin);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{
       switches::kExplicitBrowserSigninUIOnDesktop};
@@ -668,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(
   SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
   ASSERT_FALSE(
       signin_prefs
-          .GetChromeSigninInterceptionFirstDeclinedChoiceTime(account_info.gaia)
+          .GetChromeSigninInterceptionLastBubbleDeclineTime(account_info.gaia)
           .has_value());
 
   ShowAndCompleteSigninBubbleWithResult(account_info,
@@ -690,19 +727,326 @@ IN_PROC_BROWSER_TEST_F(
   // User choice is remembered and decline time is stored.
   EXPECT_EQ(GetChromeSigninUserChoicePref(account_info),
             ChromeSigninUserChoice::kDoNotSignin);
+  // Bubble decline time set.
   EXPECT_TRUE(
       signin_prefs
-          .GetChromeSigninInterceptionFirstDeclinedChoiceTime(account_info.gaia)
+          .GetChromeSigninInterceptionLastBubbleDeclineTime(account_info.gaia)
           .has_value());
+  // But no reprompt count.
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(account_info.gaia),
+            0);
 
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.ChromeSignin.DismissesBeforeDecline", 0, 1);
 
   // Attempting to show the bubble after an explicit choice.
+  // Not enough time for a reprompt yet, bubble is not shown.
 
   ASSERT_FALSE(IsChromeSignedIn());
   // Chrome Signin bubble should not show if the user already made a choice.
   ExpectAttemptToShowChromeSigninBubbleNotToShow(account_info);
+}
+
+// In this test, we simulate moving time forward by setting the needed pref in
+// the past. This allows to have the right conditions for reprompts. Testing the
+// minimum time reprompt logic here.
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest,
+    ChromeSigninInterceptDeclinesAndReprompts) {
+  base::HistogramTester histogram_tester;
+  // Setup account for interception.
+  AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com");
+  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // bubble.
+  ASSERT_FALSE(IsChromeSignedIn());
+
+  SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
+  ASSERT_FALSE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+  ASSERT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 0);
+
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+  EXPECT_FALSE(IsChromeSignedIn());
+  // Decline time pref is set.
+  std::optional<base::Time> initial_decline_time =
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia);
+  ASSERT_TRUE(initial_decline_time.has_value());
+  // Reprompt count is 0.
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.NumberOfDaysSinceLastDecline", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.RepromptCount", 0);
+
+  // Immediate attempt to show the bubble should not succeed, since not enough
+  // time has passed.
+  ExpectAttemptToShowChromeSigninBubbleNotToShow(info);
+
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(15));
+
+  // Attempt before the minimum duration for reprompt has passed, it should
+  // fail.
+  ExpectAttemptToShowChromeSigninBubbleNotToShow(info);
+
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(46));
+
+  // Bubble should show as we are in the first period where the bubble can be
+  // reprompted. Decline it to proceed with the reprompts.
+  ASSERT_GT(time_since_last_reprompt(info.gaia), base::Days(60));
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+  // Last bubble time pref is still set.
+  std::optional<base::Time> updated_last_decline_time =
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia);
+  ASSERT_TRUE(updated_last_decline_time.has_value());
+  // And different from the initial decline time.
+  EXPECT_NE(initial_decline_time.value(), updated_last_decline_time.value());
+  // Reprompt count updated
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.NumberOfDaysSinceLastDecline", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.ChromeSignin.RepromptCount", 1, 1);
+
+  // Move time forward with less time than the expected minimum duration for the
+  // reprompt. Should not show the bubble again yet.
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(31));
+
+  ASSERT_LT(time_since_last_reprompt(info.gaia), base::Days(60));
+  ExpectAttemptToShowChromeSigninBubbleNotToShow(info);
+
+  // Move time forward enough to bypass the minimum duration for the reprompt.
+  // Should show the bubble again now.
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(41));
+
+  ASSERT_GT(time_since_last_reprompt(info.gaia), base::Days(60));
+  // Decline it again to keep trying later. Second reprompt decline total
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 2);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.NumberOfDaysSinceLastDecline", 2);
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.ChromeSignin.RepromptCount", 2, 1);
+
+  // Move time forward enough time to bypass the minimum reprompt duration by a
+  // big margin.
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(120));
+
+  ASSERT_GT(time_since_last_reprompt(info.gaia), base::Days(60));
+  // Decline it again to keep trying later. 3rd reprompt decline.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 3);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.NumberOfDaysSinceLastDecline", 3);
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.ChromeSignin.RepromptCount", 3, 1);
+
+  // Repeat same operation for the last allowed reprompt.
+
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(120));
+  ASSERT_GT(time_since_last_reprompt(info.gaia), base::Days(60));
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 4);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.NumberOfDaysSinceLastDecline", 4);
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.ChromeSignin.RepromptCount", 4, 1);
+
+  // Maximum reprompt count reached. Make sure that no reprompts will be made
+  // regardless of the time that has passed.
+
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(30));
+  // Less than the minimum duration between reprompts.
+  ASSERT_LT(time_since_last_reprompt(info.gaia), base::Days(60));
+  ExpectAttemptToShowChromeSigninBubbleNotToShow(info);
+
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(120));
+  // More than the minimum duration between reprompts.
+  ASSERT_GT(time_since_last_reprompt(info.gaia), base::Days(60));
+  // Still no reprompt.
+  ExpectAttemptToShowChromeSigninBubbleNotToShow(info);
+}
+
+// This test makes sure that the reprompts are count based and not depending one
+// total time duration.
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest,
+    ChromeSigninInterceptRepromptsHasNoTimeLimit) {
+  // Setup account for interception.
+  AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com");
+  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // bubble.
+  ASSERT_FALSE(IsChromeSignedIn());
+
+  SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
+  ASSERT_FALSE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+
+  EXPECT_TRUE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+
+  // Advance a large amount of time. Greater than the minimum duration.
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(300));
+
+  ASSERT_GT(time_since_last_reprompt(info.gaia), base::Days(60));
+  // Reprompt should happen.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+
+  // Advance even larger amount of time.
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(300));
+
+  // Larger than the minimum duration.
+  ASSERT_GT(time_since_last_reprompt(info.gaia), base::Days(60));
+  // Reprompt should happen as the max count was not reached yet. The amount of
+  // time that has passed is not significant as long as it is more than the
+  // minimum duration between reprompts.
+  // Result is not important.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kAccepted);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest,
+    ChromeSigninInterceptDeclinesRepromptAttemptWithExplicitDoNotSignin) {
+  // Setup account for interception.
+  AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com");
+  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // bubble.
+  ASSERT_FALSE(IsChromeSignedIn());
+
+  SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
+  ASSERT_FALSE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+
+  EXPECT_TRUE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+
+  // Simulates settings change by the user through the settings page.
+  SimulateSettingExplicitChromeSigninUserChoiceToDoNotSignin(info.email);
+
+  EXPECT_FALSE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 0);
+
+  // Advance a large amount of time. No reprompt is expected.
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(100));
+
+  // No reprompts since the choice was explicitly set through settings.
+  ExpectAttemptToShowChromeSigninBubbleNotToShow(info);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest,
+    ChromeSigninInterceptDeclinesRepromptsThenDismissReprompt) {
+  // Setup account for interception.
+  AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com");
+  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // bubble.
+  ASSERT_FALSE(IsChromeSignedIn());
+
+  // Start by dismissing the bubble 3 times, to set up for later.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDismissed);
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDismissed);
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDismissed);
+
+  SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
+  ASSERT_FALSE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+  EXPECT_TRUE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+
+  // Advance enough time for a reprompt.
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(70));
+
+  ASSERT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 0);
+  // Reprompt should be successful and we dismiss it.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDismissed);
+  // Reprompt count did not change, as the dismiss did not trigger a completed
+  // reprompt. Only decline should do that.
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 0);
+
+  // A followup reprompt is then allowed directly without more time passing.
+  // Dismissing again, the 5th time (given the first 3 dismisses), should be
+  // treated as a decline and update the the reprompt count.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDismissed);
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 1);
+
+  // Followup attempt to show the bubble should fail, without increasing the
+  // time.
+  ExpectAttemptToShowChromeSigninBubbleNotToShow(info);
+
+  // Finally increasing the time should allow for more reprompts as we did not
+  // reach the limit yet.
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(70));
+
+  // And followup dismisses should directly be treated as declines still.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDismissed);
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest,
+    ChromeSigninInterceptDeclinesRepromptsThenAcceptReprompt) {
+  // Setup account for interception.
+  AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com");
+  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // bubble.
+  ASSERT_FALSE(IsChromeSignedIn());
+
+  SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
+  ASSERT_FALSE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+  // Bubble last decline time is set.
+  EXPECT_TRUE(
+      signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(info.gaia)
+          .has_value());
+  // Choice is set impliclty.
+  EXPECT_EQ(signin_prefs.GetChromeSigninInterceptionUserChoice(info.gaia),
+            ChromeSigninUserChoice::kDoNotSignin);
+  // No reprompt yet.
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 0);
+
+  // Advance enough time for a reprompt.
+  SimulateChromeSigninDeclinedAdvanceTime(info.gaia, base::Days(70));
+
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kAccepted);
+  // Implicit choice is overridden to always sign in, accepting the bubble.
+  EXPECT_EQ(signin_prefs.GetChromeSigninInterceptionUserChoice(info.gaia),
+            ChromeSigninUserChoice::kSignin);
+  // Still no reprompt.
+  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(info.gaia), 0);
+  EXPECT_TRUE(IsChromeSignedIn());
 }
 
 // Test the memory of the user's account storage preference.
