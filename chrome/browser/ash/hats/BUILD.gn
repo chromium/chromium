@@ -39,6 +39,9 @@ static_library("hats") {
     "//ui/message_center",
     "//ui/strings:ui_strings_grit",
     "//ui/web_dialogs",
+
+    # TODO: Use //chrome/browser/ui instead after fixing cyclic dependency.
+    "//components/compose/core/browser",
   ]
 }
 
