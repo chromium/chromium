@@ -20,7 +20,7 @@
 #include "base/threading/platform_thread.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/crash_client.h"
-#include "chrome/enterprise_companion/installer.h"
+#include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 
 namespace enterprise_companion {

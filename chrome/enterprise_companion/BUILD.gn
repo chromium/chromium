@@ -60,7 +60,6 @@ source_set("base") {
     "enterprise_companion_status.h",
     "event_logger.cc",
     "event_logger.h",
-    "installer.h",
     "ipc_support.cc",
     "ipc_support.h",
     "lock.cc",
@@ -71,6 +70,7 @@ source_set("base") {
   deps = [
     ":branding_header",
     ":client",
+    ":installer_paths",
     ":version_header",
     "mojom/",
     "//base",
@@ -88,15 +88,6 @@ source_set("base") {
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/handler",
   ]
-
-  if (is_linux) {
-    sources += [ "installer_linux.cc" ]
-  } else if (is_mac) {
-    sources += [ "installer_mac.mm" ]
-    frameworks = [ "Foundation.framework" ]
-  } else if (is_win) {
-    sources += [ "installer_win.cc" ]
-  }
 }
 
 executable("test_crashpad_embedder") {
@@ -154,6 +145,29 @@ static_library("client") {
     ":branding_header",
     "//mojo/public/cpp/platform",
   ]
+}
+
+static_library("installer_paths") {
+  sources = [ "installer_paths.h" ]
+
+  deps = [
+    ":branding_header",
+    "//base",
+  ]
+
+  visibility = [
+    ":base",
+    ":client",
+  ]
+
+  if (is_linux) {
+    sources += [ "installer_paths_linux.cc" ]
+  } else if (is_mac) {
+    sources += [ "installer_paths_mac.mm" ]
+    frameworks = [ "Foundation.framework" ]
+  } else if (is_win) {
+    sources += [ "installer_paths_win.cc" ]
+  }
 }
 
 if (!is_official_build) {

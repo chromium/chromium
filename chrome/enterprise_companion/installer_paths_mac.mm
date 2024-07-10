@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/enterprise_companion/installer.h"
+#include "chrome/enterprise_companion/installer_paths.h"
 
 #import <Foundation/Foundation.h>
 
