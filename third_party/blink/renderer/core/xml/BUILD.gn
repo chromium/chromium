@@ -6,6 +6,7 @@ import("//third_party/blink/renderer/core/core.gni")
 
 # Chromium-style plugin produces an error for xpath_grammar_generated.h.
 # Disable the plugin for sources including xpath_grammar_generated.h.
+# Bison-generated code is not compatible with unsafe_buffers.
 blink_core_sources("xpath_generated") {
   sources = [
     "xpath_grammar_generated.cc",
@@ -13,6 +14,9 @@ blink_core_sources("xpath_generated") {
     "xpath_parser.cc",
   ]
   if (is_clang) {
-    configs -= [ "//build/config/clang:find_bad_constructs" ]
+    configs -= [
+      "//build/config/clang:find_bad_constructs",
+      "//build/config/clang:unsafe_buffers",
+    ]
   }
 }

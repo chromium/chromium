@@ -120,10 +120,7 @@
 -storage/
 -testing/
 -third_party/
-+third_party/blink/renderer/core/css/
-+third_party/blink/renderer/core/dom/
-+third_party/blink/renderer/core/layout/
-+third_party/blink/renderer/core/svg/
++third_party/blink/renderer/core/
 +third_party/blink/renderer/modules/
 +third_party/blink/renderer/platform/
 -tools/

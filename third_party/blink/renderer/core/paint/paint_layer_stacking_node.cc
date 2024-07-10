@@ -42,6 +42,11 @@
  * version of this file under any of the LGPL, the MPL or the GPL.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/paint/paint_layer_stacking_node.h"
 
 #include <algorithm>
