@@ -36,6 +36,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/uuid.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Between;
