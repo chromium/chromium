@@ -13,6 +13,11 @@
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_response_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate_bridge.h"
 #import "ios/web/public/web_state.h"
@@ -140,6 +145,20 @@ NSString* gSearchTerm;
     (web::AbstractFindInPageManager*)manager {
   // User dismissed the Find panel so mark the Find UI as inactive.
   self.findInPageModel.enabled = NO;
+
+  if (base::FeatureList::IsEnabled(kDisableFullscreenScrolling)) {
+    ChromeBrowserState* browserState =
+        ChromeBrowserState::FromBrowserState(_webState->GetBrowserState());
+    BOOL incognito = browserState->IsOffTheRecord();
+    BrowserList* browserList =
+        BrowserListFactory::GetForBrowserState(browserState);
+
+    Browser* browser = GetBrowserForTabWithId(
+        browserList, _webState->GetUniqueIdentifier(), incognito);
+    FullscreenController* fullscreenController =
+        FullscreenController::FromBrowser(browser);
+    fullscreenController->ExitFullscreen();
+  }
 }
 
 - (void)detachFromWebState {

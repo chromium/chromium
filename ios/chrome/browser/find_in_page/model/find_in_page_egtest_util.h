@@ -147,7 +147,8 @@ id<GREYMatcher> PasteButton();
 - (void)helperTestFindInPageAccessibility;
 // Tests that Native Find in Page works as expected for PDF documents.
 - (void)helperTestFindInPagePDF;
-
+// Tests that FIP exit fullscreen when done.
+- (void)helperTestFindInPageExitFullscreen;
 @end
 
 #endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_FIND_IN_PAGE_EGTEST_UTIL_H_

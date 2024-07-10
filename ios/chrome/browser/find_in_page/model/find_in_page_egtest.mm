@@ -6,12 +6,14 @@
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_app_interface.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 namespace {
@@ -294,6 +296,16 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 #endif
 
   [_helper helperTestFindInPagePDF];
+}
+
+// Tests that FIP exit fullscreen when done.
+- (void)testWhenFullscreenIsDisable {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.features_enabled.push_back(kDisableFullscreenScrolling);
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [_helper helperTestFindInPageExitFullscreen];
 }
 
 @end

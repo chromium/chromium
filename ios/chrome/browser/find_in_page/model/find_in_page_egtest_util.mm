@@ -773,4 +773,37 @@ id<GREYMatcher> PasteButton() {
   }
 }
 
+// Tests that FIP exit fullscreen when done.
+- (void)helperTestFindInPageExitFullscreen {
+  if (@available(iOS 16.1.1, *)) {
+    [self setUpTestServersForWebPageTest];
+
+    // Load test page.
+    GURL destinationURL = self.testServer->GetURL(kFindInPageComplexPDFTestURL);
+    [ChromeEarlGrey loadURL:destinationURL];
+
+    // Ensure the toolbars are not in fullscreen mode by checking if share
+    // button is visible.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+
+    // Open FIP with Overflow menu and check it is visible and the share button
+    // is not visible.
+    [self.delegate openFindInPageWithOverflowMenu];
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        [self.delegate findInPageInputField]];
+
+    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                        chrome_test_util::TabShareButton()];
+
+    // Close find in page with Done button and ensure the share button is
+    // visible again.
+    [self.delegate closeFindInPageWithDoneButton];
+    [[EarlGrey selectElementWithMatcher:[self.delegate findInPageInputField]]
+        assertWithMatcher:grey_notVisible()];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+}
+
 @end
