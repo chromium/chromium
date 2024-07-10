@@ -28,7 +28,6 @@ android_resources("java_resources") {
 }
 
 android_library("public_java") {
-  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/features/start_surface/ReturnToStartSurfaceUtil.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
@@ -64,10 +63,6 @@ android_library("public_java") {
   ]
 
   resources_package = "org.chromium.chrome.start_surface"
-}
-
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java" ]
 }
 
 android_library("test_support_java") {

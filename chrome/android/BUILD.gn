@@ -3886,7 +3886,6 @@ group("jni_headers") {
   public_deps = [
     ":chrome_jni_headers",
     "//chrome/android/features/keyboard_accessory:jni_headers",
-    "//chrome/android/features/start_surface:jni_headers",
     "//chrome/browser/android/browserservices/metrics:jni_headers",
     "//chrome/browser/android/browserservices/verification:jni_headers",
     "//chrome/browser/android/metrics:jni_headers",

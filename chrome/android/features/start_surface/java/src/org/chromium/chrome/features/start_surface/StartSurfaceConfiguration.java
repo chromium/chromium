@@ -6,8 +6,6 @@ package org.chromium.chrome.features.start_surface;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.CalledByNative;
-
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
@@ -145,10 +143,5 @@ public class StartSurfaceConfiguration {
     @VisibleForTesting
     public static String getHistogramName(String name) {
         return STARTUP_UMA_PREFIX + name;
-    }
-
-    @CalledByNative
-    private static boolean isBehaviouralTargetingEnabled() {
-        return false;
     }
 }
