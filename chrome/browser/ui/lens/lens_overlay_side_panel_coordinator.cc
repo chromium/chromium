@@ -23,6 +23,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/lens/lens_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/referrer.h"
@@ -240,6 +241,13 @@ void LensOverlaySidePanelCoordinator::DOMContentLoaded(
   lens_overlay_controller_->SetSidePanelIsLoadingResults(false);
 }
 
+web_modal::WebContentsModalDialogHost*
+LensOverlaySidePanelCoordinator::GetWebContentsModalDialogHost() {
+  return lens_overlay_controller_->GetTabInterface()
+      ->GetBrowserWindowInterface()
+      ->GetWebContentsModalDialogHostForWindow();
+}
+
 void LensOverlaySidePanelCoordinator::OpenURLInBrowser(
     const content::OpenURLParams& params) {
   lens_overlay_controller_->GetTabInterface()
@@ -287,6 +295,15 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
                     LensOverlayController::kOverlaySidePanelWebViewId);
   side_panel_web_view_ = view.get();
   Observe(GetSidePanelWebContents());
+
+  // Register the modal dialog manager for this side panel web contents so
+  // browser dialogs can open when requested by the side panel WebUI.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      GetSidePanelWebContents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      GetSidePanelWebContents())
+      ->SetDelegate(this);
+
   // Important safety note: creating the SidePanelWebUIViewT can result in
   // synchronous construction of the WebUIController. Until
   // "CreateGlueForWebView" is called below, the WebUIController will not be

@@ -94,5 +94,15 @@ bool LensOverlaySidePanelWebView::HandleKeyboardEvent(
       ->HandleKeyboardEvent(source, event, GetFocusManager());
 }
 
+void LensOverlaySidePanelWebView::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  // Note: This is needed for taking screenshots via the feedback form on the
+  // side panel.
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), /*extension=*/nullptr);
+}
+
 BEGIN_METADATA(LensOverlaySidePanelWebView)
 END_METADATA

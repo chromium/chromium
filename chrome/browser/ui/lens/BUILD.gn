@@ -67,6 +67,7 @@ source_set("lens") {
     "//components/strings:components_strings_grit",
     "//components/vector_icons",
     "//components/viz/common",
+    "//components/web_modal:web_modal",
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",
