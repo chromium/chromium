@@ -29,25 +29,6 @@ WebContentsDevToolsAgentHost* FindAgentHost(WebContents* wc) {
   return it == g_agent_host_instances.Get().end() ? nullptr : it->second;
 }
 
-// This implements the DevTools definition of outermost web contents,
-// which is currently the one associated to outermost frame, not
-// traversing the guest view (so for something within a guest view),
-// this returns the parent guest view. This is for compatibility,
-// as guest views were historically exposed as independent targets.
-// Note this differs from `WebContents::GetResponsibleWebContents()`
-// that traverses guest views.
-WebContents* GetRootWebContentsForDevTools(WebContents* wc) {
-  RenderFrameHost* current = wc->GetPrimaryMainFrame();
-  while (RenderFrameHost* parent = current->GetParentOrOuterDocument()) {
-    current = parent;
-  }
-  return WebContents::FromRenderFrameHost(current);
-}
-
-bool ShouldCreateDevToolsAgentHost(WebContents* wc) {
-  return wc == GetRootWebContentsForDevTools(wc);
-}
-
 }  // namespace
 
 // static
@@ -138,13 +119,12 @@ class WebContentsDevToolsAgentHost::AutoAttacher
 // static
 WebContentsDevToolsAgentHost* WebContentsDevToolsAgentHost::GetFor(
     WebContents* web_contents) {
-  return FindAgentHost(GetRootWebContentsForDevTools(web_contents));
+  return FindAgentHost(web_contents);
 }
 
 // static
 WebContentsDevToolsAgentHost* WebContentsDevToolsAgentHost::GetOrCreateFor(
     WebContents* web_contents) {
-  web_contents = GetRootWebContentsForDevTools(web_contents);
   if (auto* host = FindAgentHost(web_contents))
     return host;
   return new WebContentsDevToolsAgentHost(web_contents);
@@ -161,8 +141,7 @@ bool WebContentsDevToolsAgentHost::IsDebuggerAttached(
 void WebContentsDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
-    if (ShouldCreateDevToolsAgentHost(wc))
-      result->push_back(GetOrCreateFor(wc));
+    result->push_back(GetOrCreateFor(wc));
   }
 }
 

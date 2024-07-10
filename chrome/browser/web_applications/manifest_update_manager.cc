@@ -90,9 +90,7 @@ class ManifestUpdateManager::PreUpdateWebContentsObserver
 
  private:
   bool IsInvalidRenderFrameHost(content::RenderFrameHost* render_frame_host) {
-    return (!render_frame_host ||
-            render_frame_host->GetParentOrOuterDocument() ||
-            !render_frame_host->IsInPrimaryMainFrame());
+    return !render_frame_host || !render_frame_host->IsInPrimaryMainFrame();
   }
 
   // content::WebContentsObserver:

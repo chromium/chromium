@@ -415,9 +415,7 @@ bool CheckXrwOriginTrial(const GURL& request_url,
         "Android.WebView.RequestedWithHeader.HadWebContentsForPartitionOrigin",
         wc);
     if (wc) {
-      partition_origin = wc->GetPrimaryMainFrame()
-                             ->GetOutermostMainFrame()
-                             ->GetLastCommittedOrigin();
+      partition_origin = wc->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     }
   }
 
