@@ -5219,6 +5219,21 @@
             ]
         }
     ],
+    "ClearDeviceDataOnSignOutForManagedUsers": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClearDeviceDataOnSignOutForManagedUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClearGrShaderDiskCacheOnInvalidPrefix": [
         {
             "platforms": [

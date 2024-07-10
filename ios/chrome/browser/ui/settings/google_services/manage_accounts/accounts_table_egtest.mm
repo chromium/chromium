@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -65,7 +66,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey clearBookmarks];
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
-      @"No bookmarks should exist before tests start.");
+      @"No bookmarks should exist befoe tests start.");
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -75,6 +76,13 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // merged.
   config.features_enabled.push_back(
       policy::kUserPolicyForSigninAndNoSyncConsentLevel);
+  if ([self isRunningTest:@selector
+            (testSignOutWithManagedAccountFromNoneSyncingAccount)]) {
+    // Disable `kClearDeviceDataOnSignOutForManagedUsers` because the feature
+    // shows a different dialog
+    config.features_disabled.push_back(
+        kClearDeviceDataOnSignOutForManagedUsers);
+  }
 
   return config;
 }

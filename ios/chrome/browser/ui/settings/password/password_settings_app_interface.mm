@@ -293,6 +293,7 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
+  example.date_created = base::Time::Now();
   return SaveToPasswordProfileStore(example);
 }
 
@@ -304,6 +305,7 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
+  example.date_created = base::Time::Now();
   return SaveToPasswordAccountStore(example);
 }
 
