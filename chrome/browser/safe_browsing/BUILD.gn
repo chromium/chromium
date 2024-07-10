@@ -459,7 +459,8 @@ static_library("safe_browsing") {
           "//components/safe_browsing/android:remote_database_manager",
           "//ui/android:android",
 
-          # TODO: Use //chrome/browser after fixing cyclic dependency.
+          # TODO(crbug.com/41437292): Use //chrome/browser after fixing cyclic
+          # dependency.
           "//chrome/browser/page_info:page_info_buildflags",
         ]
       }
