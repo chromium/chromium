@@ -596,6 +596,7 @@ NOINLINE const LayoutResult*
 BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize() {
   DCHECK_EQ(line_clamp_data_.data.state, LineClampData::kClampByBfcOffset);
   DCHECK(!line_clamp_data_.previous_inflow_position_when_clamped);
+  DCHECK(line_clamp_data_.latest_clampable_offset);
   LayoutAlgorithmParams params(Node(),
                                container_builder_.InitialFragmentGeometry(),
                                GetConstraintSpace(), GetBreakToken(), nullptr);
@@ -603,7 +604,8 @@ BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize() {
   algorithm_ignoring_line_clamp.line_clamp_data_.data.state =
       LineClampData::kClampByBfcOffset;
   algorithm_ignoring_line_clamp.line_clamp_data_.data.clamp_bfc_offset =
-      line_clamp_data_.latest_clampable_offset;
+      *line_clamp_data_.latest_clampable_offset;
+  algorithm_ignoring_line_clamp.line_clamp_data_.is_relayout = true;
   BoxFragmentBuilder& new_builder =
       algorithm_ignoring_line_clamp.container_builder_;
   new_builder.SetBoxType(container_builder_.GetBoxType());
@@ -693,9 +695,21 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
         clamp_bfc_offset, BorderScrollbarPadding().block_start);
   } else if (Style().HasLineClamp()) {
     line_clamp_data_.UpdateLinesFromStyle(Style().LineClamp());
-  } else if (Style().WebkitLineClamp() != 0) {
-    UseCounter::Count(Node().GetDocument(),
-                      WebFeature::kWebkitLineClampWithoutWebkitBox);
+  } else {
+    if (Style().WebkitLineClamp() != 0) {
+      UseCounter::Count(Node().GetDocument(),
+                        WebFeature::kWebkitLineClampWithoutWebkitBox);
+    }
+
+    // If we're clamping by BFC offset, we need to subtract the bottom bmp to
+    // leave room for it. This doesn't apply if we're relaying out to fix the
+    // offset, because that already accounts for the bmp.
+    if (line_clamp_data_.data.state == LineClampData::kClampByBfcOffset &&
+        !line_clamp_data_.is_relayout) {
+      // TODO(abotella): Margins.
+      line_clamp_data_.data.clamp_bfc_offset -=
+          BorderScrollbarPadding().block_end;
+    }
   }
 
   LayoutUnit content_edge = BorderScrollbarPadding().block_start;
@@ -1295,6 +1309,9 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     container_builder_.SetExclusionSpace(ExclusionSpace());
   } else {
     container_builder_.SetLinesUntilClamp(line_clamp_data_.LinesUntilClamp());
+    if (line_clamp_data_.has_content_after_clamp) {
+      container_builder_.SetHasContentAfterLineClamp();
+    }
   }
 
   if (constraint_space.UseFirstLineStyle()) {
@@ -2422,7 +2439,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   }
 
   // Update |line_clamp_data_| from the LayoutResult, and abort if needed.
-  if (!line_clamp_data_.UpdateAfterLayout(layout_result->LinesUntilClamp(),
+  if (!line_clamp_data_.UpdateAfterLayout(layout_result,
+                                          container_builder_.BfcBlockOffset(),
                                           *previous_inflow_position)) {
     return LayoutResult::kNeedsLineClampRelayout;
   }

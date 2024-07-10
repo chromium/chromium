@@ -87,6 +87,8 @@ struct LineClampData {
     int lines_until_clamp;
 
     // The BFC offset where the current block container should clamp.
+    // (Might not be the same BFC offset as other block containers in the same
+    // BFC, depending on the bottom bmp).
     // Only valid if state == kClampByBfcOffset
     LayoutUnit clamp_bfc_offset;
   };

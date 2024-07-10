@@ -112,6 +112,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return rare_data_ ? rare_data_->lines_until_clamp : 0;
   }
 
+  bool HasContentAfterLineClamp() const {
+    return rare_data_ && rare_data_->has_content_after_line_clamp();
+  }
+
   // Returns true if the block-start/-end is trimmed by the `text-box-trim`
   // property. Set not only for inline nodes, but also for block nodes when
   // propagating.
@@ -640,6 +644,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         DataUnionTypeValue::DefineNextValue<bool, 1>;
     using IsBlockEndTrimmedFlag =
         IsBlockStartTrimmedFlag::DefineNextValue<bool, 1>;
+    using HasContentAfterLineClampFlag =
+        IsBlockEndTrimmedFlag::DefineNextValue<bool, 1>;
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
@@ -756,6 +762,14 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     }
     void set_is_block_end_trimmed() {
       bit_field.set<IsBlockEndTrimmedFlag>(true);
+    }
+
+    bool has_content_after_line_clamp() const {
+      return bit_field.get<HasContentAfterLineClampFlag>();
+    }
+
+    void set_has_content_after_line_clamp() {
+      bit_field.set<HasContentAfterLineClampFlag>(true);
     }
 
     template <typename DataType>
