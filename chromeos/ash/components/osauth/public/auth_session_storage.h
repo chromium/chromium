@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) ScopedSessionRefresher {
 };
 
 // Helper class that stores and manages lifetime of authenticated UserContext.
-// Main usa cases for this class are the situations where authenticated
+// Main use cases for this class are the situations where authenticated
 // operations do not happen immediately after authentication, but require some
 // user input, e.g. setting up additional factors during user onboarding on a
 // first run, or entering authentication-related section of

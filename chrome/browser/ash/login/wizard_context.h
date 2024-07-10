@@ -192,8 +192,10 @@ class WizardContext {
 
   std::optional<OSAuthErrorKind> osauth_error;
 
-  // Same as above, but the actual context is stored in AuthSessionStorage,
-  // and the token can be used to retrieve it.
+  // Token used for retrieving the `UserContext` from `AuthSessionStorage`.
+  // Once authenticated, the `UserContext` is stored in `AuthSessionStorage` and
+  // this token is used for borrowing it in order to perform operations such as
+  // adding extra factors. See https://crrev.com/c/4729372 for history.
   std::optional<AuthProofToken> extra_factors_token;
 
   // If the onboarding flow wasn't completed by the user we will try to show

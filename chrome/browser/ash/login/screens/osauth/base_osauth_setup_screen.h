@@ -68,7 +68,6 @@ class BaseOSAuthSetupScreen : public BaseScreen {
   void CheckForKnowledgeFactorPresence(base::OnceClosure continuation,
                                        UserContext* context);
 
-  std::optional<std::string> quick_unlock_token_;
   std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   base::WeakPtrFactory<BaseOSAuthSetupScreen> weak_ptr_factory_{this};
