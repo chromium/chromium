@@ -507,6 +507,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->model_.ComputeDisplayNodeIdsForDistilledTree();
   }
 
+  void Draw(bool recompute_display_nodes) {
+    controller_->Draw(recompute_display_nodes);
+  }
+
+  void Reset(const std::vector<ui::AXNodeID>& content_node_ids) {
+    controller_->model_.Reset(content_node_ids);
+  }
+
   ui::AXTreeID tree_id_;
   raw_ptr<MockAXTreeDistiller, DanglingUntriaged> distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
@@ -1501,6 +1509,70 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfContentNodeNotFoundInTree) {
   OnAXTreeDistilled({6});
+}
+
+TEST_F(ReadAnythingAppControllerTest, Draw_RecomputeDisplayNodes) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData node;
+  node.id = 4;
+  update.nodes = {node};
+
+  // This update changes the structure of the tree. When the controller receives
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  AccessibilityEventReceived({update});
+  Reset({3, 4});
+  Draw(/* recompute_display_nodes= */ true);
+  EXPECT_TRUE(DisplayNodeIdsContains(1));
+  EXPECT_FALSE(DisplayNodeIdsContains(2));
+  EXPECT_TRUE(DisplayNodeIdsContains(3));
+  EXPECT_TRUE(DisplayNodeIdsContains(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+  ui::AXNodeData node;
+  node.id = 2;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.AddStringAttribute(
+      ax::mojom::StringAttribute::kUrl,
+      "https://docs.google.com/document/d/"
+      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
+  root.child_ids = {node.id};
+  update.nodes = {root, node};
+  update.root_id = root.id;
+
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
+  AccessibilityEventReceived({update}, {load_complete});
+  OnAXTreeDistilled({3});
+  OnActiveAXTreeIDChanged(id_1);
+  EXPECT_TRUE(IsGoogleDocs());
+  EXPECT_TRUE(DisplayNodeIdsContains(1));
+  EXPECT_FALSE(DisplayNodeIdsContains(2));
+  EXPECT_TRUE(DisplayNodeIdsContains(3));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  ui::AXNodeData node1;
+  node1.id = 4;
+  update1.nodes = {node1};
+
+  // This update changes the structure of the tree. When the controller receives
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  AccessibilityEventReceived({update});
+  Reset({3, 4});
+  Draw(/* recompute_display_nodes= */ true);
+  EXPECT_FALSE(DisplayNodeIdsContains(1));
+  EXPECT_FALSE(DisplayNodeIdsContains(2));
+  EXPECT_FALSE(DisplayNodeIdsContains(3));
+  EXPECT_FALSE(DisplayNodeIdsContains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {

@@ -433,7 +433,15 @@ void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
                                               ui::AXNodeID node_id) {
   if (displayed_nodes_pending_deletion_.contains(node_id)) {
     displayed_nodes_pending_deletion_.erase(node_id);
-    if (displayed_nodes_pending_deletion_.empty()) {
+    // For Google Docs, we extract text from the "annotated canvas" element
+    // nodes, which hold the currently visible text on screen. As the user
+    // scrolls, these canvas elements are dynamically updated, resulting in
+    // frequent calls to OnNodeDeleted. We found that redrawing content in the
+    // Reading Model panel after node deletion during scrolling can lead to
+    // unexpected behavior (e.g., an empty side panel). Therefore, Google Docs
+    // require special handling to ensure correct text extraction and avoid
+    // these issues.
+    if (displayed_nodes_pending_deletion_.empty() && !IsGoogleDocs()) {
       Draw(false);
     }
   }
@@ -469,9 +477,6 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
   if (model_.requires_distillation()) {
     Distill();
-    if (model_.is_empty() && IsGoogleDocs() && model_.page_finished_loading()) {
-      ExecuteJavaScript("chrome.readingMode.showEmpty();");
-    }
   }
 
   if (model_.redraw_required()) {
@@ -552,7 +557,6 @@ void ReadAnythingAppController::OnRestartReadAloud() {
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   // Cancel any running draw timers.
   post_user_entry_draw_timer_.Stop();
-
   model_.OnAXTreeDestroyed(tree_id);
 }
 
@@ -692,7 +696,11 @@ bool ReadAnythingAppController::PostProcessSelection() {
 }
 
 void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
-  if (recompute_display_nodes) {
+  // For Google Docs, do not show any text before the doc finishing loading.
+  if (IsGoogleDocs() && !model_.page_finished_loading()) {
+    return;
+  }
+  if (recompute_display_nodes && !model_.content_node_ids().empty()) {
     model_.ComputeDisplayNodeIdsForDistilledTree();
   }
   // This call should check that the active tree isn't in an undistilled state
