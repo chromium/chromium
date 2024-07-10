@@ -42,6 +42,11 @@ component("jni_zero") {
   public = [
     "default_conversions.h",
     "jni_zero.h",
+
+    # TODO(bugs.webrtc.org/42225138): Move back to sources as
+    # soon as WebRTC removes the jni_generator_helper.h which at
+    # the moment needs to read jni_zero::internal::kJniStackMarkerValue.
+    "jni_zero_internal.h",
   ]
 
   sources = [
@@ -50,7 +55,6 @@ component("jni_zero") {
     "default_conversions.cc",
     "jni_export.h",
     "jni_zero.cc",
-    "jni_zero_internal.h",
     "logging.cc",
     "logging.h",
   ]
