@@ -2,6 +2,7 @@ Name: Material Web Components
 Short Name: mwc
 URL: https://github.com/material-components/material-components-web-components
 Version: 0.20.0
+Revision: d893b14a0846777b90c10839f3d05c36bc34692e
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
