@@ -166,7 +166,8 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
 
 void TrayDetailedView::CreateScrollableList() {
   DCHECK(!scroller_);
-  scroller_ = AddChildView(std::make_unique<views::ScrollView>());
+  scroller_ = AddChildView(std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled));
   scroller_->SetDrawOverflowIndicator(false);
   scroll_content_ = scroller_->SetContents(
       views::Builder<views::FlexLayoutView>()
