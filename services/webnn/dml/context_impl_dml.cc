@@ -33,22 +33,56 @@ namespace {
 
 using Microsoft::WRL::ComPtr;
 
-ContextProperties GetProperties() {
+// The context properties follow the supported feature level on the platform.
+// https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history
+//
+// TODO(crbug.com/345271830): update the context properties based on a certain
+// feature level once there is a bundled DirectML.dll.
+ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level) {
+  static constexpr DML_FEATURE_LEVEL kMinDMLFeatureLevelForWebNN =
+      DML_FEATURE_LEVEL_4_0;
+  CHECK_GE(feature_level, kMinDMLFeatureLevelForWebNN);
+
   static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kUint32,
       OperandDataType::kInt64, OperandDataType::kUint64};
 
+  static constexpr SupportedDataTypes kFloat16To32Ints8To32{
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kInt8,    OperandDataType::kUint8,
+      OperandDataType::kInt32,   OperandDataType::kUint32};
+
   // TODO: crbug.com/345271830 - specify data types for all parameters.
-  return ContextProperties{
-      InputOperandLayout::kNchw,
-      /*input_supported_data_types=*/SupportedDataTypes::All(),
-      /*constant_supported_data_types=*/SupportedDataTypes::All(),
-      /*concat_inputs_supported_data_types=*/SupportedDataTypes::All(),
-      /*gather_input_supported_data_types=*/SupportedDataTypes::All(),
-      /*gather_indices_supported_data_types=*/kGatherIndicesSupportedDataTypes,
-      /*where_condition_supported_data_types=*/{OperandDataType::kUint8},
-      /*where_true_value_supported_data_types=*/SupportedDataTypes::All(),
-      /*where_false_value_supported_data_types=*/SupportedDataTypes::All()};
+  ContextProperties properties = {
+      .conv2d_input_layout = InputOperandLayout::kNchw,
+      .input_supported_data_types = SupportedDataTypes::All(),
+      .constant_supported_data_types = SupportedDataTypes::All(),
+
+      // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
+      .concat_inputs_supported_data_types = kFloat16To32Ints8To32,
+
+      // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc#tensor-support
+      .gather_input_supported_data_types = kFloat16To32Ints8To32,
+      .gather_indices_supported_data_types = kGatherIndicesSupportedDataTypes,
+
+      // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_if_operator_desc
+      .where_condition_supported_data_types = {OperandDataType::kUint8},
+      .where_true_value_supported_data_types = kFloat16To32Ints8To32,
+      .where_false_value_supported_data_types = kFloat16To32Ints8To32};
+
+  if (feature_level >= DML_FEATURE_LEVEL_4_1) {
+    properties.concat_inputs_supported_data_types = SupportedDataTypes::All();
+    properties.gather_input_supported_data_types = SupportedDataTypes::All();
+  }
+
+  if (feature_level >= DML_FEATURE_LEVEL_5_0) {
+    properties.where_true_value_supported_data_types =
+        SupportedDataTypes::All();
+    properties.where_false_value_supported_data_types =
+        SupportedDataTypes::All();
+  }
+
+  return properties;
 }
 
 }  // namespace
@@ -63,7 +97,7 @@ ContextImplDml::ContextImplDml(
     : WebNNContextImpl(std::move(receiver),
                        std::move(client_remote),
                        context_provider,
-                       GetProperties()),
+                       GetProperties(adapter->max_supported_feature_level())),
       adapter_(std::move(adapter)),
       command_recorder_(std::move(command_recorder)),
       gpu_feature_info_(gpu_feature_info) {

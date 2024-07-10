@@ -76,6 +76,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
 
   CommandQueue* command_queue() const { return command_queue_.get(); }
 
+  DML_FEATURE_LEVEL max_supported_feature_level() const {
+    return max_supported_dml_feature_level_;
+  }
+
   CommandQueue* init_command_queue_for_npu() const {
     return init_command_queue_for_npu_.get();
   }
