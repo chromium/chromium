@@ -277,6 +277,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.base_unittests.filter',
         ],
       },
+      'android-tablet-14-arm64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.tangorpro.base_unittests.filter',
+        ],
+      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 5,
@@ -2212,7 +2217,12 @@
       },
       'android-mte-arm64-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.content_unittests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.content_unittests.filter',
+        ],
+      },
+      'android-tablet-14-arm64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.content_unittests.filter',
         ],
       },
       'fuchsia-code-coverage': {

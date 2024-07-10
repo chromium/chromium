@@ -35,6 +35,7 @@ source_set("base_unittests_filters") {
     "//testing/buildbot/filters/android.emulator_14.base_unittests.filter",
     "//testing/buildbot/filters/android.pie_tot.base_unittests.filter",
     "//testing/buildbot/filters/android.mte.base_unittests.filter",
+    "//testing/buildbot/filters/android.tangorpro.base_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.base_unittests.filter",
   ]
 }
@@ -225,7 +226,7 @@ source_set("content_unittests_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator_14.content_unittests.filter",
     "//testing/buildbot/filters/android.emulator_15.content_unittests.filter",
-    "//testing/buildbot/filters/android.mte.content_unittests.filter",
+    "//testing/buildbot/filters/android.device.content_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.content_unittests.filter",
     "//testing/buildbot/filters/webrtc.content_unittests.filter",
     "//testing/buildbot/filters/win.win-rel-cft.content_unittests.filter",
