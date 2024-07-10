@@ -2189,4 +2189,17 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_TRUE(open_args.suggestions[1].is_acceptable);
 }
 
+TEST_F(PasswordAutofillManagerTest,
+       ManualFallback_NoPasswordForm_MetricsNotEmittedOnNavigation) {
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client,
+                                    /*autofill_client=*/nullptr);
+
+  base::HistogramTester histograms;
+  password_autofill_manager_->DidNavigateMainFrame();
+
+  EXPECT_THAT(histograms.GetTotalCountsForPrefix("Autofill.Funnel."),
+              ::testing::IsEmpty());
+}
+
 }  // namespace password_manager

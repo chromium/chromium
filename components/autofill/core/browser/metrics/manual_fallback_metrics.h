@@ -44,12 +44,10 @@ class ManualFallbackEventLogger {
 
   // Called when context menu was opened on a qualifying field.
   // `address_fallback_present` indicates where an address fallback was
-  // added. Similarly, `credit_cards_fallback_present` and
-  // `passwords_fallback_present` indicate whether a credit card or a password
-  // fallback option was added.
+  // added. Similarly, `credit_cards_fallback_present` indicates whether a
+  // credit card fallback option was added.
   void ContextMenuEntryShown(bool address_fallback_present,
-                             bool credit_cards_fallback_present,
-                             bool passwords_fallback_present);
+                             bool credit_cards_fallback_present);
 
   // Called when a fallback option was accepted (not just hovered).
   // `target_filling_product` specifies of the available options was
@@ -89,21 +87,17 @@ class ManualFallbackEventLogger {
   void EmitFillAfterSuggestionMetric(SuggestionState suggestion_state,
                                      std::string_view bucket);
 
-  // For addresses, credit cards and passwords filling, tracks if the manual
-  // fallback context menu entry was shown or accepted.
+  // For addresses and credit cards filling, tracks if the manual fallback
+  // context menu entry was shown or accepted.
   ContextMenuEntryState not_classified_as_target_filling_address =
       ContextMenuEntryState::kNotShown;
   ContextMenuEntryState not_classified_as_target_filling_credit_card =
-      ContextMenuEntryState::kNotShown;
-  ContextMenuEntryState not_classified_as_target_filling_password =
       ContextMenuEntryState::kNotShown;
 
   // Tracks if address suggestions were shown/filled.
   SuggestionState address_suggestions_state_ = SuggestionState::kNotShown;
   // Tracks if credit card suggestions were shown/filled.
   SuggestionState credit_card_suggestions_state_ = SuggestionState::kNotShown;
-  // Tracks if password suggestions were shown/filled.
-  SuggestionState password_suggestions_state_ = SuggestionState::kNotShown;
 };
 
 }  // namespace autofill::autofill_metrics

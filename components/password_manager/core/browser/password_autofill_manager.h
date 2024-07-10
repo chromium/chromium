@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -106,6 +107,11 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // Called if no suggestions were found. Assumed to be mutually exclusive with
   // |OnAddPasswordFillData|.
   void OnNoCredentialsFound();
+
+  PasswordManualFallbackMetricsRecorder&
+  GetPasswordManualFallbackMetricsRecorder() {
+    return CHECK_DEREF(manual_fallback_metrics_recorder_.get());
+  }
 
   // A public version of FillSuggestion(), only for use in tests.
   bool FillSuggestionForTest(const std::u16string& username);

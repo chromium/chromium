@@ -3293,7 +3293,8 @@ chromium-metrics-reviews@google.com.
     are either unclassified or classified differently as the filling product.
     This tracks the number of times a user accepted/didn't accept the manual
     fallback option in the context menu. Emitted on navigation (when the
-    AutofillManager is destroyed), at most once per page.
+    AutofillManager/PasswordAutofillManager is destroyed/reset), at most once
+    per page.
   </summary>
 </histogram>
 
@@ -3307,7 +3308,8 @@ chromium-metrics-reviews@google.com.
     fields that are either unclassified or classified differently as the filling
     product. This tracks the number of times a user accepted/didn't accept the
     manual fallback option in the context menu. Emitted on navigation (when the
-    AutofillManager is destroyed), at most once per page.
+    AutofillManager/PasswordAutofillManager is destroyed/reset), at most once
+    per page.
   </summary>
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>

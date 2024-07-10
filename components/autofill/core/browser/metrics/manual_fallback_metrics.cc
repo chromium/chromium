@@ -24,11 +24,8 @@ ManualFallbackEventLogger::~ManualFallbackEventLogger() {
                                 "Address");
   EmitExplicitlyTriggeredMetric(not_classified_as_target_filling_credit_card,
                                 "CreditCard");
-  EmitExplicitlyTriggeredMetric(not_classified_as_target_filling_password,
-                                "Password");
   EmitFillAfterSuggestionMetric(address_suggestions_state_, "Address");
   EmitFillAfterSuggestionMetric(credit_card_suggestions_state_, "CreditCard");
-  EmitFillAfterSuggestionMetric(password_suggestions_state_, "Password");
 }
 
 void ManualFallbackEventLogger::OnDidShowSuggestions(
@@ -45,8 +42,7 @@ void ManualFallbackEventLogger::OnDidFillSuggestion(
 
 void ManualFallbackEventLogger::ContextMenuEntryShown(
     bool address_fallback_present,
-    bool payments_fallback_present,
-    bool passwords_fallback_present) {
+    bool payments_fallback_present) {
   if (address_fallback_present) {
     UpdateContextMenuEntryState(ContextMenuEntryState::kShown,
                                 not_classified_as_target_filling_address);
@@ -54,10 +50,6 @@ void ManualFallbackEventLogger::ContextMenuEntryShown(
   if (payments_fallback_present) {
     UpdateContextMenuEntryState(ContextMenuEntryState::kShown,
                                 not_classified_as_target_filling_credit_card);
-  }
-  if (passwords_fallback_present) {
-    UpdateContextMenuEntryState(ContextMenuEntryState::kShown,
-                                not_classified_as_target_filling_password);
   }
 }
 
@@ -72,14 +64,11 @@ void ManualFallbackEventLogger::ContextMenuEntryAccepted(
       UpdateContextMenuEntryState(ContextMenuEntryState::kAccepted,
                                   not_classified_as_target_filling_credit_card);
       break;
-    case FillingProduct::kPassword:
-      UpdateContextMenuEntryState(ContextMenuEntryState::kAccepted,
-                                  not_classified_as_target_filling_password);
-      break;
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kIban:
     case FillingProduct::kAutocomplete:
+    case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kStandaloneCvc:
@@ -135,13 +124,11 @@ void ManualFallbackEventLogger::UpdateSuggestionStateForFillingProduct(
     case FillingProduct::kCreditCard:
       update_suggestion_state(new_state, credit_card_suggestions_state_);
       break;
-    case FillingProduct::kPassword:
-      update_suggestion_state(new_state, password_suggestions_state_);
-      break;
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kIban:
     case FillingProduct::kAutocomplete:
+    case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kStandaloneCvc:

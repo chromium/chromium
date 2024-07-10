@@ -134,7 +134,11 @@ PasswordManualFallbackFlow::GetDriver() {
   return password_manager_driver_.get();
 }
 
-void PasswordManualFallbackFlow::OnSuggestionsShown() {}
+void PasswordManualFallbackFlow::OnSuggestionsShown() {
+  manual_fallback_metrics_recorder_->OnDidShowSuggestions(
+      password_form_cache_->HasPasswordForm(password_manager_driver_,
+                                            field_id_));
+}
 
 void PasswordManualFallbackFlow::OnSuggestionsHidden() {}
 
@@ -173,6 +177,10 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
   if (!suggestion.is_acceptable) {
     return;
   }
+  manual_fallback_metrics_recorder_->OnDidFillSuggestion(
+      password_form_cache_->HasPasswordForm(password_manager_driver_,
+                                            field_id_));
+
   switch (suggestion.type) {
     case autofill::SuggestionType::kPasswordEntry:
       MaybeAuthenticateBeforeFilling(base::BindOnce(

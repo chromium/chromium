@@ -48,6 +48,8 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_manual_fallback_flow.h"
+#include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
@@ -588,6 +590,8 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
     bool address_option_shown,
     bool payments_option_shown,
     bool select_passwords_option_shown) {
+  // TODO(crbug.com/321678141): Create separate methods for each type of context
+  // menu entries.
   if (!autofill_driver || (!address_option_shown && !payments_option_shown &&
                            !select_passwords_option_shown)) {
     return;
@@ -604,10 +608,15 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
                       .contains(field->Type().group()));
   CHECK(!select_passwords_option_shown || password_manager_driver)
       << "No password entries should be shown if there is no driver.";
-  const bool
-      select_passwords_option_shown_for_form_not_classified_as_password_form =
-          select_passwords_option_shown &&
-          !IsPasswordFormField(password_manager_driver, params_);
+
+  if (select_passwords_option_shown) {
+    CHECK(password_manager_driver);
+    password_manager_driver->GetPasswordAutofillManager()
+        ->GetPasswordManualFallbackMetricsRecorder()
+        .ContextMenuEntryShown(
+            /*classified_as_target_filling_password=*/
+            IsPasswordFormField(password_manager_driver, params_));
+  }
 
   if (address_option_shown &&
       !address_option_shown_for_field_not_classified_as_address) {
@@ -624,8 +633,7 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
       .GetManualFallbackEventLogger()
       .ContextMenuEntryShown(
           address_option_shown_for_field_not_classified_as_address,
-          payments_option_shown_for_field_not_classified_as_payments,
-          select_passwords_option_shown_for_form_not_classified_as_password_form);
+          payments_option_shown_for_field_not_classified_as_payments);
 }
 
 void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
@@ -670,10 +678,12 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
           rfh ? ContentPasswordManagerDriver::GetForRenderFrameHost(rfh)
               : nullptr;
 
-      // TODO(crbug.com/321678141): Handle the "else" case of this if.
-      if (!IsPasswordFormField(password_manager_driver, params_)) {
-        manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
-            filling_product);
+      if (password_manager_driver) {
+        password_manager_driver->GetPasswordAutofillManager()
+            ->GetPasswordManualFallbackMetricsRecorder()
+            .ContextMenuEntryAccepted(/*classified_as_target_filling_password=*/
+                                      IsPasswordFormField(
+                                          password_manager_driver, params_));
       }
       break;
     }

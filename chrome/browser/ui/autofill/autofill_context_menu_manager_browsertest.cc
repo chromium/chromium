@@ -1423,10 +1423,14 @@ IN_PROC_BROWSER_TEST_P(ManualFallbackMetricsTest,
   if (params.option_accepted) {
     autofill_context_menu_manager()->ExecuteCommand(CommandToExecute());
   }
-  // Expect that when the autofill_manager() is destroyed, the explicitly
-  // triggered metric is emitted correctly.
+
   base::HistogramTester histogram_tester;
-  autofill_manager().Reset();
+  // Trigger navigation so that metrics are emitted. On navigation, the
+  // `AutofillManager` destroys the autofill metrics recorders, and the
+  // `PasswordAutofillManager` destroys the passwords metrics recorder. The
+  // destructors of the metrics recorders emit metrics.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("http://navigation.com")));
 
   histogram_tester.ExpectUniqueSample(GetExplicitlyTriggeredMetricName(),
                                       params.option_accepted, 1);
