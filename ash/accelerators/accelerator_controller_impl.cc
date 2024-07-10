@@ -15,6 +15,7 @@
 #include "ash/accelerators/accelerator_shift_disable_capslock_state_machine.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accelerators/suspend_state_machine.h"
+#include "ash/accelerators/system_shortcut_behavior_policy.h"
 #include "ash/accelerators/top_row_key_usage_recorder.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
@@ -33,6 +34,7 @@
 #include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -78,6 +80,32 @@ static_assert(AcceleratorAction::kDesksActivate0 ==
                   AcceleratorAction::kDesksActivate6 ==
                       AcceleratorAction::kDesksActivate7 - 1,
               "DESKS_ACTIVATE* actions must be consecutive");
+
+// This is a predetermined, fixed list of accelerators and should never be
+// appended to with new accelerators.
+constexpr auto kSystemShortcutPolicyBlockedAccelerators =
+    base::MakeFixedFlatSet<std::pair<ui::KeyboardCode, ui::EventFlags>>(
+        {{ui::VKEY_D, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_E, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_F, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_K, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_M, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_R, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_S, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN},
+         {ui::VKEY_T, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_U, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_X, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_0, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_1, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_2, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_3, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_4, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_5, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_6, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_7, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_8, ui::EF_COMMAND_DOWN},
+         {ui::VKEY_9, ui::EF_COMMAND_DOWN}});
 
 ui::Accelerator CreateAccelerator(ui::KeyboardCode keycode,
                                   int modifiers,
@@ -340,6 +368,16 @@ bool CanHandleToggleCapsLock(
   }
 
   return false;
+}
+
+bool IsShortcutBlockedByPolicy(ui::Accelerator accelerator) {
+  if (GetSystemShortcutBehavior() !=
+      SystemShortcutBehaviorType::kIgnoreCommonVdiShortcuts) {
+    return false;
+  }
+
+  return kSystemShortcutPolicyBlockedAccelerators.contains(
+      {accelerator.key_code(), accelerator.modifiers()});
 }
 
 }  // namespace
@@ -771,6 +809,10 @@ bool AcceleratorControllerImpl::IsActionForAcceleratorEnabled(
 bool AcceleratorControllerImpl::CanPerformAction(
     AcceleratorAction action,
     const ui::Accelerator& accelerator) const {
+  if (IsShortcutBlockedByPolicy(accelerator)) {
+    return false;
+  }
+
   if (accelerator.IsRepeat() && !base::Contains(repeatable_actions_, action))
     return false;
 

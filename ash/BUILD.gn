@@ -81,6 +81,8 @@ component("ash") {
     "accelerators/spoken_feedback_toggler.h",
     "accelerators/suspend_state_machine.cc",
     "accelerators/suspend_state_machine.h",
+    "accelerators/system_shortcut_behavior_policy.cc",
+    "accelerators/system_shortcut_behavior_policy.h",
     "accelerators/tablet_volume_controller.cc",
     "accelerators/tablet_volume_controller.h",
     "accelerators/top_row_key_usage_recorder.cc",

@@ -2147,6 +2147,7 @@ chromium-metrics-reviews@google.com.
   <int value="1281" label="QRCodeGeneratorEnabled"/>
   <int value="1282" label="DnsOverHttpsExcludedDomains"/>
   <int value="1283" label="DnsOverHttpsIncludedDomains"/>
+  <int value="1284" label="SystemShortcutBehavior"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
