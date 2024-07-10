@@ -34246,6 +34246,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="85" label="DirPseudo"/>
   <int value="86" label="HiddenUntilFound"/>
   <int value="87" label="WillChange"/>
+  <int value="88" label="AbortsignalAny"/>
 </enum>
 
 <enum name="WebFontCacheHit">

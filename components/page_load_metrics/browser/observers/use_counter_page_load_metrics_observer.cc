@@ -407,6 +407,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSSelectorPseudoDir, WebDXFeature::kDirPseudo},
           {WebFeature::kHiddenUntilFoundAttribute,
            WebDXFeature::kHiddenUntilFound},
+          {WebFeature::kAbortSignalAny, WebDXFeature::kAbortsignalAny},
       });
 
   return *kMap;
