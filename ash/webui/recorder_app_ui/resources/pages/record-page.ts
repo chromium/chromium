@@ -456,6 +456,7 @@ export class RecordPage extends ReactiveLitElement {
         settings.mutate((s) => {
           s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
         });
+        this.platformHandler.installSoda();
         return;
       case TranscriptionEnableState.UNKNOWN:
       case TranscriptionEnableState.DISABLED_FIRST:

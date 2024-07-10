@@ -13,7 +13,13 @@ import './settings-row.js';
 import {
   Switch as CrosSwitch,
 } from 'chrome://resources/cros_components/switch/switch.js';
-import {css, html, nothing} from 'chrome://resources/mwc/lit/index.js';
+import {
+  createRef,
+  css,
+  html,
+  nothing,
+  ref,
+} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
@@ -26,6 +32,7 @@ import {
 } from '../core/utils/assert.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
+import {TranscriptionConsentDialog} from './transcription-consent-dialog.js';
 
 /**
  * Settings menu for Recording app.
@@ -126,6 +133,9 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
+  private readonly transcriptionConsentDialog =
+    createRef<TranscriptionConsentDialog>();
+
   private get dialog(): CraDialog|null {
     return this.shadowRoot?.querySelector('cra-dialog') ?? null;
   }
@@ -139,7 +149,6 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private onTranscriptionToggle(ev: Event) {
-    // TODO: b/344784638 - Query backend for download status / progress.
     const target = assertInstanceof(ev.target, CrosSwitch);
     settings.mutate((s) => {
       s.transcriptionEnabled = target.selected ?
@@ -149,11 +158,24 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private onInstallSodaClick() {
-    // TODO: b/344784638 - Show consent window on first enable.
-    settings.mutate((s) => {
-      s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-    });
-    this.platformHandler.installSoda();
+    // TODO(pihsun): This is the same as in toggleTranscriptionEnabled in
+    // record-page.ts, consider how to centralize the logic for all
+    // transcription enable/available state transitions.
+    switch (settings.value.transcriptionEnabled) {
+      case TranscriptionEnableState.ENABLED:
+      case TranscriptionEnableState.DISABLED:
+        settings.mutate((s) => {
+          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
+        });
+        this.platformHandler.installSoda();
+        return;
+      case TranscriptionEnableState.UNKNOWN:
+      case TranscriptionEnableState.DISABLED_FIRST:
+        this.transcriptionConsentDialog.value?.show();
+        return;
+      default:
+        assertExhaustive(settings.value.transcriptionEnabled);
+    }
   }
 
   private get transcriptionEnabled() {
@@ -187,6 +209,7 @@ export class SettingsMenu extends ReactiveLitElement {
       return html`
         <cra-button
           slot="action"
+          button-style="secondary"
           .label=${i18n.settingsOptionsTranscriptionDownloadButton}
           @click=${this.onInstallSodaClick}
         ></cra-button>
@@ -222,6 +245,7 @@ export class SettingsMenu extends ReactiveLitElement {
           <span slot="description">${progressDescription}</span>
           <cra-button
             slot="action"
+            button-style="secondary"
             .label=${i18n.settingsOptionsTranscriptionDownloadingButton}
             disabled
           >
@@ -265,43 +289,45 @@ export class SettingsMenu extends ReactiveLitElement {
   override render(): RenderResult {
     // TODO: b/336963138 - Implement actual functionality of all settings.
     return html`<cra-dialog>
-      <div slot="content">
-        <div id="header">
-          ${i18n.settingsHeader}
-          <cra-icon-button
-            buttonstyle="floating"
-            size="small"
-            shape="circle"
-            @click=${this.onCloseClick}
-          >
-            <cra-icon slot="icon" name="close"></cra-icon>
-          </cra-icon-button>
-        </div>
-        <div id="body">
-          <div class="section">
-            <div class="title">${i18n.settingsSectionGeneralHeader}</div>
-            <div class="body">
-              <settings-row>
-                <span slot="label">
-                  ${i18n.settingsOptionsDoNotDisturbLabel}
-                </span>
-                <span slot="description">
-                  ${i18n.settingsOptionsDoNotDisturbDescription}
-                </span>
-                <cros-switch slot="action"></cros-switch>
-              </settings-row>
-              <settings-row>
-                <span slot="label">
-                  ${i18n.settingsOptionsKeepScreenOnLabel}
-                </span>
-                <cros-switch slot="action"></cros-switch>
-              </settings-row>
-            </div>
+        <div slot="content">
+          <div id="header">
+            ${i18n.settingsHeader}
+            <cra-icon-button
+              buttonstyle="floating"
+              size="small"
+              shape="circle"
+              @click=${this.onCloseClick}
+            >
+              <cra-icon slot="icon" name="close"></cra-icon>
+            </cra-icon-button>
           </div>
-          ${this.renderTranscriptionSection()}
+          <div id="body">
+            <div class="section">
+              <div class="title">${i18n.settingsSectionGeneralHeader}</div>
+              <div class="body">
+                <settings-row>
+                  <span slot="label">
+                    ${i18n.settingsOptionsDoNotDisturbLabel}
+                  </span>
+                  <span slot="description">
+                    ${i18n.settingsOptionsDoNotDisturbDescription}
+                  </span>
+                  <cros-switch slot="action"></cros-switch>
+                </settings-row>
+                <settings-row>
+                  <span slot="label">
+                    ${i18n.settingsOptionsKeepScreenOnLabel}
+                  </span>
+                  <cros-switch slot="action"></cros-switch>
+                </settings-row>
+              </div>
+            </div>
+            ${this.renderTranscriptionSection()}
+          </div>
         </div>
-      </div>
-    </cra-dialog>`;
+      </cra-dialog>
+      <transcription-consent-dialog ${ref(this.transcriptionConsentDialog)}>
+      </transcription-consent-dialog>`;
   }
 }
 

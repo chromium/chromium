@@ -8,6 +8,7 @@ import '../components/cra/cra-image.js';
 import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
+import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings, TranscriptionEnableState} from '../core/state/settings.js';
 
@@ -70,6 +71,8 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
 
   private readonly dialog = createRef<CraDialog>();
 
+  private readonly platformHandler = usePlatformHandler();
+
   async show(): Promise<void> {
     await this.dialog.value?.show();
   }
@@ -86,9 +89,11 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
   }
 
   private enableTranscription() {
+    // TODO: b/344787880 - This should show the speaker ID consent afterwards.
     settings.mutate((s) => {
       s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
     });
+    this.platformHandler.installSoda();
     this.hide();
   }
 
