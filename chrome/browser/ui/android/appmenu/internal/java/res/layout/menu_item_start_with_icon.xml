@@ -9,7 +9,7 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/AppMenuItem"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/listPreferredItemHeightSmall"
+    android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     tools:ignore="UseCompoundDrawables">
@@ -28,10 +28,10 @@ found in the LICENSE file.
         android:id="@+id/menu_item_text"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:singleLine="true"
         android:paddingStart="12dp"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:duplicateParentState="true" />
-
 </LinearLayout>
