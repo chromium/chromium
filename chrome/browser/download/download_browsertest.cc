@@ -125,12 +125,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_download_http_response.h"
 #include "content/public/test/test_file_error_injector.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/public/test/url_loader_monitor.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -184,6 +186,7 @@ using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;
 using content::URLLoaderInterceptor;
+using content::URLLoaderMonitor;
 using content::WebContents;
 using download::DownloadItem;
 using download::DownloadUrlParameters;
@@ -640,22 +643,6 @@ class PrerenderDownloadTest : public MPArchDownloadTest {
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
-};
-
-class FencedFrameDownloadTest : public MPArchDownloadTest {
- public:
-  FencedFrameDownloadTest() = default;
-  ~FencedFrameDownloadTest() override = default;
-  FencedFrameDownloadTest(const FencedFrameDownloadTest&) = delete;
-
-  FencedFrameDownloadTest& operator=(const FencedFrameDownloadTest&) = delete;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
 namespace {
@@ -1147,6 +1134,29 @@ IN_PROC_BROWSER_TEST_F(PrerenderDownloadTest,
   EXPECT_TRUE(VerifyNoDownloads());
 }
 
+class FencedFrameDownloadTest : public MPArchDownloadTest {
+ public:
+  FencedFrameDownloadTest() = default;
+  ~FencedFrameDownloadTest() override = default;
+  FencedFrameDownloadTest(const FencedFrameDownloadTest&) = delete;
+
+  FencedFrameDownloadTest& operator=(const FencedFrameDownloadTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    MPArchDownloadTest::SetUpOnMainThread();
+    // Add content/test/data for cross_site_iframe_factory.html.
+    https_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+    https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
 // Verify that fenced frame downloads don't affect the DownloadRequestLimiter
 // state of the WebContents.
 IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
@@ -1212,7 +1222,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
 // from fenced frames.
 IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
                        FencedFrameSandboxFlagBlockDownload) {
-  https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   const GURL main_url = https_test_server()->GetURL("a.test", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
@@ -1245,6 +1254,80 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
             "See https://www.chromestatus.com/feature/5706745674465280 for "
             "more details.");
   EXPECT_TRUE(VerifyNoDownloads());
+}
+
+// This test verifies when fenced frame untrusted network is disabled
+// immediately after user right clicks and before "Save Image As..." is
+// selected, the download request is blocked.
+IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest, NetworkCutoffBlockSaveImageAs) {
+  // Disable SafeBrowsing for testing.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                               false);
+
+  ASSERT_TRUE(https_test_server()->Start());
+  EnableFileChooser(true);
+
+  // Sanity check that there is no downloads at the start of the test.
+  ASSERT_TRUE(VerifyNoDownloads());
+
+  // Navigate the fenced frame to a page with an image element.
+  GURL fenced_frame_url(
+      https_test_server()->GetURL("a.test", "/test_visual.html"));
+
+  GURL main_url(https_test_server()->GetURL(
+      "a.test",
+      base::StringPrintf("/cross_site_iframe_factory.html?a.test(%s{fenced})",
+                         fenced_frame_url.spec().c_str())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Get fenced frame render frame host.
+  std::vector<content::RenderFrameHost*> child_frames =
+      fenced_frame_test_helper().GetChildFencedFrameHosts(
+          GetWebContents()->GetPrimaryMainFrame());
+  ASSERT_EQ(child_frames.size(), 1u);
+  content::RenderFrameHost* fenced_frame_rfh = child_frames[0];
+  ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+
+  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+
+  // Upon context menu shown, disable fenced frame untrusted network access.
+  // Then execute "Save Image As...".
+  ContextMenuWaiter context_menu_waiter(
+      IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
+      base::BindLambdaForTesting([fenced_frame_rfh]() {
+        ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+            (async () => {
+              return window.fence.disableUntrustedNetwork();
+            })();
+          )"));
+      }));
+
+  // Get the src URL of the image element.
+  GURL image_src =
+      GURL(EvalJs(fenced_frame_rfh, "document.getElementById('image').src")
+               .ExtractString());
+
+  // Monitor requests to this URL.
+  URLLoaderMonitor monitor({image_src});
+
+  // Click inside the fenced frame.
+  const gfx::PointF image_element(15, 15);
+
+  // Right-click on the image element to open the context menu.
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, image_element);
+
+  // Wait for the context menu to be shown.
+  context_menu_waiter.WaitForMenuOpenAndClose();
+
+  // The download request should be blocked.
+  EXPECT_EQ(monitor.WaitForRequestCompletion(image_src).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_TRUE(VerifyNoDownloads());
+
+  // Navigate away to avoid flakiness.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 }
 
 // Download a 0-size file with a content-disposition header, verify that the
