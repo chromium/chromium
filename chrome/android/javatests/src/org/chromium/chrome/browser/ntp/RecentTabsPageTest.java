@@ -51,6 +51,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -328,9 +329,8 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    // TODO(crbug.com/346248569): Enable this test once the empty state is fixed.
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testEmptyStateView() throws ExecutionException {
+    public void testEmptyStateView_replaceSyncWithSignInDisabled() {
         // Sign in and enable sync.
         // TODO(b/343378391) Update accountInfo to use
         // AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL.
@@ -347,6 +347,24 @@ public class RecentTabsPageTest {
         mSigninTestRule.addAccount(accountInfo);
         SigninTestUtil.signinAndEnableSync(
                 accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
+
+        // Open an empty recent tabs page and confirm empty view shows.
+        mPage = loadRecentTabsPage();
+        onView(
+                        allOf(
+                                withId(R.id.empty_state_container),
+                                withParent(withId(R.id.legacy_sync_promo_view_frame_layout))))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage"})
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testEmptyStateView() {
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        SigninTestUtil.signinAndEnableHistorySync(
+                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
 
         // Open an empty recent tabs page and confirm empty view shows.
         mPage = loadRecentTabsPage();

@@ -26,6 +26,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
@@ -495,6 +496,43 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                                 parent,
                                 mRecentTabsManager.getProfile(),
                                 SigninAccessPoint.RECENT_TABS);
+            }
+            return convertView;
+        }
+    }
+
+    /** A group containing the empty state illustration. */
+    // TODO(crbug.com/40923516): Consider using this PromoGroup subclass for the empty state
+    // implementation of LegacySyncPromoView.
+    class EmptyStatePromoGroup extends PromoGroup {
+        @Override
+        int getChildType() {
+            return ChildType.NONE;
+        }
+
+        @Override
+        View getChildView(
+                int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LegacySyncPromoView legacySyncPromoView =
+                        (LegacySyncPromoView)
+                                LayoutInflater.from(parent.getContext())
+                                        .inflate(R.layout.legacy_sync_promo_view, parent, false);
+                legacySyncPromoView.setInitializeNotRequired();
+                legacySyncPromoView
+                        .getEmptyStateTitle()
+                        .setText(R.string.recent_tabs_no_tabs_empty_state);
+                legacySyncPromoView
+                        .getEmptyStateDescription()
+                        .setText(R.string.recent_tabs_sign_in_on_other_devices);
+                int emptyViewImageResId =
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(parent.getContext())
+                                ? R.drawable.tablet_recent_tab_empty_state_illustration
+                                : R.drawable.phone_recent_tab_empty_state_illustration;
+                legacySyncPromoView.getEmptyStateImage().setImageResource(emptyViewImageResId);
+                legacySyncPromoView.getOldEmptyCardView().setVisibility(View.GONE);
+                legacySyncPromoView.getEmptyStateView().setVisibility(View.VISIBLE);
+                convertView = legacySyncPromoView;
             }
             return convertView;
         }
@@ -973,6 +1011,13 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
         switch (mRecentTabsManager.getPromoState()) {
             case SyncPromoState.NO_PROMO:
+                boolean recentlyClosedGroupIsOnlyHeader =
+                        mRecentlyClosedTabsGroup.getChildrenCount() == 1;
+                if (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        && recentlyClosedGroupIsOnlyHeader) {
+                    addGroup(new EmptyStatePromoGroup());
+                }
                 break;
             case SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE:
                 addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SIGNIN_PROMO));

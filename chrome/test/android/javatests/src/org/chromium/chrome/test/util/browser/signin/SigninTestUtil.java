@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -30,6 +31,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -143,6 +145,52 @@ public final class SigninTestUtil {
                 () -> {
                     Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SYNC));
                 });
+    }
+
+    /**
+     * Signs into an account and enables history sync given a {@link SyncService} object.
+     *
+     * @param syncService Enable history sync with it.
+     */
+    @WorkerThread
+    public static void signinAndEnableHistorySync(CoreAccountInfo coreAccountInfo) {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SigninManager signinManager =
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
+                    signinManager.signin(
+                            coreAccountInfo,
+                            SigninAccessPoint.UNKNOWN,
+                            new SigninManager.SignInCallback() {
+                                @Override
+                                public void onSignInComplete() {
+                                    SyncService syncService =
+                                            SyncTestUtil.getSyncServiceForLastUsedProfile();
+                                    syncService.setSelectedType(
+                                            UserSelectableType.HISTORY, /* isTypeOn= */ true);
+                                    syncService.setSelectedType(
+                                            UserSelectableType.TABS, /* isTypeOn= */ true);
+                                    callbackHelper.notifyCalled();
+                                }
+
+                                @Override
+                                public void onSignInAborted() {
+                                    Assert.fail("Sign-in was aborted");
+                                }
+                            });
+                });
+        try {
+            callbackHelper.waitForOnly();
+        } catch (TimeoutException e) {
+            throw new RuntimeException("Timed out waiting for callback", e);
+        }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
+                });
+        SyncTestUtil.waitForHistorySyncEnabled();
     }
 
     /** Waits for the AccountTrackerService to seed system accounts. */
