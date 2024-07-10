@@ -43,7 +43,9 @@ class CpuHealthTracker
                    ActionableTabResultCallback on_actionability_change_cb);
   ~CpuHealthTracker() override;
 
-  HealthLevel GetHealthLevelForTesting();
+  HealthLevel GetCurrentHealthLevel();
+
+  int GetTotalCpuPercentUsage(ActionableTabsResult tabs);
 
  private:
   friend class CpuHealthTrackerTestHelper;
@@ -99,10 +101,11 @@ class CpuHealthTracker
 
   ActionableTabsResult actionable_tabs_;
 
-  // Map containing all page contexts and their corresponding resource
-  // measurements since the last measurement interval that are possibly
-  // actionable.
-  PageResourceMeasurements possible_actionable_pages_;
+  // Map containing all non-off record tab page contexts and their
+  // corresponding resource measurements since the last measurement interval.
+  // Some tabs are not actionable since their CPU usage may be lower than
+  // the minimum to be considered as actionable.
+  PageResourceMeasurements tab_page_measurements_;
 
   // Number of samples in a time window being used to consider the new health
   // status.

@@ -6,8 +6,12 @@
 
 #include <memory>
 
+#include "base/check_op.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/daily_event.h"
@@ -149,4 +153,45 @@ void RecordInterventionTriggerResult(
                     GetDetectionResourceTypeString(resource_type),
                     ".MessageTriggerResult"}),
       reason);
+}
+
+void RecordInterventionToolbarButtonClicked() {
+  base::RecordComputedAction("PerformanceIntervention.Toolbar.OpenDialog");
+}
+
+void RecordInterventionBubbleClosedReason(
+    PerformanceDetectionManager::ResourceType resource_type,
+    InterventionBubbleActionType type) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PerformanceControls.Intervention.BackgroundTab.",
+                    GetDetectionResourceTypeString(resource_type),
+                    ".BubbleAction"}),
+      type);
+}
+
+void RecordCpuHealthStatusAfterDiscard(
+    base::TimeDelta time_after_discard,
+    PerformanceDetectionManager::HealthLevel health_level) {
+  std::string time = std::string();
+  if (time_after_discard == base::Minutes(1)) {
+    time = "1Min";
+  } else if (time_after_discard == base::Minutes(2)) {
+    time = "2Min";
+  } else {
+    CHECK_EQ(time_after_discard, base::Minutes(4));
+    time = "4Min";
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PerformanceControls.Intervention.BackgroundTab.",
+                    GetDetectionResourceTypeString(
+                        PerformanceDetectionManager::ResourceType::kCpu),
+                    ".HealthStatusAfterDiscard.", time}),
+      health_level);
+}
+
+void RecordCpuUsageBeforeDiscard(int cpu_usage) {
+  base::UmaHistogramPercentage(
+      "PerformanceControls.Intervention.DiscardedTabsPercentageUsage",
+      cpu_usage);
 }

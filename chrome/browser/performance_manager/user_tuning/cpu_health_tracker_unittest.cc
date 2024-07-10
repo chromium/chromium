@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -219,7 +220,7 @@ TEST_F(CpuHealthTrackerTest, RecordCpuAndUpdateHealthStatus) {
   std::unique_ptr<CpuHealthTracker> health_tracker =
       std::make_unique<CpuHealthTracker>(base::DoNothing(), base::DoNothing());
 
-  EXPECT_EQ(health_tracker->GetHealthLevelForTesting(),
+  EXPECT_EQ(health_tracker->GetCurrentHealthLevel(),
             CpuHealthTracker::HealthLevel::kHealthy);
 
   // Simulate continuously receiving system cpu
@@ -228,7 +229,7 @@ TEST_F(CpuHealthTrackerTest, RecordCpuAndUpdateHealthStatus) {
   for (int i = 0; i < kNumHealthStatusForChange - 1; i++) {
     health_tracker->RecordAndUpdateHealthStatus(
         kUnhealthySystemCpuUsagePercentage);
-    EXPECT_EQ(health_tracker->GetHealthLevelForTesting(),
+    EXPECT_EQ(health_tracker->GetCurrentHealthLevel(),
               CpuHealthTracker::HealthLevel::kHealthy);
   }
 
@@ -236,13 +237,13 @@ TEST_F(CpuHealthTrackerTest, RecordCpuAndUpdateHealthStatus) {
   // unhealthy
   health_tracker->RecordAndUpdateHealthStatus(
       kUnhealthySystemCpuUsagePercentage);
-  EXPECT_EQ(health_tracker->GetHealthLevelForTesting(),
+  EXPECT_EQ(health_tracker->GetCurrentHealthLevel(),
             CpuHealthTracker::HealthLevel::kUnhealthy);
 
   // simulate medium but doesn't meet continuous requirement
   health_tracker->RecordAndUpdateHealthStatus(
       kDegradedSystemCpuUsagePercentage);
-  EXPECT_EQ(health_tracker->GetHealthLevelForTesting(),
+  EXPECT_EQ(health_tracker->GetCurrentHealthLevel(),
             CpuHealthTracker::HealthLevel::kDegraded);
 
   // Status should stay as medium even when receiving unhealthy cpu usage
@@ -251,7 +252,7 @@ TEST_F(CpuHealthTrackerTest, RecordCpuAndUpdateHealthStatus) {
   for (int i = 0; i < kNumHealthStatusForChange - 1; i++) {
     health_tracker->RecordAndUpdateHealthStatus(
         kUnhealthySystemCpuUsagePercentage);
-    EXPECT_EQ(health_tracker->GetHealthLevelForTesting(),
+    EXPECT_EQ(health_tracker->GetCurrentHealthLevel(),
               CpuHealthTracker::HealthLevel::kDegraded);
   }
 
@@ -259,23 +260,23 @@ TEST_F(CpuHealthTrackerTest, RecordCpuAndUpdateHealthStatus) {
   // while now
   health_tracker->RecordAndUpdateHealthStatus(
       kUnhealthySystemCpuUsagePercentage);
-  EXPECT_EQ(health_tracker->GetHealthLevelForTesting(),
+  EXPECT_EQ(health_tracker->GetCurrentHealthLevel(),
             CpuHealthTracker::HealthLevel::kUnhealthy);
 
   // Health status stays as medium when oscillating between medium and unhealthy
   health_tracker->RecordAndUpdateHealthStatus(
       kDegradedSystemCpuUsagePercentage);
-  EXPECT_EQ(health_tracker->GetHealthLevelForTesting(),
+  EXPECT_EQ(health_tracker->GetCurrentHealthLevel(),
             CpuHealthTracker::HealthLevel::kDegraded);
 
   health_tracker->RecordAndUpdateHealthStatus(
       kUnhealthySystemCpuUsagePercentage);
-  EXPECT_EQ(health_tracker->GetHealthLevelForTesting(),
+  EXPECT_EQ(health_tracker->GetCurrentHealthLevel(),
             CpuHealthTracker::HealthLevel::kDegraded);
 
   health_tracker->RecordAndUpdateHealthStatus(
       kDegradedSystemCpuUsagePercentage);
-  EXPECT_EQ(health_tracker->GetHealthLevelForTesting(),
+  EXPECT_EQ(health_tracker->GetCurrentHealthLevel(),
             CpuHealthTracker::HealthLevel::kDegraded);
 }
 
@@ -471,45 +472,43 @@ TEST_F(CpuHealthTrackerBrowserTest, HealthStatusUpdates) {
 }
 
 TEST_F(CpuHealthTrackerBrowserTest, PagesMeetMinimumCpuUsage) {
-  std::map<resource_attribution::ResourceContext, double> page_contexts_cpu;
+  base::flat_map<resource_attribution::PageContext,
+                 CpuHealthTracker::CpuPercent>
+      page_contexts_cpu;
 
-  const CpuHealthTracker::CpuPercent minimum_percent_cpu_usage{
-      performance_manager::features::kMinimumActionableTabCPUPercentage.Get()};
-  const double minimum_decimal_cpu_usage =
-      minimum_percent_cpu_usage.value() / 100.0;
-
-  // Generate a map of page contexts and decimal CPU usage where half the page
-  // contexts are below the minimum cpu usage for a tab to be actionable, and
-  // half above it
-  for (int i = 0; i < 10; i++) {
+  // Populate a map of page contexts with CPU usage below the minimum required
+  // to be considered as actionable.
+  for (int i = 0; i < 3; i++) {
     resource_attribution::PageContext page_context =
         AddBackgroundTab("http://b.com", browser());
-    const double cpu_usage = (i % 2 == 0) ? minimum_decimal_cpu_usage - 0.01
-                                          : minimum_decimal_cpu_usage;
-    page_contexts_cpu[page_context] =
-        cpu_usage * base::SysInfo::NumberOfProcessors();
+    page_contexts_cpu.insert(
+        {page_context,
+         CpuHealthTracker::CpuPercent(
+             performance_manager::features::kMinimumActionableTabCPUPercentage
+                 .Get() -
+             1)});
   }
 
   PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(
-          [](std::map<resource_attribution::ResourceContext, double>
-                 page_contexts_cpu,
-             CpuHealthTracker::CpuPercent minimum_percent_cpu_usage,
+          [](base::flat_map<resource_attribution::PageContext,
+                            CpuHealthTracker::CpuPercent> page_contexts_cpu,
              Graph* graph) {
-            const CpuHealthTracker::PageResourceMeasurements
-                filtered_measurements =
-                    CpuHealthTracker::GetFromGraph(graph)
-                        ->FilterForPossibleActionablePages(page_contexts_cpu);
-            EXPECT_EQ(filtered_measurements.size(),
-                      (page_contexts_cpu.size() / 2));
-
-            for (const auto& [context, cpu_percentage] :
-                 filtered_measurements) {
-              EXPECT_EQ(cpu_percentage, minimum_percent_cpu_usage);
-            }
+            CpuHealthTracker::GetFromGraph(graph)->GetFilteredActionableTabs(
+                page_contexts_cpu,
+                CpuHealthTracker::CpuPercent(
+                    performance_manager::features::
+                        kCPUDegradedHealthPercentageThreshold.Get()),
+                base::BindOnce(
+                    [](CpuHealthTracker::ActionableTabsResult result) {
+                      // The actionable tab list should be empty because each
+                      // page's CPU usage is below the minimum needed to  be
+                      // considered as actionable.
+                      EXPECT_TRUE(result.empty());
+                    }));
           },
-          std::move(page_contexts_cpu), minimum_percent_cpu_usage));
+          std::move(page_contexts_cpu)));
 }
 
 // The PerformanceDetectionManager should properly notify observers

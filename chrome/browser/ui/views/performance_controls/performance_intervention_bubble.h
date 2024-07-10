@@ -43,6 +43,8 @@ class PerformanceInterventionBubble {
   // Hides performance intervention bubble dialog.
   static void CloseBubble(views::BubbleDialogModelHost*);
 
+  static void RecordCloseReason();
+
  private:
   static DialogStrings GetStrings();
 };

@@ -10,7 +10,10 @@
 #include <vector>
 
 #include "base/location.h"
+#include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -206,5 +209,68 @@ TEST_F(PerformanceDetectionManagerTest, UpdatedActionableTabsSentToObservers) {
             PerformanceDetectionManager::ResourceType::kCpu);
   EXPECT_TRUE(observer.actionable_tabs().value().empty());
   manager()->RemoveActionableTabsObserver(&observer);
+}
+
+TEST_F(PerformanceDetectionManagerTest, DiscardMetricsRecorded) {
+  CreateManager();
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  manager()->DiscardTabs(
+      {}, base::BindOnce([](base::RepeatingClosure quit_closure,
+                            bool did_discard) { quit_closure.Run(); },
+                         run_loop.QuitClosure()));
+  run_loop.Run();
+  const std::string health_status_prefix =
+      "PerformanceControls.Intervention.BackgroundTab.Cpu."
+      "HealthStatusAfterDiscard.";
+  const std::string one_minute_metric =
+      base::StrCat({health_status_prefix, "1Min"});
+  const std::string two_minutes_metric =
+      base::StrCat({health_status_prefix, "2Min"});
+  const std::string four_minutes_metric =
+      base::StrCat({health_status_prefix, "4Min"});
+
+  // Immediately after discard, we shouldn't record any health measurements
+  histogram_tester.ExpectBucketCount(
+      one_minute_metric, PerformanceDetectionManager::HealthLevel::kHealthy, 0);
+  histogram_tester.ExpectBucketCount(
+      two_minutes_metric, PerformanceDetectionManager::HealthLevel::kHealthy,
+      0);
+  histogram_tester.ExpectBucketCount(
+      four_minutes_metric, PerformanceDetectionManager::HealthLevel::kHealthy,
+      0);
+
+  // One minute have elapsed since discard
+  task_environment()->FastForwardBy(base::Minutes(1));
+  histogram_tester.ExpectBucketCount(
+      one_minute_metric, PerformanceDetectionManager::HealthLevel::kHealthy, 1);
+  histogram_tester.ExpectBucketCount(
+      two_minutes_metric, PerformanceDetectionManager::HealthLevel::kHealthy,
+      0);
+  histogram_tester.ExpectBucketCount(
+      four_minutes_metric, PerformanceDetectionManager::HealthLevel::kHealthy,
+      0);
+
+  // Two minutes have elapsed since discard
+  task_environment()->FastForwardBy(base::Minutes(1));
+  histogram_tester.ExpectBucketCount(
+      one_minute_metric, PerformanceDetectionManager::HealthLevel::kHealthy, 1);
+  histogram_tester.ExpectBucketCount(
+      two_minutes_metric, PerformanceDetectionManager::HealthLevel::kHealthy,
+      1);
+  histogram_tester.ExpectBucketCount(
+      four_minutes_metric, PerformanceDetectionManager::HealthLevel::kHealthy,
+      0);
+
+  // Four minutes have elapsed since discard
+  task_environment()->FastForwardBy(base::Minutes(2));
+  histogram_tester.ExpectBucketCount(
+      one_minute_metric, PerformanceDetectionManager::HealthLevel::kHealthy, 1);
+  histogram_tester.ExpectBucketCount(
+      two_minutes_metric, PerformanceDetectionManager::HealthLevel::kHealthy,
+      1);
+  histogram_tester.ExpectBucketCount(
+      four_minutes_metric, PerformanceDetectionManager::HealthLevel::kHealthy,
+      1);
 }
 }  // namespace performance_manager::user_tuning

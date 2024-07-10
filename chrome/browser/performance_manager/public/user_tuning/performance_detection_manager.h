@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/timer/timer.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 
 class ChromeBrowserMainExtraPartsPerformanceManager;
@@ -31,10 +32,14 @@ class PerformanceDetectionManager {
     kMaxValue = kNetwork,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class HealthLevel {
     kHealthy = 0,
+    kMinValue = kHealthy,
     kDegraded = 1,
     kUnhealthy = 2,
+    kMaxValue = kUnhealthy,
   };
 
   using ResourceTypeSet = base::
@@ -98,11 +103,19 @@ class PerformanceDetectionManager {
   void NotifyActionableTabObservers(ResourceType resource_type,
                                     ActionableTabsResult tabs);
 
+  void OnDiscardComplete();
+  void RecordCpuHealthStatus(base::TimeDelta time_after_discard);
+
   std::map<ResourceType, base::ObserverList<StatusObserver>> status_observers_;
   std::map<ResourceType, base::ObserverList<ActionableTabsObserver>>
       actionable_tab_observers_;
   base::flat_map<ResourceType, ActionableTabsResult> actionable_tabs_;
   base::flat_map<ResourceType, HealthLevel> current_health_status_;
+
+  base::OneShotTimer one_minute_discard_timer_;
+  base::OneShotTimer two_minute_discard_timer_;
+  base::OneShotTimer four_minute_discard_timer_;
+
   base::WeakPtrFactory<PerformanceDetectionManager> weak_ptr_factory_{this};
 };
 

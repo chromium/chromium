@@ -53,6 +53,60 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.BubbleAction"
+    enum="InterventionBubbleActionType" expires_after="2024-12-24">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs each time the performance intervention dialog closes. The enum logged
+    indicates the action the user took in order to close the dialog. This will
+    be used to measure the efficacy of the dialog message and the overall click
+    through rate of the performance intervention feature.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+</histogram>
+
+<histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.HealthStatusAfterDiscard.{Time}"
+    enum="PerformanceDetectionManagerHealthLevel" expires_after="2024-12-24">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the resource type's health level a certain duration after the user
+    discards tabs suggested by the performance intervention dialog. This will be
+    used to evaluate the impact of discarding tabs on the resource health level.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+  <token key="Time">
+    <variant name="1Min"
+        summary="One minute has elapsed since the user chose to discard the
+                 suggested tabs."/>
+    <variant name="2Min"
+        summary="Two minutes have elapsed since the user chose to discard the
+                 suggested tabs."/>
+    <variant name="4Min"
+        summary="Four minutes have elapsed since the user chose to discard
+                 the suggested tabs."/>
+  </token>
+</histogram>
+
+<histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageShownCount"
     units="count" expires_after="2024-12-24">
   <owner>stluong@chromium.org</owner>
@@ -116,6 +170,19 @@ each histogram. Maybe add here or add a new performance controls one
         summary="Performance messaging was shown because of not healthy
                  memory health level."/>
   </token>
+</histogram>
+
+<histogram name="PerformanceControls.Intervention.DiscardedTabsPercentageUsage"
+    units="%" expires_after="2024-12-24">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the total CPU usage of discarded tabs suggested by performance
+    intervention right before the discard occurs. This will be used to measure
+    the impact of discarding suggested tabs by performance intervention on CPU
+    usage.
+  </summary>
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.SettingsChangeNotification"

@@ -30567,6 +30567,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PerformanceIntervention.Toolbar.OpenDialog">
+  <owner>stluong@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user clicks on the Performance Intervention toolbar button
+    and re-opens the performance intervention dialog.
+  </description>
+</action>
+
 <action name="PermissionBubbleIFrameRequestQueued">
   <owner>gbillock@chromium.org</owner>
   <owner>leng@chromium.org</owner>

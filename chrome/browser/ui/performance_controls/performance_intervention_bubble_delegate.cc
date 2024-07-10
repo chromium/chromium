@@ -26,23 +26,14 @@ PerformanceInterventionBubbleDelegate::
     ~PerformanceInterventionBubbleDelegate() = default;
 
 void PerformanceInterventionBubbleDelegate::OnBubbleClosed() {
-  // TODO(crbug.com/341138308): Record metrics for when the dialog is
-  // closed by not clicking the dismiss or deactivate buttons.
-
   observer_->OnBubbleHidden();
 }
 
 void PerformanceInterventionBubbleDelegate::OnDismissButtonClicked() {
-  // TODO(crbug.com/341138308): Record metrics for when the dismiss button is
-  // clicked.
-
   observer_->OnBubbleHidden();
 }
 
 void PerformanceInterventionBubbleDelegate::OnDeactivateButtonClicked() {
-  // TODO(crbug.com/341138308): Record metrics for when the deactivate button is
-  // clicked.
-
   performance_manager::user_tuning::PerformanceDetectionManager* manager =
       performance_manager::user_tuning::PerformanceDetectionManager::
           GetInstance();

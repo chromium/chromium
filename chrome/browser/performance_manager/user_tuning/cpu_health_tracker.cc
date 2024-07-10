@@ -59,8 +59,19 @@ CpuHealthTracker::CpuHealthTracker(
 
 CpuHealthTracker::~CpuHealthTracker() = default;
 
-CpuHealthTracker::HealthLevel CpuHealthTracker::GetHealthLevelForTesting() {
+CpuHealthTracker::HealthLevel CpuHealthTracker::GetCurrentHealthLevel() {
   return current_health_status_;
+}
+
+int CpuHealthTracker::GetTotalCpuPercentUsage(ActionableTabsResult tabs) {
+  int total_cpu = 0;
+  for (resource_attribution::PageContext context : tabs) {
+    auto iter = tab_page_measurements_.find(context);
+    if (iter != tab_page_measurements_.end()) {
+      total_cpu += iter->second.value();
+    }
+  }
+  return total_cpu;
 }
 
 base::OnceCallback<void(CpuHealthTracker::ActionableTabsResult)>
@@ -127,6 +138,15 @@ void CpuHealthTracker::GetFilteredActionableTabs(
 
   for (size_t i = 0; i < max_actionable_tabs; i++) {
     const auto& [context, measurement] = sorted_measurements.at(i);
+
+    // Since sorted_measurements is sorted in descending order, we can
+    // terminate early as there is no longer any eligible actionable pages.
+    if (measurement.value() <
+        performance_manager::features::kMinimumActionableTabCPUPercentage
+            .Get()) {
+      break;
+    }
+
     if (CanDiscardPage(context)) {
       total_actionable_cpu_percentage += measurement.value();
       actionable_tabs.push_back(context);
@@ -238,7 +258,7 @@ void CpuHealthTracker::ProcessCpuProbeResult(
 
     if (!actionable_tabs_.empty()) {
       actionable_tabs_ = {};
-      possible_actionable_pages_ = {};
+      tab_page_measurements_ = {};
     }
 
     std::move(notify_healthy_status).Run({});
@@ -259,9 +279,9 @@ void CpuHealthTracker::ProcessQueryResultMap(
     std::map<resource_attribution::ResourceContext, double> page_cpu =
         page_cpu_proportion_tracker_.StartNextInterval(measurement_time,
                                                        results);
-    possible_actionable_pages_ = FilterForPossibleActionablePages(page_cpu);
+    tab_page_measurements_ = FilterForPossibleActionablePages(page_cpu);
 
-    GetFilteredActionableTabs(possible_actionable_pages_,
+    GetFilteredActionableTabs(tab_page_measurements_,
                               system_cpu_usage_percentage,
                               GetStatusAndActionabilityCallback(
                                   did_status_change, current_health_status_));
@@ -282,10 +302,7 @@ CpuHealthTracker::FilterForPossibleActionablePages(
 
     const int cpu_usage_percentage =
         cpu_usage * 100 / base::SysInfo::NumberOfProcessors();
-    if (is_tab && !page_node->IsOffTheRecord() &&
-        cpu_usage_percentage >=
-            performance_manager::features::kMinimumActionableTabCPUPercentage
-                .Get()) {
+    if (is_tab && !page_node->IsOffTheRecord()) {
       eligible_pages.emplace_back(page_context, cpu_usage_percentage);
     }
   }

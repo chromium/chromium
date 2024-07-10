@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_METRICS_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_METRICS_H_
 
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "components/metrics/daily_event.h"
@@ -24,6 +25,15 @@ enum class InterventionMessageTriggerResult {
   kShown = 0,
   kRateLimited = 1,
   kMaxValue = kRateLimited
+};
+
+enum class InterventionBubbleActionType {
+  kUnknown = 0,
+  kIgnore = 1,
+  kAccept = 2,
+  kDismiss = 3,
+  kClose = 4,
+  kMaxValue = kClose
 };
 
 enum class MemorySaverBubbleActionType {
@@ -74,5 +84,15 @@ void RecordInterventionTriggerResult(
     performance_manager::user_tuning::PerformanceDetectionManager::ResourceType
         resource_type,
     InterventionMessageTriggerResult reason);
+void RecordInterventionToolbarButtonClicked();
+void RecordInterventionBubbleClosedReason(
+    performance_manager::user_tuning::PerformanceDetectionManager::ResourceType
+        resource_type,
+    InterventionBubbleActionType type);
+void RecordCpuHealthStatusAfterDiscard(
+    base::TimeDelta time_after_discard,
+    performance_manager::user_tuning::PerformanceDetectionManager::HealthLevel
+        health_level);
+void RecordCpuUsageBeforeDiscard(int cpu_usage);
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_METRICS_H_

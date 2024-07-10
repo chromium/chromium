@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_bubble.h"
@@ -71,6 +72,33 @@ bool PerformanceInterventionButton::IsBubbleShowing() {
 }
 
 void PerformanceInterventionButton::OnWidgetDestroying(views::Widget* widget) {
+  InterventionBubbleActionType type = InterventionBubbleActionType::kUnknown;
+  switch (widget->closed_reason()) {
+    case views::Widget::ClosedReason::kUnspecified:
+      type = InterventionBubbleActionType::kUnknown;
+      break;
+    case views::Widget::ClosedReason::kEscKeyPressed:
+      type = InterventionBubbleActionType::kClose;
+      break;
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+      type = InterventionBubbleActionType::kClose;
+      break;
+    case views::Widget::ClosedReason::kLostFocus:
+      type = InterventionBubbleActionType::kIgnore;
+      break;
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+      type = InterventionBubbleActionType::kDismiss;
+      break;
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      type = InterventionBubbleActionType::kAccept;
+      break;
+  }
+
+  RecordInterventionBubbleClosedReason(
+      performance_manager::user_tuning::PerformanceDetectionManager::
+          ResourceType::kCpu,
+      type);
+
   bubble_dialog_model_host_ = nullptr;
   scoped_widget_observation_.Reset();
 }
@@ -87,6 +115,7 @@ void PerformanceInterventionButton::OnClicked() {
     PerformanceInterventionBubble::CloseBubble(bubble_dialog_model_host_);
   } else {
     CreateBubble();
+    RecordInterventionToolbarButtonClicked();
   }
 }
 
