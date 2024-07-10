@@ -5,12 +5,11 @@
 // Implementation of a PGO test for the decoder and encoder
 
 #include "third_party/googletest/src/include/gtest/gtest.h"
-
-#include "third_party/libvpx/source/config/vpx_version.h"
 #include "third_party/libvpx/source/libvpx/test/codec_factory.h"
 #include "third_party/libvpx/source/libvpx/test/i420_video_source.h"
 #include "third_party/libvpx/source/libvpx/test/util.h"
 #include "third_party/libvpx/source/libvpx/test/webm_video_source.h"
+#include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"
 #include "third_party/libvpx/source/libvpx/vpx_ports/vpx_timer.h"
 #include "third_party/libvpx/source/libvpx/vpx_util/vpx_pthread.h"
 
@@ -312,7 +311,7 @@ TEST_P(DecodeEncodePerfTest, PerfTest) {
 
   printf("{\n");
   printf("\t\"type\" : \"decode_perf_test\",\n");
-  printf("\t\"version\" : \"%s\",\n", VERSION_STRING_NOSP);
+  printf("\t\"version\" : \"%s\",\n", vpx_codec_version_str());
   printf("\t\"videoName\" : \"%s\",\n", GetParamVideoName());
   printf("\t\"threadCount\" : %u,\n", GetParamThreadCount());
   printf("\t\"decodeTimeSecs\" : %f,\n", elapsed_secs_);
