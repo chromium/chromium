@@ -44,6 +44,7 @@
 #include "sandbox/policy/linux/bpf_cros_amd_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_cros_arm_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_cros_intel_gpu_policy_linux.h"
+#include "sandbox/policy/linux/bpf_cros_nvidia_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_network_policy_linux.h"
 #include "sandbox/policy/linux/bpf_ppapi_policy_linux.h"
@@ -132,6 +133,9 @@ std::unique_ptr<BPFBasePolicy> GetGpuProcessSandbox(
     }
     if (options.use_intel_specific_policies) {
       return std::make_unique<CrosIntelGpuProcessPolicy>();
+    }
+    if (options.use_nvidia_specific_policies) {
+      return std::make_unique<CrosNvidiaGpuProcessPolicy>();
     }
   }
   return std::make_unique<GpuProcessPolicy>();
