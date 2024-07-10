@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/privacy_sandbox_internals_resources.h"
@@ -21,8 +22,10 @@
 #include "privacy_sandbox_internals_ui.h"
 
 namespace privacy_sandbox_internals {
+
 using ::privacy_sandbox_internals::mojom::Page;
 using ::privacy_sandbox_internals::mojom::PageHandler;
+using ::related_website_sets::mojom::RelatedWebsiteSetsPageHandler;
 
 PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
@@ -57,6 +60,17 @@ void PrivacySandboxInternalsUI::BindInterface(
       Profile::FromBrowserContext(
           web_ui()->GetWebContents()->GetBrowserContext()),
       std::move(receiver));
+}
+
+void PrivacySandboxInternalsUI::BindInterface(
+    mojo::PendingReceiver<
+        related_website_sets::mojom::RelatedWebsiteSetsPageHandler> receiver) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {
+    related_website_sets_handler_ =
+        std::make_unique<RelatedWebsiteSetsHandler>(std::move(receiver));
+  }
+#endif
 }
 
 }  // namespace privacy_sandbox_internals

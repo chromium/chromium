@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets.mojom.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -26,8 +28,13 @@ class PrivacySandboxInternalsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<privacy_sandbox_internals::mojom::PageHandler>
           receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<
+          related_website_sets::mojom::RelatedWebsiteSetsPageHandler> receiver);
+
  private:
   std::unique_ptr<PrivacySandboxInternalsHandler> handler_;
+  std::unique_ptr<RelatedWebsiteSetsHandler> related_website_sets_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

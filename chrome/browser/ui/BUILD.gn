@@ -362,6 +362,8 @@ static_library("ui") {
     "webui/privacy_sandbox/privacy_sandbox_internals_handler.h",
     "webui/privacy_sandbox/privacy_sandbox_internals_ui.cc",
     "webui/privacy_sandbox/privacy_sandbox_internals_ui.h",
+    "webui/privacy_sandbox/related_website_sets/related_website_sets_handler.cc",
+    "webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h",
     "webui/segmentation_internals/segmentation_internals_page_handler_impl.cc",
     "webui/segmentation_internals/segmentation_internals_page_handler_impl.h",
     "webui/segmentation_internals/segmentation_internals_ui.cc",
