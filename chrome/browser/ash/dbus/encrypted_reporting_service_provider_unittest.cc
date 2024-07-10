@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
