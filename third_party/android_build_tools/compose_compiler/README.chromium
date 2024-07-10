@@ -1,0 +1,22 @@
+Name: Compose Compiler Plugin
+Short Name: Compose Compiler
+Version: N/A
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: Yes
+Shipped: no
+URL: https://github.com/JetBrains/kotlin/tree/master/plugins/compose
+
+Description:
+Kotlin compiler plugin for Jetpack Compose.
+
+Local Modifications:
+None
+
+What version is this:
+  * Run print_version.sh to find out the version.
+  * New instances are uploaded by the packager bot:
+    https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+  * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
+    trigger it if you need it sooner:
+    https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
