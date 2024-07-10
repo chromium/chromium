@@ -17,9 +17,11 @@ class Window;
 
 namespace ash {
 
+class Desk;
+class DeskBarViewBase;
+class DeskTemplate;
 class SavedDeskDialogController;
 class SavedDeskPresenter;
-class DeskTemplate;
 
 namespace saved_desk_util {
 // Registers the per-profile preferences for whether desks templates are
@@ -28,7 +30,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 ASH_EXPORT bool AreDesksTemplatesEnabled();
 
-ASH_EXPORT bool ShouldShowSavedDesksButtons();
+ASH_EXPORT bool ShouldShowSavedDesksOptions();
+
+ASH_EXPORT bool ShouldShowSavedDesksOptionsForDesk(Desk* desk,
+                                                   DeskBarViewBase* bar_view);
 
 // Will return null if overview mode is not active.
 ASH_EXPORT SavedDeskDialogController* GetSavedDeskDialogController();

@@ -192,7 +192,7 @@ void OverviewSession::Init(
 
   Shell::Get()->AddShellObserver(this);
 
-  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
+  if (saved_desk_util::ShouldShowSavedDesksOptions()) {
     hide_windows_for_saved_desks_grid_ = std::make_unique<
         ScopedOverviewHideWindows>(
         /*windows=*/std::vector<raw_ptr<aura::Window, VectorExperimental>>{},
@@ -209,7 +209,7 @@ void OverviewSession::Init(
   }
 
   // Create this before the desks bar widget.
-  if (saved_desk_util::ShouldShowSavedDesksButtons() &&
+  if (saved_desk_util::ShouldShowSavedDesksOptions() &&
       !saved_desk_presenter_) {
     saved_desk_presenter_ = std::make_unique<SavedDeskPresenter>(this);
     saved_desk_dialog_controller_ =
@@ -1020,7 +1020,7 @@ void OverviewSession::OnWindowActivating(
 }
 
 bool OverviewSession::IsSavedDeskUiLosingActivation(aura::Window* lost_active) {
-  if (!saved_desk_util::ShouldShowSavedDesksButtons() || !lost_active) {
+  if (!lost_active || !saved_desk_util::ShouldShowSavedDesksOptions()) {
     return false;
   }
 

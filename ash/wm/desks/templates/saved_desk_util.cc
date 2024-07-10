@@ -10,6 +10,8 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -81,8 +83,18 @@ bool AreDesksTemplatesEnabled() {
   return features::AreDesksTemplatesEnabled();
 }
 
-bool ShouldShowSavedDesksButtons() {
+bool ShouldShowSavedDesksOptions() {
   return !IsGuestSession() && !window_util::IsInFasterSplitScreenSetupSession();
+}
+
+bool ShouldShowSavedDesksOptionsForDesk(Desk* desk, DeskBarViewBase* bar_view) {
+  // TODO(hewer): Consult with UX if we should hide the save desk options when
+  // we are in the saved desk library.
+  return features::IsForestFeatureEnabled() && desk->is_active() &&
+         (desk->ContainsAppWindows() ||
+          !DesksController::Get()->visible_on_all_desks_windows().empty()) &&
+         bar_view->type() == DeskBarViewBase::Type::kOverview &&
+         saved_desk_util::ShouldShowSavedDesksOptions();
 }
 
 SavedDeskDialogController* GetSavedDeskDialogController() {

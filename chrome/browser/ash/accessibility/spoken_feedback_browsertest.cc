@@ -2376,6 +2376,14 @@ class DeskTemplatesSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
+  // TODO(http://b/350771229): This test tests clicking the "Save desk as
+  // template" button that will not be shown if the Forest feature is enabled.
+  // This test will be fixed before the button change is no longer hidden behind
+  // Forest.
+  if (ash::features::IsForestFeatureEnabled()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature.";
+  }
+
   EnableChromeVox();
 
   // Enter overview first. This is how we reach the desk templates UI.
@@ -2389,7 +2397,7 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
 
   // TODO(crbug.com/1360638): Remove the conditional here when the Save & Recall
   // flag flip has landed since it will always be true.
-  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
+  if (saved_desk_util::ShouldShowSavedDesksOptions()) {
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
     sm_.ExpectSpeechPattern("Save desk for later");
     sm_.ExpectSpeech("Button");

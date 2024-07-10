@@ -9,6 +9,7 @@
 
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -289,7 +290,10 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   CHECK(desk_);
 
   auto get_visible = [this]() -> bool {
-    if (!DesksController::Get()->CanRemoveDesks()) {
+    // If Forest is enabled, then we still want to show the save desk options,
+    // even if we can't remove the desk.
+    if (!features::IsForestFeatureEnabled() &&
+        !DesksController::Get()->CanRemoveDesks()) {
       return false;
     }
     if (owner_bar_->dragged_item_over_bar()) {
@@ -454,9 +458,8 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
   // button.
   // Don't show save options if there are no windows in the desk, or if the
   // desk bar did not originate from overview.
-  if (features::IsForestFeatureEnabled() && desk_->is_active() &&
-      ContainsAppWindows(desk_) &&
-      owner_bar_->type() == DeskBarViewBase::Type::kOverview) {
+  if (saved_desk_util::ShouldShowSavedDesksOptionsForDesk(desk_,
+                                                          owner_bar_.get())) {
     if (saved_desk_util::AreDesksTemplatesEnabled()) {
       menu_config.save_template_target_name = desk_->name();
       menu_config.save_template_callback =
@@ -464,12 +467,9 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
                               base::Unretained(this));
     }
 
-    if (saved_desk_util::ShouldShowSavedDesksButtons()) {
-      menu_config.save_later_target_name = desk_->name();
-      menu_config.save_later_callback =
-          base::BindRepeating(&DeskMiniView::OnSaveDeskForLaterButtonPressed,
-                              base::Unretained(this));
-    }
+    menu_config.save_later_target_name = desk_->name();
+    menu_config.save_later_callback = base::BindRepeating(
+        &DeskMiniView::OnSaveDeskForLaterButtonPressed, base::Unretained(this));
   }
 
   // Only add desk combine/close options if it's possible to remove a desk.
@@ -499,9 +499,10 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
         &DeskMiniView::OnSetLacrosProfileId, base::Unretained(this));
   }
 
-  if (!menu_config.close_all_callback && menu_config.profiles.size() < 2u) {
-    // If neither close operations, nor profile selection is to be shown, then
-    // we don't show the menu.
+  // If neither close operations, nor the save desk options, nor profile
+  // selection are to be shown, then we don't show the menu.
+  if (!menu_config.save_template_callback && !menu_config.save_later_callback &&
+      !menu_config.close_all_callback && menu_config.profiles.size() < 2u) {
     return;
   }
 

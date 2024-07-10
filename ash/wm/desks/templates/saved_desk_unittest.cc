@@ -4963,4 +4963,19 @@ TEST_F(ForestSavedDeskTest, ContextMenuSaveForLater) {
   EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
 }
 
+// Tests that the saved desk buttons are not created when the Forest feature is
+// enabled.
+TEST_F(ForestSavedDeskTest, SaveDeskButtonsHidden) {
+  // Add a window and an empty desk.
+  auto test_window = CreateAppWindow();
+  NewDesk();
+
+  // Enter overview.
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+
+  EXPECT_FALSE(
+      GetSaveDeskButtonContainerForRoot(Shell::GetPrimaryRootWindow()));
+}
+
 }  // namespace ash

@@ -2352,12 +2352,15 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // overview grid changes, i.e. switches between active desks and/or the
   // saved desk grid. This will be needed when we make it so that switching
   // desks keeps us in overview mode.
-  if (!saved_desk_util::ShouldShowSavedDesksButtons()) {
+  if (!saved_desk_util::ShouldShowSavedDesksOptions() ||
+      features::IsForestFeatureEnabled()) {
     return;
   }
 
   // If there is only one item and it is animating to close, hide the widget as
   // the closing window cannot be saved as part of a template.
+  // TODO(http://b/327639285): Also hide save desk context menu items if item is
+  // animating to close.
   const bool no_items =
       item_list_.empty() ||
       (item_list_.size() == 1u && item_list_.front()->animating_to_close());
@@ -3371,7 +3374,7 @@ void OverviewGrid::RefreshDesksWidgets(bool visible) {
 void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     bool increment) {
-  if (!saved_desk_util::ShouldShowSavedDesksButtons()) {
+  if (!saved_desk_util::ShouldShowSavedDesksOptions()) {
     return;
   }
 

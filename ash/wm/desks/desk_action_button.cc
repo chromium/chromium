@@ -13,6 +13,8 @@
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -95,15 +97,23 @@ void DeskActionButton::OnFocusableViewBlurred() {
 }
 
 bool DeskActionButton::CanShow() const {
-  // The button should not show if there is only one desk.
+  // The context menu button will only show if the given desk should show the
+  // save desk options.
+  DeskMiniView* mini_view = desk_action_view_->mini_view();
+  if (type_ == Type::kContextMenu) {
+    return saved_desk_util::ShouldShowSavedDesksOptionsForDesk(
+        mini_view->desk(), mini_view->owner_bar());
+  }
+
+  // The close desk and combine desk buttons should not show if there is only
+  // one desk.
   auto* desk_controller = DesksController::Get();
   if (!desk_controller || !desk_controller->CanRemoveDesks()) {
     return false;
   }
 
-  // The close desk button can always show, while the combine desk button or
-  // the context menu button only show when their desk contains app windows or
-  // there are all desk windows.
+  // The close desk button can always show, while the combine desk button shows
+  // when its desk contains app windows or there are all desk windows.
   return type_ == Type::kCloseDesk ||
          desk_action_view_->mini_view()->desk()->ContainsAppWindows() ||
          !desk_controller->visible_on_all_desks_windows().empty();

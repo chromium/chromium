@@ -159,7 +159,7 @@ SavedDeskSaveDeskButtonContainer::SavedDeskSaveDeskButtonContainer(
             &kSaveDeskAsTemplateIcon));
   }
 
-  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
+  if (saved_desk_util::ShouldShowSavedDesksOptions()) {
     save_desk_for_later_button_ =
         AddChildView(std::make_unique<SavedDeskSaveDeskButton>(
             save_for_later_callback,
