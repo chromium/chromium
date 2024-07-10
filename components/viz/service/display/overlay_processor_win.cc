@@ -445,21 +445,6 @@ void OverlayProcessorWin::SetIsPageFullscreen(bool enabled) {
   is_page_fullscreen_mode_ = enabled;
 }
 
-void OverlayProcessorWin::ProcessOnDCLayerOverlayProcessorForTesting(
-    const DisplayResourceProvider* resource_provider,
-    const FilterOperationsMap& render_pass_filters,
-    const FilterOperationsMap& render_pass_backdrop_filters,
-    SurfaceDamageRectList surface_damage_rect_list,
-    bool is_page_fullscreen_mode,
-    DCLayerOverlayProcessor::RenderPassOverlayDataMap&
-        render_pass_overlay_data_map) {
-  CHECK_IS_TEST();
-  dc_layer_overlay_processor_->Process(
-      resource_provider, render_pass_filters, render_pass_backdrop_filters,
-      surface_damage_rect_list, is_page_fullscreen_mode,
-      render_pass_overlay_data_map);
-}
-
 OverlayProcessorWin::PromotedRenderPassesInfo::PromotedRenderPassesInfo() =
     default;
 OverlayProcessorWin::PromotedRenderPassesInfo::~PromotedRenderPassesInfo() =
