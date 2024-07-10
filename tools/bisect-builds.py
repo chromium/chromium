@@ -334,6 +334,12 @@ PATH_CONTEXT = {
             'archive_name': 'chrome-win32.zip',
             'archive_extract_dir': 'chrome-win32'
         },
+        'win-arm64': {
+            'binary_name': 'chrome.exe',
+            'listing_platform_dir': 'Win_Arm64/',
+            'archive_name': 'chrome-win.zip',
+            'archive_extract_dir': 'chrome-win'
+        },
         'lacros64': {
             'binary_name': 'chrome',
             'listing_platform_dir': 'lacros64/',
@@ -1890,11 +1896,8 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
 
   parser = optparse.OptionParser(usage=usage)
   # Strangely, the default help output doesn't include the choice list.
-  choices = [
-      'android-arm', 'android-arm64', 'android-x86', 'android-x64', 'mac',
-      'mac64', 'mac-arm', 'win', 'win-clang', 'win64', 'win64-clang', 'linux64',
-      'linux-arm', 'chromeos', 'lacros64', 'lacros-arm32', 'lacros-arm64'
-  ]
+  choices = sorted(
+      set(arch for build in PATH_CONTEXT for arch in PATH_CONTEXT[build]))
   parser.add_option('-a',
                     '--archive',
                     choices=choices,
@@ -2013,10 +2016,7 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
 
 def ParseCommandLine(args=None):
   """Parses the command line for bisect options."""
-  official_choices = [
-      'android-arm', 'android-arm64', 'linux64', 'mac', 'mac-arm', 'win64',
-      'lacros64', 'lacros-arm32', 'lacros-arm64'
-  ]
+  official_choices = list(PATH_CONTEXT['official'].keys())
   parser = _CreateCommandLineParser()
   opts, args = parser.parse_args(args)
 
