@@ -206,43 +206,44 @@ inline constexpr GuardrailPrefNames kIphPrefNames{
 // - Accepting and installing an app from a prompt will not decrease further
 // prompts and resets all guardrails. Otherwise:
 // - Prompt is limited globally to one every:
-//   - 1 day if prompt is ignored.
-//   - 7 days if prompt is dismissed.
+//   - 7 day if prompt is ignored.
+//   - 14 days if prompt is dismissed.
 // - A specific site will only be suggested again after:
-//   - 2 days for an ignored prompt.
-//   - 14 days for a dismissed prompt.
+//   - 14 days for an ignored prompt.
+//   - 28 days for a dismissed prompt.
 // - For a specific site, the prompt is shown 3 times at max, and then it gets
 // blocked.
 // - Globally, the prompt is shown 5 times at max.
-// - The guardrails are reset every 60 days (this value is Finch configurable).
+// - The guardrails are reset every `kTotalDaysToStoreMLGuardrails` days (this
+// value is Finch configurable).
 // - Example scenarios for triggering guardrails:
 //   - Multi site scenario: Visiting at least two ML promotable web-apps daily
-//   and ignoring the prompts. The prompt is then seen on days 0, 1, 2, 3 and 4,
-//   after which they are blocked.
+//   and ignoring the prompts. The prompt is then seen on days 0, 7, 14, 21 and
+//   28, after which they are blocked.
 //   - Single site scenario: Visiting one ML promotable web-app daily and
 //   ignoring the prompts. The prompt is then seen on for the same app on day 0,
-//   2, and 4, after which they are blocked.
-//   - In both cases, the user is blocked for 60 days, after which the
-//   guardrails are cleared.
+//   14 and 28, after which they are blocked.
+//   - In both cases, the user is blocked for `kTotalDaysToStoreMLGuardrails`
+//   days, after which the guardrails are cleared.
 inline constexpr GuardrailData kMlPromoGuardrails{
     // Number of times ML triggered install dialog can be ignored for this app
     // before it's muted.
     .app_specific_not_accept_count = 3,
     // Number of days to mute install dialog for this app after the ML triggered
     // prompt was dismissed.
-    .app_specific_mute_after_dismiss_days = 14,
+    .app_specific_mute_after_dismiss_days = 28,
     // Number of days to mute install dialog for this app after the ML triggered
     // prompt was ignored.
-    .app_specific_mute_after_ignore_days = 2,
+    .app_specific_mute_after_ignore_days = 14,
     // Number of times ML triggered install dialog can be ignored for all apps
     // before it's muted.
     .global_not_accept_count = 5,
     // Number of days to mute install dialog for any app after the ML triggered
     // prompt was dismissed.
-    .global_mute_after_dismiss_days = 7,
+    .global_mute_after_dismiss_days = 14,
     // Number of days to mute install dialog for any app after the ML triggered
     // prompt was ignored.
-    .global_mute_after_ignore_days = 1,
+    .global_mute_after_ignore_days = 7,
 };
 
 inline constexpr GuardrailPrefNames kMlPromoPrefNames{

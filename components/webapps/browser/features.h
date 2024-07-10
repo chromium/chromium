@@ -21,10 +21,11 @@ constexpr unsigned int kMinimumDaysBetweenBannerShows = 7;
 // Default site engagement required to trigger the banner.
 constexpr unsigned int kDefaultTotalEngagementToTrigger = 2;
 
-// Default amount of days after which the amount of user cancellations and
-// dismissals on the ML installation dialog is automatically cleared. Default to
-// 90 days, post which
-inline constexpr int kTotalDaysToStoreMLGuardrails = 60;
+// Default amount of days after which the guardrail information about user
+// cancellations and dismissals on the ML promoted installation dialog is
+// automatically cleared. To understand more on how this works, please refer to
+// `kMlPromoGuardrails` in web_app_pref_guardrails.h.
+inline constexpr int kTotalDaysToStoreMLGuardrails = 180;
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
