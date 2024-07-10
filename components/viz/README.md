@@ -228,12 +228,17 @@ project. See //third\_party/blink/rendering/core/document\_transition/README.md
 Viz related runtime feature flags, aka `base::Feature`s, should go in
 [components/viz/common/features.h](https://cs.chromium.org/chromium/src/components/viz/common/features.h).
 
-When adding a new feature `kMyFeature` it's recommended that you add a helper
+When adding a new feature `kMyFeature`, it's recommended that you add a helper
 function `IsMyFeatureEnabled()` to check if the feature is enabled. Code should
 then use `IsMyFeatureEnabled()` instead of checking
-`base::FeatureList::IsEnabled(kMyFeature)`. Having a helper function makes it
-easy to enforce preconditions that must be met for the feature to be enabled or
-to unconditionally enable a feature on a per platform basis.
+base::FeatureList::IsEnabled(kMyFeature)`.
+
+Preconditions can be platform or hardware specific checks to determine if a
+feature is supported on a given device. These preconditions should be validated
+before checking the `base::FeatureList`, as once the list is consulted the
+session will be reflected in any ongoing Finch trial. If we were to disable the
+implementation due to preconditions after registering with Finch, then we will
+be providing incorrect data to the study.
 
 ### Runtime Feature Checks
 
