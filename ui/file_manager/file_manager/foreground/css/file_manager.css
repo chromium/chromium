@@ -1082,7 +1082,11 @@ body.check-select #read-only-indicator {
 
 #empty-folder > .label > span#empty-folder-desc > a {
   color: var(--cros-sys-primary);
-  font: var(--cros-body-1-font);
+  font: var(--cros-body-2-font);
+}
+
+#empty-folder > .label > span#empty-folder-desc > a:visited {
+  color: var(--cros-sys-primary);
 }
 
 #detail-table {

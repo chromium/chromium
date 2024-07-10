@@ -334,6 +334,66 @@ testHiddenForODFSOnFailureWithoutReauthRequiredAccountState() {
 }
 
 /**
+ * Tests that the empty folder element is hidden and ODFS is still interactive
+ * if the scan failed from a QUOTA_EXCEEDED_ERR but the account is not frozen.
+ * Add ODFS to the store so that the |isInteractive| state of the volume can be
+ * read.
+ */
+export async function testHiddenForODFSOnFailureWithoutFrozenState() {
+  // Mock fileManagerPrivate.getCustomActions which is called when determining
+  // if reauth is required.
+  const mockChrome = {
+    fileManagerPrivate: {
+      getCustomActions: function(
+          _: Entry[],
+          callback: (customActions: chrome.fileManagerPrivate
+                         .FileSystemProviderAction[]) => void) {
+        // The account is not frozen.
+        const actions = [{
+          id: FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE,
+          title: 'NORMAL',
+        }];
+        callback(actions);
+      },
+    },
+  };
+  installMockChrome(mockChrome);
+
+  const odfsVolumeInfo = addODFSToStore();
+
+  // Set ODFS as the volume.
+  directoryModel.getCurrentVolumeInfo = function() {
+    return odfsVolumeInfo;
+  };
+
+  // Initialise the element to be shown to detect when it becomes hidden.
+  element.hidden = false;
+
+  // Expect that ODFS is interactive.
+  assertTrue(isInteractiveVolume(odfsVolumeInfo));
+
+  // Pass a QUOTA_EXCEEDED_ERR error (triggers a call to getCustomActions).
+  const event = new CustomEvent('cur-dir-scan-failed', {
+    detail: {
+      error: {
+        name: FileErrorToDomError.QUOTA_EXCEEDED_ERR,
+        message: '',
+      },
+    },
+  });
+  emptyFolderController.onScanFailed(event);
+
+  // Expect that the empty-folder element is hidden. Need to wait for |updateUi|
+  // (where the element is hidden) to be called as the check for
+  // the frozen state is asynchronous.
+  await waitUntil(() => element.hidden);
+  assertEquals('', emptyFolderController.label.innerText);
+
+  // Expect that ODFS is still interactive.
+  assertTrue(isInteractiveVolume(odfsVolumeInfo));
+}
+
+/**
  * Tests that the empty state image shows up when root type is Trash.
  */
 export function testShownForTrash() {
@@ -469,6 +529,71 @@ export async function testShownForODFSOnFailureFromReauthReq(
   await waitUntil(() => !element.hidden);
   await waitUntil(
       () => emptyFolderController.label.querySelector('.sign-in') !== null);
+
+  // Expect that ODFS is non-interactive.
+  assertFalse(isInteractiveVolume(odfsVolumeInfo));
+  done();
+}
+
+/**
+ * Tests that the frozen account image shows up and ODFS becomes
+ * non-interactive when the scan failed from a QUOTA_EXCEEDED_ERR and the user
+ * has a frozen account. Add ODFS to the store so that the |isInteractive| state
+ * of the volume can be set and read.
+ */
+export async function testShownForODFSOnFailureFromFrozenAccount(
+    done: VoidCallback) {
+  // Mock fileManagerPrivate.getCustomActions which is called when determining
+  // if the account is frozen.
+  const mockChrome = {
+    fileManagerPrivate: {
+      getCustomActions: function(
+          _: Entry[],
+          callback: (customActions: chrome.fileManagerPrivate
+                         .FileSystemProviderAction[]) => void) {
+        // The account is frozen.
+        const actions = [{
+          id: FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE,
+          title: 'FROZEN_ACCOUNT',
+        }];
+        callback(actions);
+      },
+    },
+  };
+  installMockChrome(mockChrome);
+
+  const odfsVolumeInfo = addODFSToStore();
+
+  // Set ODFS as the volume.
+  directoryModel.getCurrentVolumeInfo = function() {
+    return odfsVolumeInfo;
+  };
+
+  // Expect that ODFS is interactive.
+  assertTrue(isInteractiveVolume(odfsVolumeInfo));
+
+  // Initialise the element to be hidden to detect when it becomes shown.
+  element.hidden = true;
+
+  // Pass a QUOTA_EXCEEDED_ERR error (triggers a call to
+  // getCustomActions).
+  const event = new CustomEvent('cur-dir-scan-failed', {
+    detail: {
+      error: {
+        name: FileErrorToDomError.QUOTA_EXCEEDED_ERR,
+        message: '',
+      },
+    },
+  });
+  emptyFolderController.onScanFailed(event);
+
+  // Expect that the empty-folder element is shown and the frozen account text
+  // is present. Need to wait for |updateUi| (where the element is shown) to be
+  // called as the check for a frozen account is asynchronous.
+  await waitUntil(() => !element.hidden);
+  await waitUntil(
+      () => emptyFolderController.label.innerHTML.includes(
+          str('ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE')));
 
   // Expect that ODFS is non-interactive.
   assertFalse(isInteractiveVolume(odfsVolumeInfo));

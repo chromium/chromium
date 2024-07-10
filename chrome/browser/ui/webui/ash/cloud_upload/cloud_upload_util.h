@@ -27,6 +27,7 @@ namespace ash::cloud_upload {
 enum class OdfsAccountState {
   kNormal = 0,
   kReauthenticationRequired = 1,
+  kFrozenAccount = 2,
 };
 
 struct ODFSMetadata {

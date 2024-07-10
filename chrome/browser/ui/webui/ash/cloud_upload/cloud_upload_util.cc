@@ -314,6 +314,8 @@ void OnODFSMetadataActions(GetODFSMetadataCallback callback,
         metadata.account_state = OdfsAccountState::kNormal;
       } else if (action.title == "REAUTHENTICATION_REQUIRED") {
         metadata.account_state = OdfsAccountState::kReauthenticationRequired;
+      } else if (action.title == "FROZEN_ACCOUNT") {
+        metadata.account_state = OdfsAccountState::kFrozenAccount;
       }
     } else if (action.id == kUserEmailActionId) {
       metadata.user_email = action.title;

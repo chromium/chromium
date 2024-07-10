@@ -65,6 +65,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/ms365.svg",
     "foreground/images/files/ui/nudge_star_icon.svg",
     "foreground/images/files/ui/offline.svg",
+    "foreground/images/files/ui/odfs_frozen_account.svg",
     "foreground/images/files/ui/odfs_reauthentication_required.svg",
     "foreground/images/files/ui/photos_logo.svg",
     "foreground/images/files/ui/quickview_star.svg",

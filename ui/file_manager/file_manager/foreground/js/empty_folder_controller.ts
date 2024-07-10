@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
+
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {getODFSMetadataQueryEntry, isInteractiveVolume, isOneDrive, isOneDrivePlaceholderKey, isRecentRootType} from '../../common/js/entry_utils.js';
@@ -44,6 +46,12 @@ const TRASH_EMPTY_FOLDER =
 const ODFS_REAUTHENTICATION_REQUIRED = 'foreground/images/files/ui/' +
     'odfs_reauthentication_required.svg#odfs_reauthentication_required';
 
+/**
+ * The frozen account image for ODFS. There are no files when the account
+ * is frozen (scan fails).
+ */
+const ODFS_FROZEN_ACCOUNT = 'foreground/images/files/ui/' +
+    'odfs_frozen_account.svg#odfs_frozen_account';
 
 /**
  * The state of the user's OneDrive account. Matches the enum in ODFS.
@@ -51,6 +59,7 @@ const ODFS_REAUTHENTICATION_REQUIRED = 'foreground/images/files/ui/' +
 enum OdfsAccountState {
   NORMAL = 'NORMAL',
   REAUTHENTICATION_REQUIRED = 'REAUTHENTICATION_REQUIRED',
+  FROZEN_ACCOUNT = 'FROZEN_ACCOUNT',
 }
 
 interface OdfsMetadata {
@@ -177,6 +186,9 @@ export class EmptyFolderController {
                       metadata.accountState =
                           OdfsAccountState.REAUTHENTICATION_REQUIRED;
                       continue;
+                    case OdfsAccountState.FROZEN_ACCOUNT:
+                      metadata.accountState = OdfsAccountState.FROZEN_ACCOUNT;
+                      continue;
                     default:
                       continue;
                   }
@@ -191,8 +203,8 @@ export class EmptyFolderController {
 
   /**
    * Handles scan fail. If the scan failed for the ODFS volume due to
-   * reauthenticaton being required, set the state of the volume as not
-   * interactive and set the correct svg to display.
+   * reauthenticaton being required or the user having a frozen account, set the
+   * state of the volume as not interactive and set the correct svg to display.
    */
   protected onScanFailed_(event: ScanFailedEvent) {
     this.isScanning_ = false;
@@ -206,10 +218,12 @@ export class EmptyFolderController {
       this.updateUi_();
       return;
     }
-    // If the error is not NO_MODIFICATION_ALLOWED_ERR, return. This is
-    // equivalent to the ACCESS_DENIED error thrown by ODFS.
+    // If the error is not NO_MODIFICATION_ALLOWED_ERR or QUOTA_EXCEEDED_ERR,
+    // return. This is equivalent to the ACCESS_DENIED and NO_SPACE error
+    // respectively thrown by ODFS.
     if (event.detail.error.name !==
-        FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR) {
+            FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR &&
+        event.detail.error.name !== FileErrorToDomError.QUOTA_EXCEEDED_ERR) {
       this.updateUi_();
       return;
     }
@@ -226,6 +240,11 @@ export class EmptyFolderController {
               event.detail.error.name ===
                   FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR) {
             svgRef = ODFS_REAUTHENTICATION_REQUIRED;
+          } else if (
+              odfsMetadata.accountState === OdfsAccountState.FROZEN_ACCOUNT &&
+              event.detail.error.name ===
+                  FileErrorToDomError.QUOTA_EXCEEDED_ERR) {
+            svgRef = ODFS_FROZEN_ACCOUNT;
           }
           if (svgRef !== null && isInteractiveVolume(currentVolumeInfo)) {
             getStore().dispatch(updateIsInteractiveVolume({
@@ -297,6 +316,24 @@ export class EmptyFolderController {
     descSpan.appendChild(text);
     descSpan.appendChild(document.createElement('br'));
     descSpan.appendChild(signInLink);
+
+    this.label_.appendChild(titleSpan);
+    this.label_.appendChild(document.createElement('br'));
+    this.label_.appendChild(descSpan);
+  }
+
+  /**
+   * Shows the ODFS frozen account message.
+   */
+  private showOdfsFrozenAccountMessage_() {
+    const titleSpan = document.createElement('span');
+    titleSpan.id = 'empty-folder-title';
+    titleSpan.innerText = str('ONEDRIVE_FROZEN_ACCOUNT_TITLE');
+
+    const descSpan = document.createElement('span');
+    descSpan.id = 'empty-folder-desc';
+    descSpan.innerHTML =
+        sanitizeInnerHtml(str('ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE'));
 
     this.label_.appendChild(titleSpan);
     this.label_.appendChild(document.createElement('br'));
@@ -401,6 +438,11 @@ export class EmptyFolderController {
 
     if (svgRef === ODFS_REAUTHENTICATION_REQUIRED) {
       this.showOdfsReauthenticationMessage_();
+      return;
+    }
+
+    if (svgRef === ODFS_FROZEN_ACCOUNT) {
+      this.showOdfsFrozenAccountMessage_();
       return;
     }
 
