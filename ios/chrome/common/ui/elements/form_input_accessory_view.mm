@@ -159,7 +159,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
 - (void)setOmniboxTypingShieldHeight:(CGFloat)typingShieldHeight {
   _omniboxTypingShieldHeightConstraint.constant = typingShieldHeight;
-  [self layoutIfNeeded];
+  if (self.window) {
+    [self layoutIfNeeded];
+  }
 }
 
 #pragma mark - UIInputViewAudioFeedback
