@@ -2137,6 +2137,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
     DCHECK(!clip_path_bounding_box_.has_value());
     if (NeedsClipPathClipOrMask(object_)) {
+      // Recalc the composited clip path paint status, which depends on whether
+      // we are in a block fragmentation
+      ClipPathClipper::ResolveClipPathStatus(
+          object_, context_.current.is_in_block_fragmentation);
       clip_path_bounding_box_ =
           ClipPathClipper::LocalClipPathBoundingBox(object_);
       if (clip_path_bounding_box_) {
@@ -2149,8 +2153,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
                 ? gfx::Vector2dF(context_.current.paint_offset)
                 : gfx::Vector2dF();
         clip_path_bounding_box_->Offset(paint_offset);
-        if (std::optional<Path> path = ClipPathClipper::PathBasedClip(
-                object_, context_.current.is_in_block_fragmentation)) {
+        if (std::optional<Path> path =
+                ClipPathClipper::PathBasedClip(object_)) {
           path->Translate(paint_offset);
           std::optional<FloatRoundedRect> rrect;
           // TODO(crbug.com/337191311): The optimization breaks view-transition

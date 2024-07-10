@@ -343,7 +343,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
 
   Animation* animation = GetAnimationIfCompositable(element);
   // If we are here the animation must be compositable.
-  DCHECK(animation);
+  CHECK(animation);
 
   const AnimationEffect* effect = animation->effect();
   DCHECK(effect->IsKeyframeEffect());
