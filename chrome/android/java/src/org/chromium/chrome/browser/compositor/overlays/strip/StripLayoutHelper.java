@@ -1318,10 +1318,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mUpdateHost.requestUpdate();
     }
 
-    public void runTabAddedAnimator(List<Animator> animationList, StripLayoutTab tab) {
-        if (animationList == null) {
-            return;
-        }
+    private void runTabAddedAnimator(@NonNull List<Animator> animationList, StripLayoutTab tab) {
         animationList.add(
                 CompositorAnimator.ofFloatProperty(
                         mUpdateHost.getAnimationHandler(),
@@ -3132,6 +3129,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      */
     private List<Animator> computeAndUpdateTabWidth(
             boolean animate, boolean deferAnimations, Tab closedTab) {
+        // Skip updating the tab width when the tab strip width is unavailable.
+        if (mWidth == 0) {
+            return null;
+        }
+
         // Remove any queued resize messages.
         mStripTabEventHandler.removeMessages(MESSAGE_RESIZE);
 
@@ -3208,7 +3210,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         calculateBottomIndicatorWidth(groupTitle, getNumOfTabsInGroup(groupTitle));
             }
 
-            // TODO(crbug.com/330585875) Use emphasized easing for animations.
             resizeAnimationList.add(
                     CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),
@@ -5465,7 +5466,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             // Else, animate the tab translating back up onto the tab strip.
             draggedTab.setWidth(0.f);
             List<Animator> animationList = resizeTabStrip(true, false, true);
-            runTabAddedAnimator(animationList, draggedTab);
+            if (animationList != null) runTabAddedAnimator(animationList, draggedTab);
         }
     }
 

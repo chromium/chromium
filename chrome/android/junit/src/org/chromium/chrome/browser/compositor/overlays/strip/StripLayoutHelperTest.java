@@ -1390,7 +1390,9 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testScrollDuration_Medium() {
-        initializeTest(false, true, false, 3, 12);
+        initializeTest(false, true, false, 3, 22);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Act: Set scroll offset between -960 and -1920.
         mStripLayoutHelper.setScrollOffsetForTesting(-1000);
@@ -1401,7 +1403,9 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testScrollDuration_Large() {
-        initializeTest(false, true, false, 3, 24);
+        initializeTest(false, true, false, 3, 34);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Act: Set scroll offset less than -1920
         mStripLayoutHelper.setScrollOffsetForTesting(-2000);
@@ -3102,6 +3106,8 @@ public class StripLayoutHelperTest {
         // Initialize with 10 tabs.
         int tabCount = 10;
         initializeTest(false, false, false, 0, tabCount);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Remove tab from model and verify that the tab strip has not yet updated.
         int closedTabId = 1;
@@ -3789,6 +3795,8 @@ public class StripLayoutHelperTest {
         // Initialize with 10 tabs.
         int selectedIndex = 5;
         initializeTest(false, false, false, selectedIndex, 10);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab draggedTab =
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[selectedIndex];
         draggedTab.setIsDraggedOffStrip(true);
