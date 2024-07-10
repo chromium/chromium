@@ -33,6 +33,7 @@ public class ReadAloudIPHController {
     @Nullable private ObservableSupplier<String> mReadAloudReadabilitySupplier;
     private final Supplier<Tab> mCurrentTabSupplier;
     private boolean mShowAppMenuTextBubble;
+    private final Runnable mReadabilityUpdateListener = this::maybeShowReadAloudAppMenuIPH;
 
     /**
      * Constructor.
@@ -131,7 +132,7 @@ public class ReadAloudIPHController {
 
     void readAloudControllerReady(@Nullable ReadAloudController readAloudController) {
         if (readAloudController != null) {
-            readAloudController.addReadabilityUpdateListener(this::maybeShowReadAloudAppMenuIPH);
+            readAloudController.addReadabilityUpdateListener(mReadabilityUpdateListener);
         }
     }
 
@@ -139,7 +140,7 @@ public class ReadAloudIPHController {
         if (mReadAloudControllerSupplier.get() != null) {
             mReadAloudControllerSupplier
                     .get()
-                    .removeReadabilityUpdateListener(this::maybeShowReadAloudAppMenuIPH);
+                    .removeReadabilityUpdateListener(mReadabilityUpdateListener);
         }
     }
 

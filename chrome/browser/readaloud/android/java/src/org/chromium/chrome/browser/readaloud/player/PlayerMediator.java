@@ -13,6 +13,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.modules.readaloud.Playback;
@@ -123,6 +124,9 @@ class PlayerMediator implements InteractionHandler {
                 }
             };
 
+    private final Callback<List<PlaybackVoice>> mVoiceListObserver = this::setVoices;
+    private final Callback<String> mVoiceIdObserver = this::setVoice;
+
     private Playback mPlayback;
     @Nullable Playback mVoicePreviewPlayback;
 
@@ -135,8 +139,8 @@ class PlayerMediator implements InteractionHandler {
         mModel = model;
         mModel.set(PlayerProperties.INTERACTION_HANDLER, this);
 
-        mDelegate.getCurrentLanguageVoicesSupplier().addObserver(this::setVoices);
-        mDelegate.getVoiceIdSupplier().addObserver(this::setVoice);
+        mDelegate.getCurrentLanguageVoicesSupplier().addObserver(mVoiceListObserver);
+        mDelegate.getVoiceIdSupplier().addObserver(mVoiceIdObserver);
     }
 
     void destroy() {
@@ -144,8 +148,8 @@ class PlayerMediator implements InteractionHandler {
             mPlayback.removeListener(mPlaybackListener);
         }
 
-        mDelegate.getVoiceIdSupplier().removeObserver(this::setVoice);
-        mDelegate.getCurrentLanguageVoicesSupplier().removeObserver(this::setVoices);
+        mDelegate.getVoiceIdSupplier().removeObserver(mVoiceIdObserver);
+        mDelegate.getCurrentLanguageVoicesSupplier().removeObserver(mVoiceListObserver);
     }
 
     void setPlayback(@Nullable Playback playback) {

@@ -22,6 +22,7 @@ import com.google.common.hash.Hashing;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
@@ -403,7 +404,7 @@ public class ReadAloudController
      * Kicks of readability check on a page load iff: the url is valid, no previous result is
      * available/pending and if a request has to be sent, the necessary conditions are satisfied.
      */
-    private ReadAloudReadabilityHooks.ReadabilityCallback mReadabilityCallback =
+    private final ReadAloudReadabilityHooks.ReadabilityCallback mReadabilityCallback =
             new ReadAloudReadabilityHooks.ReadabilityCallback() {
                 @Override
                 public void onSuccess(String url, boolean isReadable, boolean timepointsSupported) {
@@ -444,7 +445,7 @@ public class ReadAloudController
                 }
             };
 
-    private PlaybackListener mVoicePreviewPlaybackListener =
+    private final PlaybackListener mVoicePreviewPlaybackListener =
             new PlaybackListener() {
                 @Override
                 public void onPlaybackDataChanged(PlaybackData data) {
@@ -453,6 +454,9 @@ public class ReadAloudController
                     }
                 }
             };
+
+    private final Callback<Boolean> mHighlightingEnabledObserver =
+            this::onHighlightingEnabledChanged;
 
     public ReadAloudController(
             Activity activity,
@@ -500,8 +504,7 @@ public class ReadAloudController
                 ReadAloudMetrics.recordIneligibilityReason(
                         ReadAloudFeatures.getIneligibilityReason());
             }
-            mHighlightingEnabled.addObserver(
-                    ReadAloudController.this::onHighlightingEnabledChanged);
+            mHighlightingEnabled.addObserver(mHighlightingEnabledObserver);
             mHighlightingEnabled.set(ReadAloudPrefs.isHighlightingEnabled(getPrefService()));
             ReadAloudMetrics.recordHighlightingEnabledOnStartup(mHighlightingEnabled.get());
             mTabObserver =
@@ -982,7 +985,7 @@ public class ReadAloudController
 
         removeTranslationObservers(null);
 
-        mHighlightingEnabled.removeObserver(ReadAloudController.this::onHighlightingEnabledChanged);
+        mHighlightingEnabled.removeObserver(mHighlightingEnabledObserver);
         ApplicationStatus.unregisterApplicationStateListener(this);
         resetCurrentPlayback(ReasonForStoppingPlayback.APP_DESTROYED);
         mStateToRestoreOnBringingToForeground = null;
