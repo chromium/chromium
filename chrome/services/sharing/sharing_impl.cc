@@ -186,13 +186,15 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
                        MojoDependencyName::kTcpSocketFactory),
         base::SequencedTaskRunner::GetCurrentDefault());
 
-    nearby_shared_remotes_->mdns_manager.Bind(
-        std::move(deps->wifilan_dependencies->mdns_manager), io_task_runner_);
-    nearby_shared_remotes_->mdns_manager.set_disconnect_handler(
-        base::BindOnce(&SharingImpl::OnDisconnect,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       MojoDependencyName::kMdnsManager),
-        base::SequencedTaskRunner::GetCurrentDefault());
+    if (deps->wifilan_dependencies->mdns_manager) {
+      nearby_shared_remotes_->mdns_manager.Bind(
+          std::move(deps->wifilan_dependencies->mdns_manager), io_task_runner_);
+      nearby_shared_remotes_->mdns_manager.set_disconnect_handler(
+          base::BindOnce(&SharingImpl::OnDisconnect,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         MojoDependencyName::kMdnsManager),
+          base::SequencedTaskRunner::GetCurrentDefault());
+    }
   }
 
   if (deps->wifidirect_dependencies) {

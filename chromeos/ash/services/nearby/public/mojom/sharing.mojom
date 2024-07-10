@@ -29,7 +29,7 @@ struct WifiLanDependencies {
   // A proxy for NetworkContext, used to create TCP sockets.
   pending_remote<TcpSocketFactory> tcp_socket_factory;
   // Used to manage mDNS discovery and advertising.
-  pending_remote<MdnsManager> mdns_manager;
+  pending_remote<MdnsManager>? mdns_manager;
 };
 
 // Collection of dependencies required by WifiDirect medium.

@@ -306,7 +306,9 @@ NearbyDependenciesProvider::GetWifiLanDependencies() {
   return ::sharing::mojom::WifiLanDependencies::New(
       std::move(cros_network_config.remote),
       std::move(firewall_hole_factory.remote),
-      std::move(tcp_socket_factory.remote), std::move(mdns_manager.remote));
+      std::move(tcp_socket_factory.remote),
+      (::features::IsNearbyMdnsEnabled() ? std::move(mdns_manager.remote)
+                                         : mojo::NullRemote()));
 }
 
 sharing::mojom::WifiDirectDependenciesPtr
