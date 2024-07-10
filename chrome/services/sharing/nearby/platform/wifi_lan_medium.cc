@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/cross_device/nearby/nearby_features.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -70,6 +71,31 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "their own policies associated with them."
         })");
 
+// Nearby Connections passes service types of the form "_%s._tcp.", which each
+// platform is expected to transform as needed to perform discovery. For
+// ChromeOS, that looks like "_%s._tcp.local". Provide some helpers below to
+// enforce the transformation.
+const char kServiceTypeSuffix[] = "local";
+
+std::string LongServiceType(const std::string service_type) {
+  // Should not already have the suffix.
+  auto found_index =
+      service_type.find(kServiceTypeSuffix, /*pos=*/service_type.length() -
+                                                strlen(kServiceTypeSuffix));
+  CHECK(found_index == std::string::npos);
+  return service_type + kServiceTypeSuffix;
+}
+
+std::string ShortServiceType(const std::string service_type) {
+  // Should already have the suffix.
+  CHECK(service_type.length() >= strlen(kServiceTypeSuffix));
+  auto found_index =
+      service_type.find(kServiceTypeSuffix, /*pos=*/service_type.length() -
+                                                strlen(kServiceTypeSuffix));
+  CHECK(found_index != std::string::npos);
+  return service_type.substr(0, found_index);
+}
+
 }  // namespace
 
 WifiLanMedium::WifiLanMedium(
@@ -90,7 +116,7 @@ WifiLanMedium::WifiLanMedium(
   // NOTE: We do not set the disconnect handler for the SharedRemotes here. They
   // are fundamental dependencies of the Nearby Connections process, which will
   // crash if any dependency disconnects.
-  if (mdns_manager_.is_bound()) {
+  if (mdns_manager_.is_bound() && ::features::IsNearbyMdnsEnabled()) {
     mdns_manager_->AddObserver(mdns_observer_.BindNewPipeAndPassRemote());
     VLOG(1) << " Added Mdns observer.";
   }
@@ -461,6 +487,110 @@ void WifiLanMedium::OnFirewallHoleCreated(
 // End: ListenForService()
 /*============================================================================*/
 
+/*============================================================================*/
+// Begin: StartDiscovery()
+/*============================================================================*/
+bool WifiLanMedium::StartDiscovery(const std::string& service_type,
+                                   DiscoveredServiceCallback callback) {
+  VLOG(1) << " Starting mDNS discovery.";
+
+  // This is expected to happen when the feature flag is false.
+  if (!mdns_observer_.is_bound()) {
+    VLOG(1) << " Cannot start mDNS discovery while observers unbound.";
+    return false;
+  }
+
+  bool success = false;
+  // MdnsManager expects the longer service type with suffix.
+  mdns_manager_->StartDiscoverySession(LongServiceType(service_type), &success);
+  if (success) {
+    discovery_callbacks_[LongServiceType(service_type)] = std::move(callback);
+  }
+
+  VLOG(1) << " Start mDNS discovery for service type " << service_type
+          << (success ? " succeeded." : " failed.");
+
+  return success;
+}
+
+bool WifiLanMedium::StopDiscovery(const std::string& service_type) {
+  auto discovery_callback =
+      discovery_callbacks_.find(LongServiceType(service_type));
+  if (discovery_callback == discovery_callbacks_.end()) {
+    VLOG(1) << " Can't stop discovery for service_type we weren't discovering.";
+    return false;
+  }
+
+  bool success = false;
+  // MdnsManager expects the longer service type with suffix.
+  mdns_manager_->StopDiscoverySession(LongServiceType(service_type), &success);
+  if (success) {
+    discovery_callbacks_.erase(discovery_callback);
+  }
+
+  VLOG(1) << " Stop mDNS discovery for service type " << service_type
+          << (success ? " succeeded." : " failed.");
+
+  return success;
+}
+
+void WifiLanMedium::ServiceFound(
+    sharing::mojom::NsdServiceInfoPtr service_info) {
+  auto discovery_callback =
+      discovery_callbacks_.find(service_info->service_type);
+  if (discovery_callback == discovery_callbacks_.end()) {
+    VLOG(1) << " Ignoring found service while not discovering.";
+    return;
+  }
+
+  NsdServiceInfo found_service_info;
+  found_service_info.SetServiceName(service_info->service_name);
+  // A found service that has an active discovery callback must
+  // have the service type suffix.
+  found_service_info.SetServiceType(
+      ShortServiceType(service_info->service_type));
+  if (service_info->ip_address.has_value()) {
+    found_service_info.SetIPAddress(service_info->ip_address.value());
+  }
+  if (service_info->port.has_value()) {
+    found_service_info.SetPort(service_info->port.value());
+  }
+  if (service_info->txt_records.has_value()) {
+    for (auto& entry : *service_info->txt_records) {
+      found_service_info.SetTxtRecord(entry.first, entry.second);
+    }
+  }
+
+  VLOG(1) << " Announcing service found for service: "
+          << service_info->service_name;
+  discovery_callback->second.service_discovered_cb(found_service_info);
+}
+
+void WifiLanMedium::ServiceLost(
+    sharing::mojom::NsdServiceInfoPtr service_info) {
+  auto discovery_callback =
+      discovery_callbacks_.find(service_info->service_type);
+  if (discovery_callback == discovery_callbacks_.end()) {
+    VLOG(1) << " Ignoring found service while not discovering.";
+    return;
+  }
+
+  VLOG(1) << " Announcing service lost for service: "
+          << service_info->service_name;
+  NsdServiceInfo lost_service_info;
+  lost_service_info.SetServiceName(service_info->service_name);
+  // A lost service that has an active discovery callback must
+  // have the service type suffix.
+  lost_service_info.SetServiceType(
+      ShortServiceType(service_info->service_type));
+
+  discovery_callback->second.service_lost_cb(lost_service_info);
+}
+
+/*============================================================================*/
+// End: StartDiscovery()
+/*============================================================================*/
+
 std::optional<std::pair<std::int32_t, std::int32_t>>
 WifiLanMedium::GetDynamicPortRange() {
   return std::pair<std::int32_t, std::int32_t>(
@@ -476,15 +606,6 @@ bool WifiLanMedium::StartAdvertising(const NsdServiceInfo& nsd_service_info) {
   return false;
 }
 bool WifiLanMedium::StopAdvertising(const NsdServiceInfo& nsd_service_info) {
-  NOTIMPLEMENTED();
-  return false;
-}
-bool WifiLanMedium::StartDiscovery(const std::string& service_type,
-                                   DiscoveredServiceCallback callback) {
-  NOTIMPLEMENTED();
-  return false;
-}
-bool WifiLanMedium::StopDiscovery(const std::string& service_type) {
   NOTIMPLEMENTED();
   return false;
 }
@@ -534,6 +655,7 @@ void WifiLanMedium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   cros_network_config_.reset();
   firewall_hole_factory_.reset();
   mdns_manager_.reset();
+  discovery_callbacks_.clear();
 
   // Cancel all pending connect/listen calls. This is thread safe because all
   // changes to the pending-event sets are sequenced. Make a copy of the events

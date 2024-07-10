@@ -34,10 +34,9 @@ const nearby::connections::mojom::Strategy kStrategy =
 // Timeout for initiating a connection to a remote device.
 constexpr base::TimeDelta kInitiateNearbyConnectionTimeout = base::Seconds(60);
 
-// Whether or not WifiLan is supported for advertising or discovery. Support as
+// Whether or not WifiLan is supported for advertising. Support as
 // a bandwidth upgrade medium is behind a feature flag.
 constexpr bool kIsWifiLanAdvertisingSupported = false;
-bool kIsWifiLanDiscoverySupported = ::features::IsNearbyMdnsEnabled();
 
 bool ShouldUseInternet(NearbyConnectionsManager::DataUsage data_usage,
                        NearbyConnectionsManager::PowerLevel power_level) {
@@ -300,7 +299,7 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
                          NearbyConnectionsManager::PowerLevel::kHighPower),
       /*wifi_lan=*/
       ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower) &&
-          kIsWifiLanDiscoverySupported,
+          ::features::IsNearbyMdnsEnabled(),
       /*wifi_direct=*/
       base::FeatureList::IsEnabled(features::kNearbySharingWifiDirect));
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)

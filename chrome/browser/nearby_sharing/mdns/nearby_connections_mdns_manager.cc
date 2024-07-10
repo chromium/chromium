@@ -16,7 +16,9 @@ namespace {
   ::sharing::mojom::NsdServiceInfoPtr output =
       ::sharing::mojom::NsdServiceInfo::New();
 
-  output->ip_address = service_description.ip_address.ToString();
+  // IP address is expected as bytes, rather than ToString().
+  auto ip_vec = service_description.ip_address.CopyBytesToVector();
+  output->ip_address = std::string(ip_vec.begin(), ip_vec.end());
   output->port = service_description.address.port();
   output->service_name = service_description.instance_name();
   output->service_type = service_description.service_type();

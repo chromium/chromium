@@ -151,8 +151,9 @@ TEST_F(NearbyConnectionsMdnsManagerTest, NotifiesObservers_ServiceFound) {
   EXPECT_TRUE(observer_.found_info_);
   EXPECT_EQ(observer_.found_info_->service_name, kNearbyServiceName);
   EXPECT_EQ(observer_.found_info_->service_type, kNearbyServiceType);
+  auto ip_vec = kNearbyServiceIpAddress.CopyBytesToVector();
   EXPECT_EQ(observer_.found_info_->ip_address,
-            kNearbyServiceIpAddress.ToString());
+            std::string(ip_vec.begin(), ip_vec.end()));
   EXPECT_EQ(observer_.found_info_->port, kNearbyServicePort);
   EXPECT_TRUE(observer_.found_info_->txt_records.has_value());
   EXPECT_EQ(observer_.found_info_->txt_records.value()[kNearbyEndpointInfoKey],

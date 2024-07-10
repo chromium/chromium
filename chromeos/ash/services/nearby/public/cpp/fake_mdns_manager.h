@@ -5,8 +5,10 @@
 #ifndef CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_MDNS_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_MDNS_MANAGER_H_
 
+#include "base/containers/flat_set.h"
 #include "chromeos/ash/services/nearby/public/mojom/mdns.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash::nearby {
 
@@ -23,6 +25,15 @@ class FakeMdnsManager : public ::sharing::mojom::MdnsManager {
                             StopDiscoverySessionCallback callback) override;
   void AddObserver(
       ::mojo::PendingRemote<::sharing::mojom::MdnsObserver> observer) override;
+
+  void NotifyObserversServiceFound(
+      ::sharing::mojom::NsdServiceInfoPtr service_info);
+  void NotifyObserversServiceLost(
+      ::sharing::mojom::NsdServiceInfoPtr service_info);
+
+ private:
+  base::flat_set<std::string> discovery_sessions_;
+  mojo::RemoteSet<::sharing::mojom::MdnsObserver> observers_;
 };
 
 }  // namespace ash::nearby
