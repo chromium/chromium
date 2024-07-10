@@ -1632,6 +1632,7 @@ crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-rl-
 
 crbug.com/710214 [ Mac11 Release ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 crbug.com/710214 [ Mac11-arm64 Release ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
+crbug.com/710214 [ Mac10.15 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 crbug.com/710214 [ Mac12 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 crbug.com/710214 [ Mac12-arm64 Release ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 crbug.com/710214 [ Mac10.15 Release ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
@@ -2593,7 +2594,6 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/352088183 [ Mac10.15 ] external/wpt/css/css-content/quotes-020.html [ Timeout ]
-crbug.com/352177981 [ Mac10.15 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Timeout ]
 crbug.com/352189747 [ Mac10.15 ] external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Timeout ]
 crbug.com/352191292 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Timeout ]
 crbug.com/352191318 [ Mac10.15 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Timeout ]
@@ -5650,6 +5650,7 @@ crbug.com/1385491 [ Win ] external/wpt/selection/user-select-on-input-and-conten
 crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-018-2.html [ Skip Timeout ]
 crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-002.html [ Skip Timeout ]
 crbug.com/1385905 [ Win ] external/wpt/editing/run/caret-navigation-around-line-break.html [ Skip Timeout ]
+crbug.com/1385881 [ Mac12 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Win ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385870 [ Win ] external/wpt/screen-capture/getdisplaymedia.https.html [ Skip Timeout ]

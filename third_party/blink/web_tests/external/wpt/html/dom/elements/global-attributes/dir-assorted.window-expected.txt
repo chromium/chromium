@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] text changes apply to dir=auto on further ancestor after removing dir=ltr from closer ancestor
+  assert_false: parent is RTL after changing text in child expected false got true
+Harness: the test ran to completion.
+
