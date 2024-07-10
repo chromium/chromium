@@ -3007,6 +3007,7 @@ if (!is_android) {
       "../browser/ui/views/webid/account_selection_modal_view_browsertest.cc",
       "../browser/ui/views/webid/account_selection_view_test_base.cc",
       "../browser/ui/views/webid/account_selection_view_test_base.h",
+      "../browser/ui/views/webid/digital_identity_multi_step_dialog_browsertest.cc",
       "../browser/ui/views/webid/digital_identity_safety_interstitial_integration_test.cc",
       "../browser/ui/views/webid/fake_delegate.cc",
       "../browser/ui/views/webid/fake_delegate.h",

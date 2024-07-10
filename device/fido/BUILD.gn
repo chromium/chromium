@@ -163,6 +163,8 @@ component("fido") {
         "device_operation.h",
         "device_response_converter.cc",
         "device_response_converter.h",
+        "digital_identity_request_handler.cc",
+        "digital_identity_request_handler.h",
         "enclave/constants.cc",
         "enclave/constants.h",
         "enclave/enclave_authenticator.cc",

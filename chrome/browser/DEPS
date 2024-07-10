@@ -410,6 +410,7 @@ include_rules = [
   "+content/public/common",
   "+device/base",
   "+device/bluetooth",
+  "+device/fido",
   "+device/fido/features.h",
   "+device/gamepad/public/cpp",
   "+device/vr/buildflags/buildflags.h",
