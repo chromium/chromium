@@ -1058,8 +1058,8 @@ void TransportClientSocketPool::CheckForStalledSocketGroups() {
   // Loop until there's nothing more to do.
   while (true) {
     // If we have idle sockets, see if we can give one to the top-stalled group.
-    GroupId top_group_id;
     Group* top_group = nullptr;
+    GroupId top_group_id;
     if (!FindTopStalledGroup(&top_group, &top_group_id))
       return;
 
@@ -1084,7 +1084,8 @@ void TransportClientSocketPool::CheckForStalledSocketGroups() {
 // insertion order).
 bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
                                                     GroupId* group_id) const {
-  CHECK((group && group_id) || (!group && !group_id));
+  CHECK(group);
+  CHECK(group_id);
   Group* top_group = nullptr;
   const GroupId* top_group_id = nullptr;
   bool has_stalled_group = false;
@@ -1093,8 +1094,6 @@ bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
     if (!curr_group->has_unbound_requests())
       continue;
     if (curr_group->CanUseAdditionalSocketSlot(max_sockets_per_group_)) {
-      if (!group)
-        return true;
       has_stalled_group = true;
       bool has_higher_priority =
           !top_group ||
@@ -1107,7 +1106,6 @@ bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
   }
 
   if (top_group) {
-    CHECK(group);
     *group = top_group;
     *group_id = *top_group_id;
   } else {
