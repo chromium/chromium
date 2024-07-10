@@ -47,9 +47,16 @@
 #pragma mark - Public
 
 - (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page {
+  // Configure the navigation controller.
+  self.navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.mainViewController];
+  self.navigationController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  self.navigationController.presentationController.delegate = self;
+
   // Configure the presentation controller with a custom initial detent.
   UISheetPresentationController* presentationController =
-      self.mainViewController.sheetPresentationController;
+      self.navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
 
   // TODO(crbug.com/350990359): Dynamically calculate height.
@@ -69,15 +76,10 @@
   presentationController.selectedDetentIdentifier =
       kBottomSheetDetentIdentifier;
 
-  // Configure and present the navigation controller.
-  self.navigationController = [[UINavigationController alloc]
-      initWithRootViewController:_mainViewController];
-  self.navigationController.modalPresentationStyle =
-      UIModalPresentationPageSheet;
+  // Present the navigation controller.
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
-  self.navigationController.presentationController.delegate = self;
 
   // Handle navigation if the initial page isn't the main one.
   if (page != CustomizationMenuPage::kCustomizationMenuPageMain) {

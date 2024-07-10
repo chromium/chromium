@@ -6,7 +6,13 @@ source_set("ui") {
   sources = [
     "home_customization_main_view_controller.h",
     "home_customization_main_view_controller.mm",
+    "home_customization_toggle_cell.h",
+    "home_customization_toggle_cell.mm",
   ]
-  deps = []
+  deps = [
+    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser/home_customization/utils",
+    "//ui/base",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
