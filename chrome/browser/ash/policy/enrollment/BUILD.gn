@@ -1,0 +1,186 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("enrollment") {
+  sources = [
+    "account_status_check_fetcher.cc",
+    "account_status_check_fetcher.h",
+    "auto_enrollment_client.h",
+    "auto_enrollment_client_impl.cc",
+    "auto_enrollment_client_impl.h",
+    "auto_enrollment_controller.cc",
+    "auto_enrollment_controller.h",
+    "auto_enrollment_state.cc",
+    "auto_enrollment_state.h",
+    "auto_enrollment_state_message_processor.cc",
+    "auto_enrollment_state_message_processor.h",
+    "auto_enrollment_type_checker.cc",
+    "auto_enrollment_type_checker.h",
+    "device_cloud_policy_initializer.cc",
+    "device_cloud_policy_initializer.h",
+    "enrollment_config.cc",
+    "enrollment_config.h",
+    "enrollment_handler.cc",
+    "enrollment_handler.h",
+    "enrollment_requisition_manager.cc",
+    "enrollment_requisition_manager.h",
+    "enrollment_state_fetcher.cc",
+    "enrollment_state_fetcher.h",
+    "enrollment_status.cc",
+    "enrollment_status.h",
+    "enrollment_token_provider.cc",
+    "enrollment_token_provider.h",
+    "psm/construct_rlwe_id.cc",
+    "psm/construct_rlwe_id.h",
+    "psm/fake_rlwe_dmserver_client.cc",
+    "psm/fake_rlwe_dmserver_client.h",
+    "psm/rlwe_dmserver_client.h",
+    "psm/rlwe_dmserver_client_impl.cc",
+    "psm/rlwe_dmserver_client_impl.h",
+    "tpm_enrollment_key_signing_service.cc",
+    "tpm_enrollment_key_signing_service.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/version_info",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//build/config/chromebox_for_meetings:buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/device_management",
+    "//chromeos/ash/components/dbus/device_management:device_management_proto",
+    "//chromeos/ash/components/dbus/system_clock",
+    "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/system",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/proto:",
+    "//components/prefs",
+    "//crypto",
+    "//google_apis",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
+    "//services/network/public/mojom",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/private_membership",
+    "//third_party/private_membership:private_membership_proto",
+    "//url",
+  ]
+
+  public_deps = [
+    # Indirectly included via //chrome/browser/ash/login/oobe_quick_start,
+    # but this cannot depend on it due to circular dependency.
+    # Instead, depend on the third_party target directly.
+    # We should remove this once circular dependency gets resolved.
+    "//chromeos/ash/components/nearby/common/connections_manager",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "enrollment_test_helper.cc",
+    "enrollment_test_helper.h",
+    "fake_auto_enrollment_client.cc",
+    "fake_auto_enrollment_client.h",
+  ]
+
+  deps = [
+    ":enrollment",
+    "//base",
+    "//chrome/browser/ash",
+    "//chromeos/ash/components/dbus/oobe_config",
+    "//components/policy/proto:",
+    "//components/policy/test_support",
+    "//services/network/public/cpp",
+    "//third_party/private_membership",
+    "//third_party/private_membership:private_membership_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "account_status_check_fetcher_unittest.cc",
+    "auto_enrollment_client_impl_unittest.cc",
+    "auto_enrollment_controller_unittest.cc",
+    "auto_enrollment_type_checker_unittest.cc",
+    "enrollment_config_unittest.cc",
+    "enrollment_state_fetcher_unittest.cc",
+    "enrollment_token_provider_unittest.cc",
+    "tpm_enrollment_key_signing_service_unittest.cc",
+  ]
+
+  deps = [
+    ":enrollment",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/ui:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment/psm:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/dbus/device_management",
+    "//chromeos/ash/components/dbus/oobe_config",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/system_clock",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/system",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto:",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//crypto",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/icu:icui18n",
+    "//third_party/private_membership",
+    "//third_party/private_membership:private_membership_proto",
+  ]
+}

@@ -50,6 +50,7 @@ static_library("demo_mode") {
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",
@@ -89,6 +90,7 @@ static_library("demo_mode") {
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/policy/enrollment",
   ]
 }
 
@@ -116,6 +118,7 @@ static_library("test_support") {
     "//chrome/browser/ash",
     "//chrome/browser/ash/login/enrollment:test_support",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/install_attributes",
     "//components/component_updater/ash:test_support",
@@ -155,6 +158,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
@@ -205,6 +209,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/enrollment",
     "//chrome/browser/ash/login/enrollment:test_support",
+    "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",

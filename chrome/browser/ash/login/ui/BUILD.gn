@@ -98,6 +98,7 @@ static_library("ui") {
     "//chrome/browser/ash/nearby",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/themes",
@@ -151,6 +152,7 @@ static_library("ui") {
     "//chrome/browser/ash/arc/optin",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/net",
+    "//chrome/browser/ash/policy/enrollment",
   ]
 }
 

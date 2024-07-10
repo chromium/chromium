@@ -72,6 +72,7 @@ static_library("core") {
     "//build:buildflag_header_h",
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/invalidation",
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/profiles:profile",
@@ -130,6 +131,8 @@ static_library("core") {
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//components/webapps/browser",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/enrollment" ]
 }
 
 static_library("test_support") {
@@ -202,6 +205,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/invalidation:test_support",
     "//chrome/browser/chromeos",
     "//chrome/browser/extensions",
