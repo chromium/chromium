@@ -68,10 +68,10 @@ def _git_log(git_log_args):
 
 def _query_size(review_url, internal):
   if not review_url:
-    return '<missing>'
+    return '<missing>', '<missing>'
   m = _GERRIT_RE.match(review_url)
   if not m:
-    return '<bad URL>'
+    return '<bad URL>', '<bad URL>'
   host, project, change_num = m.groups()
   if internal:
     project = 'chrome'
@@ -97,7 +97,7 @@ def _query_size(review_url, internal):
                           stdout=subprocess.PIPE,
                           encoding='utf8')
   if result.returncode:
-    return '<missing>'
+    return '<missing>', '<missing>'
 
   # Take the last one that has a size set (output is in reverse order already).
   for json_str in result.stdout.splitlines():
@@ -109,10 +109,16 @@ def _query_size(review_url, internal):
 
     properties = obj.get('output', {}).get('properties', {})
     listings = properties.get('binary_size_plugin', {}).get('listings', [])
+    arm32_size = None
+    arm64_size = '<unknown>'
     for listing in listings:
-      if listing['name'] == 'Android Binary Size':
-        return listing['delta']
-  return '<unknown>'
+      if listing['log_name'] == 'resource_sizes_log':
+        arm32_size = listing['delta']
+      elif listing['log_name'] == 'resource_sizes_64_log':
+        arm64_size = listing['delta']
+    if arm32_size:
+      return arm32_size, arm64_size
+  return '<unknown>', '<unknown>'
 
 
 def _maybe_rewrite_crrev(git_log_args):
@@ -157,22 +163,25 @@ def main():
   if args.csv:
     print_func = csv.writer(sys.stdout).writerow
   else:
-    print_func = lambda v: print('{:<12}{:14}{:12}{:32}{}'.format(*v))
+    print_func = lambda v: print('{:<12}{:14}{:12}{:12}{:32}{}'.format(*v))
 
-  print_func(('Commit #', 'Git Hash', 'Size', 'Date', 'Subject'))
+  print_func(
+      ('Commit #', 'Git Hash', 'Arm32 Size', 'Arm64 Size', 'Date', 'Subject'))
   num_bad_commits = 0
   with concurrent.futures.ThreadPoolExecutor(max_workers=20) as pool:
     sizes = [
         pool.submit(_query_size, info.review_url, args.internal)
         for info in commit_infos
     ]
-    for info, size in zip(commit_infos, sizes):
+    for info, promise in zip(commit_infos, sizes):
       if any(info.cr_position in r for r in _BAD_COMMIT_RANGES):
         num_bad_commits += 1
-      size_str = size.result().replace(' bytes', '').lstrip('+')
+      sizes = promise.result()
+      arm32_str = sizes[0].replace(' bytes', '').lstrip('+')
+      arm64_str = sizes[1].replace(' bytes', '').lstrip('+')
       crrev_str = info.cr_position or ''
-      print_func(
-          (crrev_str, info.git_hash[:12], size_str, info.date, info.subject))
+      print_func((crrev_str, info.git_hash[:12], arm32_str, arm64_str,
+                  info.date, info.subject))
   if num_bad_commits:
     print(f'Includes {num_bad_commits} commits from known bad revision range.')
 
