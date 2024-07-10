@@ -93,6 +93,21 @@ bool HasFormInBetween(const Node* root, const Node* descendant) {
   return false;
 }
 
+// Invalidates the cache of all form elements that are ancestors of
+// `starting_node` or `starting_node` itself.
+void InvalidateShadowIncludingAncestorForms(ContainerNode* starting_node) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillIncludeFormElementsInShadowDom)) {
+    return;
+  }
+  for (ContainerNode* node = starting_node; node;
+       node = node->ParentOrShadowHostNode()) {
+    if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(node)) {
+      form->InvalidateListedElementsIncludingShadowTrees();
+    }
+  }
+}
+
 }  // namespace
 
 HTMLFormElement::HTMLFormElement(Document& document)
@@ -138,6 +153,7 @@ Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
   LogAddElementIfIsolatedWorldAndInDocument("form", html_names::kMethodAttr,
                                             html_names::kActionAttr);
   if (insertion_point.isConnected()) {
+    InvalidateShadowIncludingAncestorForms(ParentElementOrShadowRoot());
     GetDocument().MarkTopLevelFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kAdd);
@@ -184,6 +200,7 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
 
   if (insertion_point.isConnected()) {
+    InvalidateShadowIncludingAncestorForms(&insertion_point);
     GetDocument().MarkTopLevelFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kRemove);
