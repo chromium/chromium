@@ -3503,6 +3503,18 @@
       invalidate: ["reshape", "layout", "paint"],
     },
     {
+      name: "interpolate-size",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["numeric-only", "allow-keywords"],
+      typedom_types: ["Keyword"],
+      default_value: "numeric-only",
+      invalidate: [],
+      runtime_flag: "CSSCalcSizeFunction",
+    },
+    {
       name: "isolation",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",

@@ -26816,6 +26816,7 @@ Called by update_use_counter_css.py.-->
   <int value="795" label="ruby-align"/>
   <int value="796" label="box-decoration-break"/>
   <int value="797" label="position-try-fallbacks"/>
+  <int value="798" label="interpolate-size"/>
 </enum>
 
 <enum name="MediaEncryptionType">

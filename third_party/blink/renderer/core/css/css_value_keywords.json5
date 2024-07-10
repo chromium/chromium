@@ -1898,5 +1898,9 @@
 
     // @supports blink-feature(RuntimeEnabledFeatureName)
     "blink-feature",
+
+    // interpolate-size
+    "numeric-only",
+    "allow-keywords",
   ],
 }

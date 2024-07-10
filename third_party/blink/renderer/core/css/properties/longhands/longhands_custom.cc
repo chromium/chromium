@@ -5374,6 +5374,14 @@ const CSSValue* InternalForcedVisitedColor::ParseSingleValue(
   return css_parsing_utils::ConsumeColorMaybeQuirky(stream, context);
 }
 
+const CSSValue* InterpolateSize::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.InterpolateSize());
+}
+
 const CSSValue* Isolation::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

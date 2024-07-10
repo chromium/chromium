@@ -225,6 +225,7 @@ All changes to this list should go through Blink's feature review process: http:
     inset-block-start
     inset-inline-end
     inset-inline-start
+    interpolate-size
     isolation
     justify-content
     justify-items

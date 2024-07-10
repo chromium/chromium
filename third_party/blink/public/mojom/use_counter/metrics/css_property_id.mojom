@@ -851,6 +851,7 @@ enum CSSSampleId {
     kRubyAlign = 795,
     kBoxDecorationBreak = 796,
     kPositionTryFallbacks = 797,
+    kInterpolateSize = 798,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -469,6 +469,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.InitialLetter() == b.InitialLetter();
     case CSSPropertyID::kInsetArea:
       return a.GetInsetArea() == b.GetInsetArea();
+    case CSSPropertyID::kInterpolateSize:
+      return a.InterpolateSize() == b.InterpolateSize();
     case CSSPropertyID::kIsolation:
       return a.Isolation() == b.Isolation();
     case CSSPropertyID::kJustifyContent:
