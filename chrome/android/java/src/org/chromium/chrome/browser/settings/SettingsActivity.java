@@ -679,11 +679,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((AutofillLocalIbanEditor) fragment)
                     .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
         }
-        if (fragment instanceof SafetyHubFragment) {
-            ((SafetyHubFragment) fragment)
-                    .setDelegate(
-                            new SafetyHubModuleDelegateImpl(
-                                    mProfile, getModalDialogManagerSupplier()));
+        if (fragment instanceof SafetyHubFragment safetyHubFragment) {
+            safetyHubFragment.setDelegate(
+                    new SafetyHubModuleDelegateImpl(mProfile, getModalDialogManagerSupplier()));
+            // TODO(crbug.com/40751023): Create a shared interface for fragments that need access to
+            // LaunchIntentDispatcher::createCustomTabActivityIntent.
+            safetyHubFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
     }
 

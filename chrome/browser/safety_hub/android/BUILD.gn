@@ -74,6 +74,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
@@ -147,6 +148,7 @@ android_library("javatests") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
     "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/content_settings/core/common:content_settings_types_java",
@@ -154,6 +156,7 @@ android_library("javatests") {
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -161,6 +164,7 @@ android_library("javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
   ]
 }
 
@@ -211,6 +215,7 @@ source_set("unit_tests") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/safety_hub_magic_stack_icon_background.xml",
+    "java/res/drawable/safety_hub_safety_tips_icon.xml",
     "java/res/layout/safety_hub_bottom_elements.xml",
     "java/res/layout/safety_hub_button_widget.xml",
     "java/res/layout/safety_hub_expandable_preference.xml",

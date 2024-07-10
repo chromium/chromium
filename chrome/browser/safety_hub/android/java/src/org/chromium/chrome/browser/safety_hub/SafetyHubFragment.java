@@ -4,8 +4,16 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
+
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -23,11 +31,36 @@ import java.util.List;
 public class SafetyHubFragment extends SafetyHubBaseFragment
         implements UnusedSitePermissionsBridge.Observer,
                 NotificationPermissionReviewBridge.Observer {
+    /**
+     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
+     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
+     * TODO(crbug.com/40751023): Update when LaunchIntentDispatcher is (partially-)modularized.
+     */
+    public interface CustomTabIntentHelper {
+        /**
+         * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
+         */
+        Intent createCustomTabActivityIntent(Context context, Intent intent);
+    }
+
     private static final String PREF_PASSWORDS = "passwords_account";
     private static final String PREF_UPDATE = "update_check";
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
     private static final String PREF_NOTIFICATIONS_REVIEW = "notifications_review";
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
+    private static final String PREF_SAFETY_TIPS_SAFETY_TOOLS = "safety_tips_safety_tools";
+    private static final String PREF_SAFETY_TIPS_INCOGNITO = "safety_tips_incognito";
+    private static final String PREF_SAFETY_TIPS_SAFE_BROWSING = "safety_tips_safe_browsing";
+
+    @VisibleForTesting
+    static final String SAFETY_TOOLS_LEARN_MORE_URL = "https://www.google.com/chrome/#safe";
+
+    @VisibleForTesting
+    static final String INCOGNITO_LEARN_MORE_URL = "https://support.google.com/chrome/?p=incognito";
+
+    @VisibleForTesting
+    static final String SAFE_BROWSING_LEARN_MORE_URL =
+            "https://support.google.com/chrome?p=safe_browsing_preferences";
 
     private SafetyHubModuleDelegate mDelegate;
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
@@ -35,6 +68,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
     private PropertyModel mNotificationsModel;
     private PropertyModel mSafeBrowsingPropertyModel;
+    private CustomTabIntentHelper mCustomTabIntentHelper;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -50,6 +84,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         setUpPermissionsRevocationModule();
         setUpNotificationsReviewModule();
         setUpSafeBrowsingModule();
+        setUpSafetyTipsModule();
     }
 
     private void setUpAccountPasswordCheckModule() {
@@ -217,6 +252,49 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 mSafeBrowsingPropertyModel,
                 safeBrowsingPreference,
                 SafetyHubModuleViewBinder::bindSafeBrowsingProperties);
+    }
+
+    private void setUpSafetyTipsModule() {
+        findPreference(PREF_SAFETY_TIPS_SAFETY_TOOLS)
+                .setOnPreferenceClickListener(
+                        (preference) -> {
+                            openUrlInCct(SAFETY_TOOLS_LEARN_MORE_URL);
+                            return true;
+                        });
+
+        findPreference(PREF_SAFETY_TIPS_INCOGNITO)
+                .setOnPreferenceClickListener(
+                        (preference) -> {
+                            openUrlInCct(INCOGNITO_LEARN_MORE_URL);
+                            return true;
+                        });
+
+        findPreference(PREF_SAFETY_TIPS_SAFE_BROWSING)
+                .setOnPreferenceClickListener(
+                        (preference) -> {
+                            openUrlInCct(SAFE_BROWSING_LEARN_MORE_URL);
+                            return true;
+                        });
+    }
+
+    /** Sets the {@link CustomTabIntentHelper} to open urls in CCT. */
+    public void setCustomTabIntentHelper(CustomTabIntentHelper helper) {
+        mCustomTabIntentHelper = helper;
+    }
+
+    private void openUrlInCct(String url) {
+        assert (mCustomTabIntentHelper != null)
+                : "CCT helpers must be set on SafetyHubFragment before opening a link";
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+        customTabIntent.intent.setData(Uri.parse(url));
+        Intent intent =
+                mCustomTabIntentHelper.createCustomTabActivityIntent(
+                        getContext(), customTabIntent.intent);
+        intent.setPackage(getContext().getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(getContext(), intent);
     }
 
     @Override

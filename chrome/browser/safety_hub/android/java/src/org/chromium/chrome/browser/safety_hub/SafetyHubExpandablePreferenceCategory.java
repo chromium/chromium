@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
@@ -22,7 +23,19 @@ public class SafetyHubExpandablePreferenceCategory extends ExpandablePreferenceG
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         TextView titleView = (TextView) holder.findViewById(android.R.id.title);
+        assert titleView != null;
         ApiCompatibilityUtils.setTextAppearance(
                 titleView, R.style.TextAppearance_TextMediumThick_Accent1);
+
+        View expandButton = holder.findViewById(R.id.checkable_image_view);
+        assert expandButton != null;
+        expandButton.setOnClickListener((v) -> setExpanded(!isExpanded()));
+    }
+
+    @Override
+    public void onExpandedChanged(boolean expanded) {
+        for (int i = 0; i < getPreferenceCount(); ++i) {
+            getPreference(i).setVisible(expanded);
+        }
     }
 }

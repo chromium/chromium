@@ -1802,6 +1802,24 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_SUMMARY" translateable="false">
         To protect your data, let Chrome remove permissions from sites that you haven’t visited recently
       </message>
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFETY_TOOLS_TITLE" translateable="false">
+        Learn about Chrome's safety tools
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFETY_TOOLS_SUMMARY" translateable="false">
+        With tools from Chrome, you can browse safely and stay in control
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_INCOGNITO_TITLE" translateable="false">
+        Learn about Chrome Incognito
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_INCOGNITO_SUMMARY" translateable="false">
+        Incognito mode keeps your browsing private from others who use your device
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFE_BROWSING_TITLE" translateable="false">
+        Learn about Safe Browsing
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFE_BROWSING_SUMMARY" translateable="false">
+        Chrome warns you about unsafe sites and downloads
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

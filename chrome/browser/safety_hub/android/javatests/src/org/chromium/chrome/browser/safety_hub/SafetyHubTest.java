@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.safety_hub;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -22,7 +23,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
@@ -39,8 +42,10 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,10 +56,13 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -62,8 +70,10 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -460,6 +470,7 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
+    @Feature({"SafetyHubPermissions"})
     public void testPermissionsModule_ClearList() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
@@ -498,6 +509,7 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
+    @Feature({"SafetyHubPermissions"})
     public void testPermissionsModule_SafeState() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(new PermissionsData[] {});
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -522,6 +534,7 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
+    @Feature({"SafetyHubNotifications"})
     public void testNotificationReviewModule_ResetAll() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {
@@ -566,6 +579,7 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
+    @Feature({"SafetyHubNotifications"})
     public void testNotificationReviewModule_SafeState() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {});
@@ -593,6 +607,113 @@ public final class SafetyHubTest {
                 .check(matches(isDisplayed()));
     }
 
+    @Test
+    @MediumTest
+    @Feature({"SafetyHubTips"})
+    public void testSafetyTipsPreferenceExpand() {
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify the safety tips module is displayed.
+        String safetyTipsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_safety_tips_section_header);
+        scrollToLastPosition();
+        onView(withText(safetyTipsTitle)).check(matches(isDisplayed()));
+
+        // The module should be expanded in it's initial state.
+        // Verify the child preferences are visible.
+        onView(withText(R.string.safety_hub_safety_tips_safety_tools_title))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.safety_hub_safety_tips_incognito_title))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.safety_hub_safety_tips_safe_browsing_title))
+                .check(matches(isDisplayed()));
+
+        // Click on collapse button.
+        clickOnExpandButtonNextToText(safetyTipsTitle);
+
+        // Verify the child preferences are now hidden.
+        onView(withText(R.string.safety_hub_safety_tips_safety_tools_title)).check(doesNotExist());
+        onView(withText(R.string.safety_hub_safety_tips_incognito_title)).check(doesNotExist());
+        onView(withText(R.string.safety_hub_safety_tips_safe_browsing_title)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"SafetyHubTips"})
+    public void testSafetyToolsLearnMoreLink_OpensInCCT() {
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        scrollToLastPosition();
+
+        // The module should be expanded in it's initial state and all its children are visible.
+        // Verify the Safety tools preference is displayed and clicking on it opens the correct link
+        // in CCT.
+        String safetyToolsTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getString(R.string.safety_hub_safety_tips_safety_tools_title);
+        onView(withText(safetyToolsTitle)).check(matches(isDisplayed()));
+        clickOnPreferenceWithTextAndWaitForActivity(
+                safetyToolsTitle, SafetyHubFragment.SAFETY_TOOLS_LEARN_MORE_URL);
+        pressBack();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"SafetyHubTips"})
+    public void testIncognitoLearnMoreLink_OpensInCCT() {
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        scrollToLastPosition();
+
+        // The module should be expanded in it's initial state and all its children are visible.
+        // Verify the Incognito preference is displayed and clicking on it opens the correct link in
+        // CCT.
+        String incognitoTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getString(R.string.safety_hub_safety_tips_incognito_title);
+        onViewWaiting(withText(incognitoTitle)).check(matches(isDisplayed()));
+        clickOnPreferenceWithTextAndWaitForActivity(
+                incognitoTitle, SafetyHubFragment.INCOGNITO_LEARN_MORE_URL);
+        pressBack();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"SafetyHubTips"})
+    public void testSafeBrowsingLearnMoreLink_OpensInCCT() {
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        scrollToLastPosition();
+
+        // The module should be expanded in it's initial state and all its children are visible.
+        // Verify the Safe browsing preference is displayed and clicking on it opens the correct
+        // link in CCT.
+        String safeBrowsingTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getString(R.string.safety_hub_safety_tips_safe_browsing_title);
+        onView(withText(safeBrowsingTitle)).check(matches(isDisplayed()));
+        clickOnPreferenceWithTextAndWaitForActivity(
+                safeBrowsingTitle, SafetyHubFragment.SAFE_BROWSING_LEARN_MORE_URL);
+        pressBack();
+    }
+
+    private void clickOnPreferenceWithTextAndWaitForActivity(
+            String preferenceTitle, String expectedUrl) {
+        CustomTabActivity cta =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        CustomTabActivity.class,
+                        () -> onView(withText(preferenceTitle)).perform(click()));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab tab = cta.getActivityTab();
+                    Criteria.checkThat(tab, Matchers.notNullValue());
+                    Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(expectedUrl));
+                });
+    }
+
     private void clickOnButtonNextToText(String text) {
         onViewWaiting(allOf(withId(R.id.button), withParent(hasSibling(withChild(withText(text))))))
                 .perform(click());
@@ -618,7 +739,9 @@ public final class SafetyHubTest {
         onViewWaiting(
                         allOf(
                                 withId(R.id.checkable_image_view),
-                                hasSibling(withChild(withText(text)))))
+                                anyOf(
+                                        is(hasSibling(withChild(withText(text)))),
+                                        is(withParent(hasSibling(withChild(withText(text))))))))
                 .perform(click());
     }
 
@@ -645,6 +768,10 @@ public final class SafetyHubTest {
     private void scrollToPreference(Matcher<View> matcher) {
         onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
+    }
+
+    private void scrollToLastPosition() {
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
     }
 
     private void setSafeBrowsingState(@SafeBrowsingState int state) {
