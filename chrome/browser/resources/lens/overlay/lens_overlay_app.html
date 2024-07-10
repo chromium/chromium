@@ -19,6 +19,7 @@
     gap: 12px;
     inset-block-start: 33px;
     inset-inline-end: 30px;
+    pointer-events: none;
     position: absolute;
   }
 
@@ -32,6 +33,7 @@
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: white;
     background-color: rgba(var(--color-scrim-rgb), 0.6);
+    pointer-events: all;
   }
 
   #closeButton {
@@ -57,11 +59,12 @@
   #moreOptionsMenu {
     background: var(--color-selection-element);
     border-radius: 8px;
+    /* Needed to prevent mouse flicker on option hover. */
+    cursor: default;
     display: none;
     margin-top: 8px;
     padding: 8px 0px;
-    /* Needed to prevent mouse flicker on option hover. */
-    cursor: default;
+    pointer-events: all;
   }
 
   :host([more-options-menu-visible]) #moreOptionsMenu {
