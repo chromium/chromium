@@ -94,6 +94,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="2554739539410784893">O Chromium está tentando substituir senhas já existentes. Digite sua senha do Windows para conceder essa permissão.</translation>
 <translation id="2560420686485554789">O Chromium precisa de acesso de armazenamento para baixar arquivos</translation>
 <translation id="2572494885440352020">Assistente do Chromium</translation>
+<translation id="2576118232315942160">Para acessar suas senhas e muito mais em todos os seus dispositivos, faça login no Chromium.</translation>
 <translation id="2583187216237139145">Quaisquer dados do Chromium gerados quando este perfil estiver sendo usado (como a criação de favoritos, histórico, senhas e outras configurações) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continuar usando o Chromium</translation>
 <translation id="259935314519650377">Falha de cache após o download do instalador. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -462,6 +463,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8357820681460164151">Para ter acesso aos recursos do navegador Chromium em todos os seus dispositivos, faça login e ative a sincronização</translation>
 <translation id="8360718212975266891">Para receber as próximas atualizações do Chromium, você precisa ter do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
+<translation id="8372327902843331129">Para acessar suas senhas e muito mais em todos os seus dispositivos, faça login no Chromium. A senha será salva na sua Conta do Google depois que você fizer login.</translation>
 <translation id="837460953767177950">Depois, é necessário reiniciar o Chromium.</translation>
 <translation id="8401454788024434101">A publicação desta extensão foi cancelada pelo desenvolvedor, e ela pode não ser segura. Remova do Chromium para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reiniciar o Chromium em 1 dia}one{Reiniciar o Chromium em # dia}other{Reiniciar o Chromium em # dias}}</translation>

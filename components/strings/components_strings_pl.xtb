@@ -368,6 +368,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1650602712345345441">Zarządzaj ustawieniami Chrome</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Aby używać Menedżera haseł z pękiem kluczy macOS, uruchom ponownie Chromium i zezwól na dostęp do pęku kluczy. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
+<translation id="1652887625750064647">Najlepsze dopasowanie AI</translation>
 <translation id="1656024727720460136">Strona została uproszczona przez Chrome, by było ją łatwiej przeczytać. Przeglądarka Chrome pobrała oryginalną stronę przez zabezpieczone połączenie.</translation>
 <translation id="1656489000284462475">Odbiór</translation>
 <translation id="1658111267661135323">TV i wideo</translation>
@@ -1927,7 +1928,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4669856024297417878">Chrome określa tematy, które Cię interesują, na podstawie Twojej historii przeglądania z ostatnich kilku tygodni.</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
 <translation id="4671339777629075741">Koperta DL</translation>
-<translation id="4673460618347856347">Gra z dinozaurem, zagraj</translation>
 <translation id="467662567472608290">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa ma błędy. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> chce odpowiadać na zdarzenia dotyczące ułatwień dostępu</translation>
 <translation id="467809019005607715">Prezentacje Google</translation>

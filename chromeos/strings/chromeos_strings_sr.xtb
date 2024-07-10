@@ -226,6 +226,7 @@
 <translation id="2080070583977670716">Више подешавања</translation>
 <translation id="2082932131694554252">Додељени тастер на тастатури</translation>
 <translation id="2085089206770112532">Смањите осветљеност екрана</translation>
+<translation id="2085876078937250610">Сачувај…</translation>
 <translation id="2086091080968010660">Промене засноване на времену можда нису прецизне. Укључите приступ локацији система у подешавањима.</translation>
 <translation id="2102231663024125441">Уређивање текста</translation>
 <translation id="2102648867808308635">Помоћ при читању за ову страницу</translation>
@@ -768,6 +769,7 @@
 <translation id="5180712487038406644">Изражајно</translation>
 <translation id="5190187232518914472">Поново проживите омиљене успомене. Да бисте додали или изменили албуме, идите у <ph name="LINK_BEGIN" />Google слике<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
+<translation id="5220549459260334974">Преузето <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
 <translation id="522307662484862935">Не наводите имејл адресу</translation>
 <translation id="5227902338748591677">Распоред тамне теме</translation>

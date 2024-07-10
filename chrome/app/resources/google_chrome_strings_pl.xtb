@@ -65,6 +65,7 @@
 <translation id="1953553007165777902">Pobieram… Pozostało: <ph name="MINUTE" /> min</translation>
 <translation id="1982647487457769627">Chrome działa na różnych platformach, dzięki czemu możesz korzystać z tych samych funkcji niezależnie od urządzenia</translation>
 <translation id="2001586581944147178">Utrudnij osobom mającym dostęp do Twojego ruchu internetowego sprawdzanie, jakie strony odwiedzasz. Do wyszukiwania adresu IP witryny w systemie nazw domenowych (DNS) Chrome używa bezpiecznego połączenia.</translation>
+<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{To rozszerzenie nie jest już obsługiwane. Chrome zaleca jego usunięcie.}few{Te rozszerzenia nie są już obsługiwane. Chrome zaleca ich usunięcie.}many{Te rozszerzenia nie są już obsługiwane. Chrome zaleca ich usunięcie.}other{Te rozszerzenia nie są już obsługiwane. Chrome zaleca ich usunięcie.}}</translation>
 <translation id="2018528049276128029">Każdy profil zawiera własne dane Chrome, takie jak zakładki, historia, hasła i inne</translation>
 <translation id="2018879682492276940">Nie udało się zainstalować. Spróbuj ponownie.</translation>
 <translation id="207902854391093810">Gdy testy są włączone, w ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chrome o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>

@@ -3365,6 +3365,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3441663102605358937">Connectez-vous de nouveau à <ph name="ACCOUNT" /> pour valider ce compte</translation>
 <translation id="3441824746233675597">Faites en sorte qu'il soit plus difficile pour les personnes ayant accès à votre trafic Internet de voir quels sites vous consultez. <ph name="PRODUCT_NAME" /> utilise une connexion sécurisée pour rechercher l'adresse IP d'un site dans le système de noms de domaine (DNS).</translation>
 <translation id="3442674350323953953">Autorisez Google à utiliser vos données matérielles pour contribuer à améliorer <ph name="DEVICE_OS" />. Si vous refusez, ces données seront quand même envoyées à Google pour savoir quelles mises à jour fournir, mais elles ne seront pas stockées ni utilisées autrement.</translation>
+<translation id="3443545121847471732">Saisissez un code à six chiffres</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> : délai dépassé</translation>
 <translation id="3443754338602062261">Vous disposez déjà de mots de passe pour ces comptes dans votre <ph name="BRAND" />. Si vous choisissez d'importer l'un des mots de passe ci-dessous, il remplacera le mot de passe existant.</translation>
 <translation id="344449859752187052">Cookies tiers bloqués</translation>
@@ -7845,6 +7846,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6790497603648687708">Ajout de l'extension <ph name="EXTENSION_NAME" /> effectué à distance</translation>
 <translation id="6790820461102226165">Ajouter un profil utilisateur…</translation>
+<translation id="6793610798874309813">Votre code doit comporter au moins quatre caractères</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Si votre clé d'accès pour <ph name="APP_NAME" /> est sur une clé de sécurité USB, insérez-la et appuyez dessus maintenant</translation>
 <translation id="679486139907144816">Pour vous connecter à ce site avec une clé d'accès, vous devez activer Windows Hello dans les paramètres. Ensuite, revenez sur ce site et réessayez.</translation>
@@ -10838,7 +10840,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8972513834460200407">Vérifiez auprès de votre administrateur réseau que le pare-feu ne bloque pas les téléchargements effectués depuis les serveurs Google.</translation>
 <translation id="8973263196882835828">&amp;Activer les Sous-titres instantanés</translation>
 <translation id="8973557916016709913">Supprimer le niveau de zoom</translation>
-<translation id="8973596347849323817">Vous pouvez personnaliser cet appareil en fonction de vos besoins. Il est possible de modifier ces fonctionnalités d'accessibilité ultérieurement dans les paramètres.</translation>
+<translation id="8973596347849323817">Vous pouvez personnaliser cet appareil en fonction de vos besoins. Il est possible de modifier ces fonctionnalités d'accessibilité par la suite dans les paramètres.</translation>
 <translation id="897414447285476047">Le fichier de destination est incomplet en raison d'un problème de connexion.</translation>
 <translation id="8974261761101622391">Trouver une alternative pour <ph name="EXTENSION_NAME" /></translation>
 <translation id="897525204902889653">Service de zone de quarantaine</translation>

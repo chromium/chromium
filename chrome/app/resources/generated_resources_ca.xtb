@@ -1024,6 +1024,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1730989807608739928">Desplaça't cap a l'última pestanya</translation>
 <translation id="1731520826054843792">Plantilla de certificat de Microsoft</translation>
 <translation id="1731911755844941020">Enviant sol·licitud....</translation>
+<translation id="1732380773380808394">També obtindràs les contrasenyes i altres dades del teu Compte de Google.</translation>
 <translation id="1734212868489994726">Blau clar</translation>
 <translation id="1734230530703461088">No s'han pogut carregar les extensions dins del límit de temps. Contacta amb l'administrador.</translation>
 <translation id="1734824808160898225">És possible que <ph name="PRODUCT_NAME" /> no pugui actualitzar-se tot sol</translation>
@@ -5240,7 +5241,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4825532258163983651">La clau d'accés no es pot suprimir</translation>
 <translation id="4827283332383516812">Suprimeix la targeta</translation>
 <translation id="4827675678516992122">No s'ha pogut connectar</translation>
-<translation id="4827784381479890589">Millora el corrector ortogràfic del navegador Chrome (el text s'envia a Google per obtenir suggeriments ortogràfics)</translation>
+<translation id="4827784381479890589">Corrector ortogràfic millorat al navegador Chrome (el text s'envia a Google per obtenir suggeriments ortogràfics)</translation>
 <translation id="4827904420700932487">Crea un codi QR d'aquesta imatge</translation>
 <translation id="4827970183019354123">Comprovador d'URL</translation>
 <translation id="4828567746430452681">"<ph name="EXTENSION_NAME" />" ja no s'admet</translation>
@@ -5808,6 +5809,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5247243947166567755">Selecciona <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">El navegador ha fallat abans de completar-se la baixada.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utilitza la teva ubicació per oferir-te contingut local. Per canviar-ho, ves a <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Crea un PIN de recuperació per al gestor de contrasenyes de Google</translation>
 <translation id="5252496130205799136">Vols utilitzar el Compte de Google per desar i emplenar contrasenyes?</translation>
 <translation id="5252653240322147470">El PIN no pot tenir més de <ph name="MAXIMUM" /> dígits</translation>
 <translation id="5253554634804500860">Utilitza <ph name="DEVICE_NAME" /></translation>

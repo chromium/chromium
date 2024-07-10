@@ -1021,6 +1021,7 @@
 <translation id="1730989807608739928">Соңғы қойындыға қарай айналдыру</translation>
 <translation id="1731520826054843792">Microsoft сертификат үлгісі</translation>
 <translation id="1731911755844941020">Сұрау жіберілуде…</translation>
+<translation id="1732380773380808394">Google аккаунтынан құпия сөздер мен басқа ақпаратты алуға болады.</translation>
 <translation id="1734212868489994726">Ашық көк</translation>
 <translation id="1734230530703461088">Уақыт шегінде кеңейтімдер жүктелмеді. Әкімшіге хабарласыңыз.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> өздігінен жаңартыла алмауы мүмкін</translation>
@@ -3361,6 +3362,7 @@
 <translation id="3441663102605358937">Осы аккаунтты растау үшін <ph name="ACCOUNT" /> аккаунтына қайта кіріңіз.</translation>
 <translation id="3441824746233675597">Интернет трафигіңізді пайдалана алатын адамдар қандай сайттарға кіретініңізді көрмейтіндей етіңіз. <ph name="PRODUCT_NAME" /> жүйесі DNS жүйесіндегі сайттың IP мекенжайын іздеу үшін қауіпсіз байланысты пайдаланады.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> жүйесін жақсарту үшін Google-ға жабдық деректерін пайдалануға рұқсат беріңіз. Егер бас тартсаңыз, дұрыс жаңартуларды анықтау үшін Google-ға дерек жіберіле береді, бірақ ол сақталмайды немесе пайдаланылмайды.</translation>
+<translation id="3443545121847471732">6 цифрлық PIN кодын енгізіңіз.</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> уақыты өтіп кетті</translation>
 <translation id="3443754338602062261"><ph name="BRAND" /> ішінде бұл тіркелгілерге арналған құпия сөздеріңіз бұрыннан бар. Төмендегі құпия сөздердің бірін импорттауды таңдасаңыз, ол бұрыннан бар біреуін ауыстырады.</translation>
 <translation id="344449859752187052">Үшінші тарап cookie файлдары блокталған</translation>
@@ -5804,6 +5806,7 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> таңдау</translation>
 <translation id="5249624017678798539">Браузер жүктеу аяқталмасынан бұрын бұзылды.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> жергілікті контентті беру үшін орналасу орны мәліметін пайдаланады. Мұны <ph name="SETTINGS_LINK" /> бөлімінде өзгерте аласыз.</translation>
+<translation id="5251885976619018662">Google Password Manager үшін қалпына келтірудің PIN кодын жасаңыз</translation>
 <translation id="5252496130205799136">Құпия сөздерді сақтау және толтыру үшін Google аккаунтыңызды пайдалану керек пе?</translation>
 <translation id="5252653240322147470">PIN коды <ph name="MAXIMUM" /> таңбадан аз болуы керек</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> пайдалану</translation>
@@ -7835,6 +7838,7 @@
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> қашықтан қосылды</translation>
 <translation id="6790820461102226165">Адам қосу…</translation>
+<translation id="6793610798874309813">PIN коды 4 таңбаға тең болуы не одан асуы керек.</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068"><ph name="APP_NAME" /> кіру кілті USB қауіпсіздік кілтінде болса, салып, оны қазір түртіңіз.</translation>
 <translation id="679486139907144816">Бұл сайтқа кіру кілтімен кіру үшін параметрлерде Windows Hello-ды қосыңыз. Одан кейін осы сайтқа оралып, әрекетті қайталаңыз.</translation>

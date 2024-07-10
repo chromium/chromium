@@ -730,6 +730,17 @@ Si no se establece esta política, los usuarios podrán añadir excepciones para
       Si no se establece esta política, cuando se use un PIN poco seguro, los usuarios recibirán una advertencia, no un error.</translation>
 <translation id="1597684038583138808">Habilitar definición de Respuestas rápidas</translation>
 <translation id="1598258379228800626">Habilitar el resaltado del foco del teclado en la pantalla de inicio de sesión</translation>
+<translation id="1599334938346636409">Esta política controla una etiqueta personalizada que se utiliza para identificar quién ha gestionado un perfil o un navegador.
+
+Esta etiqueta se mostrará en la barra de herramientas.
+
+Si se establece esta política a nivel de navegador, todos los perfiles tendrán esta etiqueta en la barra de herramientas.
+
+Si se establece esta política a nivel de perfil, solo ese perfil tendrá esta etiqueta.
+
+A diferencia de otras políticas, esta política definida a nivel de perfil tiene prioridad sobre una política definida a nivel de navegador.
+
+La etiqueta personalizada no se traducirá.</translation>
 <translation id="1599424828227887013">Habilitar el aislamiento de sitios web específicos en dispositivos Android</translation>
 <translation id="159946228300522107">Si se asigna el valor "Verdadero" a esta política, Chrome maximizará la primera ventana que se muestre al ejecutarse por primera vez.
 
@@ -4217,6 +4228,7 @@ Establecer <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efec
       Si se inhabilita esta política o no se le asigna ningún valor, el modo avanzado de carga de la batería quedará desactivado.
 
       Los usuarios no podrán modificar este ajuste.</translation>
+<translation id="4307479555111916927">Definir una etiqueta de empresa personalizada</translation>
 <translation id="4309091698378414920">Habilitar el resaltado del cursor de texto</translation>
 <translation id="4311141497190183490">Si se asigna el valor 1 a esta política, los sitios web podrán hacer un seguimiento de la ubicación física de los usuarios de forma predeterminada. Si se le asigna el valor 2, se bloqueará este seguimiento de forma predeterminada. Puedes configurar esta política para que pregunte siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios.
 
@@ -4627,6 +4639,19 @@ Si no se establece la política, los usuarios podrán cambiar la lista de aplica
 Establecer <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efecto si se le asigna el valor False a <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />.</translation>
 <translation id="4638906910792947645">Habilitar encuestas en el producto</translation>
 <translation id="4641557638919545432">Se habilitará la sintaxis obsoleta anterior.</translation>
+<translation id="464549601667073177">La URL de una imagen que se usará como insignia de la empresa en el perfil. La URL debe dirigir a una imagen.
+
+Esta insignia se mostrará en la barra de herramientas.
+
+Si se establece esta política a nivel de navegador, todos los perfiles tendrán este logotipo en la barra de herramientas.
+
+Si se establece esta política a nivel de perfil, solo ese perfil tendrá este logotipo.
+
+Si no se define esta política, se mostrará el icono predeterminado de un edificio.
+
+Si se produce un error al intentar obtener y mostrar la imagen, se mostrará el icono predeterminado de un edificio.
+
+A diferencia de otras políticas, esta política definida a nivel de perfil tiene prioridad sobre una política definida a nivel de navegador.</translation>
 <translation id="4646626362889216307">Si se establece la política, se permitirá la combinación de las políticas seleccionadas cuando procedan de fuentes distintas, con los mismos permisos y el mismo nivel. Esta combinación está en las claves de primer nivel del diccionario de cada fuente. La clave procedente de la fuente con más prioridad prevalecerá.
 
       Usa el carácter comodín "*" para permitir la combinación de todas las políticas de diccionarios admitidas.

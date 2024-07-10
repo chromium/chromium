@@ -3380,6 +3380,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3441663102605358937">Skráðu þig aftur inn á <ph name="ACCOUNT" /> til að staðfesta þennan reikning</translation>
 <translation id="3441824746233675597">Gerðu fólki með aðgang að netumferðinni þinni erfiðara fyrir að sjá hvaða vefsvæði þú skoðar. <ph name="PRODUCT_NAME" /> notar örugga tengingu til að finna IP-tölu vefsvæðis í nafnakerfi léna (DNS).</translation>
 <translation id="3442674350323953953">Leyfa Google að nota vélbúnaðargögnin þín til að bæta <ph name="DEVICE_OS" />. Ef þú hafnar því verða þessi gögn samt send til Google til að leita að viðeigandi uppfærslum en gögnin verða hvorki vistuð né notuð í nokkrum öðrum tilgangi.</translation>
+<translation id="3443545121847471732">Sláðu inn 6 stafa PIN-númer</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> rann út á tíma</translation>
 <translation id="3443754338602062261">Þú ert þegar með aðgangsorð fyrir þessa reikninga í <ph name="BRAND" />. Ef þú velur að flytja inn eitthvert aðgangsorðanna hér að neðan mun það koma í stað fyrirliggjandi aðgangsorðs.</translation>
 <translation id="344449859752187052">Lokað fyrir fótspor þriðju aðila</translation>
@@ -7860,6 +7861,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> var bætt við með fjartengingu</translation>
 <translation id="6790820461102226165">Bæta notanda við...</translation>
+<translation id="6793610798874309813">PIN-númerið getur verið 4 stafir eða lengra</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Ef aðgangslykillinn þinn fyrir <ph name="APP_NAME" /> er á USB-öryggislykli skaltu stinga honum inn og virkja lykilinn</translation>
 <translation id="679486139907144816">Til að geta skráð þig inn á þetta vefsvæði með aðgangslykli þarftu að kveikja á Windows Hello í stillingunum. Komdu svo aftur á þetta vefsvæði og reyndu aftur.</translation>

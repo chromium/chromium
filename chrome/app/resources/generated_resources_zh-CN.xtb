@@ -1019,6 +1019,7 @@
 <translation id="1730989807608739928">滚动至最后一个标签页</translation>
 <translation id="1731520826054843792">Microsoft 证书模板</translation>
 <translation id="1731911755844941020">正在发送请求...</translation>
+<translation id="1732380773380808394">您还可以从您的 Google 账号中获取密码等信息。</translation>
 <translation id="1734212868489994726">浅蓝色</translation>
 <translation id="1734230530703461088">未能在时限内加载扩展程序。请与您的管理员联系。</translation>
 <translation id="1734824808160898225">“<ph name="PRODUCT_NAME" />”可能无法自动更新</translation>
@@ -3356,6 +3357,7 @@
 <translation id="3441663102605358937">请重新登录 <ph name="ACCOUNT" /> 以验证此账号</translation>
 <translation id="3441824746233675597">让对您的互联网流量有访问权限的用户更难看到您访问的网站。<ph name="PRODUCT_NAME" /> 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
 <translation id="3442674350323953953">允许 Google 使用您的硬件数据协助改进 <ph name="DEVICE_OS" />。如果您拒绝，系统仍会将这些数据发送给 Google 以确定适当的更新，但不会存储或以其他方式使用这些数据。</translation>
+<translation id="3443545121847471732">请输入由 6 位数组成的 PIN 码</translation>
 <translation id="3443744348829035122"><ph name="BRAND" />已超时</translation>
 <translation id="3443754338602062261">您的<ph name="BRAND" />中已有这些账号的密码。如果您选择导入以下某个密码，导入的密码会替换现有密码。</translation>
 <translation id="344449859752187052">已阻止第三方 Cookie</translation>
@@ -5798,6 +5800,7 @@
 <translation id="5247243947166567755">选择“<ph name="BOOKMARK_TITLE" />”</translation>
 <translation id="5249624017678798539">浏览器崩溃了，下载还未完成。</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> 会使用您的位置信息为您提供本地内容。您可以在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
+<translation id="5251885976619018662">为 Google 密码管理工具创建恢复 PIN 码</translation>
 <translation id="5252496130205799136">使用您的 Google 账号保存和填充密码？</translation>
 <translation id="5252653240322147470">PIN 码必须少于 <ph name="MAXIMUM" /> 位数</translation>
 <translation id="5253554634804500860">使用<ph name="DEVICE_NAME" /></translation>
@@ -7829,6 +7832,7 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6790497603648687708">已远程添加“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6790820461102226165">添加用户…</translation>
+<translation id="6793610798874309813">PIN 码必须至少包含 4 个字符</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">如果您要为“<ph name="APP_NAME" />”选择的通行密钥存储在 USB 安全密钥上，请立即插入并轻触该安全密钥</translation>
 <translation id="679486139907144816">若要使用通行密钥登录此网站，您需在“设置”中开启 Windows Hello。然后，返回到此网站上重试。</translation>

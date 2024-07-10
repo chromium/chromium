@@ -94,6 +94,7 @@
 <translation id="2554739539410784893">Chromium 正在嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="2560420686485554789">Chromium 需要儲存空間存取權，才能下載檔案</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
+<translation id="2576118232315942160">如要在裝置上使用你的密碼和其他資料，請登入 Chromium</translation>
 <translation id="2583187216237139145">凡是在使用這個資料夾期間產生的 Chromium 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，工作資料夾管理員皆可予以移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">繼續使用 Chromium</translation>
 <translation id="259935314519650377">無法快取下載的安裝程式，錯誤碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
@@ -468,6 +469,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8357820681460164151">如要透過所有裝置存取你的 Chromium 瀏覽器資料，請登入並開啟同步功能</translation>
 <translation id="8360718212975266891">如要取得日後的 Chromium 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 8。</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
+<translation id="8372327902843331129">如要在裝置上使用你的密碼和其他資料，請登入 Chromium。登入後，這個密碼就會儲存到 Google 帳戶。</translation>
 <translation id="837460953767177950">接著，你必須重新啟動 Chromium。</translation>
 <translation id="8401454788024434101">這項擴充功能已由開發人員取消發布，可能不安全。請從 Chromium 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>

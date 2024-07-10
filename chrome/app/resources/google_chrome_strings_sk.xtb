@@ -179,6 +179,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3396977131400919238">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Google Chrome znova.</translation>
 <translation id="3428747202529429621">Chráni vás v Chrome a môže zlepšiť zabezpečenie v ďalších aplikáciách Google, keď sa prihlásite</translation>
 <translation id="3434246496373299699">Keď sa prihlásite pomocou účtu Google, Chrome môže skontrolovať vaše heslá</translation>
+<translation id="3438681572027105609">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do Chromu</translation>
 <translation id="3450887623636316740">Tento súbor môže byť nebezpečný<ph name="LINE_BREAK" />Ak poskytnete heslo, Chrome môže tento stiahnutý súbor skontrolovať za vás. Informácie o danom súbore sa odošlú Bezpečnému prehliadaniu Google, ale jeho obsah aj heslo zostanú vo vašom zariadení.</translation>
 <translation id="3451115285585441894">Prebieha pridávanie do prehliadača Chrome...</translation>
 <translation id="345171907106878721">Pridajte si účet do prehliadača Chrome</translation>
@@ -218,6 +219,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4035053306113201399">Aktualizácia sa použije po reštartovaní systému Chrome OS.</translation>
 <translation id="4050175100176540509">V najnovšej verzii sú k dispozícii dôležité vylepšenia zabezpečenia a nové funkcie.</translation>
 <translation id="4053720452172726777">Prispôsobiť a ovládať Google Chrome</translation>
+<translation id="408393047846373801">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do Chromu. Toto heslo bude uložené do vášho účtu Google, keď sa prihlásite.</translation>
 <translation id="4084404300720192944">Ak chcete zdieľať okno, povoľte Chromu nahrávať obrazovku v predvoľbách systému.</translation>
 <translation id="4106587138345390261">Chrome skúma nové funkcie, ktoré umožňujú webom zobraziť rovnaké prostredie prehliadania s využitím menšieho množstva vašich údajov</translation>
 <translation id="4110895483821904099">Nastavte si nový profil Chromu</translation>
@@ -464,6 +466,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome toto sťahovanie zablokoval, pretože ste vypli Bezpečné prehliadanie a súbor sa nedá overiť</translation>
 <translation id="7655455401911432608">Vaša história prehliadania, teda záznam webov, ktoré ste navštívili pomocou Chromu v tomto zariadení.</translation>
+<translation id="7655472416356262023">Odstrániť účet z Chromu</translation>
 <translation id="7661924425853052955">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ďalšie (<ph name="COUNT" />).</translation>
 <translation id="7668816516367091728">Vykonávajte úlohy, napríklad preklad, výpočty a ďalšie, priamo na paneli s adresou</translation>
 <translation id="7670287553302121848">Účet Chrome vyžaduje opätovné overenie</translation>

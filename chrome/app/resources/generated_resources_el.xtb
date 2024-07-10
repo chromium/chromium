@@ -1033,6 +1033,7 @@
 <translation id="1730989807608739928">Κύλιση προς την τελευταία καρτέλα</translation>
 <translation id="1731520826054843792">Πρότυπο πιστοποιητικού της Microsoft</translation>
 <translation id="1731911755844941020">Αποστολή αίτησης...</translation>
+<translation id="1732380773380808394">Θα έχετε επίσης πρόσβαση στους κωδικούς πρόσβασής σας και σε άλλα στοιχεία μέσω του Λογαριασμού σας Google.</translation>
 <translation id="1734212868489994726">Ανοιχτό μπλε</translation>
 <translation id="1734230530703461088">Αποτυχία φόρτωσης των επεκτάσεων εντός του χρονικού ορίου. Επικοινωνήστε με τον διαχειριστή.</translation>
 <translation id="1734824808160898225">Μπορεί να μην είναι δυνατή η αυτόματη ενημέρωση του <ph name="PRODUCT_NAME" /></translation>
@@ -5823,6 +5824,7 @@
 <translation id="5247243947166567755">Επιλέξτε <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Διακόπηκε η λειτουργία του προγράμματος περιήγησης πριν από την ολοκλήρωση της λήψης.</translation>
 <translation id="5250372599208556903">Το <ph name="SEARCH_ENGINE_NAME" /> χρησιμοποιεί την τοποθεσία σας για να παρέχει τοπικό περιεχόμενο. Μπορείτε να αλλάξετε αυτήν τη ρύθμιση από το μενού <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Δημιουργία PIN ανάκτησης για τη Διαχείριση κωδικών πρόσβασης Google</translation>
 <translation id="5252496130205799136">Χρήση του Λογαριασμού σας Google για την αποθήκευση και τη συμπλήρωση κωδικών πρόσβασης;</translation>
 <translation id="5252653240322147470">Το PIN δεν πρέπει να είναι μεγαλύτερο από <ph name="MAXIMUM" /> ψηφία</translation>
 <translation id="5253554634804500860">Χρήση <ph name="DEVICE_NAME" /></translation>

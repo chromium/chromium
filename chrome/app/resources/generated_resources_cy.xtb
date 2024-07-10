@@ -1036,6 +1036,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1730989807608739928">Sgrolio tuag at y tab olaf</translation>
 <translation id="1731520826054843792">Templed Tystysgrif Microsoft</translation>
 <translation id="1731911755844941020">Wthi'n anfon cais…</translation>
+<translation id="1732380773380808394">Byddwch hefyd yn cael eich cyfrineiriau a rhagor o'ch Cyfrif Google.</translation>
 <translation id="1734212868489994726">Glas golau</translation>
 <translation id="1734230530703461088">Wedi methu â llwytho estyniadau o fewn y terfyn amser. Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="1734824808160898225">Mae'n bosib na fydd <ph name="PRODUCT_NAME" /> yn gallu diweddaru ei hun</translation>
@@ -5826,6 +5827,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5247243947166567755">Dewis <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Gwnaeth y porwr dorri cyn i'r lawrlwythiad gwblhau.</translation>
 <translation id="5250372599208556903">Mae <ph name="SEARCH_ENGINE_NAME" /> yn defnyddio'ch lleoliad i roi cynnwys lleol i chi. Gallwch newid hyn yn <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Creu PIN adfer ar gyfer Rheolwr Cyfrineiriau Google</translation>
 <translation id="5252496130205799136">Defnyddiwch eich Cyfrif Google i gadw a llenwi cyfrineiriau?</translation>
 <translation id="5252653240322147470">Rhaid i PIN fod yn llai na <ph name="MAXIMUM" /> o ddigidau</translation>
 <translation id="5253554634804500860">Defnyddio <ph name="DEVICE_NAME" /></translation>

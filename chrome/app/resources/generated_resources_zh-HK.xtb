@@ -1032,6 +1032,7 @@
 <translation id="1730989807608739928">碌去最後一個分頁</translation>
 <translation id="1731520826054843792">Microsoft 憑證範本</translation>
 <translation id="1731911755844941020">正在傳送要求…</translation>
+<translation id="1732380773380808394">你也可以存取 Google 帳戶的密碼和其他資料。</translation>
 <translation id="1734212868489994726">淺藍色</translation>
 <translation id="1734230530703461088">無法在時限內載入擴充程式，請聯絡您的管理員。</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> 可能無法自動更新</translation>
@@ -3376,7 +3377,7 @@
 <translation id="3441663102605358937">請再次登入 <ph name="ACCOUNT" /> 以驗證此帳戶</translation>
 <translation id="3441824746233675597">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。<ph name="PRODUCT_NAME" /> 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
 <translation id="3442674350323953953">允許 Google 使用硬件資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，此資料仍會傳送至 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。</translation>
-<translation id="3443545121847471732">輸入 6 位數 PIN 碼</translation>
+<translation id="3443545121847471732">請輸入 6 位數的 PIN</translation>
 <translation id="3443744348829035122">「<ph name="BRAND" />」逾時</translation>
 <translation id="3443754338602062261">您的「<ph name="BRAND" />」中已有這些帳戶的密碼。如果選擇匯入以下其中一個密碼，將會取代現有密碼。</translation>
 <translation id="344449859752187052">已封鎖第三方 Cookie</translation>
@@ -5813,6 +5814,7 @@
 <translation id="5247243947166567755">揀 <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">瀏覽器在下載尚未完成時當機。</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> 會使用您的位置資料，為您提供本地內容。您可在<ph name="SETTINGS_LINK" />中變更此設定。</translation>
+<translation id="5251885976619018662">建立「Google 密碼管理工具」的復原 PIN</translation>
 <translation id="5252496130205799136">要使用您的 Google 帳戶儲存和填入密碼嗎？</translation>
 <translation id="5252653240322147470">PIN 不能多於 <ph name="MAXIMUM" /> 位數字</translation>
 <translation id="5253554634804500860">使用<ph name="DEVICE_NAME" /></translation>
@@ -7845,7 +7847,7 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6790497603648687708">已從遠端新增 <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">新增使用者…</translation>
-<translation id="6793610798874309813">PIN 碼長度至少要有 4 個半形字元</translation>
+<translation id="6793610798874309813">PIN 可以使用 4 個或更多字元</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">如果 <ph name="APP_NAME" /> 的密鑰存放在 USB 安全密鑰上，請立即插入並安全密鑰</translation>
 <translation id="679486139907144816">如要使用密鑰登入此網站，您需要在設定中開啟 Windows Hello，然後返回此網站並再試一次。</translation>

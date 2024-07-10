@@ -1033,6 +1033,7 @@
 <translation id="1730989807608739928">마지막 탭으로 스크롤</translation>
 <translation id="1731520826054843792">Microsoft 인증서 템플릿</translation>
 <translation id="1731911755844941020">요청하는 중...</translation>
+<translation id="1732380773380808394">Google 계정에서 비밀번호 등의 항목을 가져오게 됩니다.</translation>
 <translation id="1734212868489994726">연한 파란색</translation>
 <translation id="1734230530703461088">제한 시간 내에 확장 프로그램을 로드할 수 없습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" />에서 자동 업데이트를 수행하지 못할 수 있습니다</translation>
@@ -5824,6 +5825,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> 선택</translation>
 <translation id="5249624017678798539">다운로드가 완료되기 전에 브라우저가 종료되었습니다.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" />에서 내 위치를 사용하여 지역에 맞는 콘텐츠를 제공합니다. 이 설정은 <ph name="SETTINGS_LINK" />에서 변경할 수 있습니다.</translation>
+<translation id="5251885976619018662">Google 비밀번호 관리자에 사용할 복구 PIN을 만드세요</translation>
 <translation id="5252496130205799136">비밀번호 저장 및 자동 완성에 Google 계정을 사용하시겠습니까?</translation>
 <translation id="5252653240322147470">PIN은 <ph name="MAXIMUM" />자리 미만이어야 합니다.</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> 사용</translation>

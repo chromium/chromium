@@ -3366,6 +3366,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3441663102605358937">Ověřte účet <ph name="ACCOUNT" /> tím, že se k němu znovu přihlásíte</translation>
 <translation id="3441824746233675597">Zajistěte, aby pro lidi s přístupem k vašemu internetovému provozu bylo obtížnější zjistit, které weby navštěvujete. K vyhledání IP adresy webu v systému názvů domén (DNS) používá <ph name="PRODUCT_NAME" /> zabezpečené připojení.</translation>
 <translation id="3442674350323953953">Umožnit Googlu používat data o hardwaru k vylepšování systému <ph name="DEVICE_OS" />. Pokud odmítnete, tato data se přesto do Googlu budou odesílat, aby bylo možné vybrat správné aktualizace, ale nebudou se ukládat ani používat k jiným účelům.</translation>
+<translation id="3443545121847471732">Zadejte šesticiferný PIN</translation>
 <translation id="3443744348829035122">Časový limit <ph name="BRAND" /> vypršel</translation>
 <translation id="3443754338602062261">Hesla pro tyto účty již ve svém úložišti <ph name="BRAND" /> máte. Pokud importujete některá z níže uvedených hesel, nahradí ta stávající.</translation>
 <translation id="344449859752187052">Soubory cookie třetích stran jsou blokovány</translation>
@@ -7843,6 +7844,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6790497603648687708">Rozšíření <ph name="EXTENSION_NAME" /> bylo přidáno vzdáleně</translation>
 <translation id="6790820461102226165">Přidat uživatele...</translation>
+<translation id="6793610798874309813">PIN může mít čtyři nebo více znaků</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Pokud přístupový klíč pro <ph name="APP_NAME" /> máte na bezpečnostním klíči USB, vložte ho a dotkněte se ho</translation>
 <translation id="679486139907144816">K přihlášení na tento web pomocí přístupové fráze je potřeba zapnout v nastavení službu Windows Hello. Poté se na tento web vraťte a zkuste to znovu.</translation>

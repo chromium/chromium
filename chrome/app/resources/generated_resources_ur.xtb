@@ -1024,6 +1024,7 @@
 <translation id="1730989807608739928">آخری ٹیب کی طرف اسکرول کریں</translation>
 <translation id="1731520826054843792">‏Microsoft سرٹیفیکیٹ کی تمثیل</translation>
 <translation id="1731911755844941020">درخواست بھیجی جا رہی ہے…</translation>
+<translation id="1732380773380808394">‏آپ کو اپنے Google اکاؤنٹ سے آپ کے پاس ورڈز وغیرہ بھی حاصل ہوں گے۔</translation>
 <translation id="1734212868489994726">ہلکا نیلا</translation>
 <translation id="1734230530703461088">وقت کی حد کے اندر ایکسٹینشنز لوڈ کرنے میں ناکام۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="1734824808160898225">ممکن ہے کہ <ph name="PRODUCT_NAME" /> اپنے آپ کو اپ ڈیٹ نہ رکھ سکے</translation>
@@ -3366,6 +3367,7 @@
 <translation id="3441663102605358937">اس اکاؤنٹ کی توثیق کرنے کیلئے <ph name="ACCOUNT" /> میں دوبارہ سائن ان کریں</translation>
 <translation id="3441824746233675597">‏آپ کے انٹرنیٹ ٹریفک تک رسائی والے لوگوں کے لیے یہ دیکھنا مشکل بنائیں کہ آپ کون سی سائٹس ملاحظہ کرتے ہیں۔ <ph name="PRODUCT_NAME" /> ‏DNS (ڈومین ناموں کے نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے ایک محفوظ کنکشن کا استعمال کرتا ہے۔</translation>
 <translation id="3442674350323953953">‏<ph name="DEVICE_OS" /> کو بہتر بنانے میں مدد کے لیے Google کو اپنا ہارڈویئر ڈیٹا استعمال کرنے دیں۔ اگر آپ مسترد کرتے ہیں تو یہ ڈیٹا اب بھی Google کو بھیجا جاتا ہے تاکہ مناسب اپ ڈیٹس کا تعین کیا جا سکے، لیکن اسے اسٹور یا استعمال نہیں کیا جاتا۔</translation>
+<translation id="3443545121847471732">‏6 ہندسے والا PIN درج کریں</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> ٹائم آؤٹ ہو گيا</translation>
 <translation id="3443754338602062261">آپ کے پاس آپ کے <ph name="BRAND" /> میں پہلے سے ہی ان اکاؤنٹس کے پاس ورڈ موجود ہیں۔ اگر آپ ذیل میں سے کسی ایک پاس ورڈ کو درآمد کرنے کا انتخاب کرتے ہیں تو یہ موجودہ پاس ورڈ کو تبدیل کر دے گا۔</translation>
 <translation id="344449859752187052">فریق ثالث کوکیز کو مسدود کر دیا گیا</translation>
@@ -5809,6 +5811,7 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> منتخب کریں</translation>
 <translation id="5249624017678798539">ڈاؤن لوڈ مکمل ہونے سے پہلے براؤزر کریش ہو گیا۔</translation>
 <translation id="5250372599208556903">آپ کو مقامی مواد دینے کے لیے <ph name="SEARCH_ENGINE_NAME" /> آپ کے مقام کا استعمال کرتا ہے۔ آپ <ph name="SETTINGS_LINK" /> میں اسے تبدیل کر سکتے ہیں۔</translation>
+<translation id="5251885976619018662">‏‫Google پاس ورڈ مینیجر کے لیے ایک بازیابی PIN تخلیق کریں</translation>
 <translation id="5252496130205799136">‏پاس ورڈز کو محفوظ کرنے اور بھرنے کے لئے اپنے Google اکاؤنٹ کا استعمال کریں؟</translation>
 <translation id="5252653240322147470">‏PIN کا <ph name="MAXIMUM" /> ہندسے سے کم ہونا ضروری ہے</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> استعمال کریں</translation>
@@ -7842,6 +7845,7 @@
 <translation id="6790428901817661496">چلائیں</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> کو دور سے شامل کر دیا گیا</translation>
 <translation id="6790820461102226165">شخص کو شامل کریں…</translation>
+<translation id="6793610798874309813">‏آپ کا PIN ‏4 حروف یا اس سے زیادہ کا ہو سکتا ہے</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">‏اگر <ph name="APP_NAME" /> کے لیے آپ کی پاس کی USB سیکیورٹی کلید پر ہے تو اسے ابھی درج کریں اور ٹچ کریں</translation>
 <translation id="679486139907144816">‏پاس کی کے ساتھ اس سائٹ میں سائن ان کرنے کے لیے، آپ کو ترتیبات میں Windows Hello کو آن کرنا ہوگا۔ پھر اس سائٹ پر واپس جائیں اور دوبارہ کوشش کریں۔</translation>

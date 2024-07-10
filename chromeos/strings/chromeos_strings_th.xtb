@@ -226,6 +226,7 @@
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2082932131694554252">แป้นบนแป้นพิมพ์ที่กำหนดแล้ว</translation>
 <translation id="2085089206770112532">ลดความสว่างของหน้าจอ</translation>
+<translation id="2085876078937250610">บันทึก…</translation>
 <translation id="2086091080968010660">การเปลี่ยนแปลงตามเวลาอาจไม่ถูกต้อง เปิดการเข้าถึงตำแหน่งของระบบในการตั้งค่า</translation>
 <translation id="2102231663024125441">การแก้ไขข้อความ</translation>
 <translation id="2102648867808308635">ช่วยฉันอ่านหน้านี้</translation>
@@ -768,6 +769,7 @@
 <translation id="5180712487038406644">ชัดเจน</translation>
 <translation id="5190187232518914472">ระลึกถึงความทรงจำดีๆ ที่คุณโปรดปราน หากต้องการเพิ่มหรือแก้ไขอัลบั้ม ให้ไปที่ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="5212593641110061691">Tabloid</translation>
+<translation id="5220549459260334974">ดาวน์โหลดแล้ว <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="522307662484862935">อย่าใส่อีเมล</translation>
 <translation id="5227902338748591677">กำหนดเวลาธีมมืด</translation>

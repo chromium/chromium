@@ -74,6 +74,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="2174917724755363426">No se ha completado la instalación. ¿Seguro que quieres cancelarla?</translation>
 <translation id="2185166961232948079">Chromium, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Error de comprobación de actualizaciones: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2199210295479376551">Eliminar cuenta de Chromium</translation>
 <translation id="2210682093923538346">Sitio peligroso. Chromium ha eliminado las notificaciones.</translation>
 <translation id="2240214816234246077">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Si compartes un ordenador, tus amigos y familiares pueden navegar de forma independiente y configurar Chromium a su gusto.</translation>
@@ -95,6 +96,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="2554739539410784893">Chromium está intentando reemplazar las contraseñas. Introduce tu contraseña de Windows para permitirlo.</translation>
 <translation id="2560420686485554789">Chromium necesita acceso de almacenamiento para descargar archivos</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
+<translation id="2576118232315942160">Para acceder a tus contraseñas y más en todos tus dispositivos, inicia sesión en Chromium</translation>
 <translation id="2583187216237139145">El administrador del perfil de trabajo puede quitar cualquier dato de Chromium generado durante el uso de este perfil, como los marcadores, el historial, las contraseñas y otros ajustes. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="259935314519650377">No se ha podido guardar en caché el instalador descargado. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -469,6 +471,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8357820681460164151">Para acceder a tus elementos del navegador de Chromium en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
 <translation id="8360718212975266891">Para recibir futuras actualizaciones de Chromium, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
+<translation id="8372327902843331129">Para obtener tus contraseñas y más en todos tus dispositivos, inicia sesión en Chromium. Esta contraseña se guardará en tu cuenta de Google cuando inicies sesión.</translation>
 <translation id="837460953767177950">Después, tendrás que reiniciar Chromium.</translation>
 <translation id="8401454788024434101">El desarrollador de esta extensión ha anulado su publicación y la extensión podría no ser segura. Elimínala de Chromium para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en el próximo día}other{Reinicia Chromium en los próximos # días}}</translation>

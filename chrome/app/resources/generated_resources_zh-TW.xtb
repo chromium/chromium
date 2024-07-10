@@ -1024,6 +1024,7 @@
 <translation id="1730989807608739928">捲動至最後一個分頁</translation>
 <translation id="1731520826054843792">Microsoft 憑證範本</translation>
 <translation id="1731911755844941020">正在傳送要求...</translation>
+<translation id="1732380773380808394">登入之後，你也可以使用 Google 帳戶中的密碼和其他資料。</translation>
 <translation id="1734212868489994726">淺藍色</translation>
 <translation id="1734230530703461088">無法在時限內載入擴充功能，請與系統管理員聯絡。</translation>
 <translation id="1734824808160898225">「<ph name="PRODUCT_NAME" />」可能無法自動更新</translation>
@@ -5806,6 +5807,7 @@
 <translation id="5247243947166567755">請選取「<ph name="BOOKMARK_TITLE" />」</translation>
 <translation id="5249624017678798539">瀏覽器在下載尚未完成時當機。</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> 會使用你的位置資訊，為你提供當地的相關內容。你可以在 [<ph name="SETTINGS_LINK" />] 中變更這項設定。</translation>
+<translation id="5251885976619018662">設定 Google 密碼管理工具的復原 PIN 碼</translation>
 <translation id="5252496130205799136">要使用你的 Google 帳戶儲存及填入密碼嗎？</translation>
 <translation id="5252653240322147470">PIN 不可多於 <ph name="MAXIMUM" /> 碼</translation>
 <translation id="5253554634804500860">使用 <ph name="DEVICE_NAME" /></translation>

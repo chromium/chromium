@@ -1034,6 +1034,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1730989807608739928">Rolar até a última guia</translation>
 <translation id="1731520826054843792">Modelo de certificado da Microsoft</translation>
 <translation id="1731911755844941020">Enviando solicitação...</translation>
+<translation id="1732380773380808394">Você também terá acesso a senhas e muito mais da sua Conta do Google.</translation>
 <translation id="1734212868489994726">Azul-claro</translation>
 <translation id="1734230530703461088">Falha ao carregar extensões dentro do limite de tempo. Entre em contato com o administrador.</translation>
 <translation id="1734824808160898225">Talvez o <ph name="PRODUCT_NAME" /> não consiga se manter atualizado</translation>
@@ -5257,7 +5258,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4825532258163983651">Falha ao excluir a senha de acesso</translation>
 <translation id="4827283332383516812">Excluir cartão</translation>
 <translation id="4827675678516992122">Não foi possível conectar</translation>
-<translation id="4827784381479890589">Verificação ortográfica melhorada no navegador Chrome (o texto é enviado ao Google para sugestões de ortografia)</translation>
+<translation id="4827784381479890589">Verificação ortográfica aprimorada no navegador Chrome (o texto é enviado ao Google para sugestões de ortografia)</translation>
 <translation id="4827904420700932487">Criar QR code para esta imagem</translation>
 <translation id="4827970183019354123">Verificador de URL</translation>
 <translation id="4828567746430452681">Não há mais suporte para a extensão <ph name="EXTENSION_NAME" /></translation>
@@ -5824,6 +5825,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5247243947166567755">Selecionar <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">O navegador travou antes do término do download.</translation>
 <translation id="5250372599208556903">O <ph name="SEARCH_ENGINE_NAME" /> usa sua localização para que você tenha acesso a conteúdo local. É possível alterar isso em <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Crie um PIN de recuperação para o Gerenciador de senhas do Google</translation>
 <translation id="5252496130205799136">Usar sua Conta do Google para salvar e preencher senhas?</translation>
 <translation id="5252653240322147470">O PIN deve ter menos de <ph name="MAXIMUM" /> dígitos</translation>
 <translation id="5253554634804500860">Usar o <ph name="DEVICE_NAME" /></translation>

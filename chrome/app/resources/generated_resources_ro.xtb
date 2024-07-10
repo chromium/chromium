@@ -1025,6 +1025,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1730989807608739928">Derulează spre ultima filă</translation>
 <translation id="1731520826054843792">Șablon de certificat Microsoft</translation>
 <translation id="1731911755844941020">Se trimite solicitarea...</translation>
+<translation id="1732380773380808394">În plus, vei accesa parolele și multe altele din Contul Google.</translation>
 <translation id="1734212868489994726">Albastru deschis</translation>
 <translation id="1734230530703461088">Extensiile nu s-au încărcat astfel încât să respecte limita de timp. Contactează administratorul.</translation>
 <translation id="1734824808160898225">Este posibil ca <ph name="PRODUCT_NAME" /> să nu se poată actualiza</translation>
@@ -5810,6 +5811,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5247243947166567755">Selectează <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Browserul s-a blocat înainte de finalizarea descărcării.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> îți folosește locația pentru a-ți oferi conținut local. Poți schimba această setare din <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Creează un cod PIN de recuperare pentru Managerul de parole Google</translation>
 <translation id="5252496130205799136">Folosești Contul Google pentru a salva și a completa parole?</translation>
 <translation id="5252653240322147470">Codul PIN trebuie să conțină maximum <ph name="MAXIMUM" /> cifre</translation>
 <translation id="5253554634804500860">Folosește <ph name="DEVICE_NAME" /></translation>

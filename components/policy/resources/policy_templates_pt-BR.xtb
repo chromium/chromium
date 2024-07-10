@@ -747,6 +747,17 @@ Se esta política não for definida, o usuário poderá adicionar exceções par
       Se a política não for definida, os usuários vão receber um aviso em vez de uma mensagem de erro quando o PIN for fraco.</translation>
 <translation id="1597684038583138808">Ativar a definição das Respostas rápidas</translation>
 <translation id="1598258379228800626">Ativar o destaque de foco do teclado na tela de login</translation>
+<translation id="1599334938346636409">Esta política controla um rótulo personalizado usado para identificar quem gerencia um perfil ou navegador.
+
+Esse rótulo vai aparecer na barra de ferramentas.
+
+Se a política for definida no nível do navegador, todos os perfis terão esse rótulo na barra de ferramentas.
+
+Se ela for definida no nível perfil, somente esse perfil terá o rótulo.
+
+Ao contrário de outras políticas, a definida no nível do perfil tem precedência em relação a uma definida no nível do navegador.
+
+O rótulo personalizado não será traduzido.</translation>
 <translation id="1599424828227887013">Ativa o isolamento de sites para origens específicas em dispositivos Android</translation>
 <translation id="159946228300522107">Se a política for definida como verdadeira, o Chrome maximizará a primeira janela exibida durante a primeira execução.
 
@@ -4375,6 +4386,7 @@ A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá e
       Se a política for desativada ou deixada sem definição, o modo avançado de carregamento da bateria vai ficar desativado.
 
       Os usuários não poderão mudar essa configuração.</translation>
+<translation id="4307479555111916927">Definir um rótulo corporativo personalizado</translation>
 <translation id="4309091698378414920">Ativar destaque do sinal de interpolação</translation>
 <translation id="4311141497190183490">Se a política for definida como 1, os sites poderão rastrear a localização física dos usuários como o estado padrão. Se a política for definida como 2, será negado o rastreamento como padrão. É possível definir a política para perguntar sempre que um site quiser rastrear a localização física dos usuários.
 
@@ -4796,6 +4808,19 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá efeito se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> for definida como falsa.</translation>
 <translation id="4638906910792947645">Ativar pesquisas no produto</translation>
 <translation id="4641557638919545432">A sintaxe antiga descontinuada será ativada.</translation>
+<translation id="464549601667073177">URL de uma imagem que será usada como selo corporativo do perfil. O URL precisa levar a uma imagem.
+
+O selo vai aparecer na barra de ferramentas.
+
+Se a política for definida no navegador, todos os perfis terão esse logotipo na barra de ferramentas.
+
+Se a política for definida no perfil, somente ele terá o logotipo.
+
+Se a política for deixada sem definição, um ícone padrão de edifício vai aparecer.
+
+Se ocorrer um erro ao tentar mostrar a imagem, esse ícone não vai aparecer.
+
+Ao contrário de outras políticas, a definida no nível do perfil tem precedência em relação a uma definida no nível do navegador.</translation>
 <translation id="4646626362889216307">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada origem. A chave da origem de maior prioridade tem precedência.
 
       Use o caractere curinga "*" para permitir a mescla de todas as políticas de dicionário com suporte.

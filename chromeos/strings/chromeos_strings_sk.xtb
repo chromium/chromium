@@ -89,7 +89,7 @@
 <translation id="1432110487435300883">Približný výsledok získate, keď hodnotu <ph name="CATEGORY_TEXT" /> vydelíte číslom <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Automaticky každý mesiac resetuje spotrebu dát vo vybraný deň</translation>
 <translation id="1442433966118452622">Zdroj obrázka</translation>
-<translation id="1445573806602812670">Získanie prepisu nahrávky</translation>
+<translation id="1445573806602812670">Získajte prepis nahrávky</translation>
 <translation id="1446954767133808402">zafír</translation>
 <translation id="1449035143498573192">Otvoriť vo Vyhľadávaní Google</translation>
 <translation id="1451536289672181509">Zariadenie je klávesnica.</translation>
@@ -226,6 +226,7 @@
 <translation id="2080070583977670716">Ďalšie nastavenia</translation>
 <translation id="2082932131694554252">Priradený kláves na klávesnici</translation>
 <translation id="2085089206770112532">Zníženie jasu obrazovky</translation>
+<translation id="2085876078937250610">Uložiť…</translation>
 <translation id="2086091080968010660">Zmeny na základe času nemusia byť presné. Zapnite prístup k polohe systému v nastaveniach.</translation>
 <translation id="2102231663024125441">Úprava textu</translation>
 <translation id="2102648867808308635">Pomôcť s čítaním tejto stránky</translation>
@@ -1279,7 +1280,7 @@
 <translation id="7882501334836096755">Verejný kľúč</translation>
 <translation id="78957024357676568">doľava</translation>
 <translation id="7897043345768902965">chodníkom</translation>
-<translation id="7902285181767404769">Vypnutie zvuku upozornení počas nahrávania</translation>
+<translation id="7902285181767404769">Vypínať zvuk upozornení počas nahrávania</translation>
 <translation id="7903695460270716054">Zvoliť vybraný plagát a obrázky</translation>
 <translation id="7915220255123750251">Spravujte nastavenia názvov prístupových bodov (APN) siete. Názvy prístupových bodov umožňujú nadviazať pripojenie medzi mobilnou sieťou a internetom.</translation>
 <translation id="7936303884198020182">Nenašli sa žiadne servery DNS</translation>

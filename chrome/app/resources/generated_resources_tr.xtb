@@ -3362,6 +3362,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3441663102605358937">Bu hesabı doğrulamak için tekrar <ph name="ACCOUNT" /> hesabında oturum açın</translation>
 <translation id="3441824746233675597">İnternet trafiğinize erişimi olan kişilerin, ziyaret ettiğiniz siteleri görmesini zorlaştırın. <ph name="PRODUCT_NAME" />, DNS'de (Alan Adı Sistemi) bir sitenin IP adresini aramak için güvenli bağlantı kullanır.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> işletim sistemini iyileştirmemize yardımcı olmak için Google'ın donanım verilerinizi kullanmasına izin verin. Reddetmeniz durumunda bu veriler uygun güncellemeleri belirlemek için Google'a gönderilmeye devam eder ancak başka şekilde depolanmaz veya kullanılmaz.</translation>
+<translation id="3443545121847471732">6 basamaklı bir PIN girin</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> zaman aşımına uğradı</translation>
 <translation id="3443754338602062261"><ph name="BRAND" /> hizmetinde bu hesaplar için zaten şifreniz var. Aşağıdaki şifrelerden birini içe aktarmayı seçerseniz bu şifre mevcut şifrenin yerini alır.</translation>
 <translation id="344449859752187052">Üçüncü taraf çerezleri engellendi</translation>
@@ -7840,6 +7841,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> eklentisi uzaktan eklendi</translation>
 <translation id="6790820461102226165">Kişi Ekle...</translation>
+<translation id="6793610798874309813">PIN'iniz 4 veya daha fazla karakterden oluşabilir</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068"><ph name="APP_NAME" /> için geçiş anahtarınız bir USB güvenlik anahtarındaysa şimdi takın ve dokunun</translation>
 <translation id="679486139907144816">Bu sitede geçiş anahtarıyla oturum açmak için ayarlardan Windows Hello'yu etkinleştirmeniz gerekir. Ardından bu siteye geri dönüp tekrar deneyin.</translation>

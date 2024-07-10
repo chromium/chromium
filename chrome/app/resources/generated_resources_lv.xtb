@@ -1026,6 +1026,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1730989807608739928">Ritināt līdz pēdējai cilnei</translation>
 <translation id="1731520826054843792">Microsoft sertifikāta veidne</translation>
 <translation id="1731911755844941020">Notiek pieprasījuma sūtīšana...</translation>
+<translation id="1732380773380808394">Varēsiet arī piekļūt parolēm un citiem datiem no Google konta.</translation>
 <translation id="1734212868489994726">Gaiši zila</translation>
 <translation id="1734230530703461088">Neizdevās ielādēt paplašinājumus noteiktajā laika ierobežojumā. Lūdzu, sazinieties ar administratoru.</translation>
 <translation id="1734824808160898225">Pārlūka <ph name="PRODUCT_NAME" /> automātiskā atjaunināšana, iespējams, nebūs pieejama.</translation>
@@ -3366,6 +3367,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3441663102605358937">Vēlreiz pierakstieties kontā <ph name="ACCOUNT" />, lai verificētu šo kontu</translation>
 <translation id="3441824746233675597">Neļaujiet personām, kurām ir piekļuve jūsu interneta datplūsmai, viegli skatīt jūsu apmeklētās vietnes. <ph name="PRODUCT_NAME" /> izmanto drošu savienojumu, lai meklētu vietnes IP adresi sistēmā DNS (domēnu nosaukumu sistēmā).</translation>
 <translation id="3442674350323953953">Ļaujiet Google izmantot jūsu aparatūras datus, lai palīdzētu uzlabot operētājsistēmu <ph name="DEVICE_OS" />. Ja to neatļausiet, šie dati joprojām tiks nosūtīti uzņēmumam Google, lai noteiktu atbilstošus atjauninājumus, taču netiks saglabāti vai kā citādi izmantoti.</translation>
+<translation id="3443545121847471732">Ievadiet sešciparu PIN</translation>
 <translation id="3443744348829035122">Pakalpojumā “<ph name="BRAND" />” iestājās noildze</translation>
 <translation id="3443754338602062261">Jums jau ir šo kontu paroles pakalpojumā <ph name="BRAND" />. Ja izvēlēsieties importēt kādu no tālāk norādītajām parolēm, tā aizstās esošo paroli.</translation>
 <translation id="344449859752187052">Trešo pušu sīkfaili ir bloķēti</translation>
@@ -5809,6 +5811,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5247243947166567755">Atlasīt vienumu <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Pārlūks avarēja, pirms lejupielāde tika pabeigta.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> izmanto jūsu atrašanās vietu, lai piedāvātu vietējo saturu. Varat to mainīt šeit: <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Atkopšanas PIN izveide Google paroļu pārvaldniekam</translation>
 <translation id="5252496130205799136">Vai vēlaties saglabāt paroles un aizpildīt paroļu laukus, izmantojot Google kontu?</translation>
 <translation id="5252653240322147470">PIN kodā ir jābūt mazāk par <ph name="MAXIMUM" /> cipariem.</translation>
 <translation id="5253554634804500860">Izmantot ierīci <ph name="DEVICE_NAME" /></translation>
@@ -7844,6 +7847,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> tika pievienots attāli</translation>
 <translation id="6790820461102226165">Pievienot lietotāju...</translation>
+<translation id="6793610798874309813">PIN ir jābūt vismaz 4 rakstzīmes garam.</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Ja <ph name="APP_NAME" /> piekļuves atslēga atrodas USB drošības atslēgā, ievietojiet drošības atslēgu un pieskarieties tai tagad</translation>
 <translation id="679486139907144816">Lai varētu pierakstīties šajā vietnē, izmantojot piekļuves atslēgu, iestatījumos ir jāieslēdz tehnoloģija Windows Hello. Pēc tam atgriezieties šajā vietnē un mēģiniet vēlreiz.</translation>

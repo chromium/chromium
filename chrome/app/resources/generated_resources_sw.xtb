@@ -2518,7 +2518,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2783298271312924866">Imepakuliwa</translation>
 <translation id="2783952358106015700">Tumia ufunguo wako wa usalama kwenye <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Kikagua Manenosiri</translation>
-<translation id="2785279781154577715">Mwonekano kadi ya toleo la kukagua kichupo kinachowekelewa kiashiria</translation>
+<translation id="2785279781154577715">Mwonekano wa onyesho la kukagua kadi ya muhtasari kwenye kichupo</translation>
 <translation id="2785873697295365461">Vifafanuzi faili</translation>
 <translation id="2785975315093449168">Mandhari ya GTK</translation>
 <translation id="2787354132612937472">—</translation>
@@ -3376,6 +3376,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3441663102605358937">Ingia katika <ph name="ACCOUNT" /> tena ili uthibitishe akaunti hii</translation>
 <translation id="3441824746233675597">Fanya iwe vigumu watu wanaoweza kufikia shughuli zako kwenye intaneti kuona tovuti unazotembelea. <ph name="PRODUCT_NAME" /> hutumia muunganisho salama kutafuta anwani ya IP ya tovuti katika DNS (Mfumo wa Majina ya Vikoa).</translation>
 <translation id="3442674350323953953">Ruhusu Google itumie data yako ya maunzi ili kusaidia kuboresha <ph name="DEVICE_OS" />. Ukikataa, data hii bado itatumwa kwa Google ili kubainisha masasisho yanayofaa, lakini haitahifadhiwa wala kutumiwa vinginevyo.</translation>
+<translation id="3443545121847471732">Weka PIN yenye tarakimu 6</translation>
 <translation id="3443744348829035122">Muda wa <ph name="BRAND" /> umeisha</translation>
 <translation id="3443754338602062261">Tayari una manenosiri ya akaunti hizi kwenye <ph name="BRAND" />. Ukichagua kupakia moja ya manenosiri hapa chini, litatumika badala ya lililopo.</translation>
 <translation id="344449859752187052">Vidakuzi vya mshirika mwingine vimezuiwa</translation>
@@ -4000,7 +4001,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="3875815154304214043"><ph name="APP_NAME" /> imewekewa mipangilio ya kufunguka katika kichupo kipya cha kivinjari, viungo vinavyoweza kutumika pia vitafunguka katika kivinjari hicho. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Vidirisha vimebadilishwa ukubwa upande wa juu</translation>
 <translation id="3877075909000773256">Mipangilio ya kipengele cha Uhamishaji wa Karibu ya kifaa cha <ph name="USER_NAME" />, anashiriki akitumia akaunti ya <ph name="USER_EMAIL" />.</translation>
-<translation id="3877209288227498506">Chagua kuonyesha matumizi ya hifadhi na picha kwenye kadi ya toleo la kukagua kichupo kinachowekelewa kiashiria</translation>
+<translation id="3877209288227498506">Chagua kuonyesha matumizi ya hifadhi na picha kwenye onyesho la kukagua kadi ya muhtasari kwenye kichupo</translation>
 <translation id="3878445208930547646">Hauruhusiwi kunakili kutoka kwenye tovuti hii</translation>
 <translation id="3879748587602334249">Kidhibiti cha vipakuliwa</translation>
 <translation id="3880513902716032002">Baadhi ya kurasa unazotembelea huwa zimepakiwa mapema</translation>
@@ -7852,6 +7853,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> iliongezwa kwa mbali</translation>
 <translation id="6790820461102226165">Ongeza Mwingine...</translation>
+<translation id="6793610798874309813">PIN yako inaweza kuwa na herufi 4 au zaidi</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Ikiwa ufunguo wako wa siri wa <ph name="APP_NAME" /> unatumia ufunguo wa usalama wa USB, uweke na uuguse sasa</translation>
 <translation id="679486139907144816">Ili uingie katika akaunti kwenye tovuti hii ukitumia ufunguo wa siri, unahitaji kuwasha Windows Hello kwenye mipangilio. Kisha rejea kwenye tovuti hii na ujaribu tena.</translation>

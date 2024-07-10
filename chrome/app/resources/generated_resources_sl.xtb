@@ -1036,6 +1036,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1730989807608739928">Pomik proti zadnjemu zavihku</translation>
 <translation id="1731520826054843792">Microsoftova predloga potrdila</translation>
 <translation id="1731911755844941020">Pošiljanje zahteve ...</translation>
+<translation id="1732380773380808394">Dobili boste tudi gesla in drugo iz računa Google.</translation>
 <translation id="1734212868489994726">Svetlo modra</translation>
 <translation id="1734230530703461088">Ni bilo mogoče naložiti razširitve znotraj časovne omejitve. Obrnite se na skrbnika.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> se morda ne bo mogel posodabljati</translation>
@@ -5826,6 +5827,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5247243947166567755">Izberite: <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Brskalnik se je sesul pred koncem prenosa.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> uporablja lokacijo za zagotavljanje lokalne vsebine. To lahko spremenite tukaj: <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Ustvarjanje kode PIN za obnovitev za Googlovega upravitelja gesel</translation>
 <translation id="5252496130205799136">Želite račun Google uporabiti za shranjevanje in vnašanje gesel?</translation>
 <translation id="5252653240322147470">Koda PIN sme imeti največ toliko števk: <ph name="MAXIMUM" /></translation>
 <translation id="5253554634804500860">Uporabi napravo <ph name="DEVICE_NAME" /></translation>

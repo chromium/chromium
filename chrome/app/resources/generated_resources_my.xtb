@@ -1032,6 +1032,7 @@
 <translation id="1730989807608739928">နောက်ဆုံး တဘ်အထိ လှိမ့်ခြင်း</translation>
 <translation id="1731520826054843792">Microsoft အသိအမှတ်ပြုလက်မှတ် ပုံစံ</translation>
 <translation id="1731911755844941020">တောင်းဆိုချက် ပို့နေ...</translation>
+<translation id="1732380773380808394">သင့် Google Account ရှိ စကားဝှက်နှင့် အခြားအရာများကိုလည်း ရရှိပါမည်။</translation>
 <translation id="1734212868489994726">အပြာဖျော့</translation>
 <translation id="1734230530703461088">ကန့်သတ်အချိန်အတွင်း နောက်ဆက်တွဲများကို ဖွင့်၍မရပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> သည် ၎င်းကိုယ်တိုင် အပ်ဒိတ်လုပ်ခြင်း မပြုနိုင်ပါ</translation>
@@ -5821,6 +5822,7 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> ကို ရွေးရန်</translation>
 <translation id="5249624017678798539">ဒေါင်းလုဒ် မပြီးခင် ဘရောင်ဇာ ပျက်ကျသွားသည်။</translation>
 <translation id="5250372599208556903">ဒေသတွင်းအကြောင်းအရာများကို ဖော်ပြပေးနိုင်ရန်အတွက် <ph name="SEARCH_ENGINE_NAME" /> သည် သင်၏ တည်နေရာကို အသုံးပြုပါသည်။ ၎င်းကို <ph name="SETTINGS_LINK" /> တွင် ပြောင်းလဲနိုင်ပါသည်။</translation>
+<translation id="5251885976619018662">Google Password Manager အတွက် ပြန်လည်ရယူရေး ပင်နံပါတ် ပြုလုပ်ခြင်း</translation>
 <translation id="5252496130205799136">စကားဝှက်များ သိမ်းရန်နှင့် ဖြည့်ရန် သင့် Google Account ကို သုံးမလား။</translation>
 <translation id="5252653240322147470">ပင်နံပါတ်သည် ဂဏန်း <ph name="MAXIMUM" /> လုံးထက်နည်းရပါမည်</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> သုံးရန်</translation>

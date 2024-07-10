@@ -3369,6 +3369,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3441663102605358937">Connectez-vous à <ph name="ACCOUNT" /> de nouveau pour vérifier ce compte</translation>
 <translation id="3441824746233675597">Faites en sorte qu'il soit plus difficile pour les personnes ayant accès à votre trafic Internet de voir les sites que vous visitez. <ph name="PRODUCT_NAME" /> utilise une connexion sécurisée pour rechercher l'adresse IP d'un site dans le DNS (système de noms de domaine).</translation>
 <translation id="3442674350323953953">Permettez à Google d'utiliser vos données matérielles pour améliorer <ph name="DEVICE_OS" />. Si vous refusez, ces données sont tout de même envoyées à Google pour déterminer les mises à jour appropriées, mais elles ne sont pas stockées ni utilisées autrement.</translation>
+<translation id="3443545121847471732">Entrez un NIP à six chiffres</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> a dépassé le délai</translation>
 <translation id="3443754338602062261">Vous avez déjà des mots de passe pour ces comptes dans votre <ph name="BRAND" />. Si vous choisissez d'importer l'un des mots de passe ci-dessous, il remplacera l'ancien.</translation>
 <translation id="344449859752187052">Témoins tiers bloqués</translation>
@@ -7848,6 +7849,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> a été ajoutée à distance</translation>
 <translation id="6790820461102226165">Ajouter un personne...</translation>
+<translation id="6793610798874309813">Votre NIP peut comporter quatre caractères ou plus</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Si votre clé d'accès pour <ph name="APP_NAME" /> se trouve sur une clé de sécurité USB, insérez-la et touchez-la maintenant</translation>
 <translation id="679486139907144816">Pour vous connecter à ce site avec une clé d'accès, vous devez activer Windows Hello dans les paramètres. Revenez ensuite sur ce site et réessayez.</translation>

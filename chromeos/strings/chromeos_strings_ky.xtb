@@ -226,6 +226,7 @@
 <translation id="2080070583977670716">Дагы параметрлер</translation>
 <translation id="2082932131694554252">Дайындалган баскычтоп баскычы</translation>
 <translation id="2085089206770112532">Дисплейдин жарыктыгын азайтуу</translation>
+<translation id="2085876078937250610">Сактоо…</translation>
 <translation id="2086091080968010660">Убакыттын негизиндеги өзгөртүүлөр так болбошу мүмкүн. Параметрлерден системага жайгашкан жерди аныктоо мүмкүнчүлүгүн күйгүзүңүз.</translation>
 <translation id="2102231663024125441">Текстти оңдоо</translation>
 <translation id="2102648867808308635">Бул баракты окуганга жардам бер</translation>
@@ -768,6 +769,7 @@
 <translation id="5180712487038406644">Даана</translation>
 <translation id="5190187232518914472">Эсте калган учурларды кайра көз алдыңыздан өткөрүңүз. Альбомдорду кошуу же түзөтүү үчүн <ph name="LINK_BEGIN" />Google Фотого<ph name="LINK_END" /> өтүңүз.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
+<translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% жүктөлүп алынды</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
 <translation id="522307662484862935">Электрондук почта дареги жазылбасын</translation>
 <translation id="5227902338748591677">Караңгы теманын графиги</translation>

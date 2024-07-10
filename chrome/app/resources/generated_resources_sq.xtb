@@ -2197,7 +2197,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2559889124253841528">Ruaj te pajisja</translation>
 <translation id="2561211427862644160">Shiko të gjithë faqeshënuesit këtu</translation>
 <translation id="2564520396658920462">Ekzekutimi i JavaScript nëpërmjet AppleScript është çaktivizuar. Për ta aktivizuar, nga shiriti i menysë, shko te Pamja &gt; Zhvilluesi &gt; Lejo JavaScript nga ngjarjet e Apple. Për më shumë informacione: https://support.google.com/chrome/?p=applescript</translation>
-<translation id="2564653188463346023">Kontroll i përmirësuar drejtshkrimor</translation>
+<translation id="2564653188463346023">Kontrolli drejtshkrimor i pëmirësuar</translation>
 <translation id="256481480019204378">ID-ja e "Llogarisë së Google"</translation>
 <translation id="256517381556987641">"Sinkronizimi i skedarëve" gjeti <ph name="ITEMS_FOUND" /> skedarë deri më tani dhe është ende duke kontrolluar hapësirën ruajtëse. Provo të aktivizosh përsëri "Sinkronizimin e skedarëve" pas pak minutash.</translation>
 <translation id="2565214867520763227">Aktivizo lexuesin e ekranit</translation>
@@ -3284,7 +3284,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3387023983419383865">,</translation>
 <translation id="3387261909427947069">Mënyrat e pagesës</translation>
 <translation id="3387588771342841525">Kur kjo është aktive, fjalëkalimet ruhen te <ph name="EMAIL" />. Kur kjo është joaktive, fjalëkalimet ruhen vetëm në këtë pajisje.</translation>
-<translation id="3387614642886316601">Përdor kontrolluesin drejtshkrimor të përmirësuar</translation>
+<translation id="3387614642886316601">Përdor kontrollin drejtshkrimor të përmirësuar</translation>
 <translation id="3387829698079331264">Nuk lejohen të dinë kur ti e përdor pajisjen tënde në mënyrë aktive</translation>
 <translation id="3388094447051599208">Tabakaja e daljes është pothuajse plot</translation>
 <translation id="3388788256054548012">Ky skedar është i enkriptuar. Kërkoji zotëruesit ta deshifrojë.</translation>
@@ -3362,6 +3362,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3441663102605358937">Identifikohu përsëri në <ph name="ACCOUNT" /> për ta verifikuar këtë llogari</translation>
 <translation id="3441824746233675597">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. <ph name="PRODUCT_NAME" /> përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="3442674350323953953">Lejo Google të përdorë të dhënat e harduerit për të ndihmuar në përmirësimin e <ph name="DEVICE_OS" />. Nëse refuzon, këto të dhëna do të dërgohen gjithsesi te Google për të përcaktuar përditësimet e duhura, por nuk do të ruhen apo përdoren.</translation>
+<translation id="3443545121847471732">Fut një kod PIN me 6 shifra</translation>
 <translation id="3443744348829035122">"<ph name="BRAND" />" skadoi</translation>
 <translation id="3443754338602062261">Ke tashmë fjalëkalime për këto llogari te <ph name="BRAND" />. Nëse zgjedh që të importosh një nga fjalëkalimet më poshtë, ai do të zëvendësojë fjalëkalimin ekzistues.</translation>
 <translation id="344449859752187052">Kukit e palëve të treta janë bllokuar</translation>
@@ -4267,7 +4268,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4077917118009885966">Reklamat janë të bllokuara në këtë sajt</translation>
 <translation id="4078738236287221428">Agresiv</translation>
 <translation id="4078903002989614318">Opsionet për renditjen dhe listat</translation>
-<translation id="4079140982534148664">Përdor kontrolluesin drejtshkrimor të përmirësuar</translation>
+<translation id="4079140982534148664">Përdor kontrollin drejtshkrimor të përmirësuar</translation>
 <translation id="4084682180776658562">Faqeshënuesi</translation>
 <translation id="4084835346725913160">Mbyll <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript u bllokua në këtë faqe.</translation>
@@ -6782,7 +6783,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5976160379964388480">Të tjera</translation>
 <translation id="5976780232488408272">Merr ndihmë për të shkuarit</translation>
 <translation id="5977976211062815271">Në këtë pajisje</translation>
-<translation id="5978277834170881274">&amp;Përdor kontrolluesin drejtshkrimor bazë</translation>
+<translation id="5978277834170881274">&amp;Përdor kontrollin drejtshkrimor bazë</translation>
 <translation id="5978493744931296692">Administratori yt i ka çaktivizuar profilet e tjera</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Aktivizove përsëri 1 shtesë që mund të jetë e dëmshme}other{Aktivizove përsëri {NUM_EXTENSIONS} shtesa që mund të jenë të dëmshme}}</translation>
@@ -7839,6 +7840,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> u shtua në distancë</translation>
 <translation id="6790820461102226165">Shto person...</translation>
+<translation id="6793610798874309813">Kodi yt PIN mund të jetë 4 karaktere ose më shumë</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Nëse çelësi yt i kalimit për <ph name="APP_NAME" /> është në një çelës sigurie USB, fute dhe preke atë tani</translation>
 <translation id="679486139907144816">Për t'u identifikuar në këtë sajt me një çelës kalimi, duhet të aktivizosh Windows Hello te cilësimet. Më pas kthehu te ky sajt dhe provo përsëri.</translation>
@@ -8121,7 +8123,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6989274756151920076">Qëndro këtu</translation>
 <translation id="6991665348624301627">Zgjidh një vendmbërritje</translation>
 <translation id="6991926986715044139">Shfaq gjithmonë shkurtoren e "Lentes së Google"</translation>
-<translation id="6992554835374084304">Aktivizo kontrolluesin drejtshkrimor të përmirësuar</translation>
+<translation id="6992554835374084304">Aktivizo kontrollin drejtshkrimor të përmirësuar</translation>
 <translation id="6993000214273684335">Skeda u zhvendos nga grupi i paemërtuar - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Shfletuesi Chrome po përditësohet</translation>
 <translation id="6995899638241819463">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
@@ -8770,7 +8772,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7484645889979462775">Asnjëherë për këtë faqe</translation>
 <translation id="7484943269191249363">Mund të përdorësh të gjithë çelësat e kalimit të ruajtur në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje. Do të të duhet ta bësh këtë vetëm një herë.</translation>
 <translation id="7486587904541741388">Kursime të mëdha</translation>
-<translation id="7487141338393529395">Aktivizo kontrolluesin drejtshkrimor të përmirësuar</translation>
+<translation id="7487141338393529395">Aktivizo kontrollin drejtshkrimor të përmirësuar</translation>
 <translation id="7487969577036436319">Nuk është instaluar asnjë komponent</translation>
 <translation id="7488682689406685343">Ky sajt mund të jetë duke u përpjekur të të mashtrojë që të lejosh njoftime të bezdisshme.</translation>
 <translation id="7489761397368794366">Telefono nga pajisja jote</translation>

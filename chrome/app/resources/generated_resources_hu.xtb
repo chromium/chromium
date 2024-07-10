@@ -3378,6 +3378,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3441663102605358937">Az igazoláshoz jelentkezzen be újra a következő fiókba: <ph name="ACCOUNT" /></translation>
 <translation id="3441824746233675597">Megnehezítheti az internetes forgalmához hozzáférő személyek számára, hogy lássák, milyen webhelyeket keres fel. A(z) <ph name="PRODUCT_NAME" /> biztonságos kapcsolatot használ a webhelyek IP-címének DNS-ben (domainnévrendszerben) való megkereséséhez.</translation>
 <translation id="3442674350323953953">Hardveradatok használatának engedélyezése a Google számára a <ph name="DEVICE_OS" /> fejlesztéséhez. Ha nem engedélyezi, a rendszeri akkor is elküldi az adatokat a Google-nak, hogy meghatározhatók legyenek a megfelelő frissítések, viszont az adatok tárolására vagy egyéb jellegű felhasználására nem kerül sor.</translation>
+<translation id="3443545121847471732">Adjon meg egy 6 számjegyű PIN-kódot</translation>
 <translation id="3443744348829035122">A(z) <ph name="BRAND" /> túllépte az időkorlátot</translation>
 <translation id="3443754338602062261">Ezekhez a fiókokhoz már vannak jelszavai a(z) <ph name="BRAND" /> eszközön. Ha az alábbi jelszavak egyikének importálása mellett dönt, azzal lecseréli a meglévőt.</translation>
 <translation id="344449859752187052">Harmadik féltől származó cookie-k letiltva</translation>
@@ -7856,6 +7857,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6790497603648687708">A(z) <ph name="EXTENSION_NAME" /> bővítményt távolról adták hozzá</translation>
 <translation id="6790820461102226165">Személy hozzáadása…</translation>
+<translation id="6793610798874309813">A PIN-kódnak legalább 4 karakterből kell állnia</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Ha a(z) <ph name="APP_NAME" /> alkalmazáshoz tartozó azonosítókulcs USB-s biztonsági kulcson található, helyezze be most a kulcsot, és érintse meg</translation>
 <translation id="679486139907144816">Ha azonosítókulcs használatával szeretne bejelentkezni erre a webhelyre, be kell kapcsolnia a Windows Hello szolgáltatást a beállításokban. Ezután térjen vissza erre a webhelyre, és próbálkozzon újra.</translation>

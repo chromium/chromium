@@ -751,6 +751,17 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan untuk menambahkan peng
       Jika kebijakan tidak disetel, pengguna akan mendapatkan peringatan PIN lemah, bukan error.</translation>
 <translation id="1597684038583138808">Aktifkan Definisi Jawaban Instan</translation>
 <translation id="1598258379228800626">Aktifkan sorotan fokus keyboard di layar login</translation>
+<translation id="1599334938346636409">Kebijakan ini mengontrol label khusus yang digunakan untuk mengidentifikasi pengguna yang mengelola profil atau browser.
+
+Label ini akan ditampilkan di toolbar.
+
+Jika kebijakan ini disetel di tingkat browser, semua profil akan memiliki label ini di toolbar.
+
+Jika kebijakan ini disetel di tingkat profil, hanya profil tersebut yang akan memiliki label ini.
+
+Tidak seperti kebijakan lain, kebijakan yang disetel di tingkat profil ini akan lebih diprioritaskan daripada kebijakan yang disetel di tingkat browser.
+
+Label khusus tidak akan diterjemahkan.</translation>
 <translation id="1599424828227887013">Mengaktifkan Isolasi Situs untuk asal yang ditentukan di perangkat Android</translation>
 <translation id="159946228300522107">Jika kebijakan ditetapkan ke Benar (True), Chrome akan memaksimalkan jendela pertama yang ditampilkan saat pertama kali dijalankan.
 
@@ -4387,6 +4398,7 @@ Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpenga
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, mode pengisian daya baterai lanjutan akan dinonaktifkan.
 
       Pengguna tidak dapat mengubah setelan ini.</translation>
+<translation id="4307479555111916927">Menetapkan label perusahaan kustom</translation>
 <translation id="4309091698378414920">Aktifkan sorotan tanda sisipan</translation>
 <translation id="4311141497190183490">Jika kebijakan disetel ke 1, situs akan dapat melacak lokasi fisik pengguna secara default. Jika kebijakan disetel ke 2, situs tidak akan dapat melacak lokasi fisik pengguna secara default. Anda dapat menyetel kebijakan untuk menanyakan setiap kali situs ingin melacak lokasi fisik pengguna.
 
@@ -4807,6 +4819,19 @@ Jika kebijakan tidak disetel, pengguna akan diizinkan mengubah daftar aplikasi t
 Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpengaruh jika <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> disetel ke Salah (False).</translation>
 <translation id="4638906910792947645">Aktifkan survei dalam produk</translation>
 <translation id="4641557638919545432">Sintaksis lama yang sudah tidak digunakan lagi akan diaktifkan.</translation>
+<translation id="464549601667073177">URL ke gambar yang akan digunakan sebagai badge perusahaan untuk profil. URL harus mengarah ke gambar.
+
+Badge ini akan ditampilkan di toolbar.
+
+Jika kebijakan ini disetel di tingkat browser, semua profil akan memiliki logo ini di toolbar.
+
+Jika kebijakan ini disetel di tingkat profil, hanya profil tersebut yang akan memiliki logo ini.
+
+Jika kebijakan ini tidak disetel, ikon gedung default akan ditampilkan.
+
+Jika terjadi error saat mencoba mendapatkan dan menampilkan gambar, ikon gedung default akan ditampilkan.
+
+Tidak seperti kebijakan lain, kebijakan yang disetel di tingkat profil ini akan lebih diprioritaskan daripada kebijakan yang disetel di tingkat browser.</translation>
 <translation id="4646626362889216307">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama. Penggabungan ini ada di kunci level pertama kamus dari setiap sumber. Kunci yang berasal dari sumber prioritas tertinggi akan diutamakan.
 
       Gunakan karakter pengganti '*' untuk mengizinkan penggabungan semua kebijakan kamus yang didukung.

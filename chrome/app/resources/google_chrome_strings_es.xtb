@@ -181,6 +181,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3396977131400919238">Se ha producido un error de sistema operativo durante el proceso de instalación. Vuelve a descargar Google Chrome.</translation>
 <translation id="3428747202529429621">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión</translation>
 <translation id="3434246496373299699">Chrome puede comprobar tus contraseñas si inicias sesión con tu cuenta de Google</translation>
+<translation id="3438681572027105609">Para acceder a tus contraseñas y más en todos tus dispositivos, inicia sesión en Chrome</translation>
 <translation id="3450887623636316740">Este archivo podría ser peligroso<ph name="LINE_BREAK" />Chrome puede comprobar esta descarga si proporcionas la contraseña. La información sobre el archivo se envía a Navegación segura de Google, pero su contenido y la contraseña permanecen en tu dispositivo.</translation>
 <translation id="3451115285585441894">Añadiendo a Chrome...</translation>
 <translation id="345171907106878721">Añadirte a Chrome</translation>
@@ -220,6 +221,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4035053306113201399">ChromeOS se debe reiniciar para que se aplique la actualización.</translation>
 <translation id="4050175100176540509">En la última versión puedes encontrar mejoras de seguridad importantes y nuevas funciones.</translation>
 <translation id="4053720452172726777">Personaliza y controla Google Chrome</translation>
+<translation id="408393047846373801">Para acceder a tus contraseñas y más en todos tus dispositivos, inicia sesión en Chrome. Esta contraseña se guardará en tu cuenta de Google cuando inicies sesión.</translation>
 <translation id="4084404300720192944">Para compartir tu ventana, permite la grabación de pantalla de Chrome en Preferencias del sistema.</translation>
 <translation id="4106587138345390261">Chrome está explorando nuevas funciones que permitan a los sitios ofrecer la misma experiencia de navegación usando menos información tuya.</translation>
 <translation id="4110895483821904099">Configura tu nuevo perfil de Chrome</translation>
@@ -466,6 +468,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome ha bloqueado esta descarga porque has desactivado Navegación segura y el archivo no se puede verificar</translation>
 <translation id="7655455401911432608">Tu historial de navegación, un registro de los sitios que has visitado usando Chrome en este dispositivo.</translation>
+<translation id="7655472416356262023">Eliminar cuenta de Chrome</translation>
 <translation id="7661924425853052955">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="COUNT" /> más.</translation>
 <translation id="7668816516367091728">Haz tareas directamente desde la barra de direcciones, como traducir, calcular y más</translation>
 <translation id="7670287553302121848">La cuenta de Chrome debe volver a autenticarse</translation>
