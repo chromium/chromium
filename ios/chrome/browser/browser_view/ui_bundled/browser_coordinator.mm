@@ -9,6 +9,7 @@
 #import <memory>
 #import <optional>
 
+#import "base/check_deref.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -2135,11 +2136,12 @@ enum class ToolbarKind {
 
 #pragma mark - ContextualPanelEntrypointIPHCommands
 
-- (BOOL)maybeShowContextualPanelEntrypointIPHWithText:(NSString*)text
-                                          anchorPoint:(CGPoint)anchorPoint
-                                      isBottomOmnibox:(BOOL)isBottomOmnibox
-                                              feature:(const base::Feature&)
-                                                          feature {
+- (BOOL)maybeShowContextualPanelEntrypointIPHWithConfig:
+            (base::WeakPtr<ContextualPanelItemConfiguration>)config
+                                            anchorPoint:(CGPoint)anchorPoint
+                                        isBottomOmnibox:(BOOL)isBottomOmnibox {
+  ContextualPanelItemConfiguration& config_ref = CHECK_DEREF(config.get());
+
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -2152,21 +2154,34 @@ enum class ToolbarKind {
   CallbackWithIPHDismissalReasonType dismissalCallback =
       ^(IPHDismissalReasonType IPHDismissalReasonType,
         feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        [weakSelf contextualPanelEntrypointIPHDidDismissWithFeature:feature
-                                                    dismissalReason:
-                                                        IPHDismissalReasonType];
+        ContextualPanelItemConfiguration* config_ptr = config.get();
+        if (!config_ptr) {
+          return;
+        }
+
+        [weakSelf
+            contextualPanelEntrypointIPHDidDismissWithFeature:*config_ptr
+                                                                   ->iph_feature
+                                              dismissalReason:
+                                                  IPHDismissalReasonType];
       };
+
+  UIImage* image =
+      [UIImage imageNamed:base::SysUTF8ToNSString(config_ref.iph_image_name)];
 
   _contextualPanelEntrypointHelpPresenter =
       [[BubbleViewControllerPresenter alloc]
-          initDefaultBubbleWithText:text
-                     arrowDirection:isBottomOmnibox ? BubbleArrowDirectionDown
-                                                    : BubbleArrowDirectionUp
-                          alignment:BubbleAlignmentTopOrLeading
-               isLongDurationBubble:YES
-                  dismissalCallback:dismissalCallback];
+               initWithText:base::SysUTF8ToNSString(config_ref.iph_text)
+                      title:base::SysUTF8ToNSString(config_ref.iph_title)
+                      image:image
+             arrowDirection:isBottomOmnibox ? BubbleArrowDirectionDown
+                                            : BubbleArrowDirectionUp
+                  alignment:BubbleAlignmentTopOrLeading
+                 bubbleType:BubbleViewTypeRich
+          dismissalCallback:dismissalCallback];
 
-  _contextualPanelEntrypointHelpPresenter.voiceOverAnnouncement = text;
+  _contextualPanelEntrypointHelpPresenter.voiceOverAnnouncement =
+      base::SysUTF8ToNSString(config_ref.iph_text);
   _contextualPanelEntrypointHelpPresenter.ignoreWebContentAreaInteractions =
       YES;
 
@@ -2179,7 +2194,7 @@ enum class ToolbarKind {
   }
 
   // Do this check last as the FET needs to know the IPH can be shown.
-  if (!engagementTracker->ShouldTriggerHelpUI(feature)) {
+  if (!engagementTracker->ShouldTriggerHelpUI(*config_ref.iph_feature)) {
     _contextualPanelEntrypointHelpPresenter = nil;
     return NO;
   }

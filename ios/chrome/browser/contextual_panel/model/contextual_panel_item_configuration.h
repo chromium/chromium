@@ -28,6 +28,11 @@ struct ContextualPanelItemConfiguration {
   ContextualPanelItemConfiguration& operator=(
       const ContextualPanelItemConfiguration& other) = delete;
 
+  // Helper for checking if a given config can be used to show different
+  // entrypoint loud moment states.
+  bool CanShowLargeEntrypoint();
+  bool CanShowEntrypointIPH();
+
   // The different supported image types.
   enum class EntrypointImageType {
     // The image name is a UIImage to be loaded in.
@@ -60,10 +65,12 @@ struct ContextualPanelItemConfiguration {
   // set their own value.
   int relevance;
 
+  // ** Entrypoint IPH (rich IPH type) related config keys. **
+
   // Optional. The FET feature controlling the impressions for the item's
-  // entrypoint IPH. The entrypoint will try to show the IPH, but if the FET
-  // config decides it shouldn't be shown, the large entrypoint will be shown.
-  // If nothing is set here, the IPH will never be shown.
+  // entrypoint rich IPH. The entrypoint will try to show the IPH, but if the
+  // FET config decides it shouldn't be shown, the large entrypoint will be
+  // shown. If nothing is set here, the IPH will never be shown.
   raw_ptr<const base::Feature> iph_feature;
 
   // Optional (required if `iph_feature` is non-nil). The FET event name the
@@ -71,8 +78,22 @@ struct ContextualPanelItemConfiguration {
   // with the current infoblock model (the `used` key of the FET config). This
   // is the only event the entrypoint will fire for the infoblock, but any
   // number of events can be used in conjunction with the FET config to control
-  // the IPH impressions.
+  // the rich IPH impressions.
   std::string iph_entrypoint_used_event_name;
+
+  // Optional (required if `iph_feature` is non-nil). The title of the rich IPH
+  // bubble.
+  std::string iph_title;
+
+  // Optional (required if `iph_feature` is non-nil). The main body text of the
+  // rich IPH bubble.
+  std::string iph_text;
+
+  // Optional (required if `iph_feature` is non-nil). The name of the image used
+  // in the rich IPH bubble.
+  std::string iph_image_name;
+
+  // ** End of entrypoint IPH (rich IPH type) related config keys. **
 
   base::WeakPtrFactory<ContextualPanelItemConfiguration> weak_ptr_factory{this};
 };

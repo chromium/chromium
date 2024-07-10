@@ -341,18 +341,6 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
 }
 
 TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
-  const base::Feature& testFeature =
-      feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
-  OCMStub([mocked_entrypoint_help_handler_
-              maybeShowContextualPanelEntrypointIPHWithText:@"test"
-                                                anchorPoint:CGPointMake(0, 0)
-                                            isBottomOmnibox:NO
-                                                    feature:testFeature])
-      .andReturn(YES);
-
-  [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
-
   std::unique_ptr<SamplePanelItemConfiguration> configuration =
       std::make_unique<SamplePanelItemConfiguration>();
   configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
@@ -360,6 +348,20 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
   configuration->iph_entrypoint_used_event_name = "testEvent";
   configuration->iph_feature =
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
+  configuration->iph_text = "test_text";
+  configuration->iph_title = "test_title";
+  configuration->iph_image_name = "test_image";
+
+  auto weak_config = configuration->weak_ptr_factory.GetWeakPtr();
+
+  OCMStub([mocked_entrypoint_help_handler_
+              maybeShowContextualPanelEntrypointIPHWithConfig:weak_config
+                                                  anchorPoint:CGPointMake(0, 0)
+                                              isBottomOmnibox:NO])
+      .andReturn(YES);
+
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:NO];
 
   delegate_.canShowLargeContextualPanelEntrypoint = YES;
 

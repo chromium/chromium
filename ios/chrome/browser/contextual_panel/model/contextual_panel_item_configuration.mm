@@ -15,3 +15,13 @@ ContextualPanelItemConfiguration::ContextualPanelItemConfiguration(
     : item_type(item_type) {}
 
 ContextualPanelItemConfiguration::~ContextualPanelItemConfiguration() = default;
+
+bool ContextualPanelItemConfiguration::CanShowLargeEntrypoint() {
+  return !entrypoint_message.empty() && relevance >= high_relevance;
+}
+
+bool ContextualPanelItemConfiguration::CanShowEntrypointIPH() {
+  return iph_feature && !iph_text.empty() && !iph_title.empty() &&
+         !iph_image_name.empty() && !iph_entrypoint_used_event_name.empty() &&
+         relevance >= high_relevance;
+}

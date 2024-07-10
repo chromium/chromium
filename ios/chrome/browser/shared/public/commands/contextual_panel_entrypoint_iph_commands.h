@@ -11,13 +11,10 @@
 @protocol ContextualPanelEntrypointIPHCommands
 
 // Tries to show the Contextual Panel entrypoint's IPH, and returns the result.
-// `feature` is the FET feature used for impression management for the given
-// infoblock's IPH.
-- (BOOL)maybeShowContextualPanelEntrypointIPHWithText:(NSString*)text
-                                          anchorPoint:(CGPoint)anchorPoint
-                                      isBottomOmnibox:(BOOL)isBottomOmnibox
-                                              feature:
-                                                  (const base::Feature&)feature;
+- (BOOL)maybeShowContextualPanelEntrypointIPHWithConfig:
+            (base::WeakPtr<ContextualPanelItemConfiguration>)config
+                                            anchorPoint:(CGPoint)anchorPoint
+                                        isBottomOmnibox:(BOOL)isBottomOmnibox;
 
 // Dismisses the Contextual Panel entrypoint's IPH.
 - (void)dismissContextualPanelEntrypointIPHAnimated:(BOOL)animated;

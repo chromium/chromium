@@ -335,10 +335,9 @@
       [self.delegate helpAnchorUsingBottomOmnibox:isBottomOmnibox];
 
   return [_entrypointHelpHandler
-      maybeShowContextualPanelEntrypointIPHWithText:text
-                                        anchorPoint:anchorPoint
-                                    isBottomOmnibox:isBottomOmnibox
-                                            feature:*config->iph_feature];
+      maybeShowContextualPanelEntrypointIPHWithConfig:config
+                                          anchorPoint:anchorPoint
+                                      isBottomOmnibox:isBottomOmnibox];
 }
 
 - (void)dismissEntrypointIPHAnimated:(BOOL)animated {
@@ -347,28 +346,23 @@
 
 - (BOOL)canShowLargeEntrypointWithConfig:
     (base::WeakPtr<ContextualPanelItemConfiguration>)config {
-  ContextualPanelTabHelper* contextualPanelTabHelper =
-      ContextualPanelTabHelper::FromWebState(
-          _webStateList->GetActiveWebState());
-
-  return !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
-         !contextualPanelTabHelper->WasLoudMomentEntrypointShown() && config &&
-         !config->entrypoint_message.empty() &&
-         config->relevance >= config->high_relevance &&
-         [self.delegate canShowLargeContextualPanelEntrypoint:self];
+  return [self canShowLoudEntrypointMoment] && config &&
+         config->CanShowLargeEntrypoint();
 }
 
 - (BOOL)canShowEntrypointIPHWithConfig:
     (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+  return [self canShowLoudEntrypointMoment] && config &&
+         config->CanShowEntrypointIPH();
+}
+
+- (BOOL)canShowLoudEntrypointMoment {
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
 
   return !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
-         !contextualPanelTabHelper->WasLoudMomentEntrypointShown() && config &&
-         config->iph_feature &&
-         !config->iph_entrypoint_used_event_name.empty() &&
-         config->relevance >= config->high_relevance &&
+         !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
          [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }
 

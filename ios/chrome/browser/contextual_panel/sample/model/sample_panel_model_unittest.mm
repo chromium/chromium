@@ -52,6 +52,10 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
   EXPECT_EQ("Large entrypoint", config->entrypoint_message);
   EXPECT_EQ("chrome_product", config->entrypoint_image_name);
   EXPECT_EQ("Sample entrypoint", config->accessibility_label);
+  EXPECT_EQ("Sample rich IPH", config->iph_title);
+  EXPECT_EQ("Sample rich IPH for the CP, which should appear 3 times a day.",
+            config->iph_text);
+  EXPECT_EQ("chrome_search_engine_choice_icon", config->iph_image_name);
   EXPECT_EQ("ios_contextual_panel_sample_model_entrypoint_used",
             config->iph_entrypoint_used_event_name);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelSampleModelFeature,

@@ -27,11 +27,16 @@ void SamplePanelModel::FetchConfigurationForWebState(
   std::unique_ptr<SamplePanelItemConfiguration> item_configuration =
       std::make_unique<SamplePanelItemConfiguration>();
 
-  // Happy path, there is data to show for the current webstate.
+  // Happy path, there is data to show for the current webstate. This is
+  // sample/test data, it can be anything.
   item_configuration->sample_name = "sample_config";
   item_configuration->accessibility_label = "Sample entrypoint";
   item_configuration->entrypoint_message = "Large entrypoint";
   item_configuration->entrypoint_image_name = "chrome_product";
+  item_configuration->iph_title = "Sample rich IPH";
+  item_configuration->iph_text =
+      "Sample rich IPH for the CP, which should appear 3 times a day.";
+  item_configuration->iph_image_name = "chrome_search_engine_choice_icon";
   item_configuration->iph_feature =
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
   item_configuration->iph_entrypoint_used_event_name =
