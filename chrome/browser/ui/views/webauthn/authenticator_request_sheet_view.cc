@@ -179,16 +179,25 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
 std::unique_ptr<views::View>
 AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
   auto contents = std::make_unique<views::View>();
-  BoxLayout* contents_layout =
-      contents->SetLayoutManager(std::make_unique<BoxLayout>(
-          BoxLayout::Orientation::kVertical, gfx::Insets(),
-          views::LayoutProvider::Get()->GetDistanceMetric(
-              views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+  contents->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kVertical, gfx::Insets(),
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
   contents->SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
           views::DialogContentType::kControl,
           views::DialogContentType::kControl)));
+
+  std::unique_ptr<views::View> step_specific_header = BuildStepSpecificHeader();
+  if (step_specific_header) {
+    child_views_.step_specific_header_ =
+        contents->AddChildView(step_specific_header.release());
+
+    auto insets = contents->GetBorder()->GetInsets();
+    insets.set_top(0);
+    contents->SetBorder(views::CreateEmptyBorder(insets));
+  }
 
   auto label_container = std::make_unique<views::View>();
   label_container->SetLayoutManager(std::make_unique<BoxLayout>(
@@ -246,16 +255,6 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
         label_container->AddChildView(title_label.release());
   }
 
-  std::unique_ptr<views::View> step_specific_header = BuildStepSpecificHeader();
-  if (step_specific_header) {
-    child_views_.step_specific_header_ = step_specific_header.get();
-    contents->AddChildView(step_specific_header.release());
-
-    auto insets = contents->GetBorder()->GetInsets();
-    insets.set_top(0);
-    contents->SetBorder(views::CreateEmptyBorder(insets));
-  }
-
   std::u16string description = model()->GetStepDescription();
   if (!description.empty()) {
     auto description_label = std::make_unique<views::Label>(
@@ -279,15 +278,23 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
 
   contents->AddChildView(label_container.release());
 
+  auto content_error_and_hint_view = std::make_unique<views::View>();
+  BoxLayout* content_error_and_hint_layout =
+      content_error_and_hint_view->SetLayoutManager(std::make_unique<BoxLayout>(
+          BoxLayout::Orientation::kVertical, gfx::Insets(),
+          views::LayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   std::unique_ptr<views::View> step_specific_content;
   std::tie(step_specific_content, should_focus_step_specific_content_) =
       BuildStepSpecificContent();
   DCHECK(should_focus_step_specific_content_ == AutoFocus::kNo ||
          step_specific_content);
   if (step_specific_content) {
-    child_views_.step_specific_content_ = step_specific_content.get();
-    contents->AddChildView(step_specific_content.release());
-    contents_layout->SetFlexForView(child_views_.step_specific_content_, 1);
+    child_views_.step_specific_content_ =
+        content_error_and_hint_view->AddChildView(
+            step_specific_content.release());
+    content_error_and_hint_layout->SetFlexForView(
+        child_views_.step_specific_content_, 1);
   }
 
   std::u16string error = model()->GetError();
@@ -296,7 +303,8 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
         std::move(error), views::style::CONTEXT_LABEL, STYLE_RED);
     error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     error_label->SetMultiLine(true);
-    child_views_.error_label_ = contents->AddChildView(std::move(error_label));
+    child_views_.error_label_ =
+        content_error_and_hint_view->AddChildView(std::move(error_label));
   }
 
   std::u16string hint = model()->GetHint();
@@ -304,9 +312,11 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     auto hint_label = std::make_unique<views::Label>(
         std::move(hint), views::style::CONTEXT_LABEL, views::style::STYLE_HINT);
     hint_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    child_views_.hint_label_ = contents->AddChildView(std::move(hint_label));
+    child_views_.hint_label_ =
+        content_error_and_hint_view->AddChildView(std::move(hint_label));
   }
 
+  contents->AddChildView(content_error_and_hint_view.release());
   return contents;
 }
 
