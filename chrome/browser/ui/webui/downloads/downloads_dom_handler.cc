@@ -442,7 +442,8 @@ void DownloadsDOMHandler::SaveDangerousFromDialogRequiringGesture(
 }
 
 void DownloadsDOMHandler::SaveDangerousFromInterstitialNeedGesture(
-    const std::string& id) {
+    const std::string& id,
+    downloads::mojom::DangerousDownloadInterstitialSurveyOptions response) {
   CHECK(base::FeatureList::IsEnabled(
       safe_browsing::kDangerousDownloadInterstitial));
   if (!GetWebUIWebContents()->HasRecentInteraction()) {
@@ -474,6 +475,9 @@ void DownloadsDOMHandler::SaveDangerousFromInterstitialNeedGesture(
 
   RecordDangerousDownloadInterstitialActionHistogram(
       DangerousDownloadInterstitialAction::kSaveDangerous);
+
+  base::UmaHistogramEnumeration(
+      "Download.DangerousDownloadInterstitial.SurveyResponse", response);
 
   RecordDownloadDangerPromptHistogram("Proceed", *file);
 

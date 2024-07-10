@@ -7,6 +7,20 @@ module downloads.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
+// Represents the possible responses to the survey on the chrome://downloads
+// dangerous download interstitial.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DangerousDownloadInterstitialSurveyOptions)
+enum DangerousDownloadInterstitialSurveyOptions{
+  kNoResponse = 0,
+  kCreatedFile = 1,
+  kTrustSite = 2,
+  kAcceptRisk = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:DangerousDownloadInterstitialSurveyOptions)
+
 // This is a subset of download::DownloadDangerType.
 enum DangerType {
   // This is the catch-all value for DownloadDangerTypes that are not relevant
@@ -126,6 +140,8 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
+// TODO(crbug.com/351865738): Consider combining methods that take an id
+// into their own stateless interface.
 interface PageHandler {
   GetDownloads(array<string> search_terms);
   OpenFileRequiringGesture(string id);
@@ -157,7 +173,8 @@ interface PageHandler {
 
   // Called when "Download <dangerous file name>" is clicked from the
   // chrome://downloads warning interstitial, for dangerous files.
-  SaveDangerousFromInterstitialNeedGesture(string id);
+  SaveDangerousFromInterstitialNeedGesture(string id,
+    DangerousDownloadInterstitialSurveyOptions response);
 
   // Called when "Cancel" is clicked on the chrome://downloads warning bypass
   // dialog, or the dialog is closed by dismissing it. Only records the event

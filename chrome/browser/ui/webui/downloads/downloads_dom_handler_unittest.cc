@@ -513,7 +513,9 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
 
   handler_->RecordOpenSurveyOnDangerousInterstitial("1");
   task_environment_.FastForwardBy(base::Milliseconds(100));
-  handler_->SaveDangerousFromInterstitialNeedGesture("1");
+  handler_->SaveDangerousFromInterstitialNeedGesture(
+      "1", downloads::mojom::DangerousDownloadInterstitialSurveyOptions::
+               kAcceptRisk);
 
   histogram_tester_.ExpectBucketCount(
       "Download.DangerousDownloadInterstitial.Action",
@@ -524,6 +526,10 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
   histogram_tester_.ExpectTimeBucketCount(
       "Download.DangerousDownloadInterstitial.InteractionTime.SaveDangerous",
       base::Milliseconds(300), 1);
+  histogram_tester_.ExpectBucketCount(
+      "Download.DangerousDownloadInterstitial.SurveyResponse",
+      downloads::mojom::DangerousDownloadInterstitialSurveyOptions::kAcceptRisk,
+      1);
 
   // Verify that dangerous download report is sent.
   safe_browsing::ClientSafeBrowsingReportRequest expected_report;
@@ -546,10 +552,16 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
 
   handler_->RecordOpenSurveyOnDangerousInterstitial("1");
-  handler_->SaveDangerousFromInterstitialNeedGesture("1");
+  handler_->SaveDangerousFromInterstitialNeedGesture(
+      "1",
+      downloads::mojom::DangerousDownloadInterstitialSurveyOptions::kTrustSite);
   histogram_tester_.ExpectBucketCount(
       "Download.DangerousDownloadInterstitial.Action",
       DangerousDownloadInterstitialAction::kSaveDangerous, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Download.DangerousDownloadInterstitial.SurveyResponse",
+      downloads::mojom::DangerousDownloadInterstitialSurveyOptions::kTrustSite,
+      0);
 }
 
 class DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService
@@ -644,5 +656,14 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
 
   handler.RecordOpenBypassWarningInterstitial("1");
   handler.RecordOpenSurveyOnDangerousInterstitial("1");
-  handler.SaveDangerousFromInterstitialNeedGesture("1");
+  handler.SaveDangerousFromInterstitialNeedGesture(
+      "1", downloads::mojom::DangerousDownloadInterstitialSurveyOptions::
+               kCreatedFile);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Download.DangerousDownloadInterstitial.SurveyResponse",
+      downloads::mojom::DangerousDownloadInterstitialSurveyOptions::
+          kCreatedFile,
+      0);
 }
