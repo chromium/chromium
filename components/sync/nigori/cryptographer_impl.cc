@@ -123,6 +123,10 @@ bool CryptographerImpl::HasKeyPair(uint32_t key_pair_version) const {
   return cross_user_sharing_keys_.HasKeyPair(key_pair_version);
 }
 
+size_t CryptographerImpl::KeyPairSizeForMetrics() const {
+  return cross_user_sharing_keys_.size();
+}
+
 const CrossUserSharingPublicPrivateKeyPair&
 CryptographerImpl::GetCrossUserSharingKeyPair(uint32_t version) const {
   return cross_user_sharing_keys_.GetKeyPair(version);

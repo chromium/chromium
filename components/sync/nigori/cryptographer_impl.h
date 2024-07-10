@@ -97,6 +97,9 @@ class CryptographerImpl : public Cryptographer {
   // key-pair.
   bool HasKeyPair(uint32_t key_pair_version) const;
 
+  // Returns the number of generated key pairs.
+  size_t KeyPairSizeForMetrics() const;
+
   // Returns a key pair for a given `version`. The key pair with the given
   // `version` must exist.
   const CrossUserSharingPublicPrivateKeyPair& GetCrossUserSharingKeyPair(

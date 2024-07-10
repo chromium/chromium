@@ -218,8 +218,20 @@ NigoriState NigoriState::CreateFromLocalProto(
     }
   }
 
+  const CrossUserSharingKeyPairState key_pair_state =
+      GetCrossUserSharingPublicKeyState(state);
   base::UmaHistogramEnumeration("Sync.CrossUserSharingKeyPairState",
-                                GetCrossUserSharingPublicKeyState(state));
+                                key_pair_state);
+  if (key_pair_state ==
+      CrossUserSharingKeyPairState::kPublicKeyVersionInvalid) {
+    // Currently, only version 0 is supported and hence expected.
+    base::UmaHistogramBoolean(
+        "Sync.CrossUserSharingInvalidKeyVersion.ExpectedVersion",
+        state.cross_user_sharing_key_pair_version == 0u);
+    base::UmaHistogramBoolean(
+        "Sync.CrossUserSharingInvalidKeyVersion.EmptyKeyPair",
+        state.cryptographer->KeyPairSizeForMetrics() == 0u);
+  }
 
   return state;
 }
