@@ -201,20 +201,20 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
     backend = std::make_unique<PasswordStoreBuiltInBackend>(
         std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
         prefs, os_crypt_async);
+  } else {
+    // Note: The built-in backend is backed by the login database and Chrome
+    // syncs it. As such, it expects local data to be cleared every time when
+    // sync is permanently disabled and thus uses
+    // WipeModelUponSyncDisabledBehavior::kAlways.
+    backend = std::make_unique<AndroidBackendWithDoubleDeletion>(
+        std::make_unique<PasswordStoreBuiltInBackend>(
+            std::move(login_db),
+            syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs,
+            os_crypt_async),
+        std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
+            prefs, /*password_affiliation_adapter=*/nullptr,
+            password_manager::kAccountStore));
   }
-
-  // Note: The built-in backend is backed by the login database and Chrome
-  // syncs it. As such, it expects local data to be cleared every time when
-  // sync is permanently disabled and thus uses
-  // WipeModelUponSyncDisabledBehavior::kAlways.
-  backend = std::make_unique<AndroidBackendWithDoubleDeletion>(
-      std::make_unique<PasswordStoreBuiltInBackend>(
-          std::move(login_db),
-          syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs,
-          os_crypt_async),
-      std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-          prefs, /*password_affiliation_adapter=*/nullptr,
-          password_manager::kAccountStore));
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
