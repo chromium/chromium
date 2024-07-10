@@ -768,7 +768,7 @@ def builder(
             else:
                 dimensions["builder"] = name
 
-    if not kwargs.get("description_html", "").strip() and name not in exempted_from_description_builders.get(bucket, []):
+    if not kwargs.get("description_html", "").strip() and name not in exempted_from_description_builders.get(bucket, []) and not mirrors:
         fail("Builder " + name + " must have a description_html. All new builders must specify a description.")
 
     cores = defaults.get_value("cores", cores)
@@ -984,6 +984,7 @@ def builder(
         targets,
         targets_settings,
         additional_exclusions,
+        kwargs.get("description_html", "").strip(),
     )
 
     bootstrap = defaults.get_value("bootstrap", bootstrap)

@@ -96,7 +96,6 @@ try_.builder(
 try_.builder(
     name = "linux-arm64-cast-rel",
     branch_selector = branches.selector.MAIN,
-    description_html = "Try builder for linux-arm64-cast-rel",
     mirrors = [
         "ci/linux-arm64-cast-rel",
     ],
@@ -489,7 +488,6 @@ try_.builder(
 try_.builder(
     name = "linux-x64-cast-dbg",
     branch_selector = branches.selector.MAIN,
-    description_html = "Try builder for linux-x64-cast-dbg",
     mirrors = [
         "ci/linux-x64-cast-dbg",
     ],
