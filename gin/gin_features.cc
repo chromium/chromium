@@ -300,6 +300,11 @@ BASE_FEATURE(kJavaScriptRegExpDuplicateNamedGroups,
              ("JavaScriptRegExpDuplicateNamedGroups"),
              kFeatureDefaultStateControlledByV8);
 
+// Enables the Promise.try proposal.
+BASE_FEATURE(kJavaScriptPromiseTry,
+             ("JavaScriptPromiseTry"),
+             kFeatureDefaultStateControlledByV8);
+
 // WebAssembly features.
 
 // Enable WebAssembly inlining (not user visible).
