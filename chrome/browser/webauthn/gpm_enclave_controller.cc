@@ -820,7 +820,7 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
   // "implicit" UV.
   CHECK_EQ(*uv_method_, EnclaveUserVerificationMethod::kImplicit);
 
-  model_->SetStep(Step::kGPMConnecting);
+  model_->DisableUiOrShowLoadingDialog();
   StartTransaction();
 }
 
@@ -876,15 +876,10 @@ void GPMEnclaveController::OnGPMSelected() {
     case AccountState::kChecking:
       waiting_for_account_state_ = base::BindOnce(
           &GPMEnclaveController::OnGPMSelected, weak_ptr_factory_.GetWeakPtr());
-      if (model_->step() == Step::kNotStarted) {
-        // No UI is visible yet, display a loading dialog after a delay, so it
-        // doesn't flicker in case the account state is fetched quickly.
-        // TODO(rgod): Add delay.
-        model_->SetStep(Step::kGPMConnecting);
-      } else {
-        model_->ui_disabled_ = true;
-        model_->OnSheetModelChanged();
-      }
+      // TODO(rgod): If the model step is `kNotStarted`, no UI is visible yet.
+      // Display a loading dialog after a delay, so it doesn't flicker in case
+      // the account state is fetched quickly.
+      model_->DisableUiOrShowLoadingDialog();
       break;
 
     case AccountState::kNone:
@@ -912,7 +907,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
         case EnclaveUserVerificationMethod::kImplicit:
           if (model_->step() != Step::kConditionalMediation) {
             // The autofill UI shows its own loading indicator.
-            model_->SetStep(Step::kGPMConnecting);
+            model_->DisableUiOrShowLoadingDialog();
           }
           StartTransaction();
           break;
@@ -945,7 +940,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
       if (model_->step() != Step::kConditionalMediation &&
           model_->step() != Step::kNotStarted) {
         // The autofill UI shows its own loading indicator.
-        model_->SetStep(Step::kGPMConnecting);
+        model_->DisableUiOrShowLoadingDialog();
       }
       waiting_for_account_state_ =
           base::BindOnce(&GPMEnclaveController::OnGPMPasskeySelected,
@@ -1036,7 +1031,7 @@ void GPMEnclaveController::OnGPMCreatePasskey() {
       case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
       case EnclaveUserVerificationMethod::kNone:
       case EnclaveUserVerificationMethod::kImplicit:
-        model_->SetStep(Step::kGPMConnecting);
+        model_->DisableUiOrShowLoadingDialog();
         StartTransaction();
         break;
 
@@ -1070,8 +1065,7 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
   pin_ = base::UTF16ToUTF8(pin);
 
   // Disable the pin entry view while waiting for the response from enclave.
-  model_->ui_disabled_ = true;
-  model_->OnSheetModelChanged();
+  model_->DisableUiOrShowLoadingDialog();
 
   if (model_->step() == Step::kGPMChangeArbitraryPin ||
       model_->step() == Step::kGPMChangePin ||
@@ -1101,7 +1095,6 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
     rapt_.reset();
     ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kNewPinEntered);
   } else {
-    model_->SetStep(Step::kGPMConnecting);
     StartTransaction();
   }
 }
@@ -1109,7 +1102,7 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
 void GPMEnclaveController::OnTouchIDComplete(bool success) {
   // On error no LAContext will be provided and macOS will show the system UI
   // for user verification.
-  model_->SetStep(Step::kGPMConnecting);
+  model_->DisableUiOrShowLoadingDialog();
   StartTransaction();
 }
 

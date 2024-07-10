@@ -443,6 +443,8 @@ struct AuthenticatorRequestDialogModel {
   Step step() const { return step_; }
   void SetStep(Step step);
 
+  void DisableUiOrShowLoadingDialog();
+
   // This can return nullptr in tests.
   content::WebContents* GetWebContents() const;
   // This can return nullptr in tests.

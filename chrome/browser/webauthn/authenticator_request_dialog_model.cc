@@ -504,6 +504,17 @@ void AuthenticatorRequestDialogModel::SetStep(Step step) {
   }
 }
 
+void AuthenticatorRequestDialogModel::DisableUiOrShowLoadingDialog() {
+  // If the current step is showing a dialog, disable it. Else, show the GPM
+  // Connecting dialog.
+  if (should_dialog_be_closed()) {
+    SetStep(Step::kGPMConnecting);
+  } else {
+    ui_disabled_ = true;
+    OnSheetModelChanged();
+  }
+}
+
 content::WebContents* AuthenticatorRequestDialogModel::GetWebContents() const {
   if (!frame_host_id) {
     return nullptr;
