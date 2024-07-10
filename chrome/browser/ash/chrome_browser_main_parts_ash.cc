@@ -1519,7 +1519,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   crostini_unsupported_action_notifier_.reset();
   carrier_lock_manager_.reset();
 
-  BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded", true);
+  BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded",
+                                                /*send_to_uma=*/false);
 
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::Shutdown();

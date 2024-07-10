@@ -267,7 +267,8 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
   NukeDeletedProfilesFromDisk();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserDeleted", true);
+  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserDeleted",
+                                                     /*send_to_uma=*/false);
 #endif
 
 #if BUILDFLAG(IS_WIN)
