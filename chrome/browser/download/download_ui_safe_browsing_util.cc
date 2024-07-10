@@ -106,13 +106,13 @@ bool ShouldShowDeepScanPromptNotice(Profile* profile,
     return false;
   }
 
-  if (profile->GetPrefs()->GetBoolean(
-          prefs::kSafeBrowsingAutomaticDeepScanPerformed)) {
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningPromptRemoval)) {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kDeepScanningPromptRemoval)) {
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kSafeBrowsingAutomaticDeepScanPerformed)) {
     return false;
   }
 
