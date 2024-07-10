@@ -29,7 +29,7 @@ source_set("power_save_blocker") {
     "//services/device/wake_lock:*",
 
     # Scan Service in Ash needs to directly use the PowerSaveBlocker.
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/scanning",
   ]
 
   sources = [ "power_save_blocker.h" ]
