@@ -3175,13 +3175,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 // Verify that GPM will do UV on a uv=preferred request if and only if
 // biometrics are available.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_UserVerificationPolicy DISABLED_UserVerificationPolicy
-#else
-#define MAYBE_UserVerificationPolicy UserVerificationPolicy
-#endif
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       MAYBE_UserVerificationPolicy) {
+                       UserVerificationPolicy) {
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
   registration_state_result.state = trusted_vault::
@@ -3241,9 +3236,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   SetBiometricsEnabled(true);
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvPreferred);
   delegate_observer()->WaitForUI();
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+  dialog_model()->OnTouchIDComplete(true);
+#else
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
   dialog_model()->OnUserConfirmedPriorityMechanism();
+#endif
 
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
