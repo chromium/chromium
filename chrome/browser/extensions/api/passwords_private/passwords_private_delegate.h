@@ -47,6 +47,8 @@ class PasswordsPrivateDelegate
   using StartPasswordCheckCallback =
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
 
+  using AuthenticationCallback = base::OnceCallback<void(bool)>;
+
   // Gets the saved passwords list.
   using UiEntries = std::vector<api::passwords_private::PasswordUiEntry>;
   using UiEntriesCallback = base::OnceCallback<void(const UiEntries&)>;
@@ -243,9 +245,11 @@ class PasswordsPrivateDelegate
   virtual void RestartAuthTimer() = 0;
 
   // Switches Biometric authentication before filling state after
-  // successful authentication.
+  // successful authentication.  Invokes `callback` with true if the
+  // authentication was successful, with false otherwise.
   virtual void SwitchBiometricAuthBeforeFillingState(
-      content::WebContents* web_contents) = 0;
+      content::WebContents* web_contents,
+      AuthenticationCallback callback) = 0;
 
   // Triggers a dialog for installing the shortcut for PasswordManager page.
   virtual void ShowAddShortcutDialog(content::WebContents* web_contents) = 0;

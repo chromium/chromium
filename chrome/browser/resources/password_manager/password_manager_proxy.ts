@@ -306,8 +306,9 @@ export interface PasswordManagerProxy {
   /**
    * Switches Biometric authentication before filling state after
    * successful authentication.
+   * @return A promise that resolves with authentication result.
    */
-  switchBiometricAuthBeforeFillingState(): void;
+  switchBiometricAuthBeforeFillingState(): Promise<boolean>;
 
   /**
    * Shows the file with the exported passwords in the OS shell.
@@ -574,7 +575,7 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   switchBiometricAuthBeforeFillingState() {
-    chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState();
+    return chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState();
   }
 
   showExportedFileInShell(filePath: string) {

@@ -47,6 +47,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   private requestCredentialsDetailsResponse_:
       chrome.passwordsPrivate.PasswordUiEntry[]|null = null;
 
+  private switchBiometricAuthBeforeFillingStateResult_: boolean = false;
+
   private importResults_: chrome.passwordsPrivate.ImportResults = {
     status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
     numberImported: 0,
@@ -292,6 +294,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   switchBiometricAuthBeforeFillingState() {
     this.methodCalled('switchBiometricAuthBeforeFillingState');
+    return Promise.resolve(this.switchBiometricAuthBeforeFillingStateResult_);
+  }
+
+  setSwitchBiometricAuthBeforeFillingStateResponse(result: boolean) {
+    this.switchBiometricAuthBeforeFillingStateResult_ = result;
   }
 
   undoRemoveSavedPasswordOrException() {

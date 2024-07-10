@@ -128,7 +128,8 @@ class PasswordsPrivateDelegateImpl
       override;
   void RestartAuthTimer() override;
   void SwitchBiometricAuthBeforeFillingState(
-      content::WebContents* web_contents) override;
+      content::WebContents* web_contents,
+      AuthenticationCallback callback) override;
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
   void ShowExportedFileInShell(content::WebContents* web_contents,
                                std::string file_path) override;

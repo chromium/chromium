@@ -435,6 +435,9 @@ class PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+ private:
+  void OnAuthenticationComplete(bool result);
 };
 
 class PasswordsPrivateShowAddShortcutDialogFunction : public ExtensionFunction {

@@ -621,8 +621,19 @@ PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction::Run() {
   }
 
   GetDelegate(browser_context())
-      ->SwitchBiometricAuthBeforeFillingState(GetSenderWebContents());
-  return RespondNow(NoArguments());
+      ->SwitchBiometricAuthBeforeFillingState(
+          GetSenderWebContents(),
+          base::BindOnce(
+              &PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction::
+                  OnAuthenticationComplete,
+              this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction::
+    OnAuthenticationComplete(bool result) {
+  Respond(WithArguments(result));
 }
 
 // PasswordsPrivateShowExportedFileInShellFunction

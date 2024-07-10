@@ -236,13 +236,17 @@ extensions::api::passwords_private::ImportResults ConvertImportResults(
 
 using password_manager::prefs::kBiometricAuthenticationBeforeFilling;
 
-void ChangeBiometricAuthenticationBeforeFillingSetting(PrefService* prefs,
-                                                       bool success) {
+void ChangeBiometricAuthenticationBeforeFillingSetting(
+    PrefService* prefs,
+    extensions::PasswordsPrivateDelegate::AuthenticationCallback callback,
+    bool success) {
   if (success) {
     prefs->SetBoolean(
         kBiometricAuthenticationBeforeFilling,
         !prefs->GetBoolean(kBiometricAuthenticationBeforeFilling));
   }
+
+  std::move(callback).Run(success);
 }
 
 std::u16string GetMessageForBiometricAuthenticationBeforeFillingSetting(
@@ -925,12 +929,15 @@ PasswordsPrivateDelegateImpl::GetPasswordCheckStatus() {
 }
 
 void PasswordsPrivateDelegateImpl::SwitchBiometricAuthBeforeFillingState(
-    content::WebContents* web_contents) {
+
+    content::WebContents* web_contents,
+    AuthenticationCallback authentication_callback) {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   NOTIMPLEMENTED();
 #else
-  AuthResultCallback callback = base::BindOnce(
-      &ChangeBiometricAuthenticationBeforeFillingSetting, profile_->GetPrefs());
+  AuthResultCallback callback =
+      base::BindOnce(&ChangeBiometricAuthenticationBeforeFillingSetting,
+                     profile_->GetPrefs(), std::move(authentication_callback));
 
   AuthenticateUser(web_contents, base::Seconds(0),
                    GetMessageForBiometricAuthenticationBeforeFillingSetting(

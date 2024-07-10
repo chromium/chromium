@@ -229,7 +229,7 @@ declare global {
           Promise<UrlCollection|null>;
       export function addPassword(options: AddPasswordOptions): Promise<void>;
       export function extendAuthValidity(): Promise<void>;
-      export function switchBiometricAuthBeforeFillingState(): void;
+      export function switchBiometricAuthBeforeFillingState(): Promise<boolean>;
       export function showAddShortcutDialog(): void;
       export function showExportedFileInShell(filePath: string): void;
       export function changePasswordManagerPin(): Promise<boolean>;

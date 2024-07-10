@@ -1413,6 +1413,9 @@ TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {
 TEST_F(PasswordsPrivateDelegateImplTest,
        SwitchBiometricAuthBeforeFillingState) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  base::MockCallback<
+      extensions::PasswordsPrivateDelegate::AuthenticationCallback>
+      result_callback;
 
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
@@ -1420,9 +1423,33 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   auto delegate = CreateDelegate();
   ExpectAuthentication(delegate, /*successful=*/true);
 
-  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
+  EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/true));
+  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get(),
+                                                  result_callback.Get());
   // Expects that the switch value will change.
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling));
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       SwitchBiometricAuthBeforeFillingStateAuthenticationFailed) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  base::MockCallback<
+      extensions::PasswordsPrivateDelegate::AuthenticationCallback>
+      result_callback;
+
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  auto delegate = CreateDelegate();
+  ExpectAuthentication(delegate, /*successful=*/false);
+
+  EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/false));
+  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get(),
+                                                  result_callback.Get());
+
+  // Expects that the switch value will change.
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling));
 }
 #endif
@@ -1442,12 +1469,14 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   delegate->SetDeviceAuthenticatorForTesting(
       std::move(biometric_authenticator));
 
-  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
+  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get(),
+                                                  base::DoNothing());
 
   // Invoking authentication again will cancel previous request.
   EXPECT_CALL(*biometric_authenticator_ptr, Cancel);
   ExpectAuthentication(delegate, /*successful=*/true);
-  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
+  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get(),
+                                                  base::DoNothing());
 }
 #endif
 
@@ -1456,6 +1485,9 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        SwitchBiometricAuthBeforeFillingDoesntCancelLastTry) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  base::MockCallback<
+      extensions::PasswordsPrivateDelegate::AuthenticationCallback>
+      result_callback;
 
   auto biometric_authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -1466,11 +1498,14 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   delegate->SetDeviceAuthenticatorForTesting(
       std::move(biometric_authenticator));
 
-  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
+  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get(),
+                                                  result_callback.Get());
 
   // Invoking authentication again should not cancel previous request.
   EXPECT_CALL(*biometric_authenticator_ptr, Cancel).Times(0);
-  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
+  EXPECT_CALL(result_callback, Run(false));
+  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get(),
+                                                  result_callback.Get());
 }
 #endif
 
