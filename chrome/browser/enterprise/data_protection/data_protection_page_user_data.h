@@ -56,7 +56,9 @@ class DataProtectionPageUserData
 
   ~DataProtectionPageUserData() override;
 
-  // This function will return
+  // This function will return a `UrlSettings` object representing a combination
+  // of the restrictions applied by a `RTLookupResponse` if one exists and by
+  // Data Controls rules.
   UrlSettings settings() const;
 
   void set_rt_lookup_response(
