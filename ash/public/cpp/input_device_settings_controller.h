@@ -78,6 +78,7 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
     virtual void OnMouseBatteryInfoChanged(const mojom::Mouse& mouse) {}
     virtual void OnTouchpadBatteryInfoChanged(const mojom::Touchpad& touchpad) {
     }
+    virtual void OnMouseCompanionAppInfoChanged(const mojom::Mouse& mouse) {}
   };
 
   static InputDeviceSettingsController* Get();

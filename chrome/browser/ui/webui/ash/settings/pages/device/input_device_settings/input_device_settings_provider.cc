@@ -560,6 +560,12 @@ void InputDeviceSettingsProvider::OnTouchpadBatteryInfoChanged(
   NotifyTouchpadsUpdated();
 }
 
+void InputDeviceSettingsProvider::OnMouseCompanionAppInfoChanged(
+    const ::ash::mojom::Mouse& mouse) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  NotifyMiceUpdated();
+}
+
 void InputDeviceSettingsProvider::OnKeyboardConnected(
     const ::ash::mojom::Keyboard& keyboard) {
   NotifyKeyboardsUpdated();

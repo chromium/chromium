@@ -14,6 +14,7 @@
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/events/peripheral_customization_event_rewriter.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -1949,6 +1950,7 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
 
   RefreshCachedMouseSettings();
   RefreshBatteryInfoForConnectedDevices();
+  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
@@ -2765,6 +2767,53 @@ bool InputDeviceSettingsControllerImpl::IsOobe() const {
       session_state == session_manager::SessionState::LOGIN_PRIMARY &&
       oobe_state_ != OobeDialogState::HIDDEN;
   return is_default_oobe_flow || is_add_person_flow;
+}
+
+void InputDeviceSettingsControllerImpl::DispatchMouseCompanionAppInfoChanged(
+    const mojom::Mouse& mouse) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  for (auto& observer : observers_) {
+    observer.OnMouseCompanionAppInfoChanged(mouse);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::SetPeripheralsAppDelegate(
+    PeripheralsAppDelegate* delegate) {
+  delegate_ = delegate;
+  RefreshCompanionAppInfoForConnectedDevices();
+}
+
+// TODO(b/329686601): Implement for other input device types.
+void InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived(
+    DeviceId id,
+    const std::optional<mojom::CompanionAppInfo>& info) {
+  if (!info || !info.has_value()) {
+    return;
+  }
+
+  if (auto* mouse = FindMouse(id); mouse != nullptr) {
+    mouse->app_info = info.value().Clone();
+    DispatchMouseCompanionAppInfoChanged(*mouse);
+  }
+}
+
+// TODO(b/329686601): Implement for other input device types.
+void InputDeviceSettingsControllerImpl::
+    RefreshCompanionAppInfoForConnectedDevices() {
+  if (!delegate_ || !active_pref_service_) {
+    return;
+  }
+
+  for (const auto& [id, mouse] : mice_) {
+    if (!mouse->is_external) {
+      continue;
+    }
+    delegate_->GetCompanionAppInfo(
+        mouse->device_key,
+        base::BindOnce(
+            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
+            weak_ptr_factory_.GetWeakPtr(), id));
+  }
 }
 
 }  // namespace ash

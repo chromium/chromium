@@ -44,6 +44,12 @@
     display: flex;
     flex-direction: column;
   }
+
+  .app-info-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 </style>
 <div id="mouse">
   <template is="dom-if" if="[[isWelcomeExperienceEnabled]]">
@@ -75,7 +81,22 @@
         label="$i18n{mouseSwapButtonsLabel}" pref="{{primaryRightPref}}">
     </settings-toggle-button>
   </template>
+  <!--TODO(b/329686601): Replace placeholder text when localization strings
+    available.-->
   <div class="subsection">
+    <template is="dom-if" if="[[showInstallAppRow(mouse.appInfo)]]">
+      <div class="app-info-container">
+        <div class="app-info">
+          Install <span id="appName">[[mouse.appInfo.appName]]</span>
+        </div>
+        <cr-button id="installButton"
+            on-click="onInstallCompanionAppButtonClicked"
+            aria-labelledby="appName"
+            deep-link-focus-id$="[[Setting.kPowerwash]]">
+           Install
+        </cr-button>
+      </div>
+    </template>
     <template is="dom-if" if="[[allowScrollSettings_]]">
       <h2 class="subsection-subtitle">$i18n{mouseCursor}</h2>
     </template>

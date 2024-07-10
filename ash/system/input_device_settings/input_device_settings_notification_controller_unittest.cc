@@ -46,7 +46,8 @@ const mojom::Mouse kMouse1 = mojom::Mouse(
     mojom::CustomizationRestriction::kAllowCustomizations,
     /*mouse_button_config=*/mojom::MouseButtonConfig::kNoConfig,
     mojom::MouseSettings::New(),
-    mojom::BatteryInfo::New());
+    mojom::BatteryInfo::New(),
+    mojom::CompanionAppInfo::New());
 
 const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
     /*name=*/"Wacom Intuos S",

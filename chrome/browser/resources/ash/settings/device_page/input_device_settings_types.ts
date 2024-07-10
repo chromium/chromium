@@ -163,6 +163,9 @@ export type GraphicsTabletButtonConfig =
 export const GraphicsTabletButtonConfig =
     InputDeviceSettingsTypes.GraphicsTabletButtonConfig;
 
+export type CompanionAppState = InputDeviceSettingsTypes.CompanionAppState;
+export const CompanionAppState = InputDeviceSettingsTypes.CompanionAppState;
+
 export interface KeyboardObserverInterface {
   // Fired when the keyboard list is updated.
   onKeyboardListUpdated(keyboards: Keyboard[]): void;

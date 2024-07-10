@@ -13,6 +13,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/peripherals_app_delegate.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
@@ -295,6 +296,25 @@ mojom::KeyboardSettingsPtr CreateNewKeyboardSettings() {
 
 }  // namespace
 
+class TestPeripheralsAppDelegate : public PeripheralsAppDelegate {
+ public:
+  void set_should_fail(bool should_fail) { should_fail_ = should_fail; }
+
+  void GetCompanionAppInfo(
+      const std::string& device_key,
+      base::OnceCallback<void(const std::optional<mojom::CompanionAppInfo>&)>
+          callback) override {
+    if (should_fail_) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(mojom::CompanionAppInfo());
+  }
+
+ private:
+  bool should_fail_ = false;
+};
+
 class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
  public:
   void InitializeKeyboardSettings(
@@ -471,6 +491,10 @@ class FakeInputDeviceSettingsControllerObserver
     num_touchpad_battery_info_updated_++;
   }
 
+  void OnMouseCompanionAppInfoChanged(const mojom::Mouse& mouse) override {
+    num_mouse_companion_app_info_updated_++;
+  }
+
   uint32_t num_keyboards_connected() { return num_keyboards_connected_; }
   uint32_t num_graphics_tablets_connected() {
     return num_graphics_tablets_connected_;
@@ -510,6 +534,10 @@ class FakeInputDeviceSettingsControllerObserver
     return num_touchpad_battery_info_updated_;
   }
 
+  uint32_t num_mouse_companion_app_info_updated() {
+    return num_mouse_companion_app_info_updated_;
+  }
+
  private:
   uint32_t num_keyboards_connected_ = 0;
   uint32_t num_graphics_tablets_connected_ = 0;
@@ -527,6 +555,7 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_graphics_tablets_battery_info_updated_ = 0;
   uint32_t num_mouse_battery_info_updated_ = 0;
   uint32_t num_touchpad_battery_info_updated_ = 0;
+  uint32_t num_mouse_companion_app_info_updated_ = 0;
 };
 
 class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
@@ -566,12 +595,14 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     std::unique_ptr<FakeKeyboardPrefHandler> keyboard_pref_handler =
         std::make_unique<FakeKeyboardPrefHandler>();
     keyboard_pref_handler_ = keyboard_pref_handler.get();
+    delegate_ = std::make_unique<TestPeripheralsAppDelegate>();
     controller_ = std::make_unique<InputDeviceSettingsControllerImpl>(
         local_state(), std::move(keyboard_pref_handler),
         std::make_unique<TouchpadPrefHandlerImpl>(),
         std::make_unique<MousePrefHandlerImpl>(),
         std::make_unique<PointingStickPrefHandlerImpl>(),
         std::make_unique<GraphicsTabletPrefHandlerImpl>(), task_runner_);
+    controller_->SetPeripheralsAppDelegate(delegate_.get());
     controller_->AddObserver(observer_.get());
     sample_keyboards_ = {kSampleKeyboardUsb, kSampleKeyboardInternal,
                          kSampleKeyboardBluetooth};
@@ -656,6 +687,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
 
  protected:
   std::unique_ptr<InputDeviceSettingsControllerImpl> controller_;
+  std::unique_ptr<TestPeripheralsAppDelegate> delegate_;
   std::unique_ptr<FakeDeviceManager> fake_device_manager_;
   std::vector<ui::InputDevice> sample_keyboards_;
   std::unique_ptr<FakeInputDeviceSettingsControllerObserver> observer_;
@@ -2027,6 +2059,18 @@ TEST_F(InputDeviceSettingsControllerNoSignInTest, ModifierKeyRefresh) {
             ui::mojom::ModifierKey::kRightAlt}),
         keyboard->modifier_keys);
   }
+}
+
+TEST_F(InputDeviceSettingsControllerTest, GetCompanionAppInfo) {
+  fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
+  auto* mouse = controller_->GetMouse(kSampleMouseUsb.id);
+  ASSERT_FALSE(mouse->app_info.is_null());
+
+  fake_device_manager_->RemoveAllDevices();
+  delegate_->set_should_fail(/*should_fail=*/true);
+  fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
+  mouse = controller_->GetMouse(kSampleMouseUsb.id);
+  ASSERT_TRUE(mouse->app_info.is_null());
 }
 
 }  // namespace ash

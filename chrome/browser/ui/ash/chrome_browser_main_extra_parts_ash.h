@@ -21,6 +21,7 @@ class MagicBoostStateAsh;
 class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
 class OobeDialogUtil;
+class PeripheralsAppDelegateImpl;
 class VideoConferenceTrayController;
 }  // namespace ash
 
@@ -167,6 +168,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<DesksClient> desks_client_;
   std::unique_ptr<CampaignsManagerClientImpl> campaigns_manager_client_;
   std::unique_ptr<CampaignsManagerSession> campaigns_manager_session_;
+  std::unique_ptr<ash::PeripheralsAppDelegateImpl> peripherals_app_delegate_;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ExoParts> exo_parts_;

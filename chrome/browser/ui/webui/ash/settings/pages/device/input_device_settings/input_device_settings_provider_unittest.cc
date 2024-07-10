@@ -99,7 +99,8 @@ const ::ash::mojom::Mouse kMouse1 = ::ash::mojom::Mouse(
     ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
     /*mouse_button_config=*/::ash::mojom::MouseButtonConfig::kNoConfig,
     ::ash::mojom::MouseSettings::New(),
-    ::ash::mojom::BatteryInfo::New());
+    ::ash::mojom::BatteryInfo::New(),
+    ::ash::mojom::CompanionAppInfo::New());
 const ::ash::mojom::Mouse kMouse2 = ::ash::mojom::Mouse(
     /*name=*/"MX Anywhere 2S",
     /*is_external=*/true,
@@ -109,7 +110,8 @@ const ::ash::mojom::Mouse kMouse2 = ::ash::mojom::Mouse(
     ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
     /*mouse_button_config=*/::ash::mojom::MouseButtonConfig::kNoConfig,
     ::ash::mojom::MouseSettings::New(),
-    ::ash::mojom::BatteryInfo::New());
+    ::ash::mojom::BatteryInfo::New(),
+    ::ash::mojom::CompanionAppInfo::New());
 const ::ash::mojom::GraphicsTablet kGraphicsTablet1 =
     ::ash::mojom::GraphicsTablet(
         /*name=*/"Wacom Intuos S",

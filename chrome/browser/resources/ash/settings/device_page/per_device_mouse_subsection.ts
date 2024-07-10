@@ -35,7 +35,7 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {CustomizationRestriction, InputDeviceSettingsProviderInterface, Mouse, MousePolicies, MouseSettings} from './input_device_settings_types.js';
+import {CompanionAppState, CustomizationRestriction, InputDeviceSettingsProviderInterface, Mouse, MousePolicies, MouseSettings} from './input_device_settings_types.js';
 import {createBluetoothDeviceProperties, getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_mouse_subsection.html.js';
 
@@ -307,6 +307,14 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     return this.customizationRestriction ===
         CustomizationRestriction.kDisallowCustomizations &&
         this.isPeripheralCustomizationEnabled_;
+  }
+
+  private showInstallAppRow(): boolean {
+    return this.mouse.appInfo?.state === CompanionAppState.kAvailable;
+  }
+
+  private onInstallCompanionAppButtonClicked(): void {
+    window.open(this.mouse.appInfo?.actionLink);
   }
 
   private updateSettingsToCurrentPrefs(): void {

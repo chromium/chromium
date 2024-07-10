@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorAction, ActionChoice, ChargeState, CustomizableButton, CustomizationRestriction, ExtendedFkeysModifier, GraphicsTablet, GraphicsTabletButtonConfig, Keyboard, MetaKey, ModifierKey, Mouse, MouseButtonConfig, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
+import {AcceleratorAction, ActionChoice, ChargeState, CompanionAppState, CustomizableButton, CustomizationRestriction, ExtendedFkeysModifier, GraphicsTablet, GraphicsTabletButtonConfig, Keyboard, MetaKey, ModifierKey, Mouse, MouseButtonConfig, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -462,6 +462,13 @@ export const fakeMice: Mouse[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: {
+      packageId: '',
+      appName: '',
+      actionLink: '',
+      iconUrl: '',
+      state: CompanionAppState.kAvailable,
+    },
   },
   {
     id: 5,
@@ -508,6 +515,13 @@ export const fakeMice: Mouse[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: {
+      packageId: '',
+      appName: '',
+      actionLink: '',
+      iconUrl: '',
+      state: CompanionAppState.kAvailable,
+    },
   },
 ];
 
@@ -531,6 +545,13 @@ export const fakeMice2: Mouse[] = [
     batteryInfo: {
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
+    },
+    appInfo: {
+      packageId: '',
+      appName: '',
+      actionLink: '',
+      iconUrl: '',
+      state: CompanionAppState.kAvailable,
     },
   },
 ];

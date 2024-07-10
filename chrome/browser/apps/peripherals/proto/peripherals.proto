@@ -1,0 +1,60 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package apps.proto;
+
+import "chrome/browser/apps/almanac_api_client/proto/client_context.proto";
+
+// This file is a mirror of the proto file maintained in the server code base at
+// go/peripherals-proto. Changes should be made by updating the server code base
+// and then copying the result to Chromium.
+
+// Inbound request for the Peripherals endpoint.
+message PeripheralsGetRequest {
+  // Context information about the device making this request.
+  optional ClientDeviceContext device_context = 1;
+
+  // Context information about the user making this request.
+  optional ClientUserContext user_context = 2;
+
+  // The string device identifier (ie. "vpid:dvid") for the vendor/product being
+  // requested.
+  optional string device = 3;
+}
+
+message PeripheralsGetResponse {
+  // An individual App Icon.
+  message Icon {
+    // Url to query to get the icon itself (ie. the bytes).
+    optional string url = 1;
+
+    // Width of the icon in pixels.
+    optional int32 width_in_pixels = 2;
+
+    // Mime type of the icon.
+    optional string mime_type = 3;
+
+    // Whether or not we have permission from the platform to mask the icon.
+    // This means that ChromeOS will put a circle around it.
+    optional bool is_masking_allowed = 4;
+  }
+  // The UUID of the AppGroup for this application.
+  optional string app_group_uuid = 1;
+
+  // The PackageId for this app.
+  optional string package_id = 2;
+
+  // The Icon to display for this app.
+  optional Icon icon = 3;
+
+  // The localised human readable string for the name of this app.
+  optional string name = 4;
+
+  // The URL to invoke to initiate Unified App Installation for this app.
+  optional string action_link = 5;
+}

@@ -139,6 +139,30 @@ struct BatteryInfo {
   ChargeState charge_state;
 };
 
+// Represents the different states a companion app can be in.
+enum CompanionAppState {
+  kAvailable,
+  kInstalled,
+};
+
+// Holds information about a companion app for a connected device.
+struct CompanionAppInfo {
+  // The PackageId for this app.
+  string package_id;
+
+  // The localised human readable string for the name of this app.
+  string app_name;
+
+  // The URL to invoke to initiate Unified App Installation for this app.
+  string action_link;
+
+  // The URL of the icon to represent the companion app visually.
+  string icon_url;
+
+  // The current state of the companion app (e.g., available, installed, etc.)
+  CompanionAppState state;
+};
+
 // Contains all information needed to display, apply, and update keyboard
 // settings.
 struct Keyboard {
@@ -200,6 +224,7 @@ struct Mouse {
   MouseButtonConfig mouse_button_config;
   MouseSettings settings;
   BatteryInfo? battery_info;
+  CompanionAppInfo? app_info;
 };
 
 // Contains all existing mouse settings available for use.

@@ -11,6 +11,7 @@
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/peripherals_app_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -147,6 +148,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
     return *duplicate_id_finder_;
   }
 
+  void SetPeripheralsAppDelegate(PeripheralsAppDelegate* delegate);
+
  private:
   void Init();
 
@@ -239,6 +242,14 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RefreshCachedMouseSettings();
   void RefreshCachedKeyboardSettings();
   void RefreshCachedTouchpadSettings();
+
+  // Refreshes all companion app info for connected devices.
+  void RefreshCompanionAppInfoForConnectedDevices();
+  void OnCompanionAppInfoReceived(
+      DeviceId id,
+      const std::optional<mojom::CompanionAppInfo>& info);
+
+  void DispatchMouseCompanionAppInfoChanged(const mojom::Mouse& mouse);
 
   // Get the mouse customization restriction based on the mouse metadata. Return
   // kDisableKeyEventRewrites by default if there is no mouse metadata.
@@ -346,6 +357,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   raw_ptr<PrefService> active_pref_service_ = nullptr;  // Not owned.
+  raw_ptr<PeripheralsAppDelegate> delegate_ = nullptr;  // Not owned.
   std::optional<AccountId> active_account_id_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

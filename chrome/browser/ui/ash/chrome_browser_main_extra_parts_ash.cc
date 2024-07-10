@@ -15,6 +15,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
+#include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
@@ -418,6 +420,14 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
         ash::Shell::Get()->refresh_rate_controller()->SetGameMode(
             window, game_mode == GameMode::BOREALIS);
       }));
+
+  if (ash::features::IsWelcomeExperienceEnabled()) {
+    peripherals_app_delegate_ =
+        std::make_unique<ash::PeripheralsAppDelegateImpl>();
+    ash::Shell::Get()
+        ->input_device_settings_controller()
+        ->SetPeripheralsAppDelegate(peripherals_app_delegate_.get());
+  }
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();

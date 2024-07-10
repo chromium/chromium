@@ -125,6 +125,8 @@ class InputDeviceSettingsProvider
   void OnMouseBatteryInfoChanged(const ::ash::mojom::Mouse& mouse) override;
   void OnTouchpadBatteryInfoChanged(
       const ::ash::mojom::Touchpad& touchpad) override;
+  void OnMouseCompanionAppInfoChanged(
+      const ::ash::mojom::Mouse& mouse) override;
 
   void StartObserving(uint32_t device_id) override;
   void StopObserving() override;
