@@ -24,6 +24,8 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_feature_checks.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -58,13 +60,14 @@ enum DCLayerResult {
   DC_LAYER_FAILED_OUTPUT_HDR = 14,
   DC_LAYER_FAILED_NOT_DAMAGED = 15,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED = 16,
-  DC_LAYER_FAILED_HDR_TONE_MAPPING = 17,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_TONE_MAPPING = 17,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA = 18,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG = 19,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT = 20,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN [[deprecated]] = 21,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010 = 22,
-  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_UNSUPPORTED_COLORSPACE = 23,
+  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_UNSUPPORTED_COLORSPACE,
 };
 
 bool IsCompatibleHDRMetadata(
@@ -97,6 +100,12 @@ DCLayerResult ValidateYUVOverlay(
 
   if (processed_yuv_overlay_count >= allowed_yuv_overlay_count) {
     return DC_LAYER_FAILED_TOO_MANY_OVERLAYS;
+  }
+
+  // For YUV color spaces that VP couldn't handle, stop promote overlay.
+  if ((video_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB) &&
+      !gfx::ColorSpaceWin::CanConvertToDXGIColorSpace(video_color_space)) {
+    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_UNSUPPORTED_COLORSPACE;
   }
 
   // HLG shouldn't have the hdr metadata, but we don't want to promote it to
@@ -173,6 +182,14 @@ DCLayerResult ValidateYUVQuad(
   for (const auto& filter_target_rect : backdrop_filter_rects) {
     if (filter_target_rect.Intersects(quad_target_rect))
       return DC_LAYER_FAILED_BACKDROP_FILTERS;
+  }
+
+  // For YUV color spaces that VP couldn't handle, stop promote overlay.
+  if ((quad->video_color_space.GetMatrixID() !=
+       gfx::ColorSpace::MatrixID::RGB) &&
+      !gfx::ColorSpaceWin::CanConvertToDXGIColorSpace(
+          quad->video_color_space)) {
+    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_UNSUPPORTED_COLORSPACE;
   }
 
   // HLG shouldn't have the hdr metadata, but we don't want to promote it to
@@ -1338,7 +1355,8 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
       // tone mapping to avoid a visual difference between Viz and video
       // processor.
       if (system_hdr_disabled_on_any_display_) {
-        RecordDCLayerResult(DC_LAYER_FAILED_HDR_TONE_MAPPING, it);
+        RecordDCLayerResult(DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_TONE_MAPPING,
+                            it);
         return true;
       }
     }

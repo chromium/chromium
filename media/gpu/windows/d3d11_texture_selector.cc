@@ -14,6 +14,7 @@
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "media/gpu/windows/format_utils.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -72,13 +73,13 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       // be rendered in ARGB formats to avoid chroma downsampling. For
       // HDR contents, we should not let YUV to RGB conversion happens
       // inside D3D11VideoDecoder, the only place for the conversion
-      // should be Gfx::ColorTransform or SwapChainPresenter. For the GBR
-      // matrix, VP isn't able to handle the correct color conversion,
-      // so the current workaround is to output a 4:2:0 YUV format and let
+      // should be Gfx::ColorTransform or SwapChainPresenter. For color
+      // spaces that VP isn't able to handle the correct color conversion,
+      // the current workaround is to output a 4:2:0 YUV format and let
       // viz handle the conversion at the expense of losing 4:4:4 chroma
       // sampling. See https://crbug.com/343014700.
       if (!input_color_space.IsHDR() &&
-          input_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::GBR &&
+          gfx::ColorSpaceWin::CanConvertToDXGIColorSpace(input_color_space) &&
           supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_pixel_format = PIXEL_FORMAT_ARGB;
         output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -133,13 +134,12 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       // downsampling. For HDR contents, we should not let YUV to RGB
       // conversion happens inside D3D11VideoDecoder, the only place
       // for the conversion should be Gfx::ColorTransform or
-      // SwapChainPresenter. For the GBR matrix, VP isn't able to handle
-      // the correct color conversion, so the current workaround is to
-      // output a 4:2:0 YUV format and let viz handle the conversion at
-      // the expense of losing 4:4:4 chroma sampling. See
-      // https://crbug.com/343014700.
+      // SwapChainPresenter. For color spaces that VP isn't able to handle
+      // the correct color conversion, the current workaround is to output
+      // a 4:2:0 YUV format and let viz handle the conversion at the expense
+      // of losing 4:4:4 chroma sampling. See https://crbug.com/343014700.
       if (!input_color_space.IsHDR() &&
-          input_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::GBR &&
+          gfx::ColorSpaceWin::CanConvertToDXGIColorSpace(input_color_space) &&
           supports_fmt(DXGI_FORMAT_R10G10B10A2_UNORM)) {
         output_dxgi_format = DXGI_FORMAT_R10G10B10A2_UNORM;
         output_pixel_format = PIXEL_FORMAT_XB30;

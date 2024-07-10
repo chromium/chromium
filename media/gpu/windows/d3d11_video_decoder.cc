@@ -960,15 +960,10 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   // video. As a result, we should not allow overlay for non-NV12/P010 formats
   // which may cause chroma downsampling when blitting into the back buffer.
   // See https://crbugs.com/331679628 for more details.
-  //
-  // For the GBR matrix, VP isn't able to handle the correct color conversion,
-  // so the current workaround is to disable overlay and let viz handle the
-  // conversion. See https://crbug.com/343014700.
   if (!config_.is_encrypted()) {
     frame->metadata().allow_overlay =
-        picture_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::GBR &&
-        (texture_selector_->OutputDXGIFormat() == DXGI_FORMAT_P010 ||
-         texture_selector_->OutputDXGIFormat() == DXGI_FORMAT_NV12);
+        texture_selector_->OutputDXGIFormat() == DXGI_FORMAT_P010 ||
+        texture_selector_->OutputDXGIFormat() == DXGI_FORMAT_NV12;
   }
   frame->metadata().power_efficient = true;
 

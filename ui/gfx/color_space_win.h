@@ -22,6 +22,9 @@ class COLOR_SPACE_EXPORT ColorSpaceWin {
  public:
   static DXVA2_ExtendedFormat GetExtendedFormat(const ColorSpace& color_space);
 
+  // Returns false if the given color space couldn't be supported by DXGI.
+  static bool CanConvertToDXGIColorSpace(const ColorSpace& color_space);
+
   // Returns a DXGI_COLOR_SPACE value based on the primaries and transfer
   // function of |color_space|. If the color space's MatrixID is RGB, then the
   // returned color space is also RGB unless |force_yuv| is true in which case
