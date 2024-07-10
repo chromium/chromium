@@ -38,7 +38,19 @@ declare_args() {
   # generation of snapshot_blob.bin take ~40-60 s longer. Therefore this
   # defaults to off.
   enable_iterator_debugging = false
+
+  # Use Clang header modules for libc++.
+  # This is experimental only (see crbug.com/543704).
+  # This currently uses implicit modules, which are created on-the-fly when
+  # Clang doesn't see them in the module cache. This doesn't work with remote
+  # execution.
+  # Performance is worse than without modules when Chrome Clang plugins are on
+  # and worse when the module cache isn't warm.
+  use_libcxx_modules = false
 }
+
+assert(!use_libcxx_modules || !use_remoteexec,
+       "Implicit Clang header modules don't work with remote execution.")
 
 use_custom_libcxx =
     use_custom_libcxx || (use_custom_libcxx_for_host && !is_a_target_toolchain)
@@ -88,6 +100,7 @@ if (is_android && export_libcxxabi_from_executables) {
 
 libcxx_prefix = "//third_party/libc++/src"
 libcxxabi_prefix = "//third_party/libc++abi/src"
+libcxx_module_prefix = "$root_gen_dir/libcxx"
 
 assert(!(is_ios && libcxx_is_shared),
        "Can't build libc++ as a shared library on iOS.")

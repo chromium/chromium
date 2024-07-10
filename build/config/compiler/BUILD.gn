@@ -1657,6 +1657,34 @@ config("compiler_arm") {
   }
 }
 
+config("libcxx_module") {
+  if (use_libcxx_modules) {
+    modulemap = rebase_path("//third_party/libc++/src/include/module.modulemap",
+                            root_build_dir)
+    cflags_cc = [
+      "-fmodules",
+      "-fmodule-map-file=" + modulemap,
+      "-fno-implicit-module-maps",
+      "-fbuiltin-module-map",
+      "-fmodules-cache-path=" +
+          rebase_path("$libcxx_module_prefix/module_cache", root_build_dir),
+
+      "-Xclang",
+      "-fmodules-local-submodule-visibility",  # required for builtins
+
+      # TODO(crbug.com/1456385): Figure out if this can be removed.
+      "-Wno-modules-ambiguous-internal-linkage",
+
+      # TODO(crbug.com/40440396): Clean up.
+      "-Wno-modules-import-nested-redundant",
+
+      # Needed to allow using builtin modules when the headers are
+      # unnecessarily using extern "C".
+      "-Wno-module-import-in-extern-c",
+    ]
+  }
+}
+
 # runtime_library -------------------------------------------------------------
 #
 # Sets the runtime library and associated options.
