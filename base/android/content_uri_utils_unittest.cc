@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/android/content_uri_utils.h"
+
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/test_file_util.h"
@@ -12,7 +14,7 @@ namespace base {
 namespace android {
 
 // Disable test on Android due to flakiness: crbug.com/807080, crbug/1054637.
-TEST(ContentUriUtilsTest, DISABLED_ContentUriMimeTest) {
+TEST(ContentUriUtilsTest, DISABLED_Test) {
   // Get the test image path.
   FilePath data_dir;
   ASSERT_TRUE(PathService::Get(DIR_TEST_DATA, &data_dir));
@@ -26,12 +28,20 @@ TEST(ContentUriUtilsTest, DISABLED_ContentUriMimeTest) {
   EXPECT_TRUE(path.IsContentUri());
   EXPECT_TRUE(PathExists(path));
 
+  // Validate GetContentUriMimeType().
   std::string mime = GetContentUriMimeType(path);
   EXPECT_EQ(mime, std::string("image/png"));
+
+  // Validate GetContentUriFileSize().
+  File::Info info;
+  EXPECT_TRUE(GetFileInfo(path, &info));
+  EXPECT_GT(info.size, 0);
+  EXPECT_EQ(GetContentUriFileSize(path), info.size);
 
   FilePath invalid_path("content://foo.bar");
   mime = GetContentUriMimeType(invalid_path);
   EXPECT_TRUE(mime.empty());
+  EXPECT_EQ(GetContentUriFileSize(invalid_path), -1);
 }
 
 }  // namespace android
