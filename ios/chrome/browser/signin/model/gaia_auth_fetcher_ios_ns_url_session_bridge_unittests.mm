@@ -409,12 +409,11 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCookieStore) {
 
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
 
-  EXPECT_TRUE(url_session_configuration_.HTTPCookieStorage.cookies.count == 1);
+  EXPECT_EQ(url_session_configuration_.HTTPCookieStorage.cookies.count, 1ul);
   // Check that sent cookie is equal to the cookie in the storage.
-  EXPECT_TRUE([GetStringWithNSHTTPCookie(cookie_to_send)
-      isEqualToString:GetStringWithNSHTTPCookie(
-                          url_session_configuration_.HTTPCookieStorage
-                              .cookies[0])]);
+  EXPECT_NSEQ(GetStringWithNSHTTPCookie(cookie_to_send),
+              GetStringWithNSHTTPCookie(
+                  url_session_configuration_.HTTPCookieStorage.cookies[0]));
 
   ASSERT_TRUE(completion_handler_);
 
