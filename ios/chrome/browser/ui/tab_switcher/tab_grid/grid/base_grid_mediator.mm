@@ -1019,7 +1019,29 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)ungroupTabGroup:(const TabGroup*)group {
-  [self deleteGroup:group];
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
+
+  WebStateList* groupWebStateList = [self groupWebStateList:group];
+  if (!groupWebStateList) {
+    // The group has already been removed.
+    return;
+  }
+
+  if (groupWebStateList != _webStateList) {
+    // `group` is not in the set of groups of the `_webStateList`, so `group`
+    // should be a search result from a different window. Since this item is not
+    // from the current browser, no UI updates will be sent to the current grid.
+    // Notify the current grid consumer about the change.
+    CHECK(self.currentMode == TabGridModeSearch, base::NotFatalUntil::M130);
+    GridItemIdentifier* identifierToRemove =
+        [GridItemIdentifier groupIdentifier:group
+                           withWebStateList:groupWebStateList];
+    [self.consumer removeItemWithIdentifier:identifierToRemove
+                     selectedItemIdentifier:nil];
+  }
+
+  groupWebStateList->DeleteGroup(group);
 }
 
 - (void)closeAllItems {
@@ -1566,37 +1588,6 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 }
 
-// Deletes the group only while keeping the web states of the group in the
-// `_webStateList`.
-- (void)deleteGroup:(const TabGroup*)group {
-  if (_webStateList->ContainsGroup(group)) {
-    // Calling `DeleteGroup` will result in sending a `kGroupDelete` change to
-    // the observers which will take of updating the consumer.
-    _webStateList->DeleteGroup(group);
-    return;
-  }
-
-  // `group` is not in the set of groups of the `_webStateList`, so `group`
-  // should be a search result from a different window. Since this item is not
-  // from the current browser, no UI updates will be sent to the current grid.
-  // Notify the current grid consumer about the change.
-  GridItemIdentifier* identifierToRemove =
-      [GridItemIdentifier groupIdentifier:group withWebStateList:_webStateList];
-  [self.consumer removeItemWithIdentifier:identifierToRemove
-                   selectedItemIdentifier:nil];
-
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(self.browserState);
-  Browser* browser = GetBrowserForGroup(browserList, group,
-                                        self.browserState->IsOffTheRecord());
-
-  // If this group is still associated with another browser, remove it from the
-  // associated web state list.
-  if (browser) {
-    WebStateList* groupWebStateList = browser->GetWebStateList();
-    groupWebStateList->DeleteGroup(group);
-  }
-}
 
 // Returns the associated WebStateList for the given `group`.
 - (WebStateList*)groupWebStateList:(const TabGroup*)group {

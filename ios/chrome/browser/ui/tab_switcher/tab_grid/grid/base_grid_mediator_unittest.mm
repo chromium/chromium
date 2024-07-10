@@ -733,24 +733,57 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
   EXPECT_NSEQ(@"My group", groups.children[0].title);
 }
 
-// Tests that ungrouping a group is working.
-TEST_P(BaseGridMediatorTest, UngroupGroup) {
+// Tests that ungrouping a group correctly deletes the group.
+TEST_P(BaseGridMediatorTest, UnGroup) {
+  scoped_feature_list_.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+
+  tab_groups::MockTabGroupSyncService* mock_service =
+      static_cast<tab_groups::MockTabGroupSyncService*>(
+          tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+              browser_state_.get()));
+
   WebStateList* web_state_list = browser_->GetWebStateList();
-
-  web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  web_state_list->CreateGroup({1}, {}, tab_group_id);
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
-
-  EXPECT_EQ(3UL, consumer_.items.size());
+  EXPECT_EQ(1u, web_state_list->GetGroups().size());
   EXPECT_EQ(3, web_state_list->count());
-  EXPECT_EQ(1UL, web_state_list->GetGroups().size());
-  EXPECT_NE(nullptr, group);
+
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id)).Times(0);
 
   [mediator_ ungroupTabGroup:group];
-
-  EXPECT_EQ(3UL, consumer_.items.size());
+  EXPECT_EQ(0u, web_state_list->GetGroups().size());
   EXPECT_EQ(3, web_state_list->count());
-  EXPECT_EQ(0UL, web_state_list->GetGroups().size());
-  EXPECT_EQ(nullptr, web_state_list->GetGroupOfWebStateAt(1));
+}
+
+// Tests that ungrouping a group from another browser (e.g from Search)
+// correctly deletes the group.
+TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
+  scoped_feature_list_.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  mediator_.currentMode = TabGridModeSearch;
+
+  WebStateList* other_web_state_list = other_browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(other_web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a b c d e f g", other_browser_->GetBrowserState()));
+
+  tab_groups::MockTabGroupSyncService* mock_service =
+      static_cast<tab_groups::MockTabGroupSyncService*>(
+          tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+              browser_state_.get()));
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  other_web_state_list->CreateGroup({1}, {}, tab_group_id);
+  const TabGroup* group = other_web_state_list->GetGroupOfWebStateAt(1);
+  EXPECT_EQ(1u, other_web_state_list->GetGroups().size());
+  EXPECT_EQ(7, other_web_state_list->count());
+
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id)).Times(0);
+
+  [mediator_ ungroupTabGroup:group];
+  EXPECT_EQ(0u, other_web_state_list->GetGroups().size());
+  EXPECT_EQ(7, other_web_state_list->count());
 }
 
 // Tests that closing the last tab of a selected group clears the selection.
@@ -789,6 +822,8 @@ TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
   EXPECT_CALL(*mock_service, GetGroup(tab_group_id))
       .WillOnce(testing::Return(TestSavedGroup()));
   EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id));
+  EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id)).Times(0);
+
   [mediator_ closeItemWithIdentifier:[GridItemIdentifier
                                           groupIdentifier:group
                                          withWebStateList:web_state_list]];
@@ -819,6 +854,8 @@ TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
   EXPECT_CALL(*mock_service, GetGroup(tab_group_id))
       .WillOnce(testing::Return(TestSavedGroup()));
   EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id));
+  EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id)).Times(0);
+
   [mediator_
       closeItemWithIdentifier:[GridItemIdentifier
                                    groupIdentifier:group
