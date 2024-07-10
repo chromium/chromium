@@ -106,26 +106,6 @@ enum class ValuePatternsMetric {
   kMaxValue = kIban,
 };
 
-// Describes whether Autocomplete suggestions would have been suppressed by a
-// plus address suggestion.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// TODO(crbug.com/327328460): Clean up once the metric is has been evaluated.
-enum class AutocompleteSuppressionByPlusAddress {
-  // The Autocomplete suggestions would not have been suppressed.
-  kNotSuppressed = 0,
-  // The Autocomplete suggestions would have been suppressed and would have
-  // contained email addresses.
-  kSuppressedWithEmailResults = 1,
-  // The Autocomplete suggestions would have been suppressed and would not have
-  // contained email addresses.
-  kSuppressedWithoutEmailResults = 2,
-  kMaxValue = kSuppressedWithoutEmailResults,
-};
-
-inline constexpr char kAutocompleteSuppressionByPlusAddressUma[] =
-    "Autofill.Autocomplete.SuppressionByPlusAddress";
-
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
 class BrowserAutofillManager : public AutofillManager {
@@ -381,22 +361,6 @@ class BrowserAutofillManager : public AutofillManager {
   autofill_metrics::ManualFallbackEventLogger& GetManualFallbackEventLogger() {
     return *manual_fallback_logger_;
   }
-
-  // Attempts to show touch-to-fill with `suggestions` and falls back to showing
-  // the keyboard accessory/popup if that is not available. Called only for
-  // single field form filler suggestions.
-  // This callback will be triggered by running
-  // SingleFieldFormFiller::OnSuggestionsReturnedCallback.
-  // When `form_element_was_clicked` is true, it indicates that the form field
-  // has been clicked. `request_start_time` is the time when the user clicks on
-  // the form field, and `focused_field_type_group` specifies the type of field
-  // being focused.
-  void OnGetSingleFieldSuggestionsCallback(
-      bool form_element_was_clicked,
-      const FormData& form,
-      FieldTypeGroup focused_field_type_group,
-      FieldGlobalId field_id,
-      const std::vector<Suggestion>& suggestions);
 
  protected:
   // Stores a `callback` for `form_signature`, possibly overriding an older

@@ -279,51 +279,6 @@ bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
   }
 }
 
-// Is `suggestions` contains Autocomplete suggestions, then this function logs
-// a metric to record whether Autocomplete would have been suppressed due to
-// a plus address suggestion.
-// It only logs these metrics for users that are signed in and tabs that are not
-// in incognito mode.
-// TODO(crbug.com/327328460): Clean up once the metric is has been evaluated.
-void MaybeLogAutocompleteSuppressionByPlusAddresses(
-    AutofillClient& client,
-    base::span<const Suggestion> suggestions,
-    FieldTypeGroup focused_field_type_group) {
-  if (client.IsOffTheRecord()) {
-    return;
-  }
-
-  // Do not log metrics for users that are not signed in.
-  if (signin::IdentityManager* identity_manager = client.GetIdentityManager();
-      !identity_manager ||
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .IsEmpty()) {
-    return;
-  }
-
-  if (suggestions.empty() ||
-      GetFillingProductFromSuggestionType(suggestions[0].type) !=
-          FillingProduct::kAutocomplete) {
-    return;
-  }
-
-  // If the focused field is not classified as an email address, plus addresses
-  // would never be shown.
-  using enum AutocompleteSuppressionByPlusAddress;
-  if (focused_field_type_group != FieldTypeGroup::kEmail) {
-    base::UmaHistogramEnumeration(kAutocompleteSuppressionByPlusAddressUma,
-                                  kNotSuppressed);
-    return;
-  }
-  const bool has_email =
-      base::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
-        return IsValidEmailAddress(suggestion.main_text.value);
-      });
-  base::UmaHistogramEnumeration(
-      kAutocompleteSuppressionByPlusAddressUma,
-      has_email ? kSuppressedWithEmailResults : kSuppressedWithoutEmailResults);
-}
-
 FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAutocompleteEntry:
@@ -1497,10 +1452,15 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
         single_field_form_fill_router_->OnGetSingleFieldSuggestions(
             form_structure, field, autofill_field, client(),
             base::BindRepeating(
-                &BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback,
-                weak_ptr_factory_.GetWeakPtr(), form_element_was_clicked, form,
-                autofill_field ? autofill_field->Type().group()
-                               : FieldTypeGroup::kNoGroup));
+                [](base::WeakPtr<BrowserAutofillManager> self,
+                   FieldGlobalId field_id,
+                   const std::vector<Suggestion>& suggestions) {
+                  if (self) {
+                    self->external_delegate_->OnSuggestionsReturned(
+                        field_id, suggestions);
+                  }
+                },
+                weak_ptr_factory_.GetWeakPtr()));
     if (handled_by_single_field_form_filler) {
       // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
       // will handle sending the results back to the renderer.
@@ -2195,17 +2155,6 @@ void BrowserAutofillManager::
         self->four_digit_combinations_in_dom_ = four_digit_combinations_in_dom;
       },
       weak_ptr_factory_.GetWeakPtr()));
-}
-
-void BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback(
-    bool form_element_was_clicked,
-    const FormData& form,
-    FieldTypeGroup focused_field_type_group,
-    FieldGlobalId field_id,
-    const std::vector<Suggestion>& suggestions) {
-  MaybeLogAutocompleteSuppressionByPlusAddresses(client(), suggestions,
-                                                 focused_field_type_group);
-  external_delegate_->OnSuggestionsReturned(field_id, suggestions);
 }
 
 void BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
