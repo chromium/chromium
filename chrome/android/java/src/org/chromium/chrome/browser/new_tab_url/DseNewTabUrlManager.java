@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.url.GURL;
 
 /**
@@ -29,6 +30,7 @@ public class DseNewTabUrlManager {
     private ObservableSupplier<Profile> mProfileSupplier;
     private Callback<Profile> mProfileCallback;
     private TemplateUrlService mTemplateUrlService;
+    private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
 
     private static final String SWAP_OUT_NTP_PARAM = "swap_out_ntp";
     public static final BooleanCachedFieldTrialParameter SWAP_OUT_NTP =
@@ -65,7 +67,8 @@ public class DseNewTabUrlManager {
             mProfileSupplier = null;
         }
         if (mTemplateUrlService != null) {
-            mTemplateUrlService.removeObserver(this::onTemplateURLServiceChanged);
+            mTemplateUrlService.removeObserver(mTemplateUrlServiceObserver);
+            mTemplateUrlServiceObserver = null;
             mTemplateUrlService = null;
         }
     }
@@ -145,7 +148,10 @@ public class DseNewTabUrlManager {
     @VisibleForTesting
     void onProfileAvailable(Profile profile) {
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
-        mTemplateUrlService.addObserver(this::onTemplateURLServiceChanged);
+        if (mTemplateUrlServiceObserver == null) {
+            mTemplateUrlServiceObserver = this::onTemplateURLServiceChanged;
+            mTemplateUrlService.addObserver(mTemplateUrlServiceObserver);
+        }
         onTemplateURLServiceChanged();
         mProfileSupplier.removeObserver(mProfileCallback);
         mProfileCallback = null;
