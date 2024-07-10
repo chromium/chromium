@@ -269,8 +269,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   private async updateColors_() {
     assert(this.theme_);
     this.colors_ =
-        (await this.handler_.getChromeColors(this.theme_.isDarkMode, false))
-            .colors;
+        (await this.handler_.getChromeColors(this.theme_.isDarkMode)).colors;
   }
 
   protected onManagedDialogClosed_() {

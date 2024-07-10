@@ -36,8 +36,6 @@ suite('CrComponentsThemeColorTest', () => {
     const wrapper = colorElement.shadowRoot!.querySelector(
         'cr-theme-color-check-mark-wrapper')!;
     assertTrue(wrapper.checked);
-    const svg = colorElement.shadowRoot!.querySelector('svg')!;
-    assertTrue(hasStyle(svg, 'border', '0px none rgb(0, 0, 0)'));
   });
 
   test('color can be unchecked', async () => {
@@ -49,8 +47,6 @@ suite('CrComponentsThemeColorTest', () => {
     const wrapper = colorElement.shadowRoot!.querySelector(
         'cr-theme-color-check-mark-wrapper')!;
     assertFalse(wrapper.checked);
-    const svg = colorElement.shadowRoot!.querySelector('svg')!;
-    assertTrue(hasStyle(svg, 'border', '1px solid rgba(0, 0, 0, 0)'));
   });
 
   test('background color can be hidden', async () => {

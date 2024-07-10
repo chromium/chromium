@@ -32,22 +32,20 @@ svg {
   fill: var(--cr-theme-color-background-color);
 }
 
-:host(:not([checked])) svg {
-  border: 1px solid var(--cr-theme-color-border-color,
-                        var(--cr-theme-color-foreground-color));
+#foreground {
+  fill: var(--cr-theme-color-foreground-color);
+}
+
+#base {
+  fill: var(--cr-theme-color-base-color);
 }
 
 :host([background-color-hidden]) #background {
   display: none;
 }
 
-#foreground {
-  fill: var(--cr-theme-color-foreground-color);
-}
-
-#base {
+:host([background-color-hidden]) #base {
   display: none;
-  fill: var(--cr-theme-color-base-color);
 }
 
 /* Set styles for high contrast mode in Windows. */
@@ -56,12 +54,4 @@ svg {
     /* Set outline to hcm (high contrast mode) value. */
     outline: var(--cr-focus-outline-hcm) !important;
   }
-}
-
-:host([basic-color]) svg {
-  border: none;
-}
-
-:host([basic-color]):host(:not([background-color-hidden])) #base {
-  display: block;
 }

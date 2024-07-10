@@ -48,7 +48,3 @@ svg {
 #checkMark {
   fill: var(--cr-theme-color-check-mark-wrapper-color);
 }
-
-:host([checked]) ::slotted(*) {
-  border: 2px solid var(--cr-theme-color-check-mark-wrapper-background);
-}

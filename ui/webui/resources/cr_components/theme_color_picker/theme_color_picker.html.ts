@@ -21,11 +21,9 @@ export function getHtml(this: ThemeColorPickerElement) {
       aria-label="${this.i18n('defaultColorName')}"
       role="radio"
       ?checked="${this.isDefaultColorSelected_}"
-      checkmark-border-hidden
       aria-checked="${this.isDefaultColorSelected_}"
       tabindex="${this.tabIndex_(this.isDefaultColorSelected_)}"
-      @click="${this.onDefaultColorClick_}"
-      basic-color>
+      @click="${this.onDefaultColorClick_}">
   </cr-theme-color>
   <cr-theme-color
       id="greyDefaultColor"
@@ -36,11 +34,9 @@ export function getHtml(this: ThemeColorPickerElement) {
       aria-label="${this.i18n('greyDefaultColorName')}"
       role="radio"
       ?checked="${this.isGreyDefaultColorSelected_}"
-      checkmark-border-hidden
       aria-checked="${this.isGreyDefaultColorSelected_}"
       tabindex="${this.tabIndex_(this.isGreyDefaultColorSelected_)}"
-      @click="${this.onGreyDefaultColorClick_}"
-      basic-color>
+      @click="${this.onGreyDefaultColorClick_}">
   </cr-theme-color>
   ${this.colors_.map((item, index) => html`
     <cr-theme-color
@@ -52,13 +48,11 @@ export function getHtml(this: ThemeColorPickerElement) {
         aria-label="${item.name}"
         role="radio"
         ?checked="${this.isChromeColorSelected_(item.seed, item.variant)}"
-        checkmark-border-hidden
         aria-checked=
             "${this.isChromeColorSelected_(item.seed, item.variant)}"
         tabindex="${this.chromeColorTabIndex_(item.seed, item.variant)}"
         data-index="${index}"
-        @click="${this.onChromeColorClick_}"
-        basic-color>
+        @click="${this.onChromeColorClick_}">
     </cr-theme-color>
   `)}
   <div id="customColorContainer"
@@ -73,9 +67,7 @@ export function getHtml(this: ThemeColorPickerElement) {
         .backgroundColor="${this.customColor_.background}"
         .foregroundColor="${this.customColor_.foreground}"
         background-color-hidden
-        ?checked="${this.isCustomColorSelected_}"
-        checkmark-border-hidden
-        basic-color>
+        ?checked="${this.isCustomColorSelected_}">
     </cr-theme-color>
     <div id="colorPickerIcon"></div>
   </div>

@@ -53,7 +53,6 @@ class ThemeColorPickerHandler
                     ui::mojom::BrowserColorVariant variant) override;
   void SetSeedColorFromHue(float hue) override;
   void GetChromeColors(bool is_dark_mode,
-                       bool extended_list,
                        GetChromeColorsCallback callback) override;
   void RemoveBackgroundImage() override;
   void UpdateTheme() override;

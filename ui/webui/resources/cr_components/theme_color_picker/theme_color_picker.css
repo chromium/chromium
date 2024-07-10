@@ -23,12 +23,6 @@ cr-grid {
   width: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  #defaultColor {
-    --cr-theme-color-border-color: #323639;
-  }
-}
-
 #customColorContainer {
   position: relative;
 }
