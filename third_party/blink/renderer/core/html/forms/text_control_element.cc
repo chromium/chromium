@@ -505,14 +505,14 @@ bool TextControlElement::SetSelectionRange(
   // we fail to ensure so in some cases. Fix it.
   if (ShouldApplySelectionCache() || !isConnected()) {
     if (did_change) {
-      ScheduleSelectionchangeEvent();
+      ScheduleSelectionchangeEventOnThisOrDocument();
     }
     return did_change;
   }
 
   if (!frame || !inner_editor) {
     if (did_change) {
-      ScheduleSelectionchangeEvent();
+      ScheduleSelectionchangeEventOnThisOrDocument();
     }
     return did_change;
   }
@@ -814,15 +814,12 @@ void TextControlElement::ScheduleSelectEvent() {
   GetDocument().EnqueueAnimationFrameEvent(event);
 }
 
-void TextControlElement::ScheduleSelectionchangeEvent() {
+void TextControlElement::ScheduleSelectionchangeEventOnThisOrDocument() {
   if (RuntimeEnabledFeatures::DispatchSelectionchangeEventPerElementEnabled()) {
     if (!IsInShadowTree()) {
-      EnqueueEvent(*Event::CreateBubble(event_type_names::kSelectionchange),
-                   TaskType::kMiscPlatformAPI);
+      ScheduleSelectionchangeEvent();
     } else {
-      GetDocument().EnqueueEvent(
-          *Event::CreateBubble(event_type_names::kSelectionchange),
-          TaskType::kMiscPlatformAPI);
+      GetDocument().ScheduleSelectionchangeEvent();
     }
   }
 }
@@ -1102,6 +1099,19 @@ HTMLElement* TextControlElement::CreateInnerEditorElement() {
 
 const String& TextControlElement::SuggestedValue() const {
   return suggested_value_;
+}
+
+void TextControlElement::ScheduleSelectionchangeEvent() {
+  if (RuntimeEnabledFeatures::CoalesceSelectionchangeEventEnabled()) {
+    if (has_scheduled_selectionchange_event_)
+      return;
+    has_scheduled_selectionchange_event_ = true;
+    EnqueueEvent(*Event::CreateBubble(event_type_names::kSelectionchange),
+                 TaskType::kMiscPlatformAPI);
+  } else {
+    EnqueueEvent(*Event::CreateBubble(event_type_names::kSelectionchange),
+                 TaskType::kMiscPlatformAPI);
+  }
 }
 
 void TextControlElement::Trace(Visitor* visitor) const {

@@ -415,6 +415,8 @@ PortalHost* EventTarget::ToPortalHost() {
   return nullptr;
 }
 
+void EventTarget::ResetEventQueueStatus(const AtomicString& event_type) {}
+
 // An instance of EventTargetImpl is returned because EventTarget
 // is an abstract class, and making it non-abstract is unfavorable
 // because it will increase the size of EventTarget and all of its
@@ -1179,6 +1181,7 @@ void EventTarget::DispatchEnqueuedEvent(Event* event,
     event->async_task_context()->Cancel();
     return;
   }
+  this->ResetEventQueueStatus(event->type());
   probe::AsyncTask async_task(context, event->async_task_context());
   DispatchEvent(*event);
 }

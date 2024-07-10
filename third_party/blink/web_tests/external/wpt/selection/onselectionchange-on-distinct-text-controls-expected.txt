@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] selectionchange event on each input element fires independently
-  assert_equals: expected 1 but got 2
-[FAIL] selectionchange event on each textarea element fires independently
-  assert_equals: expected 1 but got 2
-Harness: the test ran to completion.
-

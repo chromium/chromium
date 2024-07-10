@@ -1645,7 +1645,7 @@ public class ImeTest {
 
         // TODO(yabinh): It should only fire 1 input and 1 selectionchange events.
         mRule.waitForEventLogs(
-                "keydown(229),input,input,keyup(229),selectionchange,selectionchange");
+                "keydown(229),input,input,keyup(229),selectionchange");
     }
 
     @Test
@@ -1666,7 +1666,7 @@ public class ImeTest {
         mRule.waitAndVerifyUpdateSelection(2, 1, 1, -1, -1);
         // TODO(yabinh): It should only fire 1 input and 1 selectionchange events.
         mRule.waitForEventLogs(
-                "keydown(229),input,input,keyup(229),selectionchange,selectionchange");
+                "keydown(229),input,input,keyup(229),selectionchange");
     }
 
     @Test
@@ -1691,7 +1691,7 @@ public class ImeTest {
         mRule.waitAndVerifyUpdateSelection(2, 1, 1, -1, -1);
         // TODO(yabinh): It should only fire 1 input and 1 selectionchange events.
         mRule.waitForEventLogs(
-                "keydown(229),input,input,keyup(229),selectionchange,selectionchange");
+                "keydown(229),input,input,keyup(229),selectionchange");
     }
 
     @Test
@@ -1712,7 +1712,7 @@ public class ImeTest {
         mRule.waitAndVerifyUpdateSelection(2, 1, 1, -1, -1);
         // TODO(yabinh): It should only fire 1 input and 1 selectionchange events.
         mRule.waitForEventLogs(
-                "keydown(229),input,input,keyup(229),selectionchange,selectionchange");
+                "keydown(229),input,input,keyup(229),selectionchange");
     }
 
     @Test

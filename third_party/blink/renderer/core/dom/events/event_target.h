@@ -147,6 +147,10 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   virtual ServiceWorker* ToServiceWorker();
   virtual PortalHost* ToPortalHost();
 
+  // This method is called when the enqueued event is dispatched.
+  // The input is the event type of the current dispatched event.
+  virtual void ResetEventQueueStatus(const AtomicString& event_type);
+
   static EventTarget* Create(ScriptState*);
 
   // Returns an Observable whose native subscription algorithm adds an event

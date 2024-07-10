@@ -2107,6 +2107,14 @@ class CORE_EXPORT Document : public ContainerNode,
   void ScheduleShadowTreeCreation(HTMLInputElement& element);
   void UnscheduleShadowTreeCreation(HTMLInputElement& element);
 
+  void ScheduleSelectionchangeEvent();
+
+  // Reset to false after the event gets callbacked
+  void ResetEventQueueStatus(const AtomicString& event_type) override {
+    if (event_type == event_type_names::kSelectionchange)
+      has_scheduled_selectionchange_event_on_document_ = false;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // This method is invoked when a payment link element is encountered. It
   // passes the payment link back to browser process through the mojo pipe.
@@ -2826,6 +2834,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // True if the developer supplied a media query indicating that
   // the site has support for reduced motion.
   bool supports_reduced_motion_ = false;
+
+  // Indicate whether there is one scheduled selectionchange event.
+  bool has_scheduled_selectionchange_event_on_document_ = false;
 
   Member<RenderBlockingResourceManager> render_blocking_resource_manager_;
 
