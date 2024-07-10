@@ -33,8 +33,18 @@ message RTLookupRequest {
   // Deprecated
   optional string DEPRECATED_scoped_oauth_token = 4 [deprecated = true];
 
-  // The DM Token for Enterprise-enrolled devices (go/uss-dmtoken).
+  // The DM Token for Enterprise-enrolled devices (go/cbe-dmtoken). May contain
+  // either a device or a profile DM token. The device DM token takes precedence
+  // when both are present.
   optional string dm_token = 5;
+
+  // DM token for managed profile.
+  // For more information on DM tokens, see go/cbe-dmtoken
+  optional string profile_dm_token = 11;
+
+  // DM token for managed device.
+  // For more information on DM tokens, see go/cbe-dmtoken
+  optional string browser_dm_token = 12;
 
   // |version| helps the Safe Browsing server understand what verison of the
   // proto Chrome understands, and also what kinds of behaviours it supports.
@@ -119,7 +129,6 @@ message RTLookupResponse {
     // This field is only used by previous versions of Chrome(M81 Canary and
     // Dev) that only support "COVERING_MATCH". This field is deprecated in
     // favor of "cache_expression_using_match_type" below.
-    // Deprecated in M93.
     optional string cache_expression = 3 [deprecated = true];
 
     // Type of verdicts issued by the server. Different levels of verdicts from
