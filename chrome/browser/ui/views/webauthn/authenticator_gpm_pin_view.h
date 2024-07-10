@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_PIN_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/webauthn/pin_textfield.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -52,6 +53,8 @@ class AuthenticatorGPMPinView : public views::View,
   // Child view displaying toggle for revealing the pin.
   raw_ptr<views::ToggleImageButton> reveal_button_ = nullptr;
   bool pin_revealed_ = false;
+
+  base::WeakPtrFactory<AuthenticatorGPMPinView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_PIN_VIEW_H_

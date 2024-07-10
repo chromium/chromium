@@ -53,6 +53,8 @@ bool AuthenticatorGPMPinView::HandleKeyEvent(views::Textfield* textfield,
     return false;
   }
 
+  base::WeakPtr<AuthenticatorGPMPinView> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   bool pin_changed = false;
   char16_t c = event.GetCharacter();
   bool is_digit = base::IsAsciiDigit(c);
@@ -67,8 +69,9 @@ bool AuthenticatorGPMPinView::HandleKeyEvent(views::Textfield* textfield,
   }
 
   // This might result in recreating this view if the hint visibility changes,
-  // hence it should be the last call in this function.
-  if (base::IsAsciiPrintable(c)) {
+  // hence it should be the last call in this function. The view might have also
+  // been destroyed in `OnPinChanged`, hence the need to check the weak ptr.
+  if (weak_this && base::IsAsciiPrintable(c)) {
     delegate_->PinCharTyped(is_digit);
   }
 
