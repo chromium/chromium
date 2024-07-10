@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
@@ -15,7 +16,8 @@
 namespace password_manager {
 namespace {
 
-const char kTestEmail[] = "foo@gmail.com";
+const char kTestEmail[] = "john.doe@gmail.com";
+const char kTestFullName[] = "John Doe";
 
 class PasswordInfobarUtilsTest : public testing::Test {
  public:
@@ -29,6 +31,8 @@ class PasswordInfobarUtilsTest : public testing::Test {
     AccountInfo account_info =
         identity_test_environment_.MakePrimaryAccountAvailable(
             kTestEmail, signin::ConsentLevel::kSignin);
+    account_info.full_name = kTestFullName;
+    identity_test_environment_.UpdateAccountInfoForAccount(account_info);
     sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   }
 
@@ -36,7 +40,23 @@ class PasswordInfobarUtilsTest : public testing::Test {
     AccountInfo account_info =
         identity_test_environment_.MakePrimaryAccountAvailable(
             kTestEmail, signin::ConsentLevel::kSync);
+    account_info.full_name = kTestFullName;
+    identity_test_environment_.UpdateAccountInfoForAccount(account_info);
     sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
+  }
+
+  // Must only be called when there is a signed-in account.
+  void SetCanDisplaySignedInAccountEmail(bool can_display) {
+    CoreAccountInfo core_account_info =
+        identity_manager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin);
+    ASSERT_FALSE(core_account_info.IsEmpty())
+        << "Trying to update capability of signed-in account when there's none";
+    AccountInfo account_info =
+        identity_manager()->FindExtendedAccountInfo(core_account_info);
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_can_have_email_address_displayed(can_display);
+    identity_test_environment_.UpdateAccountInfoForAccount(account_info);
   }
 
   syncer::SyncService* sync_service() { return &sync_service_; }
@@ -103,6 +123,14 @@ TEST_F(PasswordInfobarUtilsTest, SyncingWithPasswordsDisabled) {
       std::nullopt);
   EXPECT_EQ(GetDisplayableAccountName(sync_service(), identity_manager()),
             std::string());
+}
+
+TEST_F(PasswordInfobarUtilsTest, NonDisplayableEmail) {
+  SignInWithSync();
+  SetCanDisplaySignedInAccountEmail(false);
+
+  EXPECT_EQ(GetDisplayableAccountName(sync_service(), identity_manager()),
+            kTestFullName);
 }
 
 }  // namespace
