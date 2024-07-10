@@ -5,4 +5,6 @@
 import './app.js';
 
 export type {PrivateStateTokensAppElement} from './app.js';
+export type {PrivateStateTokensListItemElement} from './list_item.js';
+export type {ListItem, Redemption} from './test_data.js';
 export type {PrivateStateTokensToolbarElement} from './toolbar.js';

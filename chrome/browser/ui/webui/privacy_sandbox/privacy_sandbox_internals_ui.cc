@@ -16,10 +16,14 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/privacy_sandbox_internals_resources.h"
 #include "chrome/grit/privacy_sandbox_internals_resources_map.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "privacy_sandbox_internals_ui.h"
+#include "ui/base/webui/web_ui_util.h"
 
 namespace privacy_sandbox_internals {
 
@@ -46,6 +50,17 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
     source->AddResourcePath("private-state-tokens",
                             IDR_PRIVATE_STATE_TOKENS_PRIVATE_STATE_TOKENS_HTML);
   }
+
+  static constexpr webui::LocalizedString pstDevUiPageStrings[] = {
+      // Localized Strings
+      {"privateStateTokensDescriptionLabel",
+       IDS_PRIVATE_STATE_TOKENS_DESCRIPTION_LABEL},
+      {"privateStateTokensHeadingLabel",
+       IDS_PRIVATE_STATE_TOKENS_HEADING_LABEL},
+      {"privateStateTokensExternalLinkLabel", IDS_LEARN_MORE}};
+
+  source->AddLocalizedStrings(pstDevUiPageStrings);
+
 #endif
 }
 

@@ -4,11 +4,43 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_page_host_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
+ * #include=cr-page-host-style-lit cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
- @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
   :host {
     color: var(--google-grey-200);
   }
+}
+
+.card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  margin: 10% auto;
+  margin-block-end: 36px;
+  max-width: var(--card-max-width);
+}
+
+.flex {
+  flex: 1;
+}
+
+.button-align {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (prefers-color-scheme: dark){
+  a {
+    color: var(--cr-link-color);
+  }
+}
+
+.inline-text {
+  display: inline-block;
 }

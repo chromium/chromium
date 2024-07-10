@@ -8,6 +8,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 class PrivateStateTokensTest : public WebUIMochaBrowserTest {
  protected:
@@ -31,4 +32,11 @@ IN_PROC_BROWSER_TEST_F(PrivateStateTokensTest, App) {
 IN_PROC_BROWSER_TEST_F(PrivateStateTokensTest, Toolbar) {
   RunTest("privacy_sandbox/internals/private_state_tokens/toolbar_test.js",
           "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateStateTokensTest, ListItem) {
+  RunTest(
+      "privacy_sandbox/internals/private_state_tokens/"
+      "list_item_test.js",
+      "mocha.run()");
 }

@@ -7,10 +7,43 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PrivateStateTokensAppElement} from './app.js';
 
 export function getHtml(this: PrivateStateTokensAppElement) {
-  return html`
+  // clang-format off
+  return html`<!--_html_template_start_-->
   <private-state-tokens-toolbar
       id="toolbar"
       .pageName="${this.pageTitle_}"
       .narrow="${this.narrow_}">
-  </private-state-tokens-toolbar>`;
+  </private-state-tokens-toolbar>
+  <div>
+    <div class="cr-centered-card-container class="flex">
+      <h2>$i18n{privateStateTokensHeadingLabel}</h2>
+      <div class="flex">
+        <p class="inline-text">
+          $i18n{privateStateTokensDescriptionLabel}
+        </p>
+        <a
+            href="https://developers.google.com/privacy-sandbox/protections/private-state-tokens"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-text">
+          $i18n{privateStateTokensExternalLinkLabel}
+        </a>
+      </div>
+      <div class="button-align">
+        <cr-button>Outline button</cr-button>
+      </div>
+    </div>
+  </div>
+  <div class="cr-centered-card-container">
+    <div class="card">
+      ${this.data_.map(item => html`
+          <private-state-tokens-list-item
+              .issuerOrigin="${item.issuerOrigin}"
+              .numTokens="${item.numTokens}"
+              .redemptions="${item.redemptions}">
+          </private-state-tokens-list-item>`)}
+    </div>
+  </div>
+  <!--_html_template_end_-->`;
+  //clang-format on
 }
