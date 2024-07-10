@@ -58,6 +58,7 @@ Applied the following patches:
   //base equivalents as the former is deprecated in C++17.
 - patches/rank_dict_for_testing.diff: Add a getter for testing and replace
   StringPiece with std::string_view.
+- patches/remove_string_piece.diff: removes last usage of StringPiece
 
 Ran the following commands to generate adjacency graphs:
 $ python ./data-scripts/build_keyboard_adjacency_graphs.py ./native-src/zxcvbn/adjacency_graphs.hpp
