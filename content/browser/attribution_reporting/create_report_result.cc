@@ -12,6 +12,7 @@
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -24,7 +25,26 @@ namespace {
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
+using EventLevelSuccess = ::content::CreateReportResult::EventLevelSuccess;
+
 }  // namespace
+
+EventLevelSuccess::EventLevelSuccess(
+    AttributionReport new_report,
+    std::optional<AttributionReport> replaced_report)
+    : new_report(std::move(new_report)),
+      replaced_report(std::move(replaced_report)) {}
+
+EventLevelSuccess::~EventLevelSuccess() = default;
+
+EventLevelSuccess::EventLevelSuccess(const EventLevelSuccess&) = default;
+
+EventLevelSuccess& EventLevelSuccess::operator=(const EventLevelSuccess&) =
+    default;
+
+EventLevelSuccess::EventLevelSuccess(EventLevelSuccess&&) = default;
+
+EventLevelSuccess& EventLevelSuccess::operator=(EventLevelSuccess&&) = default;
 
 CreateReportResult::CreateReportResult(
     base::Time trigger_time,
@@ -47,7 +67,9 @@ CreateReportResult::CreateReportResult(
       DCHECK(new_event_level_report.has_value());
       DCHECK_EQ(new_event_level_report->GetReportType(),
                 AttributionReport::Type::kEventLevel);
-      event_level_result_.emplace<Success>(*std::move(new_event_level_report));
+      event_level_result_.emplace<EventLevelSuccess>(
+          *std::move(new_event_level_report),
+          /*replaced_report=*/std::nullopt);
       break;
     case EventLevelResult::kSuccessDroppedLowerPriority:
       DCHECK(new_event_level_report.has_value());
@@ -56,9 +78,9 @@ CreateReportResult::CreateReportResult(
       DCHECK(replaced_event_level_report.has_value());
       DCHECK_EQ(replaced_event_level_report->GetReportType(),
                 AttributionReport::Type::kEventLevel);
-      event_level_result_.emplace<SuccessDroppedLowerPriority>(
+      event_level_result_.emplace<EventLevelSuccess>(
           *std::move(new_event_level_report),
-          *std::move(replaced_event_level_report));
+          std::move(replaced_event_level_report));
       break;
     case EventLevelResult::kInternalError:
       event_level_result_.emplace<InternalError>();
@@ -134,7 +156,7 @@ CreateReportResult::CreateReportResult(
       DCHECK(new_aggregatable_report.has_value());
       DCHECK_EQ(new_aggregatable_report->GetReportType(),
                 AttributionReport::Type::kAggregatableAttribution);
-      aggregatable_result_.emplace<Success>(
+      aggregatable_result_.emplace<AggregatableSuccess>(
           *std::move(new_aggregatable_report));
       break;
     case AggregatableResult::kInternalError:
@@ -219,9 +241,10 @@ CreateReportResult& CreateReportResult::operator=(CreateReportResult&&) =
 EventLevelResult CreateReportResult::event_level_status() const {
   return absl::visit(
       base::Overloaded{
-          [](const Success&) { return EventLevelResult::kSuccess; },
-          [](const SuccessDroppedLowerPriority&) {
-            return EventLevelResult::kSuccessDroppedLowerPriority;
+          [](const EventLevelSuccess& v) {
+            return v.replaced_report.has_value()
+                       ? EventLevelResult::kSuccessDroppedLowerPriority
+                       : EventLevelResult::kSuccess;
           },
           [](const InternalError&) { return EventLevelResult::kInternalError; },
           [](const NoCapacityForConversionDestination&) {
@@ -275,7 +298,9 @@ EventLevelResult CreateReportResult::event_level_status() const {
 AggregatableResult CreateReportResult::aggregatable_status() const {
   return absl::visit(
       base::Overloaded{
-          [](const Success&) { return AggregatableResult::kSuccess; },
+          [](const AggregatableSuccess&) {
+            return AggregatableResult::kSuccess;
+          },
           [](const InternalError&) {
             return AggregatableResult::kInternalError;
           },
@@ -317,40 +342,36 @@ AggregatableResult CreateReportResult::aggregatable_status() const {
 
 const AttributionReport* CreateReportResult::replaced_event_level_report()
     const {
-  if (const auto* v =
-          absl::get_if<SuccessDroppedLowerPriority>(&event_level_result_)) {
-    return &v->replaced_report;
+  if (const auto* v = absl::get_if<EventLevelSuccess>(&event_level_result_)) {
+    return base::OptionalToPtr(v->replaced_report);
   }
   return nullptr;
 }
 
 const AttributionReport* CreateReportResult::new_event_level_report() const {
-  return absl::visit(
-      base::Overloaded{
-          [](const Success& v) { return &v.new_report; },
-          [](const SuccessDroppedLowerPriority& v) { return &v.new_report; },
-          [](const auto&) -> const AttributionReport* { return nullptr; }},
-      event_level_result_);
+  if (const auto* v = absl::get_if<EventLevelSuccess>(&event_level_result_)) {
+    return &v->new_report;
+  }
+  return nullptr;
 }
 
 AttributionReport* CreateReportResult::new_event_level_report() {
-  return absl::visit(
-      base::Overloaded{
-          [](Success& v) { return &v.new_report; },
-          [](SuccessDroppedLowerPriority& v) { return &v.new_report; },
-          [](auto&) -> AttributionReport* { return nullptr; }},
-      event_level_result_);
+  if (auto* v = absl::get_if<EventLevelSuccess>(&event_level_result_)) {
+    return &v->new_report;
+  }
+  return nullptr;
 }
 
 const AttributionReport* CreateReportResult::new_aggregatable_report() const {
-  if (const auto* v = absl::get_if<Success>(&aggregatable_result_)) {
+  if (const auto* v =
+          absl::get_if<AggregatableSuccess>(&aggregatable_result_)) {
     return &v->new_report;
   }
   return nullptr;
 }
 
 AttributionReport* CreateReportResult::new_aggregatable_report() {
-  if (auto* v = absl::get_if<Success>(&aggregatable_result_)) {
+  if (auto* v = absl::get_if<AggregatableSuccess>(&aggregatable_result_)) {
     return &v->new_report;
   }
   return nullptr;

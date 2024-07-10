@@ -20,13 +20,20 @@ namespace content {
 
 class CONTENT_EXPORT CreateReportResult {
  public:
-  struct Success {
+  struct EventLevelSuccess {
     AttributionReport new_report;
-  };
+    std::optional<AttributionReport> replaced_report;
 
-  struct SuccessDroppedLowerPriority {
-    AttributionReport new_report;
-    AttributionReport replaced_report;
+    EventLevelSuccess(AttributionReport new_report,
+                      std::optional<AttributionReport> replaced_report);
+
+    ~EventLevelSuccess();
+
+    EventLevelSuccess(const EventLevelSuccess&);
+    EventLevelSuccess& operator=(const EventLevelSuccess&);
+
+    EventLevelSuccess(EventLevelSuccess&&);
+    EventLevelSuccess& operator=(EventLevelSuccess&&);
   };
 
   struct InternalError {};
@@ -76,6 +83,10 @@ class CONTENT_EXPORT CreateReportResult {
 
   struct NoMatchingTriggerData {};
 
+  struct AggregatableSuccess {
+    AttributionReport new_report;
+  };
+
   struct ExcessiveAggregatableReports {
     int max;
     explicit ExcessiveAggregatableReports(int max) : max(max) {}
@@ -85,8 +96,7 @@ class CONTENT_EXPORT CreateReportResult {
 
   struct InsufficientBudget {};
 
-  using EventLevel = absl::variant<Success,
-                                   SuccessDroppedLowerPriority,
+  using EventLevel = absl::variant<EventLevelSuccess,
                                    InternalError,
                                    NoCapacityForConversionDestination,
                                    NoMatchingImpressions,
@@ -105,7 +115,7 @@ class CONTENT_EXPORT CreateReportResult {
                                    ReportWindowNotStarted,
                                    NoMatchingTriggerData>;
 
-  using Aggregatable = absl::variant<Success,
+  using Aggregatable = absl::variant<AggregatableSuccess,
                                      InternalError,
                                      NoCapacityForConversionDestination,
                                      NoMatchingImpressions,
