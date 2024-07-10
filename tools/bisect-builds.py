@@ -418,6 +418,8 @@ class BisectException(Exception):
 
 
 def RunGsutilCommand(args, can_fail=False, verbose=False):
+  if not GSUTILS_PATH:
+    raise BisectException('gsutils is not found in path.')
   if is_verbose:
     print('Running gsutil command: ' +
           str([sys.executable, GSUTILS_PATH] + args))
@@ -1760,6 +1762,7 @@ def CheckDepotToolsInPath():
 
 def SetupEnvironment(options):
   global is_verbose
+  global GSUTILS_PATH
 
   # Release and Official builds bisect requires "gsutil" inorder to
   # List and Download binaries.
@@ -1771,9 +1774,8 @@ def SetupEnvironment(options):
         'Follow the instructions in this document '
         'http://dev.chromium.org/developers/how-tos/install-depot-tools '
         'to install depot_tools and then try again.')
-
-  global GSUTILS_PATH
-  GSUTILS_PATH = os.path.join(gsutil_path, 'gsutil.py')
+  elif gsutil_path:
+    GSUTILS_PATH = os.path.join(gsutil_path, 'gsutil.py')
 
   # Catapult repo is required for Android bisect,
   # Update Catapult repo if it exists otherwise checkout repo.
