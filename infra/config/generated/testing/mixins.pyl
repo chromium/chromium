@@ -211,9 +211,6 @@
       },
     },
   },
-  'betty-arc-t': {
-    'cros_build_target': 'betty-arc-t',
-  },
   'blink_tests_write_run_histories': {
     'args': [
       '--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json',
