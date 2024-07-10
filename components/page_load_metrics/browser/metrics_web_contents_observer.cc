@@ -114,6 +114,39 @@ void MetricsWebContentsObserver::RecordFeatureUsage(
 }
 
 // static
+void MetricsWebContentsObserver::RecordFeatureUsage(
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<blink::mojom::WebDXFeature>& webdx_features) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  MetricsWebContentsObserver* observer =
+      MetricsWebContentsObserver::FromWebContents(web_contents);
+
+  if (observer) {
+    std::vector<blink::UseCounterFeature> features;
+    for (auto webdx_feature : webdx_features) {
+      CHECK_NE(webdx_feature, blink::mojom::WebDXFeature::kPageVisits)
+          << "WebFeature::kPageVisits is a reserved feature.";
+      if (webdx_feature == blink::mojom::WebDXFeature::kPageVisits) {
+        continue;
+      }
+
+      features.emplace_back(blink::mojom::UseCounterFeatureType::kWebDXFeature,
+                            static_cast<uint32_t>(webdx_feature));
+    }
+    observer->OnBrowserFeatureUsage(render_frame_host, features);
+  }
+}
+
+// static
+void MetricsWebContentsObserver::RecordFeatureUsage(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::WebDXFeature feature) {
+  MetricsWebContentsObserver::RecordFeatureUsage(
+      render_frame_host, std::vector<blink::mojom::WebDXFeature>{feature});
+}
+
+// static
 MetricsWebContentsObserver* MetricsWebContentsObserver::CreateForWebContents(
     content::WebContents* web_contents,
     std::unique_ptr<PageLoadMetricsEmbedderInterface> embedder_interface) {

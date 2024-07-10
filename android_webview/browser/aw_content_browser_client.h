@@ -259,6 +259,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       override;
   void LogWebFeatureForCurrentPage(content::RenderFrameHost* render_frame_host,
                                    blink::mojom::WebFeature feature) override;
+  void LogWebDXFeatureForCurrentPage(
+      content::RenderFrameHost* render_frame_host,
+      blink::mojom::WebDXFeature feature) override;
   PrivateNetworkRequestPolicyOverride ShouldOverridePrivateNetworkRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;

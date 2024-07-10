@@ -27,6 +27,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 
 namespace content {
 class NavigationHandle;
@@ -50,14 +51,20 @@ class MetricsWebContentsObserver
       public content::RenderWidgetHost::InputEventObserver,
       public mojom::PageLoadMetrics {
  public:
-  // Record a set of WebFeatures directly from the browser process. This
-  // should only be used for features that were detected browser-side; features
-  // sources from the renderer should go via MetricsRenderFrameObserver.
+  // Record a set of WebFeatures or WebDXFeatures directly from the browser
+  // process. This should only be used for features that were detected
+  // browser-side; features sources from the renderer should go via
+  // MetricsRenderFrameObserver.
   static void RecordFeatureUsage(
       content::RenderFrameHost* render_frame_host,
       const std::vector<blink::mojom::WebFeature>& features);
   static void RecordFeatureUsage(content::RenderFrameHost* render_frame_host,
                                  blink::mojom::WebFeature feature);
+  static void RecordFeatureUsage(
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::WebDXFeature>& features);
+  static void RecordFeatureUsage(content::RenderFrameHost* render_frame_host,
+                                 blink::mojom::WebDXFeature feature);
 
   // Note that the returned metrics is owned by the web contents.
   static MetricsWebContentsObserver* CreateForWebContents(

@@ -797,6 +797,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void LogWebFeatureForCurrentPage(content::RenderFrameHost* render_frame_host,
                                    blink::mojom::WebFeature feature) override;
+  void LogWebDXFeatureForCurrentPage(
+      content::RenderFrameHost* render_frame_host,
+      blink::mojom::WebDXFeature feature) override;
 
   std::string GetProduct() override;
   std::string GetUserAgent() override;

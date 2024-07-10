@@ -18,6 +18,7 @@ static void JNI_ContentWebFeatureUsageUtils_LogWebFeatureForCurrentPage(
     const jni_zero::JavaParamRef<jobject>& jweb_contents,
     jint web_feature) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  CHECK(web_contents);
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       web_contents->GetPrimaryMainFrame(),
       static_cast<blink::mojom::WebFeature>(web_feature));

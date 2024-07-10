@@ -7412,6 +7412,14 @@ void ChromeContentBrowserClient::LogWebFeatureForCurrentPage(
       render_frame_host, feature);
 }
 
+void ChromeContentBrowserClient::LogWebDXFeatureForCurrentPage(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::WebDXFeature feature) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+      render_frame_host, feature);
+}
+
 std::string ChromeContentBrowserClient::GetProduct() {
   return std::string(version_info::GetProductNameAndVersionForUserAgent());
 }

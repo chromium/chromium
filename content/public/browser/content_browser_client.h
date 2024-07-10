@@ -123,6 +123,7 @@ class ManagedConfigurationService;
 class RendererPreferenceWatcher;
 class WindowFeatures;
 enum class WebFeature : int32_t;
+enum class WebDXFeature : int32_t;
 }  // namespace mojom
 namespace web_pref {
 struct WebPreferences;
@@ -2401,6 +2402,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void LogWebFeatureForCurrentPage(
       content::RenderFrameHost* render_frame_host,
       blink::mojom::WebFeature feature) {}
+  virtual void LogWebDXFeatureForCurrentPage(
+      content::RenderFrameHost* render_frame_host,
+      blink::mojom::WebDXFeature feature) {}
 
   // Returns a string describing the embedder product name and version,
   // of the form "productname/version", with no other slashes.

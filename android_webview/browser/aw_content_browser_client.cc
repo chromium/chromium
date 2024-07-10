@@ -1214,6 +1214,14 @@ void AwContentBrowserClient::LogWebFeatureForCurrentPage(
       render_frame_host, feature);
 }
 
+void AwContentBrowserClient::LogWebDXFeatureForCurrentPage(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::WebDXFeature feature) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+      render_frame_host, feature);
+}
+
 content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride
 AwContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
     content::BrowserContext* browser_context,

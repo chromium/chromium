@@ -17,6 +17,10 @@ public class ContentWebFeatureUsageUtils {
         ContentWebFeatureUsageUtilsJni.get().logWebFeatureForCurrentPage(webContents, webFeature);
     }
 
+    // If there's a need for a logWebDXFeatureForCurrentPage() in Java, there's
+    // code for that included in
+    // https://chromium-review.googlesource.com/c/chromium/src/+/5640502/11.
+
     @NativeMethods
     public interface Natives {
         void logWebFeatureForCurrentPage(
