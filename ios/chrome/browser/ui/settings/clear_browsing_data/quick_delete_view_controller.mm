@@ -383,6 +383,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
          identifier:nil
             options:UIMenuOptionsSingleSelection
            children:@[
+             [self timeRangeAction:browsing_data::TimePeriod::LAST_15_MINUTES],
              [self timeRangeAction:browsing_data::TimePeriod::LAST_HOUR],
              [self timeRangeAction:browsing_data::TimePeriod::LAST_DAY],
              [self timeRangeAction:browsing_data::TimePeriod::LAST_WEEK],
@@ -417,6 +418,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 // Returns the title string based on the `timeRange`.
 - (NSString*)titleForTimeRange:(browsing_data::TimePeriod)timeRange {
   switch (timeRange) {
+    case browsing_data::TimePeriod::LAST_15_MINUTES:
+      return l10n_util::GetNSString(
+          IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES);
     case browsing_data::TimePeriod::LAST_HOUR:
       return l10n_util::GetNSString(
           IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR);
@@ -433,9 +437,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return l10n_util::GetNSString(
           IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_BEGINNING_OF_TIME);
     case browsing_data::TimePeriod::OLDER_THAN_30_DAYS:
-    case browsing_data::TimePeriod::LAST_15_MINUTES:
-      // Those values should not be reached since they're not a part of the
-      // menu.
+      // This value should not be reached since it's not a part of the menu.
       break;
   }
   NOTREACHED_NORETURN();

@@ -880,6 +880,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_FOUR_WEEKS" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the last 4 weeks. In titlecase.">
         Last 4 Weeks
       </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES" translateable="false" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the last 15 minutes. In titlecase.">
+        **Last 15 Minutes**
+      </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_OLDER_THAN_30_DAYS" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data that is older than 30 days. In titlecase.">
         Older than 30 days
       </message>

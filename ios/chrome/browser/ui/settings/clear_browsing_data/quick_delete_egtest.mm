@@ -295,13 +295,13 @@ void ExpectClearBrowsingDataNavigationHistograms(
                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE))]
       performAction:grey_tap()];
 
-  // Tap on the past week option on the popup menu.
+  // Tap on the last 15 minutes option on the popup menu.
   [[EarlGrey
       selectElementWithMatcher:
           [self
               popupCellMenuItemWithTimeRange:
                   l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK)]]
+                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
       performAction:grey_tap()];
 
   // Make sure the menu was dismissed after the tap.
@@ -310,23 +310,23 @@ void ExpectClearBrowsingDataNavigationHistograms(
           [self
               popupCellMenuItemWithTimeRange:
                   l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK)]]
+                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
       assertWithMatcher:grey_notVisible()];
 
   // Check that the cell has changed to the correct selection, i.e. is showing
-  // the last week time range.
+  // the last 15 minutes time range.
   [[EarlGrey
       selectElementWithMatcher:
           [self
               popupCellWithTimeRange:
                   l10n_util::GetNSString(
-                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK)]]
+                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Confirm that the pref was saved with the new value of last week.
+  // Confirm that the pref was saved with the new value of last 15 minutes.
   GREYAssertEqual(
       [ChromeEarlGrey userIntegerPref:browsing_data::prefs::kDeleteTimePeriod],
-      static_cast<int>(browsing_data::TimePeriod::LAST_WEEK),
+      static_cast<int>(browsing_data::TimePeriod::LAST_15_MINUTES),
       @"Incorrect local pref value.");
 }
 

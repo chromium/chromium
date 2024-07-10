@@ -373,8 +373,13 @@ BOOL UIIsBlocking(Browser* browser) {
                                         browser:(Browser*)browser
                             sourceBarButtonItem:
                                 (UIBarButtonItem*)sourceBarButtonItem {
-  if (dataTypeMaskToRemove == BrowsingDataRemoveMask::REMOVE_NOTHING) {
-    // Nothing to clear (no data types selected).
+  browsing_data::TimePeriod timePeriod =
+      static_cast<browsing_data::TimePeriod>(_timeRangePref.GetValue());
+
+  if (dataTypeMaskToRemove == BrowsingDataRemoveMask::REMOVE_NOTHING ||
+      timePeriod == browsing_data::TimePeriod::LAST_15_MINUTES) {
+    // Nothing to clear (no data types selected) or 15 minutes selected (which
+    // shouldn't be possible).
     return nil;
   }
   __weak ClearBrowsingDataManager* weakSelf = self;
@@ -655,7 +660,6 @@ BOOL UIIsBlocking(Browser* browser) {
       IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE);
   NSString* detailText = [TimeRangeSelectorTableViewController
       timePeriodLabelForPrefs:prefService];
-  DCHECK(detailText);
   timeRangeItem.detailText = detailText;
   timeRangeItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   timeRangeItem.accessibilityTraits |= UIAccessibilityTraitButton;
