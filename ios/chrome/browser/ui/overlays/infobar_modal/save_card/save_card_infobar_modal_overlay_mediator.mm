@@ -88,10 +88,13 @@
   };
   [_consumer setupModalViewControllerWithPrefs:prefs];
 
-  // If Modal has been accepted and card is being uploaded, show Modal in
-  // loading state with an activity indicator.
-  if (delegate->is_for_upload() && infobar->accepted()) {
-    [self.consumer showLoadingState];
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    // If modal has been accepted and card is being uploaded, show modal in
+    // loading state with an activity indicator.
+    if (delegate->is_for_upload() && infobar->accepted()) {
+      [self.consumer showProgressWithUploadCompleted:NO];
+    }
   }
 }
 
@@ -101,7 +104,7 @@
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
     if (card_saved) {
-      [self.consumer showSuccess];
+      [self.consumer showProgressWithUploadCompleted:YES];
     } else {
       // On card save failure, this modal is dimissed and user is shown an error
       // dialog triggered from IOSChromePaymentsAutofillClient.
@@ -134,7 +137,7 @@
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    [self.consumer showLoadingState];
+    [self.consumer showProgressWithUploadCompleted:NO];
   } else {
     [self dismissOverlay];
   }

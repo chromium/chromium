@@ -71,13 +71,11 @@ using ::testing::A;
   self.supportsEditing = [prefs[kSupportsEditingPrefKey] boolValue];
 }
 
-- (void)showLoadingState {
-  self.inLoadingState = YES;
+- (void)showProgressWithUploadCompleted:(BOOL)uploadCompleted {
+  self.inLoadingState = !uploadCompleted;
+  self.showingSuccess = uploadCompleted;
 }
 
-- (void)showSuccess {
-  self.showingSuccess = YES;
-}
 @end
 
 // Test fixture for SaveCardInfobarModalOverlayMediator.
@@ -140,20 +138,6 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, SetUpConsumer) {
   EXPECT_FALSE(consumer.inLoadingState);
   ASSERT_EQ(1U, [consumer.legalMessages count]);
   EXPECT_NSEQ(@"Test message", consumer.legalMessages[0].messageText);
-}
-
-// Tests that a SaveCardInfobarModalOverlayMediator shows Modal in loading state
-// when Modal has already been accepted for upload.
-TEST_F(SaveCardInfobarModalOverlayMediatorTest,
-       ShowLoadingStateForAcceptedInfobar) {
-  FakeSaveCardModalConsumer* consumer =
-      [[FakeSaveCardModalConsumer alloc] init];
-  infobar_->set_accepted(true);
-  mediator_.consumer = consumer;
-
-  EXPECT_TRUE(consumer.currentCardSaveAccepted);
-  EXPECT_FALSE(consumer.supportsEditing);
-  EXPECT_TRUE(consumer.inLoadingState);
 }
 
 // Tests that calling saveCardWithCardholderName:expirationMonth:expirationYear:
@@ -241,6 +225,21 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
                         expirationMonth:month
                          expirationYear:year];
 
+  EXPECT_TRUE(consumer.inLoadingState);
+}
+
+// Tests that when already accepted modal for upload is reshown
+// SaveCardInfobarModalOverlayMediator shows modal in loading state when
+// loading and confirmation flag is enabled.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       ReShowLoadingStateForAcceptedInfobar) {
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+  infobar_->set_accepted(true);
+  mediator_.consumer = consumer;
+
+  EXPECT_TRUE(consumer.currentCardSaveAccepted);
+  EXPECT_FALSE(consumer.supportsEditing);
   EXPECT_TRUE(consumer.inLoadingState);
 }
 

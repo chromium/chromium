@@ -343,15 +343,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
-- (void)showLoadingState {
+// For `uploadCompleted == NO`, sets an activity indicator on the
+// button to show card is being uploaded. For `uploadCompleted == YES`, sets a
+// checkmark on the button to show card upload has completed. Also disables the
+// button and hides it's text.
+- (void)showProgressWithUploadCompleted:(BOOL)uploadCompleted {
   self.saveCardButtonItem.buttonText = @"";
   self.saveCardButtonItem.enabled = NO;
-  self.saveCardButtonItem.showsActivityIndicator = YES;
+  self.saveCardButtonItem.showsActivityIndicator = !uploadCompleted;
+  self.saveCardButtonItem.showsCheckmark = uploadCompleted;
+  if (uploadCompleted) {
+    self.saveCardButtonItem.buttonBackgroundColor =
+        [UIColor colorNamed:kBlue100Color];
+    self.saveCardButtonItem.dimBackgroundWhenDisabled = NO;
+  }
   [self reconfigureCellsForItems:@[ self.saveCardButtonItem ]];
-}
-
-- (void)showSuccess {
-  // TODO(crbug.com/339887700): Implement showing card upload success.
 }
 
 #pragma mark - UITableViewDelegate
