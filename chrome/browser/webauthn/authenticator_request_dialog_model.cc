@@ -408,8 +408,7 @@ bool IsChromeImplemented(device::AuthenticatorType type) {
   }
 }
 
-StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step,
-                        AuthenticatorRequestDialogModel::Step previous_step) {
+StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
   switch (step) {
     case AuthenticatorRequestDialogModel::Step::kClosed:
     case AuthenticatorRequestDialogModel::Step::kNotStarted:
@@ -419,13 +418,6 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step,
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
     case AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset:
       return StepUIType::WINDOW;
-
-    case AuthenticatorRequestDialogModel::Step::kGPMConnecting:
-      // Conditional UI displays its own loading indicator.
-      return previous_step == AuthenticatorRequestDialogModel::Step::
-                                  kConditionalMediation
-                 ? StepUIType::NONE
-                 : StepUIType::DIALOG;
 
     default:
       return StepUIType::DIALOG;
@@ -484,12 +476,11 @@ void AuthenticatorRequestDialogModel::RemoveObserver(
 void AuthenticatorRequestDialogModel::SetStep(Step step) {
   FIDO_LOG(EVENT) << "UI step: " << step;
 
-  const StepUIType previous_ui_type = step_ui_type(step_, previous_step_);
-  previous_step_ = step_;
+  const StepUIType previous_ui_type = step_ui_type(step_);
   step_ = step;
   ui_disabled_ = false;
 
-  const StepUIType ui_type = step_ui_type(step_, previous_step_);
+  const StepUIType ui_type = step_ui_type(step_);
   auto* web_contents = GetWebContents();
   if (previous_ui_type != ui_type && web_contents) {
     // The UI observes `OnStepTransition` and updates automatically.
@@ -506,10 +497,6 @@ void AuthenticatorRequestDialogModel::SetStep(Step step) {
         ShowAuthenticatorRequestWindow(web_contents, this);
         break;
     }
-  } else if (step == Step::kGPMConnecting) {
-    ui_disabled_ = true;
-    OnSheetModelChanged();
-    return;
   }
 
   for (auto& observer : observers) {
@@ -534,7 +521,7 @@ content::RenderFrameHost* AuthenticatorRequestDialogModel::GetRenderFrameHost()
 }
 
 bool AuthenticatorRequestDialogModel::should_dialog_be_closed() const {
-  return step_ui_type(step_, previous_step_) != StepUIType::DIALOG;
+  return step_ui_type(step_) != StepUIType::DIALOG;
 }
 
 #define AUTHENTICATOR_REQUEST_EVENT_0(name)      \
