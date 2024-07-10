@@ -33,6 +33,7 @@ import {getSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logGenerateSeaPenWallpaper, logNumWordsInTextQuery} from './sea_pen_metrics_logger.js';
+import {SeaPenSampleSelectedEvent} from './sea_pen_samples_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SeaPenSuggestionSelectedEvent} from './sea_pen_suggestions_element.js';
 import {isSelectionEvent} from './sea_pen_utils.js';
@@ -120,6 +121,10 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         'seaPenQuery_', state => state.currentSeaPenQuery);
     this.updateFromStore();
 
+    document.body.addEventListener(
+        SeaPenSampleSelectedEvent.EVENT_NAME,
+        this.onSampleSelected_.bind(this));
+
     this.$.queryInput.focusInput();
 
     this.resizeObserver_ =
@@ -140,6 +145,13 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.resizeObserver_.disconnect();
+
+    document.body.removeEventListener(
+        SeaPenSampleSelectedEvent.EVENT_NAME, this.onSampleSelected_);
+  }
+
+  private onSampleSelected_(e: SeaPenSampleSelectedEvent) {
+    this.textValue_ = e.detail;
   }
 
   // Called when there is a custom dom-change event dispatched from

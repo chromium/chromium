@@ -8,16 +8,40 @@
  */
 
 import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SEA_PEN_SAMPLES, SeaPenSamplePrompt} from './constants.js';
 import {getTemplate} from './sea_pen_samples_element.html.js';
 
 const SeaPenSamplesElementBase = I18nMixin(PolymerElement);
+
+export class SeaPenSampleSelectedEvent extends CustomEvent<string> {
+  static readonly EVENT_NAME = 'sea-pen-sample-selected';
+
+  constructor(prompt: string) {
+    super(
+        SeaPenSampleSelectedEvent.EVENT_NAME,
+        {
+          bubbles: true,
+          composed: true,
+          detail: prompt,
+        },
+    );
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    [SeaPenSampleSelectedEvent.EVENT_NAME]: SeaPenSampleSelectedEvent;
+  }
+}
 
 export class SeaPenSamplesElement extends SeaPenSamplesElementBase {
   static get is() {
@@ -38,6 +62,11 @@ export class SeaPenSamplesElement extends SeaPenSamplesElementBase {
   }
 
   private samples: SeaPenSamplePrompt[];
+
+  private onClickSample_(e: WallpaperGridItemSelectedEvent&
+                         {model: {sample: SeaPenSamplePrompt}}) {
+    this.dispatchEvent(new SeaPenSampleSelectedEvent(e.model.sample.prompt));
+  }
 }
 
 customElements.define(SeaPenSamplesElement.is, SeaPenSamplesElement);

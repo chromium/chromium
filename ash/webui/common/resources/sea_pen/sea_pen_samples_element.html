@@ -1,13 +1,10 @@
-<style include="wallpaper common sea-pen">
+<style include="wallpaper common sea-pen cros-button-style">
   #grid {
     overflow-y: auto;
   }
 
   wallpaper-grid-item {
-    /* Subtract 0.34px to fix subpixel rounding issues with iron-list. This
-     * ensures all grid items in a row add up to at least 1px smaller than the
-     * parent width. */
-    --wallpaper-grid-item-width: calc(100% / 3 - 0.34px);
+    --wallpaper-grid-item-width: 100%;
   }
 
   wallpaper-grid-item::part(item) {
@@ -21,6 +18,30 @@
     white-space: normal;
     width: calc(100% - 38px);
   }
+
+  wallpaper-grid-item:not(:hover) + cr-icon-button.add-icon {
+    display: none;
+  }
+
+  wallpaper-grid-item:hover + cr-icon-button.add-icon {
+    --cr-icon-button-fill-color: white;
+    --cr-icon-button-icon-size: 20px;
+    background-color: inherit;
+    display: block;
+    /* The icon button itself is 36 pixels. Subtract half of that to center the icon. */
+    left: calc(50% - 18px);
+    margin: 0;
+    position: absolute;
+    top: 32px;
+    z-index: 1;
+  }
+
+  .container {
+    /* Subtract 0.34px to fix subpixel rounding issues with iron-list. This
+     * ensures all grid items in a row add up to at least 1px smaller than the
+     * parent width. */
+    width: calc(100% / 3 - 0.34px);
+  }
 </style>
 <iron-list id="grid"
     items="[[samples]]"
@@ -28,9 +49,14 @@
     grid
     role="listbox">
   <template>
-    <wallpaper-grid-item
-        primary-text="[[sample.prompt]]"
-        src="[[sample.preview]]">
-    </wallpaper-grid-item>
+    <div class="container">
+      <wallpaper-grid-item
+          on-wallpaper-grid-item-selected="onClickSample_"
+          primary-text="[[sample.prompt]]"
+          src="[[sample.preview]]">
+      </wallpaper-grid-item>
+      <cr-icon-button class="add-icon" tabindex="-1" iron-icon="personalization-shared:plus">
+      </cr-icon-button>
+    </div>
   </template>
 </iron-list>
