@@ -9,6 +9,11 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
@@ -39,8 +44,7 @@ class AutofillModelEncoderTest : public testing::Test {
         .AppendASCII("br_overfitted_dictionary_test.txt");
   }
 
-  AutofillModelEncoder EncoderFromFileContents(
-      const base::FilePath& file) {
+  AutofillModelEncoder EncoderFromFileContents(const base::FilePath& file) {
     std::string content;
     CHECK(base::ReadFileToString(file, &content));
     google::protobuf::RepeatedPtrField<std::string> tokens;
@@ -50,6 +54,8 @@ class AutofillModelEncoderTest : public testing::Test {
     }
     return AutofillModelEncoder(tokens);
   }
+
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 TEST_F(AutofillModelEncoderTest, TokensMappedCorrectly) {
@@ -67,27 +73,46 @@ TEST_F(AutofillModelEncoderTest, EmptyToken) {
 }
 
 TEST_F(AutofillModelEncoderTest, InputEncodedCorrectly) {
-  EXPECT_THAT(encoder_.Vectorize(u"Phone 'number"),
-              testing::ElementsAre(TokenId(49), TokenId(40), TokenId(0),
-                                   TokenId(0), TokenId(0)));
+  EXPECT_THAT(encoder_.EncodeAttribute(u"Phone 'number"),
+              ElementsAre(TokenId(49), TokenId(40), TokenId(0), TokenId(0),
+                          TokenId(0)));
 }
 
 // If a field label has more than one consecutive whitespace, they
 // should all be removed without any empty strings.
 TEST_F(AutofillModelEncoderTest, InputHasMoreThanOneWhitespace) {
-  EXPECT_THAT(encoder_.Vectorize(u"Phone   &number  "),
-              testing::ElementsAre(TokenId(49), TokenId(40), TokenId(0),
-                                   TokenId(0), TokenId(0)));
+  EXPECT_THAT(encoder_.EncodeAttribute(u"Phone   &number  "),
+              ElementsAre(TokenId(49), TokenId(40), TokenId(0), TokenId(0),
+                          TokenId(0)));
 }
 
-// If a field label has more words than the kOutputSequenceLength,
+// If a field label has more words than the kAttributeOutputSequenceLength,
 // only the first kOutputSequenceLength many words should be used and the
 // rest are ignored.
 TEST_F(AutofillModelEncoderTest, InputHasMoreWordsThanOutputSequenceLength) {
   EXPECT_THAT(
-      encoder_.Vectorize(u"City Number Phone Address Card Last Zip "),
-      testing::ElementsAre(TokenId(46), TokenId(40), TokenId(49), TokenId(36),
-                           TokenId(43)));
+      encoder_.EncodeAttribute(u"City Number Phone Address Card Last Zip "),
+      ElementsAre(TokenId(46), TokenId(40), TokenId(49), TokenId(36),
+                  TokenId(43)));
+}
+
+TEST_F(AutofillModelEncoderTest, InputConstructedCorrectly) {
+  AutofillField field;
+  field.set_label(u"Phone 'number");
+  EXPECT_THAT(encoder_.EncodeField(field),
+              ElementsAre(TokenId(49), TokenId(40), TokenId(0), TokenId(0),
+                          TokenId(0)));
+}
+
+TEST_F(AutofillModelEncoderTest, FormEncodedCorrectly) {
+  FormStructure form(test::GetFormData(
+      {.fields = {{.label = u"Phone 'number"},
+                  {.label = u"City Number Phone Address Card Last Zip "}}}));
+  EXPECT_THAT(encoder_.EncodeForm(form),
+              ElementsAre(ElementsAre(TokenId(49), TokenId(40), TokenId(0),
+                                      TokenId(0), TokenId(0)),
+                          ElementsAre(TokenId(46), TokenId(40), TokenId(49),
+                                      TokenId(36), TokenId(43))));
 }
 
 }  // namespace autofill

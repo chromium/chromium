@@ -12,6 +12,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace autofill {
@@ -37,15 +39,14 @@ AutofillModelEncoder::AutofillModelEncoder(
   entries.reserve(2 + tokens.size());
   size_t i = 2;
   for (const std::string& token : tokens) {
-    entries.emplace_back(base::UTF8ToUTF16(token),
-                         AutofillModelEncoder::TokenId(i++));
+    entries.emplace_back(base::UTF8ToUTF16(token), TokenId(i++));
   }
   token_to_id_ = base::flat_map<std::u16string, TokenId>(std::move(entries));
 }
 
 AutofillModelEncoder::AutofillModelEncoder() = default;
-AutofillModelEncoder::AutofillModelEncoder(
-    const AutofillModelEncoder&) = default;
+AutofillModelEncoder::AutofillModelEncoder(const AutofillModelEncoder&) =
+    default;
 AutofillModelEncoder::~AutofillModelEncoder() = default;
 
 AutofillModelEncoder::TokenId AutofillModelEncoder::TokenToId(
@@ -57,17 +58,34 @@ AutofillModelEncoder::TokenId AutofillModelEncoder::TokenToId(
   return match->second;
 }
 
+std::vector<std::array<AutofillModelEncoder::TokenId,
+                       AutofillModelEncoder::kOutputSequenceLength>>
+AutofillModelEncoder::EncodeForm(const FormStructure& form) const {
+  std::vector<std::array<TokenId, kOutputSequenceLength>> encoded_form(
+      form.fields().size());
+  for (size_t i = 0; i < form.field_count(); ++i) {
+    encoded_form[i] = EncodeField(*form.field(i));
+  }
+  return encoded_form;
+}
+
 std::array<AutofillModelEncoder::TokenId,
            AutofillModelEncoder::kOutputSequenceLength>
-AutofillModelEncoder::Vectorize(std::u16string_view input) const {
+AutofillModelEncoder::EncodeField(const AutofillField& field) const {
+ return EncodeAttribute(field.label());
+}
+
+std::array<AutofillModelEncoder::TokenId,
+           AutofillModelEncoder::kAttributeOutputSequenceLength>
+AutofillModelEncoder::EncodeAttribute(std::u16string_view input) const {
   std::u16string standardized_input = base::ToLowerASCII(input);
   base::RemoveChars(standardized_input, kSpecialChars, &standardized_input);
   std::vector<std::u16string> split_string =
       base::SplitString(standardized_input, u" ", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
-  // Padding the output to be of size `kOutputSequenceLength`.
-  split_string.resize(kOutputSequenceLength, u"");
-  std::array<TokenId, kOutputSequenceLength> output;
+  // Padding the output to be of size `kAttributeOutputSequenceLength`.
+  split_string.resize(kAttributeOutputSequenceLength, u"");
+  std::array<TokenId, kAttributeOutputSequenceLength> output;
   base::ranges::transform(
       split_string, output.begin(),
       [&](std::u16string_view token) { return TokenToId(token); });

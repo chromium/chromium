@@ -14,8 +14,8 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
@@ -52,9 +52,8 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
     std::move(callback).Run(std::move(form_structure));
     return;
   }
-
   AutofillModelExecutor::ModelInput encoded_input =
-      VectorizeForm(*form_structure);
+      state_->encoder.EncodeForm(*form_structure);
   ExecuteModelWithInput(
       base::BindOnce(
           [](base::WeakPtr<AutofillMlPredictionModelHandler> self,
@@ -107,17 +106,6 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
   }
   state.encoder = AutofillModelEncoder(state.metadata.input_token());
   state_.emplace(std::move(state));
-}
-
-AutofillModelExecutor::ModelInput
-AutofillMlPredictionModelHandler::VectorizeForm(
-    const FormStructure& form) const {
-  CHECK(state_);
-  AutofillModelExecutor::ModelInput vectorized_form(form.fields().size());
-  for (size_t i = 0; i < form.field_count(); ++i) {
-    vectorized_form[i] = state_->encoder.Vectorize(form.field(i)->label());
-  }
-  return vectorized_form;
 }
 
 void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(

@@ -61,11 +61,6 @@ class AutofillMlPredictionModelHandler
       override;
 
  private:
-  // Encodes the `form` into the `ModelInput` representation understood by the
-  // `AutofillModelExecutor`. This is done by encoding the labels of the
-  // form's fields using the `encoder_`.
-  AutofillModelExecutor::ModelInput VectorizeForm(
-      const FormStructure& form) const;
 
   // Computes the `GetMostLikelyType()` from every element of `outputs` and
   // asssigns it to the corresponding field of the `form`.

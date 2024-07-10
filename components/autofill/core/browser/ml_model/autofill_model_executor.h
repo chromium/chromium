@@ -28,8 +28,10 @@ class AutofillModelExecutor
               std::array<AutofillModelEncoder::TokenId,
                          AutofillModelEncoder::kOutputSequenceLength>>&> {
  public:
-  // An encoded representation of the form's labels. Each element of the
-  // vector corresponds to an encoded label. See `AutofillModelEncoder`,
+  // TODO(crbug.com/40276177): Move `ModelInput` and `ModelOutput` to the
+  // autofill_model_encoder. An encoded representation of the form's labels.
+  // Each element of the vector corresponds to an encoded label. See
+  // `AutofillModelEncoder`,
   using ModelInput =
       std::vector<std::array<AutofillModelEncoder::TokenId,
                              AutofillModelEncoder::kOutputSequenceLength>>;
