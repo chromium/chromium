@@ -276,10 +276,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   const base::Value::List& GetList(std::string_view path) const;
 
   // Removes a user pref and restores the pref to its default value.
-  void ClearPref(const std::string& path);
+  void ClearPref(std::string_view path);
 
   // Removes user prefs that start with |prefix|.
-  void ClearPrefsWithPrefixSilently(const std::string& prefix);
+  void ClearPrefsWithPrefixSilently(std::string_view prefix);
 
   // If the path is valid (i.e., registered), update the pref value in the user
   // prefs.
@@ -288,38 +288,38 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // SetDict()/SetList(), but to modify the value of a dictionary or list use
   // either ScopedDictPrefUpdate or ScopedListPrefUpdate from
   // scoped_user_pref_update.h.
-  void Set(const std::string& path, const base::Value& value);
-  void SetBoolean(const std::string& path, bool value);
-  void SetInteger(const std::string& path, int value);
-  void SetDouble(const std::string& path, double value);
-  void SetString(const std::string& path, std::string_view value);
-  void SetDict(const std::string& path, base::Value::Dict dict);
-  void SetList(const std::string& path, base::Value::List list);
-  void SetFilePath(const std::string& path, const base::FilePath& value);
+  void Set(std::string_view path, const base::Value& value);
+  void SetBoolean(std::string_view path, bool value);
+  void SetInteger(std::string_view path, int value);
+  void SetDouble(std::string_view path, double value);
+  void SetString(std::string_view path, std::string_view value);
+  void SetDict(std::string_view path, base::Value::Dict dict);
+  void SetList(std::string_view path, base::Value::List list);
+  void SetFilePath(std::string_view path, const base::FilePath& value);
 
   // Int64 helper methods that actually store the given value as a string.
   // Note that if obtaining the named value via GetDictionary or GetList, the
   // Value type will be Type::STRING.
-  void SetInt64(const std::string& path, int64_t value);
-  int64_t GetInt64(const std::string& path) const;
+  void SetInt64(std::string_view path, int64_t value);
+  int64_t GetInt64(std::string_view path) const;
 
   // As above, but for unsigned values.
-  void SetUint64(const std::string& path, uint64_t value);
-  uint64_t GetUint64(const std::string& path) const;
+  void SetUint64(std::string_view path, uint64_t value);
+  uint64_t GetUint64(std::string_view path) const;
 
   // Time helper methods that actually store the given value as a string, which
   // represents the number of microseconds elapsed (absolute for TimeDelta and
   // relative to Windows epoch for Time variants). Note that if obtaining the
   // named value via GetDictionary or GetList, the Value type will be
   // Type::STRING.
-  void SetTime(const std::string& path, base::Time value);
-  base::Time GetTime(const std::string& path) const;
-  void SetTimeDelta(const std::string& path, base::TimeDelta value);
-  base::TimeDelta GetTimeDelta(const std::string& path) const;
+  void SetTime(std::string_view path, base::Time value);
+  base::Time GetTime(std::string_view path) const;
+  void SetTimeDelta(std::string_view path, base::TimeDelta value);
+  base::TimeDelta GetTimeDelta(std::string_view path) const;
 
   // Returns the value of the given preference, from the user pref store. If
   // the preference is not set in the user pref store, returns NULL.
-  const base::Value* GetUserPrefValue(const std::string& path) const;
+  const base::Value* GetUserPrefValue(std::string_view path) const;
 
   // Changes the default value for a preference.
   //
@@ -411,10 +411,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Write extension-controlled prefs from Lacros in ash.
-  void SetStandaloneBrowserPref(const std::string& path,
+  void SetStandaloneBrowserPref(std::string_view path,
                                 const base::Value& value);
   // Clear extension-controlled prefs from Lacros in ash.
-  void RemoveStandaloneBrowserPref(const std::string& path);
+  void RemoveStandaloneBrowserPref(std::string_view path);
 
   // Clear all prefs in standalone_browser_pref_store_. Use it when rolling back
   // to Ash (i.e. disabling Lacros).
@@ -505,7 +505,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 
   // Sets the value for this pref path in the user pref store and informs the
   // PrefNotifier of the change.
-  void SetUserPrefValue(const std::string& path, base::Value new_value);
+  void SetUserPrefValue(std::string_view path, base::Value new_value);
 
   // Load preferences from storage, attempting to diagnose and handle errors.
   // This should only be called from the constructor.
@@ -523,7 +523,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // |type| may only be Values::Type::DICT or Values::Type::LIST and
   // |path| must point to a registered preference of type |type|.
   // Ownership of the returned value remains at the user pref store.
-  base::Value* GetMutableUserPref(const std::string& path,
+  base::Value* GetMutableUserPref(std::string_view path,
                                   base::Value::Type type);
 
   // GetPreferenceValue is the equivalent of FindPreference(path)->GetValue(),

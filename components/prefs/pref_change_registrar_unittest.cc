@@ -27,11 +27,17 @@ const char kApplicationLocale[] = "intl.app_locale";
 // A mock provider that allows us to capture pref observer changes.
 class MockPrefService : public TestingPrefServiceSimple {
  public:
-  MockPrefService() {}
-  ~MockPrefService() override {}
+  MockPrefService() = default;
+  ~MockPrefService() override = default;
 
-  MOCK_METHOD2(AddPrefObserver, void(const std::string&, PrefObserver*));
-  MOCK_METHOD2(RemovePrefObserver, void(const std::string&, PrefObserver*));
+  MOCK_METHOD(void,
+              AddPrefObserver,
+              (const std::string&, PrefObserver*),
+              (override));
+  MOCK_METHOD(void,
+              RemovePrefObserver,
+              (const std::string&, PrefObserver*),
+              (override));
 };
 
 // Due to overloads, base::DoNothing() cannot be passed directly to
@@ -44,8 +50,8 @@ base::RepeatingClosure DoNothingClosure() {
 
 class PrefChangeRegistrarTest : public testing::Test {
  public:
-  PrefChangeRegistrarTest() {}
-  ~PrefChangeRegistrarTest() override {}
+  PrefChangeRegistrarTest() = default;
+  ~PrefChangeRegistrarTest() override = default;
 
  protected:
   void SetUp() override;
