@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -61,7 +62,7 @@ void ImageAnimationController::RegisterAnimationDriver(
     PaintImage::Id paint_image_id,
     AnimationDriver* driver) {
   auto it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   it->second.AddDriver(driver);
   registered_animations_.insert(paint_image_id);
 }
@@ -70,7 +71,7 @@ void ImageAnimationController::UnregisterAnimationDriver(
     PaintImage::Id paint_image_id,
     AnimationDriver* driver) {
   auto it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   it->second.RemoveDriver(driver);
   if (!it->second.has_drivers())
     registered_animations_.erase(paint_image_id);
@@ -88,7 +89,7 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
 
   for (auto id : registered_animations_) {
     auto it = animation_state_map_.find(id);
-    DCHECK(it != animation_state_map_.end());
+    CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
     AnimationState& state = it->second;
 
     // Is anyone still interested in animating this image?
@@ -140,7 +141,7 @@ void ImageAnimationController::UpdateStateFromDrivers() {
   std::optional<base::TimeTicks> next_invalidation_time;
   for (auto image_id : registered_animations_) {
     auto it = animation_state_map_.find(image_id);
-    DCHECK(it != animation_state_map_.end());
+    CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
     AnimationState& state = it->second;
     state.UpdateStateFromDrivers();
 
@@ -169,7 +170,7 @@ void ImageAnimationController::DidActivate() {
 
   for (auto id : images_animated_on_sync_tree_) {
     auto it = animation_state_map_.find(id);
-    DCHECK(it != animation_state_map_.end());
+    CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
     it->second.PushPendingToActive();
   }
   images_animated_on_sync_tree_.clear();
@@ -193,7 +194,7 @@ size_t ImageAnimationController::GetFrameIndexForImage(
     PaintImage::Id paint_image_id,
     WhichTree tree) const {
   const auto& it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   return tree == WhichTree::PENDING_TREE ? it->second.pending_index()
                                          : it->second.active_index();
 }
@@ -208,14 +209,14 @@ const base::flat_set<
 ImageAnimationController::GetDriversForTesting(
     PaintImage::Id paint_image_id) const {
   const auto& it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   return it->second.drivers_for_testing();
 }
 
 size_t ImageAnimationController::GetLastNumOfFramesSkippedForTesting(
     PaintImage::Id paint_image_id) const {
   const auto& it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   return it->second.last_num_frames_skipped_for_testing();
 }
 
