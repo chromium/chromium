@@ -35,7 +35,6 @@ namespace content {
 namespace {
 
 using testing::_;
-using testing::Field;
 using testing::Invoke;
 using testing::Property;
 
@@ -90,9 +89,8 @@ TEST_F(AggregatableReportSchedulerTest,
   expected_shared_info.scheduled_report_time = kExampleTime;
 
   AggregatableReportRequest expected_request =
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(), std::move(expected_shared_info),
-          AggregatableReportRequest::DelayType::ScheduledWithReducedDelay)
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(expected_shared_info))
           .value();
 
   {
@@ -184,9 +182,8 @@ TEST_F(AggregatableReportSchedulerTest,
   expected_shared_info.scheduled_report_time = kExampleTime;
 
   scheduler_->ScheduleRequest(
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(), std::move(expected_shared_info),
-          AggregatableReportRequest::DelayType::ScheduledWithReducedDelay)
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(expected_shared_info))
           .value());
 
   EXPECT_CALL(mock_callback_, Run);
@@ -243,9 +240,8 @@ TEST_F(AggregatableReportSchedulerTest,
   expected_shared_info.scheduled_report_time = kExampleTime;
 
   scheduler_->ScheduleRequest(
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(), std::move(expected_shared_info),
-          AggregatableReportRequest::DelayType::ScheduledWithReducedDelay)
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(expected_shared_info))
           .value());
 
   EXPECT_CALL(mock_callback_, Run);
@@ -305,7 +301,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
   auto request = AggregatableReportRequest::Create(
       example_request.payload_contents(), std::move(expected_shared_info),
-      AggregatableReportRequest::DelayType::ScheduledWithReducedDelay);
+      /*reporting_path=*/"");
   scheduler_->ScheduleRequest(std::move(request.value()));
 
   base::TimeDelta fast_forward_required = kExampleTime - base::Time::Now();
@@ -358,14 +354,8 @@ TEST_F(AggregatableReportSchedulerTest,
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
-              EXPECT_THAT(
-                  requests_and_ids,
-                  testing::ElementsAre(Field(
-                      "request",
-                      &AggregationServiceStorage::RequestAndId::request,
-                      Property("failed_send_attempts()",
-                               &AggregatableReportRequest::failed_send_attempts,
-                               1))));
+              EXPECT_EQ(requests_and_ids.size(), 1u);
+              EXPECT_EQ(requests_and_ids[0].request.failed_send_attempts(), 1);
               run_loop.Quit();
             }));
 
@@ -437,9 +427,8 @@ TEST_F(AggregatableReportSchedulerTest,
     expected_shared_info.scheduled_report_time = scheduled_report_time;
 
     scheduler_->ScheduleRequest(
-        AggregatableReportRequest::Create(
-            example_request.payload_contents(), std::move(expected_shared_info),
-            AggregatableReportRequest::DelayType::ScheduledWithReducedDelay)
+        AggregatableReportRequest::Create(example_request.payload_contents(),
+                                          std::move(expected_shared_info))
             .value());
   }
 
@@ -516,9 +505,8 @@ TEST_F(AggregatableReportSchedulerTest,
     expected_shared_info.scheduled_report_time = scheduled_report_time;
 
     scheduler_->ScheduleRequest(
-        AggregatableReportRequest::Create(
-            example_request.payload_contents(), std::move(expected_shared_info),
-            AggregatableReportRequest::DelayType::ScheduledWithReducedDelay)
+        AggregatableReportRequest::Create(example_request.payload_contents(),
+                                          std::move(expected_shared_info))
             .value());
   }
 
@@ -553,9 +541,8 @@ TEST_F(AggregatableReportSchedulerTest,
   expected_shared_info.scheduled_report_time = kExampleTime;
 
   scheduler_->ScheduleRequest(
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(), std::move(expected_shared_info),
-          AggregatableReportRequest::DelayType::ScheduledWithReducedDelay)
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(expected_shared_info))
           .value());
 
   base::TimeDelta fast_forward_required = kExampleTime - base::Time::Now();
@@ -599,9 +586,8 @@ TEST_F(AggregatableReportSchedulerTest,
   expected_shared_info.scheduled_report_time = kExampleTime;
 
   scheduler_->ScheduleRequest(
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(), std::move(expected_shared_info),
-          AggregatableReportRequest::DelayType::ScheduledWithReducedDelay)
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(expected_shared_info))
           .value());
 
   Checkpoint checkpoint;
@@ -648,9 +634,8 @@ TEST_F(AggregatableReportSchedulerTest,
     expected_shared_info.scheduled_report_time = kExampleTime;
 
     scheduler_->ScheduleRequest(
-        AggregatableReportRequest::Create(
-            example_request.payload_contents(), std::move(expected_shared_info),
-            AggregatableReportRequest::DelayType::ScheduledWithReducedDelay)
+        AggregatableReportRequest::Create(example_request.payload_contents(),
+                                          std::move(expected_shared_info))
             .value());
   }
 
@@ -686,9 +671,8 @@ TEST_F(AggregatableReportSchedulerDeveloperModeTest,
   expected_shared_info.scheduled_report_time = kExampleTime;
 
   scheduler_->ScheduleRequest(
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(), std::move(expected_shared_info),
-          AggregatableReportRequest::DelayType::ScheduledWithReducedDelay)
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(expected_shared_info))
           .value());
 
   base::TimeDelta fast_forward_required = kExampleTime - base::Time::Now();

@@ -5,7 +5,6 @@
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 
 #include <stddef.h>
-#include <stdint.h>
 
 #include <bit>
 #include <iterator>
@@ -323,7 +322,6 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
     base::ElapsedTimer timeout_or_disconnect_timer,
     blink::mojom::DebugModeDetailsPtr debug_mode_details,
     base::Time scheduled_report_time,
-    AggregatableReportRequest::DelayType delay_type,
     base::Uuid report_id,
     const url::Origin& reporting_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
@@ -398,7 +396,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
 
   std::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::Create(
-          std::move(payload_contents), std::move(shared_info), delay_type,
+          std::move(payload_contents), std::move(shared_info),
           std::move(reporting_path), debug_key, std::move(additional_fields));
 
   // All failure cases should've been handled by earlier validation code.
@@ -531,18 +529,12 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   bool should_not_delay_this_report =
       should_not_delay_reports_ || receiver_context.timeout_timer;
 
-  const AggregatableReportRequest::DelayType delay_type =
-      receiver_context.timeout_timer
-          ? AggregatableReportRequest::DelayType::ScheduledWithReducedDelay
-          : AggregatableReportRequest::DelayType::ScheduledWithFullDelay;
-
   ReportRequestGenerator report_request_generator = base::BindOnce(
       GenerateReportRequest, std::move(timeout_or_disconnect_timer),
       std::move(receiver_context.report_debug_details),
       /*scheduled_report_time=*/
       should_not_delay_this_report ? report_issued_time
                                    : GetScheduledReportTime(report_issued_time),
-      delay_type,
       /*report_id=*/base::Uuid::GenerateRandomV4(), reporting_origin,
       receiver_context.api_for_budgeting,
       std::move(receiver_context.context_id),

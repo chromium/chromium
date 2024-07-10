@@ -163,7 +163,7 @@ void TestAggregationServiceImpl::SendReport(
     const base::Value& contents,
     base::OnceCallback<void(bool)> callback) {
   sender_->SendReport(
-      url, contents, AggregatableReportRequest::DelayType::Unscheduled,
+      url, contents,
       base::BindOnce(
           [&](base::OnceCallback<void(bool)> callback,
               AggregatableReportSender::RequestStatus status) {

@@ -9,7 +9,6 @@
 
 #include <iterator>
 #include <optional>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -262,9 +261,7 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
               ? AttributionReport::CommonAggregatableData::
                     kVersionWithFlexibleContributionFiltering
               : AttributionReport::CommonAggregatableData::kVersion,
-          AttributionReport::CommonAggregatableData::kApiIdentifier),
-      // The returned request cannot be serialized due to the null `delay_type`.
-      /*delay_type=*/std::nullopt);
+          AttributionReport::CommonAggregatableData::kApiIdentifier));
 }
 
 base::CheckedNumeric<int64_t> GetTotalAggregatableValues(

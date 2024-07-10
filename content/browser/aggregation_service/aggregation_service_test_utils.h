@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
@@ -28,7 +27,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
-#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace base {
@@ -92,16 +90,14 @@ AggregatableReportRequest CreateExampleRequest(
     blink::mojom::AggregationServiceMode aggregation_mode =
         blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
-    std::optional<url::Origin> aggregation_coordinator_origin = std::nullopt,
-    std::optional<AggregatableReportRequest::DelayType> = std::nullopt);
+    std::optional<url::Origin> aggregation_coordinator_origin = std::nullopt);
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
     blink::mojom::AggregationServiceMode aggregation_mode =
         blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
-    std::optional<url::Origin> aggregation_coordinator_origin = std::nullopt,
-    std::optional<AggregatableReportRequest::DelayType> = std::nullopt);
+    std::optional<url::Origin> aggregation_coordinator_origin = std::nullopt);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);
@@ -162,7 +158,6 @@ class MockAggregationService : public AggregationService {
               SendReport,
               (const GURL& url,
                const AggregatableReport& report,
-               std::optional<AggregatableReportRequest::DelayType> delay_type,
                AggregationService::SendCallback callback),
               (override));
 
@@ -170,7 +165,6 @@ class MockAggregationService : public AggregationService {
               SendReport,
               (const GURL& url,
                const base::Value& value,
-               std::optional<AggregatableReportRequest::DelayType> delay_type,
                AggregationService::SendCallback callback),
               (override));
 

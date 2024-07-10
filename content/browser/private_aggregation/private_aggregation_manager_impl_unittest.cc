@@ -406,12 +406,10 @@ TEST_F(PrivateAggregationManagerImplTest,
   std::optional<AggregatableReportRequest> standard_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), shared_info.Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   std::optional<AggregatableReportRequest> expected_debug_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), std::move(shared_info),
-          AggregatableReportRequest::DelayType::Unscheduled,
           /*reporting_path=*/
           "/.well-known/private-aggregation/debug/report-protected-audience");
   ASSERT_TRUE(standard_request.has_value());
@@ -475,14 +473,12 @@ TEST_F(PrivateAggregationManagerImplTest,
   std::optional<AggregatableReportRequest> standard_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), shared_info.Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path",
           /*debug_key=*/std::nullopt,
           /*additional_fields=*/{{"context_id", "example_context_id"}});
   std::optional<AggregatableReportRequest> expected_debug_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), std::move(shared_info),
-          AggregatableReportRequest::DelayType::Unscheduled,
           /*reporting_path=*/
           "/.well-known/private-aggregation/debug/report-protected-audience",
           /*debug_key=*/std::nullopt,
@@ -536,7 +532,6 @@ TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
   std::optional<AggregatableReportRequest> standard_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), shared_info.Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   ASSERT_TRUE(standard_request.has_value());
 
@@ -639,7 +634,6 @@ TEST_F(PrivateAggregationManagerImplTest,
   std::optional<AggregatableReportRequest> standard_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), shared_info.Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   ASSERT_TRUE(standard_request.has_value());
 
@@ -698,12 +692,10 @@ TEST_F(PrivateAggregationManagerImplTest,
   std::optional<AggregatableReportRequest> null_request =
       AggregatableReportRequest::Create(
           null_payload, shared_info.Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   std::optional<AggregatableReportRequest> expected_null_debug_request =
       AggregatableReportRequest::Create(
           null_payload, std::move(shared_info),
-          AggregatableReportRequest::DelayType::Unscheduled,
           /*reporting_path=*/
           "/.well-known/private-aggregation/debug/report-protected-audience");
   ASSERT_TRUE(null_request.has_value());
@@ -726,7 +718,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       .WillOnce(Invoke([&expected_null_debug_request](
                            AggregatableReportRequest report_request) {
         EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
-            expected_null_debug_request.value(), report_request));
+            report_request, expected_null_debug_request.value()));
       }));
 
   // Triggers the standard (non-debug) report.
@@ -734,7 +726,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       .WillOnce(
           Invoke([&null_request](AggregatableReportRequest report_request) {
             EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
-                null_request.value(), report_request));
+                report_request, null_request.value()));
           }));
 
   auto [generator, null_contributions] =
@@ -781,12 +773,10 @@ TEST_F(PrivateAggregationManagerImplTest,
   std::optional<AggregatableReportRequest> null_request =
       AggregatableReportRequest::Create(
           null_payload, shared_info.Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   std::optional<AggregatableReportRequest> expected_null_debug_request =
       AggregatableReportRequest::Create(
           null_payload, std::move(shared_info),
-          AggregatableReportRequest::DelayType::Unscheduled,
           /*reporting_path=*/
           "/.well-known/private-aggregation/debug/report-protected-audience");
   ASSERT_TRUE(null_request.has_value());
@@ -799,7 +789,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       .WillOnce(Invoke([&expected_null_debug_request](
                            AggregatableReportRequest report_request) {
         EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
-            expected_null_debug_request.value(), report_request));
+            report_request, expected_null_debug_request.value()));
       }));
 
   // Triggers the standard (non-debug) report.
@@ -807,7 +797,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       .WillOnce(
           Invoke([&null_request](AggregatableReportRequest report_request) {
             EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
-                null_request.value(), report_request));
+                report_request, null_request.value()));
           }));
 
   auto [generator, null_contributions] =

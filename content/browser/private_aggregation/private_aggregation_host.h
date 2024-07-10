@@ -15,7 +15,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/common/content_export.h"
@@ -156,7 +155,6 @@ class CONTENT_EXPORT PrivateAggregationHost
       base::ElapsedTimer timeout_or_disconnect_timer,
       blink::mojom::DebugModeDetailsPtr debug_mode_details,
       base::Time scheduled_report_time,
-      AggregatableReportRequest::DelayType delay_type,
       base::Uuid report_id,
       const url::Origin& reporting_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,

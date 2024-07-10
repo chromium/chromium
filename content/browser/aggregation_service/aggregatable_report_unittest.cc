@@ -66,9 +66,9 @@ std::vector<blink::mojom::AggregatableReportHistogramContribution>
 PadContributions(
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
-    size_t max_contributions_allowed) {
-  EXPECT_LE(contributions.size(), max_contributions_allowed);
-  for (size_t i = contributions.size(); i < max_contributions_allowed; ++i) {
+    int max_contributions_allowed) {
+  EXPECT_LE(static_cast<int>(contributions.size()), max_contributions_allowed);
+  for (int i = contributions.size(); i < max_contributions_allowed; ++i) {
     contributions.emplace_back(/*bucket=*/0, /*value=*/0,
                                /*filtering_id=*/std::nullopt);
   }
@@ -399,7 +399,6 @@ TEST_F(AggregatableReportTest,
   std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), expected_shared_info.Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/std::string(), expected_debug_key);
   ASSERT_TRUE(request.has_value());
 
@@ -427,12 +426,11 @@ TEST_F(AggregatableReportTest, AdditionalFieldsPresent_ValidReportReturned) {
   base::flat_map<std::string, std::string> expected_additional_fields = {
       {"additional_key", "example_value"}, {"second", "field"}, {"", ""}};
   std::optional<AggregatableReportRequest> request =
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(),
-          example_request.shared_info().Clone(),
-          AggregatableReportRequest::DelayType::Unscheduled,
-          /*reporting_path=*/std::string(),
-          /*debug_key=*/std::nullopt, expected_additional_fields);
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        example_request.shared_info().Clone(),
+                                        /*reporting_path=*/std::string(),
+                                        /*debug_key=*/std::nullopt,
+                                        expected_additional_fields);
   ASSERT_TRUE(request.has_value());
 
   AggregationServicePayloadContents expected_payload_contents =
@@ -628,12 +626,10 @@ TEST_F(AggregatableReportTest,
       aggregation_service::CreateExampleRequest();
 
   std::optional<AggregatableReportRequest> request =
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(),
-          example_request.shared_info().Clone(),
-          AggregatableReportRequest::DelayType::Unscheduled,
-          /*reporting_path=*/std::string(),
-          /*debug_key=*/1234);
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        example_request.shared_info().Clone(),
+                                        /*reporting_path=*/std::string(),
+                                        /*debug_key=*/1234);
 
   EXPECT_FALSE(request.has_value());
 }
@@ -863,11 +859,9 @@ TEST_F(AggregatableReportTest, ReportingPathSet_SetInRequest) {
   std::string reporting_path = "/example-path";
 
   std::optional<AggregatableReportRequest> request =
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(),
-          example_request.shared_info().Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithReducedDelay,
-          reporting_path);
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        example_request.shared_info().Clone(),
+                                        reporting_path);
   ASSERT_TRUE(request.has_value());
   EXPECT_EQ(request->reporting_path(), reporting_path);
   EXPECT_EQ(request->GetReportingUrl().path(), reporting_path);
@@ -884,7 +878,6 @@ TEST_F(AggregatableReportTest, RequestCreatedWithInvalidFailedAttempt_Failed) {
   std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), std::move(shared_info),
-          AggregatableReportRequest::DelayType::Unscheduled,
           /*reporting_path=*/"", /*debug_key=*/std::nullopt,
           /*additional_fields=*/{},
           /*failed_send_attempts=*/-1);
@@ -936,81 +929,13 @@ TEST_F(AggregatableReportTest, FailedSendAttempts) {
   AggregatableReportRequest example_request_with_failed_attempts =
       aggregation_service::CreateExampleRequest(
           /*aggregation_mode=*/blink::mojom::AggregationServiceMode::kDefault,
-          /*failed_send_attempts=*/2,
-          /*aggregation_coordinator_origin=*/std::nullopt,
-          /*delay_type=*/
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay);
+          /*failed_send_attempts=*/2);
 
   // The failed attempts are correctly serialized & deserialized
   std::vector<uint8_t> proto = example_request_with_failed_attempts.Serialize();
   std::optional<AggregatableReportRequest> parsed_request =
       AggregatableReportRequest::Deserialize(proto);
-  EXPECT_THAT(
-      parsed_request,
-      testing::Optional(testing::AllOf(
-          testing::Property(&AggregatableReportRequest::failed_send_attempts,
-                            2),
-          testing::Property(
-              &AggregatableReportRequest::delay_type,
-              AggregatableReportRequest::DelayType::ScheduledWithFullDelay))));
-}
-
-TEST_F(AggregatableReportTest, DelayTypeSerializeNulloptCrashes) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest(
-          /*aggregation_mode=*/blink::mojom::AggregationServiceMode::kDefault,
-          /*failed_send_attempts=*/0,
-          /*aggregation_coordinator_origin=*/std::nullopt,
-          /*delay_type=*/std::nullopt);
-
-  EXPECT_FALSE(example_request.delay_type().has_value());
-
-  EXPECT_DEATH_IF_SUPPORTED(
-      example_request.Serialize(),
-      "Check failed: request\\.delay_type\\(\\)\\.has_value\\(\\)");
-}
-
-TEST_F(AggregatableReportTest, DelayTypeSerializeUnscheduledCrashes) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest(
-          /*aggregation_mode=*/blink::mojom::AggregationServiceMode::kDefault,
-          /*failed_send_attempts=*/0,
-          /*aggregation_coordinator_origin=*/std::nullopt,
-          /*delay_type=*/AggregatableReportRequest::DelayType::Unscheduled);
-
-  EXPECT_THAT(
-      example_request.delay_type(),
-      testing::Optional(AggregatableReportRequest::DelayType::Unscheduled));
-
-  EXPECT_DEATH_IF_SUPPORTED(example_request.Serialize(),
-                            "Check failed: .*DelayType_IsValid");
-}
-
-TEST_F(AggregatableReportTest, DelayTypeSerializesAndDeserializesCorerctly) {
-  static const AggregatableReportRequest::DelayType kDelayTypeValues[] = {
-      AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
-      AggregatableReportRequest::DelayType::ScheduledWithReducedDelay,
-  };
-  for (const auto delay_type : kDelayTypeValues) {
-    AggregatableReportRequest example_request =
-        aggregation_service::CreateExampleRequest(
-            /*aggregation_mode=*/blink::mojom::AggregationServiceMode::kDefault,
-            /*failed_send_attempts=*/0,
-            /*aggregation_coordinator_origin=*/std::nullopt, delay_type);
-
-    EXPECT_EQ(example_request.delay_type(), delay_type);
-
-    // The delay_type field is correctly serialized & deserialized.
-    std::vector<uint8_t> proto = example_request.Serialize();
-    std::optional<AggregatableReportRequest> parsed_request =
-        AggregatableReportRequest::Deserialize(proto);
-
-    ASSERT_TRUE(parsed_request.has_value());
-
-    EXPECT_THAT(parsed_request,
-                testing::Optional(testing::Property(
-                    &AggregatableReportRequest::delay_type, delay_type)));
-  }
+  EXPECT_EQ(parsed_request.value().failed_send_attempts(), 2);
 }
 
 TEST_F(AggregatableReportTest, MaxContributionsAllowed) {
@@ -1022,19 +947,16 @@ TEST_F(AggregatableReportTest, MaxContributionsAllowed) {
   payload_contents.max_contributions_allowed = 20;
 
   AggregatableReportRequest request =
-      AggregatableReportRequest::Create(
-          payload_contents, example_request.shared_info().Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay)
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info().Clone())
           .value();
 
   // The max contributions allowed is correctly serialized and deserialized
   std::vector<uint8_t> proto = request.Serialize();
   std::optional<AggregatableReportRequest> parsed_request =
       AggregatableReportRequest::Deserialize(proto);
-  ASSERT_TRUE(parsed_request.has_value());
-  EXPECT_EQ(parsed_request->payload_contents().max_contributions_allowed, 20);
-  EXPECT_EQ(parsed_request->delay_type(),
-            AggregatableReportRequest::DelayType::ScheduledWithFullDelay);
+  EXPECT_EQ(parsed_request.value().payload_contents().max_contributions_allowed,
+            20);
 }
 
 TEST_F(AggregatableReportTest, AggregationCoordinatorOrigin) {
@@ -1061,8 +983,7 @@ TEST_F(AggregatableReportTest, AggregationCoordinatorOrigin) {
 
     std::optional<AggregatableReportRequest> request =
         AggregatableReportRequest::Create(
-            payload_contents, example_request.shared_info().Clone(),
-            AggregatableReportRequest::DelayType::ScheduledWithFullDelay);
+            payload_contents, example_request.shared_info().Clone());
 
     EXPECT_EQ(request.has_value(), test_case.creation_should_succeed);
 
@@ -1074,11 +995,10 @@ TEST_F(AggregatableReportTest, AggregationCoordinatorOrigin) {
     std::vector<uint8_t> proto = request->Serialize();
     std::optional<AggregatableReportRequest> parsed_request =
         AggregatableReportRequest::Deserialize(proto);
-    ASSERT_TRUE(parsed_request.has_value());
-    EXPECT_EQ(parsed_request->payload_contents().aggregation_coordinator_origin,
+    EXPECT_EQ(parsed_request.value()
+                  .payload_contents()
+                  .aggregation_coordinator_origin,
               test_case.aggregation_coordinator_origin);
-    EXPECT_EQ(parsed_request->delay_type(),
-              AggregatableReportRequest::DelayType::ScheduledWithFullDelay);
   }
 }
 
@@ -1099,9 +1019,8 @@ TEST_F(AggregatableReportTest, AggregationCoordinatorOriginAllowlistChanged) {
       url::Origin::Create(GURL("https://a.test"));
 
   AggregatableReportRequest request =
-      AggregatableReportRequest::Create(
-          payload_contents, example_request.shared_info().Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay)
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info().Clone())
           .value();
 
   std::vector<uint8_t> proto = request.Serialize();
@@ -1158,9 +1077,8 @@ TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesNullopt) {
   payload_contents.filtering_id_max_bytes.reset();
 
   AggregatableReportRequest request =
-      AggregatableReportRequest::Create(
-          payload_contents, example_request.shared_info().Clone(),
-          AggregatableReportRequest::DelayType::ScheduledWithFullDelay)
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info().Clone())
           .value();
 
   // The filtering_id_max_bytes is correctly serialized and deserialized
@@ -1195,9 +1113,8 @@ TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesMax) {
     payload_contents.contributions[0].filtering_id = test_case;
 
     AggregatableReportRequest request =
-        AggregatableReportRequest::Create(
-            payload_contents, example_request.shared_info().Clone(),
-            AggregatableReportRequest::DelayType::ScheduledWithFullDelay)
+        AggregatableReportRequest::Create(payload_contents,
+                                          example_request.shared_info().Clone())
             .value();
 
     // The report is correctly serialized and deserialized
@@ -1236,8 +1153,7 @@ TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesNotMax) {
 
     std::optional<AggregatableReportRequest> request =
         AggregatableReportRequest::Create(
-            payload_contents, example_request.shared_info().Clone(),
-            AggregatableReportRequest::DelayType::ScheduledWithFullDelay);
+            payload_contents, example_request.shared_info().Clone());
     EXPECT_EQ(request.has_value(), test_case.expect_success);
 
     if (!request.has_value()) {
@@ -1365,7 +1281,6 @@ TEST(AggregatableReportProtoMigrationTest,
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"example-version",
               /*api_identifier=*/"example-api"),
-          /*delay_type=*/std::nullopt,
           /*reporting_path=*/"example-path", /*debug_key=*/std::nullopt,
           /*additional_fields=*/{},
           /*failed_send_attempts=*/0)
@@ -1413,7 +1328,6 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"example-version",
               /*api_identifier=*/"example-api"),
-          /*delay_type=*/std::nullopt,
           /*reporting_path=*/"example-path",
           /*debug_key=*/std::numeric_limits<uint64_t>::max())
           .value();
@@ -1424,10 +1338,10 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
 
 TEST(
     AggregatableReportProtoMigrationTest,
-    NoAdditionalFieldsOrAggregationCoordinatorOriginOrFilteringIdOrDelayType_ParsesCorrectly) {
+    NoAdditionalFieldsOrAggregationCoordinatorOriginOrFilteringId_ParsesCorrectly) {
   // An `AggregatableReport` serialized before `additional_fields`,
-  // `aggregation_coordinator_origin`, `filtering_id`, `filtering_id_max_bytes`,
-  // and `delay_type` were added to the proto definition.
+  // `aggregataion_coordinator_origin`, `filtering_id` and
+  // `filtering_id_max_bytes` were added to the proto definition.
   const char kHexEncodedOldProto[] =
       "0A071205107B18C803126208D0DA8693FDBECF17122431323334353637382D393061622D"
       "346364652D386631322D3334353637383930616263641A1368747470733A2F2F6578616D"
@@ -1462,7 +1376,6 @@ TEST(
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"example-version",
               /*api_identifier=*/"example-api"),
-          /*delay_type=*/std::nullopt,
           /*reporting_path=*/"example-path", /*debug_key=*/std::nullopt,
           /*additional_fields=*/{},
           /*failed_send_attempts=*/0)
@@ -1529,7 +1442,6 @@ TEST_F(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
                 /*additional_fields=*/base::Value::Dict(),
                 /*api_version=*/"",
                 /*api_identifier=*/"example-api"),
-            AggregatableReportRequest::DelayType::Unscheduled,
             /*reporting_path=*/"example-path",
             /*debug_key=*/std::nullopt, /*additional_fields=*/{},
             /*failed_send_attempts=*/0);

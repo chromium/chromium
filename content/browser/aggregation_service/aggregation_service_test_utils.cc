@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
@@ -35,7 +36,6 @@
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
-#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -140,27 +140,6 @@ testing::AssertionResult ReportRequestsEqual(
     return testing::AssertionFailure() << "Expected additional fields to match";
   }
 
-  if (expected.failed_send_attempts() != actual.failed_send_attempts()) {
-    return testing::AssertionFailure()
-           << "Expected failed_send_attempts "
-           << expected.failed_send_attempts()
-           << ", actual: " << actual.failed_send_attempts();
-  }
-
-  if (expected.delay_type() != actual.delay_type()) {
-    return testing::AssertionFailure()
-           << "Expected delay_type: "
-           << (expected.delay_type()
-                   ? AggregatableReportRequest::DelayTypeToString(
-                         *expected.delay_type())
-                   : "nothing")
-           << ", actual: "
-           << (actual.delay_type()
-                   ? AggregatableReportRequest::DelayTypeToString(
-                         *actual.delay_type())
-                   : "nothing");
-  }
-
   return SharedInfoEqual(expected.shared_info(), actual.shared_info());
 }
 
@@ -259,19 +238,17 @@ testing::AssertionResult SharedInfoEqual(
 AggregatableReportRequest CreateExampleRequest(
     blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
-    std::optional<url::Origin> aggregation_coordinator_origin,
-    std::optional<AggregatableReportRequest::DelayType> delay_type) {
+    std::optional<url::Origin> aggregation_coordinator_origin) {
   return CreateExampleRequestWithReportTime(
       /*report_time=*/base::Time::Now(), aggregation_mode, failed_send_attempts,
-      std::move(aggregation_coordinator_origin), std::move(delay_type));
+      std::move(aggregation_coordinator_origin));
 }
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
     blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
-    std::optional<url::Origin> aggregation_coordinator_origin,
-    std::optional<AggregatableReportRequest::DelayType> delay_type) {
+    std::optional<url::Origin> aggregation_coordinator_origin) {
   return AggregatableReportRequest::Create(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
@@ -290,7 +267,6 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
                  /*additional_fields=*/base::Value::Dict(),
                  /*api_version=*/"",
                  /*api_identifier=*/"example-api"),
-             delay_type,
              /*reporting_path=*/"example-path",
              /*debug_key=*/std::nullopt, /*additional_fields=*/{},
              failed_send_attempts)
@@ -301,9 +277,9 @@ AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request) {
   return AggregatableReportRequest::CreateForTesting(
              request.processing_urls(), request.payload_contents(),
-             request.shared_info().Clone(), request.delay_type(),
-             request.reporting_path(), request.debug_key(),
-             request.additional_fields(), request.failed_send_attempts())
+             request.shared_info().Clone(), request.reporting_path(),
+             request.debug_key(), request.additional_fields(),
+             request.failed_send_attempts())
       .value();
 }
 
