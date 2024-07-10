@@ -56,6 +56,8 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/wm/core/focus_controller.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -371,9 +373,31 @@ bool CanHandleToggleCapsLock(
 }
 
 bool IsShortcutBlockedByPolicy(ui::Accelerator accelerator) {
-  if (GetSystemShortcutBehavior() !=
-      SystemShortcutBehaviorType::kIgnoreCommonVdiShortcuts) {
-    return false;
+  auto system_shortcut_behavior = GetSystemShortcutBehavior();
+  switch (system_shortcut_behavior) {
+    case SystemShortcutBehaviorType::kNormalShortcutBehavior:
+      return false;
+    // Common VDI shortcuts should always be blocked for this case.
+    case SystemShortcutBehaviorType::kIgnoreCommonVdiShortcuts:
+      break;
+    // Common VDI shortcuts should only be blocked if the focused window is
+    // fullscreen.
+    case SystemShortcutBehaviorType::kIgnoreCommonVdiShortcutsFullscreenOnly: {
+      auto* focused_window =
+          Shell::Get()->focus_controller()->GetFocusedWindow();
+      if (!focused_window) {
+        return false;
+      }
+
+      auto* top_level_window = wm::GetToplevelWindow(focused_window);
+      if (!top_level_window) {
+        return false;
+      }
+
+      if (!WindowState::Get(top_level_window)->IsFullscreen()) {
+        return false;
+      }
+    }
   }
 
   return kSystemShortcutPolicyBlockedAccelerators.contains(

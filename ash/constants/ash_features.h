@@ -921,6 +921,7 @@ BASE_DECLARE_FEATURE(kSystemShortcutBehavior);
 enum class SystemShortcutBehaviorParam {
   kNormalShortcutBehavior,
   kIgnoreCommonVdiShortcutList,
+  kIgnoreCommonVdiShortcutListFullscreenOnly,
 };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<SystemShortcutBehaviorParam>
