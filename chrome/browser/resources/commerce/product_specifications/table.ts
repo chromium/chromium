@@ -67,8 +67,6 @@ export class TableElement extends PolymerElement {
     const [draggingColumn] = columns.splice(fromIndex, 1);
     assert(draggingColumn);
     columns.splice(dropIndex, 0, draggingColumn);
-    // TODO(b/331955377): Update the order of the columns in the backend via
-    // |shoppingApi|.
     this.notifySplices('columns', [
       {
         index: fromIndex,
@@ -85,6 +83,8 @@ export class TableElement extends PolymerElement {
         type: 'splice',
       },
     ]);
+
+    this.dispatchEvent(new Event('url-order-update'));
   }
 
   // |this.draggingColumn| is set by |dragAndDropManager|.

@@ -1076,6 +1076,43 @@ suite('AppTest', () => {
         shoppingServiceApi.getArgs('setNameForProductSpecificationsSet')[0][1]);
   });
 
+  test('fire `url-order-update` event w/ id param', async () => {
+    const specsSetUrls = [{url: 'https://0'}, {url: 'https://1'}];
+    const testId = 'foo123';
+    const specsSet =
+        createSpecsSet({urls: specsSetUrls, uuid: {value: testId}});
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
+    const promiseValues = createAppPromiseValues({
+      idParam: testId,
+      specsSet: specsSet,
+    });
+    await createAppElementWithPromiseValues(promiseValues);
+
+    const table = appElement.$.summaryTable;
+    table.dispatchEvent(new Event('url-order-update'));
+
+    const args = await shoppingServiceApi.whenCalled(
+        'setUrlsForProductSpecificationsSet');
+    assertEquals(2, args.length);
+    assertArrayEquals(specsSetUrls, args[1]);
+  });
+
+  test('fire `url-order-update` event w/ url param', async () => {
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://0', 'https://1'],
+    });
+    await createAppElementWithPromiseValues(promiseValues);
+
+    const table = appElement.$.summaryTable;
+    table.dispatchEvent(new Event('url-order-update'));
+
+    const args =
+        await shoppingServiceApi.whenCalled('addProductSpecificationsSet');
+    assertEquals(2, args.length);
+    assertArrayEquals([{url: 'https://0'}, {url: 'https://1'}], args[1]);
+  });
+
   suite('Header', () => {
     test('displays correct subtitle for retrieved sets', async () => {
       const specsSet = createSpecsSet({

@@ -315,6 +315,11 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.modifyUrls_(urls);
   }
 
+  private onUrlOrderUpdate_() {
+    const urls = this.getTableUrls_();
+    this.modifyUrls_(urls);
+  }
+
   private onUrlRemove_(e: CustomEvent<{index: number}>) {
     const urls = this.getTableUrls_();
     urls.splice(e.detail.index, 1);

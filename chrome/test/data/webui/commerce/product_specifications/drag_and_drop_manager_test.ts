@@ -10,6 +10,7 @@ import {TableElement} from 'chrome://compare/table.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertStyle} from './test_support.js';
 
@@ -115,10 +116,13 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals('https://0', images[0]!.autoSrc);
     assertEquals('https://1', images[1]!.autoSrc);
 
+    const eventPromise = eventToPromise('url-order-update', tableElement);
     dispatchDrop({origin: first});
     await waitAfterNextRender(tableElement);
     assertNotDragging();
 
+    const event = await eventPromise;
+    assertTrue(!!event);
     assertEquals(2, images.length);
     assertEquals('https://1', images[0]!.autoSrc);
     assertEquals('https://0', images[1]!.autoSrc);
