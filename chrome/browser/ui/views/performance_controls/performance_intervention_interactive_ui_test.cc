@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -52,6 +54,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
+constexpr char kMessageTriggerResultHistogram[] =
+    "PerformanceControls.Intervention.BackgroundTab.Cpu.MessageTriggerResult";
 
 class DiscardWaiter : public resource_coordinator::TabLifecycleObserver {
  public:
@@ -93,10 +97,9 @@ class PerformanceInterventionInteractiveTest
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
-    feature_list_.InitWithFeatures(
-        {performance_manager::features::kPerformanceIntervention,
-         performance_manager::features::kPerformanceInterventionUI},
-        {});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        performance_manager::features::kPerformanceInterventionUI,
+        {{"intervention_show_mixed_profile", "false"}});
     InteractiveFeaturePromoTest::SetUp();
   }
 
@@ -567,6 +570,65 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 }
 #endif
 
+// We can only have one non-off record profile open at a time on ChromeOS so
+// users will not encounter this case.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       SuggestTabsOnlyForLastActiveProfile) {
+  // Create two browser windows with tabs and ensure the second browser window
+  // is active
+  Browser* const first_browser = browser();
+  ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 0, GetURL("a.com"),
+                                     ui::PageTransition::PAGE_TRANSITION_LINK));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
+                                     ui::PageTransition::PAGE_TRANSITION_LINK));
+
+  ProfileManager* const profile_manager = g_browser_process->profile_manager();
+  const base::FilePath new_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile =
+      profiles::testing::CreateProfileSync(profile_manager, new_path);
+  Browser* const second_browser = CreateBrowser(&profile);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
+                                     ui::PageTransition::PAGE_TRANSITION_LINK));
+  BrowserWindow* const first_browser_window = first_browser->window();
+  BrowserWindow* const second_browser_window = second_browser->window();
+  second_browser_window->Activate();
+  ASSERT_TRUE(second_browser_window->IsActive());
+  ASSERT_FALSE(first_browser_window->IsActive());
+
+  ToolbarButton* const first_button =
+      BrowserView::GetBrowserViewForBrowser(first_browser)
+          ->toolbar()
+          ->performance_intervention_button();
+  ToolbarButton* const second_button =
+      BrowserView::GetBrowserViewForBrowser(second_browser)
+          ->toolbar()
+          ->performance_intervention_button();
+  ASSERT_FALSE(first_button->GetVisible());
+  ASSERT_FALSE(second_button->GetVisible());
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kMessageTriggerResultHistogram,
+      InterventionMessageTriggerResult::kMixedProfile, 0);
+  histogram_tester.ExpectBucketCount(kMessageTriggerResultHistogram,
+                                     InterventionMessageTriggerResult::kShown,
+                                     0);
+
+  // The toolbar button should not show because the tabs on the first browser is
+  // actionable but it is in a different profile from the last active profile
+  NotifyActionableTabListChange({0, 1}, first_browser);
+  EXPECT_FALSE(first_button->GetVisible());
+  EXPECT_FALSE(second_button->GetVisible());
+  histogram_tester.ExpectBucketCount(
+      kMessageTriggerResultHistogram,
+      InterventionMessageTriggerResult::kMixedProfile, 1);
+  histogram_tester.ExpectBucketCount(kMessageTriggerResultHistogram,
+                                     InterventionMessageTriggerResult::kShown,
+                                     0);
+}
+#endif
+
 class PerformanceInterventionNonUiMetricsTest
     : public PerformanceInterventionInteractiveTest {
  public:
@@ -584,35 +646,110 @@ class PerformanceInterventionNonUiMetricsTest
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionNonUiMetricsTest,
                        TriggerMetricsRecorded) {
   base::HistogramTester histogram_tester;
-  const std::string message_trigger_reason_histogram_name =
-      "PerformanceControls.Intervention.BackgroundTab.Cpu.MessageTriggerResult";
   RunTestSequence(AddInstrumentedTab(kSecondTab, GetURL()),
                   AddInstrumentedTab(kThirdTab, GetURL()),
                   SelectTab(kTabStripElementId, 0), Do([&]() {
                     // verify that metrics were recorded
                     histogram_tester.ExpectBucketCount(
-                        message_trigger_reason_histogram_name,
+                        kMessageTriggerResultHistogram,
                         InterventionMessageTriggerResult::kShown, 0);
                     histogram_tester.ExpectBucketCount(
-                        message_trigger_reason_histogram_name,
+                        kMessageTriggerResultHistogram,
                         InterventionMessageTriggerResult::kRateLimited, 0);
                   }),
                   TriggerOnActionableTabListChange({1, 2}), Do([&]() {
                     // verify that metrics were recorded
                     histogram_tester.ExpectBucketCount(
-                        message_trigger_reason_histogram_name,
+                        kMessageTriggerResultHistogram,
                         InterventionMessageTriggerResult::kShown, 1);
                     histogram_tester.ExpectBucketCount(
-                        message_trigger_reason_histogram_name,
+                        kMessageTriggerResultHistogram,
                         InterventionMessageTriggerResult::kRateLimited, 0);
                   }),
                   TriggerOnActionableTabListChange({1}), Do([&]() {
                     // verify that metrics were recorded
                     histogram_tester.ExpectBucketCount(
-                        message_trigger_reason_histogram_name,
+                        kMessageTriggerResultHistogram,
                         InterventionMessageTriggerResult::kShown, 1);
                     histogram_tester.ExpectBucketCount(
-                        message_trigger_reason_histogram_name,
+                        kMessageTriggerResultHistogram,
                         InterventionMessageTriggerResult::kRateLimited, 1);
                   }));
 }
+
+class PerformanceInterventionMixedProfileTest
+    : public PerformanceInterventionInteractiveTest {
+ public:
+  void SetUp() override {
+    set_open_about_blank_on_browser_launch(true);
+
+    feature_list_.InitAndEnableFeatureWithParameters(
+        performance_manager::features::kPerformanceInterventionUI,
+        {{"intervention_show_mixed_profile", "true"}});
+    InteractiveFeaturePromoTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// We can only have one non-off record profile open at a time on ChromeOS so
+// users will not encounter this case.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionMixedProfileTest,
+                       SuggestTabsForMultipleProfiles) {
+  // Create two browser windows with tabs and ensure the second browser window
+  // is active
+  Browser* const first_browser = browser();
+  ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 0, GetURL("a.com"),
+                                     ui::PageTransition::PAGE_TRANSITION_LINK));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
+                                     ui::PageTransition::PAGE_TRANSITION_LINK));
+
+  ProfileManager* const profile_manager = g_browser_process->profile_manager();
+  const base::FilePath new_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile =
+      profiles::testing::CreateProfileSync(profile_manager, new_path);
+  Browser* const second_browser = CreateBrowser(&profile);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
+                                     ui::PageTransition::PAGE_TRANSITION_LINK));
+  BrowserWindow* const first_browser_window = first_browser->window();
+  BrowserWindow* const second_browser_window = second_browser->window();
+  second_browser_window->Activate();
+  ASSERT_TRUE(second_browser_window->IsActive());
+  ASSERT_FALSE(first_browser_window->IsActive());
+
+  ToolbarButton* const first_button =
+      BrowserView::GetBrowserViewForBrowser(first_browser)
+          ->toolbar()
+          ->performance_intervention_button();
+  ToolbarButton* const second_button =
+      BrowserView::GetBrowserViewForBrowser(second_browser)
+          ->toolbar()
+          ->performance_intervention_button();
+  ASSERT_FALSE(first_button->GetVisible());
+  ASSERT_FALSE(second_button->GetVisible());
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kMessageTriggerResultHistogram,
+      InterventionMessageTriggerResult::kMixedProfile, 0);
+  histogram_tester.ExpectBucketCount(kMessageTriggerResultHistogram,
+                                     InterventionMessageTriggerResult::kShown,
+                                     0);
+
+  // We should show the toolbar button on the second browser because it is the
+  // last active browser even though all actionable tabs belong to the first
+  // browser.
+  NotifyActionableTabListChange({0, 1}, first_browser);
+  EXPECT_FALSE(first_button->GetVisible());
+  EXPECT_TRUE(second_button->GetVisible());
+  histogram_tester.ExpectBucketCount(
+      kMessageTriggerResultHistogram,
+      InterventionMessageTriggerResult::kMixedProfile, 0);
+  histogram_tester.ExpectBucketCount(kMessageTriggerResultHistogram,
+                                     InterventionMessageTriggerResult::kShown,
+                                     1);
+}
+#endif

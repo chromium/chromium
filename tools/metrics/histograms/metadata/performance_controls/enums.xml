@@ -49,6 +49,7 @@ chromium-metrics-reviews@google.com.
 <enum name="InterventionMessageTriggerResult">
   <int value="0" label="Shown"/>
   <int value="1" label="Rate Limited"/>
+  <int value="2" label="Mixed Profile Suggestion"/>
 </enum>
 
 <enum name="MemorySaverBubbleActionType">

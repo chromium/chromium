@@ -24,7 +24,8 @@ enum class BatterySaverBubbleActionType {
 enum class InterventionMessageTriggerResult {
   kShown = 0,
   kRateLimited = 1,
-  kMaxValue = kRateLimited
+  kMixedProfile = 2,
+  kMaxValue = kMixedProfile
 };
 
 enum class InterventionBubbleActionType {

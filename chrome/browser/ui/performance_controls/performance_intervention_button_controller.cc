@@ -60,44 +60,7 @@ void PerformanceInterventionButtonController::OnActionableTabListChanged(
   actionable_cpu_tabs_ = result;
 
   if (!result.empty()) {
-    // Only trigger performance detection UI for the active window.
-    if (browser_ != chrome::FindLastActive() ||
-        !performance_manager::user_tuning::prefs::
-            ShouldShowPerformanceInterventionNotification(
-                g_browser_process->local_state())) {
-      return;
-    }
-    Profile* const profile = browser_->profile();
-    auto* const tracker =
-        feature_engagement::TrackerFactory::GetForBrowserContext(profile);
-    CHECK(tracker);
-
-    const bool can_show_intervention = tracker->ShouldTriggerHelpUI(
-        feature_engagement::kIPHPerformanceInterventionDialogFeature);
-
-    RecordInterventionTriggerResult(
-        type, can_show_intervention
-                  ? InterventionMessageTriggerResult::kShown
-                  : InterventionMessageTriggerResult::kRateLimited);
-
-    PrefService* const pref_service = g_browser_process->local_state();
-    CHECK(pref_service);
-    if (can_show_intervention) {
-      RecordInterventionMessageCount(type, pref_service);
-    } else {
-      RecordInterventionRateLimitedCount(type, pref_service);
-    }
-
-    if (base::FeatureList::IsEnabled(
-            performance_manager::features::kPerformanceInterventionUI) &&
-        !delegate_->IsButtonShowing() && can_show_intervention) {
-      delegate_->Show();
-      // Immediately dismiss the feature engagement tracker because the
-      // performance intervention button shouldn't prevent other promos from
-      // showing.
-      tracker->Dismissed(
-          feature_engagement::kIPHPerformanceInterventionDialogFeature);
-    }
+    MaybeShowUi(type, result);
   } else if (!delegate_->IsBubbleShowing()) {
     // Intervention button shouldn't hide while the dialog is being shown.
     HideToolbarButton();
@@ -180,4 +143,69 @@ void PerformanceInterventionButtonController::OnDeactivateButtonClicked() {
 void PerformanceInterventionButtonController::HideToolbarButton() {
   hide_button_timer_.Stop();
   delegate_->Hide();
+}
+
+void PerformanceInterventionButtonController::MaybeShowUi(
+    PerformanceDetectionManager::ResourceType type,
+    const PerformanceDetectionManager::ActionableTabsResult& result) {
+  PrefService* const pref_service = g_browser_process->local_state();
+  CHECK(pref_service);
+  // Only trigger performance detection UI for the active window and if we are
+  // not already showing the UI.
+  if (browser_ != chrome::FindLastActive() || delegate_->IsButtonShowing() ||
+      !performance_manager::user_tuning::prefs::
+          ShouldShowPerformanceInterventionNotification(pref_service)) {
+    return;
+  }
+
+  Profile* const profile = browser_->profile();
+  auto* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  CHECK(tracker);
+
+  InterventionMessageTriggerResult trigger_result =
+      InterventionMessageTriggerResult::kShown;
+
+  if (!performance_manager::features::kInterventionShowMixedProfileSuggestions
+           .Get() &&
+      ContainsNonLastActiveProfile(result)) {
+    trigger_result = InterventionMessageTriggerResult::kMixedProfile;
+  } else if (tracker->ShouldTriggerHelpUI(
+                 feature_engagement::
+                     kIPHPerformanceInterventionDialogFeature)) {
+    // Immediately dismiss the feature engagement tracker because the
+    // performance intervention UI shouldn't prevent other promos from
+    // showing.
+    tracker->Dismissed(
+        feature_engagement::kIPHPerformanceInterventionDialogFeature);
+    trigger_result = InterventionMessageTriggerResult::kShown;
+    RecordInterventionMessageCount(type, pref_service);
+  } else {
+    trigger_result = InterventionMessageTriggerResult::kRateLimited;
+    RecordInterventionRateLimitedCount(type, pref_service);
+  }
+
+  RecordInterventionTriggerResult(type, trigger_result);
+
+  if (trigger_result == InterventionMessageTriggerResult::kShown &&
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceInterventionUI)) {
+    delegate_->Show();
+  }
+}
+
+bool PerformanceInterventionButtonController::ContainsNonLastActiveProfile(
+    const PerformanceDetectionManager::ActionableTabsResult& result) {
+  Profile* const profile = chrome::FindLastActive()->profile();
+  for (const resource_attribution::PageContext& context : result) {
+    content::WebContents* const web_content = context.GetWebContents();
+    CHECK(web_content);
+    Profile* const content_profile =
+        Profile::FromBrowserContext(web_content->GetBrowserContext());
+    if (profile != content_profile) {
+      return true;
+    }
+  }
+
+  return false;
 }

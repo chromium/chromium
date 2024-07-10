@@ -63,6 +63,18 @@ class PerformanceInterventionButtonController
  private:
   void HideToolbarButton();
 
+  // Records metrics if the intervention UI is able to shown or the reason it
+  // was unable to do so and triggers the UI to show if is able to.
+  void MaybeShowUi(
+      PerformanceDetectionManager::ResourceType type,
+      const PerformanceDetectionManager::ActionableTabsResult& result);
+
+  // Returns true if `result` contains at least one tab that belongs to a
+  // profile different from the profile used by the last active browser.
+  // Otherwise, returns false.
+  bool ContainsNonLastActiveProfile(
+      const PerformanceDetectionManager::ActionableTabsResult& result);
+
   raw_ptr<PerformanceInterventionButtonControllerDelegate> delegate_ = nullptr;
   const raw_ptr<Browser> browser_;
   PerformanceDetectionManager::ActionableTabsResult actionable_cpu_tabs_;

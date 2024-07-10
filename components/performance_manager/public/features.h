@@ -85,6 +85,11 @@ bool ShouldUsePerformanceInterventionBackend();
 // Performance Intervention Dialog.
 extern const base::FeatureParam<int> kInterventionDialogStringVersion;
 
+// This represents whether we should show the performance intervention
+// UI when the suggested tabs to take action on include tabs from a
+// profile that is different from the last active browser.
+extern const base::FeatureParam<bool> kInterventionShowMixedProfileSuggestions;
+
 #if BUILDFLAG(IS_WIN)
 // Prefetch the main browser DLL when a new node is added to the PM graph
 // and no prefetch has been done within a reasonable timeframe.
