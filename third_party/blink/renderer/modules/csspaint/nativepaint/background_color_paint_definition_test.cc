@@ -7,7 +7,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
@@ -607,6 +609,248 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(element->GetLayoutObject()->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+}
+
+// Test that an animation can be properly recovered as compositable after
+// previously been non-composited and then cancelled.
+TEST_F(BackgroundColorPaintDefinitionTest, NotStuckOnKNotComposited) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  // Animation setup: Create a non-compositable animation using keyframes with
+  // a different property ineligible for being composited
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+
+  CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
+  CSSPropertyID nc_property_id = CSSPropertyID::kTop;  // Non-compositable
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "red", SecureContextMode::kInsecureContext, nullptr);
+  start_keyframe->SetCSSPropertyValue(
+      nc_property_id, "0", SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "yellow", SecureContextMode::kInsecureContext, nullptr);
+  end_keyframe->SetCSSPropertyValue(
+      nc_property_id, "1", SecureContextMode::kInsecureContext, nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+  Element* element = GetElementById("target");
+  StyleRecalcContext style_recalc_context;
+  style_recalc_context.old_style = element->GetComputedStyle();
+  const ComputedStyle* style = GetDocument().GetStyleResolver().ResolveStyle(
+      element, style_recalc_context);
+  EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());
+
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      exception_state);
+
+  // Play the animation, check that it exists. At this point, it should have
+  // been set compositor pending, and the composited paint status marked as
+  // kNeedsRepaint
+
+  animation->play();
+  ASSERT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+
+  // After running style and layout, the animation should still need a repaint
+  // (as paint has not yet run). The owning element should have been marked
+  // as needing paint invalidation
+
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(element->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+
+  // Compositing decision occurs during paint. At this point, the animation
+  // should be prevented from starting on cc, and marked kNotComposited
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+
+  // Cancel the animation. Because there is no animation on compositor, this
+  // *won't* update the animation state or trigger a repaint
+
+  animation->cancel();
+  ASSERT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+
+  // Update the keyframes of the now-cancelled animation to be values that would
+  // pass the value filter, making the animation compositable, then play the
+  // animation
+
+  Persistent<StringKeyframe> start_keyframe_2 =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe_2->SetCSSPropertyValue(
+      property_id, "red", SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe_2 =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe_2->SetCSSPropertyValue(
+      property_id, "yellow", SecureContextMode::kInsecureContext, nullptr);
+  keyframes.clear();
+  keyframes.push_back(start_keyframe_2);
+  keyframes.push_back(end_keyframe_2);
+  To<KeyframeEffect>(animation->effect())->SetKeyframes(keyframes);
+  animation->play();
+
+  ASSERT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+
+  // Check that we're not stuck on kNotComposited or any other value. The paint
+  // status should be kNeedsRepaint, and paint invalidation should
+  // have been triggered, that way we can have a fresh compositing decision
+
+  EXPECT_TRUE(element->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+
+  // Run paint. The compositing decision should occur and correctly mark the
+  // animation as composited.
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+}
+
+// Test that an animation has its status properly set after updating the
+// animation keyframes to a non-compositable property.
+TEST_F(BackgroundColorPaintDefinitionTest, Rep) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  // Animation setup: Create a compositable bgcolor animation
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+
+  CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "red", SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "yellow", SecureContextMode::kInsecureContext, nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+  Element* element = GetElementById("target");
+  StyleRecalcContext style_recalc_context;
+  style_recalc_context.old_style = element->GetComputedStyle();
+  const ComputedStyle* style = GetDocument().GetStyleResolver().ResolveStyle(
+      element, style_recalc_context);
+  EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());
+
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      exception_state);
+
+  // Play the animation, check that it exists. At this point, it should have
+  // been set compositor pending, and the composited paint status marked as
+  // kNeedsRepaint
+
+  animation->play();
+  ASSERT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+
+  // After running style and layout, the animation should still need a repaint
+  // (as paint has not yet run). The owning element should have been marked
+  // as needing paint invalidation
+
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(element->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+
+  // Compositing decision occurs during paint. At this point, the animation
+  // should have started on cc and marked composited
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Update the keyframes of the animation to be values that would pass the
+  // value filter, making the animation compositable, then play the animation
+
+  CSSPropertyID nc_property_id = CSSPropertyID::kTop;  // Non-compositable
+  Persistent<StringKeyframe> start_keyframe_2 =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe_2->SetCSSPropertyValue(
+      nc_property_id, "0", SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe_2 =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe_2->SetCSSPropertyValue(
+      nc_property_id, "20", SecureContextMode::kInsecureContext, nullptr);
+  keyframes.clear();
+  keyframes.push_back(start_keyframe_2);
+  keyframes.push_back(end_keyframe_2);
+  To<KeyframeEffect>(animation->effect())->SetKeyframes(keyframes);
+  animation->play();
+
+  ASSERT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+
+  // Check that we're not stuck on kNotComposited or any other value. The paint
+  // status should be kNoAnimation, and paint invalidation should
+  // have been triggered.
+
+  EXPECT_TRUE(element->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNoAnimation);
+
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(
+      element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+
+  // Run paint. No animations should be running on the compositor, and the
+  // paint status should still be kNoAnimation.
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNoAnimation);
 }
 
 TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintNewStartTime) {
