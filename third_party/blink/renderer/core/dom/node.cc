@@ -2282,7 +2282,8 @@ Node::InsertionNotificationRequest Node::InsertedInto(
     cache->NodeIsConnected(this);
   }
 
-  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+  if (GetDocument().StatePreservingAtomicMoveInProgress() &&
+      (IsElementNode() || IsTextNode())) {
     FlatTreeParentChanged();
   }
   return kInsertionDone;
