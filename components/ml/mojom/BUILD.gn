@@ -5,9 +5,6 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "ml_service.mojom",
-    "web_platform_model.mojom",
-  ]
+  sources = [ "web_platform_model.mojom" ]
   deps = [ "//mojo/public/mojom/base" ]
 }
