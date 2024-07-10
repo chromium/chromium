@@ -104,7 +104,6 @@ source_set("browser") {
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
     "//components/miracle_parameter/common",
-    "//components/ml/mojom",
     "//components/network_session_configurator/browser",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core/request_header",

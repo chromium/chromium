@@ -3308,7 +3308,6 @@ test("content_unittests") {
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
       "//chromeos/services/machine_learning/public/mojom",
-      "//components/ml/mojom",
     ]
   }
   if (is_chromeos_lacros) {

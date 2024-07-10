@@ -2,7 +2,6 @@ include_rules = [
   "+base/containers/heap_array.h",
   "+base/notimplemented.h",
   "+base/types/fixed_array.h",
-  "+components/ml/mojom",
   "+services/webnn/public/cpp",
   "+services/webnn/public/mojom",
 ]
