@@ -18,6 +18,13 @@ function withArgs<Args extends I18nArgType[]>(): Args {
 }
 
 const noArgStrings = [
+  'exportDialogAudioFormatWebmOption',
+  'exportDialogAudioHeader',
+  'exportDialogCancelButton',
+  'exportDialogHeader',
+  'exportDialogSaveButton',
+  'exportDialogTranscriptionFormatTxtOption',
+  'exportDialogTranscriptionHeader',
   'genAiDisclaimerText',
   'genAiExperimentBadge',
   'genAiLearnMoreLink',

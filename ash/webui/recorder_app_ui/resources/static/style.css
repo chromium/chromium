@@ -55,6 +55,14 @@ body {
   color: var(--cros-sys-on_surface);
 
   /*
+   * Missing token from cros-component.
+   *
+   * TODO: b/351271419 - Remove this when upstream no longer use this token, or
+   * it's added to new dynamic color spreadsheets.
+   */
+  --cros-disabled-opacity: 0.38;
+
+  /*
    * Common styling for material components.
    */
   --md-focus-ring-duration: 0s;

@@ -132,6 +132,21 @@ function calculatePowerAverages(powers: number[]): number[] {
   return averages;
 }
 
+/**
+ * Gets the default filename without extension for the exported file.
+ *
+ * The returned filename is used as a suggested name to Chrome and Chrome will
+ * further remove all characters that are not safe for filename, so we don't
+ * need to filter any characters here.
+ */
+export function getDefaultFileNameWithoutExtension(
+  meta: RecordingMetadata,
+): string {
+  // TODO(pihsun): This should be a default filename in another format if the
+  // user never manually changed title.
+  return meta.title;
+}
+
 // TODO(pihsun): Use a Map when draft.ts supports it.
 export type RecordingMetadataMap = Record<string, RecordingMetadata>;
 

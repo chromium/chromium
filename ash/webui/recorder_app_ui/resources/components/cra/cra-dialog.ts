@@ -18,14 +18,16 @@ export class CraDialog extends MdDialog {
       :host {
         --md-dialog-container-shape: 20px;
         --md-dialog-container-color: var(--cros-sys-dialog_container);
-        --md-dialog-content-font: var(--cros-body-1-font-family);
-        --md-dialog-content-line-height: var(--cros-body-1-line-height);
-        --md-dialog-content-size: var(--cros-body-1-font-size);
-        --md-dialog-content-weight: var(--cros-body-1-font-weight);
+        --md-dialog-headline-color: var(--cros-sys-on_surface);
         --md-dialog-headline-font: var(--cros-display-7-font-family);
         --md-dialog-headline-line-height: var(--cros-display-7-line-height);
         --md-dialog-headline-size: var(--cros-display-7-font-size);
         --md-dialog-headline-weight: var(--cros-display-7-font-weight);
+        --md-dialog-supporting-text-color: var(--cros-sys-on_surface_variant);
+        --md-dialog-supporting-text-font: var(--cros-body-1-font-family);
+        --md-dialog-supporting-text-line-height: var(--cros-body-1-line-height);
+        --md-dialog-supporting-text-size: var(--cros-body-1-font-size);
+        --md-dialog-supporting-text-weight: var(--cros-body-1-font-weight);
       }
 
       .scrim {

@@ -7,14 +7,12 @@
  * release. Reconsider this and whether we need the mock/alternative
  * implementation other than mojo to exist in release image.
  */
-import 'chrome://resources/cros_components/dropdown/dropdown.js';
 import 'chrome://resources/cros_components/dropdown/dropdown_option.js';
+import '../../components/cra/cra-dropdown.js';
 
-import {
-  Dropdown,
-} from 'chrome://resources/cros_components/dropdown/dropdown.js';
 import {html, styleMap} from 'chrome://resources/mwc/lit/index.js';
 
+import {CraDropdown} from '../../components/cra/cra-dropdown.js';
 import {SAMPLE_RATE} from '../../core/audio_constants.js';
 import {
   Model,
@@ -288,7 +286,7 @@ export class PlatformHandler extends PlatformHandlerBase {
       devSettings.mutate((s) => {
         s.forceTheme = assertEnumVariant(
           ColorTheme,
-          assertInstanceof(ev.target, Dropdown).value,
+          assertInstanceof(ev.target, CraDropdown).value,
         );
       });
     }
@@ -302,7 +300,7 @@ export class PlatformHandler extends PlatformHandlerBase {
     return html`
       <div class="section">
         <label style=${styleMap(labelStyle)}>
-          <cros-dropdown
+          <cra-dropdown
             label="dark/light mode"
             @change=${handleChange}
             .value=${devSettings.value.forceTheme ?? ColorTheme.SYSTEM}
@@ -316,7 +314,7 @@ export class PlatformHandler extends PlatformHandlerBase {
             </cros-dropdown-option>
             <cros-dropdown-option headline="Dark" value=${ColorTheme.DARK}>
             </cros-dropdown-option>
-          </cros-dropdown>
+          </cra-dropdown>
         </label>
       </div>
     `;

@@ -11,6 +11,7 @@ import '../components/cra/cra-image.js';
 import '../components/cra/cra-menu.js';
 import '../components/cra/cra-menu-item.js';
 import '../components/delete-recording-dialog.js';
+import '../components/export-dialog.js';
 import '../components/recording-title.js';
 import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
@@ -32,6 +33,7 @@ import {
 
 import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
+import {ExportDialog} from '../components/export-dialog.js';
 import {i18n} from '../core/i18n.js';
 import {
   AnimationFrameController,
@@ -43,9 +45,20 @@ import {
   ScopedAsyncEffect,
 } from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
+import {
+  getDefaultFileNameWithoutExtension,
+} from '../core/recording_data_manager.js';
+import {concatTextTokens} from '../core/soda/soda.js';
 import {navigateTo} from '../core/state/route.js';
-import {assertInstanceof} from '../core/utils/assert.js';
+import {
+  ExportAudioFormat,
+  ExportSettings,
+  ExportTranscriptionFormat,
+} from '../core/state/settings.js';
+import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
+import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
 import {formatDuration} from '../core/utils/datetime.js';
+import {downloadFile} from '../core/utils/utils.js';
 
 /**
  * Playback page of Recorder App.
@@ -288,6 +301,8 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly deleteRecordingDialog = createRef<DeleteRecordingDialog>();
 
+  private readonly exportDialog = createRef<ExportDialog>();
+
   private readonly recordingDataManager = useRecordingDataManager();
 
   // TODO(pihsun): Loading spinner when loading metadata.
@@ -315,27 +330,30 @@ export class PlaybackPage extends ReactiveLitElement {
   });
 
   private readonly textTokens = new ScopedAsyncComputed(this, async () => {
-    if (this.recordingMetadata.value === null) {
+    if (this.recordingIdSignal.value === null) {
       return null;
     }
     const {textTokens} = await this.recordingDataManager.getTranscription(
-      this.recordingMetadata.value.id,
+      this.recordingIdSignal.value,
     );
     return textTokens;
   });
 
   private readonly powers = new ScopedAsyncComputed(this, async () => {
-    if (this.recordingMetadata.value === null) {
+    if (this.recordingIdSignal.value === null) {
       return null;
     }
     const {powers} = await this.recordingDataManager.getAudioPower(
-      this.recordingMetadata.value.id,
+      this.recordingIdSignal.value,
     );
     return powers;
   });
 
   // TODO: b/336963138 - Handle when transcription isn't available.
   private readonly showTranscription = signal(false);
+
+  // TODO(pihsun): Move export functions out of the component.
+  private readonly exportQueue = new AsyncJobQueue('drop');
 
   constructor() {
     super();
@@ -389,6 +407,56 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private toggleTranscription() {
     this.showTranscription.update((s) => !s);
+  }
+
+  private async exportAudio(exportSettings: ExportSettings) {
+    if (!exportSettings.audio || this.recordingId === null ||
+        this.recordingMetadata.value === null) {
+      return;
+    }
+    const file = await this.recordingDataManager.getAudioFile(this.recordingId);
+    switch (exportSettings.audioFormat) {
+      case ExportAudioFormat.WEBM_ORIGINAL: {
+        const filename =
+          getDefaultFileNameWithoutExtension(this.recordingMetadata.value) +
+          '.webm';
+        downloadFile(filename, file);
+        break;
+      }
+      default:
+        assertExhaustive(exportSettings.audioFormat);
+    }
+  }
+
+  private exportTranscription(exportSettings: ExportSettings) {
+    if (!exportSettings.transcription || this.textTokens.value === null ||
+        this.recordingMetadata.value === null) {
+      return;
+    }
+    switch (exportSettings.transcriptionFormat) {
+      case ExportTranscriptionFormat.TXT: {
+        const text = concatTextTokens(this.textTokens.value);
+        const blob = new Blob([text], {type: 'text/plain'});
+        const filename =
+          getDefaultFileNameWithoutExtension(this.recordingMetadata.value) +
+          '.txt';
+        downloadFile(filename, blob);
+        break;
+      }
+      default:
+        assertExhaustive(exportSettings.transcriptionFormat);
+    }
+  }
+
+  private onExportSave(ev: CustomEvent<ExportSettings>) {
+    // TODO(pihsun): Loading state for export recording.
+    // Use the settings while the button is clicked.
+    const exportSettings = ev.detail;
+    this.exportQueue.push(async () => {
+      this.exportTranscription(exportSettings);
+      await this.exportAudio(exportSettings);
+      this.exportDialog.value?.hide();
+    });
   }
 
   private renderAudioWaveform() {
@@ -473,13 +541,19 @@ export class PlaybackPage extends ReactiveLitElement {
     }
   }
 
+  private onExportClick() {
+    this.exportDialog.value?.show();
+  }
+
   private renderMenu() {
+    const exportTranscriptionEnabled =
+      this.textTokens.value !== null && this.textTokens.value.length > 0;
     // TODO: b/344789992 - Implements show detail.
-    // TODO: b/344784478 - Implements export.
     return html`
       <cra-menu ${ref(this.menu)} anchor="show-menu">
         <cra-menu-item
           headline=${i18n.playbackMenuExportOption}
+          @cros-menu-item-triggered=${this.onExportClick}
         ></cra-menu-item>
         <cra-menu-item
           headline=${i18n.playbackMenuShowDetailOption}
@@ -490,6 +564,12 @@ export class PlaybackPage extends ReactiveLitElement {
           @cros-menu-item-triggered=${this.onDeleteClick}
         ></cra-menu-item>
       </cra-menu>
+      <export-dialog
+        ${ref(this.exportDialog)}
+        .transcriptionEnabled=${exportTranscriptionEnabled}
+        @save=${this.onExportSave}
+      >
+      </export-dialog>
       <delete-recording-dialog
         ${ref(this.deleteRecordingDialog)}
         @delete=${this.deleteRecording}

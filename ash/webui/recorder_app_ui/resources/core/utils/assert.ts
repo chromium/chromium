@@ -162,3 +162,17 @@ export function assertExists<T>(
   }
   return value;
 }
+
+/**
+ * Assert a value is a string.
+ *
+ * @param value The value to check.
+ * @param optMessage A message to show when this is hit.
+ */
+export function assertString(value: unknown, optMessage?: string): string {
+  assert(
+    typeof value === 'string',
+    optMessage ?? `Value ${value} is not a string`,
+  );
+  return value;
+}

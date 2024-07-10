@@ -55,8 +55,36 @@ export enum TranscriptionEnableState {
   UNKNOWN = 'UNKNOWN',
 }
 
+export enum ExportAudioFormat {
+  // TODO: b/344784478 - Add other supported formats. Might need ffmpeg to
+  // convert.
+  // TODO: b/344784478 - webm that we recorded directly is not ideal for export
+  // format, since it doesn't have the length metadata when played in
+  // backlight.
+  WEBM_ORIGINAL = 'WEBM_ORIGINAL',
+}
+
+export enum ExportTranscriptionFormat {
+  // TODO: b/344784478 - Add other supported formats.
+  TXT = 'TXT',
+}
+
+export const exportSettingsSchema = z.object({
+  // Whether audio should be exported.
+  audio: z.boolean(),
+  // Audio format for export.
+  audioFormat: z.nativeEnum(ExportAudioFormat),
+  // Whether transcription should be exported.
+  transcription: z.boolean(),
+  // Transcription format for export.
+  transcriptionFormat: z.nativeEnum(ExportTranscriptionFormat),
+});
+
+export type ExportSettings = Infer<typeof exportSettingsSchema>;
+
 export const settingsSchema = z.object({
   audioSource: z.nativeEnum(AudioSource),
+  exportSettings: exportSettingsSchema,
   onboardingDone: z.boolean(),
   recordingSortType: z.nativeEnum(RecordingSortType),
   transcriptionEnabled: z.nativeEnum(TranscriptionEnableState),
@@ -66,6 +94,12 @@ type Settings = Infer<typeof settingsSchema>;
 
 const defaultSettings: Settings = {
   audioSource: AudioSource.USER_MEDIA,
+  exportSettings: {
+    audio: true,
+    audioFormat: ExportAudioFormat.WEBM_ORIGINAL,
+    transcription: false,
+    transcriptionFormat: ExportTranscriptionFormat.TXT,
+  },
   onboardingDone: false,
   recordingSortType: RecordingSortType.DATE,
   transcriptionEnabled: TranscriptionEnableState.UNKNOWN,

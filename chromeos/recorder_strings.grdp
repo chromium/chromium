@@ -5,6 +5,27 @@
   <message desc="Name of the Recorder App." name="IDS_RECORDER_APP_NAME">
     Recorder
   </message>
+  <message desc="Label of the menu item to choose webm as audio format in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_AUDIO_FORMAT_WEBM_OPTION">
+    WEBM
+  </message>
+  <message desc="Header of the export audio section in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_AUDIO_HEADER">
+    Export audio
+  </message>
+  <message desc="Button to cancel exporting in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Header of the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_HEADER">
+    Export recording
+  </message>
+  <message desc="Button to start exporting in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_SAVE_BUTTON">
+    Save…
+  </message>
+  <message desc="Label of the menu item to choose txt as transcription format in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_TRANSCRIPTION_FORMAT_TXT_OPTION">
+    TXT
+  </message>
+  <message desc="Header of the export transcription section in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_TRANSCRIPTION_HEADER">
+    Export transcript
+  </message>
   <message desc="Disclaimer under generative AI features." name="IDS_RECORDER_GEN_AI_DISCLAIMER_TEXT">
     Generative AI is experimental and content may be inaccurate, misleading, or offensive.
   </message>

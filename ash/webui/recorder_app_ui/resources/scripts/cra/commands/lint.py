@@ -77,7 +77,8 @@ def _check_lit_analyzer(build_dir: Optional[pathlib.Path]) -> Optional[int]:
             cwd=util.get_cra_root(),
         )
     except subprocess.CalledProcessError as e:
-        print("lit-analyzer check failed, return code = %d", e.returncode)
+        logging.error("lit-analyzer check failed, return code = %d",
+                      e.returncode)
         return e.returncode
 
 

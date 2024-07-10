@@ -11,6 +11,16 @@
 namespace ash {
 
 const webui::LocalizedString kLocalizedStrings[] = {
+    {"exportDialogAudioFormatWebmOption",
+     IDS_RECORDER_EXPORT_DIALOG_AUDIO_FORMAT_WEBM_OPTION},
+    {"exportDialogAudioHeader", IDS_RECORDER_EXPORT_DIALOG_AUDIO_HEADER},
+    {"exportDialogCancelButton", IDS_RECORDER_EXPORT_DIALOG_CANCEL_BUTTON},
+    {"exportDialogHeader", IDS_RECORDER_EXPORT_DIALOG_HEADER},
+    {"exportDialogSaveButton", IDS_RECORDER_EXPORT_DIALOG_SAVE_BUTTON},
+    {"exportDialogTranscriptionFormatTxtOption",
+     IDS_RECORDER_EXPORT_DIALOG_TRANSCRIPTION_FORMAT_TXT_OPTION},
+    {"exportDialogTranscriptionHeader",
+     IDS_RECORDER_EXPORT_DIALOG_TRANSCRIPTION_HEADER},
     {"genAiDisclaimerText", IDS_RECORDER_GEN_AI_DISCLAIMER_TEXT},
     {"genAiExperimentBadge", IDS_RECORDER_GEN_AI_EXPERIMENT_BADGE},
     {"genAiLearnMoreLink", IDS_RECORDER_GEN_AI_LEARN_MORE_LINK},

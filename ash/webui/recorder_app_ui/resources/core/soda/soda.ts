@@ -158,21 +158,30 @@ export class SodaEventTransformer {
 /**
  * Concatenates textTokens into the string representation of the transcription.
  *
+ * This is also used to export the transcription into a txt file.
+ *
  * TODO(pihsun): Have a class for TextToken[] and move this function.
+ * TODO(pihsun): Have a different function for exporting to text format and
+ * when exporting representation used for summary input.
+ * TODO(pihsun): Include speaker ID in the output.
  */
 export function concatTextTokens(textTokens: TextToken[]): string {
   const ret: string[] = [];
+  let startOfParagraph = true;
   // TODO(pihsun): This currently don't include the speaker ID, but since the
   // speaker ID is a little bit not accurate on the start of sentence,
   // including it might make the result weird.
   for (const token of textTokens) {
     if (token.kind === 'textSeparator') {
+      ret.push('\n');
+      startOfParagraph = true;
       continue;
     }
-    if (token.leadingSpace ?? true) {
+    if (!startOfParagraph && (token.leadingSpace ?? true)) {
       ret.push(' ');
     }
     ret.push(token.text);
+    startOfParagraph = false;
   }
   return ret.join('');
 }
