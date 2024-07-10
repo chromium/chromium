@@ -520,8 +520,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // is different than `is_focused` but must always be true if `is_focused`
   // is true. All RenderWidgetHosts in an active tab are considered active,
   // but only one FrameTree can have page focus (e.g., an inner frame
-  // tree (fenced frame or portals) will not have focus if the primary frame
-  // tree has focus. See
+  // tree (fenced frame) will not have focus if the primary frame tree has
+  // focus. See
   // https://www.chromium.org/developers/design-documents/aura/focus-and-activation.
   bool is_active() const { return is_active_; }
 

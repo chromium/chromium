@@ -162,10 +162,6 @@ bool RenderWidgetHostDelegate::IsShowingContextMenuOnPage() const {
   return false;
 }
 
-bool RenderWidgetHostDelegate::IsPortal() {
-  return false;
-}
-
 int RenderWidgetHostDelegate::GetVirtualKeyboardResizeHeight() {
   return 0;
 }

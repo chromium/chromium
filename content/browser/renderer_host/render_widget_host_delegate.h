@@ -335,9 +335,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual void OnVerticalScrollDirectionChanged(
       viz::VerticalScrollDirection scroll_direction) {}
 
-  // Returns true if the delegate is a portal.
-  virtual bool IsPortal();
-
   // Notify the delegate that the screen orientation has been changed.
   virtual void DidChangeScreenOrientation() {}
 
