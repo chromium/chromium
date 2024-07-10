@@ -87,6 +87,16 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestionChip() {
   return grey_text(@"concrete username");
 }
 
+// Matcher for the username chip button of a password option shown in expanded
+// view.
+id<GREYMatcher> UsernameChipButton() {
+  NSString* accessibility_label = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL, u"concrete username");
+  return grey_allOf(
+      chrome_test_util::ButtonWithAccessibilityLabel(accessibility_label),
+      grey_interactable(), nullptr);
+}
+
 // Checks that the header view is as expected according to whether or not the
 // device is in landscape mode.
 void CheckHeader(bool is_landscape) {
@@ -405,6 +415,30 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
       assertWithMatcher:grey_sufficientlyVisible()];
   GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
+}
+
+// Tests that saved passwords for the current site are visible even when the
+// expanded manual fill view was not initially opened from a password form.
+- (void)testPasswordsVisibleWhenOpenedFromDifferentDataType {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  // Open the expanded manual fill view for an address field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  // Select the password tab and confirm that the password view controller is
+  // visible.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Confirm that the password option is visible.
+  [[EarlGrey selectElementWithMatcher:UsernameChipButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

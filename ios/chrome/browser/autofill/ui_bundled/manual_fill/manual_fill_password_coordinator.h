@@ -5,15 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_PASSWORD_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_PASSWORD_COORDINATOR_H_
 
-#import <string>
-
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_coordinator.h"
 
 class GURL;
-
-namespace autofill {
-class FormRendererId;
-}
 
 namespace password_manager {
 struct CredentialUIEntry;
@@ -58,8 +52,6 @@ struct CredentialUIEntry;
                            URL:(const GURL&)URL
               injectionHandler:(ManualFillInjectionHandler*)injectionHandler
       invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
-                        formID:(const autofill::FormRendererId)formID
-                       frameID:(const std::string&)frameID
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable, use

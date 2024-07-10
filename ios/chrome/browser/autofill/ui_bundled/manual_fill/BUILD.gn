@@ -33,6 +33,7 @@ source_set("manual_fill") {
     "manual_fill_injection_handler.mm",
     "manual_fill_password_coordinator.h",
     "manual_fill_password_coordinator.mm",
+    "manual_fill_password_mediator+Testing.h",
     "manual_fill_password_mediator.h",
     "manual_fill_password_mediator.mm",
   ]

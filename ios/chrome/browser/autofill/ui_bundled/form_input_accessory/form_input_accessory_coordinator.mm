@@ -273,8 +273,6 @@ const CGFloat kIPHVerticalOffset = -5;
   }
 
   const GURL& URL = activeWebState->GetLastCommittedURL();
-  autofill::FormActivityParams lastSeenParams =
-      self.formInputAccessoryMediator.lastSeenParams;
 
   ManualFillPasswordCoordinator* passwordCoordinator =
       [[ManualFillPasswordCoordinator alloc]
@@ -282,9 +280,7 @@ const CGFloat kIPHVerticalOffset = -5;
                              browser:self.browser
                                  URL:URL
                     injectionHandler:self.injectionHandler
-            invokedOnObfuscatedField:invokedOnObfuscatedField
-                              formID:lastSeenParams.form_renderer_id
-                             frameID:lastSeenParams.frame_id];
+            invokedOnObfuscatedField:invokedOnObfuscatedField];
 
   passwordCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -334,9 +330,6 @@ const CGFloat kIPHVerticalOffset = -5;
 // Starts the expanded manual fill coordinator and displays its view controller.
 - (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType
           invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
-  autofill::FormActivityParams lastSeenParams =
-      self.formInputAccessoryMediator.lastSeenParams;
-
   ExpandedManualFillCoordinator* expandedManualFillCoordinator =
       [[ExpandedManualFillCoordinator alloc]
           initWithBaseViewController:self.baseViewController
@@ -346,8 +339,6 @@ const CGFloat kIPHVerticalOffset = -5;
   expandedManualFillCoordinator.injectionHandler = self.injectionHandler;
   expandedManualFillCoordinator.invokedOnObfuscatedField =
       invokedOnObfuscatedField;
-  expandedManualFillCoordinator.formID = lastSeenParams.form_renderer_id;
-  expandedManualFillCoordinator.frameID = lastSeenParams.frame_id;
   expandedManualFillCoordinator.delegate = self;
   [expandedManualFillCoordinator start];
 

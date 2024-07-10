@@ -337,10 +337,6 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   return _lastSeenParams.field_type == autofill::kObfuscatedFieldType;
 }
 
-- (const autofill::FormActivityParams&)lastSeenParams {
-  return _lastSeenParams;
-}
-
 #pragma mark - KeyboardNotification
 
 - (void)keyboardWillShow:(NSNotification*)notification {

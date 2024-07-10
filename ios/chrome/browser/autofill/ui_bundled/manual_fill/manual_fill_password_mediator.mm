@@ -9,19 +9,24 @@
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/form_fetcher_impl.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
-#import "components/password_manager/core/browser/password_save_manager_impl.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#import "components/password_manager/core/common/password_manager_features.h"
-#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/sync/base/model_type.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_fetcher_consumer_bridge.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential+PasswordForm.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_list_navigator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/password_counter_delegate_bridge.h"
@@ -30,17 +35,9 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential+PasswordForm.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_consumer.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_list_navigator.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/favicon_size.h"
@@ -80,6 +77,7 @@ BOOL AreCredentialsAtIndicesConnected(
 
 @interface ManualFillPasswordMediator () <CRWWebStateObserver,
                                           FormActivityObserver,
+                                          FormFetcherConsumer,
                                           ManualFillContentInjector,
                                           PasswordCounterObserver,
                                           SavedPasswordsPresenterObserver>
@@ -130,6 +128,15 @@ BOOL AreCredentialsAtIndicesConnected(
 
   // Bridge to observe the number of passwords in the password stores.
   std::unique_ptr<PasswordCounterDelegateBridge> _passwordCounter;
+
+  // Service that fetches passwords for the current domain. This variable is
+  // lazily initialized the first time passwords associated with the current
+  // origin are requested (see `fetchPasswordsForOrigin`).
+  std::unique_ptr<password_manager::FormFetcher> _formFetcher;
+
+  // Bridge to get notified when the passwords associated with the current site
+  // have been fetched by the `_formFetcher`.
+  std::unique_ptr<FormFetcherConsumerBridge> _formFetcherConsumer;
 
   // Whether or not the user has passwords saved in the password stores.
   BOOL _hasSavedPasswords;
@@ -187,17 +194,19 @@ BOOL AreCredentialsAtIndicesConnected(
   if (_passwordCounter) {
     _passwordCounter.reset();
   }
+  if (_formFetcher) {
+    _formFetcher->RemoveConsumer(_formFetcherConsumer.get());
+    _formFetcherConsumer.reset();
+    _formFetcher = nullptr;
+  }
 }
 
-- (void)fetchPasswordsForForm:(const autofill::FormRendererId)formID
-                        frame:(const std::string&)frameID {
-  self.passwordForms = [self fetchCredentialsForForm:formID
-                                            webState:self.webState
-                                          webFrameId:frameID];
-  self.credentials =
-      [self createManualFillCredentialsFromPasswordForms:self.passwordForms];
-  self.passwordsWereFetched = YES;
-  [self postDataToConsumer];
+- (void)fetchPasswordsForOrigin {
+  if (!_formFetcher) {
+    [self setFormFetcher:[self createFormFetcher]];
+  }
+
+  _formFetcher->Fetch();
 }
 
 - (void)fetchAllPasswords {
@@ -383,33 +392,6 @@ BOOL AreCredentialsAtIndicesConnected(
   }
 }
 
-// Fetches passwords related to the current form.
-- (std::vector<PasswordForm>)
-    fetchCredentialsForForm:(autofill::FormRendererId)formId
-                   webState:(web::WebState*)webState
-                 webFrameId:(const std::string&)frameId {
-  PasswordTabHelper* tabHelper = PasswordTabHelper::FromWebState(webState);
-  if (!tabHelper) {
-    return {};
-  }
-
-  password_manager::PasswordManager* passwordManager =
-      tabHelper->GetPasswordManager();
-  CHECK(passwordManager);
-
-  web::WebFramesManager* webFramesManager =
-      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          webState);
-  web::WebFrame* frame = webFramesManager->GetFrameWithId(frameId);
-
-  password_manager::PasswordManagerDriver* driver =
-      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
-  const base::span<const password_manager::PasswordForm> passwordForms =
-      passwordManager->GetBestMatches(driver, formId);
-
-  return std::vector<PasswordForm>(passwordForms.begin(), passwordForms.end());
-}
-
 // Fetches all Password Forms related to the given list of saved credentials.
 - (std::vector<PasswordForm>)passwordFormsFromCredentials:
     (const std::vector<password_manager::CredentialUIEntry>&)credentials {
@@ -440,6 +422,29 @@ BOOL AreCredentialsAtIndicesConnected(
   }
 
   return manualFillCredentials;
+}
+
+// Creates and configures a form fetcher.
+- (std::unique_ptr<password_manager::FormFetcherImpl>)createFormFetcher {
+  password_manager::PasswordFormDigest formDigest(
+      password_manager::PasswordForm::Scheme::kHtml,
+      password_manager::GetSignonRealm(_URL), _URL);
+
+  PasswordTabHelper* tabHelper = PasswordTabHelper::FromWebState(_webState);
+  if (!tabHelper) {
+    return nullptr;
+  }
+
+  password_manager::PasswordManagerClient* passwordManagerClient =
+      tabHelper->GetPasswordManagerClient();
+
+  std::unique_ptr<password_manager::FormFetcherImpl> formFetcher =
+      std::make_unique<password_manager::FormFetcherImpl>(
+          formDigest, passwordManagerClient,
+          /*should_migrate_http_passwords=*/false);
+  formFetcher->set_filter_grouped_credentials(false);
+
+  return formFetcher;
 }
 
 // Creates a UIAction to edit a password from a UIMenu.
@@ -480,6 +485,14 @@ BOOL AreCredentialsAtIndicesConnected(
   _savedPasswordsPresenterObserver =
       std::make_unique<SavedPasswordsPresenterObserverBridge>(
           self, _savedPasswordsPresenter);
+}
+
+// Sets `_formFetcher` and its consumer `_formFetcherConsumer`.
+- (void)setFormFetcher:
+    (std::unique_ptr<password_manager::FormFetcher>)formFetcher {
+  _formFetcher = std::move(formFetcher);
+  _formFetcherConsumer =
+      std::make_unique<FormFetcherConsumerBridge>(self, _formFetcher.get());
 }
 
 #pragma mark - ManualFillContentInjector
@@ -556,6 +569,23 @@ BOOL AreCredentialsAtIndicesConnected(
 
   _hasSavedPasswords = totalPasswords;
   [self postActionsToConsumer];
+}
+
+#pragma mark - FormFetcherConsumer
+
+- (void)fetchDidComplete {
+  // Fetch the passwords.
+  const base::span<const password_manager::PasswordForm> passwordForms =
+      _formFetcher->GetBestMatches();
+
+  self.passwordForms =
+      std::vector<PasswordForm>(passwordForms.begin(), passwordForms.end());
+  self.credentials =
+      [self createManualFillCredentialsFromPasswordForms:self.passwordForms];
+
+  // Pass the passwords to the consumer.
+  self.passwordsWereFetched = YES;
+  [self postDataToConsumer];
 }
 
 @end

@@ -43,14 +43,12 @@
 // extends FallbackCoordinatorDelegate)
 @dynamic delegate;
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                           URL:(const GURL&)URL
-              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
-      invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
-                        formID:(const autofill::FormRendererId)formID
-                       frameID:(const std::string&)frameID {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                       URL:(const GURL&)URL
+                          injectionHandler:
+                              (ManualFillInjectionHandler*)injectionHandler
+                  invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                           injectionHandler:injectionHandler];
@@ -78,7 +76,7 @@
         invokedOnObfuscatedField:invokedOnObfuscatedField
             profilePasswordStore:profilePasswordStore
             accountPasswordStore:accountPasswordStore];
-    [_passwordMediator fetchPasswordsForForm:formID frame:frameID];
+    [_passwordMediator fetchPasswordsForOrigin];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;
     _passwordMediator.navigator = self;

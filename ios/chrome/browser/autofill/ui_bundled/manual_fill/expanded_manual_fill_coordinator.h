@@ -5,13 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_EXPANDED_MANUAL_FILL_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_EXPANDED_MANUAL_FILL_COORDINATOR_H_
 
-#import <string>
-
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
-namespace autofill {
-class FormRendererId;
-}
 
 namespace manual_fill {
 enum class ManualFillDataType;
@@ -43,14 +37,6 @@ enum class ManualFillDataType;
 // Whether or not the last focused field was obfuscated. Needed to instantiate
 // the ManualFillPasswordCoordinator.
 @property(nonatomic, assign) BOOL invokedOnObfuscatedField;
-
-// The form ID associated with the field that was last focused. Needed to
-// instantiate the ManualFillPasswordCoordinator.
-@property(nonatomic, assign) autofill::FormRendererId formID;
-
-// The frame ID associated with the field that was last focused. Needed to
-// instantiate the ManualFillPasswordCoordinator.
-@property(nonatomic, assign) std::string frameID;
 
 // The delegate to communicate with the FormInputAccessoryCoordinator.
 @property(nonatomic, weak) id<ExpandedManualFillCoordinatorDelegate,

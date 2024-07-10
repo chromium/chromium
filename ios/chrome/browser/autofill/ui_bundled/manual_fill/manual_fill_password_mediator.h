@@ -16,10 +16,6 @@
 @protocol ManualFillPasswordConsumer;
 @protocol PasswordListNavigator;
 
-namespace autofill {
-class FormRendererId;
-}  // namespace autofill
-
 namespace password_manager {
 class SavedPasswordsPresenter;
 }  // namespace password_manager
@@ -98,11 +94,10 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
 - (void)setSavedPasswordsPresenter:
     (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter;
 
-// Fetches passwords related to the current form.
-- (void)fetchPasswordsForForm:(const autofill::FormRendererId)formID
-                        frame:(const std::string&)frameID;
+// Fetches passwords related to the current site.
+- (void)fetchPasswordsForOrigin;
 
-// Fetched all saved passwords.
+// Fetches all saved passwords.
 - (void)fetchAllPasswords;
 
 // Detaches observers.

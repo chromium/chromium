@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_coordinator.h"
 
-#import "components/autofill/core/common/unique_ids.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
@@ -120,9 +119,7 @@ using manual_fill::ManualFillDataType;
                              browser:self.browser
                                  URL:URL
                     injectionHandler:self.injectionHandler
-            invokedOnObfuscatedField:self.invokedOnObfuscatedField
-                              formID:self.formID
-                             frameID:self.frameID];
+            invokedOnObfuscatedField:self.invokedOnObfuscatedField];
   passwordCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =

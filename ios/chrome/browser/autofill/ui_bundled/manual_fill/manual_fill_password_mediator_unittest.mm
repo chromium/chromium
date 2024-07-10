@@ -9,16 +9,19 @@
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/fake_form_fetcher.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_fetcher_consumer_bridge.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator+Testing.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_consumer.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -125,12 +128,19 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
 };
 
 // Tests that the consumer is notified when the passwords related to the current
-// form are fetched.
-TEST_F(ManualFillPasswordMediatorTest,
-       NotifiesConsumerOnFetchPasswordsForForm) {
+// site are fetched.
+TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerOnFetchDidComplete) {
+  // Set the mediator's form fetcher.
+  [mediator()
+      setFormFetcher:std::make_unique<password_manager::FakeFormFetcher>()];
+  EXPECT_TRUE([mediator() conformsToProtocol:@protocol(FormFetcherConsumer)]);
+
   OCMExpect([consumer() presentCredentials:[OCMArg isNotNil]]);
 
-  [mediator() fetchPasswordsForForm:autofill::FormRendererId() frame:"frameID"];
+  ManualFillPasswordMediator<FormFetcherConsumer>* form_fetcher_consumer =
+      static_cast<ManualFillPasswordMediator<FormFetcherConsumer>*>(mediator());
+
+  [form_fetcher_consumer fetchDidComplete];
 
   EXPECT_OCMOCK_VERIFY(consumer());
 }
