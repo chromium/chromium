@@ -5129,6 +5129,8 @@ data/accessibility/html/time-expected-mac.txt
 data/accessibility/html/time-expected-uia-win.txt
 data/accessibility/html/time-expected-win.txt
 data/accessibility/html/time.html
+data/accessibility/html/title-attribute-expected-blink.txt
+data/accessibility/html/title-attribute.html
 data/accessibility/html/title-changed-expected-blink.txt
 data/accessibility/html/title-changed.html
 data/accessibility/html/title-empty-expected-blink.txt

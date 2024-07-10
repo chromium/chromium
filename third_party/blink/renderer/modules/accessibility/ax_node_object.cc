@@ -6270,11 +6270,17 @@ String AXNodeObject::TextAlternativeFromTooltip(
     bool* found_text_alternative,
     String* text_alternative,
     AXRelatedObjectVector* related_objects) const {
+  if (!GetElement()) {
+    return String();
+  }
   name_from = ax::mojom::blink::NameFrom::kTitle;
   const AtomicString& title = GetAttribute(kTitleAttr);
   String title_text = *text_alternative = TextAlternativeFromTitleAttribute(
       title, name_from, name_sources, found_text_alternative);
-  if (!title_text.empty()) {
+  // Do not use if empty or if redundant with inner text.
+  if (!title_text.empty() &&
+      title_text.StripWhiteSpace() !=
+          GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
     return title_text;
   }
 
@@ -6314,6 +6320,11 @@ String AXNodeObject::TextAlternativeFromTooltip(
   AXObjectSet visited;
   String popover_text =
       RecursiveTextAlternative(*popover_ax_object, popover_ax_object, visited);
+  // Do not use if redundant with inner text.
+  if (popover_text.StripWhiteSpace() ==
+      GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
+    return String();
+  }
   *text_alternative = popover_text;
   if (related_objects) {
     related_objects->push_back(MakeGarbageCollected<NameSourceRelatedObject>(

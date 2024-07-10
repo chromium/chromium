@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group name='Names a group'
+++++++++staticText name='abc'
+++++++++++inlineTextBox name='abc'
+++++++group description='Moved to description' name='Has a name' descriptionFrom=title
+++++++++staticText name='def'
+++++++++++inlineTextBox name='def'
+++++++group description='Redundant' descriptionFrom=title
+++++++++staticText name='Redundant'
+++++++++++inlineTextBox name='Redundant'

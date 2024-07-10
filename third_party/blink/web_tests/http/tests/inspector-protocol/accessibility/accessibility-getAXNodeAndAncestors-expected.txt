@@ -180,11 +180,6 @@ Tests Accessibility.getAXNodeAndAncestors
                 nativeSource : title
                 type : relatedElement
             }
-            [4] : {
-                attribute : title
-                superseded : true
-                type : attribute
-            }
         ]
         type : computedString
         value : 
