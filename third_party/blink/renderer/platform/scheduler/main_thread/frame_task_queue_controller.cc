@@ -130,10 +130,6 @@ void FrameTaskQueueController::TaskQueueCreated(
 
 void FrameTaskQueueController::RemoveTaskQueueAndVoter(
     MainThreadTaskQueue* queue) {
-  if (recordreplay::AreEventsDisallowed("leak-references")) {
-    // Avoid divergence of |all_task_queues_and_voters_|.
-    return;
-  }
   DCHECK(task_queue_enabled_voters_.Contains(queue));
   task_queue_enabled_voters_.erase(queue);
 

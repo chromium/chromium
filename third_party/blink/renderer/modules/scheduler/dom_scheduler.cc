@@ -46,13 +46,23 @@ DOMScheduler::DOMScheduler(ExecutionContext* context)
 }
 
 void DOMScheduler::ContextDestroyed() {
+  REPLAY_ASSERT("[TT-1465] DOMScheduler::ContextDestroyed %u %u",
+    fixed_priority_task_queues_.size(),
+    signal_to_task_queue_map_.size());
+
   fixed_priority_task_queues_.clear();
   signal_to_task_queue_map_.clear();
+
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                            "DOMScheduler")) {
+    replay_strong_signal_.clear();
+  }
 }
 
 void DOMScheduler::Trace(Visitor* visitor) const {
   visitor->Trace(fixed_priority_task_queues_);
   visitor->Trace(signal_to_task_queue_map_);
+  visitor->Trace(replay_strong_signal_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   Supplement<ExecutionContext>::Trace(visitor);
@@ -171,6 +181,10 @@ void DOMScheduler::CreateTaskQueueFor(DOMTaskSignal* signal) {
   signal_to_task_queue_map_.insert(
       signal,
       MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue), priority));
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                            "DOMScheduler")) {
+    replay_strong_signal_.insert(signal);
+  }
   signal->AddPriorityChangeAlgorithm(
       WTF::BindRepeating(&DOMScheduler::OnPriorityChange,
                          WrapWeakPersistent(this), WrapWeakPersistent(signal)));

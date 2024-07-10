@@ -138,6 +138,7 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
   // This will be empty when the window is detached.
   HeapHashMap<WeakMember<DOMTaskSignal>, Member<DOMTaskQueue>>
       signal_to_task_queue_map_;
+  HeapHashSet<Member<DOMTaskSignal>> replay_strong_signal_;
 };
 
 }  // namespace blink
