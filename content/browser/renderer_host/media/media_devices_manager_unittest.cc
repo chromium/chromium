@@ -484,10 +484,12 @@ class MediaDevicesManagerTest : public ::testing::Test {
   std::unique_ptr<media::VideoCaptureSystemImpl> video_capture_system_;
   HistogramTester histogram_tester_;
   RenderViewHostTestEnabler rvh_test_enabler_;
+  MockBrowserClient browser_client_;
+  // Must be destroyed before `browser_client_`, since `BrowserContext`
+  // destruction can use the `ContentBrowserClient`.
   TestBrowserContext browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   raw_ptr<TestRenderFrameHost> render_frame_host_;
-  MockBrowserClient browser_client_;
 };
 
 TEST_F(MediaDevicesManagerTest, EnumerateNoCacheAudioInput) {
