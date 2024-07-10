@@ -411,10 +411,37 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       }
     }
 
+    base::Value::Dict unhandled_prompt_behavior;
+
+    static const std::unordered_map<std::string, std::string>
+        classic_to_bidi_behavior = {
+            // If no capability specified, the default behavior depends on the
+            // W3C compliance mode.
+            {"", session->w3c_compliant ? prompt_behavior::kDismiss
+                                        : prompt_behavior::kIgnore},
+            {prompt_behavior::kDismissAndNotify, prompt_behavior::kDismiss},
+            {prompt_behavior::kDismiss, prompt_behavior::kDismiss},
+            {prompt_behavior::kAcceptAndNotify, prompt_behavior::kAccept},
+            {prompt_behavior::kAccept, prompt_behavior::kAccept},
+            {prompt_behavior::kIgnore, prompt_behavior::kIgnore},
+        };
+
+    if (classic_to_bidi_behavior.contains(session->unhandled_prompt_behavior)) {
+      unhandled_prompt_behavior.Set(
+          "default",
+          classic_to_bidi_behavior.at(session->unhandled_prompt_behavior));
+    } else {
+      return Status(StatusCode::kUnknownError,
+                    "Unexpected unhandled prompt behavior: " +
+                        session->unhandled_prompt_behavior);
+    }
+
     base::Value::Dict mapper_options;
+    mapper_options.Set("unhandledPromptBehavior",
+                       std::move(unhandled_prompt_behavior));
     mapper_options.Set("acceptInsecureCerts",
                        capabilities.accept_insecure_certs);
-    mapper_options.Set("sharedIdWithFrame", true);
+
     status = web_view->StartBidiServer(mapper_script, mapper_options);
     if (status.IsError()) {
       return status;
