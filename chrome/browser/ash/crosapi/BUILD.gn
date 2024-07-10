@@ -744,6 +744,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/app_mode/test:test_support",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/net",

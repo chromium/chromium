@@ -82,11 +82,13 @@ static_library("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
   deps = [
+    ":scalable_iph",
     "//ash/constants",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash/scalable_iph",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/ui",
     "//chromeos/ash/components/scalable_iph:constants",
@@ -106,6 +108,8 @@ source_set("browser_tests") {
     "scalable_iph_e2e_browsertest.cc",
   ]
   deps = [
+    ":scalable_iph",
+    ":test_support",
     "//ash",
     "//ash:test_support",
     "//ash/constants",
@@ -118,8 +122,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/login/lock:test_support",
-    "//chrome/browser/ash/scalable_iph",
-    "//chrome/browser/ash/scalable_iph:test_support",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/ui",
