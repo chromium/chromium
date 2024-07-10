@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/mac/mac_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 
@@ -28,6 +29,8 @@
      didUpdateLocations:(NSArray*)locations;
 - (void)locationManager:(CLLocationManager*)manager
     didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
+- (void)locationManager:(CLLocationManager*)manager
+       didFailWithError:(NSError*)error;
 
 - (BOOL)hasPermission;
 - (BOOL)permissionInitialized;
@@ -184,4 +187,58 @@ void SystemGeolocationSourceApple::RemovePositionUpdateObserver(
 
   _manager->PositionUpdated(position);
 }
+
+- (void)locationManager:(CLLocationManager*)manager
+       didFailWithError:(NSError*)error {
+  base::UmaHistogramSparse("Geolocation.CoreLocationProvider.ErrorCode",
+                           static_cast<int>(error.code));
+  device::mojom::GeopositionError position_error;
+
+  switch (error.code) {
+    case kCLErrorDenied:
+      position_error.error_code =
+          device::mojom::GeopositionErrorCode::kPermissionDenied;
+      position_error.error_message =
+          device::mojom::kGeoPermissionDeniedErrorMessage;
+      position_error.error_technical =
+          "CoreLocationProvider: CoreLocation framework reported a "
+          "kCLErrorDenied failure.";
+      break;
+    case kCLErrorPromptDeclined:
+      position_error.error_code =
+          device::mojom::GeopositionErrorCode::kPermissionDenied;
+      position_error.error_message =
+          device::mojom::kGeoPermissionDeniedErrorMessage;
+      position_error.error_technical =
+          "CoreLocationProvider: CoreLocation framework reported a "
+          "kCLErrorPromptDeclined failure.";
+      break;
+    case kCLErrorLocationUnknown:
+      position_error.error_code =
+          device::mojom::GeopositionErrorCode::kPositionUnavailable;
+      position_error.error_message =
+          device::mojom::kGeoPositionUnavailableErrorMessage;
+      position_error.error_technical =
+          "CoreLocationProvider: CoreLocation framework reported a "
+          "kCLErrorLocationUnknown failure.";
+      break;
+    case kCLErrorNetwork:
+      position_error.error_code =
+          device::mojom::GeopositionErrorCode::kPositionUnavailable;
+      position_error.error_message =
+          device::mojom::kGeoPositionUnavailableErrorMessage;
+      position_error.error_technical =
+          "CoreLocationProvider: CoreLocation framework reported a "
+          "kCLErrorNetwork failure.";
+      break;
+    default:
+      // For non-critical errors (heading, ranging, or region monitoring),
+      // return immediately without setting the position_error, as they may not
+      // be relevant to the caller.
+      return;
+  }
+
+  _manager->PositionError(position_error);
+}
+
 @end

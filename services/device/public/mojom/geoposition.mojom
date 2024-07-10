@@ -16,6 +16,14 @@ const double kBadAccuracy = -1;  // Accuracy must be non-negative.
 const double kBadHeading = -1;   // Heading must be non-negative.
 const double kBadSpeed = -1;
 
+// Error messages for GeopositionError.
+// TODO(crbug.com/351865287): These can be removed once `error_message` is
+// removed from `GeopositionError`.
+const string kGeoPermissionDeniedErrorMessage =
+    "User denied geolocation permission";
+const string kGeoPositionUnavailableErrorMessage =
+    "Position update is unavailable";
+
 // A Geoposition represents a position fix. It was originally derived from:
 // http://gears.googlecode.com/svn/trunk/gears/geolocation/geolocation.h
 struct Geoposition {

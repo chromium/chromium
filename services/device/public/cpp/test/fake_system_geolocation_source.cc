@@ -41,6 +41,12 @@ void FakeSystemGeolocationSource::FakePositionUpdatedForTesting(
   position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionUpdated,
                               position);
 }
-#endif
+
+void FakeSystemGeolocationSource::FakePositionErrorForTesting(
+    const mojom::GeopositionError& error) {
+  position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionError,
+                              error);
+}
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace device

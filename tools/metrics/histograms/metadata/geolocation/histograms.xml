@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.CoreLocationProvider.ErrorCode"
+    enum="CoreLocationErrorCode" expires_after="2025-07-01">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value corresponding to the specific error encountered
+    by the CoreLocationProvider while obtaining the device's location.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.GeolocationImpl.ClientId"
     enum="GeolocationClientId" expires_after="2024-09-01">
   <owner>mattreynolds@chromium.org</owner>

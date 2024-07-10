@@ -44,10 +44,16 @@ class CoreLocationProviderTest : public testing::Test {
         ->watching_position();
   }
 
-  // updates the position synchronously
+  // Updates the position synchronously.
   void FakeUpdatePosition(const mojom::Geoposition& result) {
     static_cast<FakeSystemGeolocationSource*>(fake_system_geolocation_source_)
         ->FakePositionUpdatedForTesting(result);
+  }
+
+  // Updates the error synchronously.
+  void FakeUpdateError(const mojom::GeopositionError& error) {
+    static_cast<FakeSystemGeolocationSource*>(fake_system_geolocation_source_)
+        ->FakePositionErrorForTesting(error);
   }
 
   const mojom::GeopositionResult* GetLatestPosition() {
@@ -73,7 +79,6 @@ TEST_F(CoreLocationProviderTest, CreateDestroy) {
 }
 
 TEST_F(CoreLocationProviderTest, StartAndStopUpdating) {
-  base::RunLoop().RunUntilIdle();
   provider_->StartProvider(/*high_accuracy=*/true);
   EXPECT_TRUE(IsUpdating());
   EXPECT_EQ(GetProviderState(),
@@ -86,7 +91,6 @@ TEST_F(CoreLocationProviderTest, StartAndStopUpdating) {
 }
 
 TEST_F(CoreLocationProviderTest, GetPositionUpdates) {
-  base::RunLoop().RunUntilIdle();
   provider_->StartProvider(/*high_accuracy=*/true);
   EXPECT_TRUE(IsUpdating());
   EXPECT_EQ(GetProviderState(),
@@ -118,6 +122,34 @@ TEST_F(CoreLocationProviderTest, GetPositionUpdates) {
   ASSERT_TRUE(GetLatestPosition());
   ASSERT_TRUE(GetLatestPosition()->is_position());
   EXPECT_TRUE(GetLatestPosition()->get_position().Equals(test_position));
+
+  provider_->StopProvider();
+  EXPECT_FALSE(IsUpdating());
+  EXPECT_EQ(GetProviderState(),
+            mojom::GeolocationDiagnostics::ProviderState::kStopped);
+  provider_.reset();
+}
+
+TEST_F(CoreLocationProviderTest, GetPositionError) {
+  provider_->StartProvider(/*high_accuracy=*/true);
+  EXPECT_TRUE(IsUpdating());
+  EXPECT_EQ(GetProviderState(),
+            mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy);
+
+  auto error = mojom::GeopositionError::New();
+  error->error_code = mojom::GeopositionErrorCode::kPermissionDenied;
+
+  TestFuture<const LocationProvider*, mojom::GeopositionResultPtr>
+      location_update_future;
+  provider_->SetUpdateCallback(location_update_future.GetRepeatingCallback());
+  FakeUpdateError(*error);
+  auto [provider, result] = location_update_future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_TRUE(error.Equals(result->get_error()));
+  ASSERT_TRUE(GetLatestPosition());
+  ASSERT_TRUE(GetLatestPosition()->is_error());
+  EXPECT_TRUE(GetLatestPosition()->get_error().Equals(error));
 
   provider_->StopProvider();
   EXPECT_FALSE(IsUpdating());
