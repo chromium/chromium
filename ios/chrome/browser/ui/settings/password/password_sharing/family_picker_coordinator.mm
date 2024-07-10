@@ -76,6 +76,9 @@
   // that it looks as the spinner is replaced with the loaded data.
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:self.shouldNavigateBack];
+
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kFamilyPickerOpened);
 }
 
 - (void)stop {

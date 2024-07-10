@@ -838,6 +838,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Confirmation dialog: 'Learn more' link clicked"/>
   <int value="12" label="Confirmation dialog: 'Change password' link clicked"/>
   <int value="13" label="Confirmation dialog: 'Done' button clicked"/>
+  <int value="14" label="Family picker: opened"/>
 </enum>
 
 <enum name="PasswordManager.ProcessIncomingPasswordSharingInvitationResult">
