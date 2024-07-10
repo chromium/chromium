@@ -899,6 +899,7 @@ static_library("test_support") {
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/login/enrollment",
       "//chrome/browser/ash/login/enrollment:test_support",
+      "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps",
       "//chromeos/ash/components/account_manager",
       "//chromeos/ash/components/dbus/session_manager",

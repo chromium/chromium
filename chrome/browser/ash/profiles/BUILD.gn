@@ -1,0 +1,32 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("profiles") {
+  sources = [
+    "browser_context_helper_delegate_impl.cc",
+    "browser_context_helper_delegate_impl.h",
+    "profile_helper.cc",
+    "profile_helper.h",
+    "signin_profile_handler.cc",
+    "signin_profile_handler.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/profiles",
+    "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/account_id",
+    "//components/crx_file",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions/browser",
+  ]
+}
