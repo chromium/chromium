@@ -231,6 +231,9 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   FRIEND_TEST_ALL_PREFIXES(
       UnusedSitePermissionsServiceTest,
       UpdateIntegerValuesToGroupName_SubsetOfContentSettings);
+  FRIEND_TEST_ALL_PREFIXES(
+      UnusedSitePermissionsServiceTest,
+      UpdateIntegerValuesToGroupName_UnknownContentSettings);
   FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,
                            UpdateIntegerValuesToGroupName_OnStartUp);
   FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,

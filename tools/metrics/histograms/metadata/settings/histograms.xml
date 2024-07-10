@@ -580,6 +580,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.SafetyCheck.UnusedSitePermissionsMigrationFail"
+    units="type" expires_after="2024-11-03">
+  <owner>alimariam@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    The number of the failed type which could not be migrated to the SafetyCheck
+    new unused site permissions module with string name IDs. Recorded on profile
+    startup if the integer value ID in prefs doesn't match any
+    ContentSettingsType.
+  </summary>
+</histogram>
+
 <histogram
     name="Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown"
     enum="BooleanVisible" expires_after="2024-11-03">

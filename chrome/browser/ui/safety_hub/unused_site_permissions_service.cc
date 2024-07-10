@@ -63,6 +63,9 @@ constexpr base::TimeDelta kRevocationThresholdWithDelayForTesting =
     base::Minutes(5);
 
 namespace {
+
+constexpr char kUnknownContentSettingsType[] = "unknown";
+
 // Reflects the maximum number of days between a permissions being revoked and
 // the time when the user regrants the permission through the unused site
 // permission module of Safete Check. The maximum number of days is determined
@@ -106,14 +109,21 @@ bool IsChooserPermissionSupported() {
 }
 
 base::Value::List ConvertContentSettingsIntValuesToString(
-    const base::Value::List& content_settings_values_list) {
+    const base::Value::List& content_settings_values_list,
+    bool* successful_migration) {
   base::Value::List string_value_list;
   for (const base::Value& setting_value : content_settings_values_list) {
     if (setting_value.is_int()) {
       int setting_int = setting_value.GetInt();
-      string_value_list.Append(
+      auto setting_name =
           UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
-              static_cast<ContentSettingsType>(setting_int)));
+              static_cast<ContentSettingsType>(setting_int));
+      if (setting_name == kUnknownContentSettingsType) {
+        *successful_migration = false;
+        string_value_list.Append(setting_value.GetInt());
+      } else {
+        string_value_list.Append(setting_name);
+      }
     } else {
       DCHECK(setting_value.is_string());
       // Store string group name values.
@@ -151,7 +161,21 @@ std::string UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
     ContentSettingsType type) {
   auto* website_setting_registry =
       content_settings::WebsiteSettingsRegistry::GetInstance();
-  return website_setting_registry->Get(type)->name();
+  DCHECK(website_setting_registry);
+
+  auto* website_settings_info = website_setting_registry->Get(type);
+  if (!website_settings_info) {
+    auto integer_type = static_cast<int32_t>(type);
+    DVLOG(1) << "Couldn't retrieve website settings info entry from the "
+                "registry for type: "
+             << integer_type;
+    base::UmaHistogramSparse(
+        "Settings.SafetyCheck.UnusedSitePermissionsMigrationFail",
+        integer_type);
+    return kUnknownContentSettingsType;
+  }
+
+  return website_settings_info->name();
 }
 
 // static
@@ -700,6 +724,11 @@ UnusedSitePermissionsService::GetRevokedPermissions() {
         stored_value.GetDict().FindList(permissions::kRevokedKey);
     CHECK(type_list);
     for (base::Value& type_value : type_list->Clone()) {
+      // To avoid crashes for unknown types skip integer values.
+      if (type_value.is_int()) {
+        continue;
+      }
+
       ContentSettingsType type =
           ConvertKeyToContentSettingsType(type_value.GetString());
       permissions_data.permission_types.insert(type);
@@ -1020,6 +1049,7 @@ void UnusedSitePermissionsService::UpdateIntegerValuesToGroupName() {
   ContentSettingsForOneType settings = hcsm()->GetSettingsForOneType(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
 
+  bool successful_migration = true;
   for (const auto& revoked_permissions : settings) {
     const base::Value& stored_value = revoked_permissions.setting_value;
     DCHECK(stored_value.is_dict());
@@ -1030,7 +1060,7 @@ void UnusedSitePermissionsService::UpdateIntegerValuesToGroupName() {
     if (permission_value_list) {
       base::Value::List updated_permission_value_list =
           ConvertContentSettingsIntValuesToString(
-              permission_value_list->Clone());
+              permission_value_list->Clone(), &successful_migration);
       updated_dict.GetDict().Set(permissions::kRevokedKey,
                                  std::move(updated_permission_value_list));
     }
@@ -1061,7 +1091,9 @@ void UnusedSitePermissionsService::UpdateIntegerValuesToGroupName() {
         std::move(updated_dict), constraints);
   }
 
-  pref_change_registrar_->prefs()->SetBoolean(
-      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted,
-      true);
+  if (successful_migration) {
+    pref_change_registrar_->prefs()->SetBoolean(
+        safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted,
+        true);
+  }
 }

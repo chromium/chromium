@@ -78,6 +78,8 @@ const ContentSettingsType revoked_abusive_notification =
     ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS;
 const ContentSettingsType revoked_unused_site_type =
     ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS;
+// An arbitrary large number that doesn't match any ContentSettingsType;
+const int32_t unknown_type = 300000;
 
 std::set<ContentSettingsType> abusive_permission_types({notifications_type});
 std::set<ContentSettingsType> unused_permission_types({geolocation_type,
@@ -1557,6 +1559,45 @@ TEST_P(UnusedSitePermissionsServiceTest,
                                          ->GetList());
 }
 
+TEST_P(UnusedSitePermissionsServiceTest,
+       UpdateIntegerValuesToGroupName_UnknownContentSettings) {
+  base::Value::List permissions_list_int;
+  permissions_list_int.Append(static_cast<int32_t>(geolocation_type));
+  // Append a large number that does not match to any content settings type.
+  permissions_list_int.Append(unknown_type);
+
+  auto dict = base::Value::Dict().Set(permissions::kRevokedKey,
+                                      permissions_list_int.Clone());
+  hcsm()->SetWebsiteSettingDefaultScope(GURL(url1), GURL(url1),
+                                        revoked_unused_site_type,
+                                        base::Value(dict.Clone()));
+
+  ContentSettingsForOneType revoked_permissions_content_settings =
+      hcsm()->GetSettingsForOneType(revoked_unused_site_type);
+
+  // Expecting no-op, stored integer values of content settings on disk.
+  EXPECT_EQ(permissions_list_int, GetRevokedUnusedPermissions(hcsm())[0]
+                                      .setting_value.GetDict()
+                                      .Find(permissions::kRevokedKey)
+                                      ->GetList());
+
+  // Update disk stored content settings values from integers to strings.
+  service()->UpdateIntegerValuesToGroupName();
+
+  // Validate content settings are stored in group name strings.
+  auto permissions_list_string =
+      base::Value::List()
+          .Append(UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+              geolocation_type))
+          .Append(unknown_type);
+  revoked_permissions_content_settings =
+      hcsm()->GetSettingsForOneType(revoked_unused_site_type);
+  EXPECT_EQ(permissions_list_string, GetRevokedUnusedPermissions(hcsm())[0]
+                                         .setting_value.GetDict()
+                                         .Find(permissions::kRevokedKey)
+                                         ->GetList());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     UnusedSitePermissionsServiceTest,
@@ -1670,6 +1711,73 @@ TEST_F(UnusedSitePermissionsServiceStartUpTest,
   auto expected_permissions_list_url1 = base::Value::List().Append(
       UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
           mediastream_type));
+  auto expected_permissions_list_url2 = base::Value::List().Append(
+      UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+          geolocation_type));
+  EXPECT_EQ(expected_permissions_list_url1,
+            GetRevokedUnusedPermissions(hcsm())[0]
+                .setting_value.GetDict()
+                .Find(permissions::kRevokedKey)
+                ->GetList());
+  EXPECT_EQ(expected_permissions_list_url2,
+            GetRevokedUnusedPermissions(hcsm())[1]
+                .setting_value.GetDict()
+                .Find(permissions::kRevokedKey)
+                ->GetList());
+}
+
+TEST_F(UnusedSitePermissionsServiceStartUpTest,
+       UpdateIntegerValuesToGroupName_MixedKeysWithUnknownTypes) {
+  base::HistogramTester histogram_tester;
+  // Setting up two entries one with integers and one with strings to simulate
+  // partial migration in case of a crash.
+  auto dict_int = base::Value::Dict().Set(
+      permissions::kRevokedKey,
+      base::Value::List()
+          .Append(static_cast<int32_t>(mediastream_type))
+          // Append a large number that does not match to any content settings
+          // type.
+          .Append(unknown_type));
+  auto dict_string = base::Value::Dict().Set(
+      permissions::kRevokedKey,
+      base::Value::List().Append(
+          UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+              geolocation_type)));
+  hcsm()->SetWebsiteSettingDefaultScope(GURL(url1), GURL(url1),
+                                        revoked_unused_site_type,
+                                        base::Value(dict_int.Clone()));
+  hcsm()->SetWebsiteSettingDefaultScope(GURL(url2), GURL(url2),
+                                        revoked_unused_site_type,
+                                        base::Value(dict_string.Clone()));
+
+  // Expect migration completion to be false at the beginning of the test before
+  // starting the service.
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
+
+  // No histogram entries should be recorded for failed migration.
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyCheck.UnusedSitePermissionsMigrationFail", unknown_type,
+      0);
+
+  // When we start up a new service instance, the latest result (i.e. the list
+  // of revoked permissions) should be be updated to strings.
+  auto new_service = std::make_unique<UnusedSitePermissionsService>(
+      profile(), profile()->GetPrefs());
+
+  // Verify the migration is not completed on after the service has started due
+  // to the unknown integer value.
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
+  // Histogram entries should include the unknown type after failed migration.
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyCheck.UnusedSitePermissionsMigrationFail", unknown_type,
+      1);
+  auto expected_permissions_list_url1 =
+      base::Value::List()
+          .Append(UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+              mediastream_type))
+          .Append(unknown_type);
   auto expected_permissions_list_url2 = base::Value::List().Append(
       UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
           geolocation_type));
