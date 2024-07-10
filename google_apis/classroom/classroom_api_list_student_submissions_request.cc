@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -43,12 +44,12 @@ ListStudentSubmissionsRequest::ListStudentSubmissionsRequest(
     const std::string& page_token,
     Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      course_id_(course_id),
-      course_work_id_(course_work_id),
+      course_id_(base::EscapeAllExceptUnreserved(course_id)),
+      course_work_id_(base::EscapeAllExceptUnreserved(course_work_id)),
       page_token_(page_token),
       callback_(std::move(callback)) {
-  CHECK(!course_id.empty());
-  CHECK(!course_work_id.empty());
+  CHECK(!course_id_.empty());
+  CHECK(!course_work_id_.empty());
   CHECK(!callback_.is_null());
 }
 
