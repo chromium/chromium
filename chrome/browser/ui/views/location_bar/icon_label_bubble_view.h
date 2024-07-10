@@ -42,6 +42,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
  public:
   static constexpr int kTrailingPaddingPreMd = 2;
 
+  // TODO(tluk): These should be updated to return ColorIds instead of raw
+  // SkColors.
   class Delegate {
    public:
     // Returns the foreground color of items around the IconLabelBubbleView,
@@ -270,6 +272,11 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Gets the highlight path for ink drops and focus rings using the current
   // bounds and separator visibility.
   SkPath GetHighlightPath() const;
+
+  // Returns true if the view is painted on a solid background, or if it is
+  // intended to be transparent to the view over which it is painted. The view's
+  // background and foreground color accessors will reflect this preference.
+  bool PaintedOnSolidBackground() const;
 
   raw_ptr<Delegate, DanglingUntriaged> delegate_;
 

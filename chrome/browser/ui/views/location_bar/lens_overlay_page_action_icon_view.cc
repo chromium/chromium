@@ -71,10 +71,7 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
   if (!lens::features::IsOmniboxEntrypointAlwaysVisible()) {
     SetLabel(
         l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
-    // TODO(crbug.com/345521958): Remove these and return to requesting default
-    // expanded tonal colors once page action icon colors have been fixed.
-    SetCustomBackgroundColorId(kColorPageInfoLensOverlayBackground);
-    SetCustomForegroundColorId(kColorPageInfoLensOverlayForeground);
+    SetUseTonalColorsWhenExpanded(true);
     SetPaintLabelOverSolidBackground(true);
   }
 }
