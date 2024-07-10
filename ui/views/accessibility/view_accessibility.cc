@@ -1033,6 +1033,15 @@ void ViewAccessibility::SetPopupForId(ui::AXPlatformNodeId popup_for_id) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kPopupForId, popup_for_id);
 }
 
+void ViewAccessibility::SetTextDirection(int text_direction) {
+  CHECK_GE(text_direction,
+           static_cast<int32_t>(ax::mojom::WritingDirection::kMinValue));
+  CHECK_LE(text_direction,
+           static_cast<int32_t>(ax::mojom::WritingDirection::kMaxValue));
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTextDirection,
+                        text_direction);
+}
+
 void ViewAccessibility::SetIsProtected(bool is_protected) {
   if (data_.HasState(ax::mojom::State::kProtected) == is_protected) {
     return;
