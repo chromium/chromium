@@ -240,8 +240,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // to the suggestion text, like in the SelectedKeywordView.
   virtual int GetExtraInternalSpacing() const;
 
-  std::optional<ui::ColorId> GetCustomBackgroundColorId();
-  std::optional<ui::ColorId> GetCustomForegroundColorId();
+  // True if the icon color should match the label color specified by
+  // GetForegroundColor().
+  bool IconColorShouldMatchForeground() const;
 
   void SetCustomBackgroundColorId(const ui::ColorId color_id);
   void SetCustomForegroundColorId(const ui::ColorId color_id);
