@@ -70,7 +70,8 @@ void IOSTabModelURLVisitDataFetcher::FetchURLVisitData(
   std::map<URLMergeKey, URLVisitAggregate::TabData> url_visit_tab_data_map;
   const BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);
-  for (Browser* browser : browser_list->AllRegularBrowsers()) {
+  for (Browser* browser : browser_list->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* web_state_list = browser->GetWebStateList();
     for (int i = 0; i < web_state_list->count(); i++) {
       web::WebState* web_state = web_state_list->GetWebStateAt(i);

@@ -29,6 +29,8 @@ class BrowserList : public KeyedService {
     kRegular = 1 << 0,
     kInactive = 1 << 1,
     kIncognito = 1 << 2,
+    kRegularAndInactive = kRegular | kInactive,
+    kAll = kRegular | kInactive | kIncognito
   };
 
   explicit BrowserList() = default;
@@ -47,14 +49,6 @@ class BrowserList : public KeyedService {
   // Returns the current set of browsers in the list matching the `type`. `type`
   // can be be used as a bitmask.
   virtual std::set<Browser*> BrowsersOfType(int browser_type_mask) const = 0;
-
-  // DEPRECATED, use `BrowsersOfType` instead.
-  // Returns the current set of regular browsers in the list.
-  virtual std::set<Browser*> AllRegularBrowsers() const = 0;
-
-  // DEPRECATED, use `BrowsersOfType` instead.
-  // Returns the current set of incognito browsers in the list.
-  virtual std::set<Browser*> AllIncognitoBrowsers() const = 0;
 
   // Adds an observer to the service.
   virtual void AddObserver(BrowserListObserver* observer) = 0;

@@ -49,11 +49,8 @@ class CloseTabsAction : public Action {
            Continuation continuation) override {
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state);
-    for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
-      CloseAllWebStates(*browser->GetWebStateList(),
-                        WebStateList::CLOSE_NO_FLAGS);
-    }
-    for (Browser* browser : browser_list->AllRegularBrowsers()) {
+    for (Browser* browser :
+         browser_list->BrowsersOfType(BrowserList::BrowserType::kAll)) {
       CloseAllWebStates(*browser->GetWebStateList(),
                         WebStateList::CLOSE_NO_FLAGS);
     }
@@ -207,11 +204,8 @@ class ClearBrowsingDataAction : public Action,
       return;
     }
 
-    for (Browser* browser : browser_list_->AllIncognitoBrowsers()) {
-      WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
-          enabled);
-    }
-    for (Browser* browser : browser_list_->AllIncognitoBrowsers()) {
+    for (Browser* browser :
+         browser_list_->BrowsersOfType(BrowserList::BrowserType::kAll)) {
       WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
           enabled);
     }

@@ -17,10 +17,12 @@ void TestBrowserListObserver::OnBrowserAdded(const BrowserList* browser_list,
   if (browser->type() == Browser::Type::kRegular ||
       browser->type() == Browser::Type::kInactive) {
     last_added_browser_ = browser;
-    last_browsers_ = browser_list->AllRegularBrowsers();
+    last_browsers_ = browser_list->BrowsersOfType(
+        BrowserList::BrowserType::kRegularAndInactive);
   } else {
     last_added_incognito_browser_ = browser;
-    last_incognito_browsers_ = browser_list->AllIncognitoBrowsers();
+    last_incognito_browsers_ =
+        browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito);
   }
 }
 
@@ -30,10 +32,12 @@ void TestBrowserListObserver::OnBrowserRemoved(const BrowserList* browser_list,
   if (browser->type() == Browser::Type::kRegular ||
       browser->type() == Browser::Type::kInactive) {
     last_removed_browser_ = browser;
-    last_browsers_ = browser_list->AllRegularBrowsers();
+    last_browsers_ = browser_list->BrowsersOfType(
+        BrowserList::BrowserType::kRegularAndInactive);
   } else {
     last_removed_incognito_browser_ = browser;
-    last_incognito_browsers_ = browser_list->AllIncognitoBrowsers();
+    last_incognito_browsers_ =
+        browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito);
   }
 }
 

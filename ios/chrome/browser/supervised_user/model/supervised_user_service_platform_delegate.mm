@@ -17,7 +17,8 @@ SupervisedUserServicePlatformDelegate::SupervisedUserServicePlatformDelegate(
 void SupervisedUserServicePlatformDelegate::CloseIncognitoTabs() {
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);
-  for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
+  for (Browser* browser :
+       browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito)) {
     CloseAllWebStates(*browser->GetWebStateList(),
                       WebStateList::CLOSE_USER_ACTION);
   }

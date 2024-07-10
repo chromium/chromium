@@ -105,9 +105,10 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
                                          web::WebStateID identifier,
                                          bool is_otr_tab) {
-  std::set<Browser*> browsers = is_otr_tab
-                                    ? browser_list->AllIncognitoBrowsers()
-                                    : browser_list->AllRegularBrowsers();
+  int browser_types = is_otr_tab ? BrowserList::BrowserType::kIncognito
+                                 : BrowserList::BrowserType::kInactive |
+                                       BrowserList::BrowserType::kRegular;
+  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();
     int index = GetWebStateIndex(web_state_list,

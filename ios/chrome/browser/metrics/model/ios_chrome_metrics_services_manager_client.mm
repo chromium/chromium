@@ -120,7 +120,8 @@ bool IOSChromeMetricsServicesManagerClient::AreIncognitoTabsPresent() {
   for (ChromeBrowserState* browser_state : browser_states) {
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state);
-    for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
+    for (Browser* browser :
+         browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito)) {
       if (!browser->GetWebStateList()->empty()) {
         return true;
       }

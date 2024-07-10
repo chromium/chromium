@@ -50,9 +50,11 @@ void IOSTranslateInternalsHandler::RegisterMessages() {
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(chrome_browser_state);
-  std::set<Browser*> browsers = chrome_browser_state->IsOffTheRecord()
-                                    ? browser_list->AllIncognitoBrowsers()
-                                    : browser_list->AllRegularBrowsers();
+
+  int browser_types = chrome_browser_state->IsOffTheRecord()
+                          ? BrowserList::BrowserType::kIncognito
+                          : BrowserList::BrowserType::kRegularAndInactive;
+  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();

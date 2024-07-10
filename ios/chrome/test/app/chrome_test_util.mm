@@ -95,7 +95,7 @@ SceneController* GetForegroundActiveSceneController() {
 NSUInteger RegularBrowserCount() {
   return static_cast<NSUInteger>(
       BrowserListFactory::GetForBrowserState(GetOriginalBrowserState())
-          ->AllRegularBrowsers()
+          ->BrowsersOfType(BrowserList::BrowserType::kRegularAndInactive)
           .size());
 }
 

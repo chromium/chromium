@@ -61,14 +61,6 @@ std::set<Browser*> BrowserListImpl::BrowsersOfType(
   return browsers;
 }
 
-std::set<Browser*> BrowserListImpl::AllRegularBrowsers() const {
-  return BrowsersOfType(BrowserType::kRegular | BrowserType::kInactive);
-}
-
-std::set<Browser*> BrowserListImpl::AllIncognitoBrowsers() const {
-  return BrowsersOfType(BrowserType::kIncognito);
-}
-
 // Adds an observer to the model.
 void BrowserListImpl::AddObserver(BrowserListObserver* observer) {
   observers_.AddObserver(observer);

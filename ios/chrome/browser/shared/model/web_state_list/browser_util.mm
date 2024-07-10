@@ -82,9 +82,10 @@ void MoveTabToBrowser(web::WebStateID tab_id,
   ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state);
-  const std::set<Browser*>& browsers =
-      browser_state->IsOffTheRecord() ? browser_list->AllIncognitoBrowsers()
-                                      : browser_list->AllRegularBrowsers();
+  int browser_types = browser_state->IsOffTheRecord()
+                          ? BrowserList::BrowserType::kIncognito
+                          : BrowserList::BrowserType::kRegularAndInactive;
+  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   BrowserAndIndex tab_info = FindBrowserAndIndex(tab_id, browsers);
 
@@ -127,9 +128,10 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
   ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state);
-  const std::set<Browser*>& browsers =
-      browser_state->IsOffTheRecord() ? browser_list->AllIncognitoBrowsers()
-                                      : browser_list->AllRegularBrowsers();
+  int browser_types = browser_state->IsOffTheRecord()
+                          ? BrowserList::BrowserType::kIncognito
+                          : BrowserList::BrowserType::kRegular;
+  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   // Retrieve the `source_browser`.
   Browser* source_browser;

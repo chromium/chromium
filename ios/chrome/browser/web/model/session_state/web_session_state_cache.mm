@@ -239,7 +239,8 @@ void PurgeCacheOnBackgroundSequenceExcept(
   std::set<std::string> liveSessionIDs;
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(self.browserState);
-  for (Browser* browser : browserList->AllRegularBrowsers()) {
+  for (Browser* browser :
+       browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* webState = webStateList->GetWebStateAt(index);
@@ -257,23 +258,6 @@ void PurgeCacheOnBackgroundSequenceExcept(
     }
   }
 
-  for (Browser* browser : browserList->AllIncognitoBrowsers()) {
-    WebStateList* webStateList = browser->GetWebStateList();
-    for (int index = 0; index < webStateList->count(); ++index) {
-      web::WebState* webState = webStateList->GetWebStateAt(index);
-      liveSessionIDs.insert(SessionIdentifierForWebState(webState));
-
-      // Since until M-115, the filename was derived from GetStableIdentifier()
-      // and since the file are renamed only when loaded (which happens only
-      // for realized WebState), we have to also preserve any file named after
-      // GetStableIdentifier().
-      //
-      // The file are renamed when loaded, so eventually those paths won't
-      // correspond to existing files.
-      liveSessionIDs.insert(
-          base::SysNSStringToUTF8(webState->GetStableIdentifier()));
-    }
-  }
   return liveSessionIDs;
 }
 

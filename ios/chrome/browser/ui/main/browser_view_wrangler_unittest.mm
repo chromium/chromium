@@ -214,8 +214,13 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   // The BrowserViewWrangler creates all browser in its initializer. The
   // first created CL is the main Browser, the second one the inactive
   // Browser, and then the OTR Browser.
-  EXPECT_EQ(2UL, browser_list->AllRegularBrowsers().size());
-  EXPECT_EQ(1UL, browser_list->AllIncognitoBrowsers().size());
+  EXPECT_EQ(2UL,
+            browser_list
+                ->BrowsersOfType(BrowserList::BrowserType::kRegularAndInactive)
+                .size());
+  EXPECT_EQ(1UL,
+            browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito)
+                .size());
   EXPECT_EQ(wrangler.mainInterface.inactiveBrowser,
             browser_list_observer().GetLastAddedBrowser());
   EXPECT_EQ(wrangler.incognitoInterface.browser,
@@ -234,7 +239,9 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   EXPECT_EQ(wrangler.incognitoInterface.browser,
             browser_list_observer().GetLastAddedIncognitoBrowser());
   // There still should be one OTR browser.
-  EXPECT_EQ(1UL, browser_list->AllIncognitoBrowsers().size());
+  EXPECT_EQ(1UL,
+            browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito)
+                .size());
 
   // Store unsafe pointers to the current browsers.
   Browser* pre_shutdown_main_browser = wrangler.mainInterface.browser;
@@ -244,8 +251,13 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   [wrangler shutdown];
 
   // There should be no browsers in the BrowserList.
-  EXPECT_EQ(0UL, browser_list->AllRegularBrowsers().size());
-  EXPECT_EQ(0UL, browser_list->AllIncognitoBrowsers().size());
+  EXPECT_EQ(0UL,
+            browser_list
+                ->BrowsersOfType(BrowserList::BrowserType::kRegularAndInactive)
+                .size());
+  EXPECT_EQ(0UL,
+            browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito)
+                .size());
   // Both browser removals should have been observed.
   EXPECT_EQ(pre_shutdown_main_browser,
             browser_list_observer().GetLastRemovedBrowser());
@@ -276,13 +288,19 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
       BrowserListFactory::GetForBrowserState(chrome_browser_state());
 
   [wrangler createMainCoordinatorAndInterface];
-  EXPECT_EQ(2UL, browser_list->AllRegularBrowsers().size());
+  EXPECT_EQ(2UL,
+            browser_list
+                ->BrowsersOfType(BrowserList::BrowserType::kRegularAndInactive)
+                .size());
   EXPECT_EQ(wrangler.mainInterface.inactiveBrowser,
             browser_list_observer().GetLastAddedBrowser());
 
   // After shutdown all browsers are destroyed.
   [wrangler shutdown];
-  EXPECT_EQ(0UL, browser_list->AllRegularBrowsers().size());
+  EXPECT_EQ(0UL,
+            browser_list
+                ->BrowsersOfType(BrowserList::BrowserType::kRegularAndInactive)
+                .size());
 }
 
 // Tests the session restoration logic.

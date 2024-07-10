@@ -69,12 +69,11 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
 Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(GetLastUsedBrowserState());
-  for (Browser* browser : browser_list->AllRegularBrowsers()) {
-    if (!browser->IsInactive()) {
-      if (browser->GetSceneState().activationLevel ==
-          SceneActivationLevelForegroundActive) {
-        return browser;
-      }
+  for (Browser* browser :
+       browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+    if (browser->GetSceneState().activationLevel ==
+        SceneActivationLevelForegroundActive) {
+      return browser;
     }
   }
   return nullptr;

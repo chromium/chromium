@@ -445,13 +445,10 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
     // tab.
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state);
-    std::set<Browser*> regular_browsers = browser_list->AllRegularBrowsers();
-    std::set<Browser*> otr_browsers = browser_list->AllIncognitoBrowsers();
+    std::set<Browser*> browsers =
+        browser_list->BrowsersOfType(BrowserList::BrowserType::kAll);
 
-    for (Browser* browser : regular_browsers) {
-      open_tabs_count += browser->GetWebStateList()->count();
-    }
-    for (Browser* browser : otr_browsers) {
+    for (Browser* browser : browsers) {
       open_tabs_count += browser->GetWebStateList()->count();
     }
   }

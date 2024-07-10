@@ -107,18 +107,21 @@ TEST_F(BrowserListImplTest, AddRemoveIncognitoAndInactiveBrowsers) {
   EXPECT_EQ(1UL, browser_list_->BrowsersOfType(BrowserType::kRegular).size());
   EXPECT_EQ(0UL, browser_list_->BrowsersOfType(BrowserType::kIncognito).size());
   EXPECT_EQ(0UL, browser_list_->BrowsersOfType(BrowserType::kInactive).size());
+  EXPECT_EQ(1UL, browser_list_->BrowsersOfType(BrowserType::kAll).size());
 
   // Adding an incognito browser doesn't affect the regular/inactive lists.
   browser_list_->AddBrowser(&incognito_browser_1);
   EXPECT_EQ(1UL, browser_list_->BrowsersOfType(BrowserType::kRegular).size());
   EXPECT_EQ(1UL, browser_list_->BrowsersOfType(BrowserType::kIncognito).size());
   EXPECT_EQ(0UL, browser_list_->BrowsersOfType(BrowserType::kInactive).size());
+  EXPECT_EQ(2UL, browser_list_->BrowsersOfType(BrowserType::kAll).size());
 
   // Adding an inactive browser doesn't affect the regular/incognito lists.
   browser_list_->AddBrowser(inactive_browser_1);
   EXPECT_EQ(1UL, browser_list_->BrowsersOfType(BrowserType::kRegular).size());
   EXPECT_EQ(1UL, browser_list_->BrowsersOfType(BrowserType::kIncognito).size());
   EXPECT_EQ(1UL, browser_list_->BrowsersOfType(BrowserType::kInactive).size());
+  EXPECT_EQ(3UL, browser_list_->BrowsersOfType(BrowserType::kAll).size());
 
   // An added incognito browser is in the list.
   std::set<Browser*> browsers =
@@ -141,87 +144,6 @@ TEST_F(BrowserListImplTest, AddRemoveIncognitoAndInactiveBrowsers) {
                                       BrowserType::kIncognito |
                                       BrowserType::kInactive)
                      .size());
-}
-
-// Tests main add/remove logic.
-TEST_F(BrowserListImplTest, LegacyAddRemoveBrowsers) {
-  // Browser list should start empty
-  EXPECT_EQ(0UL, browser_list_->AllRegularBrowsers().size());
-
-  TestBrowser browser_1(chrome_browser_state_.get());
-
-  // Adding a browser should result in it appearing in the list.
-  browser_list_->AddBrowser(&browser_1);
-  std::set<Browser*> browsers = browser_list_->AllRegularBrowsers();
-  EXPECT_EQ(1UL, browsers.size());
-  auto found_browser = browsers.find(&browser_1);
-  EXPECT_EQ(&browser_1, *found_browser);
-
-  TestBrowser browser_2(chrome_browser_state_.get());
-
-  // Removing a browser not in the list is a no-op.
-  browser_list_->RemoveBrowser(&browser_2);
-  EXPECT_EQ(1UL, browser_list_->AllRegularBrowsers().size());
-
-  // More than one browset can be added to the list.
-  browser_list_->AddBrowser(&browser_2);
-  EXPECT_EQ(2UL, browser_list_->AllRegularBrowsers().size());
-
-  // Removing a browser works -- the list gets smaller, and the removed browser
-  // isn't on it.
-  browser_list_->RemoveBrowser(&browser_2);
-  browsers = browser_list_->AllRegularBrowsers();
-  EXPECT_EQ(1UL, browsers.size());
-  found_browser = browsers.find(&browser_2);
-  EXPECT_EQ(browsers.end(), found_browser);
-
-  // Removing a browser a second time does nothing.
-  browser_list_->RemoveBrowser(&browser_2);
-  EXPECT_EQ(1UL, browser_list_->AllRegularBrowsers().size());
-
-  // Removing the last browser, even multiple times, works as expected.
-  browser_list_->RemoveBrowser(&browser_1);
-  browser_list_->RemoveBrowser(&browser_1);
-  EXPECT_EQ(0UL, browser_list_->AllRegularBrowsers().size());
-}
-
-// Tests regular/incognito interactions.
-TEST_F(BrowserListImplTest, LegacyAddRemoveIncognitoBrowsers) {
-  // Verify that the "OTR browser list" is the same as the regular one.
-  BrowserList* otr_browser_list = BrowserListFactory::GetForBrowserState(
-      chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-  EXPECT_EQ(otr_browser_list, browser_list_);
-
-  // Incognito browser list starts empty.
-  EXPECT_EQ(0UL, browser_list_->AllRegularBrowsers().size());
-  EXPECT_EQ(0UL, browser_list_->AllIncognitoBrowsers().size());
-
-  TestBrowser browser_1(chrome_browser_state_.get());
-
-  ChromeBrowserState* incognito_browser_state =
-      chrome_browser_state_->GetOffTheRecordChromeBrowserState();
-  TestBrowser incognito_browser_1(incognito_browser_state);
-
-  // Adding a regular browser doesn't affect the incognito list.
-  browser_list_->AddBrowser(&browser_1);
-  EXPECT_EQ(1UL, browser_list_->AllRegularBrowsers().size());
-  EXPECT_EQ(0UL, browser_list_->AllIncognitoBrowsers().size());
-
-  // Adding an incognito browser doesn't affect the regular list.
-  browser_list_->AddBrowser(&incognito_browser_1);
-  EXPECT_EQ(1UL, browser_list_->AllIncognitoBrowsers().size());
-  EXPECT_EQ(1UL, browser_list_->AllRegularBrowsers().size());
-
-  // An added incognito browser is in the list.
-  std::set<Browser*> browsers = browser_list_->AllIncognitoBrowsers();
-  auto found_browser = browsers.find(&incognito_browser_1);
-  EXPECT_EQ(&incognito_browser_1, *found_browser);
-
-  // Removing browsers works as expected.
-  browser_list_->RemoveBrowser(&browser_1);
-  browser_list_->RemoveBrowser(&incognito_browser_1);
-  EXPECT_EQ(0UL, browser_list_->AllIncognitoBrowsers().size());
-  EXPECT_EQ(0UL, browser_list_->AllRegularBrowsers().size());
 }
 
 // Tests that destroyed browsers are auto-removed.
@@ -247,8 +169,8 @@ TEST_F(BrowserListImplTest, AutoRemoveBrowsers) {
                .size());
 }
 
-// Tests that values returned from AllRegularBrowsers and AllIncognitoBrowsers
-// aren't affected by subsequent changes to the browser list.
+// Tests that values returned from BrowsersOfType aren't affected by subsequent
+// changes to the browser list.
 TEST_F(BrowserListImplTest, AllBrowserValuesDontChange) {
   TestBrowser browser_1(chrome_browser_state_.get());
 

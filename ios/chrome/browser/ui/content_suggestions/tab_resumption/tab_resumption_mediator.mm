@@ -511,7 +511,8 @@ const char kGStatic[] = ".gstatic.com";
   }
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browser->GetBrowserState());
-  for (Browser* browser : browserList->AllRegularBrowsers()) {
+  for (Browser* browser : browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* const webStateList = browser->GetWebStateList();
     const int index = webStateList->GetIndexOfWebStateWithURL(item.tabURL);
     if (index == WebStateList::kInvalidIndex) {

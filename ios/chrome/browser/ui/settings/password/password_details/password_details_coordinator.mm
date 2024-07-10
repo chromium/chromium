@@ -424,11 +424,8 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
 
-  for (Browser* browser : browserList->AllRegularBrowsers()) {
-    [self updateFormManagersForBrowser:browser];
-  }
-
-  for (Browser* browser : browserList->AllIncognitoBrowsers()) {
+  for (Browser* browser :
+       browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
     [self updateFormManagersForBrowser:browser];
   }
 }

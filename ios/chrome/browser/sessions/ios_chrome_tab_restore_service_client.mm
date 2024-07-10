@@ -32,13 +32,8 @@ sessions::LiveTabContext* FindLiveTabContextWithCondition(
     DCHECK(!browser_state->IsOffTheRecord());
     BrowserList* browsers =
         BrowserListFactory::GetForBrowserState(browser_state);
-    for (Browser* browser : browsers->AllRegularBrowsers()) {
-      if (condition.Run(browser)) {
-        return LiveTabContextBrowserAgent::FromBrowser(browser);
-      }
-    }
-
-    for (Browser* browser : browsers->AllIncognitoBrowsers()) {
+    for (Browser* browser :
+         browsers->BrowsersOfType(BrowserList::BrowserType::kAll)) {
       if (condition.Run(browser)) {
         return LiveTabContextBrowserAgent::FromBrowser(browser);
       }

@@ -34,9 +34,8 @@ void TabsCounter::Count() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   ResetCounts();
 
-  // TODO(crbug.com/349074585): Migrate to
-  // BrowserList::BrowsersOfType(BrowserList::kRegularAndInactive).
-  std::set<Browser*> all_regular_browsers = browser_list_->AllRegularBrowsers();
+  std::set<Browser*> all_regular_browsers =
+      browser_list_->BrowsersOfType(BrowserList::kRegularAndInactive);
 
   // Report result early if browser list is empty.
   if (all_regular_browsers.empty()) {

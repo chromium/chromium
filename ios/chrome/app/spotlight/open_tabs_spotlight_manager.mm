@@ -456,7 +456,8 @@ const int kBatchSize = 100;
   // observed as they are batch-indexed.
   [self startObservingAllWebStateLists];
 
-  for (Browser* browser : self.browserList->AllRegularBrowsers()) {
+  for (Browser* browser : self.browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* webStateList = browser->GetWebStateList();
     [self addAllURLsFromWebStateList:webStateList];
   }
@@ -553,7 +554,8 @@ const int kBatchSize = 100;
     return;
   }
 
-  for (Browser* browser : _browserList->AllRegularBrowsers()) {
+  for (Browser* browser : _browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* webStateList = browser->GetWebStateList();
     if (!webStateList) {
       continue;
@@ -577,7 +579,8 @@ const int kBatchSize = 100;
 
   [self stopObservingAllWebStates];
 
-  for (Browser* browser : _browserList->AllRegularBrowsers()) {
+  for (Browser* browser : _browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* webStateList = browser->GetWebStateList();
     webStateList->AddObserver(_webStateListObserverBridge.get());
   }
@@ -590,7 +593,8 @@ const int kBatchSize = 100;
 
   [self startObservingAllWebStateLists];
 
-  for (Browser* browser : _browserList->AllRegularBrowsers()) {
+  for (Browser* browser : _browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* webStateList = browser->GetWebStateList();
     for (int i = 0; i < webStateList->count(); i++) {
       web::WebState* webState = webStateList->GetWebStateAt(i);

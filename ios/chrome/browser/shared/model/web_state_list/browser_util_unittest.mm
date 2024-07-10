@@ -132,8 +132,9 @@ TEST_F(BrowserUtilTest, TestMoveTabAcrossIncognitoBrowsers) {
   ASSERT_TRUE(tab_restore_service_->entries().empty());
   web::WebStateID tab_id = GetTabIDForWebStateAt(0, incognito_browser_.get());
 
-  BrowserAndIndex tab_info =
-      FindBrowserAndIndex(tab_id, browser_list_->AllIncognitoBrowsers());
+  BrowserAndIndex tab_info = FindBrowserAndIndex(
+      tab_id,
+      browser_list_->BrowsersOfType(BrowserList::BrowserType::kIncognito));
   ASSERT_EQ(tab_info.tab_index, 0);
   ASSERT_EQ(tab_info.browser, incognito_browser_.get());
 
@@ -152,8 +153,9 @@ TEST_F(BrowserUtilTest, TestMoveTabAcrossRegularBrowsers) {
   ASSERT_TRUE(tab_restore_service_->entries().empty());
   web::WebStateID tab_id = GetTabIDForWebStateAt(1, browser_.get());
 
-  BrowserAndIndex tab_info =
-      FindBrowserAndIndex(tab_id, browser_list_->AllRegularBrowsers());
+  BrowserAndIndex tab_info = FindBrowserAndIndex(
+      tab_id, browser_list_->BrowsersOfType(
+                  BrowserList::BrowserType::kRegularAndInactive));
   ASSERT_EQ(tab_info.tab_index, 1);
   ASSERT_EQ(tab_info.browser, browser_.get());
 
@@ -169,12 +171,15 @@ TEST_F(BrowserUtilTest, TestMoveTabAcrossRegularBrowsers) {
 TEST_F(BrowserUtilTest, TestFindBrowserAndIndexWithUnknownId) {
   web::WebStateID tab_id = web::WebStateID::NewUnique();
 
-  BrowserAndIndex tab_info =
-      FindBrowserAndIndex(tab_id, browser_list_->AllRegularBrowsers());
+  BrowserAndIndex tab_info = FindBrowserAndIndex(
+      tab_id, browser_list_->BrowsersOfType(
+                  BrowserList::BrowserType::kRegularAndInactive));
   ASSERT_EQ(tab_info.tab_index, WebStateList::kInvalidIndex);
   EXPECT_NE(tab_info.browser, browser_.get());
 
-  tab_info = FindBrowserAndIndex(tab_id, browser_list_->AllIncognitoBrowsers());
+  tab_info = FindBrowserAndIndex(
+      tab_id,
+      browser_list_->BrowsersOfType(BrowserList::BrowserType::kIncognito));
   ASSERT_EQ(tab_info.tab_index, WebStateList::kInvalidIndex);
   EXPECT_NE(tab_info.browser, incognito_browser_.get());
 }
@@ -185,8 +190,9 @@ TEST_F(BrowserUtilTest, TestReorderTabWithinSameBrowser) {
   ASSERT_TRUE(tab_restore_service_->entries().empty());
   web::WebStateID tab_id = GetTabIDForWebStateAt(0, browser_.get());
 
-  BrowserAndIndex tab_info =
-      FindBrowserAndIndex(tab_id, browser_list_->AllRegularBrowsers());
+  BrowserAndIndex tab_info = FindBrowserAndIndex(
+      tab_id, browser_list_->BrowsersOfType(
+                  BrowserList::BrowserType::kRegularAndInactive));
   ASSERT_EQ(tab_info.tab_index, 0);
   ASSERT_EQ(tab_info.browser, browser_.get());
 

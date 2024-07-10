@@ -31,8 +31,6 @@ class BrowserListImpl : public BrowserList, public BrowserObserver {
   void AddBrowser(Browser* browser) override;
   void RemoveBrowser(Browser* browser) override;
   std::set<Browser*> BrowsersOfType(int browser_type_mask) const override;
-  std::set<Browser*> AllRegularBrowsers() const override;
-  std::set<Browser*> AllIncognitoBrowsers() const override;
   void AddObserver(BrowserListObserver* observer) override;
   void RemoveObserver(BrowserListObserver* observer) override;
 

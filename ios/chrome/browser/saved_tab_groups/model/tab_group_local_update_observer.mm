@@ -53,7 +53,8 @@ TabGroupLocalUpdateObserver::TabGroupLocalUpdateObserver(
     : sync_service_(sync_service),
       browser_list_(browser_list) {
   browser_list_observation_.Observe(browser_list);
-  CHECK(browser_list_->AllRegularBrowsers().empty());
+  CHECK(browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular)
+            .empty());
 }
 
 TabGroupLocalUpdateObserver::~TabGroupLocalUpdateObserver() = default;

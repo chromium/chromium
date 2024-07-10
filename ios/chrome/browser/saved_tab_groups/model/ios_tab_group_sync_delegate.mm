@@ -223,7 +223,8 @@ void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(
 
 std::vector<LocalTabGroupID> IOSTabGroupSyncDelegate::GetLocalTabGroupIds() {
   std::vector<LocalTabGroupID> local_tab_group_ids;
-  for (Browser* browser : browser_list_->AllRegularBrowsers()) {
+  for (Browser* browser :
+       browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
     WebStateList* web_state_list = browser->GetWebStateList();
     for (const TabGroup* group : web_state_list->GetGroups()) {
       local_tab_group_ids.emplace_back(group->tab_group_id());
@@ -260,13 +261,11 @@ void IOSTabGroupSyncDelegate::CreateRemoteTabGroup(
 }
 
 Browser* IOSTabGroupSyncDelegate::GetMostActiveSceneBrowser() {
-  std::set<Browser*> all_browsers = browser_list_->AllRegularBrowsers();
+  std::set<Browser*> all_browsers =
+      browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular);
 
   Browser* browser = nullptr;
   for (Browser* browser_to_check : all_browsers) {
-    if (browser_to_check->IsInactive()) {
-      continue;
-    }
     // The pointer to the scene state is weak, so it could be nil. In that case,
     // the activation level will be 0 (lowest).
     if (browser && browser->GetSceneState().activationLevel >=

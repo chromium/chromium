@@ -1362,9 +1362,10 @@ void OnListFamilyMembersResponse(
   ChromeBrowserState* browserState = self.currentInterface.browserState;
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
-  const std::set<Browser*>& browsers = self.currentInterface.incognito
-                                           ? browserList->AllIncognitoBrowsers()
-                                           : browserList->AllRegularBrowsers();
+  int browser_types = self.currentInterface.incognito
+                          ? BrowserList::BrowserType::kIncognito
+                          : BrowserList::BrowserType::kRegularAndInactive;
+  std::set<Browser*> browsers = browserList->BrowsersOfType(browser_types);
 
   BrowserAndIndex tabInfo = FindBrowserAndIndex(tabID, browsers);
 
@@ -3978,7 +3979,8 @@ using UserFeedbackDataCallback =
 
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(otrBrowserState);
-  for (Browser* browser : browserList->AllIncognitoBrowsers()) {
+  for (Browser* browser :
+       browserList->BrowsersOfType(BrowserList::BrowserType::kIncognito)) {
     WebStateList* webStateList = browser->GetWebStateList();
     if (!webStateList->empty()) {
       return NO;

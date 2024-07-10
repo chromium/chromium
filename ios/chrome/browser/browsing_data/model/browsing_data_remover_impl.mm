@@ -146,13 +146,7 @@ std::set<Browser*> GetAllBrowsersForBrowserState(
     ChromeBrowserState* browser_state) {
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state);
-  std::set<Browser*> all_browsers = browser_list->AllRegularBrowsers();
-  std::set<Browser*> all_incognito_browsers =
-      browser_list->AllIncognitoBrowsers();
-  all_browsers.insert(all_incognito_browsers.begin(),
-                      all_incognito_browsers.end());
-
-  return all_browsers;
+  return browser_list->BrowsersOfType(BrowserList::BrowserType::kAll);
 }
 
 bool IsActivityIndicatorNeeded(bool isOffTheRecord,
@@ -695,7 +689,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS)) {
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state_);
-    for (Browser* browser : browser_list->AllRegularBrowsers()) {
+    for (Browser* browser :
+         browser_list->BrowsersOfType(BrowserList::kRegularAndInactive)) {
       current_task_runner->PostTask(
           FROM_HERE, base::BindOnce(&tabs_closure_util::CloseTabs,
                                     browser->GetWebStateList(), delete_begin,

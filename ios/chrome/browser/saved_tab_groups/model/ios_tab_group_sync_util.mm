@@ -32,7 +32,8 @@ LocalTabGroupInfo GetLocalTabGroupInfo(
 LocalTabGroupInfo GetLocalTabGroupInfo(
     BrowserList* browser_list,
     const tab_groups::LocalTabGroupID& tab_group_id) {
-  for (Browser* browser : browser_list->AllRegularBrowsers()) {
+  for (Browser* browser :
+       browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
     WebStateList* web_state_list = browser->GetWebStateList();
     for (const TabGroup* group : web_state_list->GetGroups()) {
       if (group->tab_group_id() == tab_group_id) {

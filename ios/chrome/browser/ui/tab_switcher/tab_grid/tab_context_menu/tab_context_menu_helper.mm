@@ -355,7 +355,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browserState);
 
-  for (Browser* browser : browserList->AllRegularBrowsers()) {
+  for (Browser* browser :
+       browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
     WebStateList* webStateList = browser->GetWebStateList();
     web::WebState* webState = GetWebState(
         webStateList, WebStateSearchCriteria{
@@ -373,8 +374,10 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 - (TabItem*)tabItemForIdentifier:(web::WebStateID)identifier {
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browserState);
-  std::set<Browser*> browsers = _incognito ? browserList->AllIncognitoBrowsers()
-                                           : browserList->AllRegularBrowsers();
+  int browser_types = _incognito
+                          ? BrowserList::BrowserType::kIncognito
+                          : BrowserList::BrowserType::kRegularAndInactive;
+  std::set<Browser*> browsers = browserList->BrowsersOfType(browser_types);
   for (Browser* browser : browsers) {
     WebStateList* webStateList = browser->GetWebStateList();
     TabItem* item = GetTabItem(
@@ -402,7 +405,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browserState);
 
-  for (Browser* browser : browserList->AllRegularBrowsers()) {
+  for (Browser* browser :
+       browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
     WebStateList* webStateList = browser->GetWebStateList();
     int index = GetWebStateIndex(
         webStateList,
@@ -420,7 +424,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browserState);
 
-  for (Browser* browser : browserList->AllRegularBrowsers()) {
+  for (Browser* browser :
+       browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
     WebStateList* webStateList = browser->GetWebStateList();
     int index = GetWebStateIndex(
         webStateList,

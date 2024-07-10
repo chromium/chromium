@@ -85,7 +85,8 @@ void OTRWebStateObserver::WebStateObserver::BatchOperationEnded(
 }
 
 void OTRWebStateObserver::WebStateObserver::UpdateOtrWebStateCount() {
-  const std::set<Browser*>& browsers = browser_list_->AllIncognitoBrowsers();
+  std::set<Browser*> browsers =
+      browser_list_->BrowsersOfType(BrowserList::BrowserType::kIncognito);
   int otr_state_count = 0;
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();

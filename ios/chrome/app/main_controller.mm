@@ -1459,10 +1459,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   for (ChromeBrowserState* browserState : loadedBrowserStates) {
     BrowserList* browserList =
         BrowserListFactory::GetForBrowserState(browserState);
-    for (Browser* browser : browserList->AllRegularBrowsers()) {
-      SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
-    }
-    for (Browser* browser : browserList->AllIncognitoBrowsers()) {
+    for (Browser* browser :
+         browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
       SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
     }
   }
