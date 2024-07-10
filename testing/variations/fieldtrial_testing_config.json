@@ -8589,23 +8589,6 @@
             ]
         }
     ],
-    "EnableGestureBeginEndTypes": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableGestureBeginEndTypes"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableImmediateDrawDuringScrollInteraction": [
         {
             "platforms": [
@@ -21441,7 +21424,7 @@
             ]
         }
     ],
-    "SuppressToolbarCapturesAtGestureEnd": [
+    "SuppressToolbarCapturesAtGestureEndStudy": [
         {
             "platforms": [
                 "android"
@@ -21450,6 +21433,23 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "EnableGestureBeginEndTypes",
+                        "SuppressToolbarCapturesAtGestureEnd"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "EnableGestureBeginEndTypes",
+                        "SuppressToolbarCapturesAtGestureEnd"
+                    ]
+                },
+                {
+                    "name": "Enabled_GestureBeginEndTypes",
+                    "enable_features": [
+                        "EnableGestureBeginEndTypes"
+                    ],
+                    "disable_features": [
                         "SuppressToolbarCapturesAtGestureEnd"
                     ]
                 }
