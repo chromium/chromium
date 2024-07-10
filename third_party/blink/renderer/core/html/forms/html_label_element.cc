@@ -210,7 +210,9 @@ bool HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
     }
 
     processing_click_ = true;
-    if (element->IsFocusable()) {
+    if (element->IsFocusable() ||
+        (element->IsShadowHostWithDelegatesFocus() &&
+         RuntimeEnabledFeatures::LabelAndDelegatesFocusNewHandlingEnabled())) {
       // If the label is *not* selected, or if the click happened on
       // selection of label, only then focus the control element.
       // In case of double click or triple click, selection will be there,

@@ -2331,6 +2331,11 @@
       origin_trial_allows_third_party: true,
     },
     {
+      // This is a killswitch for a bug fix that is shipping in M128.
+      name: "LabelAndDelegatesFocusNewHandling",
+      status: "stable",
+    },
+    {
       // This feature makes HTMLLabelElement::DefaultEventHandler always call
       // HTMLElement::DefaultEventHandler instead of only doing so
       // conditionally. Shipping in M123 so should be safe to remove in M127.
