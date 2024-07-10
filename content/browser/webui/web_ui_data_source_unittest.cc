@@ -306,6 +306,8 @@ TEST_F(WebUIDataSourceTest, NoSetDefaultResource) {
                    base::BindOnce(&InvalidResourceCallback));
   StartDataRequest("does_not_exist.js",
                    base::BindOnce(&InvalidResourceCallback));
+  StartDataRequest("does_not_exist.ts",
+                   base::BindOnce(&InvalidResourceCallback));
 
   // strings.m.js fails until UseStringsJs is called.
   StartDataRequest("strings.m.js", base::BindOnce(&InvalidResourceCallback));

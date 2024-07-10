@@ -306,35 +306,52 @@ void WebUIDataSourceImpl::SetSupportedScheme(std::string_view scheme) {
 std::string WebUIDataSourceImpl::GetMimeType(const GURL& url) const {
   const std::string_view file_path = url.path_piece();
 
-  if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     return "text/css";
+  }
 
-  if (base::EndsWith(file_path, ".js", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".js", base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/javascript";
+  }
 
-  if (base::EndsWith(file_path, ".json", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".ts", base::CompareCase::INSENSITIVE_ASCII)) {
+    return "application/typescript";
+  }
+
+  if (base::EndsWith(file_path, ".json",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/json";
+  }
 
-  if (base::EndsWith(file_path, ".pdf", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".pdf", base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/pdf";
+  }
 
-  if (base::EndsWith(file_path, ".svg", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".svg", base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/svg+xml";
+  }
 
-  if (base::EndsWith(file_path, ".jpg", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".jpg", base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/jpeg";
+  }
 
-  if (base::EndsWith(file_path, ".png", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".png", base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/png";
+  }
 
-  if (base::EndsWith(file_path, ".mp4", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".mp4", base::CompareCase::INSENSITIVE_ASCII)) {
     return "video/mp4";
+  }
 
-  if (base::EndsWith(file_path, ".wasm", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".wasm",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/wasm";
+  }
 
-  if (base::EndsWith(file_path, ".woff2", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".woff2",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/font-woff2";
+  }
 
   return "text/html";
 }
