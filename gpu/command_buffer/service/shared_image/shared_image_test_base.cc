@@ -363,4 +363,8 @@ bool SharedImageTestBase::DawnForceFallbackAdapter() const {
 }
 #endif
 
+void PrintTo(GrContextType type, std::ostream* os) {
+  *os << GrContextTypeToString(type);
+}
+
 }  // namespace gpu

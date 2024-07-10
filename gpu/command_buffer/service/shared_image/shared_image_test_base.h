@@ -112,6 +112,8 @@ class SharedImageTestBase : public testing::Test {
   std::unique_ptr<SharedImageBackingFactory> backing_factory_;
 };
 
+void PrintTo(GrContextType type, std::ostream* os);
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_TEST_BASE_H_

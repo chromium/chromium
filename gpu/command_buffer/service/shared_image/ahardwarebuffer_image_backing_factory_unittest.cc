@@ -28,6 +28,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -41,8 +42,16 @@
 namespace gpu {
 namespace {
 
-class AHardwareBufferImageBackingFactoryTest : public SharedImageTestBase {
+class AHardwareBufferImageBackingFactoryTest
+    : public SharedImageTestBase,
+      public testing::WithParamInterface<GrContextType> {
  public:
+  GrContextType GrContextType() const { return GetParam(); }
+
+  bool IsGraphiteDawn() {
+    return GrContextType() == GrContextType::kGraphiteDawn;
+  }
+
   void SetUp() override {
     // AHardwareBuffer is only supported on ANDROID O+. Hence these tests
     // should not be run on android versions less that O.
@@ -50,7 +59,11 @@ class AHardwareBufferImageBackingFactoryTest : public SharedImageTestBase {
       GTEST_SKIP() << "AHardwareBuffer not supported";
     }
 
-    ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
+    if (IsGraphiteDawn() && !IsGraphiteDawnSupported()) {
+      GTEST_SKIP() << "Graphite/Dawn not supported";
+    }
+
+    ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType()));
 
     backing_factory_ = std::make_unique<AHardwareBufferImageBackingFactory>(
         context_state_->feature_info(), gpu_preferences_);
@@ -79,7 +92,7 @@ class GlLegacySharedImage {
 };
 
 // Basic test to check creation and deletion of AHB backed shared image.
-TEST_F(AHardwareBufferImageBackingFactoryTest, Basic) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, Basic) {
   GlLegacySharedImage gl_legacy_shared_image{
       backing_factory_.get(),          /*is_thread_safe=*/false,
       /*concurrent_read_write=*/false, &shared_image_manager_,
@@ -109,14 +122,22 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, Basic) {
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
   EXPECT_TRUE(scoped_read_access);
-  auto* promise_texture = scoped_read_access->promise_image_texture();
   EXPECT_EQ(0u, begin_semaphores.size());
   EXPECT_EQ(0u, end_semaphores.size());
-  EXPECT_TRUE(promise_texture);
-  GrBackendTexture backend_texture = promise_texture->backendTexture();
-  EXPECT_TRUE(backend_texture.isValid());
-  EXPECT_EQ(gl_legacy_shared_image.size().width(), backend_texture.width());
-  EXPECT_EQ(gl_legacy_shared_image.size().height(), backend_texture.height());
+  if (IsGraphiteDawn()) {
+    auto graphite_texture = scoped_read_access->graphite_texture();
+    EXPECT_TRUE(graphite_texture.isValid());
+    EXPECT_EQ(gl_legacy_shared_image.size(),
+              gfx::SkISizeToSize(graphite_texture.dimensions()));
+  } else {
+    auto* promise_texture = scoped_read_access->promise_image_texture();
+    ASSERT_TRUE(promise_texture);
+    GrBackendTexture backend_texture = promise_texture->backendTexture();
+    EXPECT_TRUE(backend_texture.isValid());
+    EXPECT_EQ(gl_legacy_shared_image.size().width(), backend_texture.width());
+    EXPECT_EQ(gl_legacy_shared_image.size().height(), backend_texture.height());
+  }
+
   scoped_read_access.reset();
   skia_representation.reset();
 }
@@ -179,7 +200,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, GLWriteSkiaRead) {
 
 // Test ProduceDawn via OpenGLES Compat backend
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-TEST_F(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
@@ -265,7 +286,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
 }
 #endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 
-TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, InitialData) {
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(4, 4);
@@ -302,7 +323,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
 }
 
 // Test to check invalid format support.
-TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
   auto mailbox = Mailbox::Generate();
   auto format = viz::MultiPlaneFormat::kNV12;
   gfx::Size size(256, 256);
@@ -321,7 +342,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
 }
 
 // Test to check invalid size support.
-TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidSize) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, InvalidSize) {
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(0, 0);
@@ -345,7 +366,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_F(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
@@ -372,7 +393,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
 }
 
 // Test to check that only one context can write at a time
-TEST_F(AHardwareBufferImageBackingFactoryTest, OnlyOneWriter) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, OnlyOneWriter) {
   GlLegacySharedImage gl_legacy_shared_image{
       backing_factory_.get(),          /*is_thread_safe=*/true,
       /*concurrent_read_write=*/false, &shared_image_manager_,
@@ -411,7 +432,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, OnlyOneWriter) {
 }
 
 // Test to check that multiple readers are allowed
-TEST_F(AHardwareBufferImageBackingFactoryTest, CanHaveMultipleReaders) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, CanHaveMultipleReaders) {
   GlLegacySharedImage gl_legacy_shared_image{
       backing_factory_.get(),          /*is_thread_safe=*/true,
       /*concurrent_read_write=*/false, &shared_image_manager_,
@@ -446,7 +467,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CanHaveMultipleReaders) {
 }
 
 // Test to check that a context cannot write while another context is reading
-TEST_F(AHardwareBufferImageBackingFactoryTest, CannotWriteWhileReading) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, CannotWriteWhileReading) {
   GlLegacySharedImage gl_legacy_shared_image{
       backing_factory_.get(),          /*is_thread_safe=*/true,
       /*concurrent_read_write=*/false, &shared_image_manager_,
@@ -486,7 +507,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CannotWriteWhileReading) {
 }
 
 // Test to check that a context cannot read while another context is writing
-TEST_F(AHardwareBufferImageBackingFactoryTest, CannotReadWhileWriting) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, CannotReadWhileWriting) {
   GlLegacySharedImage gl_legacy_shared_image{
       backing_factory_.get(),          /*is_thread_safe=*/true,
       /*concurrent_read_write=*/false, &shared_image_manager_,
@@ -521,7 +542,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CannotReadWhileWriting) {
   skia_representation.reset();
 }
 
-TEST_F(AHardwareBufferImageBackingFactoryTest, ConcurrentReadWrite) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, ConcurrentReadWrite) {
   GlLegacySharedImage gl_legacy_shared_image{
       backing_factory_.get(),         /*is_thread_safe=*/true,
       /*concurrent_read_write=*/true, &shared_image_manager_,
@@ -610,7 +631,7 @@ GlLegacySharedImage::~GlLegacySharedImage() {
   shared_image_.reset();
 }
 
-TEST_F(AHardwareBufferImageBackingFactoryTest, Overlay) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, Overlay) {
   GlLegacySharedImage gl_legacy_shared_image{
       backing_factory_.get(),          /*is_thread_safe=*/false,
       /*concurrent_read_write=*/false, &shared_image_manager_,
@@ -641,6 +662,12 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, Overlay) {
   scoped_read_access.reset();
   skia_representation.reset();
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         AHardwareBufferImageBackingFactoryTest,
+                         testing::Values(GrContextType::kGL,
+                                         GrContextType::kGraphiteDawn),
+                         testing::PrintToStringParamName());
 
 }  // anonymous namespace
 }  // namespace gpu
