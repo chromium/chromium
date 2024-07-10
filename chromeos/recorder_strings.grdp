@@ -175,7 +175,7 @@ You can turn this off at anytime in Settings.
   <message desc="Button when transcription model is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_BUTTON">
     Downloading…
   </message>
-  <message desc="Label of the transcription when transcription is downloading in settings" name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_PROGRESS_LABEL">
+  <message desc="Description of the transcription when transcription is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_PROGRESS_DESCRIPTION">
     <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
   </message>
   <message desc="Button to download transcription model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOAD_BUTTON">

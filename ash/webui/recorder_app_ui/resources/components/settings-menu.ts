@@ -214,12 +214,12 @@ export class SettingsMenu extends ReactiveLitElement {
         // TODO: b/344784638 - Render error state.
         return nothing;
       case 'installing': {
-        const progressLabel =
-          i18n.settingsOptionsTranscriptionDownloadingProgressLabel(
+        const progressDescription =
+          i18n.settingsOptionsTranscriptionDownloadingProgressDescription(
             sodaState.progress,
           );
         return html`
-          <span slot="description">${progressLabel}</span>
+          <span slot="description">${progressDescription}</span>
           <cra-button
             slot="action"
             .label=${i18n.settingsOptionsTranscriptionDownloadingButton}

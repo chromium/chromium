@@ -93,7 +93,8 @@ const withArgsStrings = {
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
   // then `i18n.fooBar(1, '2')` works.
-  settingsOptionsTranscriptionDownloadingProgressLabel: withArgs<[number]>(),
+  settingsOptionsTranscriptionDownloadingProgressDescription:
+    withArgs<[number]>(),
 } satisfies Record<string, I18nArgType[]>;
 type WithArgsStrings = typeof withArgsStrings;
 
