@@ -97,6 +97,10 @@ static_library("autofill") {
       "//components/messages/android:feature_flags",
       "//components/password_manager/core/browser",
       "//third_party/libaddressinput",
+
+      # TODO(crbug.com/352191610): Use //chrome/browser instead after fixing cyclic
+      # dependency.
+      "//chrome/browser/page_info:page_info_buildflags",
     ]
   } else {
     # !is_android
