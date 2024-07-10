@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -19,7 +20,10 @@
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
@@ -68,9 +72,10 @@ MATCHER_P3(HasTabEntityData, title, url, collaboration_id, "") {
 
 class MockTabGroupModelObserver : public SavedTabGroupModelObserver {
  public:
-  explicit MockTabGroupModelObserver(SavedTabGroupModel* model) {
-    observation_.Observe(model);
-  }
+  MockTabGroupModelObserver() = default;
+
+  void ObserveModel(SavedTabGroupModel* model) { observation_.Observe(model); }
+  void Reset() { observation_.Reset(); }
 
   MOCK_METHOD(void, SavedTabGroupRemovedFromSync, (const SavedTabGroup&));
   MOCK_METHOD(void,
@@ -142,24 +147,44 @@ std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
   return result;
 }
 
+sync_pb::EntityMetadata CreateMetadata(std::string collaboration_id) {
+  sync_pb::EntityMetadata metadata;
+  // Other metadata fields are not used in these tests.
+  metadata.mutable_collaboration()->set_collaboration_id(
+      std::move(collaboration_id));
+  return metadata;
+}
+
 class SharedTabGroupDataSyncBridgeTest : public testing::Test {
  public:
   SharedTabGroupDataSyncBridgeTest()
-      : mock_model_observer_(&saved_tab_group_model_),
-        store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
-  void InitializeBridge() {
+  // Creates the bridges and initializes the model. Returns true when succeeds.
+  bool InitializeBridgeAndModel() {
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
+
+    ResetBridgeAndModel();
+    saved_tab_group_model_ = std::make_unique<SavedTabGroupModel>();
+    mock_model_observer_.ObserveModel(saved_tab_group_model_.get());
+
     bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
-        &saved_tab_group_model_,
+        saved_tab_group_model_.get(),
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor(), &pref_service_);
+        processor_.CreateForwardingProcessor(), &pref_service_,
+        base::BindOnce(&SavedTabGroupModel::LoadStoredEntries,
+                       base::Unretained(saved_tab_group_model_.get())));
     task_environment_.RunUntilIdle();
 
-    // The model should be initialized by this time, do that explicitly while
-    // loading from the disk is not implemented yet.
-    saved_tab_group_model_.LoadStoredEntries({}, {});
+    return saved_tab_group_model_->is_loaded();
+  }
+
+  // Cleans up the bridge and the model, used to simulate browser restart.
+  void ResetBridgeAndModel() {
+    mock_model_observer_.Reset();
+    bridge_.reset();
+    saved_tab_group_model_.reset();
   }
 
   size_t GetNumEntriesInStore() {
@@ -180,16 +205,17 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   testing::NiceMock<syncer::MockModelTypeChangeProcessor>& mock_processor() {
     return processor_;
   }
-  SavedTabGroupModel* model() { return &saved_tab_group_model_; }
+  SavedTabGroupModel* model() { return saved_tab_group_model_.get(); }
   testing::NiceMock<MockTabGroupModelObserver>& mock_model_observer() {
     return mock_model_observer_;
   }
+  syncer::ModelTypeStore& store() { return *store_; }
 
  private:
   // In memory model type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
-  SavedTabGroupModel saved_tab_group_model_;
+  std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
   testing::NiceMock<MockTabGroupModelObserver> mock_model_observer_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
@@ -198,7 +224,8 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
 };
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnClientTag) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
   EXPECT_TRUE(bridge()->SupportsGetClientTag());
   EXPECT_FALSE(bridge()
                    ->GetClientTag(CreateEntityData(
@@ -212,11 +239,11 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCallModelReadyToSync) {
   EXPECT_CALL(mock_processor(), ModelReadyToSync).WillOnce(Invoke([]() {}));
 
   // This already invokes RunUntilIdle, so the call above is expected to happen.
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAddRemoteGroupsAtInitialSync) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   syncer::EntityChangeList change_list;
   change_list.push_back(CreateAddEntityChange(
@@ -238,7 +265,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAddRemoteGroupsAtInitialSync) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAddRemoteTabsAtInitialSync) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   sync_pb::SharedTabGroupDataSpecifics group_specifics =
       MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
@@ -274,7 +301,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAddRemoteTabsAtInitialSync) {
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
        ShouldAddRemoteGroupsAtIncrementalUpdate) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   syncer::EntityChangeList change_list;
   change_list.push_back(CreateAddEntityChange(
@@ -297,7 +324,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
        ShouldAddRemoteTabsAtIncrementalUpdate) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   sync_pb::SharedTabGroupDataSpecifics group_specifics =
       MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
@@ -332,7 +359,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingGroup) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   sync_pb::SharedTabGroupDataSpecifics group_specifics =
       MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
@@ -366,7 +393,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingGroup) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingTab) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   sync_pb::SharedTabGroupDataSpecifics group_specifics =
       MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
@@ -408,7 +435,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingTab) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingGroup) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group_to_delete(u"title", tab_groups::TabGroupColorId::kBlue,
                                 /*urls=*/{}, /*position=*/std::nullopt);
@@ -435,7 +462,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingGroup) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingTab) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"group title", tab_groups::TabGroupColorId::kBlue,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -463,7 +490,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingTab) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCheckValidEntities) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   EXPECT_TRUE(bridge()->IsEntityDataValid(CreateEntityData(
       MakeTabGroupSpecifics("test title", sync_pb::SharedTabGroup::GREEN),
@@ -471,7 +498,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCheckValidEntities) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldRemoveLocalGroupsOnDisableSync) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   // Initialize the model with some initial data. Create 2 entities to make it
   // sure that each of them is being deleted.
@@ -495,7 +522,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldRemoveLocalGroupsOnDisableSync) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotifyObserversOnDisableSync) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -525,7 +552,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotifyObserversOnDisableSync) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnGroupDataForCommit) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -550,7 +577,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnGroupDataForCommit) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabDataForCommit) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -578,7 +605,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabDataForCommit) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnAllDataForDebugging) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -607,7 +634,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnAllDataForDebugging) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -641,7 +668,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldIgnoreNewNonSharedGroups) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -652,7 +679,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldIgnoreNewNonSharedGroups) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt,
@@ -688,7 +715,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewLocalTab) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -719,7 +746,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewLocalTab) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalTab) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -743,7 +770,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalTab) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedLocalTab) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -776,7 +803,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedLocalTab) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalGroup) {
-  InitializeBridge();
+  ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -802,6 +829,57 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalGroup) {
               Delete(tab2.saved_tab_guid().AsLowercaseString(), _, _))
       .Times(0);
   model()->Remove(group.saved_guid());
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  const std::string collaboration_id = "collaboration";
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(collaboration_id);
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
+
+  group.AddTabLocally(tab1);
+  group.AddTabLocally(tab2);
+  model()->Add(group);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  // Simulate sync metadata which is normally created by the change processor.
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store().CreateWriteBatch();
+  syncer::MetadataChangeList* metadata_change_list =
+      write_batch->GetMetadataChangeList();
+  metadata_change_list->UpdateMetadata(group.saved_guid().AsLowercaseString(),
+                                       CreateMetadata(collaboration_id));
+  metadata_change_list->UpdateMetadata(
+      tab1.saved_tab_guid().AsLowercaseString(),
+      CreateMetadata(collaboration_id));
+  metadata_change_list->UpdateMetadata(
+      tab2.saved_tab_guid().AsLowercaseString(),
+      CreateMetadata(collaboration_id));
+  store().CommitWriteBatch(std::move(write_batch), base::DoNothing());
+
+  // Verify that the model is destroyed to simulate browser restart.
+  ResetBridgeAndModel();
+  ASSERT_EQ(model(), nullptr);
+
+  // Note that sync metadata is not checked explicitly because the collaboration
+  // ID is stored as a part of sync metadata.
+  ASSERT_TRUE(InitializeBridgeAndModel());
+  ASSERT_THAT(
+      model()->saved_tab_groups(),
+      UnorderedElementsAre(HasSharedGroupMetadata(
+          "title", tab_groups::TabGroupColorId::kGrey, "collaboration")));
+  EXPECT_THAT(
+      model()->saved_tab_groups().front().saved_tabs(),
+      UnorderedElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
+                           HasTabMetadata("tab 2", "http://google.com/2")));
 }
 
 }  // namespace

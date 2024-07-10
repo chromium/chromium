@@ -7,12 +7,16 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -36,11 +40,16 @@ class SavedTabGroupModel;
 class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge,
                                      public SavedTabGroupModelObserver {
  public:
+  using SharedTabGroupLoadCallback =
+      base::OnceCallback<void(std::vector<SavedTabGroup>,
+                              std::vector<SavedTabGroupTab>)>;
+
   SharedTabGroupDataSyncBridge(
       SavedTabGroupModel* model,
       syncer::OnceModelTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      SharedTabGroupLoadCallback on_load_callback);
 
   SharedTabGroupDataSyncBridge(const SharedTabGroupDataSyncBridge&) = delete;
   SharedTabGroupDataSyncBridge& operator=(const SharedTabGroupDataSyncBridge&) =
@@ -84,12 +93,14 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge,
 
  private:
   // Loads the data already stored in the ModelTypeStore.
-  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
+  void OnStoreCreated(SharedTabGroupLoadCallback on_load_callback,
+                      const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
 
-  // Calls ModelReadyToSync if there are no errors to report and loads the
-  // stored entries into `model_`.
+  // Calls ModelReadyToSync if there are no errors to report and propagaters the
+  // stored entries to `on_load_callback`.
   void OnReadAllDataAndMetadata(
+      SharedTabGroupLoadCallback on_load_callback,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);

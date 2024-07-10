@@ -39,11 +39,10 @@ TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
         model_,
         std::move(shared_tab_group_configuration->model_type_store_factory),
         std::move(shared_tab_group_configuration->change_processor),
-        pref_service);
-
-    // TODO(crbug.com/319521964): remove once shared tab group loader is
-    // implemented.
-    OnSharedGroupsWithTabsLoaded({}, {});
+        pref_service,
+        base::BindOnce(
+            &TabGroupSyncBridgeMediator::OnSharedGroupsWithTabsLoaded,
+            base::Unretained(this)));
   }
 }
 

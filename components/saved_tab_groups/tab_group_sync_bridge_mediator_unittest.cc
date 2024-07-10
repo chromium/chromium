@@ -4,14 +4,17 @@
 
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 
+#include <map>
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/sync/model/model_type_store.h"
@@ -27,6 +30,19 @@ namespace {
 using testing::InvokeWithoutArgs;
 using testing::Return;
 
+class MockSavedTabGroupModelObserver : public SavedTabGroupModelObserver {
+ public:
+  explicit MockSavedTabGroupModelObserver(SavedTabGroupModel* model) {
+    observation_.Observe(model);
+  }
+
+  MOCK_METHOD(void, SavedTabGroupModelLoaded, ());
+
+ private:
+  base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
+      observation_{this};
+};
+
 class TabGroupSyncBridgeMediatorTest : public testing::Test {
  public:
   TabGroupSyncBridgeMediatorTest()
@@ -40,7 +56,7 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
   ~TabGroupSyncBridgeMediatorTest() override = default;
 
   // Simulate browser restart and re-initialize the model and sync bridges.
-  void InitializeModelAndMediator() {
+  void InitializeModelAndMediator(bool initialize_shared_tab_group = true) {
     Reset();
     model_ = std::make_unique<SavedTabGroupModel>();
 
@@ -49,13 +65,23 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
             saved_tab_group_store_.get()));
 
+    std::unique_ptr<SyncDataTypeConfiguration> shared_sync_configuration;
+    if (initialize_shared_tab_group) {
+      shared_sync_configuration = std::make_unique<SyncDataTypeConfiguration>(
+          mock_shared_processor_.CreateForwardingProcessor(),
+          syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+              saved_tab_group_store_.get()));
+    }
+
+    testing::NiceMock<MockSavedTabGroupModelObserver> model_observer(
+        model_.get());
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_saved_processor_, ModelReadyToSync)
+    EXPECT_CALL(model_observer, SavedTabGroupModelLoaded)
         .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }))
         .RetiresOnSaturation();
     bridge_mediator_ = std::make_unique<TabGroupSyncBridgeMediator>(
         model_.get(), &pref_service_, std::move(saved_sync_configuration),
-        /*shared_tab_group_configuration=*/nullptr);
+        std::move(shared_sync_configuration));
     run_loop.Run();
   }
 
@@ -79,6 +105,9 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_saved_processor_;
   std::unique_ptr<syncer::ModelTypeStore> saved_tab_group_store_;
+  testing::NiceMock<syncer::MockModelTypeChangeProcessor>
+      mock_shared_processor_;
+  std::unique_ptr<syncer::ModelTypeStore> shared_tab_group_store_;
 
   // Store in unique_ptr to be able to re-create simulating browser restart.
   std::unique_ptr<SavedTabGroupModel> model_;
@@ -87,6 +116,10 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
 
 TEST_F(TabGroupSyncBridgeMediatorTest, ShouldInitializeEmptySavedTabGroups) {
   // The model must be loaded because the bridge was initialized.
+  EXPECT_TRUE(model().is_loaded());
+
+  // The same but with disabled shared tab group data.
+  InitializeModelAndMediator(/*initialize_shared_tab_group=*/false);
   EXPECT_TRUE(model().is_loaded());
 }
 
