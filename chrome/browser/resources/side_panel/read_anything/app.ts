@@ -1413,6 +1413,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (hasSelection) {
         this.synth.cancel();
         chrome.readingMode.onRestartReadAloud();
+        this.resetToDefaultWordBoundaryState();
         playedFromSelection = this.playFromSelection();
       }
 
