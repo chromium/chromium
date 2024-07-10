@@ -2801,6 +2801,9 @@ extern const char kTabGroupSyncForceOffDescription[];
 extern const char kTabStripGroupCollapseAndroidName[];
 extern const char kTabStripGroupCollapseAndroidDescription[];
 
+extern const char kTabStripGroupContextMenuAndroidName[];
+extern const char kTabStripGroupContextMenuAndroidDescription[];
+
 extern const char kTabStripGroupIndicatorsAndroidName[];
 extern const char kTabStripGroupIndicatorsAndroidDescription[];
 

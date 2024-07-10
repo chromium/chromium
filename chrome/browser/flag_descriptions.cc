@@ -4741,6 +4741,13 @@ const char kTabStripGroupCollapseAndroidDescription[] =
     "Collapsed groups can be clicked again to expand. Synced tab groups will "
     "immediately be collapsed.";
 
+const char kTabStripGroupContextMenuAndroidName[] =
+    "Tab Strip Group Context Menu Android";
+const char kTabStripGroupContextMenuAndroidDescription[] =
+    "Enables tab strip group context menu to show when long-pressing on group "
+    "titles, allowing user to assign colors and names to tab groups, open new "
+    "tab within the group, ungroup, and close group";
+
 const char kTabStripGroupIndicatorsAndroidName[] =
     "Tab Strip Group Indicators Android";
 const char kTabStripGroupIndicatorsAndroidDescription[] =

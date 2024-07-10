@@ -23239,6 +23239,7 @@ from previous Chrome versions.
   <int value="1074359194" label="UseSuggestionsEvenIfFew:enabled"/>
   <int value="1074427701" label="NewPrintPreviewLayout:enabled"/>
   <int value="1075191614" label="LauncherSystemInfoAnswerCards:disabled"/>
+  <int value="1075535842" label="TabStripGroupContextMenuAndroid:enabled"/>
   <int value="1075637651" label="disable-tablet-splitview"/>
   <int value="1075862390" label="LauncherItemSuggest:enabled"/>
   <int value="1076335895" label="CrosPrivacyHubV0:enabled"/>
@@ -24383,6 +24384,7 @@ from previous Chrome versions.
   <int value="1553430984" label="Projector:enabled"/>
   <int value="1553667664" label="CoralFeature:enabled"/>
   <int value="1553777815" label="enable-search-prefetch-service"/>
+  <int value="1555578029" label="TabStripGroupContextMenuAndroid:disabled"/>
   <int value="1556554961" label="DriveFsBidirectionalNativeMessaging:enabled"/>
   <int value="1556739957" label="Jelly:disabled"/>
   <int value="1556835732"
