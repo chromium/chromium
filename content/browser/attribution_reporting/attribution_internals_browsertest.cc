@@ -718,17 +718,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                   .Build()}));
   manager()->NotifyTriggerHandled(CreateReportResult(
       /*trigger_time=*/base::Time::Now(), DefaultTrigger(),
-      AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority,
-      AttributionTrigger::AggregatableResult::kNoHistograms,
-      /*replaced_event_level_report=*/
-      ReportBuilder(AttributionInfoBuilder().Build(),
-                    SourceBuilder(now).BuildStored())
-          .SetReportTime(now + base::Hours(1))
-          .SetPriority(11)
-          .Build(),
-      /*new_event_level_report=*/IrreleventEventLevelReport(),
-      /*new_aggregatable_report=*/std::nullopt,
-      /*source=*/SourceBuilder().BuildStored()));
+      CreateReportResult::EventLevelSuccess(
+          /*new_event_level_report=*/IrreleventEventLevelReport(),
+          /*replaced_event_level_report=*/
+          ReportBuilder(AttributionInfoBuilder().Build(),
+                        SourceBuilder(now).BuildStored())
+              .SetReportTime(now + base::Hours(1))
+              .SetPriority(11)
+              .Build()),
+      /*aggregatable_result=*/CreateReportResult::NoHistograms(),
+      /*source=*/SourceBuilder().BuildStored(),
+      /*min_null_aggregatable_report_time=*/std::nullopt));
 
   {
     static constexpr char kScript[] = R"(
@@ -1272,29 +1272,31 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   auto notify_trigger_handled =
       [&](const AttributionTrigger& trigger,
-          AttributionTrigger::EventLevelResult event_status,
-          AttributionTrigger::AggregatableResult aggregatable_status,
+          CreateReportResult::EventLevel event_level_result,
+          CreateReportResult::Aggregatable aggregatable_result,
           std::optional<uint64_t> cleared_debug_key = std::nullopt) {
         static int offset_hours = 0;
         manager()->NotifyTriggerHandled(
             CreateReportResult(
                 /*trigger_time=*/now + base::Hours(++offset_hours), trigger,
-                event_status, aggregatable_status,
-                /*replaced_event_level_report=*/std::nullopt,
-                /*new_event_level_report=*/IrreleventEventLevelReport(),
-                /*new_aggregatable_report=*/IrreleventAggregatableReport(),
-                /*source=*/SourceBuilder().BuildStored()),
+                std::move(event_level_result), std::move(aggregatable_result),
+                /*source=*/SourceBuilder().BuildStored(),
+                /*min_null_aggregatable_report_time=*/std::nullopt),
             cleared_debug_key);
       };
 
-  notify_trigger_handled(create_trigger(),
-                         AttributionTrigger::EventLevelResult::kSuccess,
-                         AttributionTrigger::AggregatableResult::kSuccess);
+  notify_trigger_handled(
+      create_trigger(),
+      CreateReportResult::EventLevelSuccess(IrreleventEventLevelReport(),
+                                            /*replaced_report=*/std::nullopt),
+      CreateReportResult::AggregatableSuccess(IrreleventAggregatableReport()));
 
-  notify_trigger_handled(create_trigger(),
-                         AttributionTrigger::EventLevelResult::kSuccess,
-                         AttributionTrigger::AggregatableResult::kSuccess,
-                         /*cleared_debug_key=*/123);
+  notify_trigger_handled(
+      create_trigger(),
+      CreateReportResult::EventLevelSuccess(IrreleventEventLevelReport(),
+                                            /*replaced_report=*/std::nullopt),
+      CreateReportResult::AggregatableSuccess(IrreleventAggregatableReport()),
+      /*cleared_debug_key=*/123);
 
   // TODO(apaseltiner): Add tests for other statuses.
 

@@ -20,7 +20,7 @@ namespace content {
 
 class CONTENT_EXPORT CreateReportResult {
  public:
-  struct EventLevelSuccess {
+  struct CONTENT_EXPORT EventLevelSuccess {
     AttributionReport new_report;
     std::optional<AttributionReport> replaced_report;
 
@@ -154,9 +154,7 @@ class CONTENT_EXPORT CreateReportResult {
     std::optional<int> max_aggregatable_reports_per_source;
   };
 
-  // TODO(apaseltiner): Change this constructor to directly accept
-  // `EventLevel` and `Aggregatable` instead of the individual
-  // components.
+  // TODO(apaseltiner): Remove this constructor.
   CreateReportResult(
       base::Time trigger_time,
       AttributionTrigger,
@@ -170,8 +168,16 @@ class CONTENT_EXPORT CreateReportResult {
       Limits limits = Limits(),
       std::optional<AttributionReport> dropped_event_level_report =
           std::nullopt,
-      std::optional<base::Time> min_null_aggregatble_report_time =
+      std::optional<base::Time> min_null_aggregatable_report_time =
           std::nullopt);
+
+  CreateReportResult(
+      base::Time trigger_time,
+      AttributionTrigger,
+      EventLevel,
+      Aggregatable,
+      std::optional<StoredSource> source,
+      std::optional<base::Time> min_null_aggregatable_report_time);
 
   ~CreateReportResult();
 
@@ -222,8 +228,8 @@ class CONTENT_EXPORT CreateReportResult {
 
   std::optional<base::Time> min_null_aggregatable_report_time_;
 
-  EventLevel event_level_result_{NotRegistered()};
-  Aggregatable aggregatable_result_{NotRegistered()};
+  EventLevel event_level_result_;
+  Aggregatable aggregatable_result_;
 
   AttributionTrigger trigger_;
 };

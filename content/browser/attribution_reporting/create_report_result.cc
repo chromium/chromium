@@ -46,6 +46,135 @@ EventLevelSuccess::EventLevelSuccess(EventLevelSuccess&&) = default;
 
 EventLevelSuccess& EventLevelSuccess::operator=(EventLevelSuccess&&) = default;
 
+namespace {
+
+CreateReportResult::EventLevel CreateEventLevelResult(
+    EventLevelResult event_level_status,
+    const CreateReportResult::Limits& limits,
+    std::optional<AttributionReport> replaced_event_level_report,
+    std::optional<AttributionReport> new_event_level_report,
+    std::optional<AttributionReport> dropped_event_level_report) {
+  switch (event_level_status) {
+    case EventLevelResult::kSuccess:
+      DCHECK(new_event_level_report.has_value());
+      DCHECK_EQ(new_event_level_report->GetReportType(),
+                AttributionReport::Type::kEventLevel);
+      return CreateReportResult::EventLevelSuccess(
+          *std::move(new_event_level_report),
+          /*replaced_report=*/std::nullopt);
+    case EventLevelResult::kSuccessDroppedLowerPriority:
+      DCHECK(new_event_level_report.has_value());
+      DCHECK_EQ(new_event_level_report->GetReportType(),
+                AttributionReport::Type::kEventLevel);
+      DCHECK(replaced_event_level_report.has_value());
+      DCHECK_EQ(replaced_event_level_report->GetReportType(),
+                AttributionReport::Type::kEventLevel);
+      return CreateReportResult::EventLevelSuccess(
+          *std::move(new_event_level_report),
+          std::move(replaced_event_level_report));
+    case EventLevelResult::kInternalError:
+      return CreateReportResult::InternalError();
+    case EventLevelResult::kNoCapacityForConversionDestination:
+      DCHECK(limits.max_event_level_reports_per_destination.has_value());
+      return CreateReportResult::NoCapacityForConversionDestination(
+          *limits.max_event_level_reports_per_destination);
+    case EventLevelResult::kNoMatchingImpressions:
+      return CreateReportResult::NoMatchingImpressions();
+    case EventLevelResult::kDeduplicated:
+      return CreateReportResult::Deduplicated();
+    case EventLevelResult::kExcessiveAttributions:
+      DCHECK(limits.rate_limits_max_attributions.has_value());
+      return CreateReportResult::ExcessiveAttributions(
+          *limits.rate_limits_max_attributions);
+    case EventLevelResult::kPriorityTooLow:
+      DCHECK(dropped_event_level_report.has_value());
+      DCHECK_EQ(dropped_event_level_report->GetReportType(),
+                AttributionReport::Type::kEventLevel);
+      return CreateReportResult::PriorityTooLow(
+          *std::move(dropped_event_level_report));
+    case EventLevelResult::kNeverAttributedSource:
+      return CreateReportResult::NeverAttributedSource();
+    case EventLevelResult::kExcessiveReportingOrigins:
+      DCHECK(limits.rate_limits_max_attribution_reporting_origins.has_value());
+      return CreateReportResult::ExcessiveReportingOrigins(
+          *limits.rate_limits_max_attribution_reporting_origins);
+    case EventLevelResult::kNoMatchingSourceFilterData:
+      return CreateReportResult::NoMatchingSourceFilterData();
+    case EventLevelResult::kProhibitedByBrowserPolicy:
+      return CreateReportResult::ProhibitedByBrowserPolicy();
+    case EventLevelResult::kNoMatchingConfigurations:
+      return CreateReportResult::NoMatchingConfigurations();
+    case EventLevelResult::kExcessiveReports:
+      DCHECK(dropped_event_level_report.has_value());
+      DCHECK_EQ(dropped_event_level_report->GetReportType(),
+                AttributionReport::Type::kEventLevel);
+      return CreateReportResult::ExcessiveEventLevelReports(
+          *std::move(dropped_event_level_report));
+    case EventLevelResult::kFalselyAttributedSource:
+      return CreateReportResult::FalselyAttributedSource();
+    case EventLevelResult::kReportWindowPassed:
+      return CreateReportResult::ReportWindowPassed();
+    case EventLevelResult::kNotRegistered:
+      return CreateReportResult::NotRegistered();
+    case EventLevelResult::kReportWindowNotStarted:
+      return CreateReportResult::ReportWindowNotStarted();
+    case EventLevelResult::kNoMatchingTriggerData:
+      return CreateReportResult::NoMatchingTriggerData();
+  }
+  NOTREACHED_NORETURN();
+}
+
+CreateReportResult::Aggregatable CreateAggregatableResult(
+    AggregatableResult aggregatable_status,
+    const CreateReportResult::Limits& limits,
+    std::optional<AttributionReport> new_aggregatable_report) {
+  switch (aggregatable_status) {
+    case AggregatableResult::kSuccess:
+      DCHECK(new_aggregatable_report.has_value());
+      DCHECK_EQ(new_aggregatable_report->GetReportType(),
+                AttributionReport::Type::kAggregatableAttribution);
+      return CreateReportResult::AggregatableSuccess(
+          *std::move(new_aggregatable_report));
+    case AggregatableResult::kInternalError:
+      return CreateReportResult::InternalError();
+    case AggregatableResult::kNoCapacityForConversionDestination:
+      DCHECK(limits.max_aggregatable_reports_per_destination.has_value());
+      return CreateReportResult::NoCapacityForConversionDestination(
+          *limits.max_aggregatable_reports_per_destination);
+    case AggregatableResult::kNoMatchingImpressions:
+      return CreateReportResult::NoMatchingImpressions();
+    case AggregatableResult::kExcessiveAttributions:
+      DCHECK(limits.rate_limits_max_attributions.has_value());
+      return CreateReportResult::ExcessiveAttributions(
+          *limits.rate_limits_max_attributions);
+    case AggregatableResult::kExcessiveReportingOrigins:
+      DCHECK(limits.rate_limits_max_attribution_reporting_origins.has_value());
+      return CreateReportResult::ExcessiveReportingOrigins(
+          *limits.rate_limits_max_attribution_reporting_origins);
+    case AggregatableResult::kNoHistograms:
+      return CreateReportResult::NoHistograms();
+    case AggregatableResult::kInsufficientBudget:
+      return CreateReportResult::InsufficientBudget();
+    case AggregatableResult::kNoMatchingSourceFilterData:
+      return CreateReportResult::NoMatchingSourceFilterData();
+    case AggregatableResult::kNotRegistered:
+      return CreateReportResult::NotRegistered();
+    case AggregatableResult::kProhibitedByBrowserPolicy:
+      return CreateReportResult::ProhibitedByBrowserPolicy();
+    case AggregatableResult::kDeduplicated:
+      return CreateReportResult::Deduplicated();
+    case AggregatableResult::kReportWindowPassed:
+      return CreateReportResult::ReportWindowPassed();
+    case AggregatableResult::kExcessiveReports:
+      DCHECK(limits.max_aggregatable_reports_per_source.has_value());
+      return CreateReportResult::ExcessiveAggregatableReports(
+          *limits.max_aggregatable_reports_per_source);
+  }
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
+
 CreateReportResult::CreateReportResult(
     base::Time trigger_time,
     AttributionTrigger trigger,
@@ -55,162 +184,38 @@ CreateReportResult::CreateReportResult(
     std::optional<AttributionReport> new_event_level_report,
     std::optional<AttributionReport> new_aggregatable_report,
     std::optional<StoredSource> source,
-    Limits limits,
+    const Limits limits,
     std::optional<AttributionReport> dropped_event_level_report,
+    std::optional<base::Time> min_null_aggregatable_report_time)
+    : CreateReportResult(
+          trigger_time,
+          std::move(trigger),
+          CreateEventLevelResult(event_level_status,
+                                 limits,
+                                 std::move(replaced_event_level_report),
+                                 std::move(new_event_level_report),
+                                 std::move(dropped_event_level_report)),
+          CreateAggregatableResult(aggregatable_status,
+                                   limits,
+                                   std::move(new_aggregatable_report)),
+          std::move(source),
+          min_null_aggregatable_report_time) {}
+
+CreateReportResult::CreateReportResult(
+    base::Time trigger_time,
+    AttributionTrigger trigger,
+    EventLevel event_level_result,
+    Aggregatable aggregatable_result,
+    std::optional<StoredSource> source,
     std::optional<base::Time> min_null_aggregatable_report_time)
     : trigger_time_(trigger_time),
       source_(std::move(source)),
       min_null_aggregatable_report_time_(min_null_aggregatable_report_time),
+      event_level_result_(std::move(event_level_result)),
+      aggregatable_result_(std::move(aggregatable_result)),
       trigger_(std::move(trigger)) {
-  switch (event_level_status) {
-    case EventLevelResult::kSuccess:
-      DCHECK(new_event_level_report.has_value());
-      DCHECK_EQ(new_event_level_report->GetReportType(),
-                AttributionReport::Type::kEventLevel);
-      event_level_result_.emplace<EventLevelSuccess>(
-          *std::move(new_event_level_report),
-          /*replaced_report=*/std::nullopt);
-      break;
-    case EventLevelResult::kSuccessDroppedLowerPriority:
-      DCHECK(new_event_level_report.has_value());
-      DCHECK_EQ(new_event_level_report->GetReportType(),
-                AttributionReport::Type::kEventLevel);
-      DCHECK(replaced_event_level_report.has_value());
-      DCHECK_EQ(replaced_event_level_report->GetReportType(),
-                AttributionReport::Type::kEventLevel);
-      event_level_result_.emplace<EventLevelSuccess>(
-          *std::move(new_event_level_report),
-          std::move(replaced_event_level_report));
-      break;
-    case EventLevelResult::kInternalError:
-      event_level_result_.emplace<InternalError>();
-      break;
-    case EventLevelResult::kNoCapacityForConversionDestination:
-      DCHECK(limits.max_event_level_reports_per_destination.has_value());
-      event_level_result_.emplace<NoCapacityForConversionDestination>(
-          *limits.max_event_level_reports_per_destination);
-      break;
-    case EventLevelResult::kNoMatchingImpressions:
-      event_level_result_.emplace<NoMatchingImpressions>();
-      break;
-    case EventLevelResult::kDeduplicated:
-      event_level_result_.emplace<Deduplicated>();
-      break;
-    case EventLevelResult::kExcessiveAttributions:
-      DCHECK(limits.rate_limits_max_attributions.has_value());
-      event_level_result_.emplace<ExcessiveAttributions>(
-          *limits.rate_limits_max_attributions);
-      break;
-    case EventLevelResult::kPriorityTooLow:
-      DCHECK(dropped_event_level_report.has_value());
-      DCHECK_EQ(dropped_event_level_report->GetReportType(),
-                AttributionReport::Type::kEventLevel);
-      event_level_result_.emplace<PriorityTooLow>(
-          *std::move(dropped_event_level_report));
-      break;
-    case EventLevelResult::kNeverAttributedSource:
-      event_level_result_.emplace<NeverAttributedSource>();
-      break;
-    case EventLevelResult::kExcessiveReportingOrigins:
-      DCHECK(limits.rate_limits_max_attribution_reporting_origins.has_value());
-      event_level_result_.emplace<ExcessiveReportingOrigins>(
-          *limits.rate_limits_max_attribution_reporting_origins);
-      break;
-    case EventLevelResult::kNoMatchingSourceFilterData:
-      event_level_result_.emplace<NoMatchingSourceFilterData>();
-      break;
-    case EventLevelResult::kProhibitedByBrowserPolicy:
-      event_level_result_.emplace<ProhibitedByBrowserPolicy>();
-      break;
-    case EventLevelResult::kNoMatchingConfigurations:
-      event_level_result_.emplace<NoMatchingConfigurations>();
-      break;
-    case EventLevelResult::kExcessiveReports:
-      DCHECK(dropped_event_level_report.has_value());
-      DCHECK_EQ(dropped_event_level_report->GetReportType(),
-                AttributionReport::Type::kEventLevel);
-      event_level_result_.emplace<ExcessiveEventLevelReports>(
-          *std::move(dropped_event_level_report));
-      break;
-    case EventLevelResult::kFalselyAttributedSource:
-      event_level_result_.emplace<FalselyAttributedSource>();
-      break;
-    case EventLevelResult::kReportWindowPassed:
-      event_level_result_.emplace<ReportWindowPassed>();
-      break;
-    case EventLevelResult::kNotRegistered:
-      event_level_result_.emplace<NotRegistered>();
-      break;
-    case EventLevelResult::kReportWindowNotStarted:
-      event_level_result_.emplace<ReportWindowNotStarted>();
-      break;
-    case EventLevelResult::kNoMatchingTriggerData:
-      event_level_result_.emplace<NoMatchingTriggerData>();
-      break;
-    default:
-      NOTREACHED_NORETURN();
-  }
-
-  switch (aggregatable_status) {
-    case AggregatableResult::kSuccess:
-      DCHECK(new_aggregatable_report.has_value());
-      DCHECK_EQ(new_aggregatable_report->GetReportType(),
-                AttributionReport::Type::kAggregatableAttribution);
-      aggregatable_result_.emplace<AggregatableSuccess>(
-          *std::move(new_aggregatable_report));
-      break;
-    case AggregatableResult::kInternalError:
-      aggregatable_result_.emplace<InternalError>();
-      break;
-    case AggregatableResult::kNoCapacityForConversionDestination:
-      DCHECK(limits.max_aggregatable_reports_per_destination.has_value());
-      aggregatable_result_.emplace<NoCapacityForConversionDestination>(
-          *limits.max_aggregatable_reports_per_destination);
-      break;
-    case AggregatableResult::kNoMatchingImpressions:
-      aggregatable_result_.emplace<NoMatchingImpressions>();
-      break;
-    case AggregatableResult::kExcessiveAttributions:
-      DCHECK(limits.rate_limits_max_attributions.has_value());
-      aggregatable_result_.emplace<ExcessiveAttributions>(
-          *limits.rate_limits_max_attributions);
-      break;
-    case AggregatableResult::kExcessiveReportingOrigins:
-      DCHECK(limits.rate_limits_max_attribution_reporting_origins.has_value());
-      aggregatable_result_.emplace<ExcessiveReportingOrigins>(
-          *limits.rate_limits_max_attribution_reporting_origins);
-      break;
-    case AggregatableResult::kNoHistograms:
-      aggregatable_result_.emplace<NoHistograms>();
-      break;
-    case AggregatableResult::kInsufficientBudget:
-      aggregatable_result_.emplace<InsufficientBudget>();
-      break;
-    case AggregatableResult::kNoMatchingSourceFilterData:
-      aggregatable_result_.emplace<NoMatchingSourceFilterData>();
-      break;
-    case AggregatableResult::kNotRegistered:
-      aggregatable_result_.emplace<NotRegistered>();
-      break;
-    case AggregatableResult::kProhibitedByBrowserPolicy:
-      aggregatable_result_.emplace<ProhibitedByBrowserPolicy>();
-      break;
-    case AggregatableResult::kDeduplicated:
-      aggregatable_result_.emplace<Deduplicated>();
-      break;
-    case AggregatableResult::kReportWindowPassed:
-      aggregatable_result_.emplace<ReportWindowPassed>();
-      break;
-    case AggregatableResult::kExcessiveReports:
-      DCHECK(limits.max_aggregatable_reports_per_source.has_value());
-      aggregatable_result_.emplace<ExcessiveAggregatableReports>(
-          *limits.max_aggregatable_reports_per_source);
-      break;
-    default:
-      NOTREACHED_NORETURN();
-  }
-
-  if (event_level_status != EventLevelResult::kInternalError &&
+  if (EventLevelResult event_level_status = this->event_level_status();
+      event_level_status != EventLevelResult::kInternalError &&
       event_level_status != EventLevelResult::kNotRegistered) {
     DCHECK_EQ(
         source_.has_value(),
@@ -218,7 +223,8 @@ CreateReportResult::CreateReportResult(
             event_level_status != EventLevelResult::kProhibitedByBrowserPolicy);
   }
 
-  if (aggregatable_status != AggregatableResult::kInternalError &&
+  if (AggregatableResult aggregatable_status = this->aggregatable_status();
+      aggregatable_status != AggregatableResult::kInternalError &&
       aggregatable_status != AggregatableResult::kNotRegistered) {
     DCHECK_EQ(
         source_.has_value(),

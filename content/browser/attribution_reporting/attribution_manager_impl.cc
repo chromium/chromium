@@ -850,10 +850,12 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
                   /*is_debug_cookie_set=*/false,
                   CreateReportResult(
                       /*trigger_time=*/base::Time::Now(), std::move(trigger),
-                      AttributionTrigger::EventLevelResult::
-                          kProhibitedByBrowserPolicy,
-                      AttributionTrigger::AggregatableResult::
-                          kProhibitedByBrowserPolicy));
+                      /*event_level_result=*/
+                      CreateReportResult::ProhibitedByBrowserPolicy(),
+                      /*aggregatable_result=*/
+                      CreateReportResult::ProhibitedByBrowserPolicy(),
+                      /*source=*/std::nullopt,
+                      /*min_null_aggregatable_report_time=*/std::nullopt));
             }
           },
       },

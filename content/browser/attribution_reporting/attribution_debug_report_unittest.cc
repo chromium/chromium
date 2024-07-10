@@ -37,8 +37,6 @@ namespace {
 
 using ::testing::Message;
 
-using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
-using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using ::attribution_reporting::OsRegistrationItem;
 using ::attribution_reporting::RegistrationHeaderError;
 using ::attribution_reporting::SuitableOrigin;
@@ -89,8 +87,10 @@ TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
       /*is_debug_cookie_set=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
                          TriggerBuilder().Build(),
-                         EventLevelResult::kNoMatchingImpressions,
-                         AggregatableResult::kNoMatchingImpressions)));
+                         CreateReportResult::NoMatchingImpressions(),
+                         CreateReportResult::NoMatchingImpressions(),
+                         /*source=*/std::nullopt,
+                         /*min_null_aggregatable_report_time=*/std::nullopt)));
 }
 
 TEST(AttributionDebugReportTest, OperationProhibited_NoReportReturned) {
@@ -107,8 +107,10 @@ TEST(AttributionDebugReportTest, OperationProhibited_NoReportReturned) {
       /*is_debug_cookie_set=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
                          TriggerBuilder().SetDebugReporting(true).Build(),
-                         EventLevelResult::kNoMatchingImpressions,
-                         AggregatableResult::kNoMatchingImpressions)));
+                         CreateReportResult::NoMatchingImpressions(),
+                         CreateReportResult::NoMatchingImpressions(),
+                         /*source=*/std::nullopt,
+                         /*min_null_aggregatable_report_time=*/std::nullopt)));
 }
 
 TEST(AttributionDebugReportTest,
@@ -163,8 +165,10 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
                              .SetDebugReporting(true)
                              .SetIsWithinFencedFrame(true)
                              .Build(),
-                         EventLevelResult::kNoMatchingImpressions,
-                         AggregatableResult::kNoMatchingImpressions)));
+                         CreateReportResult::NoMatchingImpressions(),
+                         CreateReportResult::NoMatchingImpressions(),
+                         /*source=*/std::nullopt,
+                         /*min_null_aggregatable_report_time=*/std::nullopt)));
 }
 
 TEST(AttributionDebugReportTest, SourceDebugging) {
@@ -496,29 +500,27 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
 
 TEST(AttributionDebugReportTest, TriggerDebugging) {
   const struct {
-    EventLevelResult event_level_result;
-    AggregatableResult aggregatable_result;
+    CreateReportResult::EventLevel event_level_result;
+    CreateReportResult::Aggregatable aggregatable_result;
     bool has_matching_source = false;
-    CreateReportResult::Limits limits;
     const char* expected_report_body;
   } kTestCases[] = {
-      {EventLevelResult::kNoMatchingImpressions,
-       AggregatableResult::kNoMatchingImpressions,
-       /*has_matching_source=*/false, CreateReportResult::Limits(),
+      {CreateReportResult::NoMatchingImpressions(),
+       CreateReportResult::NoMatchingImpressions(),
+       /*has_matching_source=*/false,
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test"
          },
          "type": "trigger-no-matching-source"
        }])json"},
-      {EventLevelResult::kProhibitedByBrowserPolicy,
-       AggregatableResult::kProhibitedByBrowserPolicy,
-       /*has_matching_source=*/false, CreateReportResult::Limits(),
+      {CreateReportResult::ProhibitedByBrowserPolicy(),
+       CreateReportResult::ProhibitedByBrowserPolicy(),
+       /*has_matching_source=*/false,
        /*expected_report_body=*/nullptr},
-      {EventLevelResult::kNoMatchingConfigurations,
-       AggregatableResult::kExcessiveAttributions,
+      {CreateReportResult::NoMatchingConfigurations(),
+       CreateReportResult::ExcessiveAttributions(/*max=*/10),
        /*has_matching_source=*/true,
-       CreateReportResult::Limits{.rate_limits_max_attributions = 10},
        R"json([
          {
            "body": {
@@ -538,9 +540,9 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
            "type": "trigger-aggregate-attributions-per-source-destination-limit"
          }
        ])json"},
-      {EventLevelResult::kNoMatchingConfigurations,
-       AggregatableResult::kInsufficientBudget,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
+      {CreateReportResult::NoMatchingConfigurations(),
+       CreateReportResult::InsufficientBudget(),
+       /*has_matching_source=*/true,
        R"json([
          {
            "body": {
@@ -565,30 +567,29 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
   for (bool is_source_debug_cookie_set : {false, true}) {
     for (bool is_trigger_debug_cookie_set : {false, true}) {
       for (const auto& test_case : kTestCases) {
-        SCOPED_TRACE(
-            Message()
-            << "is_source_debug_cookie_set: " << is_source_debug_cookie_set
-            << ", is_trigger_debug_cookie_set: " << is_trigger_debug_cookie_set
-            << ", event_level_result: " << test_case.event_level_result
-            << ", aggregatable_result: " << test_case.aggregatable_result);
+        const CreateReportResult result(
+            /*trigger_time=*/base::Time::Now(),
+            TriggerBuilder().SetDebugReporting(true).Build(),
+            test_case.event_level_result, test_case.aggregatable_result,
+            test_case.has_matching_source
+                ? std::make_optional(
+                      SourceBuilder()
+                          .SetDebugCookieSet(is_source_debug_cookie_set)
+                          .BuildStored())
+                : std::nullopt,
+            /*min_null_aggregatable_report_time=*/std::nullopt);
+
+        SCOPED_TRACE(Message()
+                     << "is_source_debug_cookie_set: "
+                     << is_source_debug_cookie_set
+                     << ", is_trigger_debug_cookie_set: "
+                     << is_trigger_debug_cookie_set << ", event_level_result: "
+                     << result.event_level_status() << ", aggregatable_result: "
+                     << result.aggregatable_status());
 
         std::optional<AttributionDebugReport> report =
-            AttributionDebugReport::Create(
-                &OperationAllowed, is_trigger_debug_cookie_set,
-                CreateReportResult(
-                    /*trigger_time=*/base::Time::Now(),
-                    TriggerBuilder().SetDebugReporting(true).Build(),
-                    test_case.event_level_result, test_case.aggregatable_result,
-                    /*replaced_event_level_report=*/std::nullopt,
-                    /*new_event_level_report=*/std::nullopt,
-                    /*new_aggregatable_report=*/std::nullopt,
-                    test_case.has_matching_source
-                        ? std::make_optional(
-                              SourceBuilder()
-                                  .SetDebugCookieSet(is_source_debug_cookie_set)
-                                  .BuildStored())
-                        : std::nullopt,
-                    test_case.limits));
+            AttributionDebugReport::Create(&OperationAllowed,
+                                           is_trigger_debug_cookie_set, result);
         if (is_trigger_debug_cookie_set &&
             (!test_case.has_matching_source || is_source_debug_cookie_set)) {
           EXPECT_EQ(report.has_value(),
@@ -607,35 +608,26 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
 
 TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
   const struct {
-    EventLevelResult result;
-    std::optional<AttributionReport> replaced_event_level_report;
-    std::optional<AttributionReport> new_event_level_report;
+    CreateReportResult::EventLevel result;
     bool has_matching_source = false;
-    CreateReportResult::Limits limits;
-    std::optional<AttributionReport> dropped_event_level_report;
     std::optional<uint64_t> trigger_debug_key;
     const char* expected_report_body;
     std::optional<uint64_t> source_debug_key;
   } kTestCases[] = {
-      {EventLevelResult::kSuccess,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/DefaultEventLevelReport(),
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::EventLevelSuccess(
+           DefaultEventLevelReport(),
+           /*replaced_event_level_report=*/std::nullopt),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        /*expected_report_body=*/nullptr},
-      {EventLevelResult::kSuccessDroppedLowerPriority,
-       /*replaced_event_level_report=*/DefaultEventLevelReport(),
-       /*new_event_level_report=*/DefaultEventLevelReport(),
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::EventLevelSuccess(
+           DefaultEventLevelReport(),
+           /*replaced_event_level_report=*/DefaultEventLevelReport()),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        /*expected_report_body=*/nullptr},
-      {EventLevelResult::kInternalError,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/false, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::InternalError(),
+       /*has_matching_source=*/false,
        /*trigger_debug_key=*/123,
        R"json([{
          "body": {
@@ -644,13 +636,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-unknown-error"
        }])json"},
-      {EventLevelResult::kNoCapacityForConversionDestination,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
+      {CreateReportResult::NoCapacityForConversionDestination(/*max=*/10),
        /*has_matching_source=*/true,
-       CreateReportResult::Limits{.max_event_level_reports_per_destination =
-                                      10},
-       /*dropped_event_level_report=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -663,11 +650,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          "type": "trigger-event-storage-limit"
        }])json",
        /*source_debug_key=*/456},
-      {EventLevelResult::kNoMatchingImpressions,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/false, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::NoMatchingImpressions(),
+       /*has_matching_source=*/false,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -675,11 +659,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-no-matching-source"
        }])json"},
-      {EventLevelResult::kDeduplicated,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::Deduplicated(),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/456,
        R"json([{
          "body": {
@@ -692,12 +673,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          "type": "trigger-event-deduplicated"
        }])json",
        /*source_debug_key=*/789},
-      {EventLevelResult::kExcessiveAttributions,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
+      {CreateReportResult::ExcessiveAttributions(/*max=*/10),
        /*has_matching_source=*/true,
-       CreateReportResult::Limits{.rate_limits_max_attributions = 10},
-       /*dropped_event_level_report=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -708,12 +685,9 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-attributions-per-source-destination-limit"
        }])json"},
-      {EventLevelResult::kPriorityTooLow,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/
-       DefaultEventLevelReport(base::Time::UnixEpoch()),
+      {CreateReportResult::PriorityTooLow(
+           DefaultEventLevelReport(base::Time::UnixEpoch())),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -727,11 +701,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-low-priority"
        }])json"},
-      {EventLevelResult::kNeverAttributedSource,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::NeverAttributedSource(),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -741,13 +712,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-noise"
        }])json"},
-      {EventLevelResult::kExcessiveReportingOrigins,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
+      {CreateReportResult::ExcessiveReportingOrigins(/*max=*/10),
        /*has_matching_source=*/true,
-       CreateReportResult::Limits{
-           .rate_limits_max_attribution_reporting_origins = 10},
-       /*dropped_event_level_report=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -758,11 +724,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-reporting-origin-limit"
        }])json"},
-      {EventLevelResult::kNoMatchingSourceFilterData,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::NoMatchingSourceFilterData(),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -772,18 +735,12 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-no-matching-filter-data"
        }])json"},
-      {EventLevelResult::kProhibitedByBrowserPolicy,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/false, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::ProhibitedByBrowserPolicy(),
+       /*has_matching_source=*/false,
        /*trigger_debug_key=*/std::nullopt,
        /*expected_report_body=*/nullptr},
-      {EventLevelResult::kNoMatchingConfigurations,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::NoMatchingConfigurations(),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -793,12 +750,9 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-no-matching-configurations"
        }])json"},
-      {EventLevelResult::kExcessiveReports,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/
-       DefaultEventLevelReport(base::Time::UnixEpoch()),
+      {CreateReportResult::ExcessiveEventLevelReports(
+           DefaultEventLevelReport(base::Time::UnixEpoch())),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -812,11 +766,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-excessive-reports"
        }])json"},
-      {EventLevelResult::kFalselyAttributedSource,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::FalselyAttributedSource(),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -826,11 +777,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-noise"
        }])json"},
-      {EventLevelResult::kReportWindowNotStarted,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::ReportWindowNotStarted(),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -840,11 +788,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-report-window-not-started"
        }])json"},
-      {EventLevelResult::kReportWindowPassed,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/true, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::ReportWindowPassed(),
+       /*has_matching_source=*/true,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
          "body": {
@@ -854,11 +799,8 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-report-window-passed"
        }])json"},
-      {EventLevelResult::kNotRegistered,
-       /*replaced_event_level_report=*/std::nullopt,
-       /*new_event_level_report=*/std::nullopt,
-       /*has_matching_source=*/false, CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/std::nullopt,
+      {CreateReportResult::NotRegistered(),
+       /*has_matching_source=*/false,
        /*trigger_debug_key=*/std::nullopt,
        /*expected_report_body=*/nullptr},
   };
@@ -870,33 +812,32 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
           continue;
         }
 
+        const CreateReportResult result(
+            /*trigger_time=*/base::Time::Now(),
+            TriggerBuilder()
+                .SetDebugReporting(true)
+                .SetDebugKey(test_case.trigger_debug_key)
+                .Build(),
+            /*event_level_result=*/test_case.result,
+            /*aggregatable_result=*/CreateReportResult::NotRegistered(),
+            test_case.has_matching_source
+                ? std::make_optional(
+                      SourceBuilder(base::Time::UnixEpoch())
+                          .SetDebugCookieSet(is_source_debug_cookie_set)
+                          .SetDebugKey(test_case.source_debug_key)
+                          .BuildStored())
+                : std::nullopt,
+            /*min_null_aggregatable_report_time=*/std::nullopt);
+
         SCOPED_TRACE(Message() << "is_source_debug_cookie_set: "
                                << is_source_debug_cookie_set
                                << ", is_trigger_debug_cookie_set: "
                                << is_trigger_debug_cookie_set
-                               << ", result: " << test_case.result);
+                               << ", result: " << result.event_level_status());
 
         std::optional<AttributionDebugReport> report =
-            AttributionDebugReport::Create(
-                &OperationAllowed, is_trigger_debug_cookie_set,
-                CreateReportResult(
-                    /*trigger_time=*/base::Time::Now(),
-                    TriggerBuilder()
-                        .SetDebugReporting(true)
-                        .SetDebugKey(test_case.trigger_debug_key)
-                        .Build(),
-                    test_case.result, AggregatableResult::kNotRegistered,
-                    test_case.replaced_event_level_report,
-                    test_case.new_event_level_report,
-                    /*new_aggregatable_report=*/std::nullopt,
-                    test_case.has_matching_source
-                        ? std::make_optional(
-                              SourceBuilder(base::Time::UnixEpoch())
-                                  .SetDebugCookieSet(is_source_debug_cookie_set)
-                                  .SetDebugKey(test_case.source_debug_key)
-                                  .BuildStored())
-                        : std::nullopt,
-                    test_case.limits, test_case.dropped_event_level_report));
+            AttributionDebugReport::Create(&OperationAllowed,
+                                           is_trigger_debug_cookie_set, result);
         if (is_trigger_debug_cookie_set &&
             (!test_case.has_matching_source || is_source_debug_cookie_set)) {
           EXPECT_EQ(report.has_value(),
@@ -915,20 +856,16 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
 
 TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
   const struct {
-    AggregatableResult result;
-    std::optional<AttributionReport> new_aggregatable_report;
-    CreateReportResult::Limits limits;
+    CreateReportResult::Aggregatable result;
     std::optional<uint64_t> source_debug_key;
     std::optional<uint64_t> trigger_debug_key;
     const char* expected_report_body;
   } kTestCases[] = {
-      {AggregatableResult::kSuccess, DefaultAggregatableReport(),
-       CreateReportResult::Limits(),
+      {CreateReportResult::AggregatableSuccess(DefaultAggregatableReport()),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        /*expected_report_body=*/nullptr},
-      {AggregatableResult::kInternalError,
-       /*new_aggregatable_report=*/std::nullopt, CreateReportResult::Limits(),
+      {CreateReportResult::InternalError(),
        /*source_debug_key=*/456,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
@@ -940,10 +877,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-unknown-error"
        }])json"},
-      {AggregatableResult::kNoCapacityForConversionDestination,
-       /*new_aggregatable_report=*/std::nullopt,
-       CreateReportResult::Limits{.max_aggregatable_reports_per_destination =
-                                      20},
+      {CreateReportResult::NoCapacityForConversionDestination(/*max=*/20),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/789,
        R"json([{
@@ -956,9 +890,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-aggregate-storage-limit"
        }])json"},
-      {AggregatableResult::kExcessiveAttributions,
-       /*new_aggregatable_report=*/std::nullopt,
-       CreateReportResult::Limits{.rate_limits_max_attributions = 10},
+      {CreateReportResult::ExcessiveAttributions(/*max=*/10),
        /*source_debug_key=*/789,
        /*trigger_debug_key=*/456,
        R"json([{
@@ -972,10 +904,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-aggregate-attributions-per-source-destination-limit"
        }])json"},
-      {AggregatableResult::kExcessiveReportingOrigins,
-       /*new_aggregatable_report=*/std::nullopt,
-       CreateReportResult::Limits{
-           .rate_limits_max_attribution_reporting_origins = 5},
+      {CreateReportResult::ExcessiveReportingOrigins(/*max=*/5),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
@@ -987,8 +916,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-reporting-origin-limit"
        }])json"},
-      {AggregatableResult::kNoHistograms,
-       /*new_aggregatable_report=*/std::nullopt, CreateReportResult::Limits(),
+      {CreateReportResult::NoHistograms(),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
@@ -999,8 +927,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-aggregate-no-contributions"
        }])json"},
-      {AggregatableResult::kInsufficientBudget,
-       /*new_aggregatable_report=*/std::nullopt, CreateReportResult::Limits(),
+      {CreateReportResult::InsufficientBudget(),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
@@ -1012,9 +939,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-aggregate-insufficient-budget"
        }])json"},
-      {AggregatableResult::kExcessiveReports,
-       /*new_aggregatable_report=*/std::nullopt,
-       CreateReportResult::Limits{.max_aggregatable_reports_per_source = 10},
+      {CreateReportResult::ExcessiveAggregatableReports(/*max=*/10),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
@@ -1026,8 +951,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-aggregate-excessive-reports"
        }])json"},
-      {AggregatableResult::kNoMatchingSourceFilterData,
-       /*new_aggregatable_report=*/std::nullopt, CreateReportResult::Limits(),
+      {CreateReportResult::NoMatchingSourceFilterData(),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
@@ -1038,13 +962,11 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-no-matching-filter-data"
        }])json"},
-      {AggregatableResult::kNotRegistered,
-       /*new_aggregatable_report=*/std::nullopt, CreateReportResult::Limits(),
+      {CreateReportResult::NotRegistered(),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        /*expected_report_body=*/nullptr},
-      {AggregatableResult::kDeduplicated,
-       /*new_aggregatable_report=*/std::nullopt, CreateReportResult::Limits(),
+      {CreateReportResult::Deduplicated(),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
@@ -1055,8 +977,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-aggregate-deduplicated"
        }])json"},
-      {AggregatableResult::kReportWindowPassed,
-       /*new_aggregatable_report=*/std::nullopt, CreateReportResult::Limits(),
+      {CreateReportResult::ReportWindowPassed(),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
        R"json([{
@@ -1076,30 +997,31 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
           continue;
         }
 
+        const CreateReportResult result(
+            /*trigger_time=*/base::Time::Now(),
+            TriggerBuilder()
+                .SetDebugReporting(true)
+                .SetDebugKey(test_case.trigger_debug_key)
+                .Build(),
+            CreateReportResult::EventLevelSuccess(
+                DefaultEventLevelReport(),
+                /*replaced_report=*/std::nullopt),
+            /*aggregatable_result=*/test_case.result,
+            SourceBuilder()
+                .SetDebugKey(test_case.source_debug_key)
+                .SetDebugCookieSet(is_source_debug_cookie_set)
+                .BuildStored(),
+            /*min_null_aggregatable_report_time=*/std::nullopt);
+
         SCOPED_TRACE(Message() << "is_source_debug_cookie_set: "
                                << is_source_debug_cookie_set
                                << ", is_trigger_debug_cookie_set: "
                                << is_trigger_debug_cookie_set
-                               << ", result: " << test_case.result);
+                               << ", result: " << result.aggregatable_status());
 
         std::optional<AttributionDebugReport> report =
-            AttributionDebugReport::Create(
-                &OperationAllowed, is_trigger_debug_cookie_set,
-                CreateReportResult(
-                    /*trigger_time=*/base::Time::Now(),
-                    TriggerBuilder()
-                        .SetDebugReporting(true)
-                        .SetDebugKey(test_case.trigger_debug_key)
-                        .Build(),
-                    EventLevelResult::kSuccess, test_case.result,
-                    /*replaced_event_level_report=*/std::nullopt,
-                    /*new_event_level_report=*/DefaultEventLevelReport(),
-                    test_case.new_aggregatable_report,
-                    SourceBuilder()
-                        .SetDebugKey(test_case.source_debug_key)
-                        .SetDebugCookieSet(is_source_debug_cookie_set)
-                        .BuildStored(),
-                    test_case.limits));
+            AttributionDebugReport::Create(&OperationAllowed,
+                                           is_trigger_debug_cookie_set, result);
         if (is_trigger_debug_cookie_set && is_source_debug_cookie_set) {
           EXPECT_EQ(report.has_value(),
                     test_case.expected_report_body != nullptr);
