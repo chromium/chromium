@@ -48,12 +48,6 @@ PDFExtensionTestBase::~PDFExtensionTestBase() = default;
 void PDFExtensionTestBase::SetUpCommandLine(
     base::CommandLine* /*command_line*/) {
   feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
-
-  if (UseOopif()) {
-    factory_ = std::make_unique<pdf::TestPdfViewerStreamManagerFactory>();
-  } else {
-    factory_ = std::make_unique<guest_view::TestGuestViewManagerFactory>();
-  }
 }
 
 void PDFExtensionTestBase::SetUpOnMainThread() {
@@ -62,6 +56,12 @@ void PDFExtensionTestBase::SetUpOnMainThread() {
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
   content::SetupCrossSiteRedirector(embedded_test_server());
   embedded_test_server()->StartAcceptingConnections();
+
+  if (UseOopif()) {
+    factory_ = std::make_unique<pdf::TestPdfViewerStreamManagerFactory>();
+  } else {
+    factory_ = std::make_unique<guest_view::TestGuestViewManagerFactory>();
+  }
 }
 
 void PDFExtensionTestBase::TearDownOnMainThread() {
