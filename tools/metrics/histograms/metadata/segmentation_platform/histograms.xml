@@ -24,8 +24,9 @@ chromium-metrics-reviews@google.com.
 
 <variants name="BooleanModel">
   <variant name="ChromeLowUserEngagement"/>
-  <variant name="ChromeStartAndroid"/>
-  <variant name="ChromeStartAndroidV2"/>
+  <variant name="ChromeStartAndroid" summary="(obsolete) Not used since M-127"/>
+  <variant name="ChromeStartAndroidV2"
+      summary="(obsolete) Not used since M-127"/>
   <variant name="CrossDeviceUserSegment"/>
   <variant name="FrequentFeatureUser"/>
   <variant name="IntentionalUserSegment"/>
@@ -67,8 +68,9 @@ chromium-metrics-reviews@google.com.
   <variant name="AdaptiveToolbar"/>
   <variant name="AndroidHomeModuleRanker"/>
   <variant name="ChromeLowUserEngagement"/>
-  <variant name="ChromeStartAndroid"/>
-  <variant name="ChromeStartAndroidV2"/>
+  <variant name="ChromeStartAndroid" summary="(obsolete) Not used since M-127"/>
+  <variant name="ChromeStartAndroidV2"
+      summary="(obsolete) Not used since M-127"/>
   <variant name="ComposePromotion"/>
   <variant name="ContextualPageActions"/>
   <variant name="CrossDeviceUser"/>
@@ -98,8 +100,9 @@ chromium-metrics-reviews@google.com.
   <variant name="AdaptiveToolbar"/>
   <variant name="AndroidHomeModuleRanker"/>
   <variant name="ChromeLowUserEngagement"/>
-  <variant name="ChromeStartAndroid"/>
-  <variant name="ChromeStartAndroidV2"/>
+  <variant name="ChromeStartAndroid" summary="(obsolete) Not used since M-127"/>
+  <variant name="ChromeStartAndroidV2"
+      summary="(obsolete) Not used since M-127"/>
   <variant name="ComposePromotion"/>
   <variant name="ContextualPageActionPriceTracking"/>
   <variant name="CrossDeviceUserSegment"/>

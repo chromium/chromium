@@ -461,12 +461,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             Log.i(TAG, "Recorded %s = %b", START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
             RecordHistogram.recordBooleanHistogram(
                     START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
-
-            // The segmentation results should only be cached when Start is enabled, for example,
-            // not on tablet.
-            if (StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL.getValue()) {
-                ReturnToChromeUtil.cacheReturnTimeFromSegmentation();
-            }
         }
     }
 

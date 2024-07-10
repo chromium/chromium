@@ -643,12 +643,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String PWA_RESTORE_PROMO_STAGE = "Chrome.PwaRestore.PromoStage";
 
-    /**
-     * Keys used to store user actions for behavioral targeting of showing Start surface on startup.
-     */
-    public static final String START_RETURN_TIME_SEGMENTATION_RESULT_MS =
-            "Chrome.StartSurface.StartReturnTimeSegmentationResultMs";
-
     public static final String REGULAR_TAB_COUNT = "Chrome.StartSurface.RegularTabCount";
     public static final String INCOGNITO_TAB_COUNT = "Chrome.StartSurface.IncognitoTabCount";
     public static final String IS_LAST_VISITED_TAB_SRP = "Chrome.StartSurface.IsLastVisitedTabSRP";
@@ -1032,7 +1026,6 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
-                START_RETURN_TIME_SEGMENTATION_RESULT_MS,
                 SYNC_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,
                 SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,

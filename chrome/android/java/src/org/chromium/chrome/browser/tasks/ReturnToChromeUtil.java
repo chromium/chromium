@@ -34,8 +34,6 @@ import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -52,10 +50,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.segmentation_platform.ClassificationResult;
-import org.chromium.components.segmentation_platform.PredictionOptions;
-import org.chromium.components.segmentation_platform.SegmentationPlatformService;
-import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -113,8 +107,6 @@ public final class ReturnToChromeUtil {
     public static final String FAIL_TO_SHOW_HOME_SURFACE_UI_UMA =
             "NewTabPage.FailToShowHomeSurfaceUI";
 
-    private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
-
     public static void setActivityPresentingOverivewWithOmniboxForTesting(ChromeActivity value) {
         sActivityPresentingOverivewWithOmniboxForTesting = value;
         ResettersForTesting.register(() -> sActivityPresentingOverivewWithOmniboxForTesting = null);
@@ -126,8 +118,7 @@ public final class ReturnToChromeUtil {
      * Determine if we should show the tab switcher on returning to Chrome. Returns true if enough
      * time has elapsed since the app was last backgrounded or foreground, depending on which time
      * is the max. The threshold time in milliseconds is set by experiment
-     * "enable-start-surface-return-time" or from segmentation platform result if {@link
-     * ChromeFeatureList.START_SURFACE_RETURN_TIME} is enabled.
+     * "enable-start-surface-return-time".
      *
      * @param lastTimeMillis The last time the application was backgrounded or foreground, depends
      *     on which time is the max. Set in ChromeTabbedActivity::onStopWithNative
@@ -152,31 +143,11 @@ public final class ReturnToChromeUtil {
 
     /**
      * Gets the return time interval. The return time is in the unit of milliseconds.
+     *
      * @param returnTime The return time parameter based on form factor, either phones or tablets.
      */
     private static long getReturnTime(IntCachedFieldTrialParameter returnTime) {
-        if (returnTime.getValue() != 0
-                && StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL.getValue()) {
-            return getReturnTimeFromSegmentation(returnTime);
-        }
-
         return returnTime.getValue() * DateUtils.SECOND_IN_MILLIS;
-    }
-
-    /**
-     * Gets the cached return time obtained from the segmentation platform service.
-     * Note: this function should NOT been called on tablets! The default value for tablets is -1
-     * which means not showing.
-     * @return How long to show the Start surface again on startup. A negative value means not show,
-     *         0 means showing immediately. The return time is in the unit of milliseconds.
-     */
-    @VisibleForTesting
-    public static long getReturnTimeFromSegmentation(IntCachedFieldTrialParameter returnTime) {
-        // Sets the default value as 8 hours; 0 means showing immediately.
-        return ChromeSharedPreferences.getInstance()
-                .readLong(
-                        ChromePreferenceKeys.START_RETURN_TIME_SEGMENTATION_RESULT_MS,
-                        returnTime.getDefaultValue());
     }
 
     /**
@@ -184,7 +155,7 @@ public final class ReturnToChromeUtil {
      *
      * @param params The LoadUrlParams to load.
      * @param incognito Whether to load URL in an incognito Tab.
-     * @param parentTab  The parent tab used to create a new tab if needed.
+     * @param parentTab The parent tab used to create a new tab if needed.
      * @return Current tab created if we have handled the navigation, null otherwise.
      */
     public static Tab handleLoadUrlFromStartSurface(
@@ -523,41 +494,6 @@ public final class ReturnToChromeUtil {
         recordHomeSurfaceShownAtStartup();
         recordHomeSurfaceShown();
         return true;
-    }
-
-    /*
-     * Computes a return time from the result of the segmentation platform and stores to prefs.
-     */
-    public static void cacheReturnTimeFromSegmentation() {
-        SegmentationPlatformService segmentationPlatformService =
-                SegmentationPlatformServiceFactory.getForProfile(
-                        ProfileManager.getLastUsedRegularProfile());
-        PredictionOptions predictionOptions = new PredictionOptions(false);
-        segmentationPlatformService.getClassificationResult(
-                START_V2_SEGMENTATION_PLATFORM_KEY,
-                predictionOptions,
-                null,
-                result -> {
-                    cacheReturnTimeFromSegmentationImpl(result);
-                });
-    }
-
-    @VisibleForTesting
-    public static void cacheReturnTimeFromSegmentationImpl(ClassificationResult result) {
-        long returnTimeMs;
-        if (result.status != PredictionStatus.SUCCEEDED || result.orderedLabels.isEmpty()) {
-            // Model execution failed or no label selected.
-            returnTimeMs = -1;
-        } else {
-            String label = result.orderedLabels.get(0);
-            // When label is non-integer return -1, else convert label to microseconds.
-            returnTimeMs =
-                    isValidLong(label) ? (Long.parseLong(label) * DateUtils.SECOND_IN_MILLIS) : -1;
-        }
-        ChromeSharedPreferences.getInstance()
-                .writeLong(
-                        ChromePreferenceKeys.START_RETURN_TIME_SEGMENTATION_RESULT_MS,
-                        returnTimeMs);
     }
 
     /** Called when Start surface is shown at startup. */

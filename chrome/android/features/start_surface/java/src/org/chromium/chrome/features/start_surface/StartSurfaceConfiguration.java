@@ -66,13 +66,6 @@ public class StartSurfaceConfiguration {
                     ChromeFeatureList.START_SURFACE_RETURN_TIME,
                     HOME_SURFACE_RETURN_TIME_SECONDS_PARAM,
                     28800); // 8 hours
-    private static final String START_SURFACE_RETURN_TIME_USE_MODEL_PARAM =
-            "start_surface_return_time_use_model";
-    public static final BooleanCachedFieldTrialParameter START_SURFACE_RETURN_TIME_USE_MODEL =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_RETURN_TIME,
-                    START_SURFACE_RETURN_TIME_USE_MODEL_PARAM,
-                    false);
 
     private static final String LOGO_POLISH_LARGE_SIZE_PARAM = "polish_logo_size_large";
     public static final BooleanCachedFieldTrialParameter LOGO_POLISH_LARGE_SIZE =

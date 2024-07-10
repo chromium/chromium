@@ -39,7 +39,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android_v2.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/segmentation_platform/embedder/default_model/android_home_module_ranker.h"
@@ -154,7 +153,6 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     configs.emplace_back(GetConfigForContextualPageActions(context));
   }
 
-  configs.emplace_back(ChromeStartModelV2::GetConfig());
   configs.emplace_back(IntentionalUserModel::GetConfig());
   configs.emplace_back(PowerUserSegment::GetConfig());
   configs.emplace_back(FrequentFeatureUserModel::GetConfig());
