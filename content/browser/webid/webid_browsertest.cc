@@ -1192,6 +1192,19 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
     WebIdBrowserTest::SetUpOnMainThread();
 
     SetTestDigitalIdentityProvider();
+
+    MockDigitalIdentityProvider* digital_identity_provider =
+        static_cast<MockDigitalIdentityProvider*>(
+            test_browser_client_->GetDigitalIdentityProviderForTests());
+    ON_CALL(*digital_identity_provider,
+            ShowDigitalIdentityInterstitial(_, _, _, _))
+        .WillByDefault(WithArg<3>(
+            [](DigitalIdentityProvider::DigitalIdentityInterstitialCallback
+                   callback) {
+              std::move(callback).Run(
+                  DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
+              return base::OnceClosure();
+            }));
   }
 };
 

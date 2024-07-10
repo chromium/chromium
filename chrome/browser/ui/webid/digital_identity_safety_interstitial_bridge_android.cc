@@ -30,12 +30,12 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::
   Java_DigitalIdentitySafetyInterstitialBridge_destroy(env, j_bridge_);
 }
 
-content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
 DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitial(
     content::WebContents& web_contents,
     const url::Origin& origin,
     content::DigitalIdentityInterstitialType interstitial_type,
-    content::ContentBrowserClient::DigitalIdentityInterstitialCallback
+    content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
         callback) {
   callback_ = std::move(callback);
   JNIEnv* env = AttachCurrentThread();

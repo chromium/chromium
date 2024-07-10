@@ -919,12 +919,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   CreateIdentityRequestDialogController(
       content::WebContents* web_contents) override;
 
-  DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
-      content::WebContents& web_contents,
-      const url::Origin& origin,
-      content::DigitalIdentityInterstitialType interstitial_type,
-      DigitalIdentityInterstitialCallback callback) override;
-
   std::unique_ptr<content::DigitalIdentityProvider>
   CreateDigitalIdentityProvider() override;
 

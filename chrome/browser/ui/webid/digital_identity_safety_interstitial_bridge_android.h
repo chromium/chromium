@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/digital_identity_provider.h"
 
 namespace content {
 class WebContents;
@@ -32,12 +32,12 @@ class DigitalIdentitySafetyInterstitialBridgeAndroid {
   DigitalIdentitySafetyInterstitialBridgeAndroid& operator=(
       const DigitalIdentitySafetyInterstitialBridgeAndroid&) = delete;
 
-  content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+  content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
   ShowInterstitial(
       content::WebContents& web_contents,
       const url::Origin& origin,
       content::DigitalIdentityInterstitialType interstitial_type,
-      content::ContentBrowserClient::DigitalIdentityInterstitialCallback
+      content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
           callback);
 
   void OnInterstitialDone(JNIEnv* env, jint status_for_metrics);
@@ -47,7 +47,8 @@ class DigitalIdentitySafetyInterstitialBridgeAndroid {
 
   base::android::ScopedJavaGlobalRef<jobject> j_bridge_;
 
-  content::ContentBrowserClient::DigitalIdentityInterstitialCallback callback_;
+  content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
+      callback_;
 
   base::WeakPtrFactory<DigitalIdentitySafetyInterstitialBridgeAndroid>
       weak_ptr_factory_;

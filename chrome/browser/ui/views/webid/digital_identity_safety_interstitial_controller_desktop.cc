@@ -11,6 +11,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/widget/widget.h"
@@ -23,12 +24,12 @@ DigitalIdentitySafetyInterstitialControllerDesktop::
 DigitalIdentitySafetyInterstitialControllerDesktop::
     ~DigitalIdentitySafetyInterstitialControllerDesktop() = default;
 
-content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
 DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitial(
     content::WebContents& web_contents,
     const url::Origin& rp_origin,
     InterstitialType interstitial_type,
-    content::ContentBrowserClient::DigitalIdentityInterstitialCallback
+    content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
         callback) {
   web_contents_ = web_contents.GetWeakPtr();
   rp_origin_ = rp_origin;

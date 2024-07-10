@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBID_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBID_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_H_
 
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"
+#include "content/public/browser/digital_identity_provider.h"
 
 namespace content {
 class WebContents;
@@ -21,13 +21,13 @@ class Origin;
 // share their identity with website.
 class DigitalIdentitySafetyInterstitialController {
  public:
-  virtual content::ContentBrowserClient::
+  virtual content::DigitalIdentityProvider::
       DigitalIdentityInterstitialAbortCallback
       ShowInterstitial(
           content::WebContents& web_contents,
           const url::Origin& rp_origin,
           content::DigitalIdentityInterstitialType,
-          content::ContentBrowserClient::DigitalIdentityInterstitialCallback
+          content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
               callback) = 0;
 
  protected:

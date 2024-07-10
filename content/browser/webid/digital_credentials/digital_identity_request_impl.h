@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -41,8 +40,9 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
   // Returns the type of interstitial to show based on the request contents.
-  static std::optional<content::DigitalIdentityInterstitialType>
-  ComputeInterstitialType(
+  static std::optional<DigitalIdentityInterstitialType> ComputeInterstitialType(
+      const url::Origin& rp_origin,
+      const DigitalIdentityProvider* provider,
       const data_decoder::DataDecoder::ValueOrError& request);
 
   DigitalIdentityRequestImpl(const DigitalIdentityRequestImpl&) = delete;
@@ -65,7 +65,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
     RenderFrameHostLifecycleObserver(
         const raw_ptr<WebContents> web_contents,
         raw_ptr<RenderFrameHost> render_frame_host,
-        ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+        DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
             abort_callback);
     ~RenderFrameHostLifecycleObserver() override;
 
@@ -79,7 +79,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
         content::RenderFrameHost::LifecycleState new_state) override;
 
     const raw_ptr<RenderFrameHost> render_frame_host_;
-    ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+    DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
         abort_callback_;
   };
 
@@ -124,7 +124,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
 
   // Callback which updates interstitial to inform user that the credential
   // request has been aborted.
-  ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+  DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
       update_interstitial_on_abort_callback_;
 
   // Updates interstitial to indicate that credential request was canceled when

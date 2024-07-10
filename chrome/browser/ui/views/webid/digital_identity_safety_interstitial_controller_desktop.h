@@ -8,8 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webid/digital_identity_safety_interstitial_controller.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
@@ -23,12 +23,12 @@ class DigitalIdentitySafetyInterstitialControllerDesktop
   DigitalIdentitySafetyInterstitialControllerDesktop();
   ~DigitalIdentitySafetyInterstitialControllerDesktop() override;
 
-  content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+  content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
   ShowInterstitial(
       content::WebContents& web_contents,
       const url::Origin& rp_origin,
       content::DigitalIdentityInterstitialType,
-      content::ContentBrowserClient::DigitalIdentityInterstitialCallback
+      content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
           callback) override;
 
  private:
@@ -45,7 +45,8 @@ class DigitalIdentitySafetyInterstitialControllerDesktop
 
   url::Origin rp_origin_;
   content::DigitalIdentityInterstitialType interstitial_type_;
-  content::ContentBrowserClient::DigitalIdentityInterstitialCallback callback_;
+  content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
+      callback_;
 
   base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<views::Widget> dialog_widget_;

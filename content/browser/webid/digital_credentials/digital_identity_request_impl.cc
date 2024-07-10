@@ -28,7 +28,7 @@ using InterstitialType = content::DigitalIdentityInterstitialType;
 using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
 using DigitalIdentityInterstitialAbortCallback =
-    content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback;
+    content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
 
 namespace content {
 namespace {
@@ -182,6 +182,8 @@ void DigitalIdentityRequestImpl::Create(
 // static
 std::optional<InterstitialType>
 DigitalIdentityRequestImpl::ComputeInterstitialType(
+    const url::Origin& rp_origin,
+    const DigitalIdentityProvider* provider,
     const data_decoder::DataDecoder::ValueOrError& request) {
   std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
       features::kWebIdentityDigitalCredentials, kDigitalIdentityDialogParam);
@@ -195,6 +197,10 @@ DigitalIdentityRequestImpl::ComputeInterstitialType(
 
   if (dialog_param_value == kDigitalIdentityLowRiskDialogParamValue) {
     return InterstitialType::kLowRisk;
+  }
+
+  if (provider->IsLowRiskOrigin(rp_origin)) {
+    return std::nullopt;
   }
 
   return (request.has_value() &&
@@ -352,8 +358,9 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
     return;
   }
 
-  std::optional<InterstitialType> interstitial_type =
-      ComputeInterstitialType(parsed_result);
+  std::optional<InterstitialType> interstitial_type = ComputeInterstitialType(
+      render_frame_host().GetMainFrame()->GetLastCommittedOrigin(),
+      provider_.get(), parsed_result);
 
   if (!interstitial_type) {
     OnInterstitialDone(request_to_send, RequestStatusForMetrics::kSuccess);
@@ -361,7 +368,7 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
   }
 
   update_interstitial_on_abort_callback_ =
-      GetContentClient()->browser()->ShowDigitalIdentityInterstitial(
+      provider_->ShowDigitalIdentityInterstitial(
           *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
           *interstitial_type,
           base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,

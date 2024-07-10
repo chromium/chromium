@@ -1541,17 +1541,6 @@ ContentBrowserClient::CreateIdentityRequestDialogController(
   return std::make_unique<IdentityRequestDialogController>();
 }
 
-ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
-ContentBrowserClient::ShowDigitalIdentityInterstitial(
-    WebContents& web_contents,
-    const url::Origin& origin,
-    DigitalIdentityInterstitialType interstitial_type,
-    DigitalIdentityInterstitialCallback callback) {
-  std::move(callback).Run(
-      DigitalIdentityProvider::RequestStatusForMetrics::kErrorOther);
-  return base::OnceClosure();
-}
-
 std::unique_ptr<DigitalIdentityProvider>
 ContentBrowserClient::CreateDigitalIdentityProvider() {
   return nullptr;

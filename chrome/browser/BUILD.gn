@@ -1878,6 +1878,8 @@ static_library("browser") {
     "webauthn/webauthn_pref_names.h",
     "webdata_services/web_data_service_factory.cc",
     "webdata_services/web_data_service_factory.h",
+    "webid/digital_identity_low_risk_origins.cc",
+    "webid/digital_identity_low_risk_origins.h",
     "webid/federated_identity_account_keyed_permission_context.cc",
     "webid/federated_identity_account_keyed_permission_context.h",
     "webid/federated_identity_api_permission_context.cc",

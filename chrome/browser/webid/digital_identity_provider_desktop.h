@@ -19,6 +19,13 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   DigitalIdentityProviderDesktop();
   ~DigitalIdentityProviderDesktop() override;
 
+  // content::DigitalIdentityProvider:
+  bool IsLowRiskOrigin(const url::Origin& to_check) const override;
+  DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
+      content::WebContents& web_contents,
+      const url::Origin& origin,
+      content::DigitalIdentityInterstitialType interstitial_type,
+      DigitalIdentityInterstitialCallback callback) override;
   void Request(content::WebContents* web_contents,
                const url::Origin& rp_origin,
                const std::string& request,

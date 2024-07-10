@@ -2791,6 +2791,8 @@ test("content_unittests") {
     "../browser/webid/test/mock_modal_dialog_view_delegate.h",
     "../browser/webid/test/mock_permission_delegate.cc",
     "../browser/webid/test/mock_permission_delegate.h",
+    "../browser/webid/test/stub_digital_identity_provider.cc",
+    "../browser/webid/test/stub_digital_identity_provider.h",
     "../browser/webrtc/webrtc_internals_message_handler_unittest.cc",
     "../browser/webrtc/webrtc_internals_unittest.cc",
     "../browser/webtransport/web_transport_throttle_context_unittest.cc",

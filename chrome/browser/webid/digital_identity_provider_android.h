@@ -37,7 +37,12 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
                  jstring j_digital_identity,
                  jint j_status_for_metrics);
 
-  // Triggers a request for a digital credential.
+  bool IsLowRiskOrigin(const url::Origin& to_check) const override;
+  DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
+      content::WebContents& web_contents,
+      const url::Origin& origin,
+      content::DigitalIdentityInterstitialType interstitial_type,
+      DigitalIdentityInterstitialCallback callback) override;
   void Request(content::WebContents* web_contents,
                const url::Origin& origin,
                const std::string& request,

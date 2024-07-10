@@ -14,6 +14,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/webid/digital_identity_safety_interstitial_controller_desktop.h"
+#include "chrome/browser/webid/digital_identity_provider_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -44,7 +45,7 @@ void OnDialogShown(base::RepeatingClosure dialog_shown_callback,
 // - always succeeds
 // - offers method to wait till DigitalIdentityProvider::Request() is invoked.
 class TestDigitalIdentityProvider final
-    : public content::DigitalIdentityProvider {
+    : public DigitalIdentityProviderDesktop {
  public:
   explicit TestDigitalIdentityProvider(
       base::OnceClosure credential_request_observer)

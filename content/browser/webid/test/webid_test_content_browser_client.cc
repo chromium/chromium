@@ -24,17 +24,6 @@ void WebIdTestContentBrowserClient::SetIdentityRequestDialogController(
   test_dialog_controller_ = std::move(controller);
 }
 
-ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
-WebIdTestContentBrowserClient::ShowDigitalIdentityInterstitial(
-    content::WebContents& web_contents,
-    const url::Origin& origin,
-    DigitalIdentityInterstitialType interstitial_type,
-    DigitalIdentityInterstitialCallback callback) {
-  std::move(callback).Run(
-      DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
-  return base::OnceClosure();
-}
-
 std::unique_ptr<DigitalIdentityProvider>
 WebIdTestContentBrowserClient::CreateDigitalIdentityProvider() {
   DCHECK(test_digital_identity_provider_);
