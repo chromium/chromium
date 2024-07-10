@@ -28,6 +28,15 @@ const CGFloat kCloseButtonTopMargin = 10;
 // Margin between the close button and the trailing edge of the screen.
 const CGFloat kCloseButtonTrailingMargin = 16;
 
+// Height of the drag handle view.
+const CGFloat kDragHandleHeight = 5;
+
+// Width of the drag handle view.
+const CGFloat kDragHandleWidth = 36;
+
+// Top margin between the drag handle view and the panel.
+const CGFloat kDragHandleTopMargin = 5;
+
 // The size of the logo image.
 constexpr CGFloat kLogoSize = 22;
 
@@ -52,6 +61,9 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
   // The button to close the view.
   UIButton* _closeButton;
+
+  // The view for the small drag handle at the top of the panel.
+  UIView* _dragHandleView;
 
   // The collection view managed by this view controller
   UICollectionView* _collectionView;
@@ -98,8 +110,10 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   ]];
 
   [self createCloseButton];
+  [self createDragHandleView];
 
   [_headerView.contentView addSubview:_closeButton];
+  [_headerView.contentView addSubview:_dragHandleView];
   [NSLayoutConstraint activateConstraints:@[
     [_closeButton.topAnchor
         constraintEqualToAnchor:_headerView.contentView.topAnchor
@@ -107,6 +121,11 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     [_headerView.contentView.trailingAnchor
         constraintEqualToAnchor:_closeButton.trailingAnchor
                        constant:kCloseButtonTrailingMargin],
+    [_headerView.centerXAnchor
+        constraintEqualToAnchor:_dragHandleView.centerXAnchor],
+    [_dragHandleView.topAnchor
+        constraintEqualToAnchor:_headerView.contentView.topAnchor
+                       constant:kDragHandleTopMargin],
   ]];
 
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
@@ -294,6 +313,18 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                 }]];
   _closeButton.accessibilityIdentifier = kCloseButtonAccessibilityIdentifier;
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+}
+
+- (void)createDragHandleView {
+  _dragHandleView = [[UIView alloc] init];
+  _dragHandleView.translatesAutoresizingMaskIntoConstraints = NO;
+  _dragHandleView.backgroundColor = UIColor.systemGray2Color;
+  _dragHandleView.layer.cornerRadius = kDragHandleHeight / 2;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_dragHandleView.heightAnchor constraintEqualToConstant:kDragHandleHeight],
+    [_dragHandleView.widthAnchor constraintEqualToConstant:kDragHandleWidth],
+  ]];
 }
 
 - (void)createBackground {
