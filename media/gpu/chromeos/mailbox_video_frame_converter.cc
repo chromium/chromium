@@ -28,6 +28,7 @@
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -143,18 +144,21 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
         std::move(handle));
   }
 
-  bool UpdateSharedImage(const gpu::Mailbox& mailbox,
-                         gfx::GpuFenceHandle in_fence_handle) override {
+  std::optional<gpu::SyncToken> UpdateSharedImage(
+      const gpu::Mailbox& mailbox) override {
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
 
     if (!gpu_channel_)
-      return false;
+      return std::nullopt;
 
     gpu::SharedImageStub* shared_image_stub = gpu_channel_->shared_image_stub();
     DCHECK(shared_image_stub);
+    const scoped_refptr<gpu::GpuChannelSharedImageInterface>&
+        shared_image_interface = shared_image_stub->shared_image_interface();
+    CHECK(shared_image_interface);
 
-    return shared_image_stub->UpdateSharedImage(mailbox,
-                                                std::move(in_fence_handle));
+    shared_image_interface->UpdateSharedImage(gpu::SyncToken(), mailbox);
+    return shared_image_interface->GenVerifiedSyncToken();
   }
 
   bool WaitOnSyncTokenAndReleaseFrame(
@@ -331,7 +335,8 @@ void MailboxVideoFrameConverter::ConvertFrame(
 void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
     FrameResource* origin_frame,
     scoped_refptr<FrameResource> frame,
-    scoped_refptr<gpu::ClientSharedImage> shared_image) {
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    const gpu::SyncToken& shared_image_sync_token) {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(shared_image);
 
@@ -421,9 +426,9 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
           ? frame->coded_size()
           : GetRectSizeFromOrigin(frame->visible_rect());
   scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapSharedImage(
-      frame->format(), shared_image, shared_image->creation_sync_token(),
-      texture_target, std::move(release_mailbox_cb), coded_size,
-      frame->visible_rect(), frame->natural_size(), frame->timestamp());
+      frame->format(), shared_image, shared_image_sync_token, texture_target,
+      std::move(release_mailbox_cb), coded_size, frame->visible_rect(),
+      frame->natural_size(), frame->timestamp());
   mailbox_frame->set_color_space(frame->ColorSpace());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
@@ -464,14 +469,17 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
     DCHECK(stored_shared_image->HasData());
     bool res;
     const auto& client_shared_image = stored_shared_image->shared_image();
+    std::optional<gpu::SyncToken> sync_token;
     if (client_shared_image->size() == GetRectSizeFromOrigin(visible_rect) &&
         client_shared_image->color_space() == src_color_space) {
-      res = UpdateSharedImageOnGPUThread(client_shared_image->mailbox());
+      sync_token = UpdateSharedImageOnGPUThread(client_shared_image->mailbox());
+      res = sync_token.has_value();
     } else {
       // Either the existing shared image's size is no longer good enough or the
       // color space has changed. Let's create a new shared image.
       res = GenerateSharedImageOnGPUThread(origin_frame, src_color_space,
                                            visible_rect, stored_shared_image);
+      sync_token = client_shared_image->creation_sync_token();
     }
     if (res) {
       DCHECK(stored_shared_image->HasData());
@@ -479,7 +487,7 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
           FROM_HERE,
           base::BindOnce(
               std::move(wrap_shared_image_and_video_frame_and_output_cb),
-              client_shared_image));
+              client_shared_image, sync_token.value()));
     }
     return;
   }
@@ -494,6 +502,7 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
 
   scoped_refptr<gpu::ClientSharedImage> new_client_shared_image =
       new_shared_image->shared_image();
+  gpu::SyncToken sync_token = new_client_shared_image->creation_sync_token();
   // |origin_frame| is valid as long as |frame| lives. |frame| is kept alive in
   // |wrap_shared_image_and_video_frame_and_output_cb|.
   parent_task_runner_->PostTask(
@@ -504,7 +513,7 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
   parent_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(wrap_shared_image_and_video_frame_and_output_cb),
-                     std::move(new_client_shared_image)));
+                     std::move(new_client_shared_image), sync_token));
 }
 
 bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
@@ -613,14 +622,16 @@ void MailboxVideoFrameConverter::RegisterSharedImage(
       origin_frame->unique_id()));
 }
 
-bool MailboxVideoFrameConverter::UpdateSharedImageOnGPUThread(
+std::optional<gpu::SyncToken>
+MailboxVideoFrameConverter::UpdateSharedImageOnGPUThread(
     const gpu::Mailbox& mailbox) {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
-  if (!gpu_delegate_->UpdateSharedImage(mailbox, gfx::GpuFenceHandle())) {
+  std::optional<gpu::SyncToken> sync_token =
+      gpu_delegate_->UpdateSharedImage(mailbox);
+  if (!sync_token.has_value()) {
     OnError(FROM_HERE, "Could not update shared image");
-    return false;
   }
-  return true;
+  return sync_token;
 }
 
 void MailboxVideoFrameConverter::WaitOnSyncTokenAndReleaseFrameOnGPUThread(
