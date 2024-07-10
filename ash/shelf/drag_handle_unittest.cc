@@ -127,16 +127,28 @@ TEST_P(DragHandleTest, AccessibilityFeaturesEnabled) {
   SetTestA11yFeatureEnabled(true /*enabled*/);
   EXPECT_TRUE(drag_handle()->GetEnabled());
 
+  ui::AXNodeData data;
+  drag_handle()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(HotseatState::kHidden,
             GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
 
   // Click on the drag handle should extend the hotseat.
   ClickDragHandle();
+  data = ui::AXNodeData();
+  drag_handle()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(HotseatState::kExtended,
             GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
 
   // Click again should hide the hotseat.
   ClickDragHandle();
+  data = ui::AXNodeData();
+  drag_handle()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(HotseatState::kHidden,
             GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
 
@@ -166,6 +178,8 @@ TEST_F(DragHandleFocusTest, AccessibilityFocusOrder) {
       ->GetDragHandle()
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
   CheckFocusOrder(shelf->shelf_widget()->navigation_widget(),
                   shelf->status_area_widget());
 
@@ -173,10 +187,13 @@ TEST_F(DragHandleFocusTest, AccessibilityFocusOrder) {
   // should be the hotseat.
   ClickDragHandle();
   ASSERT_EQ(shelf->hotseat_widget()->state(), HotseatState::kExtended);
+  data = ui::AXNodeData();
   shelf->shelf_widget()
       ->GetDragHandle()
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
   CheckFocusOrder(shelf->hotseat_widget(), shelf->hotseat_widget());
 }
 

@@ -156,6 +156,9 @@ class ASH_EXPORT DragHandle : public views::Button,
   // Stops the timer to show the drag handle nudge.
   void StopDragHandleNudgeShowTimer();
 
+  // Sets accessible states of the view.
+  void UpdateExpandedCollapsedAccessibleState() const;
+
   // Pointer to the shelf that owns the drag handle.
   const raw_ptr<Shelf> shelf_;
 
