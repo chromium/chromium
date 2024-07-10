@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/types/expected.h"
 #import "components/plus_addresses/fake_plus_address_service.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -28,20 +30,12 @@
 #import "url/origin.h"
 
 namespace {
+
 using plus_addresses::FakePlusAddressService;
 using plus_addresses::MockPlusAddressSettingService;
+using ::testing::Return;
+
 }  // namespace
-
-@interface TestPlusAddressBottomSheetMediator : PlusAddressBottomSheetMediator
-@end
-
-@implementation TestPlusAddressBottomSheetMediator
-
-- (BOOL)shouldShowNotice {
-  return YES;
-}
-
-@end
 
 class PlusAddressBottomSheetMediatorTest : public PlatformTest {
  protected:
@@ -56,7 +50,7 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(&browser_));
     BOOL incognito = browser_state_.get()->IsOffTheRecord();
-    mediator_ = [[TestPlusAddressBottomSheetMediator alloc]
+    mediator_ = [[PlusAddressBottomSheetMediator alloc]
         initWithPlusAddressService:&service()
          plusAddressSettingService:&plus_address_setting_service_
                          activeUrl:GURL(FakePlusAddressService::kFacet)
@@ -82,7 +76,7 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
   FakePlusAddressService service_;
   MockPlusAddressSettingService plus_address_setting_service_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
-  TestPlusAddressBottomSheetMediator* mediator_ = nil;
+  PlusAddressBottomSheetMediator* mediator_ = nil;
 };
 
 // Ensure that the consumer is notified when a plus address is successfully
@@ -111,12 +105,38 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
                                 FakePlusAddressService::kFakePlusAddress)]);
-  EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice());
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
   OCMExpect([consumer_ didConfirmPlusAddress]);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the settings service is informed that the notice was accepted.
+TEST_F(PlusAddressBottomSheetMediatorTest, AcceptNoticeNotifiesService) {
+  base::test::ScopedFeatureList features_{
+      plus_addresses::features::kPlusAddressUserOnboardingEnabled};
+
+  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice())
+      .WillByDefault(Return(false));
+  EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice());
+
+  [mediator() reservePlusAddress];
+  [mediator() confirmPlusAddress];
+}
+
+// Tests that the settings service is not informed when the bottomsheet was
+// accepted if the notice has already been accepted before.
+TEST_F(PlusAddressBottomSheetMediatorTest, NoticeAlreadyAccepted) {
+  base::test::ScopedFeatureList features_{
+      plus_addresses::features::kPlusAddressUserOnboardingEnabled};
+
+  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice())
+      .WillByDefault(Return(true));
+  EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice()).Times(0);
+
+  [mediator() reservePlusAddress];
+  [mediator() confirmPlusAddress];
 }
 
 // Ensure the consumer is notified when plus addresses confirmation fails.
@@ -134,7 +154,7 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddressError) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-TEST_F(PlusAddressBottomSheetMediatorTest, openManagementUrlOnNewTab) {
+TEST_F(PlusAddressBottomSheetMediatorTest, OpenManagementUrlOnNewTab) {
   [mediator() openNewTab:PlusAddressURLType::kManagement];
 
   EXPECT_EQ(GURL(plus_addresses::features::kPlusAddressManagementUrl.Get()),
@@ -144,7 +164,7 @@ TEST_F(PlusAddressBottomSheetMediatorTest, openManagementUrlOnNewTab) {
 }
 
 // Ensure that `openNewTab` opens errorReportUrl.
-TEST_F(PlusAddressBottomSheetMediatorTest, openErrorReportUrlOnNewTab) {
+TEST_F(PlusAddressBottomSheetMediatorTest, OpenErrorReportUrlOnNewTab) {
   [mediator() openNewTab:PlusAddressURLType::kErrorReport];
 
   EXPECT_EQ(GURL(plus_addresses::features::kPlusAddressErrorReportUrl.Get()),
@@ -153,7 +173,7 @@ TEST_F(PlusAddressBottomSheetMediatorTest, openErrorReportUrlOnNewTab) {
   EXPECT_EQ(1, url_loader()->load_new_tab_call_count);
 }
 
-TEST_F(PlusAddressBottomSheetMediatorTest, openLearnMoreUrlOnNewTab) {
+TEST_F(PlusAddressBottomSheetMediatorTest, OpenLearnMoreUrlOnNewTab) {
   [mediator() openNewTab:PlusAddressURLType::kLearnMore];
 
   EXPECT_EQ(GURL(plus_addresses::features::kPlusAddressLearnMoreUrl.Get()),
@@ -163,13 +183,12 @@ TEST_F(PlusAddressBottomSheetMediatorTest, openLearnMoreUrlOnNewTab) {
 }
 
 // Ensure the consumer is notified when plus addresses are refreshed.
-TEST_F(PlusAddressBottomSheetMediatorTest, didTapRefresh) {
+TEST_F(PlusAddressBottomSheetMediatorTest, DidTapRefresh) {
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
                                 FakePlusAddressService::kFakePlusAddress)]);
   [mediator() didTapRefreshButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
-  EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice());
   OCMExpect([consumer_ didConfirmPlusAddress]);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);

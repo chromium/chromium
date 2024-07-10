@@ -142,8 +142,9 @@
 }
 
 - (BOOL)shouldShowNotice {
-  // TODO(crbug.com/348353662): Should not return NO by default. Update!
-  return NO;
+  return !_plusAddressSettingService->GetHasAcceptedNotice() &&
+         base::FeatureList::IsEnabled(
+             plus_addresses::features::kPlusAddressUserOnboardingEnabled);
 }
 
 #pragma mark - Private
