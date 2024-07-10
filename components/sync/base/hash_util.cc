@@ -9,25 +9,22 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
 
-std::string GenerateSyncableBookmarkHash(
-    const std::string& originator_cache_guid,
-    const std::string& originator_client_item_id) {
-  // Blank PB with just the field in it has termination symbol,
-  // handy for delimiter.
-  sync_pb::EntitySpecifics serialized_type;
-  AddDefaultFieldValue(BOOKMARKS, &serialized_type);
-  std::string hash_input;
-  serialized_type.AppendToString(&hash_input);
-  hash_input.append(originator_cache_guid + originator_client_item_id);
-
-  return base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
+std::string GenerateUniquePositionSuffix(const ClientTagHash& client_tag_hash) {
+  // TODO(crbug.com/351357559): move this logic closer to UniquePosition class
+  // (use ClientTagHash instead of suffixes in API).
+  std::string result = base::Base64Encode(
+      base::SHA1Hash(base::as_byte_span(client_tag_hash.value())));
+  CHECK_EQ(result.size(), UniquePosition::kSuffixLength);
+  return result;
 }
 
 std::string GetUnhashedClientTagFromAutofillWalletSpecifics(

@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
@@ -16,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "components/sync/base/hash_util.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -98,6 +100,22 @@ std::string InferGuidForLegacyBookmark(
   return guid;
 }
 
+// Legacy method to calculate unique position suffix for the bookmarks which did
+// not have client tag hash.
+std::string GenerateUniquePositionSuffixForBookmark(
+    const std::string& originator_cache_guid,
+    const std::string& originator_client_item_id) {
+  // Blank PB with just the field in it has termination symbol,
+  // handy for delimiter.
+  sync_pb::EntitySpecifics serialized_type;
+  AddDefaultFieldValue(BOOKMARKS, &serialized_type);
+  std::string hash_input;
+  serialized_type.AppendToString(&hash_input);
+  hash_input.append(originator_cache_guid + originator_client_item_id);
+
+  return base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
+}
+
 sync_pb::UniquePosition GetUniquePositionFromSyncEntity(
     const sync_pb::SyncEntity& update_entity) {
   if (update_entity.has_unique_position()) {
@@ -107,9 +125,9 @@ sync_pb::UniquePosition GetUniquePositionFromSyncEntity(
   std::string suffix;
   if (update_entity.has_originator_cache_guid() &&
       update_entity.has_originator_client_item_id()) {
-    suffix =
-        GenerateSyncableBookmarkHash(update_entity.originator_cache_guid(),
-                                     update_entity.originator_client_item_id());
+    suffix = GenerateUniquePositionSuffixForBookmark(
+        update_entity.originator_cache_guid(),
+        update_entity.originator_client_item_id());
   } else {
     suffix = UniquePosition::RandomSuffix();
   }

@@ -13,7 +13,9 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/hash_util.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
@@ -22,7 +24,7 @@
 #include "components/sync/protocol/unique_position.pb.h"
 
 using std::string;
-using syncer::GenerateSyncableBookmarkHash;
+using syncer::GenerateUniquePositionSuffix;
 using syncer::LoopbackServerEntity;
 
 // A version must be passed when creating a LoopbackServerEntity, but this value
@@ -33,6 +35,15 @@ const int64_t kUnusedVersion = 0L;
 const int64_t kDefaultTime = 1234L;
 
 namespace fake_server {
+
+namespace {
+
+std::string GenerateUniquePositionStringForBookmark(const base::Uuid& uuid) {
+  return GenerateUniquePositionSuffix(syncer::ClientTagHash::FromUnhashed(
+      syncer::BOOKMARKS, uuid.AsLowercaseString()));
+}
+
+}  // namespace
 
 BookmarkEntityBuilder::BookmarkEntityBuilder(
     const string& title,
@@ -125,7 +136,12 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
 
   if (bookmark_generation_ >= BookmarkGeneration::kValidGuidAndLegacyTitle) {
     bookmark_specifics->set_legacy_canonicalized_title(title_);
-    bookmark_specifics->set_guid(originator_client_item_id_);
+
+    // GUID must be valid for `kValidGuidAndLegacyTitle`.
+    base::Uuid uuid =
+        base::Uuid::ParseCaseInsensitive(originator_client_item_id_);
+    CHECK(uuid.is_valid());
+    bookmark_specifics->set_guid(uuid.AsLowercaseString());
   }
 
   if (bookmark_generation_ >= BookmarkGeneration::kValidGuidAndFullTitle) {
@@ -154,9 +170,8 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
   return base::WrapUnique<LoopbackServerEntity>(
       new syncer::PersistentBookmarkEntity(
           id_, kUnusedVersion, title_, originator_cache_guid_,
-          originator_client_item_id_, /*client_tag_hash=*/"",
-          GenerateUniquePosition(), entity_specifics, is_folder, parent_id_,
-          kDefaultTime, kDefaultTime));
+          originator_client_item_id_, /*client_tag_hash=*/"", unique_position_,
+          entity_specifics, is_folder, parent_id_, kDefaultTime, kDefaultTime));
 }
 
 void BookmarkEntityBuilder::FillWithFaviconIfNeeded(
@@ -175,8 +190,11 @@ void BookmarkEntityBuilder::FillWithFaviconIfNeeded(
 }
 
 sync_pb::UniquePosition BookmarkEntityBuilder::GenerateUniquePosition() const {
-  const string suffix = GenerateSyncableBookmarkHash(
-      originator_cache_guid_, originator_client_item_id_);
+  base::Uuid uuid =
+      base::Uuid::ParseCaseInsensitive(originator_client_item_id_);
+  const string suffix = uuid.is_valid()
+                            ? GenerateUniquePositionStringForBookmark(uuid)
+                            : syncer::UniquePosition::RandomSuffix();
   return syncer::UniquePosition::FromInt64(index_, suffix).ToProto();
 }
 

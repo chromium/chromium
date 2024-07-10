@@ -76,8 +76,7 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
 
  private:
   syncer::UniquePosition ComputePosition(const bookmarks::BookmarkNode& parent,
-                                         size_t index,
-                                         const std::string& sync_id);
+                                         size_t index) const;
 
   // Process a modification of a local node and updates `bookmark_tracker_`
   // accordingly. No-op if the commit can be optimized away, i.e. if `specifics`
