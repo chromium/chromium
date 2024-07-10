@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SERVICE_H_
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SERVICE_H_
 
-#import <memory>
+#import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
+#import <memory>
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -19,6 +19,7 @@ class PrefRegistrySimple;
 @class PushNotificationAccountContextManager;
 enum class PushNotificationClientId;
 class PushNotificationClientManager;
+@class PushNotificationConfiguration;
 
 // Service responsible for establishing connection and interacting
 // with the push notification server.

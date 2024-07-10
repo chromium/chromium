@@ -39,7 +39,7 @@ source_set("model") {
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prefs/model",
-    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",

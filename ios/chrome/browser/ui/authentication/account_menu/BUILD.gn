@@ -20,7 +20,7 @@ source_set("account_menu") {
     "//components/signin/public/identity_manager/objc",
     "//components/sync/service",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
