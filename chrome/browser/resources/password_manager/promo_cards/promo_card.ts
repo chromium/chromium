@@ -109,7 +109,7 @@ export class PromoCardElement extends PromoCardElementBase {
     return sanitizeInnerHtml(this.promoCard.description);
   }
 
-  private onActionButtonClick_() {
+  private async onActionButtonClick_() {
     switch (this.promoCard.id) {
       case PromoCardId.CHECKUP:
         const params = new URLSearchParams();
@@ -131,7 +131,16 @@ export class PromoCardElement extends PromoCardElementBase {
         recordPromoCardAction(PromoCardMetricId.MOVE_PASSWORDS);
         return;
       case PromoCardId.SCREENLOCK_REAUTH:
-        // TODO(b/41485156): Add reauth logic.
+        recordPromoCardAction(PromoCardMetricId.SCREENLOCK_REAUTH);
+        await PasswordManagerImpl.getInstance()
+            .switchBiometricAuthBeforeFillingState()
+            .then(result => {
+              if (result) {
+                this.dispatchEvent(new CustomEvent(
+                    'biometric-auth-before-filling-enabled',
+                    {bubbles: true, composed: true}));
+              }
+            });
         break;
       default:
         assertNotReached();

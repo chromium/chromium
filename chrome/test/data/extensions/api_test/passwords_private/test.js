@@ -654,6 +654,7 @@ var availableTests = [
 
   function switchBiometricAuthBeforeFillingState() {
     chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState(_ => {
+      chrome.test.assertNoLastError();
       chrome.test.succeed();
     });
   },
