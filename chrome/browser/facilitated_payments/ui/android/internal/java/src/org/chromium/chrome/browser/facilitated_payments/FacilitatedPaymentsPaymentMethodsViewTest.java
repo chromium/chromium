@@ -229,7 +229,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         TextView descriptionLine1 = mView.getContentView().findViewById(R.id.description_line_1);
         assertThat(
                 descriptionLine1.getText(),
-                is("Transactions that exceed your balance will not be processed"));
+                is("Limits from your financial institution are applied."));
     }
 
     @Test
