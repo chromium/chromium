@@ -45,6 +45,7 @@ import native_disassembly
 
 _RESOURCE_SIZES_LOG = 'resource_sizes_log'
 _RESOURCE_SIZES_64_LOG = 'resource_sizes_64_log'
+_MAIN_LOG_NAMES = (_RESOURCE_SIZES_LOG, _RESOURCE_SIZES_64_LOG)
 _BASE_RESOURCE_SIZES_LOG = 'base_resource_sizes_log'
 _MUTABLE_CONSTANTS_LOG = 'mutable_contstants_log'
 _FOR_TESTING_LOG = 'for_test_log'
@@ -293,7 +294,7 @@ def _GenerateBinarySizePluginDetails(metrics):
         'large_improvement': delta.IsLargeImprovement(),
     }
     # Always show the Normalized APK Size.
-    if log_name == _RESOURCE_SIZES_LOG or delta.actual != 0:
+    if log_name in _MAIN_LOG_NAMES or delta.actual != 0:
       binary_size_listings.append(listing)
   binary_size_listings.sort(key=lambda x: x['name'])
 
