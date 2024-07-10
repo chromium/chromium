@@ -87,7 +87,18 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                         mAsyncTabParamsManager,
                         this,
                         /* supportUndo= */ true,
-                        /* trackInNativeModelList= */ false);
+                        /* trackInNativeModelList= */ false) {
+                    @Override
+                    public int index() {
+                        // Intentional noop.
+                        return INVALID_TAB_INDEX;
+                    }
+
+                    @Override
+                    public void setIndex(int i, final @TabSelectionType int type) {
+                        // Intentional noop.
+                    }
+                };
         ((ArchivedTabCreator) tabCreator).setTabModel(normalModel);
 
         onNativeLibraryReadyInternal(

@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
 import android.util.Pair;
 
@@ -238,6 +239,13 @@ public class ArchivedTabModelOrchestratorTest {
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testGetModelIndex() {
+        finishLoading();
+        assertEquals(INVALID_TAB_INDEX, mArchivedTabModel.index());
     }
 
     @Test
