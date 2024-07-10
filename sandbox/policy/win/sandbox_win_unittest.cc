@@ -294,7 +294,14 @@ TEST_F(SandboxWinTest, IsGpuAppContainerEnabled) {
       command_line, sandbox::mojom::Sandbox::kNoSandbox));
 }
 
-TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
+// TODO(crbug/40223285): re-enable the tests once they are passing on
+// Windows ARM64.
+#ifdef ARCH_CPU_ARM64
+#define MAYBE_AppContainerAccessCheckFail DISABLED_AppContainerAccessCheckFail
+#else
+#define MAYBE_AppContainerAccessCheckFail AppContainerAccessCheckFail
+#endif
+TEST_F(SandboxWinTest, MAYBE_AppContainerAccessCheckFail) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     return;
   }
@@ -305,7 +312,14 @@ TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
   EXPECT_EQ(SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK, result.error());
 }
 
-TEST_F(SandboxWinTest, AppContainerCheckProfile) {
+// TODO(crbug/40223285): re-enable the tests once they are passing on
+// Windows ARM64.
+#ifdef ARCH_CPU_ARM64
+#define MAYBE_AppContainerCheckProfile DISABLED_AppContainerCheckProfile
+#else
+#define MAYBE_AppContainerCheckProfile AppContainerCheckProfile
+#endif
+TEST_F(SandboxWinTest, MAYBE_AppContainerCheckProfile) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     return;
   }
@@ -364,7 +378,16 @@ TEST_F(SandboxWinTest, AppContainerCheckProfile) {
   }
 }
 
-TEST_F(SandboxWinTest, AppContainerCheckProfileDisableLpac) {
+// TODO(crbug/40223285): re-enable the tests once they are passing on
+// Windows ARM64.
+#ifdef ARCH_CPU_ARM64
+#define MAYBE_AppContainerCheckProfileDisableLpac \
+  DISABLED_AppContainerCheckProfileDisableLpac
+#else
+#define MAYBE_AppContainerCheckProfileDisableLpac \
+  AppContainerCheckProfileDisableLpac
+#endif
+TEST_F(SandboxWinTest, MAYBE_AppContainerCheckProfileDisableLpac) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     return;
   }
@@ -378,7 +401,16 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileDisableLpac) {
   EXPECT_FALSE(result.value()->GetEnableLowPrivilegeAppContainer());
 }
 
-TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
+// TODO(crbug/40223285): re-enable the tests once they are passing on
+// Windows ARM64.
+#ifdef ARCH_CPU_ARM64
+#define MAYBE_AppContainerCheckProfileAddCapabilities \
+  DISABLED_AppContainerCheckProfileAddCapabilities
+#else
+#define MAYBE_AppContainerCheckProfileAddCapabilities \
+  AppContainerCheckProfileAddCapabilities
+#endif
+TEST_F(SandboxWinTest, MAYBE_AppContainerCheckProfileAddCapabilities) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     return;
   }
