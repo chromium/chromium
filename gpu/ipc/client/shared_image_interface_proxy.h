@@ -69,11 +69,6 @@ class SharedImageInterfaceProxy {
                             base::span<const uint8_t> pixel_data);
   Mailbox CreateSharedImage(const SharedImageInfo& si_info,
                             gfx::GpuMemoryBufferHandle handle);
-  Mailbox CreateSharedImage(gfx::BufferFormat format,
-                            gfx::BufferPlane plane,
-                            const gfx::Size& size,
-                            const SharedImageInfo& si_info,
-                            gfx::GpuMemoryBufferHandle buffer_handle);
 
 #if BUILDFLAG(IS_WIN)
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,

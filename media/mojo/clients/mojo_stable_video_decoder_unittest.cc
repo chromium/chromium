@@ -346,11 +346,6 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
                    gfx::GpuMemoryBufferHandle buffer_handle));
   MOCK_METHOD1(CreateSharedImage,
                SharedImageMapping(const gpu::SharedImageInfo& si_info));
-  MOCK_METHOD3(CreateSharedImage,
-               scoped_refptr<gpu::ClientSharedImage>(
-                   gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-                   const gpu::SharedImageInfo& si_info));
   MOCK_METHOD2(UpdateSharedImage,
                void(const gpu::SyncToken& sync_token,
                     const gpu::Mailbox& mailbox));

@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -472,67 +471,6 @@ void GpuChannelSharedImageInterface::CreateSharedImageWithBufferOnGpuThread(
           si_info.meta.color_space, si_info.meta.surface_origin,
           si_info.meta.alpha_type, si_info.meta.usage,
           std::move(si_info.debug_label), std::move(buffer_handle))) {
-    shared_image_stub_->shared_context_state()->MarkContextLost();
-    return;
-  }
-  ReleaseFenceSync(release);
-}
-
-scoped_refptr<ClientSharedImage>
-GpuChannelSharedImageInterface::CreateSharedImage(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    const SharedImageInfo& si_info) {
-  auto plane = gfx::BufferPlane::DEFAULT;
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
-  DCHECK(IsImageSizeValidForGpuMemoryBufferFormat(
-      gpu_memory_buffer->GetSize(), gpu_memory_buffer->GetFormat()));
-  DCHECK(IsPlaneValidForGpuMemoryBufferFormat(plane,
-                                              gpu_memory_buffer->GetFormat()));
-
-  auto mailbox = Mailbox::Generate();
-  gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
-  {
-    base::AutoLock lock(lock_);
-    ScheduleGpuTask(
-        base::BindOnce(
-            &GpuChannelSharedImageInterface::CreateGMBSharedImageOnGpuThread,
-            this, mailbox, std::move(handle), gpu_memory_buffer->GetFormat(),
-            plane, gpu_memory_buffer->GetSize(), si_info,
-            next_fence_sync_release_++),
-        {});
-  }
-
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox,
-      SharedImageMetadata(
-          viz::GetSinglePlaneSharedImageFormat(
-              GetPlaneBufferFormat(plane, gpu_memory_buffer->GetFormat())),
-          gpu_memory_buffer->GetSize(), si_info.meta.color_space,
-          si_info.meta.surface_origin, si_info.meta.alpha_type,
-          si_info.meta.usage),
-      GenVerifiedSyncToken(), holder_, gpu_memory_buffer->GetType());
-}
-
-void GpuChannelSharedImageInterface::CreateGMBSharedImageOnGpuThread(
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    SharedImageInfo si_info,
-    uint64_t release) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  if (!MakeContextCurrent()) {
-    return;
-  }
-
-  DCHECK(shared_image_stub_->factory());
-  if (!shared_image_stub_->factory()->CreateSharedImage(
-          mailbox, std::move(handle), format, plane, size,
-          si_info.meta.color_space, si_info.meta.surface_origin,
-          si_info.meta.alpha_type, si_info.meta.usage,
-          std::move(si_info.debug_label))) {
     shared_image_stub_->shared_context_state()->MarkContextLost();
     return;
   }

@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -208,40 +207,6 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   last_flush_id_ = host_->EnqueueDeferredMessage(
       mojom::DeferredRequestParams::NewSharedImageRequest(
           mojom::DeferredSharedImageRequest::NewCreateSharedImageWithBuffer(
-              std::move(params))),
-      /*sync_token_fences=*/{}, ++next_release_id_);
-  host_->EnsureFlush(last_flush_id_);
-
-  AddMailbox(mailbox, si_info.meta.usage);
-  return mailbox;
-}
-
-Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const SharedImageInfo& si_info,
-    gfx::GpuMemoryBufferHandle buffer_handle) {
-  auto mailbox = Mailbox::Generate();
-
-  auto params = mojom::CreateGMBSharedImageParams::New();
-  params->mailbox = mailbox;
-  params->buffer_handle = std::move(buffer_handle);
-  params->size = size;
-  params->format = format;
-  params->plane = plane;
-  params->si_info = CreateSharedImageInfo(si_info);
-
-  // TODO(piman): DCHECK GMB format support.
-  DCHECK(gpu::IsImageSizeValidForGpuMemoryBufferFormat(params->size,
-                                                       params->format));
-
-  base::AutoLock lock(lock_);
-  // Note: we enqueue and send the IPC under the lock to guarantee
-  // monotonicity of the release ids as seen by the service.
-  last_flush_id_ = host_->EnqueueDeferredMessage(
-      mojom::DeferredRequestParams::NewSharedImageRequest(
-          mojom::DeferredSharedImageRequest::NewCreateGmbSharedImage(
               std::move(params))),
       /*sync_token_fences=*/{}, ++next_release_id_);
   host_->EnsureFlush(last_flush_id_);

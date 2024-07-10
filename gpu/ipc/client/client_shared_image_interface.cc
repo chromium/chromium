@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -237,26 +236,6 @@ ClientSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info) {
       si_info.meta, GenUnverifiedSyncToken(), holder_,
       gfx::SHARED_MEMORY_BUFFER);
   return shared_image_mapping;
-}
-
-scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    const SharedImageInfo& si_info) {
-  auto plane = gfx::BufferPlane::DEFAULT;
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage)) << si_info.meta.usage;
-  auto buffer_format = gpu_memory_buffer->GetFormat();
-  CHECK(gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format));
-  return base::MakeRefCounted<ClientSharedImage>(
-      AddMailbox(proxy_->CreateSharedImage(
-          buffer_format, plane, gpu_memory_buffer->GetSize(), si_info,
-          gpu_memory_buffer->CloneHandle())),
-      SharedImageMetadata(viz::GetSinglePlaneSharedImageFormat(
-                              GetPlaneBufferFormat(plane, buffer_format)),
-                          gpu_memory_buffer->GetSize(),
-                          si_info.meta.color_space, si_info.meta.surface_origin,
-                          si_info.meta.alpha_type, si_info.meta.usage),
-      GenUnverifiedSyncToken(), holder_, gpu_memory_buffer->GetType());
 }
 
 #if BUILDFLAG(IS_WIN)

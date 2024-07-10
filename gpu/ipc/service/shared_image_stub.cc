@@ -130,11 +130,6 @@ void SharedImageStub::ExecuteDeferredRequest(
           release_count);
       break;
 
-    case mojom::DeferredSharedImageRequest::Tag::kCreateGmbSharedImage:
-      OnCreateGMBSharedImage(std::move(request->get_create_gmb_shared_image()),
-                             release_count);
-      break;
-
     case mojom::DeferredSharedImageRequest::Tag::kRegisterUploadBuffer:
       OnRegisterSharedImageUploadBuffer(
           std::move(request->get_register_upload_buffer()));
@@ -207,40 +202,6 @@ bool SharedImageStub::GetGpuMemoryBufferHandleInfo(
   if (!factory_->GetGpuMemoryBufferHandleInfo(mailbox, handle, format, size,
                                               buffer_usage)) {
     LOG(ERROR) << "SharedImageStub: Unable to get GpuMemoryBufferHandle";
-    return false;
-  }
-  return true;
-}
-
-bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
-                                        gfx::GpuMemoryBufferHandle handle,
-                                        gfx::BufferFormat format,
-                                        gfx::BufferPlane plane,
-                                        const gfx::Size& size,
-                                        const gfx::ColorSpace& color_space,
-                                        GrSurfaceOrigin surface_origin,
-                                        SkAlphaType alpha_type,
-                                        uint32_t usage,
-                                        std::string debug_label) {
-  TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
-               size.width(), "height", size.height());
-  bool needs_gl = HasGLES2ReadOrWriteUsage(usage);
-  if (!MakeContextCurrent(needs_gl)) {
-    OnError();
-    return false;
-  }
-
-  if (!IsPlaneValidForGpuMemoryBufferFormat(plane, format)) {
-    LOG(ERROR) << "SharedImageStub: Incompatible format.";
-    OnError();
-    return false;
-  }
-
-  if (!factory_->CreateSharedImage(mailbox, std::move(handle), format, plane,
-                                   size, color_space, surface_origin,
-                                   alpha_type, usage, GetLabel(debug_label))) {
-    LOG(ERROR) << kSICreationFailureError;
-    OnError();
     return false;
   }
   return true;
@@ -399,23 +360,6 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
           params->mailbox, std::move(params->buffer_handle),
           params->si_info->meta.format, params->si_info->meta.size,
           params->si_info->meta.color_space,
-          params->si_info->meta.surface_origin,
-          params->si_info->meta.alpha_type, params->si_info->meta.usage,
-          GetLabel(params->si_info->debug_label))) {
-    return;
-  }
-
-  sync_point_client_state_->ReleaseFenceSync(release_count);
-}
-
-void SharedImageStub::OnCreateGMBSharedImage(
-    mojom::CreateGMBSharedImageParamsPtr params,
-    uint64_t release_count) {
-  TRACE_EVENT2("gpu", "SharedImageStub::OnCreateGMBSharedImage", "width",
-               params->size.width(), "height", params->size.height());
-  if (!CreateSharedImage(
-          params->mailbox, std::move(params->buffer_handle), params->format,
-          params->plane, params->size, params->si_info->meta.color_space,
           params->si_info->meta.surface_origin,
           params->si_info->meta.alpha_type, params->si_info->meta.usage,
           GetLabel(params->si_info->debug_label))) {

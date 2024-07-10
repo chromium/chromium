@@ -68,10 +68,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
       gfx::GpuMemoryBufferHandle buffer_handle) override;
   SharedImageInterface::SharedImageMapping CreateSharedImage(
       const SharedImageInfo& si_info) override;
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      const SharedImageInfo& si_info) override;
   void UpdateSharedImage(const SyncToken& sync_token,
                          const Mailbox& mailbox) override;
   void UpdateSharedImage(const SyncToken& sync_token,
@@ -173,13 +169,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
       SharedImageInfo si_info,
       gfx::GpuMemoryBufferHandle buffer_handle,
       uint64_t release);
-  void CreateGMBSharedImageOnGpuThread(const Mailbox& mailbox,
-                                       gfx::GpuMemoryBufferHandle handle,
-                                       gfx::BufferFormat format,
-                                       gfx::BufferPlane plane,
-                                       const gfx::Size& size,
-                                       SharedImageInfo si_info,
-                                       uint64_t release);
   void UpdateSharedImageOnGpuThread(const Mailbox& mailbox, uint64_t release);
   void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
   void DestroyClientSharedImageOnGpuThread(

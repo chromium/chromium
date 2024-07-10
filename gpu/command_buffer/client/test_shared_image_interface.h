@@ -49,11 +49,6 @@ class TestSharedImageInterface : public SharedImageInterface {
   SharedImageInterface::SharedImageMapping CreateSharedImage(
       const SharedImageInfo& si_info) override;
 
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      const SharedImageInfo& si_info) override;
-
   void UpdateSharedImage(const SyncToken& sync_token,
                          const Mailbox& mailbox) override;
   void UpdateSharedImage(const SyncToken& sync_token,

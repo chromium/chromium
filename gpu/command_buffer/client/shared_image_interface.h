@@ -49,7 +49,6 @@ class ClientSharedImage;
 class ClientSharedImageInterface;
 struct ExportedSharedImage;
 class GpuChannelSharedImageInterface;
-class GpuMemoryBufferManager;
 struct SharedImageCapabilities;
 class SharedImageInterfaceHolder;
 class SharedImageInterfaceInProcess;
@@ -86,21 +85,6 @@ struct SharedImageInfo {
              kPremul_SkAlphaType,
              usage),
         debug_label(debug_label) {}
-  // This constructor exists only to support the DEPRECATED CreareSharedImage
-  // call below that accepts a GpuMemoryBuffer. This should be removed when that
-  // call is removed.
-  SharedImageInfo(const gfx::ColorSpace& color_space,
-                  GrSurfaceOrigin surface_origin,
-                  SkAlphaType alpha_type,
-                  uint32_t usage,
-                  std::string_view debug_label)
-      : SharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888,
-                        gfx::Size(),
-                        color_space,
-                        surface_origin,
-                        alpha_type,
-                        usage,
-                        debug_label) {}
 
   SharedImageMetadata meta;
   std::string debug_label;
@@ -206,31 +190,6 @@ class GPU_EXPORT SharedImageInterface
   // created out this buffer. This method is used by the software compositor
   // only.
   virtual SharedImageMapping CreateSharedImage(
-      const SharedImageInfo& si_info) = 0;
-
-  // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
-  // single planar eg. RGB BufferFormats. Please use the equivalent method above
-  // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.
-  //
-  // Creates a shared image out of a GpuMemoryBuffer, using |color_space|.
-  // |usage| is a combination of |SharedImageUsage| bits that describes which
-  // API(s) the image will be used with. Format and size are derived from the
-  // GpuMemoryBuffer. |gpu_memory_buffer_manager| is the manager that created
-  // |gpu_memory_buffer|. If the |gpu_memory_buffer| was created on the client
-  // side (for NATIVE_PIXMAP or ANDROID_HARDWARE_BUFFER types only), without a
-  // GpuMemoryBufferManager, |gpu_memory_buffer_manager| can be nullptr.
-  // If valid, |color_space| will be applied to the shared
-  // image (possibly overwriting the one set on the GpuMemoryBuffer).
-  // Returns a mailbox that can be imported into said APIs using their
-  // corresponding shared image functions (e.g.
-  // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM or
-  // RasterInterface::CopySharedImage).
-  // The |SharedImageInterface| keeps ownership of the image until
-  // |DestroySharedImage| is called or the interface itself is destroyed (e.g.
-  // the GPU channel is lost).
-  virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
       const SharedImageInfo& si_info) = 0;
 
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on

@@ -479,9 +479,6 @@ union DeferredSharedImageRequest {
   // See CreateSharedImageWithBufferParams.
   CreateSharedImageWithBufferParams create_shared_image_with_buffer;
 
-  // See CreateGMBSharedImageParams.
-  CreateGMBSharedImageParams create_gmb_shared_image;
-
   // Registers a new shared memory region to share with the GPU process for
   // uploading shared image data.
   mojo_base.mojom.ReadOnlySharedMemoryRegion register_upload_buffer;
@@ -602,27 +599,6 @@ struct CreateSharedImageWithBufferParams {
 
   // A handle to the existing GPU memory buffer.
   gfx.mojom.GpuMemoryBufferHandle buffer_handle;
-};
-
-// Creates a new shared image from an existing GPU memory buffer.
-struct CreateGMBSharedImageParams {
-  // The mailbox used to identify the shared image.
-  Mailbox mailbox;
-
-  // A handle to the existing GPU memory buffer.
-  gfx.mojom.GpuMemoryBufferHandle buffer_handle;
-
-  // Size in pixels of the GPU memory buffer.
-  gfx.mojom.Size size;
-
-  // Format of pixels in the GPU memory buffer.
-  gfx.mojom.BufferFormat format;
-
-  // Plane for which to create the shared image.
-  gfx.mojom.BufferPlane plane;
-
-  // Information about the shared image.
-  SharedImageInfo si_info;
 };
 
 // Updates the contents of a shared image from whatever is backing it, if

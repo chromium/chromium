@@ -72,14 +72,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   // get the shared memory mapping.
   SharedImageInterface::SharedImageMapping CreateSharedImage(
       const SharedImageInfo& si_info) override;
-
-  // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
-  // single planar eg. RGB BufferFormats. Please use the equivalent method above
-  // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      const SharedImageInfo& si_info) override;
 #if BUILDFLAG(IS_WIN)
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox) override;

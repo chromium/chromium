@@ -70,19 +70,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   SharedImageDestructionCallback GetSharedImageDestructionCallback(
       const Mailbox& mailbox);
 
-  // NOTE: The below method is DEPRECATED for single planar formats eg. RGB
-  // BufferFormats. Please use the equivalent method below it taking in single
-  // planar SharedImageFormat with GpuMemoryBufferHandle.
-  bool CreateSharedImage(const Mailbox& mailbox,
-                         gfx::GpuMemoryBufferHandle handle,
-                         gfx::BufferFormat format,
-                         gfx::BufferPlane plane,
-                         const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         std::string debug_label);
   bool CreateSharedImage(const Mailbox& mailbox,
                          gfx::GpuMemoryBufferHandle handle,
                          viz::SharedImageFormat format,
@@ -127,8 +114,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   void OnCreateSharedImageWithBuffer(
       mojom::CreateSharedImageWithBufferParamsPtr params,
       uint64_t release_count);
-  void OnCreateGMBSharedImage(mojom::CreateGMBSharedImageParamsPtr params,
-                              uint64_t release_count);
   void OnUpdateSharedImage(const Mailbox& mailbox,
                            uint64_t release_count,
                            gfx::GpuFenceHandle in_fence_handle);
