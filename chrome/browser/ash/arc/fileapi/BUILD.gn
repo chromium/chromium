@@ -65,6 +65,7 @@ static_library("fileapi") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/dbus/virtual_file_provider",

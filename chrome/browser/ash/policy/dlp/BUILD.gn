@@ -1,0 +1,127 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("dlp") {
+  sources = [
+    "dlp_content_manager_ash.cc",
+    "dlp_content_manager_ash.h",
+    "dlp_extract_io_task_observer.cc",
+    "dlp_extract_io_task_observer.h",
+    "dlp_files_controller_ash.cc",
+    "dlp_files_controller_ash.h",
+    "dlp_files_controller_ash_utils.cc",
+    "dlp_files_controller_ash_utils.h",
+    "dlp_files_event_storage.cc",
+    "dlp_files_event_storage.h",
+    "dlp_window_observer.cc",
+    "dlp_window_observer.h",
+    "files_policy_notification_manager.cc",
+    "files_policy_notification_manager.h",
+    "files_policy_notification_manager_factory.cc",
+    "files_policy_notification_manager_factory.h",
+    "files_policy_string_util.cc",
+    "files_policy_string_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chromeos/dbus/dlp",
+    "//chromeos/dbus/dlp:dlp_proto",
+    "//chromeos/ui/base",
+    "//components/enterprise/data_controls",
+    "//components/exo",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/services/app_service",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common:common_constants",
+    "//mojo/public/cpp/bindings",
+    "//storage/browser",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/clipboard:file_info",
+    "//ui/base/data_transfer_policy",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
+    "//ui/message_center/public/cpp",
+    "//ui/shell_dialogs",
+    "//ui/views",
+    "//ui/wm/public",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/dlp/dialogs" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "dlp_content_manager_ash_unittest.cc",
+    "dlp_files_controller_ash_unittest.cc",
+    "dlp_files_event_storage_unittest.cc",
+    "files_policy_notification_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":dlp",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/ash/policy/dlp/test:test_support",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos:test_support",
+    "//chrome/browser/enterprise/data_controls",
+    "//chrome/browser/enterprise/data_controls:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/dbus/dlp",
+    "//chromeos/dbus/dlp:dlp_proto",
+    "//chromeos/ui/base",
+    "//components/drive",
+    "//components/enterprise/data_controls",
+    "//components/enterprise/data_controls:dlp_policy_event_proto",
+    "//components/file_access",
+    "//components/reporting/client:test_support",
+    "//components/reporting/storage:test_support",
+    "//components/services/app_service",
+    "//components/strings:components_strings",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/common:common_constants",
+    "//storage/browser",
+    "//storage/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+    "//url",
+  ]
+}

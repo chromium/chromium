@@ -437,6 +437,8 @@ source_set("chromeos") {
       "//chrome/browser/ash/platform_keys",
       "//chrome/browser/ash/platform_keys/key_permissions",
       "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/policy/dlp",
+      "//chrome/browser/ash/policy/dlp/dialogs",
       "//chrome/browser/ash/printing/history",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/system_web_apps/apps",
@@ -477,6 +479,8 @@ source_set("chromeos") {
       "//chrome/browser/ash/platform_keys",
       "//chrome/browser/ash/platform_keys/key_permissions",
       "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/policy/dlp",
+      "//chrome/browser/ash/policy/dlp/dialogs",
       "//chrome/browser/ash/printing/history",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/printing/print_preview",
@@ -595,13 +599,6 @@ static_library("test_support") {
     "//url",
   ]
 
-  if (is_chromeos_ash) {
-    public_deps += [
-      "//chrome/browser/ash:test_support",
-      "//chrome/browser/ash/app_mode:test_support",
-    ]
-  }
-
   deps = [
     "//chrome/browser/enterprise/data_controls",
     "//chromeos/components/mahi/public/cpp:cpp",
@@ -610,7 +607,12 @@ static_library("test_support") {
   ]
 
   if (is_chromeos_ash) {
-    public_deps += [ "//chrome/browser/ash" ]
+    public_deps += [
+      "//chrome/browser/ash",
+      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/app_mode:test_support",
+    ]
+    deps += [ "//chrome/browser/ash/policy/dlp" ]
   }
 }
 

@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("dialogs") {
+  sources = [
+    "files_policy_dialog.cc",
+    "files_policy_dialog.h",
+    "files_policy_dialog_utils.cc",
+    "files_policy_dialog_utils.h",
+    "files_policy_error_dialog.cc",
+    "files_policy_error_dialog.h",
+    "files_policy_warn_dialog.cc",
+    "files_policy_warn_dialog.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//ash/style",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/common:chrome_features",
+    "//components/enterprise/data_controls",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/base/metadata",
+    "//ui/chromeos/strings",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//url",
+  ]
+}
