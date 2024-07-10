@@ -105,10 +105,6 @@ void AnnotatorController::ResetTools() {
   }
 }
 
-void AnnotatorController::SetToolClient(AnnotatorClient* client) {
-  client_ = client;
-}
-
 void AnnotatorController::RegisterView(aura::Window* current_root) {
   current_root_ = current_root;
   // Show the tray icon.
@@ -140,6 +136,10 @@ void AnnotatorController::DisableAnnotator() {
   }
 
   canvas_initialized_state_.reset();
+}
+
+void AnnotatorController::SetToolClient(AnnotatorClient* client) {
+  client_ = client;
 }
 
 bool AnnotatorController::GetAnnotatorAvailability() const {

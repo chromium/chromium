@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 
-#include "ash/annotator/annotator_controller.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
+#include "ash/public/cpp/test/mock_annotator_controller.h"
 #include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/annotator/public/mojom/annotator_structs.mojom.h"
 #include "ash/webui/annotator/test/mock_untrusted_annotator_page.h"
@@ -58,7 +58,7 @@ class AnnotatorClientImplTest : public testing::Test {
   std::unique_ptr<MockUntrustedAnnotatorPage> annotator_;
   std::unique_ptr<UntrustedAnnotatorPageHandlerImpl> handler_;
   std::unique_ptr<AnnotatorClientImpl> annotator_client_;
-  AnnotatorController annotator_controller_;
+  MockAnnotatorController annotator_controller_;
 };
 
 TEST_F(AnnotatorClientImplTest, SetTool) {

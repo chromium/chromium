@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 
 namespace ash {
+class AnnotatorClient;
 
 // This controller provides an interface for ash annotator controller.
 class ASH_PUBLIC_EXPORT AnnotatorControllerBase {
@@ -19,6 +20,8 @@ class ASH_PUBLIC_EXPORT AnnotatorControllerBase {
 
   static AnnotatorControllerBase* Get();
 
+  // Sets browser client.
+  virtual void SetToolClient(AnnotatorClient* client) = 0;
   // Returns if the annotatotion canvas is available.
   virtual bool GetAnnotatorAvailability() const = 0;
   // Called when the ink canvas has either succeeded or failed in initializing.

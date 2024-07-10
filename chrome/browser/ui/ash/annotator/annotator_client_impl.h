@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
 
-#include "ash/annotator/annotator_controller.h"
+#include "ash/public/cpp/annotator/annotator_controller_base.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
@@ -18,7 +18,8 @@ class WebView;
 // Implements the interface for the Annotator tool.
 class AnnotatorClientImpl : public ash::AnnotatorClient {
  public:
-  explicit AnnotatorClientImpl(ash::AnnotatorController* annotator_controller);
+  explicit AnnotatorClientImpl(
+      ash::AnnotatorControllerBase* annotator_controller);
   AnnotatorClientImpl();
   AnnotatorClientImpl(const AnnotatorClientImpl&) = delete;
   AnnotatorClientImpl& operator=(const AnnotatorClientImpl&) = delete;
@@ -43,7 +44,7 @@ class AnnotatorClientImpl : public ash::AnnotatorClient {
   }
 
  private:
-  raw_ptr<ash::AnnotatorController> annotator_controller_ = nullptr;
+  raw_ptr<ash::AnnotatorControllerBase> annotator_controller_ = nullptr;
   raw_ptr<ash::UntrustedAnnotatorPageHandlerImpl> annotator_handler_ = nullptr;
 };
 

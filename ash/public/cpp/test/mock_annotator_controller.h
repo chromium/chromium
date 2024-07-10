@@ -18,6 +18,7 @@ class MockAnnotatorController : public ash::AnnotatorControllerBase {
   ~MockAnnotatorController() override;
 
   // AnnotatorControllerBase:
+  MOCK_METHOD1(SetToolClient, void(AnnotatorClient* client));
   MOCK_CONST_METHOD0(GetAnnotatorAvailability, bool());
   MOCK_METHOD1(OnCanvasInitialized, void(bool success));
   MOCK_METHOD0(ToggleAnnotationTray, void());

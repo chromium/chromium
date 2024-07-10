@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 
-#include "annotator_client_impl.h"
 #include "ash/annotator/annotator_controller.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/shell.h"
@@ -16,7 +15,7 @@
 #include "url/gurl.h"
 
 AnnotatorClientImpl::AnnotatorClientImpl(
-    ash::AnnotatorController* annotator_controller)
+    ash::AnnotatorControllerBase* annotator_controller)
     : annotator_controller_(annotator_controller) {
   annotator_controller_->SetToolClient(this);
 }

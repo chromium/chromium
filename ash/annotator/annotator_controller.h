@@ -41,8 +41,6 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   virtual void SetAnnotatorTool(const AnnotatorTool& tool);
   // Resets annotator tools and clears the canvas.
   void ResetTools();
-  // Sets browser client.
-  void SetToolClient(AnnotatorClient* client);
   // Shows annotation tray for `current_root`.
   void RegisterView(aura::Window* current_root);
   // Hides annotation tray for `current_root` if it was previously registered
@@ -54,6 +52,7 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   void DisableAnnotator();
 
   // AnnotatorControllerBase:
+  void SetToolClient(AnnotatorClient* client) override;
   bool GetAnnotatorAvailability() const override;
   void OnCanvasInitialized(bool success) override;
   void ToggleAnnotationTray() override;
