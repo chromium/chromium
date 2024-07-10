@@ -182,6 +182,12 @@ BASE_FEATURE(kFedCmIdAssertionCORS,
              "FedCmIdAssertionCORS",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables sending SameSite=Lax cookies in credentialed FedCM requests
+// (accounts endpoint, ID assertion endpoint and disconnect endpoint).
+BASE_FEATURE(kFedCmSameSiteLax,
+             "FedCmSameSiteLax",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables sending only SameSite=None cookies in credentialed FedCM requests
 // (accounts endpoint and ID assertion endpoint). If kFedCmIdAssertionCORS
 // is enabled, this is a no-op for the ID assertion endpoint.

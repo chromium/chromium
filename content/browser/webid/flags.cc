@@ -71,4 +71,8 @@ bool IsFedCmButtonModeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmButtonMode);
 }
 
+bool IsFedCmSameSiteLaxEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmSameSiteLax);
+}
+
 }  // namespace content

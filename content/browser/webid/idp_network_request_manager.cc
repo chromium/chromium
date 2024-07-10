@@ -1337,9 +1337,14 @@ IdpNetworkRequestManager::CreateCredentialedResourceRequest(
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
+  net::IsolationInfo::RequestType request_type =
+      net::IsolationInfo::RequestType::kOther;
+  if (IsFedCmSameSiteLaxEnabled()) {
+    // We use kMainFrame so that we can send SameSite=Lax cookies.
+    request_type = net::IsolationInfo::RequestType::kMainFrame;
+  }
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, target_origin, target_origin,
-      site_for_cookies);
+      request_type, target_origin, target_origin, site_for_cookies);
   DCHECK(client_security_state_);
   resource_request->trusted_params->client_security_state =
       client_security_state_.Clone();

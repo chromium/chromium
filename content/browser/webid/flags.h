@@ -55,6 +55,9 @@ bool IsFedCmUseOtherAccountEnabled(bool is_button_mode);
 // Whether the ButtonMode feature is enabled.
 bool IsFedCmButtonModeEnabled();
 
+// Whether sending of SameSite=Lax cookies is enabled.
+bool IsFedCmSameSiteLaxEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_
