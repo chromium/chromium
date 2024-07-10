@@ -68,8 +68,7 @@ void SnapOneTestWindow(aura::Window* window,
   EXPECT_EQ(state_type, window_state->GetStateType());
 }
 
-void VerifySplitViewOverviewSession(aura::Window* window,
-                                    bool faster_split_screen_setup) {
+void VerifySplitViewOverviewSession(aura::Window* window) {
   auto* overview_controller = OverviewController::Get();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   EXPECT_FALSE(
@@ -112,12 +111,16 @@ void VerifySplitViewOverviewSession(aura::Window* window,
   EXPECT_TRUE(
       expected_grid_bounds.Contains(GetOverviewGridBounds(root_window)));
 
-  if (!Shell::Get()->IsInTabletMode() && faster_split_screen_setup) {
+  if (!Shell::Get()->IsInTabletMode()) {
     auto* overview_grid = GetOverviewGridForRoot(window->GetRootWindow());
     EXPECT_TRUE(overview_grid->faster_splitview_widget());
     EXPECT_FALSE(overview_grid->no_windows_widget());
-    EXPECT_FALSE(overview_grid->GetSaveDeskButtonContainer());
-    EXPECT_FALSE(overview_grid->desks_bar_view());
+    // TODO(b/345814268): Consider destroying the widgets.
+    const auto* save_desk_widget =
+        overview_grid->save_desk_button_container_widget();
+    EXPECT_FALSE(save_desk_widget && save_desk_widget->IsVisible());
+    const auto* desks_bar_widget = overview_grid->desks_widget();
+    EXPECT_FALSE(desks_bar_widget && desks_bar_widget->IsVisible());
   }
 }
 

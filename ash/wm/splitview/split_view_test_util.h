@@ -43,11 +43,8 @@ void SnapOneTestWindow(
 
 // Verifies that `window` is in split view overview, where `window` is
 // excluded from overview, and overview occupies the work area opposite of
-// `window`. `faster_split_screen_setup` specifies whether the
-// `SplitViewOverviewSession` is initiated by faster split screen set up or not,
-// where behaviors differ such as overview widget.
-void VerifySplitViewOverviewSession(aura::Window* window,
-                                    bool faster_split_screen_setup = true);
+// `window`.
+void VerifySplitViewOverviewSession(aura::Window* window);
 
 // Verifies that Split View, Overview and `SplitViewOverviewSession` are all
 // inactive for `window`.

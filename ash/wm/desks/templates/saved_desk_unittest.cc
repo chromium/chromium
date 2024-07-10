@@ -631,53 +631,6 @@ TEST_F(SavedDeskTest, NoItemsLabelOnDeletingLastSavedDesk) {
                   ->GetVisible());
 }
 
-// Tests that the "App does not support split-screen" label is hidden when the
-// saved desk grid is shown.
-TEST_F(SavedDeskTest, NoAppSplitScreenLabelOnSavedDeskGridShow) {
-  // With forest, the saved desk library button is hidden once we snap a
-  // window. Therefore, we cannot show the grid while the labels are shown.
-  // TODO(sammiequon): Remove this test once forest is fully launched.
-  if (features::IsForestFeatureEnabled()) {
-    return;
-  }
-
-  std::unique_ptr<aura::Window> unsnappable_window = CreateUnsnappableWindow();
-  auto test_window = CreateAppWindow();
-
-  // At least one entry is required for the saved desk grid to be shown.
-  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
-           DeskTemplateType::kTemplate);
-
-  // Start overview mode.
-  ToggleOverview();
-  ASSERT_TRUE(GetOverviewSession());
-
-  ASSERT_TRUE(GetOverviewController()->InOverviewSession());
-
-  auto* snappable_overview_item = GetOverviewItemForWindow(test_window.get());
-  auto* unsnappable_overview_item =
-      GetOverviewItemForWindow(unsnappable_window.get());
-
-  // Note: Cannot snap widget will be created on demand.
-  EXPECT_FALSE(GetCannotSnapWidget(snappable_overview_item));
-  ASSERT_FALSE(GetCannotSnapWidget(unsnappable_overview_item));
-
-  // Snap the extra snappable window to enter split view mode.
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
-
-  split_view_controller->SnapWindow(test_window.get(), SnapPosition::kPrimary);
-  ASSERT_TRUE(split_view_controller->InSplitViewMode());
-  views::Widget* cannot_snap_widget =
-      GetCannotSnapWidget(unsnappable_overview_item);
-  ASSERT_TRUE(cannot_snap_widget);
-  EXPECT_EQ(1.f, cannot_snap_widget->GetLayer()->opacity());
-
-  // Entering the saved desk grid will hide the unsnappable label.
-  ShowSavedDeskLibrary();
-  EXPECT_EQ(0.f, cannot_snap_widget->GetLayer()->opacity());
-}
-
 // Tests when user enter saved desk, a11y alert being sent.
 TEST_F(SavedDeskTest, InvokeAccessibilityAlertOnEnterDeskTemplates) {
   TestAccessibilityControllerClient client;

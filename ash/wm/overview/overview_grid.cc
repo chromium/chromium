@@ -2723,6 +2723,7 @@ void OverviewGrid::OnSplitViewStateChanged(
   } else {
     DestroyBirchBarWidget();
     RefreshDesksWidgets(/*visible=*/false);
+    UpdateFasterSplitViewWidget();
   }
 
   // Update the cannot snap warnings and adjust the grid bounds.
@@ -3345,10 +3346,6 @@ void OverviewGrid::OnBirchBarLayoutChanged(
 }
 
 void OverviewGrid::RefreshDesksWidgets(bool visible) {
-  if (!features::IsForestFeatureEnabled()) {
-    return;
-  }
-
   if (!visible) {
     views::Widget::Widgets desks_widgets = {
         desks_widget_.get(), saved_desk_library_widget_.get(),
@@ -3459,7 +3456,7 @@ void OverviewGrid::OnSettingsButtonPressed() {
 }
 
 void OverviewGrid::UpdateFasterSplitViewWidget() {
-  if (!window_util::IsInFasterSplitScreenSetupSession(root_window_)) {
+  if (!SplitViewController::Get(root_window_)->InClamshellSplitViewMode()) {
     // If we weren't started by faster splitview, don't show the widget.
     if (auto* faster_split_view = GetFasterSplitViewOld()) {
       auto* focus_cycler_old = overview_session_->focus_cycler_old();

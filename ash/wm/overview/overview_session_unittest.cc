@@ -11196,7 +11196,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   DragWindowTo(GetOverviewItemForWindow(w1.get()), gfx::PointF(0, 0));
   ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             window_state->GetStateType());
-  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  VerifySplitViewOverviewSession(w1.get());
 
   // TODO(b/313505530): Determine when to show the widget.
   EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());

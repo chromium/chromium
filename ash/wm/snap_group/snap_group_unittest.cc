@@ -360,7 +360,7 @@ TEST_F(FasterSplitScreenTest, OldPartialOverview) {
             WindowState::Get(w1.get())->GetStateType());
   // Verify that split view overview session is active and the grid bounds are
   // updated, but the faster splitscreen setup UI is *not* shown.
-  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  VerifySplitViewOverviewSession(w1.get());
   EXPECT_TRUE(GetSplitViewController()->InSplitViewMode());
   // Select the other window in overview, test we end overview and split view.
   ClickOverviewItem(event_generator, w2.get());
@@ -374,7 +374,7 @@ TEST_F(FasterSplitScreenTest, OldPartialOverview) {
   DragGroupItemToPoint(GetOverviewItemForWindow(w1.get()), gfx::Point(0, 0),
                        event_generator, /*by_touch_gestures=*/false,
                        /*drop=*/true);
-  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  VerifySplitViewOverviewSession(w1.get());
   EXPECT_TRUE(GetSplitViewController()->InSplitViewMode());
   DragGroupItemToPoint(GetOverviewItemForWindow(w2.get()),
                        GetWorkAreaBounds().top_right(), event_generator,
@@ -749,7 +749,7 @@ TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
                        /*by_touch_gestures=*/false, /*drop=*/true);
   EXPECT_EQ(WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
-  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  VerifySplitViewOverviewSession(w1.get());
   EXPECT_TRUE(overview_session->IsWindowInOverview(w2.get()));
 
   // Select `w2`. Test it snaps and we end overview.
@@ -3279,7 +3279,7 @@ TEST_F(SnapGroupTest, OldPartialOverview) {
                        /*drop=*/true);
   EXPECT_EQ(WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
-  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  VerifySplitViewOverviewSession(w1.get());
   EXPECT_TRUE(GetSplitViewController()->InSplitViewMode());
 
   // Select the other window in overview, test we end overview and split view
@@ -3297,7 +3297,7 @@ TEST_F(SnapGroupTest, OldPartialOverview) {
   DragGroupItemToPoint(GetOverviewItemForWindow(w1.get()), gfx::Point(0, 0),
                        event_generator, /*by_touch_gestures=*/false,
                        /*drop=*/true);
-  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  VerifySplitViewOverviewSession(w1.get());
   EXPECT_TRUE(GetSplitViewController()->InSplitViewMode());
   DragGroupItemToPoint(GetOverviewItemForWindow(w2.get()),
                        GetWorkAreaBounds().top_right(), event_generator,
@@ -7923,7 +7923,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   DragItemToPoint(GetOverviewItemForWindow(w3.get()), gfx::Point(0, 300),
                   event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
   ASSERT_TRUE(IsInOverviewSession());
-  VerifySplitViewOverviewSession(w3.get(), /*faster_split_screen_setup=*/false);
+  VerifySplitViewOverviewSession(w3.get());
 
   overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
@@ -7970,7 +7970,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   DragItemToPoint(GetOverviewItemForWindow(w1.get()), gfx::Point(800, 300),
                   event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
   ASSERT_TRUE(IsInOverviewSession());
-  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  VerifySplitViewOverviewSession(w1.get());
 
   overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
