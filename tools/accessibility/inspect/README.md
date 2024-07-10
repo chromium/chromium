@@ -1,76 +1,57 @@
 # Inspect tools
 
-These cli tools are designed to help to debug accessibility problems in applications, primarily in web browsers.
+These cli tools are designed to help to debug accessibility problems in
+applications, primarily in web browsers.
 
-* `ax_dump_tree` to inspect accessibility tree of application
+* `ax_dump_tree` to show the accessibility tree of an application
 * `ax_dump_events` to watch accessibility events fired by application
 
-## Prerequisites
+## Build
 
-You may be required to enable accessibility on your system. Depending on
-the application, you may also be required to run an assistive technology
-like a screen reader or use an application-specific runtime flag or flip
-a preference on in order to activate accessibility application-wide.
+To build the tools, run:
+```
+autoninja -C out/Default ax_dump_tree ax_dump_events
+```
+The command generates `ax_dump_tree`  and `ax_dump_events` executables in
+`out/Default` directory.
 
-### Mac
-
-1) Turn on Accessibility for Terminal in Security & Privacy System Preferences.
-
-2) Either
-* Start VoiceOver (`CMD+F5`) or
-* Use application specific flag/preference
-  * Chrome/Chromium: use `--force-renderer-accessibility` runtime flag
-
-For example, to enable accessibility in Chromium run:
-```Chromium.app/Contents/MacOS/Chromium --force-renderer-accessibility```
-
-### Linux
-
-Either
-* Start Orca or
-* Use application specific flag/preference
-  * Chrome/Chromium: use `--force-renderer-accessibility` runtime flag
-
-### Windows
-
-Either
-* Start Narrator/NVDA/JAWS or
-* Use application specific flag/preference
-  * Chrome/Chromium: use `--force-renderer-accessibility` runtime flag
-
-## ax_dump_tree
-
-Helps to inspect accessibility trees of applications. Trees are dumped into console.
-
-To dump an accessible tree, run:
-`ax_dump_tree <options>`
-
-## ax_dump_events
-
-The tool logs into console accessibility events fired by application.
-
-To watch accessibility events, run:
-`ax_dump_events <options>`
+To use the tools:
+1. Enable accessibility on your system and/or target application. Refer to the
+"Enabling Accessibility" section below for guidance.
+2. Launch the application and go to the specific screen, webpage, or content you
+want to inspect.
+3. To view the accessibility trees of the application, run `ax_dump_tree
+<options>`.
+To view accessibility events fired by application, run `ax_dump_events
+<options>`. Both tools will output information into the console.
 
 ## Options
 
 ### Selectors
 
-At your convenience the number of pre-defined application selectors are available:
+A selector is needed to specify the application you wish to inspect.
+
+#### Web Browsers:
+
+The following flags can be used to specify a web browser:
 * `--chrome` for Chrome browser
 * `--chromium` for Chromium browser
 * `--firefox` for Firefox browser
 * `--edge` for Edge browser (Windows only)
 * `--safari` for Safari browser (Mac only)
 
-`--active-tab` to dump a tree of active tab of a selected browser.
+You may pass in `--active-tab` when using any of the browser selectors above to
+dump the tree of active (current) tab. Otherwise, trees from all tabs will be
+dumped.
 
-You can also specify an application by its title:
-`ax_dump_tree --pattern=title`
-The pattern string can contain wildcards like * and ?. Note, you can use
-``--pattern`` selector in conjunction with pre-defined selectors.
+#### Other Applications:
 
-Alternatively you can dump a tree by HWND on Windows:
+You can specify an application by its title:
+`ax_dump_tree --pattern=title`.
+The pattern string can contain wildcards like `*` and `?`. Note, you can use the
+`--pattern` selector in conjunction with pre-defined browser selectors.
+
+Alternatively, you can dump a tree by HWND on Windows:
 `--pid=HWND`
 Note, to use a hex window handle prefix it with `0x`.
 
@@ -79,33 +60,45 @@ Or by application PID on Mac and Linux:
 
 ### Filters
 
-By default a pre-defined set of property filters is applied. If you want to tune
-up the output, then use `--filters` option which specifies a file containing
-filtering rules:
+By default, the accessibility tree output is filtered to show a specific set of
+properties.  To control which properties are included or excluded, use the
+`--filters` option.
 
-`--filters=absolute_path_to_filters.txt`
+#### How to Use Filters:
 
-The format of the file is a plain text where each line defines a property
-filter. The supported property filters are:
+1. **Create a Filter File:** Write a plain text file (e.g., filters.txt) where
+each line contains one filtering rule.
+2. **Apply Filters:** Run the tool with the `--filters` option, specifying the
+full path to your filter file:
+```
+--filters=absolute_path_to_filters.txt
+```
 
-* @ALLOW filter means to include the attribute having non empty values;
-* @ALLOW-EMPTY filter means to include the attribute even if its value is empty;
-* @DENY filter means to exclude an attribute.
+#### Filtering Rules:
 
-For example, `@ALLOW:AXARIALive` will add AXARIALive attributes to the
-result tree. Also see example-tree-filters.txt in tools/accessibility/inspect
-for more examples.
+- `@ALLOW:property_name`: Include the property only if it has a non-empty value.
+- `@ALLOW-EMPTY:property_name`: Include the property even if it has an empty
+value.
+- `@DENY:property_name`: Exclude the property.
+
+#### Examples:
+- `@ALLOW:AXARIALive`: Include the `AXARIALive` attribute in the tree.
+- `@ALLOW:*`: Include all properties in the tree.
+
+
+See [example-tree-filters.txt](https://source.chromium.org/chromium/chromium/src/+/main:tools/accessibility/inspect/example-tree-filters.txt)
+in `tools/accessibility/inspect` for more examples.
 
 ### API option for Windows
 
-On windows, we support two accessibility APIS, IAccessible2 and UI-AUTOMATION.
+On windows, we support two accessibility APIs, IAccessible2 and UI Automation.
 By default, IA2 is selected.
 
 To dump a tree with IAccessible2:
 
 `--api=ia2`
 
-To dump a tree with UI-AUTOMATION:
+To dump a tree with UI Automation:
 
 `--api=uia`
 
@@ -115,18 +108,45 @@ To dump a tree with UI-AUTOMATION:
 
 ## Examples
 
-To dump Edge accessible tree on Windows:
+To dump an Edge accessible tree on Windows:
 ``out\Default\ax_dump_tree --edge``
 
-To dump an accessible tree on Mac for a Firefox window having title containing ``mozilla``:
+To dump an accessible tree on Mac for a Firefox window with title containing
+``mozilla``:
 ``out/Default/ax_dump_tree --firefox --pattern=*mozilla*``
 
 To watch Chromium accessibility events on Linux:
 ``out/Default/ax_dump_events --chromium``
 
-## Build
+## Enabling Accessibility
 
-`autoninja -C out/Default ax_dump_tree ax_dump_events`
+You may be required to enable accessibility on your system so that accessibility
+tree/events are generated. Depending on the application, you may also be
+required to run an assistive technology, like a screen reader, or use an
+application-specific runtime flag in order to activate accessibility
+application-wide.
 
-The command generates `ax_dump_tree`  and `ax_dump_events` executables  in
-`out/Default` directory.
+### Operating System-Specific Instructions
+
+#### Mac
+
+1) Turn on Accessibility for Terminal in Security & Privacy System Preferences.
+
+2) Start VoiceOver (`CMD+F5`) or if your application has a specific
+flag/preference to turn on accessibility, use that instead.
+
+#### Linux
+
+Use Orca or use the application specific flag/preference to turn on
+accessibility.
+
+#### Windows
+
+Use Narrator/NVDA/JAWS or use the application specific flag/preference to turn
+on accessibility.
+
+### Chrome/Chromium
+
+To enable accessibility for Chrome/Chromium, launch chrome with the run time
+flag `--force-renderer-accessibility`. For example, on Mac, the full command
+would be ``Chromium.app/Contents/MacOS/Chromium --force-renderer-accessibility``.
