@@ -26,33 +26,7 @@ enum class NotificationStatus {
   kMaxValue = kThrottled,
 };
 
-std::string GetEntryPointHistogramString(ShareEntryPoint entry_point) {
-  switch (entry_point) {
-    case ShareEntryPoint::kShareSheet:
-      return "ShareSheet";
-    case ShareEntryPoint::kOmniboxIcon:
-      return "OmniboxIcon";
-    case ShareEntryPoint::kContentMenu:
-      return "ContentMenu";
-    case ShareEntryPoint::kLinkMenu:
-      return "LinkMenu";
-    case ShareEntryPoint::kOmniboxMenu:
-      return "OmniboxMenu";
-    case ShareEntryPoint::kTabMenu:
-      return "TabMenu";
-    case ShareEntryPoint::kShareMenu:
-      return "ShareMenu";
-  }
-}
-
 }  // namespace
-
-void RecordSendingEvent(ShareEntryPoint entry_point, SendingEvent event) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"SendTabToSelf.", GetEntryPointHistogramString(entry_point),
-                    ".ClickResult"}),
-      event);
-}
 
 void RecordNotificationShown() {
   base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",

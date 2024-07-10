@@ -31538,18 +31538,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Forbidden cross-origin trusted signals requested"/>
 </enum>
 
-<enum name="SendTabToSelfClickResult">
-  <int value="0"
-      label="(Obsolete) SendTabToSelf entry point is shown. Removed on
-             06/2020"/>
-  <int value="1" label="SendTabToSelf target device is clicked."/>
-  <int value="2" label="SendTabToSelf device list is shown.">
-    Removed on 06/2020 and brought back 09/2022.
-  </int>
-  <int value="3" label="No target device message shown."/>
-  <int value="4" label="Sign-in promo shown."/>
-</enum>
-
 <enum name="SendTabToSelfNotificationStatus">
   <int value="0" label="Shown"/>
   <int value="1" label="Dismissed"/>

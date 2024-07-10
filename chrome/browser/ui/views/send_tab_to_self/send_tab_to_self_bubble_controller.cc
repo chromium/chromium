@@ -69,23 +69,16 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   DCHECK(reason);
   switch (*reason) {
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
-      send_tab_to_self::RecordSendingEvent(ShareEntryPoint::kOmniboxIcon,
-                                           SendingEvent::kShowDeviceList);
       send_tab_to_self_bubble_view_ =
           browser->window()->ShowSendTabToSelfDevicePickerBubble(
               &GetWebContents());
       break;
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
-      send_tab_to_self::RecordSendingEvent(ShareEntryPoint::kOmniboxIcon,
-                                           SendingEvent::kShowSigninPromo);
       send_tab_to_self_bubble_view_ =
           browser->window()->ShowSendTabToSelfPromoBubble(
               &GetWebContents(), /*show_signin_button=*/true);
       break;
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
-      send_tab_to_self::RecordSendingEvent(
-          ShareEntryPoint::kOmniboxIcon,
-          SendingEvent::kShowNoTargetDeviceMessage);
       send_tab_to_self_bubble_view_ =
           browser->window()->ShowSendTabToSelfPromoBubble(
               &GetWebContents(), /*show_signin_button=*/false);
@@ -120,11 +113,6 @@ Profile* SendTabToSelfBubbleController::GetProfile() {
 
 void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_guid) {
-  // TODO(crbug.com/40817150): This is being recorded for entry points other
-  // than the omnibox. Make the entry point a ShowBubble() argument.
-  send_tab_to_self::RecordSendingEvent(ShareEntryPoint::kOmniboxIcon,
-                                       SendingEvent::kClickItem);
-
   SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile())
           ->GetSendTabToSelfModel();

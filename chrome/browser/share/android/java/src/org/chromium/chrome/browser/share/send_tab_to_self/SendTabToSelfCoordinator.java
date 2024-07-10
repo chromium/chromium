@@ -194,14 +194,13 @@ public class SendTabToSelfCoordinator {
                 SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
         assert displayReason.isPresent();
 
+        MetricsRecorder.recordCrossDeviceTabJourney();
         switch (displayReason.get()) {
             case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
-                MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_NO_TARGET_DEVICE_MESSAGE);
                 mController.requestShowContent(
                         new NoTargetDeviceBottomSheetContent(mContext, mProfile), true);
                 return;
             case EntryPointDisplayReason.OFFER_FEATURE:
-                MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_DEVICE_LIST);
                 List<TargetDeviceInfo> targetDevices =
                         SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
                 mController.requestShowContent(
@@ -211,7 +210,6 @@ public class SendTabToSelfCoordinator {
                 return;
             case EntryPointDisplayReason.OFFER_SIGN_IN:
                 {
-                    MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_SIGNIN_PROMO);
                     AccountPickerBottomSheetStrings strings =
                             new AccountPickerBottomSheetStrings.Builder(
                                             R.string

@@ -8124,24 +8124,6 @@ should be kept until we remove incident reporting. -->
   </token>
 </histogram>
 
-<histogram base="true" name="SendTabToSelf.ClickResult"
-    enum="SendTabToSelfClickResult" expires_after="2024-07-18">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>src/components/send_tab_to_self/OWNERS</owner>
-  <summary>
-    Records user flow for SendTabToSelf feature.
-
-    Because each bucket represents a different aspect of the flow, it's
-    important to look at &quot;bucket count&quot;, not &quot;bucket
-    proportion&quot;.
-
-    On iOS this was not recorded between M85 and M90, inclusive (see
-    crbug.com/1204944).
-
-    This expired 2022/10 and got revived 2023/07, some data will be missing.
-  </summary>
-</histogram>
-
 <histogram name="Servicification.Startup2" enum="ServicificationStartupMode"
     expires_after="2024-12-30">
   <owner>hanxi@chromium.org</owner>

@@ -3905,21 +3905,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Security.TimeOnPage2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SendTabToSelfEntryPoint" separator="."
-    ordering="prefix">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>tgupta@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
-  <suffix name="ContentMenu" label="Option shown in the content context menu"/>
-  <suffix name="LinkMenu" label="Option shown in the link context menu"/>
-  <suffix name="OmniboxIcon" label="Icon shown in the omnibox"/>
-  <suffix name="OmniboxMenu" label="Option shown in the omnibox context menu"/>
-  <suffix name="ShareMenu" label="Option shown in the share sheet menu"/>
-  <suffix name="ShareSheet" label="Option to show in the android share sheet"/>
-  <suffix name="TabMenu" label="Option shown in the tab context menu"/>
-  <affected-histogram name="SendTabToSelf.ClickResult"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ServiceWorker_EventType" separator="_">
 <!-- TODO(crbug.com/40858621): rewrite with the new way. -->
 

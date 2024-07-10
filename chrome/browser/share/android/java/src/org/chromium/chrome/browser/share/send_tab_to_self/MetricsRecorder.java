@@ -12,9 +12,8 @@ import org.chromium.base.metrics.RecordUserAction;
 /** Class that captures all the metrics needed for Send Tab To Self on Android. */
 @JNINamespace("send_tab_to_self")
 class MetricsRecorder {
-    public static void recordSendingEvent(@SendingEvent int sendingEvent) {
+    public static void recordCrossDeviceTabJourney() {
         RecordUserAction.record("MobileCrossDeviceTabJourney");
-        MetricsRecorderJni.get().recordSendingEvent(sendingEvent);
     }
 
     public static void recordNotificationShown() {
@@ -36,8 +35,6 @@ class MetricsRecorder {
 
     @NativeMethods
     interface Natives {
-        void recordSendingEvent(int sendingEvent);
-
         void recordNotificationShown();
 
         void recordNotificationOpened();
