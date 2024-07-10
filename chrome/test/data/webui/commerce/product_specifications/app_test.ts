@@ -100,6 +100,7 @@ suite('AppTest', () => {
   async function createAppElement(): Promise<ProductSpecificationsElement> {
     appElement = document.createElement('product-specifications-app');
     document.body.appendChild(appElement);
+    appElement.resetMinLoadingAnimationMsForTesting();
     return appElement;
   }
 
@@ -131,7 +132,7 @@ suite('AppTest', () => {
           return Promise.resolve({productInfo: emptyInfo});
         });
 
-    const appElement = createAppElement();
+    const appElement = await createAppElement();
     await flushTasks();
 
     return appElement;
@@ -187,7 +188,7 @@ suite('AppTest', () => {
   test('parses product urls', async () => {
     const urlsParam = ['https://example.com/', 'https://example2.com/'];
     const promiseValues = createAppPromiseValues({urlsParam: urlsParam});
-    createAppElementWithPromiseValues(promiseValues);
+    await createAppElementWithPromiseValues(promiseValues);
 
     const urls =
         await shoppingServiceApi.whenCalled('getProductSpecificationsForUrls');
@@ -209,8 +210,7 @@ suite('AppTest', () => {
       urlsParam: ['https://example3.com/', 'https://example4.com/'],
       specsSet: specsSet,
     });
-    createAppElementWithPromiseValues(promiseValues);
-    await flushTasks();
+    await createAppElementWithPromiseValues(promiseValues);
 
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
@@ -237,8 +237,7 @@ suite('AppTest', () => {
       idParam: '',
       urlsParam: urlsParam,
     });
-    createAppElementWithPromiseValues(promiseValues);
-    await flushTasks();
+    await createAppElementWithPromiseValues(promiseValues);
 
     assertEquals(
         1, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
@@ -312,9 +311,7 @@ suite('AppTest', () => {
       }),
       infos: [info1, info2, createInfo({clusterId: BigInt(0)})],
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting();
-    await flushTasks();
+    await createAppElementWithPromiseValues(promiseValues);
 
     const tableColumns = appElement.$.summaryTable.columns;
     assertEquals(2, tableColumns.length);
@@ -395,9 +392,7 @@ suite('AppTest', () => {
       }),
       infos: [info1],
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting();
-    await flushTasks();
+    await createAppElementWithPromiseValues(promiseValues);
 
     const tableColumns = appElement.$.summaryTable.columns;
     assertEquals(1, tableColumns.length);
@@ -419,8 +414,6 @@ suite('AppTest', () => {
   });
 
   test('populates specs table, correct column order', async () => {
-    const detailTitle = 'Section';
-
     // Set up the first product with at least one unique description.
     const dimensionValues1 = {
       summary: [],
@@ -443,7 +436,6 @@ suite('AppTest', () => {
     };
     const dimensionValuesMap1 = new Map<bigint, ProductSpecificationsValue>(
         [[BigInt(2), dimensionValues1]]);
-
     const specsProduct1 = createSpecsProduct({
       productClusterId: BigInt(123),
       title: 'Product 1',
@@ -479,7 +471,6 @@ suite('AppTest', () => {
     };
     const dimensionValuesMap2 = new Map<bigint, ProductSpecificationsValue>(
         [[BigInt(2), dimensionValues2]]);
-
     const specsProduct2 = createSpecsProduct({
       productClusterId: BigInt(456),
       title: 'Product 2',
@@ -492,6 +483,7 @@ suite('AppTest', () => {
       imageUrl: {url: 'http://example.com/image2.png'},
     });
 
+    const detailTitle = 'Section';
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/1', 'https://example.com/2'],
       specs: createSpecs({
@@ -504,10 +496,7 @@ suite('AppTest', () => {
       }),
       infos: [info1, info2],
     });
-
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting();
-    await flushTasks();
+    await createAppElementWithPromiseValues(promiseValues);
 
     // Ensure the column header matches the content.
     const tableColumns = appElement.$.summaryTable.columns;
@@ -541,8 +530,6 @@ suite('AppTest', () => {
   });
 
   test('reacts to update event, column reordering', async () => {
-    const rowTitle = 'Section';
-
     // Set up the first product with at least one unique description.
     const dimensionValues1 = {
       summary: [],
@@ -601,7 +588,6 @@ suite('AppTest', () => {
     };
     const dimensionValuesMap2 = new Map<bigint, ProductSpecificationsValue>(
         [[BigInt(2), dimensionValues2]]);
-
     const specsProduct2 = createSpecsProduct({
       productClusterId: BigInt(456),
       title: 'Product 2',
@@ -622,6 +608,7 @@ suite('AppTest', () => {
     shoppingServiceApi.setResultFor(
         'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
 
+    const rowTitle = 'Section';
     const promiseValues = createAppPromiseValues({
       idParam: testId,
       specs: createSpecs({
@@ -630,9 +617,7 @@ suite('AppTest', () => {
       }),
       infos: [info1, info2],
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting();
-    await waitAfterNextRender(appElement);
+    await createAppElementWithPromiseValues(promiseValues);
 
     // We should only have a single call to the backend.
     assertEquals(
@@ -640,7 +625,6 @@ suite('AppTest', () => {
     assertArrayEquals(
         [{url: 'https://example.com/1'}, {url: 'https://example.com/2'}],
         shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[0]);
-
     // Ensure column count and the first column URL is correct.
     let columns = appElement.$.summaryTable.columns;
     assertEquals(2, columns.length);
@@ -658,7 +642,6 @@ suite('AppTest', () => {
     // call to the backend.
     assertEquals(
         1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
-
     // After the update, the columns should be swapped.
     columns = appElement.$.summaryTable.columns;
     assertEquals(2, columns.length);
@@ -691,8 +674,6 @@ suite('AppTest', () => {
   });
 
   test('reacts to update event, name only', async () => {
-    const rowTitle = 'Section';
-
     // Set up the first product with at least one unique description.
     const dimensionValues = {
       summary: [],
@@ -700,37 +681,33 @@ suite('AppTest', () => {
     };
     const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
         [[BigInt(2), dimensionValues]]);
-
     const specsProduct = createSpecsProduct({
       productClusterId: BigInt(123),
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info1 = createInfo({
+    const info = createInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'http://example.com/image.png'},
     });
-
     const specsSetUrls = [{url: 'https://example.com/'}];
     const testId = '00000000-0000-0000-0000-000000000001';
     const specsSet =
         createSpecsSet({urls: specsSetUrls, uuid: {value: testId}});
     shoppingServiceApi.setResultFor(
         'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
-
     const promiseValues = createAppPromiseValues({
       idParam: testId,
       specs: createSpecs({
-        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        productDimensionMap:
+            new Map<bigint, string>([[BigInt(2), 'Row Title']]),
         products: [specsProduct],
       }),
-      infos: [info1],
+      infos: [info],
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting();
-    await waitAfterNextRender(appElement);
+    await createAppElementWithPromiseValues(promiseValues);
 
     // We should only have a single call to the backend.
     assertEquals(
@@ -751,28 +728,23 @@ suite('AppTest', () => {
   });
 
   test('reacts to update event, url change', async () => {
-    const rowTitle = 'Section';
-
-    // Set up the first product with at least one unique description.
     const dimensionValues = {
       summary: [],
       specificationDescriptions: [],
     };
     const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
         [[BigInt(2), dimensionValues]]);
-
     const specsProduct = createSpecsProduct({
       productClusterId: BigInt(123),
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info1 = createInfo({
+    const info = createInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'http://example.com/image.png'},
     });
-
     const testId = '00000000-0000-0000-0000-000000000001';
     const specsSet = createSpecsSet(
         {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
@@ -782,14 +754,13 @@ suite('AppTest', () => {
     const promiseValues = createAppPromiseValues({
       idParam: testId,
       specs: createSpecs({
-        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        productDimensionMap:
+            new Map<bigint, string>([[BigInt(2), 'Row Title']]),
         products: [specsProduct],
       }),
-      infos: [info1],
+      infos: [info],
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting();
-    await waitAfterNextRender(appElement);
+    await createAppElementWithPromiseValues(promiseValues);
 
     // We should only have a single call to the backend.
     assertEquals(
@@ -811,7 +782,7 @@ suite('AppTest', () => {
         shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[1]);
   });
 
-  test('add url for new set creates set', async () => {
+  test('adding url w/o existing set creates new set', async () => {
     const productTabs = [{
       title: 'title',
       url: stringToMojoUrl('https://example.com/'),
@@ -820,10 +791,7 @@ suite('AppTest', () => {
         'getUrlInfosForProductTabs', Promise.resolve({urlInfos: productTabs}));
     shoppingServiceApi.setResultFor(
         'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
-
     createAppElement();
-    appElement.resetMinLoadingAnimationMsForTesting();
-    await flushTasks();
 
     // Click on the "add column" button and select the first (only) item.
     const newColSelector = appElement.$.newColumnSelector;
@@ -858,7 +826,6 @@ suite('AppTest', () => {
     };
     const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
         [[BigInt(2), dimensionValues]]);
-
     const specsProduct = createSpecsProduct({
       productClusterId: BigInt(123),
       title: 'Product',
@@ -870,7 +837,6 @@ suite('AppTest', () => {
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'http://example.com/image.png'},
     });
-
     const testId = '00000000-0000-0000-0000-000000000001';
     const promiseValues = createAppPromiseValues({
       idParam: testId,
@@ -880,12 +846,10 @@ suite('AppTest', () => {
       }),
       infos: [info],
     });
-
     const specsSet = createSpecsSet(
         {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
     shoppingServiceApi.setResultFor(
         'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
-
     const productTabs = [{
       title: 'title 2',
       url: stringToMojoUrl('https://example.com/2'),
@@ -894,10 +858,7 @@ suite('AppTest', () => {
         'getUrlInfosForProductTabs', Promise.resolve({urlInfos: productTabs}));
     shoppingServiceApi.setResultFor(
         'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
-
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting();
-    await flushTasks();
+    await createAppElementWithPromiseValues(promiseValues);
 
     // Click on the "add column" button and select the first (only) item.
     const newColSelector = appElement.$.newColumnSelector;
@@ -933,7 +894,6 @@ suite('AppTest', () => {
     };
     const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
         [[BigInt(2), dimensionValues]]);
-
     const specsProduct = createSpecsProduct({
       productClusterId: BigInt(123),
       title: 'Product',
@@ -945,7 +905,6 @@ suite('AppTest', () => {
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'http://example.com/image.png'},
     });
-
     const testId = '00000000-0000-0000-0000-000000000001';
     const promiseValues = createAppPromiseValues({
       idParam: testId,
@@ -955,7 +914,6 @@ suite('AppTest', () => {
       }),
       infos: [info],
     });
-
     const specsSet = createSpecsSet({
       name: 'My products',
       urls: [{url: 'https://example.com/'}],
@@ -963,10 +921,7 @@ suite('AppTest', () => {
     });
     shoppingServiceApi.setResultFor(
         'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
-
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting();
-    await flushTasks();
+    await createAppElementWithPromiseValues(promiseValues);
 
     // Since we loaded an existing set, the page title should use the name of
     // the set.
@@ -1004,6 +959,7 @@ suite('AppTest', () => {
       urlsParam: ['https://example.com/'],
     });
     createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting(500);
     await flushTasks();
 
     assertTrue(appElement.$.header.$.menuButton.disabled);
@@ -1022,9 +978,7 @@ suite('AppTest', () => {
         0,
         shoppingServiceApi.getCallCount('setUrlsForProductSpecificationsSet'));
 
-    const table =
-        appElement.shadowRoot!.querySelector('product-specifications-table');
-    assertTrue(!!table);
+    const table = appElement.$.summaryTable;
     const newUrl = 'https://example3.com/';
     table.dispatchEvent(new CustomEvent('url-change', {
       detail: {
@@ -1032,42 +986,48 @@ suite('AppTest', () => {
         index: 0,
       },
     }));
-    await flushTasks();
 
     assertEquals(
         1,
         shoppingServiceApi.getCallCount('setUrlsForProductSpecificationsSet'));
     assertArrayEquals(
-        [{url: newUrl}],
+        [{url: newUrl}, {url: 'https://example2.com/'}],
         shoppingServiceApi.getArgs('setUrlsForProductSpecificationsSet')[0][1]);
   });
 
-  test('updates on removal', async () => {
-    const urlsParam = ['https://example.com/'];
-    const promiseValues = createAppPromiseValues({urlsParam: urlsParam});
+  test('updates table on url removal', async () => {
+    const testUrl = 'https://example.com/';
+    const testId = 'foo';
+    const promiseValues = createAppPromiseValues({
+      urlsParam: [testUrl],
+      specsSet: createSpecsSet({
+        urls: [{url: testUrl}],
+        uuid: {value: testId},
+      }),
+    });
     await createAppElementWithPromiseValues(promiseValues);
 
+    const table = appElement.$.summaryTable;
+    assertEquals(1, table.columns.length);
     assertEquals(
         1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
     assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrl'));
-    assertArrayEquals(
-        urlsParam.map(url => ({url})),
-        shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[0]);
 
-    const table =
-        appElement.shadowRoot!.querySelector('product-specifications-table');
-    assertTrue(!!table);
     table.dispatchEvent(new CustomEvent('url-remove', {
       detail: {
         index: 0,
       },
     }));
+    // Simulate an update from sync (as a result of the above change).
+    callbackRouterRemote.onProductSpecificationsSetUpdated(
+        createSpecsSet({urls: [], uuid: {value: testId}}));
+    await waitAfterNextRender(appElement);
 
+    assertEquals(0, table.columns.length);
     // Should not get called on an empty url list.
     assertEquals(
         1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
     assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrl'));
-    assertEquals(0, table.columns.length);
   });
 
   test('deletes product specification set', async () => {
@@ -1125,8 +1085,7 @@ suite('AppTest', () => {
           Promise.resolve({set: specsSet}));
 
       const promiseValues = createAppPromiseValues({idParam: 'foo123'});
-      createAppElementWithPromiseValues(promiseValues);
-      await flushTasks();
+      await createAppElementWithPromiseValues(promiseValues);
 
       assertEquals('fooName', appElement.$.header.subtitle);
     });
@@ -1137,8 +1096,7 @@ suite('AppTest', () => {
         idParam: '',
         urlsParam: urlsParam,
       });
-      createAppElementWithPromiseValues(promiseValues);
-      await flushTasks();
+      await createAppElementWithPromiseValues(promiseValues);
 
       // TODO(b/338427523): Parameterize this test once there is UI for
       // choosing the name.
@@ -1147,8 +1105,7 @@ suite('AppTest', () => {
 
     test('displays correct subtitle for empty state', async () => {
       router.setResultFor('getCurrentQuery', '');
-      createAppElement();
-      await flushTasks();
+      await createAppElement();
 
       assertEquals(null, appElement.$.header.subtitle);
     });
@@ -1163,10 +1120,10 @@ suite('AppTest', () => {
       assertStyle($$(appElement, '#specs')!, 'display', 'none');
     });
 
-    test('hides empty state if app loads with urls', () => {
+    test('hides empty state if app loads with urls', async () => {
       const urlsParam = ['https://example.com/', 'https://example2.com/'];
       const promiseValues = createAppPromiseValues({urlsParam: urlsParam});
-      createAppElementWithPromiseValues(promiseValues);
+      await createAppElementWithPromiseValues(promiseValues);
 
       assertStyle($$(appElement, '#empty')!, 'display', 'none');
       assertNotStyle($$(appElement, '#specs')!, 'display', 'none');
@@ -1190,8 +1147,7 @@ suite('AppTest', () => {
           productUrl: {url: 'https://example.com/'},
         })],
       });
-      createAppElementWithPromiseValues(promiseValues);
-      appElement.resetMinLoadingAnimationMsForTesting();
+      await createAppElementWithPromiseValues(promiseValues);
 
       assertEquals(0, appElement.$.summaryTable.columns.length);
 
@@ -1210,85 +1166,38 @@ suite('AppTest', () => {
       // The table should be updated with the selected URL.
       assertStyle($$(appElement, '#empty')!, 'display', 'none');
       assertNotStyle($$(appElement, '#specs')!, 'display', 'none');
-      assertEquals(1, appElement.$.summaryTable.columns.length);
-      assertEquals(url, appElement.$.summaryTable.columns[0]!.selectedItem.url);
+      const tableColumns = appElement.$.summaryTable.columns;
+      assertEquals(1, tableColumns.length);
+      assertEquals(url, tableColumns[0]!.selectedItem.url);
     });
 
     test('removing last column shows empty state', async () => {
-      const dimensionValues = {
-        summary: [],
-        specificationDescriptions: [
-          {
-            label: '',
-            altText: '',
-            options: [],
-          },
-        ],
-      };
-      const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
-          [[BigInt(2), dimensionValues]]);
-
-      const specsProduct = createSpecsProduct({
-        productClusterId: BigInt(123),
-        title: 'Product',
-        productDimensionValues: dimensionValuesMap,
-      });
-      const info = createInfo({
-        clusterId: BigInt(123),
-        title: 'Product',
-        productUrl: {url: 'https://example.com/'},
-        imageUrl: {url: 'http://example.com/image.png'},
-      });
-
-      const testId = '00000000-0000-0000-0000-000000000001';
+      const testUrl = 'https://example.com/';
+      const testId = 'foo';
       const promiseValues = createAppPromiseValues({
-        idParam: testId,
-        specs: createSpecs({
-          productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
-          products: [specsProduct],
+        urlsParam: [testUrl],
+        specsSet: createSpecsSet({
+          urls: [{url: testUrl}],
+          uuid: {value: testId},
         }),
-        infos: [info],
       });
+      await createAppElementWithPromiseValues(promiseValues);
+      const table = appElement.$.summaryTable;
+      assertEquals(1, table.columns.length);
+      assertStyle($$(appElement, '#empty')!, 'display', 'none');
+      assertNotStyle($$(appElement, '#specs')!, 'display', 'none');
 
-      const specsSet = createSpecsSet(
-          {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
-      shoppingServiceApi.setResultFor(
-          'getProductSpecificationsSetByUuid',
-          Promise.resolve({set: specsSet}));
-
-      createAppElementWithPromiseValues(promiseValues);
-      appElement.resetMinLoadingAnimationMsForTesting();
-      await flushTasks();
-
-      // Trigger a remove event
-      const table =
-          appElement.shadowRoot!.querySelector('product-specifications-table');
-      assertTrue(!!table);
       table.dispatchEvent(new CustomEvent('url-remove', {
         detail: {
           index: 0,
         },
       }));
-
-      // Exaggerate the loading animation time to ensure it doesn't show for
-      // this case.
-      appElement.resetMinLoadingAnimationMsForTesting(60000);
-
-      // We should see a call to update the URLs in the set.
-      const args = await shoppingServiceApi.whenCalled(
-          'setUrlsForProductSpecificationsSet');
-      assertEquals(2, args.length);
-      assertArrayEquals([], args[1]);
-
       // Simulate an update from sync (as a result of the above change).
       callbackRouterRemote.onProductSpecificationsSetUpdated(
           createSpecsSet({urls: [], uuid: {value: testId}}));
-
       await waitAfterNextRender(appElement);
 
-      assertFalse(isVisible(appElement.$.loading));
-
-      // The empty state should now be showing.
+      assertEquals(0, table.columns.length);
       assertNotStyle($$(appElement, '#empty')!, 'display', 'none');
       assertStyle($$(appElement, '#specs')!, 'display', 'none');
     });
