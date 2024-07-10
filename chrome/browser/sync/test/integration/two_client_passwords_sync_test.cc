@@ -20,7 +20,6 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -474,13 +473,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
-              UnorderedElementsAre(
-                  Pointee(password_manager::HasPrimaryKeyAndEquals(form0)),
-                  Pointee(password_manager::HasPrimaryKeyAndEquals(form1))));
+              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              UnorderedElementsAre(
-                  Pointee(password_manager::HasPrimaryKeyAndEquals(form0)),
-                  Pointee(password_manager::HasPrimaryKeyAndEquals(form1))));
+              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
@@ -504,9 +499,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(
-      GetAllLogins(GetProfilePasswordStoreInterface(1)),
-      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
@@ -533,9 +527,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              UnorderedElementsAre(
-                  Pointee(password_manager::HasPrimaryKeyAndEquals(form0)),
-                  Pointee(password_manager::HasPrimaryKeyAndEquals(form1))));
+              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 
   // Remove security issues on Client 1.
   form0.password_issues.clear();
@@ -544,9 +536,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
   // Wait until Client 0 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              UnorderedElementsAre(
-                  Pointee(password_manager::HasPrimaryKeyAndEquals(form0)),
-                  Pointee(password_manager::HasPrimaryKeyAndEquals(form1))));
+              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
@@ -573,9 +563,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(
-      GetAllLogins(GetProfilePasswordStoreInterface(1)),
-      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
 }
 
 // Regression test for crbug.com/1346576.
@@ -621,9 +610,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(
-      GetAllLogins(GetProfilePasswordStoreInterface(1)),
-      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
 
   // Update the note in Client 1.
   form.notes[0].value = u"78910";
@@ -631,9 +619,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 0 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(
-      GetAllLogins(GetProfilePasswordStoreInterface(0)),
-      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
+              ElementsAre(Pointee(form)));
 
   // Remove all notes on Client 0.
   form.notes.clear();
@@ -641,9 +628,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(
-      GetAllLogins(GetProfilePasswordStoreInterface(1)),
-      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
 }
 
 // This tests the  logic for reading and writing the notes backup blob when
@@ -659,9 +645,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(
-      GetAllLogins(GetProfilePasswordStoreInterface(1)),
-      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
 
   // Update the password in Client 1.
   form.password_value = u"new_password";
@@ -669,7 +654,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 0 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(
-      GetAllLogins(GetProfilePasswordStoreInterface(0)),
-      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
+              ElementsAre(Pointee(form)));
 }

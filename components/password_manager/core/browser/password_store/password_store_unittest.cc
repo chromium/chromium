@@ -295,10 +295,10 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   // The expected form should have no password_issues.
   expected_form.password_issues =
       base::flat_map<InsecureType, InsecurityMetadata>();
-  EXPECT_CALL(mock_consumer,
-              OnGetPasswordStoreResultsOrErrorFrom(
-                  store.get(), VariantWith<LoginsResult>(ElementsAre(
-                                   HasPrimaryKeyAndEquals(expected_form)))));
+  EXPECT_CALL(
+      mock_consumer,
+      OnGetPasswordStoreResultsOrErrorFrom(
+          store.get(), VariantWith<LoginsResult>(ElementsAre(expected_form))));
   store->GetAutofillableLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
@@ -336,8 +336,8 @@ TEST_F(PasswordStoreTest, AddLogins) {
   EXPECT_CALL(
       mock_consumer,
       OnGetPasswordStoreResultsOrErrorFrom(
-          store.get(), VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                           FormsIgnoringPrimaryKey(all_credentials)))));
+          store.get(), VariantWith<LoginsResult>(
+                           UnorderedElementsAreArray(all_credentials))));
   store->GetAutofillableLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
@@ -394,8 +394,8 @@ TEST_F(PasswordStoreTest, UpdateLogins) {
   EXPECT_CALL(
       mock_consumer,
       OnGetPasswordStoreResultsOrErrorFrom(
-          store.get(), VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                           FormsIgnoringPrimaryKey(updated_credentials)))));
+          store.get(), VariantWith<LoginsResult>(
+                           UnorderedElementsAreArray(updated_credentials))));
   store->GetAutofillableLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
@@ -513,10 +513,10 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
   WaitForPasswordStore();
 
   MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(mock_consumer,
-              OnGetPasswordStoreResultsOrErrorFrom(
-                  store.get(), VariantWith<LoginsResult>(ElementsAre(
-                                   HasPrimaryKeyAndEquals(test_form_2)))));
+  EXPECT_CALL(
+      mock_consumer,
+      OnGetPasswordStoreResultsOrErrorFrom(
+          store.get(), VariantWith<LoginsResult>(ElementsAre(test_form_2))));
   store->GetAllLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
@@ -555,10 +555,10 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
   WaitForPasswordStore();
 
   MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(mock_consumer,
-              OnGetPasswordStoreResultsOrErrorFrom(
-                  store.get(), VariantWith<LoginsResult>(ElementsAre(
-                                   HasPrimaryKeyAndEquals(*test_form_2)))));
+  EXPECT_CALL(
+      mock_consumer,
+      OnGetPasswordStoreResultsOrErrorFrom(
+          store.get(), VariantWith<LoginsResult>(ElementsAre(*test_form_2))));
   store->GetAllLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
@@ -694,11 +694,10 @@ TEST_F(PasswordStoreTest, GetLoginsWithPSL) {
   expected_results[2].match_type = PasswordForm::MatchType::kPSL;
 
   MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(
-      mock_consumer,
-      OnGetPasswordStoreResultsOrErrorFrom(
-          store.get(), VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                           FormsIgnoringPrimaryKey(expected_results)))));
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsOrErrorFrom(
+                  store.get(), VariantWith<LoginsResult>(
+                                   ElementsAreArray(expected_results))));
 
   store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
@@ -734,10 +733,10 @@ TEST_F(PasswordStoreTest, GetLoginsPSLDisabled) {
   MockPasswordStoreConsumer mock_consumer;
   PasswordForm expected_form(*all_credentials[0]);
   expected_form.match_type = PasswordForm::MatchType::kExact;
-  EXPECT_CALL(mock_consumer,
-              OnGetPasswordStoreResultsOrErrorFrom(
-                  store.get(), VariantWith<LoginsResult>(ElementsAre(
-                                   HasPrimaryKeyAndEquals(expected_form)))));
+  EXPECT_CALL(
+      mock_consumer,
+      OnGetPasswordStoreResultsOrErrorFrom(
+          store.get(), VariantWith<LoginsResult>(ElementsAre(expected_form))));
 
   store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
@@ -806,11 +805,10 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
       observed_form, no_affiliated_android_realms);
 
   MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(
-      mock_consumer,
-      OnGetPasswordStoreResultsOrErrorFrom(
-          store.get(), VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                           FormsIgnoringPrimaryKey(expected_results)))));
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsOrErrorFrom(
+                  store.get(), VariantWith<LoginsResult>(
+                                   ElementsAreArray(expected_results))));
   store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
@@ -925,11 +923,10 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
       observed_form, affiliated_android_realms);
 
   MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(
-      mock_consumer,
-      OnGetPasswordStoreResultsOrErrorFrom(
-          store.get(), VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                           FormsIgnoringPrimaryKey(expected_results)))));
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsOrErrorFrom(
+                  store.get(), VariantWith<LoginsResult>(
+                                   ElementsAreArray(expected_results))));
 
   store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
@@ -979,8 +976,8 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsOrErrorFrom(
-                  store.get(), VariantWith<LoginsResult>(ElementsAre(
-                                   HasPrimaryKeyAndEquals(expected_result)))));
+                  store.get(),
+                  VariantWith<LoginsResult>(ElementsAre(expected_result))));
 
   store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
@@ -1007,14 +1004,16 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
                                 u"",
                                 kTestLastUsageTime,
                                 1};
-  PasswordForm credential =
-      *FillPasswordFormWithData(form_data, /*is_account_store=*/false);
-  store->AddLogin(credential);
+  std::unique_ptr<PasswordForm> credential =
+      FillPasswordFormWithData(form_data, /*is_account_store=*/false);
+  store->AddLogin(*credential);
 
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};
 
-  credential.match_type = PasswordForm::MatchType::kAffiliated;
+  std::vector<PasswordForm> expected_results;
+  expected_results.push_back(*credential);
+  expected_results.back().match_type = PasswordForm::MatchType::kAffiliated;
 
   mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
       observed_form, {kTestAndroidRealm1});
@@ -1025,15 +1024,15 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
       ->ExpectCallToInjectAffiliationAndBrandingInformation(
           std::move(affiliation_info_for_results));
 
-  credential.affiliated_web_realm = kTestWebRealm1;
-  credential.app_display_name = kTestAndroidName1;
-  credential.app_icon_url = GURL(kTestAndroidIconURL1);
+  expected_results[0].affiliated_web_realm = kTestWebRealm1;
+  expected_results[0].app_display_name = kTestAndroidName1;
+  expected_results[0].app_icon_url = GURL(kTestAndroidIconURL1);
 
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsOrErrorFrom(
-                  store.get(), VariantWith<LoginsResult>(ElementsAre(
-                                   HasPrimaryKeyAndEquals(credential)))));
+                  store.get(), VariantWith<LoginsResult>(
+                                   ElementsAreArray(expected_results))));
 
   store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
@@ -1144,11 +1143,10 @@ TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
       observed_form, affiliated_realms);
 
   MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(
-      mock_consumer,
-      OnGetPasswordStoreResultsOrErrorFrom(
-          store.get(), VariantWith<LoginsResult>(ElementsAreArray(
-                           FormsIgnoringPrimaryKey(expected_results)))));
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsOrErrorFrom(
+                  store.get(), VariantWith<LoginsResult>(
+                                   ElementsAreArray(expected_results))));
 
   store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
@@ -1252,11 +1250,10 @@ TEST_F(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
       observed_form, affiliated_realms, grouped_realms);
 
   MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(
-      mock_consumer,
-      OnGetPasswordStoreResultsOrErrorFrom(
-          store_.get(), VariantWith<LoginsResult>(ElementsAreArray(
-                            FormsIgnoringPrimaryKey(expected_results)))));
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsOrErrorFrom(
+                  store_.get(), VariantWith<LoginsResult>(
+                                    ElementsAreArray(expected_results))));
 
   store_->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
@@ -1534,10 +1531,10 @@ TEST_F(PasswordStoreTest, GetAllLogins) {
     expected_results.push_back(*credential);
   }
 
-  EXPECT_CALL(mock_consumer,
-              OnGetPasswordStoreResultsOrErrorFrom(
-                  _, VariantWith<LoginsResult>(ElementsAreArray(
-                         FormsIgnoringPrimaryKey(expected_results)))));
+  EXPECT_CALL(
+      mock_consumer,
+      OnGetPasswordStoreResultsOrErrorFrom(
+          _, VariantWith<LoginsResult>(ElementsAreArray(expected_results))));
   store->GetAllLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
@@ -1607,8 +1604,8 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   EXPECT_CALL(
       mock_consumer,
       OnGetPasswordStoreResultsOrErrorFrom(
-          store.get(), VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                           FormsIgnoringPrimaryKey(expected_results)))));
+          store.get(), VariantWith<LoginsResult>(
+                           UnorderedElementsAreArray(expected_results))));
   store->GetAllLoginsWithAffiliationAndBrandingInformation(
       mock_consumer.GetWeakPtr());
 
@@ -1679,11 +1676,10 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
   all_credentials.erase(all_credentials.begin());
 
   MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(
-      mock_consumer,
-      OnGetPasswordStoreResultsOrErrorFrom(
-          store.get(), VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                           FormsIgnoringPrimaryKey(all_credentials)))));
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsOrErrorFrom(
+                  store.get(), VariantWith<LoginsResult>(
+                                   ElementsAreArray(all_credentials))));
   store->GetAllLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
@@ -1729,8 +1725,7 @@ TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnUpdate) {
 
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsOrErrorFrom(
-                  store.get(), VariantWith<LoginsResult>(
-                                   ElementsAre(HasPrimaryKeyAndEquals(form)))));
+                  store.get(), VariantWith<LoginsResult>(ElementsAre(form))));
 
   WaitForPasswordStore();
 
