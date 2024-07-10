@@ -66,6 +66,7 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
@@ -140,27 +141,24 @@ MATCHER_P(CreateReportSourceIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.source(), result_listener);
 }
 
-MATCHER_P(CreateReportMaxAttributionsLimitIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.limits().rate_limits_max_attributions,
-                            result_listener);
-}
-
-MATCHER_P(CreateReportMaxAttributionReportingOriginsLimitIs, matcher, "") {
-  return ExplainMatchResult(
-      matcher, arg.limits().rate_limits_max_attribution_reporting_origins,
-      result_listener);
-}
-
 MATCHER_P(CreateReportMaxEventLevelReportsLimitIs, matcher, "") {
-  return ExplainMatchResult(
-      matcher, arg.limits().max_event_level_reports_per_destination,
-      result_listener);
+  std::optional<int> value;
+  if (const auto* v =
+          absl::get_if<CreateReportResult::NoCapacityForConversionDestination>(
+              &arg.event_level_result())) {
+    value = v->max;
+  }
+  return ExplainMatchResult(matcher, value, result_listener);
 }
 
 MATCHER_P(CreateReportMaxAggregatableReportsLimitIs, matcher, "") {
-  return ExplainMatchResult(
-      matcher, arg.limits().max_aggregatable_reports_per_destination,
-      result_listener);
+  std::optional<int> value;
+  if (const auto* v =
+          absl::get_if<CreateReportResult::NoCapacityForConversionDestination>(
+              &arg.aggregatable_result())) {
+    value = v->max;
+  }
+  return ExplainMatchResult(matcher, value, result_listener);
 }
 
 }  // namespace
@@ -1147,12 +1145,12 @@ TEST_F(AttributionResolverTest, MaxAttributionsBetweenSites) {
   storage()->StoreSource(source_builder.Build());
 
   auto conversion1 = TriggerBuilder().SetTriggerData(1).Build();
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(conversion1),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kSuccess),
-                    CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kNotRegistered),
-                    CreateReportMaxAttributionsLimitIs(std::nullopt)));
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(conversion1),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kSuccess),
+            CreateReportAggregatableStatusIs(
+                AttributionTrigger::AggregatableResult::kNotRegistered)));
 
   auto conversion2 = DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
                          .SetTriggerData(2)
@@ -1161,8 +1159,7 @@ TEST_F(AttributionResolverTest, MaxAttributionsBetweenSites) {
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
                     CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess),
-                    CreateReportMaxAttributionsLimitIs(std::nullopt)));
+                        AttributionTrigger::AggregatableResult::kSuccess)));
 
   auto conversion3 = DefaultAggregatableTriggerBuilder(/*histogram_values=*/{3})
                          .SetTriggerData(3)
@@ -1172,23 +1169,26 @@ TEST_F(AttributionResolverTest, MaxAttributionsBetweenSites) {
   // limit.
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(conversion3),
-      AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kExcessiveAttributions),
-            CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kSuccess),
-            ReplacedEventLevelReportIs(IsNull()),
-            CreateReportMaxAttributionsLimitIs(2),
-            DroppedEventLevelReportIs(IsNull())));
+      AllOf(
+          Property(&CreateReportResult::event_level_result,
+                   VariantWith<CreateReportResult::ExcessiveAttributions>(Field(
+                       &CreateReportResult::ExcessiveAttributions::max, 2))),
+          CreateReportAggregatableStatusIs(
+              AttributionTrigger::AggregatableResult::kSuccess),
+          ReplacedEventLevelReportIs(IsNull()),
+          DroppedEventLevelReportIs(IsNull())));
 
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(conversion3),
-      AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kExcessiveAttributions),
-            CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kExcessiveAttributions),
-            ReplacedEventLevelReportIs(IsNull()),
-            CreateReportMaxAttributionsLimitIs(2),
-            DroppedEventLevelReportIs(IsNull())));
+      AllOf(
+          Property(&CreateReportResult::event_level_result,
+                   VariantWith<CreateReportResult::ExcessiveAttributions>(Field(
+                       &CreateReportResult::ExcessiveAttributions::max, 2))),
+          Property(&CreateReportResult::aggregatable_result,
+                   VariantWith<CreateReportResult::ExcessiveAttributions>(Field(
+                       &CreateReportResult::ExcessiveAttributions::max, 2))),
+          ReplacedEventLevelReportIs(IsNull()),
+          DroppedEventLevelReportIs(IsNull())));
 
   const auto source =
       source_builder.SetRemainingAggregatableAttributionBudget(65536 - 8)
@@ -3074,19 +3074,16 @@ TEST_F(AttributionResolverTest, MaxReportingOriginsPerAttribution) {
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kSuccess),
             CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kNotRegistered),
-            CreateReportMaxAttributionReportingOriginsLimitIs(std::nullopt)));
+                AttributionTrigger::AggregatableResult::kNotRegistered)));
 
-  ASSERT_THAT(
-      storage()->MaybeCreateAndStoreReport(
-          aggregatable_trigger_builder.SetReportingOrigin(origin2)
-              .SetDebugKey(2)
-              .Build(/*generate_event_trigger_data=*/false)),
-      AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kNotRegistered),
-            CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kSuccess),
-            CreateReportMaxAttributionReportingOriginsLimitIs(std::nullopt)));
+  ASSERT_THAT(storage()->MaybeCreateAndStoreReport(
+                  aggregatable_trigger_builder.SetReportingOrigin(origin2)
+                      .SetDebugKey(2)
+                      .Build(/*generate_event_trigger_data=*/false)),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kNotRegistered),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess)));
 
   ASSERT_THAT(
       storage()->MaybeCreateAndStoreReport(
@@ -3094,12 +3091,14 @@ TEST_F(AttributionResolverTest, MaxReportingOriginsPerAttribution) {
               .SetDebugKey(3)
               .Build()),
       AllOf(
-          CreateReportEventLevelStatusIs(
-              AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins),
-          CreateReportAggregatableStatusIs(
-              AttributionTrigger::AggregatableResult::
-                  kExcessiveReportingOrigins),
-          CreateReportMaxAttributionReportingOriginsLimitIs(2)));
+          Property(
+              &CreateReportResult::event_level_result,
+              VariantWith<CreateReportResult::ExcessiveReportingOrigins>(Field(
+                  &CreateReportResult::ExcessiveReportingOrigins::max, 2))),
+          Property(
+              &CreateReportResult::aggregatable_result,
+              VariantWith<CreateReportResult::ExcessiveReportingOrigins>(Field(
+                  &CreateReportResult::ExcessiveReportingOrigins::max, 2)))));
 
   // One event-level report, one aggregatable report.
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),

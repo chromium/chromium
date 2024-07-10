@@ -377,45 +377,6 @@ AttributionReport* CreateReportResult::new_aggregatable_report() {
   return nullptr;
 }
 
-CreateReportResult::Limits CreateReportResult::limits() const {
-  Limits limits;
-
-  absl::visit(base::Overloaded{
-                  [&](const NoCapacityForConversionDestination& v) {
-                    limits.max_event_level_reports_per_destination = v.max;
-                  },
-                  [&](const ExcessiveAttributions& v) {
-                    limits.rate_limits_max_attributions = v.max;
-                  },
-                  [&](const ExcessiveReportingOrigins& v) {
-                    limits.rate_limits_max_attribution_reporting_origins =
-                        v.max;
-                  },
-                  [](const auto&) {},
-              },
-              event_level_result_);
-
-  absl::visit(base::Overloaded{
-                  [&](const NoCapacityForConversionDestination& v) {
-                    limits.max_aggregatable_reports_per_destination = v.max;
-                  },
-                  [&](const ExcessiveAttributions& v) {
-                    limits.rate_limits_max_attributions = v.max;
-                  },
-                  [&](const ExcessiveReportingOrigins& v) {
-                    limits.rate_limits_max_attribution_reporting_origins =
-                        v.max;
-                  },
-                  [&](const ExcessiveAggregatableReports& v) {
-                    limits.max_aggregatable_reports_per_source = v.max;
-                  },
-                  [](const auto&) {},
-              },
-              aggregatable_result_);
-
-  return limits;
-}
-
 const AttributionReport* CreateReportResult::dropped_event_level_report()
     const {
   return absl::visit(

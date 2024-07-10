@@ -185,7 +185,13 @@ class CONTENT_EXPORT CreateReportResult {
 
   AttributionTrigger::EventLevelResult event_level_status() const;
 
+  const EventLevel& event_level_result() const { return event_level_result_; }
+
   AttributionTrigger::AggregatableResult aggregatable_status() const;
+
+  const Aggregatable& aggregatable_result() const {
+    return aggregatable_result_;
+  }
 
   const AttributionReport* replaced_event_level_report() const;
 
@@ -198,8 +204,6 @@ class CONTENT_EXPORT CreateReportResult {
   AttributionReport* new_aggregatable_report();
 
   const std::optional<StoredSource>& source() const { return source_; }
-
-  Limits limits() const;
 
   const AttributionReport* dropped_event_level_report() const;
 
