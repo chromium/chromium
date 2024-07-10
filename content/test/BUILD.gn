@@ -3300,11 +3300,7 @@ test("content_unittests") {
     weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 12.3
   }
   if (is_chromeos_ash) {
-    sources += [
-      "../browser/handwriting/handwriting_recognition_service_impl_cros_unittest.cc",
-      "../browser/ml/ml_service_impl_cros_unittest.cc",
-      "../browser/ml/ml_service_impl_unittest.cc",
-    ]
+    sources += [ "../browser/handwriting/handwriting_recognition_service_impl_cros_unittest.cc" ]
     deps += [
       "//ash/constants:constants",
       "//chromeos/ash/components/audio",
