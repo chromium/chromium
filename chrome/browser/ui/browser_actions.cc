@@ -395,17 +395,19 @@ void BrowserActions::InitializeBrowserActions() {
           .SetEnabled(!is_guest_session)
           .Build());
 
-  root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             browser->window()->ShowChromeLabs();
-                           },
-                           base::Unretained(browser)),
-                       kActionShowChromeLabs, IDS_CHROMELABS, IDS_CHROMELABS,
-                       kScienceIcon)
-          .SetEnabled(IsChromeLabsEnabled())
-          .Build());
+  if (IsChromeLabsEnabled()) {
+    root_action_item_->AddChild(
+        ChromeMenuAction(base::BindRepeating(
+                             [](Browser* browser, actions::ActionItem* item,
+                                actions::ActionInvocationContext context) {
+                               browser->window()->ShowChromeLabs();
+                             },
+                             base::Unretained(browser)),
+                         kActionShowChromeLabs, IDS_CHROMELABS, IDS_CHROMELABS,
+                         kScienceIcon)
+            .SetEnabled(IsChromeLabsEnabled())
+            .Build());
+  }
 
   AddListeners();
 }
