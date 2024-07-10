@@ -6,12 +6,14 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {LensFormElement} from './lens_form.js';
 import {LensErrorType, LensSubmitType} from './lens_form.js';
-import {getTemplate} from './lens_upload_dialog.html.js';
+import {getCss} from './lens_upload_dialog.css.js';
+import {getHtml} from './lens_upload_dialog.html.js';
 import {WindowProxy} from './window_proxy.js';
 
 enum DialogState {
@@ -106,7 +108,7 @@ export function recordLensUploadDialogError(action: LensUploadDialogError) {
       Object.keys(LensUploadDialogError).length);
 }
 
-const LensUploadDialogElementBase = I18nMixin(PolymerElement);
+const LensUploadDialogElementBase = I18nMixinLit(CrLitElement);
 
 // Modal that lets the user upload images for search on Lens.
 export class LensUploadDialogElement extends LensUploadDialogElementBase {
@@ -114,82 +116,88 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     return 'ntp-lens-upload-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      dialogState_: {
-        type: DialogState,
-      },
-      lensErrorMessage_: {
-        type: LensErrorMessage,
-      },
-      isHidden_: {
-        type: Boolean,
-        computed: `computeIsHidden_(dialogState_)`,
-      },
-      isNormalOrError_: {
-        type: Boolean,
-        computed: `computeIsNormalOrError_(dialogState_)`,
-        reflectToAttribute: true,
-      },
+      dialogState_: {type: DialogState},
+      lensErrorMessage_: {type: Number},
+      isHidden_: {type: Boolean},
+      isNormalOrError_: {type: Boolean},
+
       isDragging_: {
         type: Boolean,
-        computed: `computeIsDragging_(dialogState_)`,
-        reflectToAttribute: true,
+        reflect: true,
       },
+
       isLoading_: {
         type: Boolean,
-        computed: `computeIsLoading_(dialogState_)`,
-        reflectToAttribute: true,
+        reflect: true,
       },
-      isError_: {
-        type: Boolean,
-        computed: `computeIsError_(dialogState_)`,
-        reflectToAttribute: true,
-      },
-      isOffline_: {
-        type: Boolean,
-        computed: `computeIsOffline_(dialogState_)`,
-        reflectToAttribute: true,
-      },
-      uploadUrl_: {
-        type: String,
-      },
+
+      isError_: {type: Boolean},
+      isOffline_: {type: Boolean},
+      uploadUrl_: {type: String},
     };
   }
 
+  protected isHidden_: boolean;
+  protected isError_: boolean;
+  protected isNormalOrError_: boolean;
+  protected isDragging_: boolean;
+  protected isLoading_: boolean;
+  protected isOffline_: boolean;
   private dialogState_ = DialogState.HIDDEN;
   private lensErrorMessage_ = LensErrorMessage.NONE;
   private outsideHandlerAttached_ = false;
-  private uploadUrl_: string = '';
+  protected uploadUrl_: string = '';
   private dragCount: number = 0;
 
-  private computeIsHidden_(dialogState: DialogState): boolean {
-    return dialogState === DialogState.HIDDEN;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('dialogState_')) {
+      this.isHidden_ = this.computeIsHidden_();
+      this.isNormalOrError_ = this.computeIsNormalOrError_();
+      this.isDragging_ = this.computeIsDragging_();
+      this.isLoading_ = this.computeIsLoading_();
+      this.isError_ = this.computeIsError_();
+      this.isOffline_ = this.computeIsOffline_();
+    }
   }
 
-  private computeIsNormalOrError_(dialogState: DialogState): boolean {
-    return dialogState === DialogState.NORMAL ||
-        dialogState === DialogState.ERROR;
+  private computeIsHidden_(): boolean {
+    return this.dialogState_ === DialogState.HIDDEN;
   }
 
-  private computeIsDragging_(dialogState: DialogState): boolean {
-    return dialogState === DialogState.DRAGGING;
+  private computeIsNormalOrError_(): boolean {
+    return this.dialogState_ === DialogState.NORMAL ||
+        this.dialogState_ === DialogState.ERROR;
   }
 
-  private computeIsLoading_(dialogState: DialogState): boolean {
-    return dialogState === DialogState.LOADING;
+  private computeIsDragging_(): boolean {
+    return this.dialogState_ === DialogState.DRAGGING;
   }
 
-  private computeIsError_(dialogState: DialogState): boolean {
-    return dialogState === DialogState.ERROR;
+  private computeIsLoading_(): boolean {
+    return this.dialogState_ === DialogState.LOADING;
   }
 
-  private computeIsOffline_(dialogState: DialogState): boolean {
-    return dialogState === DialogState.OFFLINE;
+  private computeIsError_(): boolean {
+    return this.dialogState_ === DialogState.ERROR;
+  }
+
+  private computeIsOffline_(): boolean {
+    return this.dialogState_ === DialogState.OFFLINE;
   }
 
   override connectedCallback() {
@@ -208,26 +216,30 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     // otherwise the click of the icon which initially opened the dialog would
     // also be registered in the outside click handler, causing the dialog to
     // immediately close after opening.
-    afterNextRender(this, () => {
+    this.updateComplete.then(() => {
       this.attachOutsideHandler_();
-      if (this.computeIsOffline_(this.dialogState_)) {
-        this.shadowRoot!.getElementById('offlineRetryButton')?.focus();
+      if (this.isOffline_) {
+        this.shadowRoot!.getElementById('offlineRetryButton')!.focus();
       } else {
-        this.shadowRoot!.getElementById('uploadText')?.focus();
+        this.shadowRoot!.getElementById('uploadText')!.focus();
       }
     });
     recordLensUploadDialogAction(LensUploadDialogAction.DIALOG_OPENED);
   }
 
   closeDialog() {
+    if (this.isHidden_) {
+      return;
+    }
+
     this.dialogState_ = DialogState.HIDDEN;
     this.detachOutsideHandler_();
     this.dispatchEvent(new Event('close-lens-search'));
     recordLensUploadDialogAction(LensUploadDialogAction.DIALOG_CLOSED);
   }
 
-  private getErrorString_(lensErrorMessage: LensErrorMessage) {
-    switch (lensErrorMessage) {
+  protected getErrorString_() {
+    switch (this.lensErrorMessage_) {
       case LensErrorMessage.FILE_TYPE:
         return this.i18n('lensSearchUploadDialogErrorFileType');
       case LensErrorMessage.FILE_SIZE:
@@ -274,49 +286,47 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  private onCloseButtonKeydown_ = (event: KeyboardEvent) => {
-    if (event.key === EventKeys.TAB &&
-        (this.computeIsDragging_(this.dialogState_) ||
-         this.computeIsLoading_(this.dialogState_))) {
+  protected onCloseButtonKeydown_(event: KeyboardEvent) {
+    if (event.key === EventKeys.TAB && (this.isDragging_ || this.isLoading_)) {
       event.preventDefault();
       // In the dragging and loading states, the close button is the only
       // tabbable element in the dialog, so focus should stay on it.
     } else if (event.key === EventKeys.TAB && event.shiftKey) {
       event.preventDefault();
-      if (this.computeIsNormalOrError_(this.dialogState_)) {
-        this.shadowRoot!.getElementById('inputSubmit')?.focus();
-      } else if (this.computeIsOffline_(this.dialogState_)) {
-        this.shadowRoot!.getElementById('offlineRetryButton')?.focus();
+      if (this.isNormalOrError_) {
+        this.shadowRoot!.getElementById('inputSubmit')!.focus();
+      } else if (this.isOffline_) {
+        this.shadowRoot!.getElementById('offlineRetryButton')!.focus();
       }
     }
-  };
+  }
 
-  private onOfflineRetryButtonKeydown_ = (event: KeyboardEvent) => {
+  protected onOfflineRetryButtonKeydown_(event: KeyboardEvent) {
     if (event.key === EventKeys.TAB && !event.shiftKey) {
       event.preventDefault();
       this.$.closeButton.focus();
     }
-  };
+  }
 
-  private onCloseButtonClick_() {
+  protected onCloseButtonClick_() {
     this.closeDialog();
   }
 
-  private onOfflineRetryButtonClick_() {
+  protected onOfflineRetryButtonClick_() {
     this.setOnlineState_();
   }
 
-  private onUploadFileKeyDown_(event: KeyboardEvent) {
+  protected onUploadFileKeyDown_(event: KeyboardEvent) {
     if (event.key === EventKeys.ENTER || event.key === EventKeys.SPACE) {
       this.$.lensForm.openSystemFilePicker();
     }
   }
 
-  private onUploadFileClick_() {
+  protected onUploadFileClick_() {
     this.$.lensForm.openSystemFilePicker();
   }
 
-  private handleFormLoading_(event: CustomEvent<LensSubmitType>) {
+  protected handleFormLoading_(event: CustomEvent<LensSubmitType>) {
     this.dialogState_ = DialogState.LOADING;
     switch (event.detail) {
       case LensSubmitType.FILE:
@@ -328,7 +338,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  private handleFormError_(event: CustomEvent<LensErrorType>) {
+  protected handleFormError_(event: CustomEvent<LensErrorType>) {
     switch (event.detail) {
       case LensErrorType.MULTIPLE_FILES:
         this.dialogState_ = DialogState.ERROR;
@@ -376,14 +386,14 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  private onUrlKeyDown_(event: KeyboardEvent) {
+  protected onUrlKeyDown_(event: KeyboardEvent) {
     if (event.key === EventKeys.ENTER) {
       event.preventDefault();
       this.onSubmitUrl_();
     }
   }
 
-  private onInputSubmitKeyDown_(event: KeyboardEvent) {
+  protected onInputSubmitKeyDown_(event: KeyboardEvent) {
     if (event.key === EventKeys.ENTER || event.key === EventKeys.SPACE) {
       this.onSubmitUrl_();
     } else if (event.key === EventKeys.TAB && !event.shiftKey) {
@@ -392,14 +402,14 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  private onSubmitUrl_() {
+  protected onSubmitUrl_() {
     const url = this.uploadUrl_.trim();
     if (url.length > 0) {
       this.$.lensForm.submitUrl(url);
     }
   }
 
-  private onDragEnter_(e: DragEvent) {
+  protected onDragEnter_(e: DragEvent) {
     e.preventDefault();
     this.dragCount += 1;
 
@@ -408,11 +418,11 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  private onDragOver_(e: DragEvent) {
+  protected onDragOver_(e: DragEvent) {
     e.preventDefault();
   }
 
-  private onDragLeave_(e: DragEvent) {
+  protected onDragLeave_(e: DragEvent) {
     e.preventDefault();
     this.dragCount -= 1;
 
@@ -421,7 +431,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  private onDrop_(e: DragEvent) {
+  protected onDrop_(e: DragEvent) {
     e.preventDefault();
     this.dragCount = 0;
 
@@ -431,7 +441,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  private onFocusOut_(event: FocusEvent) {
+  protected onFocusOut_(event: FocusEvent) {
     // If the focus event is occurring during a drag into the upload dialog,
     // do nothing. See b/284201957#6 for scenario in which this is necessary.
     if (this.dragCount === 1) {
@@ -447,7 +457,12 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
       this.closeDialog();
     }
   }
+
+  protected onInputBoxInput_(e: Event) {
+    this.uploadUrl_ = (e.target as HTMLInputElement).value;
+  }
 }
+
 declare global {
   interface HTMLElementTagNameMap {
     'ntp-lens-upload-dialog': LensUploadDialogElement;
