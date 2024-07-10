@@ -327,8 +327,10 @@ gfx::Size GlanceablesTasksView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   if (running_resize_animation_.has_value() &&
       *running_resize_animation_ == ResizeAnimation::Type::kChildResize) {
+    // The animation was implemented to ignore `available_size`. See b/351880846
+    // for more detail.
     const gfx::Size base_preferred_size =
-        views::FlexLayoutView::CalculatePreferredSize(available_size);
+        views::FlexLayoutView::CalculatePreferredSize({});
 
     // If bottom of the task list is animating, offset the tasks view
     // preferred size so the tasks matches the animating bottom of the task

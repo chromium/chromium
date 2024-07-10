@@ -153,8 +153,10 @@ void GlanceablesTimeManagementBubbleView::ShowErrorMessage(
 
 gfx::Size GlanceablesTimeManagementBubbleView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
+  // The animation was implemented to ignore `available_size`. See b/351880846
+  // for more detail.
   const gfx::Size base_preferred_size =
-      views::FlexLayoutView::CalculatePreferredSize(available_size);
+      views::FlexLayoutView::CalculatePreferredSize({});
 
   if (resize_animation_) {
     return gfx::Size(base_preferred_size.width(),
