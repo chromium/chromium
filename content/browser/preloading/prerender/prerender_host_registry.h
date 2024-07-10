@@ -80,11 +80,12 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // value for an embedder was determined by
   // PageLoad.Clients.Prerender.NavigationToActivation.*.
   // The value for speculation rules was determined to align with the default
-  // value of BFCache's eviction timer.
+  // value of BFCache's eviction timer
+  // (kDefaultTimeToLiveInBackForwardCacheInSeconds).
   static constexpr base::TimeDelta kTimeToLiveInBackgroundForEmbedder =
       base::Seconds(19);
   static constexpr base::TimeDelta kTimeToLiveInBackgroundForSpeculationRules =
-      base::Seconds(180);
+      base::Seconds(600);
 
   using PassKey = base::PassKey<PrerenderHostRegistry>;
 
