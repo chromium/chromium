@@ -201,7 +201,14 @@ void GatewayCanBePingedRoutine::OnManagedPropertiesReceived(
     if (managed_properties->ip_configs.has_value() &&
         managed_properties->ip_configs->size() != 0) {
       for (const auto& ip_config : managed_properties->ip_configs.value()) {
-        if (ip_config->gateway.has_value()) {
+        // TODO(b/277696397): Reaching a link-local address needs to specify the
+        // interface. Currently we don't have a good way to get the interface
+        // here, so skip link-local addresses instead of always reporting a
+        // failure here. Revisit this part when we can get the interface name,
+        // or ideally we should rely on the layer 2 link monitor signal for the
+        // diagnostic.
+        if (ip_config->gateway.has_value() &&
+            !ip_config->gateway->starts_with("fe80::")) {
           const std::string& gateway = ip_config->gateway.value();
           if (managed_properties->guid == default_network_guid_) {
             default_network_gateway_ = gateway;
