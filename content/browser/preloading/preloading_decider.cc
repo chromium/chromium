@@ -367,11 +367,11 @@ void PreloadingDecider::UpdateSpeculationCandidates(
       }));
   PredictorDomainCallback is_new_link_nav =
       base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
+        auto page_transition = navigation_handle->GetPageTransition();
         return ui::PageTransitionCoreTypeIs(
-                   navigation_handle->GetPageTransition(),
-                   ui::PageTransition::PAGE_TRANSITION_LINK) &&
-               ui::PageTransitionIsNewNavigation(
-                   navigation_handle->GetPageTransition());
+                   page_transition, ui::PageTransition::PAGE_TRANSITION_LINK) &&
+               (page_transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT) == 0 &&
+               ui::PageTransitionIsNewNavigation(page_transition);
       });
   if (base::FeatureList::IsEnabled(
           blink::features::kSpeculationRulesPointerDownHeuristics)) {
