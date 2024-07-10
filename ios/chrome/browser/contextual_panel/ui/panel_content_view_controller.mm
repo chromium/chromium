@@ -43,6 +43,8 @@ constexpr CGFloat kLogoSize = 22;
 // The top logo has a specific font size for branding reasons.
 const CGFloat kLogoLabelFontSize = 18;
 
+const CGFloat kContentBottomMargin = 16;
+
 // Identifier for the one section in this collection view.
 NSString* const kSectionIdentifier = @"section1";
 
@@ -265,8 +267,8 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                          collectionViewLayout:[self createLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.backgroundColor = UIColor.clearColor;
-  _collectionView.contentInset =
-      UIEdgeInsetsMake(kHeaderHeight, 0, _bottomToolbarHeight, 0);
+  _collectionView.contentInset = UIEdgeInsetsMake(
+      kHeaderHeight, 0, _bottomToolbarHeight + kContentBottomMargin, 0);
   _collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
 
