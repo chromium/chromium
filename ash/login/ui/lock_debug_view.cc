@@ -407,7 +407,8 @@ class LockDebugView::DebugDataDispatcherTransformer
   }
 
   // Activates AuthPanel for the user at |user_index|.
-  void AuthPanelRequestForUserIndex(size_t user_index) {
+  void AuthPanelRequestForUserIndex(size_t user_index,
+                                    bool use_legacy_authpanel) {
     if (auth_panel_debug_widget_) {
       LOG(ERROR) << "AuthPanelDebugWidget still exists.";
       return;
@@ -424,7 +425,8 @@ class LockDebugView::DebugDataDispatcherTransformer
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata* debug_user = &debug_users_[user_index];
     const AccountId account_id = debug_user->account_id;
-    delegate->SetContentsView(std::make_unique<AuthPanelDebugView>(account_id));
+    delegate->SetContentsView(
+        std::make_unique<AuthPanelDebugView>(account_id, use_legacy_authpanel));
 
     auth_panel_debug_widget_ = views::DialogDelegate::CreateDialogWidget(
         std::move(delegate),
@@ -1337,10 +1339,18 @@ void LockDebugView::UpdatePerUserActionContainer() {
                             base::Unretained(debug_data_dispatcher_.get()), i),
         row);
 
+    AddButton("Show legacy AuthPanel",
+              base::BindRepeating(
+                  &DebugDataDispatcherTransformer::AuthPanelRequestForUserIndex,
+                  base::Unretained(debug_data_dispatcher_.get()), i,
+                  /*use_legacy_authpanel=*/true),
+              row);
+
     AddButton("Show AuthPanel",
               base::BindRepeating(
                   &DebugDataDispatcherTransformer::AuthPanelRequestForUserIndex,
-                  base::Unretained(debug_data_dispatcher_.get()), i),
+                  base::Unretained(debug_data_dispatcher_.get()), i,
+                  /*use_legacy_authpanel=*/false),
               row);
 
     AddButton("Show local authentication request",

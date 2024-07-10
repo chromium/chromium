@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/auth/views/auth_container_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -37,17 +38,8 @@
 
 namespace ash {
 
-namespace {
-
-// TODO(b/304754895): move the pin request view shared constants to
-// ash/login/ui/login_constants.h
-// Minimum inset (= back button inset).
-constexpr int kAuthPanelDebugViewWidthDp = 500;
-constexpr int kAuthPanelDebugViewHeightDp = 400;
-
-}  // namespace
-
-AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id) {
+AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id,
+                                       bool use_legacy_authpanel) {
   //  MODAL_TYPE_SYSTEM is used to get a semi-transparent background behind the
   //  local authentication request view, when it is used directly on a widget.
   //  The overlay consumes all the inputs from the user, so that they can only
@@ -65,31 +57,27 @@ AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id) {
   ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
   SetBackground(views::CreateThemedSolidBackground(background_color_id));
 
-  auto* auth_hub = AuthHub::Get();
-
-  auto continuation =
-      base::BindOnce(&AuthHub::StartAuthentication, base::Unretained(auth_hub),
-                     account_id, AuthPurpose::kLogin, this);
-
-  auth_hub->EnsureInitialized(std::move(continuation));
+  if (use_legacy_authpanel) {
+    auto* auth_hub = AuthHub::Get();
+    auto continuation = base::BindOnce(&AuthHub::StartAuthentication,
+                                       base::Unretained(auth_hub), account_id,
+                                       AuthPurpose::kLogin, this);
+    auth_hub->EnsureInitialized(std::move(continuation));
+  } else {
+    auto* auth_panel = AddChildView(std::make_unique<AuthContainerView>(
+        AuthFactorSet{AuthInputType::kPassword, AuthInputType::kPin}));
+    auth_panel->SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysSystemBase, /*radius=*/8));
+  }
 }
 
 AuthPanelDebugView::~AuthPanelDebugView() = default;
 
-gfx::Size AuthPanelDebugView::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  return GetAuthPanelDebugViewSize();
-}
-
-void AuthPanelDebugView::UpdatePreferredSize() {
-  SetPreferredSize(CalculatePreferredSize({}));
+void AuthPanelDebugView::ChildPreferredSizeChanged(views::View* child) {
   if (GetWidget()) {
-    GetWidget()->CenterWindow(GetPreferredSize());
+    GetWidget()->CenterWindow(
+        GetWidget()->GetContentsView()->GetPreferredSize());
   }
-}
-
-gfx::Size AuthPanelDebugView::GetAuthPanelDebugViewSize() const {
-  return gfx::Size(kAuthPanelDebugViewWidthDp, kAuthPanelDebugViewHeightDp);
 }
 
 void AuthPanelDebugView::OnEndAuthentication() {
@@ -122,12 +110,11 @@ void AuthPanelDebugView::OnUserAuthAttemptConfirmed(
                           weak_ptr_factory_.GetWeakPtr()),
       connector));
   auth_panel->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBase, 8));
+      cros_tokens::kCrosSysSystemBase, /*radius=*/8));
   LOG(ERROR) << "auth panel visible: " << auth_panel->GetVisible();
   LOG(ERROR) << "auth panel visible bounds: "
              << auth_panel->GetVisibleBounds().ToString();
   out_consumer = auth_panel;
-  SetPreferredSize(GetAuthPanelDebugViewSize());
 }
 
 void AuthPanelDebugView::OnAccountNotFound() {
