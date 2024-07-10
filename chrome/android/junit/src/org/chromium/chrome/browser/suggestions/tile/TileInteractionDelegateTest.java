@@ -189,6 +189,10 @@ public class TileInteractionDelegateTest {
         ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
         Mockito.verify(mAndroidPrerenderManager, Mockito.timeout(1000))
                 .startPrerendering(ArgumentMatchers.any());
+        // The second onTouch with the same tile should be considered to be duplicate and should be
+        // skipped by maybePrerender, and this should not cause any error.
+        mOnTouchListenerCaptor.getValue().onTouch(mTileView, event);
+
         mOnTouchListenerCaptor.getValue().onTouch(mTileView, cancelEvent);
         // mPrerenderStarted in TileInteractionDelegateImpl is true, stopPrerendering should be
         // called.

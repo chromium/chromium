@@ -42,6 +42,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /** The model and controller for a group of site suggestion tiles. */
 public class TileGroup implements MostVisitedSites.Observer {
@@ -543,8 +544,8 @@ public class TileGroup implements MostVisitedSites.Observer {
         private Long mTouchTimer;
         private AndroidPrerenderManager mAndroidPrerenderManager;
         private @Nullable CancelableRunnable mPrerenderRunnable;
-        private boolean mPrerenderStarted;
-        private Tile mPrerenderedTile;
+        private GURL mPrerenderedUrl;
+        private GURL mScheduldedPrerenderingUrl;
 
         private void maybeRecordTouchDuration(boolean taken) {
             if (mTouchTimer == null) return;
@@ -578,26 +579,27 @@ public class TileGroup implements MostVisitedSites.Observer {
             mTileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.CURRENT_TAB, tile);
         }
 
-        private void maybePrerender(Tile tile) {
+        private void maybePrerender(GURL url) {
             if (!ChromeFeatureList.isEnabled(
                     ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2)) {
                 return;
             }
 
-            if (mPrerenderedTile == tile) {
-                // Avoid resetting the delayed task if witness several MotionEvent.ACTION_DOWN in a
-                // row.
-                return;
-            }
+            // Avoid resetting the delayed task if witness several MotionEvent.ACTION_DOWN in a
+            // row. If the URL has been scheduled to be prerendered or already prerendered, it
+            // should skipped.
+            if (Objects.equals(mScheduldedPrerenderingUrl, url)
+                    || Objects.equals(mPrerenderedUrl, url)) return;
 
-            assert !mPrerenderStarted;
-            mPrerenderedTile = tile;
+            assert mScheduldedPrerenderingUrl == null;
+            mScheduldedPrerenderingUrl = url;
             mPrerenderRunnable =
                     new CancelableRunnable(
                             () -> {
-                                mPrerenderStarted =
-                                        mAndroidPrerenderManager.startPrerendering(tile.getUrl());
-                                mPrerenderedTile = null;
+                                if (mAndroidPrerenderManager.startPrerendering(url)) {
+                                    mPrerenderedUrl = url;
+                                }
+                                mScheduldedPrerenderingUrl = null;
                             });
             PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mPrerenderRunnable, mPrerenderDelay);
         }
@@ -615,12 +617,12 @@ public class TileGroup implements MostVisitedSites.Observer {
                 mPrerenderRunnable = null;
             }
 
-            if (mPrerenderStarted) {
+            if (mPrerenderedUrl != null) {
                 mAndroidPrerenderManager.stopPrerendering();
-                mPrerenderStarted = false;
             }
 
-            mPrerenderedTile = null;
+            mPrerenderedUrl = null;
+            mScheduldedPrerenderingUrl = null;
         }
 
         @Override
@@ -632,7 +634,7 @@ public class TileGroup implements MostVisitedSites.Observer {
                 if (mSuggestion == null) return false;
                 Tile tile = findTile(mSuggestion);
                 if (tile == null) return false;
-                maybePrerender(tile);
+                maybePrerender(tile.getUrl());
             }
             if (event.getAction() == MotionEvent.ACTION_CANCEL) {
                 maybeRecordTouchDuration(false);
