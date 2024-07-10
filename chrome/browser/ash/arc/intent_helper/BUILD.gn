@@ -42,6 +42,9 @@ static_library("intent_helper") {
     "//net",
     "//ui/aura",
     "//ui/base",
+
+    # TODO: Use //chrome/browser instead after fixing cyclic dependency.
+    "//components/paint_preview/buildflags",
   ]
 }
 
