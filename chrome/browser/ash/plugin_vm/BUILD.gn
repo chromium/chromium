@@ -112,20 +112,23 @@ static_library("test_support") {
     "plugin_vm_test_helper.cc",
     "plugin_vm_test_helper.h",
   ]
+
   public_deps = [
+    ":plugin_vm",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/plugin_vm",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",
     "//chromeos/ash/components/dbus/concierge",
     "//components/user_manager",
     "//testing/gmock",
   ]
+
   deps = [
     "//ash/public/cpp",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash",
     "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ui",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
@@ -140,12 +143,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "plugin_vm_manager_impl_unittest.cc" ]
   deps = [
+    ":plugin_vm",
+    ":test_support",
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash/plugin_vm",
-    "//chrome/browser/ash/plugin_vm:test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/chunneld",

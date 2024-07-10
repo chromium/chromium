@@ -252,6 +252,8 @@ static_library("screens") {
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/login/smart_lock",
     "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/login/users",
+    "//chrome/browser/ash/login/users/default_user_image",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/sync",

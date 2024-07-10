@@ -470,6 +470,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/guest_os:test_support",
       "//chrome/browser/ash/guest_os/public",
+      "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/plugin_vm",
       "//chrome/browser/ash/plugin_vm:test_support",
       "//chrome/browser/metrics/structured:features",
@@ -530,6 +531,7 @@ source_set("test_support") {
 
     deps += [
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/login/users:test_support",
       "//components/webapk:proto",
     ]
   }

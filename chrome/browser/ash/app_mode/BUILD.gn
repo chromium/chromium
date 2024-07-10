@@ -199,6 +199,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/extensions:test_support",
+    "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications:web_applications_test_support",
