@@ -354,7 +354,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   [UIView animateWithDuration:kEntrypointDisplayingAnimationTime
                         delay:0
-                      options:UIViewAnimationOptionCurveEaseIn
+                      options:(UIViewAnimationOptionCurveEaseIn |
+                               UIViewAnimationOptionAllowUserInteraction)
                    animations:^{
                      self.view.alpha = 1;
                      self.view.transform = CGAffineTransformIdentity;
