@@ -265,6 +265,9 @@ ConvertExtensionInstallStatusForAPI(ExtensionInstallStatus status) {
           kCustodianApprovalRequiredForInstallation;
     case kForceInstalled:
       return api::webstore_private::ExtensionInstallStatus::kForceInstalled;
+    case kDeprecatedManifestVersion:
+      return api::webstore_private::ExtensionInstallStatus::
+          kDeprecatedManifestVersion;
   }
   return api::webstore_private::ExtensionInstallStatus::kNone;
 }

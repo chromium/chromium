@@ -24,6 +24,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_set.h"
 
@@ -670,6 +671,102 @@ TEST_F(
 
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
+
+// A test suite to toggle the behavior of the MV2 deprecation experiment.
+class ExtensionInstallStatusTestWithMV2Deprecation
+    : public ExtensionInstallStatusTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExtensionInstallStatusTestWithMV2Deprecation() {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kExtensionManifestV2Disabled, GetParam());
+  }
+  ~ExtensionInstallStatusTestWithMV2Deprecation() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+using ExtensionInstallStatusTestWithMV2DeprecationEnabled =
+    ExtensionInstallStatusTestWithMV2Deprecation;
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionInstallStatusTestWithMV2Deprecation,
+                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionInstallStatusTestWithMV2DeprecationEnabled,
+                         testing::Values(true));
+
+// Tests the webstore properly checks whether an extension can be installed
+// inline with the MV2 Deprecation experiments.
+TEST_P(ExtensionInstallStatusTestWithMV2Deprecation,
+       MV2ExtensionsAreBlockedWithExperiment) {
+  const ExtensionId kTestId(32, 'a');
+
+  // MV3 extensions are always installable.
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(
+                kTestId, profile(), Manifest::TYPE_EXTENSION, PermissionSet(),
+                /*manifest_version=*/3));
+
+  // MV2 extensions should be unavailable if and only if the experiment is
+  // enabled.
+  ExtensionInstallStatus expected_status =
+      GetParam() ? ExtensionInstallStatus::kDeprecatedManifestVersion
+                 : ExtensionInstallStatus::kInstallable;
+  EXPECT_EQ(expected_status,
+            GetWebstoreExtensionInstallStatus(
+                kTestId, profile(), Manifest::TYPE_EXTENSION, PermissionSet(),
+                /*manifest_version=*/2));
+}
+
+// An extension explicitly blocked by the admin should be considered blocked
+// by policy, rather than a deprecated manifest version.
+TEST_P(ExtensionInstallStatusTestWithMV2DeprecationEnabled,
+       IdBlockedByPolicyTakesPriorityOverDeprecatedManifestVersion) {
+  SetExtensionSettings(kExtensionSettingsWithIdBlocked);
+  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/2));
+}
+
+// If an admin blocks all MV2 extensions, they should be considered blocked by
+// policy, rather than a deprecated manifest version.
+TEST_P(ExtensionInstallStatusTestWithMV2DeprecationEnabled,
+       ManifestV2PolicyTakesPriorityOverDeprecatedManifestVersion) {
+  SetPolicy(pref_names::kManifestV2Availability,
+            std::make_unique<base::Value>(static_cast<int>(
+                internal::GlobalSettings::ManifestV2Setting::kDisabled)));
+  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/2));
+}
+
+// Extensions that are installed and enabled should indicate such, even if they
+// are using a deprecated manifest version (since they are either re-enabled by
+// the user or are allowed by the admin).
+TEST_P(ExtensionInstallStatusTestWithMV2DeprecationEnabled,
+       EnabledTakesPriorityOverDeprecatedManifestVersion) {
+  ExtensionRegistry::Get(profile())->AddEnabled(CreateExtension(kExtensionId));
+  EXPECT_EQ(ExtensionInstallStatus::kEnabled,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/2));
+}
+
+// Extensions that are installed and disabled and have a deprecated manifest
+// version should indicate they are unsupported due to the manifest version.
+// Note, this applies even if they are disabled due to other reasons.
+TEST_P(ExtensionInstallStatusTestWithMV2DeprecationEnabled,
+       DeprecatedManifestVersionTakesPriorityOverDisabled) {
+  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
+  EXPECT_EQ(ExtensionInstallStatus::kDeprecatedManifestVersion,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/2));
 }
 
 }  // namespace extensions

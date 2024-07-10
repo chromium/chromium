@@ -36,7 +36,10 @@ enum ExtensionInstallStatus {
   // New extension requires custodian approval to be installed.
   kCustodianApprovalRequiredForInstallation,
   // Extension is force installed or recommended by policy.
-  kForceInstalled
+  kForceInstalled,
+  // The extension may not be installed because it uses an unsupported manifest
+  // version.
+  kDeprecatedManifestVersion,
 };
 
 // Returns the Extension install status for a Chrome web store extension with
