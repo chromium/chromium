@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/containers/vector_buffer.h"
 
 #include "base/compiler_specific.h"
@@ -55,26 +50,29 @@ TEST(VectorBuffer, DeletePOD) {
   constexpr int size = 10;
   VectorBuffer<int> buffer(size);
   for (int i = 0; i < size; i++)
-    buffer.begin()[i] = i + 1;
+    buffer[i] = i + 1;
 
   VectorBuffer<int>::DestructRange(buffer.as_span());
 
   // Delete should do nothing.
   for (int i = 0; i < size; i++)
-    EXPECT_EQ(i + 1, buffer.begin()[i]);
+    EXPECT_EQ(i + 1, buffer[i]);
 }
 
 TEST(VectorBuffer, DeleteMoveOnly) {
   constexpr int size = 10;
   VectorBuffer<MoveOnlyInt> buffer(size);
-  for (int i = 0; i < size; i++)
-    new (buffer.begin() + i) MoveOnlyInt(i + 1);
+  for (int i = 0; i < size; i++) {
+    // SAFETY: `i < size`, and `size` is the buffer's allocation size, so
+    // `begin() + i` is inside the buffer.
+    new (UNSAFE_BUFFERS(buffer.begin() + i)) MoveOnlyInt(i + 1);
+  }
 
   VectorBuffer<MoveOnlyInt>::DestructRange(buffer.as_span());
 
   // Delete should have reset all of the values to 0.
   for (int i = 0; i < size; i++)
-    EXPECT_EQ(0, buffer.begin()[i].data());
+    EXPECT_EQ(0, buffer[i].data());
 }
 
 TEST(VectorBuffer, PODMove) {
@@ -83,11 +81,11 @@ TEST(VectorBuffer, PODMove) {
 
   VectorBuffer<int> original(size);
   for (int i = 0; i < size; i++)
-    original.begin()[i] = i + 1;
+    original[i] = i + 1;
 
   VectorBuffer<int>::MoveConstructRange(original.as_span(), dest.as_span());
   for (int i = 0; i < size; i++)
-    EXPECT_EQ(i + 1, dest.begin()[i]);
+    EXPECT_EQ(i + 1, dest[i]);
 }
 
 TEST(VectorBuffer, MovableMove) {
@@ -95,16 +93,19 @@ TEST(VectorBuffer, MovableMove) {
   VectorBuffer<MoveOnlyInt> dest(size);
 
   VectorBuffer<MoveOnlyInt> original(size);
-  for (int i = 0; i < size; i++)
-    new (original.begin() + i) MoveOnlyInt(i + 1);
+  for (int i = 0; i < size; i++) {
+    // SAFETY: `i < size`, and `size` is the buffer's allocation size, so
+    // `begin() + i` is inside the buffer.
+    new (UNSAFE_BUFFERS(original.begin() + i)) MoveOnlyInt(i + 1);
+  }
 
   VectorBuffer<MoveOnlyInt>::MoveConstructRange(original.as_span(),
                                                 dest.as_span());
 
   // Moving from a MoveOnlyInt resets to 0.
   for (int i = 0; i < size; i++) {
-    EXPECT_EQ(0, original.begin()[i].data());
-    EXPECT_EQ(i + 1, dest.begin()[i].data());
+    EXPECT_EQ(0, original[i].data());
+    EXPECT_EQ(i + 1, dest[i].data());
   }
 }
 
@@ -113,17 +114,19 @@ TEST(VectorBuffer, CopyToMove) {
   VectorBuffer<CopyOnlyInt> dest(size);
 
   VectorBuffer<CopyOnlyInt> original(size);
-  for (int i = 0; i < size; i++)
-    new (original.begin() + i) CopyOnlyInt(i + 1);
-
+  for (int i = 0; i < size; i++) {
+    // SAFETY: `i < size`, and `size` is the buffer's allocation size, so
+    // `begin() + i` is inside the buffer.
+    new (UNSAFE_BUFFERS(original.begin() + i)) CopyOnlyInt(i + 1);
+  }
   VectorBuffer<CopyOnlyInt>::MoveConstructRange(original.as_span(),
                                                 dest.as_span());
 
   // The original should have been destructed, which should reset the value to
   // 0. Technically this dereferences the destructed object.
   for (int i = 0; i < size; i++) {
-    EXPECT_EQ(0, original.begin()[i].data());
-    EXPECT_EQ(i + 1, dest.begin()[i].data());
+    EXPECT_EQ(0, original[i].data());
+    EXPECT_EQ(i + 1, dest[i].data());
   }
 }
 
@@ -139,7 +142,9 @@ TEST(VectorBuffer, TrivialAbiMove) {
   int move_count = 0;
   VectorBuffer<TrivialAbiWithCountingOperations> original(size);
   for (int i = 0; i < size; i++) {
-    new (original.begin() + i)
+    // SAFETY: `i < size`, and `size` is the buffer's allocation size, so
+    // `begin() + i` is inside the buffer.
+    new (UNSAFE_BUFFERS(original.begin() + i))
         TrivialAbiWithCountingOperations(&destruction_count, &move_count);
   }
 
