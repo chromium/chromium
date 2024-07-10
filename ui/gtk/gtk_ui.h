@@ -15,6 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/glib/scoped_gsignal.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -105,6 +107,7 @@ class GtkUi : public ui::LinuxUiAndTheme {
   void GetInactiveSelectionFgColor(SkColor* color) const override;
   bool PreferDarkTheme() const override;
   void SetDarkTheme(bool dark) override;
+  void SetAccentColor(std::optional<SkColor> accent_color) override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
                                                   bool tiled) override;
@@ -151,6 +154,9 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   display::DisplayConfig GetDisplayConfig() const;
 
+  void AddGtkNativeColorMixer(ui::ColorProvider* provider,
+                              const ui::ColorProviderKey& key);
+
   std::unique_ptr<GtkUiPlatform> platform_;
 
   raw_ptr<NativeThemeGtk> native_theme_;
@@ -174,6 +180,8 @@ class GtkUi : public ui::LinuxUiAndTheme {
   SkColor active_selection_fg_color_;
   SkColor inactive_selection_bg_color_;
   SkColor inactive_selection_fg_color_;
+
+  std::optional<SkColor> accent_color_;
 
   std::optional<gfx::FontRenderParams> default_font_render_params_;
 

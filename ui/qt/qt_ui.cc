@@ -397,6 +397,12 @@ void QtUi::SetDarkTheme(bool dark) {
 }
 
 DISABLE_CFI_VCALL
+void QtUi::SetAccentColor(std::optional<SkColor> accent_color) {
+  accent_color_ = accent_color;
+  ThemeChanged();
+}
+
+DISABLE_CFI_VCALL
 bool QtUi::AnimationsEnabled() const {
   return shim_->GetAnimationDurationMs() > 0;
 }
@@ -500,14 +506,10 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
     ColorState state = ColorState::kNormal;
   } const kMaps[] = {
       // Core colors
-      {ui::kColorAccent, ColorType::kHighlightBg},
       {ui::kColorDisabledForeground, ColorType::kWindowFg,
        ColorState::kDisabled},
       {ui::kColorEndpointBackground, ColorType::kEntryBg},
       {ui::kColorEndpointForeground, ColorType::kEntryFg},
-      {ui::kColorItemHighlight, ColorType::kHighlightBg},
-      {ui::kColorItemSelectionBackground, ColorType::kHighlightBg},
-      {ui::kColorMenuSelectionBackground, ColorType::kHighlightBg},
       {ui::kColorMidground, ColorType::kMidground},
       {ui::kColorPrimaryBackground, ColorType::kWindowBg},
       {ui::kColorPrimaryForeground, ColorType::kWindowFg},
@@ -515,18 +517,15 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
        ColorState::kDisabled},
       {ui::kColorSubtleAccent, ColorType::kHighlightBg, ColorState::kInactive},
       {ui::kColorSubtleEmphasisBackground, ColorType::kWindowBg},
-      {ui::kColorTextSelectionBackground, ColorType::kHighlightBg},
-      {ui::kColorTextSelectionForeground, ColorType::kHighlightFg},
 
       // UI element colors
       {ui::kColorMenuBackground, ColorType::kEntryBg},
-      {ui::kColorMenuItemBackgroundHighlighted, ColorType::kHighlightBg},
-      {ui::kColorMenuItemBackgroundSelected, ColorType::kHighlightBg},
       {ui::kColorMenuItemForeground, ColorType::kEntryFg},
       {ui::kColorMenuItemForegroundHighlighted, ColorType::kHighlightFg},
       {ui::kColorMenuItemForegroundSelected, ColorType::kHighlightFg},
       {ui::kColorBubbleBackground, ColorType::kEntryBg},
       {ui::kColorBubbleFooterBackground, ColorType::kWindowBg},
+      {ui::kColorTextSelectionForeground, ColorType::kHighlightFg},
 
       // Platform-specific UI elements
       {ui::kColorNativeButtonBorder, ColorType::kMidground},
@@ -543,6 +542,21 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
   };
   for (const auto& map : kMaps) {
     mixer[map.id] = {shim_->GetColor(map.role, map.state)};
+  }
+
+  const ui::ColorId kAccentIds[] = {
+      ui::kColorAccent,
+      ui::kColorItemHighlight,
+      ui::kColorItemSelectionBackground,
+      ui::kColorMenuSelectionBackground,
+      ui::kColorTextSelectionBackground,
+      ui::kColorMenuItemBackgroundHighlighted,
+      ui::kColorMenuItemBackgroundSelected,
+  };
+  const SkColor accent = accent_color_.value_or(
+      shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal));
+  for (ui::ColorId accent_id : kAccentIds) {
+    mixer[accent_id] = {accent};
   }
 
   const bool use_custom_frame =

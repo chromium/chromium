@@ -79,6 +79,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   void GetInactiveSelectionFgColor(SkColor* color) const override;
   bool PreferDarkTheme() const override;
   void SetDarkTheme(bool dark) override;
+  void SetAccentColor(std::optional<SkColor>) override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
                                                   bool tiled) override;
@@ -111,6 +112,8 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   std::unique_ptr<QtInterface> shim_;
 
   std::unique_ptr<QtNativeTheme> native_theme_;
+
+  std::optional<SkColor> accent_color_;
 
   bool scale_factor_task_active_ = false;
 

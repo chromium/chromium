@@ -124,6 +124,8 @@ void FallbackLinuxUi::SetDarkTheme(bool dark) {
   theme_is_dark_ = dark;
 }
 
+void FallbackLinuxUi::SetAccentColor(std::optional<SkColor> accent_color) {}
+
 bool FallbackLinuxUi::AnimationsEnabled() const {
   return true;
 }

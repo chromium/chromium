@@ -274,6 +274,10 @@ int GetLocationPermissionsExperimentLabelPromptLimit();
 
 BASE_DECLARE_FEATURE(kStopLoadingAnimationForHiddenWindow);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kUsePortalAccentColor);
+#endif
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

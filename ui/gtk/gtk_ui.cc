@@ -54,6 +54,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skbitmap_operations.h"
+#include "ui/gtk/gtk_color_mixers.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_key_bindings_handler.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -222,6 +223,10 @@ bool GtkUi::Initialize() {
   if (!GtkInitFromCommandLine(&cmd_line.argc, cmd_line.argv.data())) {
     return false;
   }
+
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(&GtkUi::AddGtkNativeColorMixer,
+                          base::Unretained(this)));
   native_theme_ = NativeThemeGtk::instance();
 
   using Action = ui::LinuxUi::WindowFrameAction;
@@ -543,6 +548,11 @@ void GtkUi::SetDarkTheme(bool dark) {
   // OnThemeChanged() will be called via the
   // notify::gtk-application-prefer-dark-theme handler to update the native
   // theme.
+}
+
+void GtkUi::SetAccentColor(std::optional<SkColor> accent_color) {
+  accent_color_ = accent_color;
+  native_theme_->NotifyOnNativeThemeUpdated();
 }
 
 bool GtkUi::AnimationsEnabled() const {
@@ -1013,6 +1023,11 @@ display::DisplayConfig GtkUi::GetDisplayConfig() const {
         monitor_scale * font_scale);
   }
   return config;
+}
+
+void GtkUi::AddGtkNativeColorMixer(ui::ColorProvider* provider,
+                                   const ui::ColorProviderKey& key) {
+  gtk::AddGtkNativeColorMixer(provider, key, accent_color_);
 }
 
 void GtkUi::UpdateDeviceScaleFactor() {

@@ -483,4 +483,10 @@ BASE_FEATURE(kStopLoadingAnimationForHiddenWindow,
              "StopLoadingAnimationForHiddenWindow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kUsePortalAccentColor,
+             "UsePortalAccentColor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features

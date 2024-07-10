@@ -96,9 +96,6 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 NativeThemeGtk::NativeThemeGtk()
     : NativeThemeBase(/*should_only_use_dark_colors=*/false,
                       ui::SystemTheme::kGtk) {
-  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
-      base::BindRepeating(AddGtkNativeColorMixer));
-
   OnThemeChanged(gtk_settings_get_default(), nullptr);
 }
 

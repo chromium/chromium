@@ -17,7 +17,8 @@
 namespace gtk {
 
 void AddGtkNativeColorMixer(ui::ColorProvider* provider,
-                            const ui::ColorProviderKey& key) {
+                            const ui::ColorProviderKey& key,
+                            std::optional<SkColor> accent_color) {
   if (key.system_theme != ui::SystemTheme::kGtk) {
     return;
   }
@@ -44,14 +45,15 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   const SkColor entry_border = GetBorderColor("entry");
   const SkColor toolbar_color =
       color_utils::GetResultingPaintColor(primary_bg, frame_color);
-  const SkColor accent = GetFgColor(
+  const SkColor accent_fg = GetFgColor(
       "treeview.view "
       "treeview.view.cell:selected:focus label");
+  const SkColor accent_bg =
+      accent_color.value_or(GetBgColor("treeview.view "
+                                       "treeview.view.cell:selected:focus"));
 
   // Core colors
-  mixer[ui::kColorAccent] = {
-      GetBgColor("treeview.view "
-                 "treeview.view.cell:selected:focus")};
+  mixer[ui::kColorAccent] = {accent_bg};
   mixer[ui::kColorAlertHighSeverity] = {SelectBasedOnDarkInput(
       ui::kColorPrimaryBackground, gfx::kGoogleRed300, gfx::kGoogleRed600)};
   mixer[ui::kColorAlertLowSeverity] = {SelectBasedOnDarkInput(
@@ -95,7 +97,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorButtonForeground] = {GetFgColor("button.text-button label")};
   mixer[ui::kColorButtonForegroundDisabled] = {
       GetFgColor("button.text-button:disabled label")};
-  mixer[ui::kColorButtonForegroundProminent] = {accent};
+  mixer[ui::kColorButtonForegroundProminent] = {accent_fg};
   mixer[ui::kColorDialogForeground] = {ui::kColorPrimaryForeground};
   mixer[ui::kColorDropdownBackground] = {GetBgColor(base::StrCat(
       {"combobox window.background.popup ", "menu(gtk-combobox-popup-menu) ",
@@ -138,7 +140,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), ":hover label"}))};
   mixer[ui::kColorMenuSeparator] = {
       GetSeparatorColor(base::StrCat({GtkCssMenu(), " separator.horizontal"}))};
-  mixer[ui::kColorNotificationInputForeground] = {accent};
+  mixer[ui::kColorNotificationInputForeground] = {accent_fg};
   mixer[ui::kColorOverlayScrollbarFill] = {GetBgColor("scrollbar slider")};
   mixer[ui::kColorOverlayScrollbarFillHovered] = {
       GetBgColor("scrollbar slider:hover")};
@@ -201,7 +203,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTreeNodeForeground] = {
       GetFgColor("treeview.view treeview.view.cell "
                  "label")};
-  mixer[ui::kColorTreeNodeForegroundSelectedFocused] = {accent};
+  mixer[ui::kColorTreeNodeForegroundSelectedFocused] = {accent_fg};
   mixer[ui::kColorTreeNodeBackgroundSelectedUnfocused] = {
       GetBgColor("treeview.view "
                  "treeview.view.cell:selected")};
