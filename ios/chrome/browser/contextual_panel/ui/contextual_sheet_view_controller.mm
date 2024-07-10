@@ -23,6 +23,9 @@ const int kLargeDetentTopThreshold = 150;
 // Duration for the animation of the sheet's height.
 const CGFloat kHeightAnimationDuration = 0.2;
 
+// Radius of the 2 top corners on the sheet.
+const CGFloat kTopCornerRadius = 10;
+
 }  // namespace
 
 @implementation ContextualSheetViewController {
@@ -48,6 +51,11 @@ const CGFloat kHeightAnimationDuration = 0.2;
       initWithTarget:self
               action:@selector(handlePanGesture:)];
   [self.view addGestureRecognizer:_panGestureRecognizer];
+
+  self.view.layer.cornerRadius = kTopCornerRadius;
+  self.view.layer.maskedCorners =
+      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+  self.view.clipsToBounds = YES;
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
