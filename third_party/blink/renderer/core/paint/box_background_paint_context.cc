@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -106,9 +108,13 @@ BoxBackgroundPaintContext::BoxBackgroundPaintContext(
     const LayoutView* view = fragment.GetDocument().GetLayoutView();
     box_ = view;
     positioning_size_override_ = view->RootBox().Size();
-  }
 
-  if (fragment.IsTable()) {
+    // Calculate the offset into the background image for the current page.
+    wtf_size_t page_number =
+        view->GetFrameView()->GetPaginationState()->CurrentPageNumber();
+    element_positioning_area_offset_ =
+        StitchedPageContentRect(*view, page_number).offset;
+  } else if (fragment.IsTable()) {
     auto stitched_background_rect = ComputeStitchedTableGridRect(fragment);
     positioning_size_override_ = stitched_background_rect.size;
     element_positioning_area_offset_ = -stitched_background_rect.offset;
