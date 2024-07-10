@@ -149,11 +149,7 @@ struct PartitionOptions {
   // positive of the plugin, since constexpr implies inline.
   inline constexpr PartitionOptions();
   inline constexpr PartitionOptions(const PartitionOptions& other);
-#if __cplusplus >= 202002L
-  inline constexpr ~PartitionOptions();
-#else
-  inline ~PartitionOptions();
-#endif
+  inline PA_CONSTEXPR_DTOR ~PartitionOptions();
 
   enum class AllowToggle : uint8_t {
     kDisallowed,
@@ -197,11 +193,7 @@ struct PartitionOptions {
 constexpr PartitionOptions::PartitionOptions() = default;
 constexpr PartitionOptions::PartitionOptions(const PartitionOptions& other) =
     default;
-#if __cplusplus >= 202002L
-constexpr PartitionOptions::~PartitionOptions() = default;
-#else
-PartitionOptions::~PartitionOptions() = default;
-#endif
+PA_CONSTEXPR_DTOR PartitionOptions::~PartitionOptions() = default;
 
 // When/if free lists should be "straightened" when calling
 // PartitionRoot::PurgeMemory(..., accounting_only=false).
