@@ -86,10 +86,11 @@ class DownloadsDOMHandlerTest : public testing::Test {
 
  protected:
   testing::StrictMock<MockPage> page_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   // NOTE: The initialization order of these members matters.
-  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -441,6 +442,8 @@ class DownloadsDOMHandlerTestDangerousDownloadInterstitial
     SetUpDangerousDownload();
     handler_ = std::make_unique<TestDownloadsDOMHandler>(
         page_.BindAndGetRemote(), manager(), web_ui());
+    handler_->RecordOpenBypassWarningInterstitial("1");
+    task_environment_.FastForwardBy(base::Milliseconds(200));
   }
 
   void TearDown() override {
@@ -459,9 +462,8 @@ class DownloadsDOMHandlerTestDangerousDownloadInterstitial
 TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
        RecordOpenBypassWarningInterstitial) {
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
-  handler_->RecordOpenBypassWarningInterstitial("1");
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
       "Download.DangerousDownloadInterstitial.Action",
       DangerousDownloadInterstitialAction::kOpenInterstitial, 1);
 
@@ -476,9 +478,12 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
   handler_->RecordOpenSurveyOnDangerousInterstitial("1");
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
       "Download.DangerousDownloadInterstitial.Action",
       DangerousDownloadInterstitialAction::kOpenSurvey, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Download.DangerousDownloadInterstitial.InteractionTime.OpenSurvey",
+      base::Milliseconds(200), 1);
 }
 
 TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
@@ -486,9 +491,13 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
   handler_->RecordCancelBypassWarningInterstitial("1");
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
       "Download.DangerousDownloadInterstitial.Action",
       DangerousDownloadInterstitialAction::kCancelInterstitial, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Download.DangerousDownloadInterstitial.InteractionTime."
+      "CancelInterstitial",
+      base::Milliseconds(200), 1);
 
   // Verify no report is sent, since it's not a terminal action.
   EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
@@ -501,11 +510,20 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
   SimulateMouseGestureOnWebUI();
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
+
+  handler_->RecordOpenSurveyOnDangerousInterstitial("1");
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   handler_->SaveDangerousFromInterstitialNeedGesture("1");
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
       "Download.DangerousDownloadInterstitial.Action",
       DangerousDownloadInterstitialAction::kSaveDangerous, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Download.DangerousDownloadInterstitial.InteractionTime.CompleteSurvey",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Download.DangerousDownloadInterstitial.InteractionTime.SaveDangerous",
+      base::Milliseconds(300), 1);
 
   // Verify that dangerous download report is sent.
   safe_browsing::ClientSafeBrowsingReportRequest expected_report;
@@ -526,8 +544,10 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
 TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
        SaveDangerousFromInterstitialNeedGesture_NoRecentInteraction) {
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
+
+  handler_->RecordOpenSurveyOnDangerousInterstitial("1");
   handler_->SaveDangerousFromInterstitialNeedGesture("1");
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
       "Download.DangerousDownloadInterstitial.Action",
       DangerousDownloadInterstitialAction::kSaveDangerous, 0);
 }
@@ -621,5 +641,8 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
   SimulateMouseGestureOnWebUI();
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
+
+  handler.RecordOpenBypassWarningInterstitial("1");
+  handler.RecordOpenSurveyOnDangerousInterstitial("1");
   handler.SaveDangerousFromInterstitialNeedGesture("1");
 }

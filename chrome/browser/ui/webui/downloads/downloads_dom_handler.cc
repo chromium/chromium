@@ -115,10 +115,33 @@ bool CanLogWarningMetrics(download::DownloadItem* file) {
   return file && file->IsDangerous() && !file->IsDone();
 }
 
+std::string InteractionTypeToString(
+    DangerousDownloadInterstitialInteraction interaction_type) {
+  switch (interaction_type) {
+    case DangerousDownloadInterstitialInteraction::kCancelInterstitial:
+      return "CancelInterstitial";
+    case DangerousDownloadInterstitialInteraction::kOpenSurvey:
+      return "OpenSurvey";
+    case DangerousDownloadInterstitialInteraction::kCompleteSurvey:
+      return "CompleteSurvey";
+    case DangerousDownloadInterstitialInteraction::kSaveDangerous:
+      return "SaveDangerous";
+  }
+}
+
 void RecordDangerousDownloadInterstitialActionHistogram(
     DangerousDownloadInterstitialAction action) {
   base::UmaHistogramEnumeration("Download.DangerousDownloadInterstitial.Action",
                                 action);
+}
+
+void RecordDangerousDownloadInterstitialInteractionHistogram(
+    DangerousDownloadInterstitialInteraction interaction_type,
+    const base::TimeDelta elapsed_time) {
+  const std::string histogram_name =
+      "Download.DangerousDownloadInterstitial.InteractionTime." +
+      InteractionTypeToString(interaction_type);
+  base::UmaHistogramMediumTimes(histogram_name, elapsed_time);
 }
 
 void PromptForScanningInBubble(content::WebContents* web_contents,
@@ -355,6 +378,8 @@ void DownloadsDOMHandler::RecordOpenBypassWarningInterstitial(
     return;
   }
 
+  interstitial_open_time_ = base::TimeTicks::Now();
+
   RecordDangerousDownloadInterstitialActionHistogram(
       DangerousDownloadInterstitialAction::kOpenInterstitial);
 
@@ -375,6 +400,14 @@ void DownloadsDOMHandler::RecordOpenSurveyOnDangerousInterstitial(
     return;
   }
 
+  DCHECK(interstitial_open_time_.has_value())
+      << "Dangerous download interstitial survey should only open after the "
+         "download interstitial is opened.";
+  interstitial_survey_open_time_ = base::TimeTicks::Now();
+
+  RecordDangerousDownloadInterstitialInteractionHistogram(
+      DangerousDownloadInterstitialInteraction::kOpenSurvey,
+      (*interstitial_survey_open_time_) - (*interstitial_open_time_));
   RecordDangerousDownloadInterstitialActionHistogram(
       DangerousDownloadInterstitialAction::kOpenSurvey);
 }
@@ -418,11 +451,26 @@ void DownloadsDOMHandler::SaveDangerousFromInterstitialNeedGesture(
     return;
   }
 
+  DCHECK(interstitial_open_time_.has_value())
+      << "Saving from the dangerous download interstitial should only happen "
+         "if the interstitial is opened.";
+  DCHECK(interstitial_survey_open_time_.has_value())
+      << "Saving from the dangerous download interstitial should only happen "
+         "after the interstitial survey is opened.";
+
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS_FROM_PROMPT);
   download::DownloadItem* file = GetDownloadByStringId(id);
   if (!CanLogWarningMetrics(file)) {
     return;
   }
+
+  base::TimeTicks save_time = base::TimeTicks::Now();
+  RecordDangerousDownloadInterstitialInteractionHistogram(
+      DangerousDownloadInterstitialInteraction::kCompleteSurvey,
+      save_time - (*interstitial_survey_open_time_));
+  RecordDangerousDownloadInterstitialInteractionHistogram(
+      DangerousDownloadInterstitialInteraction::kSaveDangerous,
+      save_time - (*interstitial_open_time_));
 
   RecordDangerousDownloadInterstitialActionHistogram(
       DangerousDownloadInterstitialAction::kSaveDangerous);
@@ -456,6 +504,7 @@ void DownloadsDOMHandler::RecordCancelBypassWarningDialog(
 
 void DownloadsDOMHandler::RecordCancelBypassWarningInterstitial(
     const std::string& id) {
+  DCHECK(interstitial_open_time_.has_value());
   CHECK(base::FeatureList::IsEnabled(
       safe_browsing::kDangerousDownloadInterstitial));
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_CANCEL_BYPASS_WARNING_PROMPT);
@@ -463,6 +512,11 @@ void DownloadsDOMHandler::RecordCancelBypassWarningInterstitial(
   if (!CanLogWarningMetrics(file)) {
     return;
   }
+
+  RecordDangerousDownloadInterstitialInteractionHistogram(
+      DangerousDownloadInterstitialInteraction::kCancelInterstitial,
+      base::TimeTicks::Now() - (*interstitial_open_time_));
+
   RecordDangerousDownloadInterstitialActionHistogram(
       DangerousDownloadInterstitialAction::kCancelInterstitial);
 

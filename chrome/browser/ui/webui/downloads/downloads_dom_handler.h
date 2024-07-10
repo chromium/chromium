@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom-forward.h"
@@ -59,6 +60,20 @@ enum class DangerousDownloadInterstitialAction {
   kMaxValue = kSaveDangerous
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:DangerousDownloadInterstitialAction)
+
+// Represents the possible actions a user can take on the chrome://downloads
+// dangerous download interstitial that trigger UMA logging of the latency
+// between opening the interstitial and performing the action.
+enum class DangerousDownloadInterstitialInteraction {
+  // Latency between opening and closing the interstitial.
+  kCancelInterstitial,
+  // Latency between opening the interstitial and opening the survey.
+  kOpenSurvey,
+  // Latency between opening the survey and saving the dangerous file.
+  kCompleteSurvey,
+  // Latency between opening the survey and saving the dangerous file.
+  kSaveDangerous
+};
 
 // The handler for Javascript messages related to the "downloads" view,
 // also observes changes to the download manager.
@@ -165,6 +180,10 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   void CheckForRemovedFiles();
 
   DownloadsListTracker list_tracker_;
+
+  // Used for logging UMA metrics.
+  std::optional<base::TimeTicks> interstitial_open_time_;
+  std::optional<base::TimeTicks> interstitial_survey_open_time_;
 
   // IDs of downloads to remove when this handler gets deleted.
   std::vector<IdSet> removals_;
