@@ -57,6 +57,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/cross_device/logging/logging.h"
+#include "components/cross_device/nearby/nearby_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -112,11 +113,6 @@ constexpr base::TimeDelta kClearNearbyProcessUnexpectedShutdownCountDelay =
 // by (180 - kNearbySharingVisibilityReminderLastShownTimePrefName set in
 // nearby_share_prefs).
 constexpr base::TimeDelta kNearbyVisibilityReminderTimerDelay = base::Days(180);
-
-// Whether or not WifiLan is supported for advertising or discovery. Support as
-// a bandwidth upgrade medium is behind a feature flag.
-constexpr bool kIsWifiLanAdvertisingSupported = false;
-constexpr bool kIsWifiLanDiscoverySupported = false;
 
 std::string ReceiveSurfaceStateToString(
     NearbySharingService::ReceiveSurfaceState state) {
@@ -1914,8 +1910,7 @@ bool NearbySharingServiceImpl::HasAvailableConnectionMediums() {
       connection_type ==
           net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET;
   return IsBluetoothPowered() ||
-         (kIsWifiLanAdvertisingSupported && kIsWifiLanDiscoverySupported &&
-          hasNetworkConnection);
+         (hasNetworkConnection && ::features::IsNearbyMdnsEnabled());
 }
 
 void NearbySharingServiceImpl::InvalidateSurfaceState() {

@@ -17,12 +17,14 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/firewall_hole/nearby_connections_firewall_hole_factory.h"
+#include "chrome/browser/nearby_sharing/mdns/nearby_connections_mdns_manager.h"
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
 #include "chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.h"
 #include "chrome/browser/nearby_sharing/tcp_socket/nearby_connections_tcp_socket_factory.h"
 #include "chrome/browser/nearby_sharing/webrtc_signaling_messenger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/mdns.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
@@ -294,10 +296,17 @@ NearbyDependenciesProvider::GetWifiLanDependencies() {
                               base::Unretained(this))),
       std::move(tcp_socket_factory.receiver));
 
+  MojoPipe<::sharing::mojom::MdnsManager> mdns_manager;
+  if (::features::IsNearbyMdnsEnabled()) {
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<::nearby::sharing::NearbyConnectionsMdnsManager>(),
+        std::move(mdns_manager.receiver));
+  }
+
   return ::sharing::mojom::WifiLanDependencies::New(
       std::move(cros_network_config.remote),
       std::move(firewall_hole_factory.remote),
-      std::move(tcp_socket_factory.remote));
+      std::move(tcp_socket_factory.remote), std::move(mdns_manager.remote));
 }
 
 sharing::mojom::WifiDirectDependenciesPtr

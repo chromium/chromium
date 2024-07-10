@@ -79,15 +79,21 @@ WifiLanMedium::WifiLanMedium(
         chromeos::network_config::mojom::CrosNetworkConfig>&
         cros_network_config,
     const mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>&
-        firewall_hole_factory)
+        firewall_hole_factory,
+    const mojo::SharedRemote<::sharing::mojom::MdnsManager>& mdns_manager)
     : task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       socket_factory_(socket_factory),
       cros_network_config_(cros_network_config),
-      firewall_hole_factory_(firewall_hole_factory) {
+      firewall_hole_factory_(firewall_hole_factory),
+      mdns_manager_(mdns_manager) {
   // NOTE: We do not set the disconnect handler for the SharedRemotes here. They
   // are fundamental dependencies of the Nearby Connections process, which will
   // crash if any dependency disconnects.
+  if (mdns_manager_.is_bound()) {
+    mdns_manager_->AddObserver(mdns_observer_.BindNewPipeAndPassRemote());
+    VLOG(1) << " Added Mdns observer.";
+  }
 }
 
 WifiLanMedium::~WifiLanMedium() {
@@ -527,6 +533,7 @@ void WifiLanMedium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   socket_factory_.reset();
   cros_network_config_.reset();
   firewall_hole_factory_.reset();
+  mdns_manager_.reset();
 
   // Cancel all pending connect/listen calls. This is thread safe because all
   // changes to the pending-event sets are sequenced. Make a copy of the events

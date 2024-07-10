@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_mdns_manager.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
 #include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
@@ -140,12 +141,19 @@ class WifiLanMediumTest : public ::testing::Test {
         std::move(fake_firewall_hole_factory),
         firewall_hole_factory_shared_remote_.BindNewPipeAndPassReceiver());
 
+    // Set up Mdns Manager mojo service.
+    auto fake_mdns_manager = std::make_unique<ash::nearby::FakeMdnsManager>();
+    fake_mdns_manager_ = fake_mdns_manager.get();
+    mojo::MakeSelfOwnedReceiver(
+        std::move(fake_mdns_manager),
+        mdns_manager_shared_remote_.BindNewPipeAndPassReceiver());
+
     nsd_service_info_.SetIPAddress(kRemoteIpString);
     nsd_service_info_.SetPort(kRemotePort);
 
     wifi_lan_medium_ = std::make_unique<WifiLanMedium>(
         socket_factory_shared_remote_, cros_network_config_,
-        firewall_hole_factory_shared_remote_);
+        firewall_hole_factory_shared_remote_, mdns_manager_shared_remote_);
   }
 
   void TearDown() override {
@@ -349,6 +357,10 @@ class WifiLanMediumTest : public ::testing::Test {
   raw_ptr<ash::nearby::FakeFirewallHoleFactory> fake_firewall_hole_factory_;
   mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_shared_remote_;
+
+  // Mdns manager
+  raw_ptr<ash::nearby::FakeMdnsManager> fake_mdns_manager_;
+  mojo::SharedRemote<::sharing::mojom::MdnsManager> mdns_manager_shared_remote_;
 
   std::unique_ptr<WifiLanMedium> wifi_lan_medium_;
 };

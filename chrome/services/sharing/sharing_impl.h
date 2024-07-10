@@ -82,7 +82,8 @@ class SharingImpl : public mojom::Sharing {
     kQuickStartDecoder = 11,
     kNearbyPresenceCredentialStorage = 12,
     kWifiDirectManager = 13,
-    kMaxValue = kWifiDirectManager
+    kMdnsManager = 14,
+    kMaxValue = kMdnsManager
   };
 
   void DoShutDown(bool is_expected);

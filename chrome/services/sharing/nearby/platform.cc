@@ -28,6 +28,7 @@
 #include "chrome/services/sharing/nearby/platform/wifi_direct_medium.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/mdns.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/cross_device/nearby/nearby_features.h"
@@ -373,8 +374,16 @@ std::unique_ptr<WifiLanMedium> ImplementationPlatform::CreateWifiLanMedium() {
     return nullptr;
   }
 
+  const mojo::SharedRemote<::sharing::mojom::MdnsManager>& mdns_manager =
+      nearby_shared_remotes->mdns_manager;
+  if (features::IsNearbyMdnsEnabled() && !mdns_manager.is_bound()) {
+    LOG(ERROR) << "MdnsManager not bound. Returning null WifiLan medium";
+    return nullptr;
+  }
+
   return std::make_unique<chrome::WifiLanMedium>(
-      tcp_socket_factory, cros_network_config, firewall_hole_factory);
+      tcp_socket_factory, cros_network_config, firewall_hole_factory,
+      mdns_manager);
 }
 
 std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {

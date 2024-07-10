@@ -37,7 +37,7 @@ constexpr base::TimeDelta kInitiateNearbyConnectionTimeout = base::Seconds(60);
 // Whether or not WifiLan is supported for advertising or discovery. Support as
 // a bandwidth upgrade medium is behind a feature flag.
 constexpr bool kIsWifiLanAdvertisingSupported = false;
-constexpr bool kIsWifiLanDiscoverySupported = false;
+bool kIsWifiLanDiscoverySupported = ::features::IsNearbyMdnsEnabled();
 
 bool ShouldUseInternet(NearbyConnectionsManager::DataUsage data_usage,
                        NearbyConnectionsManager::PowerLevel power_level) {
@@ -358,7 +358,8 @@ void NearbyConnectionsManagerImpl::Connect(
 
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/true,
-      /*ble=*/false, ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
+      /*ble=*/false,
+      /*web_rtc=*/ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
       /*wifi_lan=*/ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower),
       /*wifi_direct=*/
       base::FeatureList::IsEnabled(features::kNearbySharingWifiDirect));
