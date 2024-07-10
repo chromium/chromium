@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
@@ -28,7 +29,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
                                   TabStripModelObserver,
-                                  views::WidgetObserver {
+                                  views::WidgetObserver,
+                                  public LensOverlayController::Observer {
  public:
   // safe_zone_diameter/icon_size as defined in
   // https://www.w3.org/TR/appmanifest/#icon-masks
@@ -119,6 +121,14 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void CloseModalDialog() override;
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override;
+
+  // LensOverlayController::Observer:
+  void OnLensOverlayDidShow() override;
+  void OnLensOverlayDidClose() override;
+  void OnLensOverlayControllerDestroyed() override;
+
+  // Setter method for testing only.
+  void SetIsLensOverlayShowingForTesting(bool value);
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
@@ -293,6 +303,15 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Returns whether an IDP sign-in pop-up window is currently open.
   bool IsIdpSigninPopupOpen();
 
+  // Returns whether the dialog widget is ready.
+  bool IsDialogWidgetReady();
+
+  // Returns whether the dialog widget should be shown.
+  bool ShouldShowDialogWidget();
+
+  // Updates the dialog's position and shows the dialog.
+  void UpdateAndShowDialogWidget();
+
   // Hides the dialog widget and notifies the input protector.
   void HideDialogWidget();
 
@@ -355,6 +374,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // or not.
   bool started_as_single_returning_account_{false};
 
+  // Whether the Lens overlay is showing. Updated by LensOverlayController and
+  // observer events.
+  bool is_lens_overlay_showing_{false};
+
   // Time when IdentityProvider.close() was called for metrics purposes.
   base::TimeTicks idp_close_popup_time_;
 
@@ -370,6 +393,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // otherwise returns an AccountSelectionViewBase to render modal dialogs
   // for button flows.
   raw_ptr<AccountSelectionViewBase> account_selection_view_;
+
+  // Observation for Lens overlay controller.
+  base::ScopedObservation<LensOverlayController,
+                          LensOverlayController::Observer>
+      lens_overlay_controller_observation_{this};
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

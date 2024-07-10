@@ -354,6 +354,23 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     return controller;
   }
 
+  std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowWithLensOverlay(
+      const std::vector<content::IdentityRequestAccount>& accounts,
+      SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget,
+      const std::optional<content::IdentityProviderData>& new_account_idp =
+          std::nullopt,
+      bool request_permission = true,
+      content::IdentityProviderMetadata idp_metadata =
+          content::IdentityProviderMetadata()) {
+    auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+        delegate_.get(), account_selection_view_.get());
+    controller->SetIsLensOverlayShowingForTesting(true);
+    Show(*controller, accounts, sign_in_mode, rp_mode, new_account_idp,
+         request_permission, idp_metadata);
+    return controller;
+  }
+
   void Show(TestFedCmAccountSelectionView& controller,
             const std::vector<content::IdentityRequestAccount>& accounts,
             SignInMode sign_in_mode,
@@ -2417,4 +2434,37 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   controller->OnVisibilityChanged(content::Visibility::VISIBLE);
   EXPECT_TRUE(account_selection_view_->dialog_position_updated_);
   EXPECT_TRUE(dialog_widget_->IsVisible());
+}
+
+// Tests that the Lens overlay showing hides the dialog until the overlay is
+// closed.
+TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlayHidesDialog) {
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts, SignInMode::kExplicit);
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  controller->OnLensOverlayDidShow();
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  controller->OnLensOverlayDidClose();
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+}
+
+// Tests that the dialog does not open if the Lens overlay is already showing.
+TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlaySuppressesDialog) {
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowWithLensOverlay(accounts, SignInMode::kExplicit);
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  controller->OnLensOverlayDidClose();
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  controller->OnLensOverlayDidShow();
+  EXPECT_FALSE(dialog_widget_->IsVisible());
 }
