@@ -116,10 +116,12 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
@@ -5596,6 +5598,72 @@ TEST_F(SnapGroupOverviewTest, HideCloseButtonsOnDragStart) {
     EXPECT_EQ(close_button->layer()->GetTargetOpacity(), 1.f);
     EXPECT_TRUE(close_button->GetEnabled());
   }
+}
+
+// Tests that fling-to-close gestures on `OverviewGroupItem` closes the windows
+// in the Snap Group.
+TEST_F(SnapGroupOverviewTest, FlingToCloseGroupItem) {
+  // Explicitly enable immediate close so that we can directly close the
+  // window(s) without waiting the delayed task to be completed in
+  // `ScopedOverviewTransformWindow::Close()`.
+  ScopedOverviewTransformWindow::SetImmediateCloseForTests(true);
+
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow();
+  auto* window_widget0 = views::Widget::GetWidgetForNativeView(window0.get());
+  views::test::TestWidgetObserver observer0(window_widget0);
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  auto* window_widget1 = views::Widget::GetWidgetForNativeView(window1.get());
+  views::test::TestWidgetObserver observer1(window_widget1);
+  SnapTwoTestWindows(window0.get(), window1.get());
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kOverviewButton,
+                                     OverviewEnterExitType::kImmediateEnter);
+  OverviewSession* overview_session = overview_controller->overview_session();
+  ASSERT_TRUE(overview_session);
+
+  OverviewGroupItem* overview_group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(window0.get()));
+  ASSERT_TRUE(overview_group_item);
+
+  const auto& overview_items =
+      overview_group_item->overview_items_for_testing();
+  ASSERT_EQ(2u, overview_items.size());
+
+  // Pre-release ownership of `window0` and `window1` using `release()`. This is
+  // crucial to avoid double-freeing memory. When unique_ptr goes out of scope,
+  // its destructor will attempt to deallocate the owned memory. Since CloseAll
+  // will already handle the window destruction, leaving the unique_ptrs to
+  // manage the memory would lead to a second deallocation attempt on the same
+  // address, resulting in crash.
+  window0.release();
+  window1.release();
+
+  gfx::PointF location = overview_group_item->target_bounds().CenterPoint();
+  location.Offset(/*delta_x=*/-10, /*delta_y=*/0);
+
+  overview_session->InitiateDrag(overview_group_item, location,
+                                 /*is_touch_dragging=*/true,
+                                 /*event_source_item=*/overview_items[0].get());
+
+  // Perform fling-to-close with vertical velocity greater than
+  // `kFlingToCloseVelocityThreshold` to trigger fling-to-close.
+  overview_session->Fling(overview_group_item, location, /*velocity_x=*/0,
+                          /*velocity_y=*/2500);
+
+  // Widget closure is asynchronous and may not finish immediately. For
+  // guaranteed completion, run the current thread's RunLoop until idle (See
+  // `NativeWidgetAura::Close()` for details).
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(observer0.widget_closed());
+  EXPECT_TRUE(observer1.widget_closed());
+
+  // Verify that Overview exits with no Overview items exist.
+  EXPECT_FALSE(IsInOverviewSession());
 }
 
 // Tests that `OverviewGroupItem` is not snappable in overview when there are

@@ -679,8 +679,7 @@ void ScopedOverviewTransformWindow::SetImmediateCloseForTests(bool immediate) {
 }
 
 void ScopedOverviewTransformWindow::CloseWidget() {
-  aura::Window* parent_window = wm::GetTransientRoot(window_);
-  if (parent_window) {
+  if (aura::Window* parent_window = wm::GetTransientRoot(window_)) {
     window_util::CloseWidgetForWindow(parent_window);
   }
 }

@@ -606,6 +606,7 @@ void OverviewWindowDragController::ContinueDragToClose(
   float opacity = original_opacity_;
   if (opacity > kItemMinOpacity)
     opacity = original_opacity_ - val * (original_opacity_ - kItemMinOpacity);
+
   item_->SetOpacity(opacity);
 
   // When dragging to close, only update the y component.

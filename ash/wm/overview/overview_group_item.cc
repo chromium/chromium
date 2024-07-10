@@ -399,7 +399,9 @@ void OverviewGroupItem::OnStartingAnimationComplete() {
 }
 
 void OverviewGroupItem::Restack() {
-  CHECK(!overview_items_.empty());
+  if (overview_items_.empty() || !item_widget_) {
+    return;
+  }
 
   // Sort the items in `sorted_items` based on their stacking order, starting
   // with the lowest.
@@ -485,7 +487,13 @@ void OverviewGroupItem::Shutdown() {
   }
 }
 
-void OverviewGroupItem::AnimateAndCloseItem(bool up) {}
+void OverviewGroupItem::AnimateAndCloseItem(bool up) {
+  animating_to_close_ = true;
+
+  for (const auto& overview_item : overview_items_) {
+    overview_item->AnimateAndCloseItem(up);
+  }
+}
 
 void OverviewGroupItem::StopWidgetAnimation() {
   for (const auto& overview_item : overview_items_) {

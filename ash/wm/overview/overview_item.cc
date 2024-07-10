@@ -887,7 +887,7 @@ void OverviewItem::AnimateAndCloseItem(bool up) {
   overview_session_->PositionWindows(/*animate=*/true);
   overview_item_view_->OnOverviewItemWindowRestoring();
 
-  int translation_y = kSwipeToCloseCloseTranslationDp * (up ? -1 : 1);
+  const int translation_y = kSwipeToCloseCloseTranslationDp * (up ? -1 : 1);
   gfx::Transform transform;
   transform.Translate(gfx::Vector2d(0, translation_y));
 
