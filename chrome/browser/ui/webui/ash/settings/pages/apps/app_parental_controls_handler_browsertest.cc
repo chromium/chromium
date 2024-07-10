@@ -13,6 +13,7 @@
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -331,6 +333,49 @@ IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest, UninstallApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
+                       OnControlsDisabled) {
+  AppParentalControlsHandler* handler = GetHandler();
+  handler->AddObserver(observer()->GenerateRemote());
+
+  std::string arc_app_id = InstallArcApp("com.example.app1");
+
+  EXPECT_EQ(observer()->GetReadinessChangeCount(arc_app_id), 1);
+  EXPECT_EQ(observer()->recently_updated_app()->id, arc_app_id);
+
+  std::string pin = "123456";
+  base::RunLoop run_loop;
+  handler->SetUpPin(
+      pin, base::BindLambdaForTesting(([&](bool isSuccess) -> void {
+        ASSERT_TRUE(isSuccess);
+        ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
+            prefs::kOnDeviceAppControlsSetupCompleted));
+        EXPECT_EQ(
+            profile()->GetPrefs()->GetString(prefs::kOnDeviceAppControlsPin),
+            pin);
+        run_loop.Quit();
+      })));
+
+  observer()->SetUpWaiterForAppUpdate(arc_app_id);
+  handler->UpdateApp(arc_app_id, /*is_blocked=*/true);
+  observer()->WaitForAppUpdate();
+
+  EXPECT_EQ(observer()->GetReadinessChangeCount(arc_app_id), 2);
+  EXPECT_EQ(observer()->recently_updated_app()->id, arc_app_id);
+
+  observer()->SetUpWaiterForAppUpdate(arc_app_id);
+  handler->OnControlsDisabled();
+  observer()->WaitForAppUpdate();
+
+  EXPECT_EQ(observer()->GetReadinessChangeCount(arc_app_id), 3);
+  EXPECT_EQ(observer()->recently_updated_app()->id, arc_app_id);
+
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
+      prefs::kOnDeviceAppControlsSetupCompleted));
+  EXPECT_EQ(profile()->GetPrefs()->GetString(prefs::kOnDeviceAppControlsPin),
+            std::string());
+}
+
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
                        ValidatePinSuccess) {
   AppParentalControlsHandler* handler = GetHandler();
 
@@ -429,6 +474,36 @@ IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
                                    PinValidationResult::kPinNumericError);
                      run_loop.Quit();
                    }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest, SetUpValidPin) {
+  AppParentalControlsHandler* handler = GetHandler();
+
+  std::string pin = "123456";
+  base::RunLoop run_loop;
+  handler->SetUpPin(
+      pin, base::BindLambdaForTesting([&](bool is_success) -> void {
+        ASSERT_TRUE(is_success);
+        ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
+            prefs::kOnDeviceAppControlsSetupCompleted));
+        EXPECT_EQ(
+            profile()->GetPrefs()->GetString(prefs::kOnDeviceAppControlsPin),
+            pin);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest, SetUpInvalidPin) {
+  AppParentalControlsHandler* handler = GetHandler();
+
+  base::RunLoop run_loop;
+  handler->SetUpPin("1a3%56",
+                    base::BindLambdaForTesting([&](bool is_success) -> void {
+                      ASSERT_FALSE(is_success);
+                      run_loop.Quit();
+                    }));
   run_loop.Run();
 }
 

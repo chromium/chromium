@@ -314,6 +314,7 @@ suite('<os-apps-page> Subpage trigger focusing', () => {
 
 suite('AppsPageTests', () => {
   let mojoApi: FakeAppNotificationHandler;
+  let parentalControlsHandler: FakeAppParentalControlsHandler;
 
   function simulateNotificationAppChanged(app: App): void {
     mojoApi.getObserverRemote().onNotificationAppChanged(app);
@@ -334,6 +335,9 @@ suite('AppsPageTests', () => {
   });
 
   setup(async () => {
+    parentalControlsHandler = new FakeAppParentalControlsHandler();
+    setAppParentalControlsProviderForTesting(parentalControlsHandler);
+
     Router.getInstance().navigateTo(routes.APPS);
     appsPage = document.createElement('os-settings-apps-page');
     document.body.appendChild(appsPage);
@@ -448,9 +452,6 @@ suite('AppsPageTests', () => {
           `Clicking set up and creating a PIN sets up parental controls and
            navigates to the subpage`,
           async () => {
-            const handler = new FakeAppParentalControlsHandler();
-            setAppParentalControlsProviderForTesting(handler);
-
             const parentalControlsRow = queryParentalControlsRow();
             // Wait for the row to become visible.
             assertTrue(!!parentalControlsRow);
@@ -501,9 +502,6 @@ suite('AppsPageTests', () => {
             continuePinSetupButton.click();
             await waitAfterNextRender(appsPage);
 
-            assertTrue(appsPage.prefs.on_device_app_controls.pin.value === pin);
-            assertTrue(
-                appsPage.prefs.on_device_app_controls.setup_completed.value);
             // The subpage should be visible.
             assertEquals(
                 routes.APP_PARENTAL_CONTROLS,
@@ -519,9 +517,6 @@ suite('AppsPageTests', () => {
           `Clicking the subpage arrow when parental controls are enabled and
            entering the correct PIN navigates to the subpage`,
           async () => {
-            const handler = new FakeAppParentalControlsHandler();
-            setAppParentalControlsProviderForTesting(handler);
-
             const parentalControlsRow = queryParentalControlsRow();
             // Wait for the row to become visible.
             assertTrue(!!parentalControlsRow);
@@ -567,9 +562,6 @@ suite('AppsPageTests', () => {
             continuePinSetupButton.click();
             await waitAfterNextRender(appsPage);
 
-            assertTrue(appsPage.prefs.on_device_app_controls.pin.value === pin);
-            assertTrue(
-                appsPage.prefs.on_device_app_controls.setup_completed.value);
             // The subpage should be visible.
             assertEquals(
                 routes.APP_PARENTAL_CONTROLS,
@@ -631,9 +623,6 @@ suite('AppsPageTests', () => {
              entering an incorrect PIN surfaces an error and does not navigate
              to the subpage`,
           async () => {
-            const handler = new FakeAppParentalControlsHandler();
-            setAppParentalControlsProviderForTesting(handler);
-
             const parentalControlsRow = queryParentalControlsRow();
             // Wait for the row to become visible.
             assertTrue(!!parentalControlsRow);
@@ -679,9 +668,6 @@ suite('AppsPageTests', () => {
             continuePinSetupButton.click();
             await waitAfterNextRender(appsPage);
 
-            assertTrue(appsPage.prefs.on_device_app_controls.pin.value === pin);
-            assertTrue(
-                appsPage.prefs.on_device_app_controls.setup_completed.value);
             // The subpage should be visible.
             assertEquals(
                 routes.APP_PARENTAL_CONTROLS,
@@ -738,9 +724,6 @@ suite('AppsPageTests', () => {
           `Toggling parental controls off and entering the correct PIN resets
              parental controls`,
           async () => {
-            const handler = new FakeAppParentalControlsHandler();
-            setAppParentalControlsProviderForTesting(handler);
-
             const parentalControlsRow = queryParentalControlsRow();
             // Wait for the row to become visible.
             assertTrue(!!parentalControlsRow);
@@ -786,9 +769,6 @@ suite('AppsPageTests', () => {
             continuePinSetupButton.click();
             await waitAfterNextRender(appsPage);
 
-            assertTrue(appsPage.prefs.on_device_app_controls.pin.value === pin);
-            assertTrue(
-                appsPage.prefs.on_device_app_controls.setup_completed.value);
             // The subpage should be visible.
             assertEquals(
                 routes.APP_PARENTAL_CONTROLS,
@@ -837,9 +817,6 @@ suite('AppsPageTests', () => {
                 parentalControlsRow.querySelector<HTMLElement>('cr-button');
             assertTrue(!!setUpButton);
             assertTrue(isVisible(setUpButton));
-            assertFalse(
-                appsPage.prefs.on_device_app_controls.setup_completed.value);
-            assertTrue(appsPage.prefs.on_device_app_controls.pin.value === '');
             assertEquals(
                 1,
                 fakeMetricsPrivate.countMetricValue(
@@ -851,9 +828,6 @@ suite('AppsPageTests', () => {
       test(
           'Searching parental controls deep links to parental controls row',
           async () => {
-            const handler = new FakeAppParentalControlsHandler();
-            setAppParentalControlsProviderForTesting(handler);
-
             const parentalControlsSettingId =
                 settingMojom.Setting.kAppParentalControls.toString();
             const params = new URLSearchParams();

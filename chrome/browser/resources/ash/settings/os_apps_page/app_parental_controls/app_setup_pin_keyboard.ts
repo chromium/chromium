@@ -211,11 +211,17 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
     }
 
     this.isSetPinCallPending_ = true;
-    this.setPrefValue('on_device_app_controls.pin', this.pinKeyboardValue_);
-    this.setPrefValue('on_device_app_controls.setup_completed', true);
-    this.isSetPinCallPending_ = false;
-
-    this.dispatchEvent(new Event('set-app-pin-done', {composed: true}));
+    this.mojoInterfaceProvider.setUpPin(this.pinKeyboardValue_)
+        .then((result) => {
+          this.isSetPinCallPending_ = false;
+          if (!result.isSuccess) {
+            // An error is not expected because the PIN is validated before
+            // proceeding to the confirmation step where the PIN is stored.
+            console.error('app-controls: Failed to set PIN');
+            return;
+          }
+          this.dispatchEvent(new Event('set-app-pin-done', {composed: true}));
+        });
   }
 
   private hasError_(): boolean {

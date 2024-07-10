@@ -135,11 +135,11 @@ export class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
    * Checks whether the PIN entered matches the saved PIN when the user presses
    * enter.
    */
-  private onPinSubmit_(): void {
+  private async onPinSubmit_(): Promise<void> {
     this.isVerificationPending_ = true;
 
-    if (this.pinValue_ &&
-        this.pinValue_ === this.getPref('on_device_app_controls.pin').value) {
+    const result = await this.mojoInterfaceProvider_.verifyPin(this.pinValue_);
+    if (result.isSuccess) {
       // Trigger the method set in `on-pin-verified` by the containing dialog.
       this.dispatchEvent(new CustomEvent('pin-verified'));
       this.close();

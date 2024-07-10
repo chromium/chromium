@@ -165,6 +165,12 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         value: false,
       },
 
+      /** Whether the user has set up app parental controls. */
+      isParentalControlsSetupCompleted_: {
+        type: Boolean,
+        value: false,
+      },
+
       isPluginVmAvailable_: {
         type: Boolean,
         value: () => {
@@ -294,6 +300,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private showParentalControlsDisablePinDialog_: boolean;
   private showParentalControlsSetupPinDialog_: boolean;
   private showParentalControlsVerifyPinDialog_: boolean;
+  private isParentalControlsSetupCompleted_: boolean;
   private readonly shouldShowStartup_: boolean;
 
   constructor() {
@@ -329,6 +336,9 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     });
 
     this.parentalControlsHandler_ = getAppParentalControlsProvider();
+    this.getIsParentalControlsSetupCompleted_().then((isCompleted) => {
+      this.isParentalControlsSetupCompleted_ = isCompleted;
+    });
   }
 
   override ready(): void {
@@ -376,16 +386,19 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     Router.getInstance().navigateTo(routes.APP_NOTIFICATIONS);
   }
 
-  private isParentalControlsSetupCompleted_(): boolean {
-    return this.getPref('on_device_app_controls.setup_completed').value;
+  private async getIsParentalControlsSetupCompleted_(): Promise<boolean> {
+    const response = await this.parentalControlsHandler_.isSetupCompleted();
+    return response.isCompleted;
   }
 
   private onClickParentalControls_(): void {
-    if (this.isParentalControlsSetupCompleted_()) {
-      this.showParentalControlsVerifyPinDialog_ = true;
-      recordParentalControlsDialogOpened(
-          ParentalControlsDialogType.ENTER_SUBPAGE_VERIFICATION);
-    }
+    this.getIsParentalControlsSetupCompleted_().then((isSetupCompleted) => {
+      if (isSetupCompleted) {
+        this.showParentalControlsVerifyPinDialog_ = true;
+        recordParentalControlsDialogOpened(
+            ParentalControlsDialogType.ENTER_SUBPAGE_VERIFICATION);
+      }
+    });
   }
 
   private setUpParentalControls_(e: Event): void {
@@ -412,14 +425,19 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
   private onSetupPinSuccess_(): void {
     this.navigateToParentalControls_();
+
+    this.getIsParentalControlsSetupCompleted_().then((isCompleted) => {
+      this.isParentalControlsSetupCompleted_ = isCompleted;
+    });
     recordParentalControlsDialogFlowCompleted(
         ParentalControlsDialogType.SET_UP_CONTROLS);
   }
 
   private onDisablePinVerified_(): void {
-    this.setPrefValue('on_device_app_controls.setup_completed', false);
-    this.setPrefValue('on_device_app_controls.pin', '');
     this.parentalControlsHandler_.onControlsDisabled();
+    this.getIsParentalControlsSetupCompleted_().then((isCompleted) => {
+      this.isParentalControlsSetupCompleted_ = isCompleted;
+    });
     recordParentalControlsDialogFlowCompleted(
         ParentalControlsDialogType.DISABLE_CONTROLS_VERIFICATION);
   }
@@ -432,7 +450,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.showParentalControlsSetupPinDialog_ = false;
   }
 
-  private onDisablePinDialogClose_(): void {
+  private async onDisablePinDialogClose_(): Promise<void> {
     this.showParentalControlsDisablePinDialog_ = false;
     const toggle =
         this.shadowRoot!.querySelector<HTMLElement>('#appParentalControls')!
@@ -440,7 +458,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     // If the toggle is still on the page, reset toggle in case the disable flow
     // was cancelled prior to completion.
     if (toggle) {
-      toggle.checked = this.isParentalControlsSetupCompleted_();
+      toggle.checked = await this.getIsParentalControlsSetupCompleted_();
     }
   }
 

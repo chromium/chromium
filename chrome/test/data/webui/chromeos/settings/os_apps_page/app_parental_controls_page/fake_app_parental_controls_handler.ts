@@ -18,6 +18,8 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
     AppParentalControlsHandlerInterface {
   private apps_: App[] = [];
   private observer_: AppParentalControlsObserverRemoteType|null = null;
+  private pin_: string = '';
+  private isSetupComplete_: boolean = false;
 
   constructor() {
     super([
@@ -26,6 +28,9 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
       'addObserver',
       'onControlsDisabled',
       'validatePin',
+      'setUpPin',
+      'verifyPin',
+      'isSetupCompleted',
     ]);
   }
 
@@ -57,6 +62,7 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
         this.observer_.onAppInstalledOrUpdated(app);
       }
     }
+    this.isSetupComplete_ = false;
     return Promise.resolve();
   }
 
@@ -71,6 +77,23 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
       return Promise.resolve({result: PinValidationResult.kPinNumericError});
     }
     return Promise.resolve({result: PinValidationResult.kPinValidationSuccess});
+  }
+
+  setUpPin(pin: string): Promise<{isSuccess: boolean}> {
+    this.methodCalled('setUpPin');
+    this.pin_ = pin;
+    this.isSetupComplete_ = true;
+    return Promise.resolve({isSuccess: true});
+  }
+
+  verifyPin(pin: string): Promise<{isSuccess: boolean}> {
+    this.methodCalled('verifyPin');
+    return Promise.resolve({isSuccess: this.pin_ === pin});
+  }
+
+  isSetupCompleted(): Promise<{isCompleted: boolean}> {
+    this.methodCalled('isSetupCompleted');
+    return Promise.resolve({isCompleted: this.isSetupComplete_});
   }
 
   addAppForTesting(app: App) {

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_notifier.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_registry.h"
@@ -40,6 +41,18 @@ bool ShouldIncludeApp(const apps::AppUpdate& update) {
   return update.ShowInManagement().value_or(false) &&
          update.AppType() == apps::AppType::kArc;
 }
+
+app_parental_controls::mojom::PinValidationResult GetPinValidationResult(
+    const std::string& pin) {
+  if (pin.length() != kValidPinLength) {
+    return app_parental_controls::mojom::PinValidationResult::kPinLengthError;
+  }
+  if (!RE2::FullMatch(pin, kNumericOnlyRegex)) {
+    return app_parental_controls::mojom::PinValidationResult::kPinNumericError;
+  }
+  return app_parental_controls::mojom::PinValidationResult::
+      kPinValidationSuccess;
+}
 }  // namespace
 
 AppParentalControlsHandler::AppParentalControlsHandler(
@@ -51,7 +64,8 @@ AppParentalControlsHandler::AppParentalControlsHandler(
       blocked_app_registry_(
           std::make_unique<on_device_controls::BlockedAppRegistry>(
               app_service_proxy,
-              profile->GetPrefs())) {
+              profile->GetPrefs())),
+      profile_(profile) {
   CHECK(app_service_proxy_);
   CHECK(blocked_app_registry_);
 
@@ -90,23 +104,44 @@ void AppParentalControlsHandler::AddObserver(
 }
 
 void AppParentalControlsHandler::OnControlsDisabled() {
+  profile_->GetPrefs()->SetString(prefs::kOnDeviceAppControlsPin,
+                                  std::string());
+  profile_->GetPrefs()->SetBoolean(prefs::kOnDeviceAppControlsSetupCompleted,
+                                   false);
   blocked_app_registry_->RemoveAllApps();
 }
 
 void AppParentalControlsHandler::ValidatePin(const std::string& pin,
                                              ValidatePinCallback callback) {
-  if (pin.length() != kValidPinLength) {
-    std::move(callback).Run(
-        app_parental_controls::mojom::PinValidationResult::kPinLengthError);
+  std::move(callback).Run(GetPinValidationResult(pin));
+}
+
+void AppParentalControlsHandler::SetUpPin(const std::string& pin,
+                                          SetUpPinCallback callback) {
+  if (GetPinValidationResult(pin) !=
+      app_parental_controls::mojom::PinValidationResult::
+          kPinValidationSuccess) {
+    std::move(callback).Run(false);
     return;
   }
-  if (!RE2::FullMatch(pin, kNumericOnlyRegex)) {
-    std::move(callback).Run(
-        app_parental_controls::mojom::PinValidationResult::kPinNumericError);
-    return;
-  }
-  std::move(callback).Run(
-      app_parental_controls::mojom::PinValidationResult::kPinValidationSuccess);
+  profile_->GetPrefs()->SetString(prefs::kOnDeviceAppControlsPin, pin);
+  profile_->GetPrefs()->SetBoolean(prefs::kOnDeviceAppControlsSetupCompleted,
+                                   true);
+  profile_->GetPrefs()->CommitPendingWrite();
+  std::move(callback).Run(true);
+}
+
+void AppParentalControlsHandler::VerifyPin(const std::string& pin,
+                                           VerifyPinCallback callback) {
+  std::string stored_pin =
+      profile_->GetPrefs()->GetString(prefs::kOnDeviceAppControlsPin);
+  std::move(callback).Run(pin == stored_pin);
+}
+
+void AppParentalControlsHandler::IsSetupCompleted(
+    IsSetupCompletedCallback callback) {
+  std::move(callback).Run(profile_->GetPrefs()->GetBoolean(
+      prefs::kOnDeviceAppControlsSetupCompleted));
 }
 
 void AppParentalControlsHandler::OnAppUpdate(const apps::AppUpdate& update) {

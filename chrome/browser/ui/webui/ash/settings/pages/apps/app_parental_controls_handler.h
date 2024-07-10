@@ -49,6 +49,9 @@ class AppParentalControlsHandler
   void OnControlsDisabled() override;
   void ValidatePin(const std::string& pin,
                    ValidatePinCallback callback) override;
+  void SetUpPin(const std::string& pin, SetUpPinCallback callback) override;
+  void VerifyPin(const std::string& pin, VerifyPinCallback callback) override;
+  void IsSetupCompleted(IsSetupCompletedCallback callback) override;
 
   void BindInterface(
       mojo::PendingReceiver<
@@ -77,6 +80,8 @@ class AppParentalControlsHandler
       app_controls_notifier_;
 
   std::unique_ptr<on_device_controls::BlockedAppRegistry> blocked_app_registry_;
+
+  const raw_ptr<Profile> profile_;
 
   mojo::Receiver<app_parental_controls::mojom::AppParentalControlsHandler>
       receiver_{this};

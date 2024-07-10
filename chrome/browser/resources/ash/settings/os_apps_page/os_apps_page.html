@@ -35,7 +35,7 @@
         <div id="appParentalControls"
             class="settings-box"
             actionable$=
-                "[[prefs.on_device_app_controls.setup_completed.value]]"
+                "[[isParentalControlsSetupCompleted_]]"
             on-click="onClickParentalControls_">
           <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
             <iron-icon id="parentalControlsRowIcon"
@@ -52,7 +52,7 @@
             </div>
           </div>
           <template is="dom-if"
-              if="[[!prefs.on_device_app_controls.setup_completed.value]]"
+              if="[[!isParentalControlsSetupCompleted_]]"
               restamp>
             <div class="separator"></div>
             <cr-button
@@ -64,7 +64,7 @@
             </cr-button>
           </template>
           <template is="dom-if"
-              if="[[prefs.on_device_app_controls.setup_completed.value]]"
+              if="[[isParentalControlsSetupCompleted_]]"
               restamp>
             <cr-icon-button class="subpage-arrow"
                 aria-label="$i18n{appParentalControlsTitle}"
@@ -75,7 +75,7 @@
             <div class="separator"></div>
             <cr-toggle id="toggle"
                 aria-label="$i18n{appParentalControlsTitle}"
-                checked="[[prefs.on_device_app_controls.setup_completed.value]]"
+                checked="[[isParentalControlsSetupCompleted_]]"
                 on-change="disableParentalControls_">
             </cr-toggle>
           </template>
