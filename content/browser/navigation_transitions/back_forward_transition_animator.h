@@ -357,9 +357,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // Set by the latest `OnGestureProgressed()`.
   ui::BackGestureEvent latest_progress_gesture_;
 
-  // A transition always suppresses sending input events to the renderer.
-  WebContentsImpl::ScopedIgnoreInputEvents ignore_input_scope_;
-
   State state_;
 };
 

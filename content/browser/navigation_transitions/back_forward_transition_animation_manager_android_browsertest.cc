@@ -2166,8 +2166,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 
 // Test that input isn't dispatched to the renderer while the transition
 // animation is in progress.
+// TODO(bokan): Re-enable once crbug.com/344620149 is fixed.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
-                       SuppressRendererInputDuringTransition) {
+                       DISABLED_SuppressRendererInputDuringTransition) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
