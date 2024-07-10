@@ -1693,7 +1693,18 @@ void BluetoothAdapterFloss::AdvertisementLost(uint8_t scanner_id,
 
 void BluetoothAdapterFloss::RemovePairingDelegateInternal(
     device::BluetoothDevice::PairingDelegate* pairing_delegate) {
-  NOTIMPLEMENTED();
+  // Check if any device is using the pairing delegate.
+  // If so, clear the pairing context which will make any responses no-ops.
+  for (auto& [_, device] : devices_) {
+    BluetoothDeviceFloss* device_floss =
+        static_cast<BluetoothDeviceFloss*>(device.get());
+
+    BluetoothPairingFloss* pairing = device_floss->pairing();
+    if (pairing && pairing->pairing_delegate() == pairing_delegate) {
+      BLUETOOTH_LOG(DEBUG) << __func__ << ": " << device_floss->GetAddress();
+      device_floss->ResetPairing();
+    }
+  }
 }
 
 base::WeakPtr<device::BluetoothAdapter> BluetoothAdapterFloss::GetWeakPtr() {
