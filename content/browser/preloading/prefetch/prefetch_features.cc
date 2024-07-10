@@ -42,10 +42,6 @@ const base::FeatureParam<PrefetchClientHintsCrossSiteBehavior>
         PrefetchClientHintsCrossSiteBehavior::kLowEntropy,
         &kPrefetchClientHintsCrossSiteBehaviorOptions};
 
-BASE_FEATURE(kPrefetchOffTheRecord,
-             "PrefetchOffTheRecord",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchStateContaminationMitigation,
              "PrefetchStateContaminationMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);

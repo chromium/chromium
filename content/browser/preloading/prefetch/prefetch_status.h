@@ -177,7 +177,7 @@ enum class PrefetchStatus {
   kPrefetchIneligibleExistingProxy = 38,
 
   // Prefetch not supported in Guest or Incognito mode.
-  kPrefetchIneligibleBrowserContextOffTheRecord = 39,
+  // OBSOLETE: kPrefetchIneligibleBrowserContextOffTheRecord = 39,
 
   // Whether this prefetch is heldback for counterfactual logging.
   kPrefetchHeldback = 40,

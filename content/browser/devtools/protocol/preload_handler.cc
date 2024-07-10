@@ -252,9 +252,6 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleDataSaverEnabled;
     case PrefetchStatus::kPrefetchIneligibleExistingProxy:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleExistingProxy;
-    case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
-      return Preload::PrefetchStatusEnum::
-          PrefetchNotEligibleBrowserContextOffTheRecord;
     case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
       return Preload::PrefetchStatusEnum::PrefetchNotEligiblePreloadingDisabled;
     case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:

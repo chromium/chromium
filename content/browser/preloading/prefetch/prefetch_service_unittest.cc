@@ -2766,35 +2766,7 @@ class PrefetchServiceIncognitoTest : public PrefetchServiceTest {
   }
 };
 
-TEST_F(PrefetchServiceIncognitoTest, OffTheRecordIneligible) {
-  base::test::ScopedFeatureList disable_otr;
-  disable_otr.InitAndDisableFeature(features::kPrefetchOffTheRecord);
-  base::HistogramTester histogram_tester;
-
-  MakePrefetchService(
-      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
-
-  MakePrefetchOnMainFrame(
-      GURL("https://example.com"),
-      PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                   /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager));
-  task_environment()->RunUntilIdle();
-
-  EXPECT_EQ(RequestCount(), 0);
-
-  ExpectPrefetchNotEligible(histogram_tester,
-                            PreloadingEligibility::kBrowserContextOffTheRecord);
-
-  NavigateInitiatedByRenderer(GURL("https://example.com"));
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
-  ExpectServingMetrics(
-      PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord);
-}
-
 TEST_F(PrefetchServiceIncognitoTest, OffTheRecordEligible) {
-  base::test::ScopedFeatureList enable_otr;
-  enable_otr.InitAndEnableFeature(features::kPrefetchOffTheRecord);
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(

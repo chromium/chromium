@@ -57,9 +57,6 @@ CONTENT_EXPORT extern const base::FeatureParam<
 // If enabled, prefetch requests may include X-Client-Data request header.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchXClientDataHeader);
 
-// If enabled, prefetches may occur in off-the-record browser contexts.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchOffTheRecord);
-
 // If enabled, then prefetch serving will apply mitigations if it may have been
 // contaminated by cross-partition state.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchStateContaminationMitigation);

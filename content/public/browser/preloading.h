@@ -241,7 +241,7 @@ enum class PreloadingEligibility {
   kPrefetchProxyNotAvailable = 78,
   kHostIsNonUnique = 86,
   kExistingProxy = 88,
-  kBrowserContextOffTheRecord = 89,
+  //  OBSOLETE: kBrowserContextOffTheRecord = 89,
   kSameSiteCrossOriginPrefetchRequiredProxy = 96,
 
   // This constant is used to define the value beyond which embedders can add
