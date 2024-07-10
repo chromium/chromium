@@ -25,7 +25,7 @@ declare global {
 }
 
 /**
- * Extracts fields from |controlElements| with |extractMask| to |formFields|.
+ * Extracts fields from |controlElements| to |formFields|.
  * The extracted fields are also placed in |elementArray|.
  *
  * TODO(crbug.com/40661883): Make |elementArray| a Map.
@@ -34,8 +34,6 @@ declare global {
  *     will be processed.
  * @param iframeElements The iframe elements that
  *     will be processed.
- * @param extractMask Mask controls what data is extracted from
- *     controlElements.
  * @param formFields The extracted form fields.
  * @param childFrames The extracted child
  *     frames.
@@ -48,7 +46,7 @@ declare global {
  */
 function extractFieldsFromControlElements(
     controlElements: fillConstants.FormControlElement[],
-    iframeElements: HTMLIFrameElement[], extractMask: number,
+    iframeElements: HTMLIFrameElement[],
     formFields: fillUtil.AutofillFormFieldData[],
     childFrames: fillUtil.FrameTokenWithPredecessor[],
     fieldsExtracted: boolean[],
@@ -78,8 +76,7 @@ function extractFieldsFromControlElements(
     // Create a new AutofillFormFieldData, fill it out and map it to the
     // field's name.
     const formField = new gCrWeb['common'].JSONSafeObject();
-    gCrWeb.fill.webFormControlElementToFormField(
-        controlElement, extractMask, formField);
+    gCrWeb.fill.webFormControlElementToFormField(controlElement, formField);
     formFields.push(formField);
     elementArray[i] = formField;
     fieldsExtracted[i] = true;
@@ -248,8 +245,6 @@ function isDOMSuccessor(a: Node, b: Node): boolean {
  *     will be processed.
  * @param iframeElements The iframe elements that
  *     will be processed.
- * @param extractMask Mask controls what data is extracted from
- *     formElement.
  * @param form Form to fill in the AutofillFormData
  *     information of formElement.
  * @param field Field to fill in the form field
@@ -261,8 +256,7 @@ function formOrFieldsetsToFormData(
     formElement: HTMLFormElement|null,
     formControlElement: fillConstants.FormControlElement|null,
     fieldsets: Element[], controlElements: fillConstants.FormControlElement[],
-    iframeElements: HTMLIFrameElement[], extractMask: number,
-    form: fillUtil.AutofillFormData,
+    iframeElements: HTMLIFrameElement[], form: fillUtil.AutofillFormData,
     _field?: fillUtil.AutofillFormFieldData): boolean {
   // This should be a map from a control element to the AutofillFormFieldData.
   // However, without Map support, it's just an Array of AutofillFormFieldData.
@@ -280,7 +274,7 @@ function formOrFieldsetsToFormData(
   const fieldsExtracted: boolean[] = [];
 
   if (!extractFieldsFromControlElements(
-          controlElements, iframeElements, extractMask, formFields, childFrames,
+          controlElements, iframeElements, formFields, childFrames,
           fieldsExtracted, elementArray)) {
     return false;
   }
@@ -396,8 +390,6 @@ function formOrFieldsetsToFormData(
  * @param formElement The form element that will be processed.
  * @param formControlElement A control element in
  *     formElement, the FormField of which will be returned in field.
- * @param extractMask Mask controls what data is extracted from
- *     formElement.
  * @param form Form to fill in the AutofillFormData
  *     information of formElement.
  * @param field Field to fill in the form field
@@ -407,7 +399,7 @@ function formOrFieldsetsToFormData(
  */
 gCrWeb.fill.webFormElementToFormData = function(
     frame: Window, formElement: HTMLFormElement,
-    formControlElement: fillConstants.FormControlElement, extractMask: number,
+    formControlElement: fillConstants.FormControlElement,
     form: fillUtil.AutofillFormData,
     field?: fillUtil.AutofillFormFieldData): boolean {
   if (!frame) {
@@ -442,8 +434,8 @@ gCrWeb.fill.webFormElementToFormData = function(
     [];
 
   return formOrFieldsetsToFormData(
-      formElement, formControlElement, [] /* fieldsets */, controlElements,
-      iframeElements, extractMask, form, field);
+      formElement, formControlElement, /*fieldsets=*/[], controlElements,
+      iframeElements, form, field);
 };
 
 /**
@@ -457,14 +449,10 @@ gCrWeb.fill.webFormElementToFormData = function(
  * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
  *
  * @param element The element to be processed.
- * @param extractMask A bit field mask to extract data from |element|.
- *     TODO: crbug.com/40100455 - Implement extract options for extracting
- *     the field bounds and/or datalist options. Or remove the unused parameter.
- * @param field Field to fill in the element
- *     information.
+ * @param field Field to fill in the element information.
  */
 gCrWeb.fill.webFormControlElementToFormField = function(
-    element: fillConstants.FormControlElement, _extractMask: number,
+    element: fillConstants.FormControlElement,
     field: fillUtil.AutofillFormFieldData) {
   if (!field || !element) {
     return;
@@ -566,8 +554,7 @@ gCrWeb.fill.webFormControlElementToFormField = function(
  */
 gCrWeb.fill.autofillSubmissionData = function(form: HTMLFormElement): string {
   const formData = new gCrWeb['common'].JSONSafeObject();
-  gCrWeb['fill'].webFormElementToFormData(
-      window, form, null, /*extractMask=*/0, formData, null);
+  gCrWeb['fill'].webFormElementToFormData(window, form, null, formData, null);
   return gCrWeb.stringify([formData]);
 };
 
@@ -640,8 +627,6 @@ gCrWeb.fill.getUnownedAutofillableFormFieldElements = function(
  * @param fieldsets The fieldsets to look through.
  * @param controlElements The control elements that
  *     will be processed.
- * @param extractMask Mask controls what data is extracted from
- *     formElement.
  * @param restrictUnownedFieldsToFormlessCheckout whether forms made of
  *     unowned fields (i.e., not within a <form> tag) should be restricted to
  *     those that appear to be in a checkout flow.
@@ -653,7 +638,7 @@ gCrWeb.fill.getUnownedAutofillableFormFieldElements = function(
 gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
     frame: Window, fieldsets: Element[],
     controlElements: fillConstants.FormControlElement[],
-    iframeElements: HTMLIFrameElement[], extractMask: number,
+    iframeElements: HTMLIFrameElement[],
     restrictUnownedFieldsToFormlessCheckout: boolean,
     form: fillUtil.AutofillFormData): boolean {
   if (!frame) {
@@ -666,11 +651,9 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   if (!restrictUnownedFieldsToFormlessCheckout) {
     // TODO(crbug.com/40266126): Pass iframe elements.
     return formOrFieldsetsToFormData(
-        /* formElement= */ null, /* formControlElement= */ null, fieldsets,
-        controlElements, /* iframeElements= */ iframeElements, extractMask,
-        form);
+        /*formElement=*/ null, /*formControlElement=*/ null, fieldsets,
+        controlElements, /*iframeElements=*/ iframeElements, form);
   }
-
 
   const title = document.title.toLowerCase();
   const path = document.location.pathname.toLowerCase();
@@ -687,8 +670,7 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
       // TODO(crbug.com/40266126): Pass iframe elements.
       return formOrFieldsetsToFormData(
           /* formElement= */ null, /* formControlElement= */ null, fieldsets,
-          controlElements, /* iframeElements= */ iframeElements, extractMask,
-          form);
+          controlElements, /* iframeElements= */ iframeElements, form);
     }
   }
 
@@ -710,7 +692,7 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   return formOrFieldsetsToFormData(
       /* formElement= */ null, /* formControlElement= */ null, fieldsets,
       controlElementsWithAutocomplete, /* iframeElements= */ iframeElements,
-      extractMask, form);
+      form);
 };
 
 

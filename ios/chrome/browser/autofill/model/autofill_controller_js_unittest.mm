@@ -135,33 +135,12 @@ enum ExtractMask {
                                  // WebFormControlElement.
 };
 
-const ExtractMask kFormExtractMasks[] = {
-    EXTRACT_NONE,
-    EXTRACT_VALUE,
-    EXTRACT_OPTION_TEXT,
-    EXTRACT_OPTIONS,
-};
-
-// Gets the attributes to check for a mask in `kFormExtractMasks`.
-NSArray* GetFormFieldAttributeListsToCheck(NSUInteger mask) {
-  if (!(mask & EXTRACT_VALUE)) {
-    return @[
-      @"identifier", @"name", @"form_control_type", @"autocomplete_attribute",
-      @"max_length", @"should_autocomplete", @"is_checkable"
-    ];
-  }
-
-  if (mask & EXTRACT_OPTIONS) {
-    return @[
-      @"identifier", @"name", @"form_control_type", @"autocomplete_attribute",
-      @"max_length", @"should_autocomplete", @"is_checkable", @"value",
-      @"option_values", @"option_texts"
-    ];
-  }
-
+// Gets the attributes to check.
+NSArray* GetFormFieldAttributeListsToCheck() {
   return @[
     @"identifier", @"name", @"form_control_type", @"autocomplete_attribute",
-    @"max_length", @"should_autocomplete", @"is_checkable", @"value"
+    @"max_length", @"should_autocomplete", @"is_checkable", @"value",
+    @"option_values", @"option_texts"
   ];
 }
 
@@ -742,12 +721,9 @@ NSArray* GetTestFormSelectElementWithOptgroup() {
 // values for all the keys other than @"option_values" and @"option_texts";
 // the values of @"option_values" and @"option_texts" are arrays of
 // strings or undefined. Only attributes in `attributes_to_check` are checked.
-// A different expected value is chosen in `expected` for different
-// `extract_mask`.
 // `index` is the index of the control element in the form. If it is >0, it will
 // be used to generate a name for nameless elements.
 NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
-                                                  NSUInteger extract_mask,
                                                   NSDictionary* expected,
                                                   NSArray* attributes_to_check,
                                                   int index) {
@@ -778,10 +754,6 @@ NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
         expected_value =
             [NSString stringWithFormat:@"'gChrome~field~%d'", index];
       }
-      // Option text is used as value for extract_mask 1 << 1
-      if ((extract_mask & 1 << 1) && [attribute isEqualToString:@"value"]) {
-        expected_value = [expected objectForKey:@"value_option_text"];
-      }
       [verifying_javascripts
           addObject:[NSString stringWithFormat:@"%@['%@']===%@", results,
                                                attribute, expected_value]];
@@ -794,10 +766,8 @@ NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
 // Generates JavaScripts to check a JavaScripts array `results` with the
 // expected values given in `expected`, which is an array of dictionaries; each
 // dictionary is the expected values of the corresponding item in `results`.
-// Only attributes in `attributes_to_check` are checked. A different expected
-// value is chosen in `expected` for different `extract_mask`.
+// Only attributes in `attributes_to_check` are checked.
 NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
-                                               NSUInteger extract_mask,
                                                NSArray* expected,
                                                NSArray* attributed_to_check) {
   NSMutableArray* verifying_javascripts = [NSMutableArray array];
@@ -812,7 +782,7 @@ NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
           GenerateElementItemVerifyingJavaScripts(
               [NSString stringWithFormat:@"%@['fields'][%" PRIuNS "]", results,
                                          controlCount],
-              extract_mask, expectedDict, attributed_to_check, controlCount);
+              expectedDict, attributed_to_check, controlCount);
       [verifying_javascripts addObject:itemVerifyingJavaScripts];
     }
   }
@@ -876,7 +846,6 @@ class AutofillControllerJsTest : public PlatformTest {
   // are verified with `verifying_java_scripts`.
   void TestWebFormElementToFormDataForOneForm(
       NSString* get_form_element_javascripts,
-      NSUInteger extract_mask,
       NSString* expected_result,
       NSString* verifying_javascripts);
 
@@ -1435,46 +1404,41 @@ void AutofillControllerJsTest::TestWebFormControlElementToFormField(
     NSString* tag_name) {
   web::test::LoadHtml([test_data firstObject], web_state());
 
-  for (NSUInteger i = 0; i < std::size(kFormExtractMasks); ++i) {
-    ExtractMask extract_mask = kFormExtractMasks[i];
-    NSArray* attributes_to_check =
-        GetFormFieldAttributeListsToCheck(extract_mask);
+  NSArray* attributes_to_check = GetFormFieldAttributeListsToCheck();
 
-    for (NSUInteger j = 1; j < [test_data count]; ++j) {
-      NSString* get_element_to_test =
-          [NSString stringWithFormat:@"var element = "
-                                      "window.document.getElementsByTagName('%"
-                                      "@')[%" PRIuNS "]",
-                                     tag_name, j - 1];
-      NSDictionary* expected = [test_data objectAtIndex:j];
-      // Generates JavaScripts to verify the results. Parameter `results` is
-      // @"field" as in the evaluation JavaScripts the results are returned in
-      // `field`.
-      NSString* verifying_javascripts = GenerateElementItemVerifyingJavaScripts(
-          @"field", extract_mask, expected, attributes_to_check, -1);
-      EXPECT_NSEQ(
-          @YES,
-          ExecuteJavaScript([NSString
-              stringWithFormat:
-                  @"%@; var field = {};"
-                   "__gCrWeb.fill.webFormControlElementToFormField("
-                   "    element, %u, field);"
-                   "%@",
-                  get_element_to_test, extract_mask, verifying_javascripts]))
-          << base::SysNSStringToUTF8([NSString
-                 stringWithFormat:
-                     @"webFormControlElementToFormField actual results are: "
-                     @"%@, \n"
-                      "expected to be verified by %@",
-                     ExecuteJavaScript([NSString
-                         stringWithFormat:@"%@; var field = {};"
-                                           "__gCrWeb.fill."
-                                           "webFormControlElementToFormField("
-                                           "    element, %u, "
-                                           "field);__gCrWeb.stringify(field);",
-                                          get_element_to_test, extract_mask]),
-                     verifying_javascripts]);
-    }
+  for (NSUInteger j = 1; j < [test_data count]; ++j) {
+    NSString* get_element_to_test =
+        [NSString stringWithFormat:@"var element = "
+                                    "window.document.getElementsByTagName('%"
+                                    "@')[%" PRIuNS "]",
+                                   tag_name, j - 1];
+    NSDictionary* expected = [test_data objectAtIndex:j];
+    // Generates JavaScripts to verify the results. Parameter `results` is
+    // @"field" as in the evaluation JavaScripts the results are returned in
+    // `field`.
+    NSString* verifying_javascripts = GenerateElementItemVerifyingJavaScripts(
+        @"field", expected, attributes_to_check, -1);
+    EXPECT_NSEQ(
+        @YES,
+        ExecuteJavaScript([NSString
+            stringWithFormat:@"%@; var field = {};"
+                              "__gCrWeb.fill.webFormControlElementToFormField("
+                              "    element, field);"
+                              "%@",
+                             get_element_to_test, verifying_javascripts]))
+        << base::SysNSStringToUTF8([NSString
+               stringWithFormat:
+                   @"webFormControlElementToFormField actual results are: "
+                   @"%@, \n"
+                    "expected to be verified by %@",
+                   ExecuteJavaScript([NSString
+                       stringWithFormat:@"%@; var field = {};"
+                                         "__gCrWeb.fill."
+                                         "webFormControlElementToFormField("
+                                         "    element, "
+                                         "field);__gCrWeb.stringify(field);",
+                                        get_element_to_test]),
+                   verifying_javascripts]);
   }
 }
 
@@ -1508,16 +1472,15 @@ TEST_F(AutofillControllerJsTest, WebFormControlElementToFormField) {
 
 void AutofillControllerJsTest::TestWebFormElementToFormDataForOneForm(
     NSString* get_form_element_javascripts,
-    NSUInteger extract_mask,
     NSString* expected_result,
     NSString* verifying_javascripts) {
   NSString* actual = ExecuteJavaScript(
       [NSString stringWithFormat:@"var form={}; var field={};"
                                   "(__gCrWeb.fill.webFormElementToFormData("
-                                  "window, %@, null, %" PRIuNS
-                                  ", form, field) === %@) && %@",
-                                 get_form_element_javascripts, extract_mask,
-                                 expected_result, verifying_javascripts]);
+                                  "window, %@, null, form, field) "
+                                  "=== %@) && %@",
+                                 get_form_element_javascripts, expected_result,
+                                 verifying_javascripts]);
 
   EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8([NSString
       stringWithFormat:
@@ -1526,9 +1489,9 @@ void AutofillControllerJsTest::TestWebFormElementToFormDataForOneForm(
               stringWithFormat:@"var form={};"
                                 "__gCrWeb.fill."
                                 "webFormElementToFormData(window, %@, null,"
-                                "%" PRIuNS ", form, null);"
+                                "form, null);"
                                 "__gCrWeb.stringify(form);",
-                               get_form_element_javascripts, extract_mask]),
+                               get_form_element_javascripts]),
           verifying_javascripts]);
 }
 
@@ -1545,23 +1508,18 @@ void AutofillControllerJsTest::TestWebFormElementToFormData(
   web::test::LoadHtml(form_html_fragment, web_state());
 
   NSString* parameter = @"document.getElementsByTagName('form')[0]";
-  for (NSUInteger extract_index = 0;
-       extract_index < std::size(kFormExtractMasks); ++extract_index) {
-    NSString* expected_result = @"true";
-    // We don't verify 'action' here as action is generated as a complete url
-    // and here data url is used.
-    NSMutableArray* verifying_javascripts = [NSMutableArray
-        arrayWithObjects:@"form['name'] === 'TestForm'",
-                         @"form['origin'] === window.location.href", nil];
-    ExtractMask extract_mask = kFormExtractMasks[extract_index];
-    [verifying_javascripts
-        addObject:GenerateTestItemVerifyingJavaScripts(
-                      @"form", extract_mask, test_items,
-                      GetFormFieldAttributeListsToCheck(extract_mask))];
-    TestWebFormElementToFormDataForOneForm(
-        parameter, extract_mask, expected_result,
-        [verifying_javascripts componentsJoinedByString:@"&&"]);
-  }
+  NSString* expected_result = @"true";
+  // We don't verify 'action' here as action is generated as a complete url
+  // and here data url is used.
+  NSMutableArray* verifying_javascripts = [NSMutableArray
+      arrayWithObjects:@"form['name'] === 'TestForm'",
+                       @"form['origin'] === window.location.href", nil];
+  [verifying_javascripts
+      addObject:GenerateTestItemVerifyingJavaScripts(
+                    @"form", test_items, GetFormFieldAttributeListsToCheck())];
+  TestWebFormElementToFormDataForOneForm(
+      parameter, expected_result,
+      [verifying_javascripts componentsJoinedByString:@"&&"]);
 }
 
 TEST_F(AutofillControllerJsTest, WebFormElementToFormData) {
@@ -1606,7 +1564,7 @@ TEST_F(AutofillControllerJsTest, WebFormElementToFormDataTooManyFields) {
 
   web::test::LoadHtml(html_fragment, web_state());
   TestWebFormElementToFormDataForOneForm(
-      @"document.getElementsByTagName('form')[0]", 1, @"false", @"true");
+      @"document.getElementsByTagName('form')[0]", @"false", @"true");
 }
 
 TEST_F(AutofillControllerJsTest, WebFormElementToFormEmpty) {
@@ -1615,7 +1573,7 @@ TEST_F(AutofillControllerJsTest, WebFormElementToFormEmpty) {
 
   web::test::LoadHtml(html_fragment, web_state());
   TestWebFormElementToFormDataForOneForm(
-      @"document.getElementsByTagName('form')[0]", 1, @"false", @"true");
+      @"document.getElementsByTagName('form')[0]", @"false", @"true");
 }
 
 void AutofillControllerJsTest::TestExtractNewForms(
@@ -1645,13 +1603,11 @@ void AutofillControllerJsTest::TestExtractNewForms(
     }
     // This is the extract mask used by
     // __gCrWeb.autofill.extractNewForms.
-    NSUInteger extract_mask = EXTRACT_VALUE | EXTRACT_OPTIONS;
     [verifying_javascripts
         addObject:GenerateTestItemVerifyingJavaScripts(
                       [NSString stringWithFormat:@"forms[%" PRIuNS "]", i],
-                      extract_mask, [expected_items objectAtIndex:i],
-                      // The relevant attributes for the extract mask
-                      GetFormFieldAttributeListsToCheck(extract_mask))];
+                      [expected_items objectAtIndex:i],
+                      GetFormFieldAttributeListsToCheck())];
   }
 
   NSString* actual = ExecuteJavaScript([NSString

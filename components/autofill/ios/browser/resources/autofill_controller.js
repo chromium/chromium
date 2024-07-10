@@ -138,15 +138,12 @@ function getUnownedIframes() {
 /**
  * Scans the page for fields not owned by a form, and returns a synthetic form
  * containing them, if any are found. Returns null otherwise.
- * @param {number} extractMask Bitmask use for filtering elements. See
- *     fill_constants.ts.
  * @param {boolean} restrictUnownedFieldsToFormlessCheckout Whether extraction
  *     should exclude fields outside checkout fields.
  * @return {AutofillFormData|null} A form containing the unowned fields, or null
  *     if no such fields were found.
  */
-function extractUnownedFields(
-    extractMask, restrictUnownedFieldsToFormlessCheckout) {
+function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
   const fieldsets = [];
   const unownedControlElements =
       __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
@@ -162,7 +159,7 @@ function extractUnownedFields(
     const hasUnownedForm =
         __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
             window, fieldsets, unownedControlElements, iframeElements,
-            extractMask, restrictUnownedFieldsToFormlessCheckout, unownedForm);
+            restrictUnownedFieldsToFormlessCheckout, unownedForm);
     if (hasUnownedForm) {
       return unownedForm;
     }
@@ -316,13 +313,11 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
       let formData = new __gCrWeb['common'].JSONSafeObject();
       if (_form) {
         if (!__gCrWeb.fill.webFormElementToFormData(
-                window, _form, null, /*extractMask=*/0, formData,
-                /*field=*/null)) {
+                window, _form, null, formData, /*field=*/ null)) {
           formData = null;
         }
       } else {
         formData = extractUnownedFields(
-            /*extractMask=*/0,
             /*restrictUnownedFieldsToFormlessCheckout=*/ false);
       }
       if (formData) {
@@ -483,8 +478,7 @@ __gCrWeb.autofill.extractNewForms = function(
 
     const form = new __gCrWeb['common'].JSONSafeObject();
     if (!__gCrWeb.fill.webFormElementToFormData(
-            window, formElement, null, /*extractMask=*/0, form,
-            /*field=*/null)) {
+            window, formElement, null, form, /*field=*/ null)) {
       continue;
     }
 
@@ -499,8 +493,8 @@ __gCrWeb.autofill.extractNewForms = function(
   }
 
   // Look for more extractable fields outside of forms.
-  const unownedForm = extractUnownedFields(
-      /*extractMask=*/0, restrictUnownedFieldsToFormlessCheckout);
+  const unownedForm =
+      extractUnownedFields(restrictUnownedFieldsToFormlessCheckout);
 
   if (unownedForm) {
     numFieldsSeen += unownedForm['fields'].length;

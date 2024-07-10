@@ -292,8 +292,7 @@ function getPasswordInputElementForFill(
 function fillUsernameAndPassword(
     inputs: HTMLInputElement[], formData: AutofillFormData, username: string,
     password: string): FillResult {
-  const usernameRendererId: number =
-        Number(formData.fields[0]!.renderer_id);
+  const usernameRendererId: number = Number(formData.fields[0]!.renderer_id);
   let usernameInput;
   if (usernameRendererId !== Number(fillConstants.RENDERER_ID_NOT_SET)) {
     usernameInput = getUsernameInputElementForFill(inputs, usernameRendererId);
@@ -304,8 +303,7 @@ function fillUsernameAndPassword(
     }
   }
 
-  const passwordRendererId: number =
-      Number(formData.fields[1]!.renderer_id);
+  const passwordRendererId: number = Number(formData.fields[1]!.renderer_id);
   let passwordInput;
   if (passwordRendererId !== Number(fillConstants.RENDERER_ID_NOT_SET)) {
     passwordInput = getPasswordInputElementForFill(inputs, passwordRendererId);
@@ -388,8 +386,8 @@ function getPasswordFormDataFromUnownedElements(): object|void {
   }
   const unownedForm = new gCrWeb['common'].JSONSafeObject();
   const hasUnownedForm = gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
-      window, fieldsets, unownedControlElements, /* iframeElements= */[],
-      /*extractMask=*/0, false, unownedForm);
+      window, fieldsets, unownedControlElements, /* iframeElements= */[], false,
+      unownedForm);
   return hasUnownedForm ? unownedForm : null;
 }
 
@@ -402,8 +400,8 @@ function getPasswordFormData(
     formElement: HTMLFormElement): AutofillFormData|null {
   const formData = {} as AutofillFormData;
   const ok = gCrWeb.fill.webFormElementToFormData(
-      window, formElement, /*formControlElement=*/null, /*extractMask=*/0,
-      formData, /*field=*/null);
+      window, formElement, /*formControlElement=*/ null, formData,
+      /*field=*/ null);
   return ok ? formData : null;
 }
 
