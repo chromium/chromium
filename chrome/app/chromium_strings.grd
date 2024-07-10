@@ -2127,6 +2127,15 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog when the application installer does not complete in the allowed amount of time.">
           Install error: The installer did not complete. The installation has been aborted.
         </message>
+
+        <!--Metainstaller errors.-->
+        <message name="IDS_GENERIC_METAINSTALLER_ERROR"
+                 desc="Error message displayed when the metainstaller returns an error.">
+          Setup error: <ph name="METAINSTALLER_EXIT_CODE">$1<ex>error-internal</ex></ph>. <ph name="WINDOWS_ERROR">$2<ex>windows-error-description</ex></ph>
+        </message>
+        <message name="IDS_FAILED_TO_ELEVATE_METAINSTALLER" desc="Error displayed if the metainstaller could not be run with elevated privileges for a system install">
+          Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR">$1<ex>error-internal</ex></ph>
+        </message>
       </if>
       <!-- Memory Saver Chip strings -->
       <if expr="not is_android">

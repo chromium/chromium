@@ -157,6 +157,7 @@ template("generate_installer") {
              ":version",
              "//build/win:default_exe_manifest",
              "//chrome/updater:base",
+             "//chrome/updater:branding_header",
              "//third_party/abseil-cpp:absl",
            ] + invoker.deps
   }

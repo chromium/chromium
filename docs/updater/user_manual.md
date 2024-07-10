@@ -136,7 +136,7 @@ Command line arguments for the updater client are documented in the [functional 
 ## Error codes
 
 The updater setup process can exit with the following error codes:
-* UNABLE_TO_ELEVATE_METAINSTALLER = 113: This error code indicates that the
+* UNEXPECTED_ELEVATION_LOOP = 113: This error code indicates that the
 updater setup failed to elevate itself when trying to install a system app.
 
 ## Dynamic Install Parameters

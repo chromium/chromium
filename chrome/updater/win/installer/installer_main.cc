@@ -9,6 +9,11 @@
 #include <string>
 
 #include "base/at_exit.h"
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/win/installer/installer.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 
@@ -28,9 +33,13 @@ int WINAPI wWinMain(HINSTANCE /* instance */,
   // command line arguments.
   if (result.exit_code != updater::SUCCESS_EXIT_CODE &&
       wcslen(command_line) == 0) {
+    base::FilePath exe_path;
+    base::PathService::Get(base::FILE_EXE, &exe_path);
     ::MessageBoxEx(nullptr,
-                   updater::GetLocalizedErrorString(result.exit_code).c_str(),
-                   nullptr, 0, 0);
+                   updater::GetLocalizedMetainstallerErrorString(
+                       result.exit_code, result.windows_error)
+                       .c_str(),
+                   exe_path.BaseName().value().c_str(), 0, 0);
   }
   return result.exit_code;
 }

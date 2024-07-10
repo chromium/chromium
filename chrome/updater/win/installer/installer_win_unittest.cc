@@ -44,7 +44,7 @@ void ExpectSwitchValue(const std::wstring& cmd_line,
 }
 }  // namespace
 
-// Tests that `HandleRunElevated` returns `UNABLE_TO_ELEVATE_METAINSTALLER` when
+// Tests that `HandleRunElevated` returns `UNEXPECTED_ELEVATION_LOOP` when
 // not elevated and called with `kCmdLineExpectElevated` argument.
 TEST(InstallerTest, HandleRunElevated) {
   if (::IsUserAnAdmin()) {
@@ -59,7 +59,7 @@ TEST(InstallerTest, HandleRunElevated) {
 
   updater::ProcessExitResult exit_result =
       updater::HandleRunElevated(command_line);
-  EXPECT_EQ(exit_result.exit_code, updater::UNABLE_TO_ELEVATE_METAINSTALLER);
+  EXPECT_EQ(exit_result.exit_code, updater::UNEXPECTED_ELEVATION_LOOP);
   EXPECT_EQ(exit_result.windows_error, 0U);
 }
 

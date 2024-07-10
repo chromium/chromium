@@ -39,10 +39,10 @@ std::wstring GetLocalizedStringF(
     std::vector<std::wstring> replacements,
     const std::wstring& lang = GetPreferredLanguage());
 
-// Returns a localized version of the error message associated with an exit
-// code.
-std::wstring GetLocalizedErrorString(DWORD exit_code);
-
+// Returns a localized version of the error message associated with a
+// metainstaller `exit_code`/`windows_error`.
+std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
+                                                  DWORD windows_error);
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_UI_L10N_UTIL_H_

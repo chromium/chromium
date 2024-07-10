@@ -282,16 +282,16 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(kCmdLineExpectElevated)) {
     VLOG(1) << __func__ << "Unexpected elevation loop! "
             << command_line.GetCommandLineString();
-    return ProcessExitResult(UNABLE_TO_ELEVATE_METAINSTALLER);
+    return ProcessExitResult(UNEXPECTED_ELEVATION_LOOP);
   }
 
   if (command_line.HasSwitch(kSilentSwitch)) {
     VLOG(1) << __func__ << ": cannot show an elevation prompt with `/silent`: "
             << command_line.GetCommandLineString();
-    return ProcessExitResult(UNABLE_TO_ELEVATE_METAINSTALLER_SILENT);
+    return ProcessExitResult(UNEXPECTED_ELEVATION_LOOP_SILENT);
   }
 
-  // The metainstaller is elevated because unpacking its files and running
+  // The metainstaller needs elevation because unpacking files and running
   // updater.exe must happen from a secure directory.
   base::CommandLine elevated_command_line = command_line;
   elevated_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
@@ -299,8 +299,8 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
                    RunElevated(command_line.GetProgram(),
                                elevated_command_line.GetArgumentsString()),
                    [](HRESULT error) {
-                     return ProcessExitResult(
-                         RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, error);
+                     return ProcessExitResult(FAILED_TO_ELEVATE_METAINSTALLER,
+                                              error);
                    });
   return ProcessExitResult(result);
 }
@@ -311,7 +311,7 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(kCmdLineExpectDeElevated)) {
     VLOG(1) << __func__ << "Unexpected de-elevation loop! "
             << command_line.GetCommandLineString();
-    return ProcessExitResult(UNABLE_TO_DE_ELEVATE_METAINSTALLER);
+    return ProcessExitResult(UNEXPECTED_DE_ELEVATION_LOOP);
   }
 
   base::win::ScopedCOMInitializer com_initializer(
@@ -327,7 +327,7 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
       }());
   return SUCCEEDED(hr)
              ? ProcessExitResult(SUCCESS_EXIT_CODE)
-             : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, hr);
+             : ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER, hr);
 }
 
 ProcessExitResult InstallerMain(HMODULE module) {
@@ -363,8 +363,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
     ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
     if ((run_elevated_result.exit_code !=
              RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS &&
-         run_elevated_result.exit_code !=
-             UNABLE_TO_ELEVATE_METAINSTALLER_SILENT) ||
+         run_elevated_result.exit_code != UNEXPECTED_ELEVATION_LOOP_SILENT) ||
         !IsPrefersForCommandLine(command_line)) {
       return run_elevated_result;
     }

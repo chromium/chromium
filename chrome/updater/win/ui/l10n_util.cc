@@ -13,6 +13,7 @@
 #include "base/win/embedded_i18n/language_selector.h"
 #include "base/win/i18n.h"
 #include "chrome/updater/util/util.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 
@@ -74,15 +75,45 @@ std::wstring GetLocalizedStringF(UINT base_message_id,
       GetLocalizedString(base_message_id, lang), replacements, nullptr);
 }
 
-std::wstring GetLocalizedErrorString(DWORD exit_code) {
+std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
+                                                  DWORD windows_error) {
+#define METAINSTALLER_ERROR_SWITCH_ENTRY(exit_code)                        \
+  case static_cast<int>(exit_code):                                        \
+    return GetLocalizedStringF(                                            \
+        IDS_GENERIC_METAINSTALLER_ERROR_BASE,                              \
+        {L#exit_code, windows_error ? GetTextForSystemError(windows_error) \
+                                    : std::wstring()})
+
   switch (exit_code) {
-    case updater::UNSUPPORTED_WINDOWS_VERSION:
+    METAINSTALLER_ERROR_SWITCH_ENTRY(TEMP_DIR_FAILED);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(UNPACKING_FAILED);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(GENERIC_INITIALIZATION_FAILURE);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(COMMAND_STRING_OVERFLOW);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(WAIT_FOR_PROCESS_FAILED);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(PATH_STRING_OVERFLOW);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(UNABLE_TO_GET_WORK_DIRECTORY);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(UNABLE_TO_EXTRACT_ARCHIVE);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(UNEXPECTED_ELEVATION_LOOP);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(UNEXPECTED_DE_ELEVATION_LOOP);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(UNEXPECTED_ELEVATION_LOOP_SILENT);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(UNABLE_TO_SET_DIRECTORY_ACL);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(INVALID_OPTION);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(FAILED_TO_DE_ELEVATE_METAINSTALLER);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(RUN_SETUP_FAILED_FILE_NOT_FOUND);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(RUN_SETUP_FAILED_PATH_NOT_FOUND);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS);
+    METAINSTALLER_ERROR_SWITCH_ENTRY(UNABLE_TO_GET_EXE_PATH);
+
+    case UNSUPPORTED_WINDOWS_VERSION:
       return GetLocalizedString(IDS_INSTALL_OS_NOT_SUPPORTED_BASE);
+    case FAILED_TO_ELEVATE_METAINSTALLER:
+      return GetLocalizedStringF(IDS_FAILED_TO_ELEVATE_METAINSTALLER_BASE,
+                                 GetTextForSystemError(windows_error));
     default:
-      std::wstring error = L"Updater error ";
-      error.append(std::to_wstring(exit_code));
-      return error;
+      NOTREACHED_IN_MIGRATION();
+      return {};
   }
+#undef METAINSTALLER_ERROR_SWITCH_ENTRY
 }
 
 }  // namespace updater
