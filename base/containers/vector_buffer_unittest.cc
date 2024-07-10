@@ -57,7 +57,7 @@ TEST(VectorBuffer, DeletePOD) {
   for (int i = 0; i < size; i++)
     buffer.begin()[i] = i + 1;
 
-  buffer.DestructRange(buffer.begin(), buffer.end());
+  VectorBuffer<int>::DestructRange(buffer.as_span());
 
   // Delete should do nothing.
   for (int i = 0; i < size; i++)
@@ -70,7 +70,7 @@ TEST(VectorBuffer, DeleteMoveOnly) {
   for (int i = 0; i < size; i++)
     new (buffer.begin() + i) MoveOnlyInt(i + 1);
 
-  buffer.DestructRange(buffer.begin(), buffer.end());
+  VectorBuffer<MoveOnlyInt>::DestructRange(buffer.as_span());
 
   // Delete should have reset all of the values to 0.
   for (int i = 0; i < size; i++)
@@ -85,7 +85,7 @@ TEST(VectorBuffer, PODMove) {
   for (int i = 0; i < size; i++)
     original.begin()[i] = i + 1;
 
-  original.MoveRange(original.begin(), original.end(), dest.begin());
+  VectorBuffer<int>::MoveConstructRange(original.as_span(), dest.as_span());
   for (int i = 0; i < size; i++)
     EXPECT_EQ(i + 1, dest.begin()[i]);
 }
@@ -98,7 +98,8 @@ TEST(VectorBuffer, MovableMove) {
   for (int i = 0; i < size; i++)
     new (original.begin() + i) MoveOnlyInt(i + 1);
 
-  original.MoveRange(original.begin(), original.end(), dest.begin());
+  VectorBuffer<MoveOnlyInt>::MoveConstructRange(original.as_span(),
+                                                dest.as_span());
 
   // Moving from a MoveOnlyInt resets to 0.
   for (int i = 0; i < size; i++) {
@@ -115,7 +116,8 @@ TEST(VectorBuffer, CopyToMove) {
   for (int i = 0; i < size; i++)
     new (original.begin() + i) CopyOnlyInt(i + 1);
 
-  original.MoveRange(original.begin(), original.end(), dest.begin());
+  VectorBuffer<CopyOnlyInt>::MoveConstructRange(original.as_span(),
+                                                dest.as_span());
 
   // The original should have been destructed, which should reset the value to
   // 0. Technically this dereferences the destructed object.
@@ -141,14 +143,15 @@ TEST(VectorBuffer, TrivialAbiMove) {
         TrivialAbiWithCountingOperations(&destruction_count, &move_count);
   }
 
-  original.MoveRange(original.begin(), original.end(), dest.begin());
+  VectorBuffer<TrivialAbiWithCountingOperations>::MoveConstructRange(
+      original.as_span(), dest.as_span());
 
   // We expect the move to have been performed via memcpy, without calling move
   // constructors or destructors.
   EXPECT_EQ(destruction_count, kHaveTrivialRelocation ? 0 : size);
   EXPECT_EQ(move_count, kHaveTrivialRelocation ? 0 : size);
 
-  dest.DestructRange(dest.begin(), dest.end());
+  dest.DestructRange(dest.as_span());
   EXPECT_EQ(destruction_count, kHaveTrivialRelocation ? size : size * 2);
   EXPECT_EQ(move_count, kHaveTrivialRelocation ? 0 : size);
 }

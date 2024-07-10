@@ -590,9 +590,9 @@ class GSL_POINTER span {
     // size_bytes(), which while computable at compile time when `other` has a
     // fixed size, the optimizer stumbles on with -Oz.
     //
-    // SAFETY: The copy() here does not check bounds, but we have verified that
-    // `this` and `other` have the same bounds above (and are pointers of the
-    // same type), so `data()` and `other.data()` both have at least
+    // SAFETY: The std::copy() here does not check bounds, but we have verified
+    // that `this` and `other` have the same bounds above (and are pointers of
+    // the same type), so `data()` and `other.data()` both have at least
     // `other.size()` elements.
     UNSAFE_BUFFERS(
         std::copy(other.data(), other.data() + other.size(), data()));

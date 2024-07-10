@@ -1481,6 +1481,11 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'in_out_out_result',
             'min_max_result',
             'in_found_result',
+            # From https://en.cppreference.com/w/cpp/iterator
+            'advance',
+            'distance',
+            'next',
+            'prev',
         )) + r')\w+',
         explanation=(
             'Use of range views and associated helpers is banned in Chrome. '
