@@ -93,6 +93,7 @@ source_set("onc") {
     deps += [
       "//ash/constants:constants",
       "//base",
+      "//chrome/browser/ash/login/session",
       "//chrome/browser/ash/policy/core",
       "//chromeos/ash/components/install_attributes",
       "//chromeos/ash/components/network",

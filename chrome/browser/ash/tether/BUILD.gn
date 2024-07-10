@@ -19,6 +19,7 @@ static_library("tether") {
   deps = [
     "//base",
     "//chrome/browser/ash/device_sync",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/profiles",
@@ -34,6 +35,8 @@ static_library("tether") {
     "//components/session_manager/core",
     "//device/bluetooth",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
 }
 source_set("unit_tests") {
   testonly = true

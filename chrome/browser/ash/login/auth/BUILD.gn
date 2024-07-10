@@ -27,6 +27,7 @@ static_library("auth") {
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
     "//chrome/common:constants",
@@ -38,4 +39,6 @@ static_library("auth") {
     "//components/signin/public/identity_manager",
     "//services/network/public/cpp",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
 }

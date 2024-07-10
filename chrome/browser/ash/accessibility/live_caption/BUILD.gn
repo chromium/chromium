@@ -46,6 +46,7 @@ source_set("browser_tests") {
   deps = [
     ":live_caption",
     "//base",
+    "//chrome/browser/ash/login/session",
     "//chrome/test:test_support",
     "//components/live_caption",
     "//components/live_caption:constants",

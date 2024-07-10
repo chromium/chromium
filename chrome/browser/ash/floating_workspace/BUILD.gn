@@ -27,6 +27,7 @@ static_library("floating_workspace") {
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chromeos/ash/components/browser_context_helper",
@@ -44,7 +45,10 @@ static_library("floating_workspace") {
     "//ui/message_center",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/app_restore" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/login/session",
+  ]
 }
 
 source_set("unit_tests") {

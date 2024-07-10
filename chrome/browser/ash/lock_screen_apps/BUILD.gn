@@ -34,6 +34,7 @@ static_library("lock_screen_apps") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -55,6 +56,8 @@ static_library("lock_screen_apps") {
     "//ui/wm",
     "//url",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
 }
 
 static_library("test_support") {

@@ -62,6 +62,7 @@ static_library("arc") {
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
@@ -120,6 +121,7 @@ static_library("arc") {
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/platform_keys/key_permissions",
   ]
 }

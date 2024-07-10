@@ -42,6 +42,7 @@ static_library("lock") {
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
@@ -68,6 +69,7 @@ static_library("lock") {
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/extensions",
   ]
 }

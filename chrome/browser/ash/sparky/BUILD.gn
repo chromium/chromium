@@ -22,6 +22,7 @@ static_library("sparky") {
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
@@ -34,6 +35,8 @@ static_library("sparky") {
     "//ui/display/types",
     "//ui/events:event_constants",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
 }
 
 source_set("unit_tests") {

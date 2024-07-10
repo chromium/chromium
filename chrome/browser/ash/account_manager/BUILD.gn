@@ -46,6 +46,7 @@ static_library("account_manager") {
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/net",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/components/mgs",
@@ -53,7 +54,10 @@ static_library("account_manager") {
     "//content/public/browser",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/arc/auth" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/login/session",
+  ]
 }
 
 source_set("unit_tests") {

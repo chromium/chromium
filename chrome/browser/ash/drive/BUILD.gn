@@ -41,6 +41,7 @@ static_library("drive") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/chromeos/drivefs",
@@ -71,13 +72,14 @@ static_library("drive") {
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/crosapi",
-    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/extensions/file_manager",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/extensions",
     "//chrome/browser/web_applications",
-    "//chrome/browser/ash/file_manager",
   ]
 }
 

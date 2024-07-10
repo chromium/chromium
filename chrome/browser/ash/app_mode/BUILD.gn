@@ -106,6 +106,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/login/auth",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
@@ -137,6 +138,7 @@ static_library("app_mode") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/login/app_mode",
+    "//chrome/browser/ash/login/session",
   ]
 }
 

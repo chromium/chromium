@@ -47,6 +47,7 @@ static_library("net") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/net/dns_over_https",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/platform_keys",
@@ -88,7 +89,10 @@ static_library("net") {
     "//services/network/public/mojom",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/platform_keys" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/platform_keys",
+  ]
 }
 
 static_library("test_support") {
