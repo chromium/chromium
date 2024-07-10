@@ -162172,6 +162172,110 @@
         {}
        ]
       ],
+      "line-clamp-auto-017.tentative.html": [
+       "376c69a210611977b3eae9ed3900b2538516be98",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-018.tentative.html": [
+       "deb1f42431d26c503d5abd6f22ba567d2ecd446f",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-018-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-019.tentative.html": [
+       "82c53dc6bbec03a810dc04538a5bc714cd5802fd",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-019-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-020.tentative.html": [
+       "eb84151ca66c1a42b8ff35690946350450fcec46",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-020-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-021.tentative.html": [
+       "90c33755bee669e770cf2a9a699998ea67c19fc6",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-021-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-022.tentative.html": [
+       "7834c9c3ae0e2d2120f5fbc47f7946908235dedd",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-021-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-023.tentative.html": [
+       "d41d68d84a3f9518a64aae73bb6d8f990d9ee160",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-023-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-024.tentative.html": [
+       "134dade711ad9ff4dcb3cb310e23a5a5e5e492ea",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-023-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "line-clamp-with-abspos-001.tentative.html": [
        "79667f23fbdc3d941484c343b2cf0a04ec34363f",
        [
@@ -330784,6 +330888,26 @@
        ],
        "line-clamp-auto-016-ref.html": [
         "4a5f3536cc62c33e1a30ed9fce9a21cecda341bc",
+        []
+       ],
+       "line-clamp-auto-018-ref.html": [
+        "4d24d766956879e47ad7b36e4074993324204b8d",
+        []
+       ],
+       "line-clamp-auto-019-ref.html": [
+        "5dd739a1dabadff72e9ec19236f46a7850f2d83f",
+        []
+       ],
+       "line-clamp-auto-020-ref.html": [
+        "ef111f1e4a88a88c3b7f679d29f5bae58ea9624e",
+        []
+       ],
+       "line-clamp-auto-021-ref.html": [
+        "9ecad287453435b3b64e50366013caab453f0dfa",
+        []
+       ],
+       "line-clamp-auto-023-ref.html": [
+        "adb4b6dc6edf2a401cd4016f394c74b9bf9b89cb",
         []
        ],
        "line-clamp-with-abspos-001-ref.html": [
@@ -681843,7 +681967,7 @@
      ]
     ],
     "videoFrame-copyTo-rgb.any.js": [
-     "146b6756cb467335087dd234e63b4e9afcd03adb",
+     "eb7351e048b2aff4cff3f2df793ef4741fb1db8d",
      [
       "webcodecs/videoFrame-copyTo-rgb.any.html",
       {
