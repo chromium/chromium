@@ -22,6 +22,10 @@ namespace views {
 class WebView;
 }  // namespace views
 
+namespace web_modal {
+class WebContentsModalDialogHost;
+}  // namespace web_modal
+
 class BrowserWindowFeatures;
 class GURL;
 class SessionID;
@@ -45,6 +49,11 @@ class BrowserWindowInterface {
 
   // Returns the feature controllers scoped to this browser window.
   virtual BrowserWindowFeatures& GetFeatures() = 0;
+
+  // Returns the web contents modal dialog host pertaining to this
+  // BrowserWindow.
+  virtual web_modal::WebContentsModalDialogHost*
+  GetWebContentsModalDialogHostForWindow() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

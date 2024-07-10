@@ -881,6 +881,8 @@ class Browser : public TabStripModelObserver,
   const SessionID& GetSessionID() override;
   tabs::TabInterface* GetActiveTabInterface() override;
   BrowserWindowFeatures& GetFeatures() override;
+  web_modal::WebContentsModalDialogHost*
+  GetWebContentsModalDialogHostForWindow() override;
 
  private:
   friend class BrowserTest;

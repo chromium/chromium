@@ -1113,6 +1113,11 @@ BrowserWindowFeatures& Browser::GetFeatures() {
   return *features_.get();
 }
 
+web_modal::WebContentsModalDialogHost*
+Browser::GetWebContentsModalDialogHostForWindow() {
+  return window_->GetWebContentsModalDialogHost();
+}
+
 void Browser::OnWindowClosing() {
   if (const auto closing_status = HandleBeforeClose();
       closing_status != BrowserClosingStatus::kPermitted) {
