@@ -12,6 +12,7 @@
 
 namespace tab_groups {
 class SavedTabGroup;
+class TabGroupSyncService;
 }  // namespace tab_groups
 
 class Browser;
@@ -54,6 +55,12 @@ LocalTabInfo GetLocalTabInfo(BrowserList* browser_list,
 // the given `web_state_identifier`.
 LocalTabInfo GetLocalTabInfo(WebStateList* web_state_list,
                              web::WebStateID web_state_identifier);
+
+// Removes the association between the local tab group mapping and the
+// `tab_group`. All tabs within the tab_group are closed.
+void CloseTabGroupLocally(const TabGroup* tab_group,
+                          WebStateList* web_state_list,
+                          TabGroupSyncService* sync_service);
 
 }  // namespace utils
 }  // namespace tab_groups

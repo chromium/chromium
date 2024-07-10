@@ -128,6 +128,10 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
   // Propagates the visual update of `tab_group`.
   void UpdateVisualDataSyncedGroup(const TabGroup* tab_group);
 
+  // Propagates the deletion of `tab_group` if `tab_group` is not closed
+  // locally.
+  void DeleteSyncedGroup(const TabGroup* tab_group);
+
   raw_ptr<TabGroupSyncService> sync_service_ = nullptr;
   raw_ptr<BrowserList> browser_list_ = nullptr;
 

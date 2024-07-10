@@ -421,7 +421,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (void)closeTabGroup:(const TabGroup*)group {
+- (void)deleteTabGroup:(const TabGroup*)group {
   NOTREACHED_NORETURN();
 }
 

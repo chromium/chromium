@@ -330,8 +330,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                                       incognito:incognito];
                 }]];
   [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate closeTabGroup:group
-                                                    incognito:incognito];
+                  [weakSelf.contextMenuDelegate deleteTabGroup:group
+                                                     incognito:incognito];
                 }]];
 
   return menuElements;

@@ -7,6 +7,7 @@
 #import "components/saved_tab_groups/saved_tab_group.h"
 #import "components/saved_tab_groups/saved_tab_group_tab.h"
 #import "components/saved_tab_groups/tab_group_sync_delegate.h"
+#import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/saved_tab_groups/types.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -76,6 +77,16 @@ LocalTabInfo GetLocalTabInfo(WebStateList* web_state_list,
     }
   }
   return LocalTabInfo{};
+}
+
+void CloseTabGroupLocally(const TabGroup* tab_group,
+                          WebStateList* web_state_list,
+                          TabGroupSyncService* sync_service) {
+  if (sync_service->GetGroup(tab_group->tab_group_id())) {
+    sync_service->RemoveLocalTabGroupMapping(tab_group->tab_group_id());
+  }
+  CloseAllWebStatesInGroup(*web_state_list, tab_group,
+                           WebStateList::CLOSE_USER_ACTION);
 }
 
 }  // namespace utils

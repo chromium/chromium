@@ -185,10 +185,13 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
       }
       break;
     }
+    case WebStateListChange::Type::kGroupDelete: {
+      const WebStateListChangeGroupDelete& delete_group =
+          change.As<WebStateListChangeGroupDelete>();
+      DeleteSyncedGroup(delete_group.deleted_group());
+      break;
+    }
     case WebStateListChange::Type::kGroupMove:
-    case WebStateListChange::Type::kGroupDelete:
-      // No need to update the sync model in that case. In case of delete, the
-      // caller needs to update it directly.
       break;
   }
 }
@@ -351,6 +354,11 @@ void TabGroupLocalUpdateObserver::RemoveLocalWebStateFromSyncedGroup(
     return;
   }
 
+  if (!sync_service_->GetGroup(tab_group->tab_group_id())) {
+    // The group has been closed locally.
+    return;
+  }
+
   sync_service_->RemoveTab(tab_group->tab_group_id(),
                            web_state->GetUniqueIdentifier().identifier());
 }
@@ -403,6 +411,14 @@ void TabGroupLocalUpdateObserver::UpdateVisualDataSyncedGroup(
 
   sync_service_->UpdateVisualData(tab_group->tab_group_id(),
                                   &tab_group->visual_data());
+}
+
+void TabGroupLocalUpdateObserver::DeleteSyncedGroup(const TabGroup* tab_group) {
+  if (!sync_service_->GetGroup(tab_group->tab_group_id())) {
+    // The group has been closed locally.
+    return;
+  }
+  sync_service_->RemoveGroup(tab_group->tab_group_id());
 }
 
 }  // namespace tab_groups

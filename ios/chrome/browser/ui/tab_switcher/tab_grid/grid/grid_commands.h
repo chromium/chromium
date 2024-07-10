@@ -67,8 +67,8 @@ class WebStateID;
 // no item with that identifier, no item is closed.
 - (void)closeItemWithID:(web::WebStateID)itemID;
 
-// Tells the receiver to close the `group`.
-- (void)closeTabGroup:(const TabGroup*)group;
+// Tells the receiver to delete the `group`.
+- (void)deleteTabGroup:(const TabGroup*)group;
 
 // Tells the receiver to ungroup the `group`.
 - (void)ungroupTabGroup:(const TabGroup*)group;

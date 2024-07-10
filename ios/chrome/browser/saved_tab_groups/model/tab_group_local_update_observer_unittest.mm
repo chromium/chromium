@@ -16,6 +16,7 @@
 #import "components/saved_tab_groups/types.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/test_session_restoration_service.h"
@@ -40,6 +41,7 @@ using testing::_;
 
 using ::testing::AllOf;
 using ::testing::Property;
+using ::testing::Return;
 
 using ScopedPauseSyncOperation =
     tab_groups::TabGroupLocalUpdateObserver::ScopedPauseSyncOperation;
@@ -61,6 +63,14 @@ auto SyncTabGroupPrediction(SavedTabGroup saved_group) {
       Property(&SavedTabGroup::local_group_id, saved_group.local_group_id()),
       Property(&SavedTabGroup::title, saved_group.title()),
       Property(&SavedTabGroup::color, saved_group.color()));
+}
+
+// Returns a test `SavedTabGroup`.
+SavedTabGroup TestSavedGroup() {
+  SavedTabGroup saved_group(u"Test title", tab_groups::TabGroupColorId::kBlue,
+                            {}, std::nullopt, base::Uuid::GenerateRandomV4(),
+                            TabGroupId::GenerateNew());
+  return saved_group;
 }
 
 }  // namespace
@@ -354,6 +364,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, MoveTabToGroup) {
   EXPECT_CALL(*mock_service_, AddTab(tab_group_id, web_state_1_id.identifier(),
                                      _, _, std::make_optional(0ul)));
   const TabGroup* group = web_state_list->CreateGroup({0}, {}, tab_group_id);
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillOnce(Return(TestSavedGroup()));
 
   // Move `web_state_2` in the group.
   EXPECT_CALL(*mock_service_, AddTab(tab_group_id, web_state_2_id.identifier(),
@@ -405,6 +417,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, MoveTabFromOtherGroup) {
                      std::make_optional(0ul)));
   const TabGroup* group_2 =
       web_state_list->CreateGroup({1}, {}, tab_group_2_id);
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_2_id))
+      .WillRepeatedly(Return(TestSavedGroup()));
 
   // Move `web_state_3` in the second group.
   EXPECT_CALL(*mock_service_,
@@ -432,6 +446,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroup) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
 
   web_state_list->CreateGroup({0, 1}, {}, tab_group_id);
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillOnce(Return(TestSavedGroup()));
 
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_id.identifier()));
@@ -451,6 +467,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroupSyncPaused) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
 
   web_state_list->CreateGroup({0, 1}, {}, tab_group_id);
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id)).Times(0);
 
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_id.identifier()))
@@ -579,6 +596,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, ReplaceTabInGroup) {
   web::WebStateID web_state_b_id = web_state_b->GetUniqueIdentifier();
   web::WebStateID passed_web_state_id = passed_web_state->GetUniqueIdentifier();
   TabGroupId tab_group_id = group->tab_group_id();
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillOnce(Return(TestSavedGroup()));
 
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_b_id.identifier()));
@@ -604,6 +623,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, ReplaceTabInGroupSyncPaused) {
   web::WebStateID web_state_b_id = web_state_b->GetUniqueIdentifier();
   web::WebStateID passed_web_state_id = passed_web_state->GetUniqueIdentifier();
   TabGroupId tab_group_id = group->tab_group_id();
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id)).Times(0);
 
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_b_id.identifier()))
@@ -656,6 +676,75 @@ TEST_F(TabGroupLocalUpdateObserverTest, InsertInGroupSyncPaused) {
       .Times(0);
   web_state_list->InsertWebState(std::move(passed_web_state),
                                  WebStateList::InsertionParams::AtIndex(1));
+}
+
+// Tests that the service is correctly updated when a tab group is deleted.
+TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  InsertWebState(web_state_list);
+  InsertWebState(web_state_list);
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  const TabGroup* group = web_state_list->CreateGroup({0, 1}, {}, tab_group_id);
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillRepeatedly(Return(TestSavedGroup()));
+
+  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id))
+      .Times(0);
+  EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id));
+  web_state_list->DeleteGroup(group);
+}
+
+// Tests that the service is correctly updated when a tab group is closed
+// locally.
+TEST_F(TabGroupLocalUpdateObserverTest, CloseGroupLocally) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  InsertWebState(web_state_list);
+  InsertWebState(web_state_list);
+  InsertWebState(web_state_list);
+  InsertWebState(web_state_list);
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  const TabGroup* group = web_state_list->CreateGroup({0, 1}, {}, tab_group_id);
+  EXPECT_EQ(1u, web_state_list->GetGroups().size());
+  std::optional<SavedTabGroup> saved_group = TestSavedGroup();
+
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillRepeatedly([&saved_group] { return saved_group; });
+  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id))
+      .WillOnce([&saved_group] { saved_group = std::nullopt; });
+  EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id)).Times(0);
+  EXPECT_CALL(*mock_service_, RemoveTab(tab_group_id, _)).Times(0);
+  utils::CloseTabGroupLocally(group, web_state_list, mock_service_);
+
+  EXPECT_EQ(0u, web_state_list->GetGroups().size());
+  EXPECT_EQ(2, web_state_list->count());
+
+  web_state_list->MoveWebStateAt(0, 1);
+  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  EXPECT_EQ(1, web_state_list->count());
+}
+
+// Tests that the service is correctly updated when the last tab of a group is
+// deleted.
+TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroupAfterRemovingLastTtab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::FakeWebState* web_state = InsertWebState(web_state_list);
+  InsertWebState(web_state_list);
+
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+
+  web_state_list->CreateGroup({0}, {}, tab_group_id);
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillRepeatedly(Return(TestSavedGroup()));
+
+  EXPECT_CALL(*mock_service_,
+              RemoveTab(tab_group_id, web_state_id.identifier()));
+  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id))
+      .Times(0);
+  EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id));
+  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
 }
 
 }  // namespace tab_groups

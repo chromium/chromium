@@ -15,11 +15,15 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
+#import "components/commerce/core/commerce_feature_list.h"
+#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
+#import "components/saved_tab_groups/saved_tab_group.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -63,6 +67,14 @@ enum GridMediatorType { TEST_REGULAR_MEDIATOR, TEST_INCOGNITO_MEDIATOR };
 
 const char kHasPriceDropUserAction[] = "Commerce.TabGridSwitched.HasPriceDrop";
 const char kHasNoPriceDropUserAction[] = "Commerce.TabGridSwitched.NoPriceDrop";
+
+// Returns a test `SavedTabGroup`.
+tab_groups::SavedTabGroup TestSavedGroup() {
+  tab_groups::SavedTabGroup saved_group(
+      u"Test title", tab_groups::TabGroupColorId::kBlue, {}, std::nullopt,
+      base::Uuid::GenerateRandomV4(), tab_groups::TabGroupId::GenerateNew());
+  return saved_group;
+}
 
 }  // namespace
 
@@ -756,6 +768,62 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
                                                WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_EQ(0UL, [mediator_ allSelectedDragItems].count);
+}
+
+// Tests that closing a group locally removes the mapping from the sync service.
+TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
+  scoped_feature_list_.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+
+  tab_groups::MockTabGroupSyncService* mock_service =
+      static_cast<tab_groups::MockTabGroupSyncService*>(
+          tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+              browser_state_.get()));
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  web_state_list->CreateGroup({1}, {}, tab_group_id);
+  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
+  EXPECT_EQ(1u, web_state_list->GetGroups().size());
+
+  EXPECT_CALL(*mock_service, GetGroup(tab_group_id))
+      .WillOnce(testing::Return(TestSavedGroup()));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id));
+  [mediator_ closeItemWithIdentifier:[GridItemIdentifier
+                                          groupIdentifier:group
+                                         withWebStateList:web_state_list]];
+  EXPECT_EQ(0u, web_state_list->GetGroups().size());
+}
+
+// Tests that closing a group locally from another browser (e.g from Search)
+// correctly closes the group and removes the mapping from the sync service.
+TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
+  scoped_feature_list_.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  mediator_.currentMode = TabGridModeSearch;
+
+  WebStateList* other_web_state_list = other_browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(other_web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a b c d e f g", other_browser_->GetBrowserState()));
+
+  tab_groups::MockTabGroupSyncService* mock_service =
+      static_cast<tab_groups::MockTabGroupSyncService*>(
+          tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+              browser_state_.get()));
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  other_web_state_list->CreateGroup({1}, {}, tab_group_id);
+  const TabGroup* group = other_web_state_list->GetGroupOfWebStateAt(1);
+  EXPECT_EQ(1u, other_web_state_list->GetGroups().size());
+
+  EXPECT_CALL(*mock_service, GetGroup(tab_group_id))
+      .WillOnce(testing::Return(TestSavedGroup()));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id));
+  [mediator_
+      closeItemWithIdentifier:[GridItemIdentifier
+                                   groupIdentifier:group
+                                  withWebStateList:other_web_state_list]];
+  EXPECT_EQ(0u, other_web_state_list->GetGroups().size());
 }
 
 // Tests that closing the last tab of a selected group in a batch operation

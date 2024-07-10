@@ -215,3 +215,25 @@ TEST_F(TabGroupMediatorTest, DropExternalURL) {
   EXPECT_EQ(tab_group_, web_state_list->GetGroupOfWebStateAt(2));
   ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
 }
+
+// Tests that deleting a group works.
+TEST_F(TabGroupMediatorTest, DeleteGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(6, web_state_list->count());
+  EXPECT_EQ(1u, web_state_list->GetGroups().size());
+
+  [mediator_ deleteGroup];
+  ASSERT_EQ(3, web_state_list->count());
+  EXPECT_EQ(0u, web_state_list->GetGroups().size());
+}
+
+// Tests that ungrouping a group works.
+TEST_F(TabGroupMediatorTest, Ungroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(6, web_state_list->count());
+  EXPECT_EQ(1u, web_state_list->GetGroups().size());
+
+  [mediator_ ungroup];
+  ASSERT_EQ(6, web_state_list->count());
+  EXPECT_EQ(0u, web_state_list->GetGroups().size());
+}

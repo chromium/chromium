@@ -29,6 +29,8 @@
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -1012,8 +1014,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 }
 
-- (void)closeTabGroup:(const TabGroup*)group {
-  [self closeTabsAndDeleteGroup:group];
+- (void)deleteTabGroup:(const TabGroup*)group {
+  [self closeTabGroup:group andDeleteGroup:YES];
 }
 
 - (void)ungroupTabGroup:(const TabGroup*)group {
@@ -1521,42 +1523,44 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 }
 
-// Closes all the tabs (webStates) in a given `group` and deletes the `group`
-// from the `webStateList`.
-- (void)closeTabsAndDeleteGroup:(const TabGroup*)group {
-  if (IsTabGroupSyncEnabled()) {
-    // TODO(crbug.com/329627077): Add a mechanism to show it only once.
-    [self.tabGridToolbarHandler showSavedTabGroupIPH];
-  }
-
+// Closes all tabs in `group`, optionally deleting it from the sync service.
+// If 'deleteGroup' is YES, the group is removed permanently.
+// If 'deleteGroup' is NO, the group is closed locally but remains on the sync
+// service.
+- (void)closeTabGroup:(const TabGroup*)group andDeleteGroup:(BOOL)deleteGroup {
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
-  if (_webStateList->ContainsGroup(group)) {
-    // Using `CloseAllWebStatesInGroup` will result in calling the web state
-    // list observers which will take care of updating the consumer.
-    CloseAllWebStatesInGroup(*_webStateList, group,
-                             WebStateList::CLOSE_USER_ACTION);
+
+  WebStateList* groupWebStateList = [self groupWebStateList:group];
+  if (!groupWebStateList) {
+    // The group has already been removed.
     return;
   }
 
-  // `group` is not in the set of groups of the `_webStateList`, so `group`
-  // should be a search result from a different window. Since this item is not
-  // from the current browser, no UI updates will be sent to the current grid.
-  // Notify the current grid consumer about the change.
-  GridItemIdentifier* identifierToRemove =
-      [GridItemIdentifier groupIdentifier:group withWebStateList:_webStateList];
-  [self.consumer removeItemWithIdentifier:identifierToRemove
-                   selectedItemIdentifier:nil];
+  if (groupWebStateList != _webStateList) {
+    // `group` is not in the set of groups of the `_webStateList`, so `group`
+    // should be a search result from a different window. Since this item is not
+    // from the current browser, no UI updates will be sent to the current grid.
+    // Notify the current grid consumer about the change.
+    CHECK(self.currentMode == TabGridModeSearch, base::NotFatalUntil::M130);
+    GridItemIdentifier* identifierToRemove =
+        [GridItemIdentifier groupIdentifier:group
+                           withWebStateList:groupWebStateList];
+    [self.consumer removeItemWithIdentifier:identifierToRemove
+                     selectedItemIdentifier:nil];
+  }
 
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(self.browserState);
-  Browser* browser = GetBrowserForGroup(browserList, group,
-                                        self.browserState->IsOffTheRecord());
-
-  // If this group is still associated with another browser, remove it from the
-  // associated web state list.
-  if (browser) {
-    WebStateList* groupWebStateList = browser->GetWebStateList();
+  if (IsTabGroupSyncEnabled() && !deleteGroup) {
+    // TODO(crbug.com/329627077): Add a mechanism to show it only once.
+    [self.tabGridToolbarHandler showSavedTabGroupIPH];
+    tab_groups::TabGroupSyncService* syncService =
+        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    tab_groups::utils::CloseTabGroupLocally(group, groupWebStateList,
+                                            syncService);
+  } else {
+    // Using `CloseAllWebStatesInGroup` will result in calling the web state
+    // list observers which will take care of updating the consumer.
     CloseAllWebStatesInGroup(*groupWebStateList, group,
                              WebStateList::CLOSE_USER_ACTION);
   }
@@ -1592,6 +1596,21 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     WebStateList* groupWebStateList = browser->GetWebStateList();
     groupWebStateList->DeleteGroup(group);
   }
+}
+
+// Returns the associated WebStateList for the given `group`.
+- (WebStateList*)groupWebStateList:(const TabGroup*)group {
+  if (_webStateList->ContainsGroup(group)) {
+    return _webStateList;
+  }
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(self.browserState);
+  Browser* browser = GetBrowserForGroup(browserList, group,
+                                        self.browserState->IsOffTheRecord());
+  if (!browser) {
+    return nullptr;
+  }
+  return browser->GetWebStateList();
 }
 
 // Updates the cell of the given `group`.
@@ -1756,7 +1775,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       break;
     case GridItemType::Group: {
       const TabGroup* group = identifier.tabGroupItem.tabGroup;
-      [self closeTabsAndDeleteGroup:group];
+      [self closeTabGroup:group andDeleteGroup:NO];
       break;
     }
     case GridItemType::SuggestedActions:
