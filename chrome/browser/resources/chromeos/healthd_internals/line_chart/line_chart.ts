@@ -2,23 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/iron-location/iron-location.js';
-import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './menu.js';
+import './scrollbar.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DEFAULT_SCALE} from './configs.js';
+import {DEFAULT_SCALE, DRAG_RATE, MAX_SCALE, MIN_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, SAMPLE_RATE, TOUCH_ZOOM_UNITS, ZOOM_RATE} from './configs.js';
 import {getTemplate} from './line_chart.html.js';
 import type {HealthdInternalsLineChartMenuElement} from './menu.js';
+import type {HealthdInternalsLineChartScrollbarElement} from './scrollbar.js';
 import {CanvasDrawer} from './utils/canvas_drawer.js';
 import {DataSeries} from './utils/data_series.js';
+
+/**
+ * Return the distance of two touch points.
+ */
+function getTouchsDistance(touchA: Touch, touchB: Touch): number {
+  const diffX: number = touchA.clientX - touchB.clientX;
+  const diffY: number = touchA.clientY - touchB.clientY;
+  return Math.sqrt(diffX * diffX + diffY * diffY);
+}
 
 export interface HealthdInternalsLineChartElement {
   $: {
     chartRoot: HTMLElement,
     mainCanvas: HTMLCanvasElement,
     chartMenu: HealthdInternalsLineChartMenuElement,
+    chartScrollbar: HealthdInternalsLineChartScrollbarElement,
   };
 }
 
@@ -41,11 +51,17 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     this.startTime = Date.now();
     this.endTime = this.startTime + 1;
 
+    this.initCanvasEventHandlers();
+
     const resizeObserver = new ResizeObserver(() => {
       this.resizeChart();
       this.updateChart();
     });
     resizeObserver.observe(this.$.chartRoot);
+
+    window.addEventListener('bar-scroll', () => {
+      this.updateChart();
+    });
 
     window.addEventListener('menu-buttons-updated', () => {
       this.updateChart();
@@ -65,6 +81,13 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
 
   // Used to avoid updating the graph multiple times in a single operation.
   private chartUpdateTimer: number = 0;
+
+  // Status of dragging and touching events for scrolling and zooming.
+  private isDragging: boolean = false;
+  private dragX: number = 0;
+  private isTouching: boolean = false;
+  private touchX: number = 0;
+  private touchZoomBase: number = 0;
 
   // Initialize the `canvasDrawer`.
   initCanvasDrawer(units: string[], unitBase: number) {
@@ -87,8 +110,8 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     this.updateChart();
   }
 
-  // Update the end time of the line chart. Also update the line chart to
-  // display latest data.
+  // Update the end time of the line chart. Also update the line chart and
+  // scrollbar to display latest data.
   updateEndTime(endTime: number) {
     if (this.canvasDrawer === null) {
       console.warn(
@@ -97,6 +120,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
       return;
     }
     this.endTime = endTime;
+    this.updateScrollBar();
     this.updateChart();
   }
 
@@ -111,6 +135,137 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     this.canvasDrawer.setMaxValue(maxValue);
   }
 
+  // Handle the wheeling, mouse dragging and touching events.
+  private initCanvasEventHandlers() {
+    const canvas: HTMLCanvasElement = this.$.mainCanvas;
+    canvas.addEventListener('wheel', (e: Event) => this.onWheel(e));
+    canvas.addEventListener('mousedown', (e: Event) => this.onMouseDown(e));
+    canvas.addEventListener('mousemove', (e: Event) => this.onMouseMove(e));
+    canvas.addEventListener('mouseup', (e: Event) => this.onMouseUpOrOut(e));
+    canvas.addEventListener('mouseout', (e: Event) => this.onMouseUpOrOut(e));
+    canvas.addEventListener('touchstart', (e: Event) => this.onTouchStart(e));
+    canvas.addEventListener('touchmove', (e: Event) => this.onTouchMove(e));
+    canvas.addEventListener('touchend', (e: Event) => this.onTouchEnd(e));
+    canvas.addEventListener('touchcancel', (e: Event) => this.onTouchCancel(e));
+  }
+
+  // Mouse and touchpad scroll event. Horizontal scroll for chart scrolling,
+  // vertical scroll for chart zooming.
+  private onWheel(event: Event) {
+    event.preventDefault();
+    const wheelEvent: WheelEvent = event as WheelEvent;
+    const wheelX: number = wheelEvent.deltaX / MOUSE_WHEEL_UNITS;
+    const wheelY: number = -wheelEvent.deltaY / MOUSE_WHEEL_UNITS;
+    this.scrollChart(MOUSE_WHEEL_SCROLL_RATE * wheelX);
+    this.zoomChart(Math.pow(ZOOM_RATE, -wheelY));
+  }
+
+  // The following three functions handle mouse dragging event.
+  private onMouseDown(event: Event) {
+    event.preventDefault();
+    this.isDragging = true;
+    this.dragX = (event as MouseEvent).clientX;
+  }
+
+  private onMouseMove(event: Event) {
+    event.preventDefault();
+    if (!this.isDragging) {
+      return;
+    }
+    const mouseEvent: MouseEvent = event as MouseEvent;
+    const dragDeltaX = mouseEvent.clientX - this.dragX;
+    this.scrollChart(DRAG_RATE * dragDeltaX);
+    this.dragX = mouseEvent.clientX;
+  }
+
+  private onMouseUpOrOut(event: Event) {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  // The following four functions handle touch events. One finger for scrolling,
+  // two finger for zooming.
+  private onTouchStart(event: Event) {
+    event.preventDefault();
+    this.isTouching = true;
+    const touches = (event as TouchEvent).targetTouches;
+    if (touches.length === 1) {
+      this.touchX = touches[0].clientX;
+    } else if (touches.length === 2) {
+      this.touchZoomBase = getTouchsDistance(touches[0], touches[1]);
+    }
+  }
+
+  private onTouchMove(event: Event) {
+    event.preventDefault();
+    if (!this.isTouching) {
+      return;
+    }
+    const touches: TouchList = (event as TouchEvent).targetTouches;
+    if (touches.length === 1) {
+      const dragDeltaX: number = this.touchX - touches[0].clientX;
+      this.scrollChart(DRAG_RATE * dragDeltaX);
+      this.touchX = touches[0].clientX;
+    } else if (touches.length === 2) {
+      const newDistance: number = getTouchsDistance(touches[0], touches[1]);
+      const zoomDelta: number =
+          (this.touchZoomBase - newDistance) / TOUCH_ZOOM_UNITS;
+      this.zoomChart(Math.pow(ZOOM_RATE, zoomDelta));
+      this.touchZoomBase = newDistance;
+    }
+  }
+
+  private onTouchEnd(event: Event) {
+    event.preventDefault();
+    this.isTouching = false;
+  }
+
+  private onTouchCancel(event: Event) {
+    event.preventDefault();
+    this.isTouching = false;
+  }
+
+  // Zoom the line chart by setting the `scale` to `rate` times.
+  private zoomChart(rate: number) {
+    const oldScale: number = this.scale;
+    const newScale: number = this.scale * rate;
+    this.scale = Math.max(MIN_SCALE, Math.min(newScale, MAX_SCALE));
+
+    if (this.scale === oldScale) {
+      return;
+    }
+
+    if (this.$.chartScrollbar.isScrolledToRightEdge()) {
+      this.updateScrollBar();
+      this.$.chartScrollbar.scrollToRightEdge();
+      this.updateChart();
+      return;
+    }
+
+    // To try to make the chart keep right, make the right edge of the chart
+    // stop at the same position.
+    const oldPosition: number = this.$.chartScrollbar.getPosition();
+    const width: number = this.$.mainCanvas.width;
+    const visibleEndTime: number = oldScale * (oldPosition + width);
+    const newPosition: number = Math.round(visibleEndTime / this.scale) - width;
+
+    this.updateScrollBar();
+    this.$.chartScrollbar.setPosition(newPosition);
+    this.updateChart();
+  }
+
+  // Scroll the line chart by moving forward `delta` pixels.
+  private scrollChart(delta: number) {
+    const oldPosition: number = this.$.chartScrollbar.getPosition();
+    const newPosition: number = oldPosition + Math.round(delta);
+
+    this.$.chartScrollbar.setPosition(newPosition);
+    if (this.$.chartScrollbar.getPosition() === oldPosition) {
+      return;
+    }
+    this.updateChart();
+  }
+
   private resizeChart() {
     const width = this.getChartVisibleWidth();
     const height = this.getChartVisibleHeight();
@@ -121,6 +276,33 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
 
     this.$.mainCanvas.width = width;
     this.$.mainCanvas.height = height;
+    this.$.chartScrollbar.resize(width);
+    this.updateScrollBar();
+  }
+
+  // Update the scrollbar to the current line chart status after zooming,
+  // scrolling... etc.
+  private updateScrollBar() {
+    const scrollRange: number =
+        Math.max(this.getChartWidth() - this.getChartVisibleWidth(), 0);
+    const isScrolledToRightEdge: boolean =
+        this.$.chartScrollbar.isScrolledToRightEdge();
+    this.$.chartScrollbar.setRange(scrollRange);
+    if (isScrolledToRightEdge && !this.isDragging) {
+      this.$.chartScrollbar.scrollToRightEdge();
+    }
+  }
+
+  // Get the whole line chart width, in pixel.
+  private getChartWidth(): number {
+    const timeRange: number = this.endTime - this.startTime;
+    const numOfPixels: number = Math.floor(timeRange / this.scale);
+
+    // To reduce CPU usage, the chart do not draw points at every pixels.
+    // Remove the last few pixels to avoid the graph showing some blank at
+    // the end of the graph.
+    const extraPixels: number = numOfPixels % SAMPLE_RATE;
+    return numOfPixels - extraPixels;
   }
 
   // Get the visible chart width.
@@ -130,7 +312,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
 
   // Get the visible chart height.
   private getChartVisibleHeight(): number {
-    return this.$.chartRoot.offsetHeight;
+    return this.$.chartRoot.offsetHeight - this.$.chartScrollbar.getHeight();
   }
 
   // Render the line chart. Note that to avoid calling render function
@@ -149,8 +331,14 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
 
   // Render the chart content by `canvasDrawer`.
   private renderCanvas(context: CanvasRenderingContext2D) {
-    // TODO(b/350423216): Update the `scrollbarPosition`.
-    const scrollbarPosition: number = 0;
+    // To reduce CPU usage, the chart do not draw points at every pixels.
+    // We need to know the offset of data from `scrollbarPosition`.
+    let scrollbarPosition: number = this.$.chartScrollbar.getPosition();
+    if (this.$.chartScrollbar.getRange() === 0) {
+      // If the chart width less than the visible width, make the chart align
+      // right by setting the negative position.
+      scrollbarPosition = this.getChartWidth() - this.$.mainCanvas.width;
+    }
 
     if (this.canvasDrawer === null) {
       return;

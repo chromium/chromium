@@ -1,0 +1,22 @@
+<style include="healthd-internals-shared">
+  #outerDiv {
+    overflow-x: scroll;
+    overflow-y: hidden;
+  }
+
+  #innerDiv {
+    height: 2px;
+  }
+
+  /* Avoid hiding scrollbar */
+  #outerDiv::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
+
+  #outerDiv::-webkit-scrollbar-thumb {
+    background-color: var(--cros-ref-neutral70);
+  }
+</style>
+<div id="outerDiv" class="horizontal-scrollbar-outer">
+  <div id="innerDiv" class="horizontal-scrollbar-inner"></div>
+</div>

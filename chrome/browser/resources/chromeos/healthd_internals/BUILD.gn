@@ -19,6 +19,7 @@ build_webui("build") {
     "pages/thermal_chart.ts",
     "line_chart/line_chart.ts",
     "line_chart/menu.ts",
+    "line_chart/scrollbar.ts",
   ]
 
   non_web_component_files = [
