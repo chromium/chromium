@@ -49,10 +49,19 @@ class MODULES_EXPORT VideoFrameHandle
                    bool use_capture_timestamp = false);
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    sk_sp<SkImage> sk_image,
+                   base::TimeDelta timestamp,
                    scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>,
                    std::string monitoring_source_id = std::string());
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    sk_sp<SkImage> sk_image,
+                   base::TimeDelta timestamp,
+                   std::string monitoring_source_id = std::string());
+  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
+                   sk_sp<SkImage> sk_image,
+                   std::string monitoring_source_id = std::string());
+  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
+                   sk_sp<SkImage> sk_image,
+                   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>,
                    std::string monitoring_source_id = std::string());
 
   VideoFrameHandle(const VideoFrameHandle&) = delete;

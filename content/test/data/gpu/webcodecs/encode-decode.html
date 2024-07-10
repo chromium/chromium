@@ -53,11 +53,14 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
           let dots = frames_decoded;
           // Check that we have intended number of dots and no more.
           // Completely black frame shouldn't pass the test.
-          if(!validateBlackDots(frame, dots) ||
-            validateBlackDots(frame, dots + 1)) {
-            showFrameForDebug(frame);
-            TEST.reportFailure(
-                `Unexpected dot count ts:${frame.timestamp} dots:${dots}`);
+          // Only count dots for sources that can actually pain them.
+          if (['offscreen', 'arraybuffer'].includes(arg.source_type)) {
+            if(!validateBlackDots(frame, dots) ||
+              validateBlackDots(frame, dots + 1)) {
+              showFrameForDebug(frame);
+              TEST.reportFailure(
+                  `Unexpected dot count ts:${frame.timestamp} dots:${dots}`);
+            }
           }
           frames_decoded++;
           frame.close();
@@ -127,6 +130,11 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
     }
     addManualTestButton([{
       'source_type': 'offscreen',
+      'codec': 'avc1.42001E',
+      'acceleration':'prefer-software'
+    },
+    {
+      'source_type': 'camera',
       'codec': 'avc1.42001E',
       'acceleration':'prefer-software'
     },

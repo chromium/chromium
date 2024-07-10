@@ -158,7 +158,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                'acceleration': acc
            }])
 
-    for source_type in ['offscreen', 'arraybuffer']:
+    for source_type in frame_sources:
       for codec in video_codecs:
         for acc in accelerations:
           args = (source_type, codec, acc)

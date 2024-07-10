@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -118,6 +119,11 @@ using EncoderType = media::VideoEncodeAccelerator::Config::EncoderType;
 namespace {
 
 constexpr const char kCategory[] = "media";
+// Controls if VideoEncoder will use timestamp from blink::VideoFrame
+// instead of media::VideoFrame.
+BASE_FEATURE(kUseBlinkTimestampForEncoding,
+             "UseBlinkTimestampForEncoding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/40215121): This is very similar to the method in
 // video_frame.cc. It should probably be a function in video_types.cc.
@@ -1033,17 +1039,29 @@ void VideoEncoder::ProcessEncode(Request* request) {
   auto frame = request->input->frame();
   auto encode_options = CreateEncodeOptions(request);
   active_encodes_++;
-  request->StartTracingVideoEncode(encode_options.key_frame,
-                                   frame->timestamp());
-
   auto encode_done_callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
       &VideoEncoder::OnEncodeDone, MakeUnwrappingCrossThreadWeakHandle(this),
       MakeUnwrappingCrossThreadHandle(request)));
+
+  auto blink_timestamp = base::Microseconds(request->input->timestamp());
+  if (frame->timestamp() != blink_timestamp &&
+      base::FeatureList::IsEnabled(kUseBlinkTimestampForEncoding)) {
+    // If blink::VideFrame has the timestamp different from media::VideoFrame
+    // we need to use blink's timestamp, because this is what JS-devs observe
+    // and it's expected to be the timestamp of the EncodedVideoChunk.
+    // More context about timestamp adjustments: crbug.com/333420614,
+    // crbug.com/350780007
+    frame = media::VideoFrame::WrapVideoFrame(
+        frame, frame->format(), frame->visible_rect(), frame->natural_size());
+    frame->set_timestamp(blink_timestamp);
+  }
 
   if (frame->metadata().frame_duration) {
     frame_metadata_[frame->timestamp()] =
         FrameMetadata{*frame->metadata().frame_duration};
   }
+  request->StartTracingVideoEncode(encode_options.key_frame,
+                                   frame->timestamp());
 
   bool mappable = frame->IsMappable() || frame->HasMappableGpuBuffer();
 
