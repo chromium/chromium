@@ -1142,6 +1142,13 @@ BASE_FEATURE(kWebUsb, "WebUSB", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether the WebXR Device API is enabled.
 BASE_FEATURE(kWebXr, "WebXR", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable the navigator.permissions API.
+// Used for launch in WebView, but exposed in content to map to runtime-enabled
+// feature.
+BASE_FEATURE(kWebPermissionsApi,
+             "WebPermissionsApi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, includes the ACTION_LONG_CLICK action to all relevant nodes in
 // the web contents accessibility tree.
@@ -1225,7 +1232,6 @@ BASE_FEATURE(kWebNfc, "WebNFC", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewSuppressTapDuringFling,
              "WebViewSuppressTapDuringFling",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

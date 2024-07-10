@@ -329,6 +329,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kRemoveMobileViewportDoubleTap)},
           {wf::EnableServiceWorkerStaticRouter,
            raw_ref(features::kServiceWorkerStaticRouter)},
+          {wf::EnablePermissions, raw_ref(features::kWebPermissionsApi),
+           kSetOnlyIfOverridden},
       };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
@@ -445,7 +447,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
   using wrf = WebRuntimeFeatures;
   const SwitchToFeatureMap switchToFeatureMapping[] = {
       // Stable Features
-      {wrf::EnablePermissions, switches::kDisablePermissionsAPI, false},
       {wrf::EnablePresentation, switches::kDisablePresentationAPI, false},
       {wrf::EnableRemotePlayback, switches::kDisableRemotePlaybackAPI, false},
       {wrf::EnableTimerThrottlingForBackgroundTabs,

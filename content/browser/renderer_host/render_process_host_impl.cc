@@ -3149,7 +3149,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kDisableBackgroundMediaSuspend,
     switches::kDisableNotifications,
     switches::kDisableOriginTrialControlledBlinkFeatures,
-    switches::kDisablePermissionsAPI,
     switches::kDisablePresentationAPI,
     switches::kDisableRTCSmoothnessAlgorithm,
     switches::kDisableScrollToTextFragment,

@@ -257,4 +257,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // kHashPrefixRealTimeLookups on WebView.
   aw_feature_overrides.DisableFeature(
       safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+
+  // WebView does not currently support the Permissions API (crbug.com/490120)
+  aw_feature_overrides.DisableFeature(::features::kWebPermissionsApi);
 }
