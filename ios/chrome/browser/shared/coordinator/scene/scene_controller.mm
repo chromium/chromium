@@ -530,9 +530,13 @@ void OnListFamilyMembersResponse(
         agentFromScene:self.sceneState] logUserEnteredAppViaFirstPartyScheme];
   }
 
-  ChromeBrowserState* browserState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
+  Browser* mainBrowser =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  if (!mainBrowser) {
+    return;
+  }
+
+  ChromeBrowserState* browserState = mainBrowser->GetBrowserState();
   if (!browserState) {
     return;
   }
