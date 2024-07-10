@@ -22,9 +22,10 @@ using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::VariantWith;
 
+using CaseTransformType = PickerSearchResult::CaseTransformData::Type;
+
 struct TestCase {
-  std::vector<PickerCategory> available_categories;
-  bool caps_lock_state_to_search = false;
+  PickerActionSearchOptions options;
   std::u16string query;
   std::vector<PickerSearchResult> expected_results;
 };
@@ -32,13 +33,8 @@ struct TestCase {
 class PickerActionSearchTest : public testing::TestWithParam<TestCase> {};
 
 TEST_P(PickerActionSearchTest, MatchesExpectedCategories) {
-  const auto& [available_categories, caps_lock_state_to_search, query,
-               expected_results] = GetParam();
-  EXPECT_THAT(PickerActionSearch(
-                  {.available_categories = available_categories,
-                   .caps_lock_state_to_search = caps_lock_state_to_search},
-                  query),
-              expected_results);
+  const auto& [options, query, expected_results] = GetParam();
+  EXPECT_THAT(PickerActionSearch(options, query), expected_results);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -47,63 +43,137 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         // Exact match
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .options =
+                {
+                    .available_categories = {{PickerCategory::kLinks}},
+                },
             .query = u"Browsing history",
             .expected_results = {PickerSearchResult::Category(
                 PickerCategory::kLinks)},
         },
         // Case-insensitive match
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .options =
+                {
+                    .available_categories = {{PickerCategory::kLinks}},
+                },
             .query = u"bRoWsInG hIsToRy",
             .expected_results = {PickerSearchResult::Category(
                 PickerCategory::kLinks)},
         },
         // Prefix match
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .options =
+                {
+                    .available_categories = {{PickerCategory::kLinks}},
+                },
             .query = u"b",
             .expected_results = {PickerSearchResult::Category(
                 PickerCategory::kLinks)},
         },
         // Prefix match in second word
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .options =
+                {
+                    .available_categories = {{PickerCategory::kLinks}},
+                },
             .query = u"hi",
             .expected_results = {PickerSearchResult::Category(
                 PickerCategory::kLinks)},
         },
         // Substring match
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .options =
+                {
+                    .available_categories = {{PickerCategory::kLinks}},
+                },
             .query = u"ist",
             .expected_results = {},
         },
         // Category unavailable
         TestCase{
-            .available_categories = {PickerCategory::kLocalFiles},
+            .options =
+                {
+                    .available_categories = {{PickerCategory::kLocalFiles}},
+                },
             .query = u"Browsing history",
             .expected_results = {},
         },
         // Not matched
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .options =
+                {
+                    .available_categories = {{PickerCategory::kLinks}},
+                },
             .query = u"Browsing history1",
             .expected_results = {},
         },
         // Caps Lock Off
         TestCase{
-            .available_categories = {},
-            .caps_lock_state_to_search = false,
+            .options =
+                {
+                    .caps_lock_state_to_search = false,
+                },
             .query = u"caps",
             .expected_results = {PickerSearchResult::CapsLock(false)},
         },
         // Caps Lock On
         TestCase{
-            .available_categories = {},
-            .caps_lock_state_to_search = true,
+            .options =
+                {
+                    .caps_lock_state_to_search = true,
+                },
             .query = u"caps",
             .expected_results = {PickerSearchResult::CapsLock(true)},
+        },
+        // Uppercase
+        TestCase{
+            .options =
+                {
+                    .search_case_transforms = true,
+                },
+            .query = u"upper",
+            .expected_results = {PickerSearchResult::CaseTransform(
+                CaseTransformType::kUpperCase)},
+        },
+        // Lowercase
+        TestCase{
+            .options =
+                {
+                    .search_case_transforms = true,
+                },
+            .query = u"lower",
+            .expected_results = {PickerSearchResult::CaseTransform(
+                CaseTransformType::kLowerCase)},
+        },
+        // Sentence case
+        TestCase{
+            .options =
+                {
+                    .search_case_transforms = true,
+                },
+            .query = u"sentence",
+            .expected_results = {PickerSearchResult::CaseTransform(
+                CaseTransformType::kSentenceCase)},
+        },
+        // Title case
+        TestCase{
+            .options =
+                {
+                    .search_case_transforms = true,
+                },
+            .query = u"title",
+            .expected_results = {PickerSearchResult::CaseTransform(
+                CaseTransformType::kTitleCase)},
+        },
+        // No case
+        TestCase{
+            .options =
+                {
+                    .search_case_transforms = false,
+                },
+            .query = u"upper",
+            .expected_results = {},
         }));
 
 }  // namespace

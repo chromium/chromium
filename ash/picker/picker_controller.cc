@@ -406,6 +406,8 @@ void PickerController::StartSearch(std::u16string_view query,
       {
           .available_categories = GetAvailableCategories(),
           .caps_lock_state_to_search = !model_->is_caps_lock_enabled(),
+          .search_case_transforms =
+              model_->GetMode() == PickerModeType::kHasSelection,
       },
       std::move(callback));
 }

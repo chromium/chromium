@@ -758,6 +758,57 @@ TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
                         Contains(PickerSearchResult::CapsLock(false)))));
 }
 
+TEST_F(PickerControllerTest, DoesNotSearchCaseTransformWhenNoSelectedText) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  base::MockCallback<PickerController::SearchResultsCallback> callback;
+
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
+  EXPECT_CALL(
+      callback,
+      Run(Contains(Property(
+          &PickerSearchResultsSection::results,
+          Contains(Property(
+              &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::CaseTransformData>(_)))))))
+      .Times(0);
+
+  controller.ToggleWidget();
+  controller.StartSearch(u"uppercase", /*category=*/{}, callback.Get());
+}
+
+TEST_F(PickerControllerTest, SearchesCaseTransformWhenSelectedText) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
+  input_method->SetFocusedTextInputClient(&input_field);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  base::MockCallback<PickerController::SearchResultsCallback> callback;
+
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
+  EXPECT_CALL(
+      callback,
+      Run(Contains(Property(
+          &PickerSearchResultsSection::results,
+          Contains(Property(
+              &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::CaseTransformData>(Field(
+                  &PickerSearchResult::CaseTransformData::type,
+                  PickerSearchResult::CaseTransformData::kUpperCase))))))))
+      .Times(1);
+
+  controller.ToggleWidget();
+  controller.StartSearch(u"uppercase", /*category=*/{}, callback.Get());
+}
+
 struct ActionTestCase {
   PickerSearchResult result;
   std::optional<PickerActionType> unfocused_action;

@@ -4,8 +4,10 @@
 
 #include "ash/picker/search/picker_action_search.h"
 
+#include <array>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/picker/views/picker_strings.h"
@@ -19,6 +21,17 @@
 
 namespace ash {
 namespace {
+
+using CaseTransformType = PickerSearchResult::CaseTransformData::Type;
+
+constexpr auto kTransformMessageIds =
+    std::to_array<std::pair<int, CaseTransformType>>({
+        {IDS_PICKER_UPPER_CASE_CATEGORY_LABEL, CaseTransformType::kUpperCase},
+        {IDS_PICKER_LOWER_CASE_CATEGORY_LABEL, CaseTransformType::kLowerCase},
+        {IDS_PICKER_SENTENCE_CASE_CATEGORY_LABEL,
+         CaseTransformType::kSentenceCase},
+        {IDS_PICKER_TITLE_CASE_CATEGORY_LABEL, CaseTransformType::kTitleCase},
+    });
 
 bool IsMatch(const string_matching::TokenizedString& query,
              std::u16string text) {
@@ -53,6 +66,15 @@ std::vector<PickerSearchResult> PickerActionSearch(
     matches.push_back(
         PickerSearchResult::CapsLock(options.caps_lock_state_to_search));
   }
+
+  if (options.search_case_transforms) {
+    for (const auto& [message_id, type] : kTransformMessageIds) {
+      if (IsMatch(tokenized_query, l10n_util::GetStringUTF16(message_id))) {
+        matches.push_back(PickerSearchResult::CaseTransform(type));
+      }
+    }
+  }
+
   return matches;
 }
 

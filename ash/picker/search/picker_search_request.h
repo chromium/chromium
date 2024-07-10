@@ -43,6 +43,7 @@ class ASH_EXPORT PickerSearchRequest {
   struct Options {
     base::span<const PickerCategory> available_categories;
     bool caps_lock_state_to_search = false;
+    bool search_case_transforms = false;
   };
 
   // `done_closure` is guaranteed to be called strictly after the last call to

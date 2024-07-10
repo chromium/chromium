@@ -140,7 +140,8 @@ PickerSearchRequest::PickerSearchRequest(std::u16string_view query,
     // Action results are currently synchronous.
     HandleActionSearchResults(PickerActionSearch(
         {.available_categories = available_categories,
-         .caps_lock_state_to_search = options.caps_lock_state_to_search},
+         .caps_lock_state_to_search = options.caps_lock_state_to_search,
+         .search_case_transforms = options.search_case_transforms},
         query));
 
     if (base::Contains(available_categories, PickerCategory::kEditorWrite)) {
