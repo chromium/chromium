@@ -66,6 +66,11 @@ namespace {
 
 constexpr int kChromeRefreshImageLabelPadding = 6;
 
+// Value used to enlarge the AvatarIcon to accommodate for DIP scaling. This is
+// used to adapt other related icon modifications, such as the dotted circle
+// icon in SigninPending mode.
+constexpr int kAvatarIconEnlargement = 1;
+
 }  // namespace
 
 // static
@@ -164,7 +169,7 @@ void AvatarToolbarButton::Layout(PassKey) {
   image->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   image->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   gfx::Size image_size = image->GetImage().size();
-  image_size.Enlarge(1, 1);
+  image_size.Enlarge(kAvatarIconEnlargement, kAvatarIconEnlargement);
   image->SetSize(image_size);
 }
 
@@ -483,10 +488,25 @@ void AvatarToolbarButton::NotifyShowSigninPausedDelayEnded() const {
 
 void AvatarToolbarButton::PaintButtonContents(gfx::Canvas* canvas) {
   int icon_size = GetIconSize();
-  gfx::Rect avatar_image_bounds = image_container_view()->bounds();
+  // This ensures that the bounds get are mirror adapted, and will only return
+  // the mirror values if RTL or mirror is enabled.
+  gfx::Rect avatar_image_bounds = image_container_view()->GetMirroredBounds();
+
   // Override image bounds width and height to match the icon size used.
   avatar_image_bounds.set_width(icon_size);
   avatar_image_bounds.set_height(icon_size);
+  // This is needed to adapt the changes done in `AvatarToolbarButton::Layout()`
+  // where the internal image is enlarged. When enlarging an image, the
+  // coordinates are not affected, but the image size is and therefore the
+  // container of the image as well.
+  // This is only needed for the mirrored version since in the regular version
+  // the icon is placed at the beginning which does not take into consideration
+  // the total width (the total width is considered when getting the mirrored
+  // value).
+  if (GetMirrored()) {
+    avatar_image_bounds.set_x(avatar_image_bounds.x() + kAvatarIconEnlargement);
+  }
+
   delegate_->PaintIcon(canvas, avatar_image_bounds);
 }
 
