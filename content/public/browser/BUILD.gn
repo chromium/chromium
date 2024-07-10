@@ -33,6 +33,11 @@ source_set("browser_sources") {
     # //chrome/browser/ash/input_method and
     # //chrome/browser/ash/magic_boost.
     "//chrome/browser/ash/magic_boost",
+
+    # TODO: remove this after fixing cyclic dependency between
+    # //chrome/browser/ash/policy/dlp/dialogs and
+    # //chrome/browser.
+    "//chrome/browser/ash/policy/dlp/dialogs",
   ]
   sources = [
     "active_url_message_filter.cc",

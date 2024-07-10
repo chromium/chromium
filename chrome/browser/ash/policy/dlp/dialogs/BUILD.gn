@@ -35,5 +35,9 @@ static_library("dialogs") {
     "//ui/gfx/geometry",
     "//ui/views",
     "//url",
+
+    # TODO: Use //chrome/browser instead after fixing cyclic dependency.
+    "//components/enterprise/common/proto:connectors_proto",
+    "//content/public/browser:browser_sources",
   ]
 }
