@@ -634,7 +634,8 @@ bool FeedStream::IsFeedEnabledByDse() {
 bool FeedStream::IsWebFeedEnabled() {
   return l10n_util::GetLanguage(delegate_->GetLanguageTag()) == "en" &&
          feed::IsWebFeedEnabledForLocale(delegate_->GetCountry()) &&
-         !delegate_->IsSupervisedAccount();
+         !delegate_->IsSupervisedAccount() &&
+         !base::FeatureList::IsEnabled(kWebFeedKillSwitch);
 }
 
 void FeedStream::EnabledPreferencesChanged() {
