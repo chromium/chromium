@@ -7,6 +7,8 @@
 
 namespace ash::on_device_controls {
 
+inline constexpr char kOnDeviceControlsAppRemovalHistogramName[] =
+    "ChromeOS.OnDeviceControls.AppRemoval";
 inline constexpr char kOnDeviceControlsBlockAppActionHistogramName[] =
     "ChromeOS.OnDeviceControls.BlockAppAction";
 inline constexpr char kOnDeviceControlsBlockedAppsCountHistogramName[] =
@@ -15,6 +17,16 @@ inline constexpr char kOnDeviceControlsBlockedAppsEngagementHistogramName[] =
     "ChromeOS.OnDeviceControls.BlockedAppsEngagement";
 inline constexpr char kOnDeviceControlsPinSetCompletedHistogramName[] =
     "ChromeOS.OnDeviceControls.PinSetupCompleted";
+
+// Used for metrics. Those values are logged to UMA. Entries should not be
+// renumbered and numeric values should never be reused. Please keep in sync
+// with "OnDeviceControlsAppRemoval" in
+// src/tools/metrics/histograms/metadata/families/enums.xml.
+enum class OnDeviceControlsAppRemoval {
+  kOldestUninstalledAppRemoved = 0,
+  kOldestUninstalledAppNotFound = 1,
+  kMaxValue = kOldestUninstalledAppNotFound,
+};
 
 // Used for metrics. Those values are logged to UMA. Entries should not be
 // renumbered and numeric values should never be reused. Please keep in sync

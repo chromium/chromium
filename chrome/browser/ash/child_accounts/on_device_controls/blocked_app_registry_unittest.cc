@@ -272,6 +272,9 @@ TEST_F(BlockedAppRegistryTest, UninstallMaxBlockedApps) {
             GetAppReadiness(oldest_uninstalled_app));
   EXPECT_EQ(LocalAppState::kAvailable,
             registry()->GetAppState(oldest_uninstalled_app));
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsAppRemovalHistogramName,
+      OnDeviceControlsAppRemoval::kOldestUninstalledAppRemoved, 1);
 }
 
 TEST_F(BlockedAppRegistryTest, TestHistogramsOnBlockAndUnblockApp) {

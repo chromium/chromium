@@ -237,12 +237,18 @@ void BlockedAppRegistry::RemoveOldestUninstalledApp() {
   if (oldest_app.empty()) {
     VLOG(1)
         << "app-controls: removing oldest uninstalled blocked app - not found";
+    base::UmaHistogramEnumeration(
+        kOnDeviceControlsAppRemovalHistogramName,
+        OnDeviceControlsAppRemoval::kOldestUninstalledAppNotFound);
     return;
   }
 
   VLOG(1) << "app-controls: removing oldest uninstalled blocked app "
           << oldest_app;
   RemoveApp(oldest_app);
+  base::UmaHistogramEnumeration(
+      kOnDeviceControlsAppRemovalHistogramName,
+      OnDeviceControlsAppRemoval::kOldestUninstalledAppRemoved);
 }
 
 }  // namespace ash::on_device_controls

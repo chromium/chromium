@@ -248,6 +248,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.OnDeviceControls.AppRemoval"
+    enum="OnDeviceControlsAppRemoval" expires_after="2024-12-12">
+  <owner>lkupo@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the success or failure of removing the oldest uninstalled app that
+    has been blocked by on-device parental controls. This occurs when the max
+    number of uninstalled blocked apps are stored in the blocked app registry.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.OnDeviceControls.BlockAppAction"
     enum="OnDeviceControlsBlockAppAction" expires_after="2024-12-12">
   <owner>courtneywong@chromium.org</owner>

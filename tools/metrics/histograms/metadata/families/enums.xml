@@ -232,6 +232,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Regular user added"/>
 </enum>
 
+<enum name="OnDeviceControlsAppRemoval">
+  <int value="0" label="Oldest uninstalled blocked app removed">
+    Recorded when the oldest uninstalled blocked app was successfully removed.
+  </int>
+  <int value="1" label="Oldest uninstalled blocked app not found">
+    Recorded when the oldest uninstalled blocked app failed to be removed
+    because it was not found.
+  </int>
+</enum>
+
 <enum name="OnDeviceControlsBlockAppAction">
   <int value="0" label="Block app">
     Recorded when a user has blocked an app with on-device controls.
