@@ -254,6 +254,23 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     }
 
     @Test
+    public void testDontShowMessageOnIncognito() {
+        when(mIdentityServicesProviderMock.getIdentityManager(mProfile)).thenReturn(null);
+        final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
+        final long timeOfSyncPrompt =
+                timeOfFirstUpmPrompt
+                        + PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
+        when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
+                .thenReturn(Long.toString(timeOfFirstUpmPrompt));
+        mSharedPrefsManager.writeLong(
+                ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
+        mFakeTimeTestRule.advanceMillis(
+                PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
+
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
+    }
+
+    @Test
     public void testDontShowMessageWithtoutAccount() {
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
         assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
