@@ -195,23 +195,23 @@ TEST_F(PickerZeroStateViewTest,
 TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
-      .WillOnce([](MockZeroStateViewDelegate::SuggestedResultsCallback
-                       callback) {
-        std::move(callback).Run({
-            PickerSearchResult::Editor(
-                PickerSearchResult::EditorData::Mode::kRewrite,
-                /*display_name=*/u"a",
-                /*category=*/
-                chromeos::editor_menu::PresetQueryCategory::kUnknown, "query_a",
-                /*freeform_text=*/std::nullopt),
-            PickerSearchResult::Editor(
-                PickerSearchResult::EditorData::Mode::kRewrite,
-                /*display_name=*/u"b",
-                /*category=*/
-                chromeos::editor_menu::PresetQueryCategory::kUnknown, "query_b",
-                /*freeform_text=*/std::nullopt),
-        });
-      });
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({
+                PickerSearchResult::Editor(
+                    PickerSearchResult::EditorData::Mode::kRewrite,
+                    /*display_name=*/u"a",
+                    /*category=*/
+                    chromeos::editor_menu::PresetQueryCategory::kUnknown,
+                    "query_a"),
+                PickerSearchResult::Editor(
+                    PickerSearchResult::EditorData::Mode::kRewrite,
+                    /*display_name=*/u"b",
+                    /*category=*/
+                    chromeos::editor_menu::PresetQueryCategory::kUnknown,
+                    "query_b"),
+            });
+          });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
                            kPickerWidth, &asset_fetcher_, &submenu_controller_);
 
@@ -233,23 +233,23 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
 TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
-      .WillOnce([](MockZeroStateViewDelegate::SuggestedResultsCallback
-                       callback) {
-        std::move(callback).Run({
-            PickerSearchResult::Editor(
-                PickerSearchResult::EditorData::Mode::kRewrite,
-                /*display_name=*/u"a",
-                /*category=*/
-                chromeos::editor_menu::PresetQueryCategory::kShorten, "shorten",
-                /*freeform_text=*/std::nullopt),
-            PickerSearchResult::Editor(
-                PickerSearchResult::EditorData::Mode::kRewrite,
-                /*display_name=*/u"b",
-                /*category=*/
-                chromeos::editor_menu::PresetQueryCategory::kEmojify, "emojify",
-                /*freeform_text=*/std::nullopt),
-        });
-      });
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({
+                PickerSearchResult::Editor(
+                    PickerSearchResult::EditorData::Mode::kRewrite,
+                    /*display_name=*/u"a",
+                    /*category=*/
+                    chromeos::editor_menu::PresetQueryCategory::kShorten,
+                    "shorten"),
+                PickerSearchResult::Editor(
+                    PickerSearchResult::EditorData::Mode::kRewrite,
+                    /*display_name=*/u"b",
+                    /*category=*/
+                    chromeos::editor_menu::PresetQueryCategory::kEmojify,
+                    "emojify"),
+            });
+          });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
                            kPickerWidth, &asset_fetcher_, &submenu_controller_);
 

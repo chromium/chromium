@@ -934,7 +934,6 @@ INSTANTIATE_TEST_SUITE_P(
                 PickerSearchResult::EditorData::Mode::kWrite,
                 u"",
                 {},
-                {},
                 {}),
             .unfocused_action = PickerActionType::kCreate,
             .no_selection_action = PickerActionType::kCreate,

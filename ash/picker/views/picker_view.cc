@@ -290,8 +290,9 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
     StartSearchWithNewQuery(search_request_data->text);
   } else if (const PickerSearchResult::EditorData* editor_data =
                  std::get_if<PickerSearchResult::EditorData>(&result.data())) {
-    delegate_->ShowEditor(editor_data->preset_query_id,
-                          editor_data->freeform_text);
+    delegate_->ShowEditor(
+        editor_data->preset_query_id,
+        base::UTF16ToUTF8(search_field_view_->GetQueryText()));
   } else {
     delegate_->GetSessionMetrics().SetSelectedResult(
         result, search_results_view_->GetIndex(result));

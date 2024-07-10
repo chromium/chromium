@@ -57,7 +57,7 @@ TEST_F(PickerSuggestionsControllerTest,
           [](PickerClient::SuggestedEditorResultsCallback callback) {
             std::move(callback).Run({
                 PickerSearchResult::Editor(
-                    PickerSearchResult::EditorData::Mode::kRewrite, u"", {}, {},
+                    PickerSearchResult::EditorData::Mode::kRewrite, u"", {},
                     {}),
             });
           });

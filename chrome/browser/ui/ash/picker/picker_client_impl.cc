@@ -208,8 +208,7 @@ std::vector<ash::PickerSearchResult> GetEditorResultsFromPanelContext(
     results.push_back(ash::PickerSearchResult::Editor(
         ash::PickerSearchResult::EditorData::Mode::kRewrite,
         base::UTF8ToUTF16(query->name),
-        FromMojoPresetQueryCategory(query->category), query->text_query_id,
-        /*freeform_text=*/""));
+        FromMojoPresetQueryCategory(query->category), query->text_query_id));
   }
   return results;
 }

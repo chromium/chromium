@@ -13,6 +13,7 @@
 namespace ash {
 namespace {
 
+using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Optional;
@@ -25,9 +26,13 @@ TEST(PickerEditorSearchTest, MatchesSentence) {
                          u"the quick brown fox"),
       Optional(Property(
           "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::EditorData>(Field(
-              "freeform_text", &PickerSearchResult::EditorData::freeform_text,
-              Optional(Eq("the quick brown fox")))))));
+          VariantWith<PickerSearchResult::EditorData>(
+              AllOf(Field("mode", &PickerSearchResult::EditorData::mode,
+                          PickerSearchResult::EditorData::Mode::kWrite),
+                    Field("display_name",
+                          &PickerSearchResult::EditorData::display_name, u""),
+                    Field("category", &PickerSearchResult::EditorData::category,
+                          std::nullopt))))));
 }
 
 TEST(PickerEditorSearchTest, DoesNotMatchShortSentence) {

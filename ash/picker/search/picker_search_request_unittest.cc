@@ -1003,16 +1003,12 @@ TEST_P(PickerSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
   const auto& [category, source] = GetParam();
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(source,
-           ElementsAre(Property(
-               "data", &PickerSearchResult::data,
-               VariantWith<PickerSearchResult::EditorData>(Field(
-                   "freeform_text",
-                   &PickerSearchResult::EditorData::freeform_text,
-                   Optional(Eq("quick brown fox jumped over lazy dog")))))),
-           /*has_more_results=*/false))
+  EXPECT_CALL(search_results_callback,
+              Call(source,
+                   ElementsAre(Property(
+                       "data", &PickerSearchResult::data,
+                       VariantWith<PickerSearchResult::EditorData>(_))),
+                   /*has_more_results=*/false))
       .Times(1);
 
   PickerSearchRequest request(
