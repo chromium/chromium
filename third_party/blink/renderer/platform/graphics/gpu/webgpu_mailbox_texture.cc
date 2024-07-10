@@ -109,7 +109,6 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
       recyclable_canvas_resource->resource_provider()->ProduceCanvasResource(
           FlushReason::kWebGPUTexture);
   DCHECK(canvas_resource->IsValid());
-  DCHECK(canvas_resource->IsAccelerated());
 
   const gpu::Mailbox& mailbox =
       canvas_resource->GetClientSharedImage(kUnverifiedSyncToken)->mailbox();

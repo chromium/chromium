@@ -93,12 +93,7 @@ class PLATFORM_EXPORT CanvasResource
   // outstanding references).
   virtual bool IsRecycleable() const = 0;
 
-  // Returns true if rendering to the resource is accelerated.
-  virtual bool IsAccelerated() const = 0;
-
-  // Returns true if the resource can be used with accelerated compositing. This
-  // is different from IsAccelerated since a resource may be rendered to on the
-  // CPU but can be used with GPU compositing (using GMBs).
+  // Returns true if the resource can be used with accelerated compositing.
   virtual bool SupportsAcceleratedCompositing() const = 0;
 
   // Transfers ownership of the resource's vix::ReleaseCallback.  This is useful
@@ -306,7 +301,6 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       cc::PaintFlags::FilterQuality);
   ~CanvasResourceSharedBitmap() override;
   bool IsRecycleable() const final { return IsValid(); }
-  bool IsAccelerated() const final { return false; }
   bool IsValid() const final;
   bool SupportsAcceleratedCompositing() const final { return false; }
   bool PrepareUnacceleratedTransferableResource(
@@ -347,7 +341,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   ~CanvasResourceSharedImage() override;
 
   bool IsRecycleable() const final { return true; }
-  bool IsAccelerated() const final { return is_accelerated_; }
   bool SupportsAcceleratedCompositing() const override { return true; }
   bool IsValid() const final;
   gfx::Size Size() const final { return size_; }
@@ -486,9 +479,8 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 };
 
 // Resource type for a given opaque external resource described on construction
-// via a TransferableResource; this CanvasResource IsAccelerated() by
-// definition. This CanvasResource should only be used with context that support
-// GL.
+// via a TransferableResource. This CanvasResource should only be used with
+// context that support GL.
 class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
  public:
   static scoped_refptr<ExternalCanvasResource> Create(
@@ -501,7 +493,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
 
   ~ExternalCanvasResource() override;
   bool IsRecycleable() const final { return IsValid(); }
-  bool IsAccelerated() const final { return true; }
   bool IsValid() const override;
   bool SupportsAcceleratedCompositing() const override { return true; }
   bool NeedsReadLockFences() const final { return false; }
@@ -562,7 +553,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
       cc::PaintFlags::FilterQuality);
   ~CanvasResourceSwapChain() override;
   bool IsRecycleable() const final { return IsValid(); }
-  bool IsAccelerated() const final { return true; }
   bool IsValid() const override;
   bool SupportsAcceleratedCompositing() const override { return true; }
   bool NeedsReadLockFences() const final { return false; }
