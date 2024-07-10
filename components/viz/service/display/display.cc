@@ -650,9 +650,7 @@ void VisualDebuggerSync(gfx::OverlayTransform current_display_transform,
 
 }  // namespace
 
-void Display::MaybeLogQuadsProperties(
-    AggregatedRenderPass& last_render_pass,
-    const SurfaceDamageRectList* surface_damage_rect_list) {
+void Display::MaybeLogQuadsProperties(AggregatedRenderPass& last_render_pass) {
   // A restraint on how frequently we log quad infos in number of frames.
   constexpr double kLogQuadInfoProbability = 1.0 / 20000;
   if (!metrics_subsampler_.ShouldSample(kLogQuadInfoProbability)) {
@@ -682,8 +680,9 @@ void Display::MaybeLogQuadsProperties(
   base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
       render_pass_filters;
   render_pass_filters[last_render_pass.id] = &(last_render_pass.filters);
+  SurfaceDamageRectList surface_damage_rect_list;
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
-      &last_render_pass, resource_provider_.get(), surface_damage_rect_list,
+      &last_render_pass, resource_provider_.get(), &surface_damage_rect_list,
       &color_matrix, gfx::RectF(), &render_pass_filters, context);
 
   OverlayCandidate candidate;
@@ -906,8 +905,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
   // log quad types every so often if experiment and n-th frame
   if (features::ShouldLogFrameQuadInfo()) {
-    MaybeLogQuadsProperties(last_render_pass,
-                            &(frame.surface_damage_rect_list_));
+    MaybeLogQuadsProperties(last_render_pass);
   }
 
   // The CompositorFrame provided by the SurfaceAggregator includes the display

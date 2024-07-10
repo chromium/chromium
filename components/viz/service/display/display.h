@@ -217,9 +217,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // `old_client` is used to guarantee that the callee is a correct owner of
   // this Display instance.
   void ResetDisplayClientForTesting(DisplayClient* old_client);
-  void MaybeLogQuadsProperties(
-      AggregatedRenderPass& last_render_pass,
-      const SurfaceDamageRectList* surface_damage_rect_list);
+  void MaybeLogQuadsProperties(AggregatedRenderPass& last_render_pass);
 
  protected:
   friend class DisplayTest;
