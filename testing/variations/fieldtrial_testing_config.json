@@ -11165,62 +11165,56 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Promo_20240522",
+                    "name": "Enabled_Promo",
                     "params": {
                         "ContentPushNotificationsExperimentType": "1"
                     },
                     "enable_features": [
-                        "ContentNotificationExperiment",
                         "ContentPushNotifications"
                     ]
                 },
                 {
-                    "name": "Registered_Promo_20240522",
+                    "name": "Registered_Promo",
                     "params": {
                         "ContentPushNotificationsExperimentType": "5"
                     },
                     "enable_features": [
-                        "ContentNotificationExperiment",
                         "ContentPushNotifications"
                     ]
                 },
                 {
-                    "name": "Enabled_Provisional_20240522",
+                    "name": "Enabled_Provisional",
                     "params": {
                         "ContentPushNotificationsExperimentType": "3"
                     },
                     "enable_features": [
-                        "ContentNotificationExperiment",
                         "ContentPushNotifications"
                     ]
                 },
                 {
-                    "name": "Registered_Provisional_20240522",
+                    "name": "Registered_Provisional",
                     "params": {
                         "ContentPushNotificationsExperimentType": "6"
                     },
                     "enable_features": [
-                        "ContentNotificationExperiment",
                         "ContentPushNotifications"
                     ]
                 },
                 {
-                    "name": "Enabled_Setuplist_20240522",
+                    "name": "Enabled_Setuplist",
                     "params": {
                         "ContentPushNotificationsExperimentType": "2"
                     },
                     "enable_features": [
-                        "ContentNotificationExperiment",
                         "ContentPushNotifications"
                     ]
                 },
                 {
-                    "name": "Registered_Setuplist_20240522",
+                    "name": "Registered_Setuplist",
                     "params": {
                         "ContentPushNotificationsExperimentType": "7"
                     },
                     "enable_features": [
-                        "ContentNotificationExperiment",
                         "ContentPushNotifications"
                     ]
                 }

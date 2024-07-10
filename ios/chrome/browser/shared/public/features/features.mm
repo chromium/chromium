@@ -379,7 +379,7 @@ BASE_FEATURE(kContentPushNotifications,
 
 BASE_FEATURE(kContentNotificationExperiment,
              "ContentNotificationExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsContentNotificationExperimentEnabled() {
   return base::FeatureList::IsEnabled(kContentNotificationExperiment);
