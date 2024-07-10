@@ -30,6 +30,7 @@
 
   #ghostLoader {
     background-color: white;
+    max-width: 796px;
   }
 
   :host([dark-mode]) #ghostLoader {
@@ -40,6 +41,10 @@
   :host([is-error-page-visible]) #ghostLoader {
     visibility: hidden;
     z-index: 0;
+  }
+
+  :host([is-back-arrow-visible]) #ghostLoader {
+    max-width: 832px;
   }
 
   #networkErrorBottomLine {

@@ -7,8 +7,6 @@
     gap: 8px;
     /* Space between squares */
     margin: 8px 6px 8px 14px;
-    /* Allow squares to wrap onto new lines */
-    max-width: 900px;
   }
 
   /* Individual animation delays for each square */
@@ -69,11 +67,25 @@
     width: 180px;
   }
 
-    /* Media query for adjustments below 588px */
-    @media (max-width: 588px) {
+  /* Media query for adjustments below 588px */
+  @media (max-width: 588px) {
     .square {
       /* 2 squares per row with gaps */
       width: calc(50% - 8px);
+    }
+  }
+
+  @media (min-width: 589px) and (max-width: 763px) {
+    .square {
+      /* 3 squares per row with gaps */
+      width: calc(33% - 8px);
+    }
+  }
+
+  @media (min-width: 764px) {
+    .square {
+      /* 4 squares per row with gaps */
+      width: calc(25% - 8px);
     }
   }
 
