@@ -28,4 +28,8 @@ message AutofillFieldClassificationModelMetadata {
   // is specified and the highest confidence is below it, the prediction becomes
   // UNKNOWN_TYPE instead.
   optional float confidence_threshold = 3;
+
+  // The version of the input, based on which the relevant model
+  // version will be used from server.
+  optional int64 input_version = 4;
 }
