@@ -101,7 +101,7 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
 }
 
 TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
-  handler_->RecordTimeToLoadContent(101);
+  handler_->RecordTimeToLoadContent(base::Time::Now());
   histogram_tester_.ExpectTotalCount("UserEducation.WhatsNew.TimeToLoadContent",
                                      1);
 

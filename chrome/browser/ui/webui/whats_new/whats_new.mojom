@@ -33,9 +33,8 @@ interface PageHandler {
   GetServerUrl() => (url.mojom.Url url);
 
   // Record when the content was loaded.
-  // This function takes a double from JS and converts it to Windows
-  // epoch with `base::Time::FromMillisecondsSinceUnixEpoch()`.
-  RecordTimeToLoadContent(double time_since_unix_epoch);
+  // Time passed from JS is based on Unix epoch.
+  RecordTimeToLoadContent(mojo_base.mojom.JSTime time);
 
   // Record metric for which type of page was loaded.
   RecordVersionPageLoaded(bool is_auto_open);

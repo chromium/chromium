@@ -12,6 +12,16 @@ struct Time {
 };
 
 [Stable]
+struct JSTime {
+  // This type is used to map a Javascript Date object (based on Unix epoch)
+  // to a C++ base::Time (based on Windows epoch). The value `msec` is
+  // expressed in terms of milliseconds since the Unix epoch. From Javascript,
+  // `msec` should be set via functions that return the timestamp, i.e.
+  // `Date.now()`, `Date.parse()`, or `valueOf()`.
+  double msec;
+};
+
+[Stable]
 struct TimeDelta {
   int64 microseconds;
 };

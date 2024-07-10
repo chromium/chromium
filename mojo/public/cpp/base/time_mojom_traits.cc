@@ -18,6 +18,18 @@ bool StructTraits<mojo_base::mojom::TimeDataView, base::Time>::Read(
   return true;
 }
 
+double StructTraits<mojo_base::mojom::JSTimeDataView, base::Time>::msec(
+    const base::Time& time) {
+  return time.InMillisecondsFSinceUnixEpochIgnoringNull();
+}
+
+bool StructTraits<mojo_base::mojom::JSTimeDataView, base::Time>::Read(
+    mojo_base::mojom::JSTimeDataView data,
+    base::Time* time) {
+  *time = base::Time::FromMillisecondsSinceUnixEpoch(data.msec());
+  return true;
+}
+
 int64_t
 StructTraits<mojo_base::mojom::TimeDeltaDataView,
              base::TimeDelta>::microseconds(const base::TimeDelta& delta) {

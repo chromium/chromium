@@ -41,7 +41,7 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTestWithCountry,
                            SurveyIsTriggeredInActiveCountries);
 
-  void RecordTimeToLoadContent(double time_since_unix_epoch) override;
+  void RecordTimeToLoadContent(base::Time time) override;
   void RecordVersionPageLoaded(bool is_auto_open) override;
   void RecordModuleImpression(const std::string& module_name) override;
   void RecordExploreMoreToggled(bool expanded) override;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {JSTime, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {PageCallbackRouter} from 'chrome://whats-new/whats_new.mojom-webui.js';
@@ -37,7 +37,7 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
     return Promise.resolve({url: this.url_});
   }
 
-  recordTimeToLoadContent(time: number) {
+  recordTimeToLoadContent(time: JSTime) {
     this.methodCalled('recordTimeToLoadContent', time);
   }
 

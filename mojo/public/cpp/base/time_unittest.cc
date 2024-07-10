@@ -32,6 +32,31 @@ TEST(TimeTest, Time) {
   EXPECT_EQ(in, out);
 }
 
+TEST(TimeTest, JSTime) {
+  base::Time in = base::Time::Now();
+  base::Time out;
+
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::JSTime>(in, out));
+  EXPECT_EQ(in, out);
+
+  base::Time::UnixEpoch();
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::JSTime>(in, out));
+  EXPECT_EQ(in, out);
+
+  // Test corner cases.
+  in = base::Time();
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::JSTime>(in, out));
+  EXPECT_EQ(in, out);
+
+  in = base::Time::Max();
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::JSTime>(in, out));
+  EXPECT_EQ(in, out);
+
+  in = base::Time::Min();
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::JSTime>(in, out));
+  EXPECT_EQ(in, out);
+}
+
 TEST(TimeTest, TimeDelta) {
   base::TimeDelta in = base::Days(123);
   base::TimeDelta out;

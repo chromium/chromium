@@ -44,11 +44,9 @@ WhatsNewHandler::WhatsNewHandler(
 
 WhatsNewHandler::~WhatsNewHandler() = default;
 
-void WhatsNewHandler::RecordTimeToLoadContent(double time_since_unix_epoch) {
-  base::UmaHistogramTimes(
-      "UserEducation.WhatsNew.TimeToLoadContent",
-      base::Time::FromMillisecondsSinceUnixEpoch(time_since_unix_epoch) -
-          navigation_start_time_);
+void WhatsNewHandler::RecordTimeToLoadContent(base::Time time) {
+  base::UmaHistogramTimes("UserEducation.WhatsNew.TimeToLoadContent",
+                          time - navigation_start_time_);
 }
 
 void WhatsNewHandler::RecordVersionPageLoaded(bool is_auto_open) {

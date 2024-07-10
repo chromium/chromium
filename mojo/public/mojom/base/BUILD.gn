@@ -285,6 +285,11 @@ mojom_component("base") {
           copyable_pass_by_value = true
         },
         {
+          mojom = "mojo_base.mojom.JSTime"
+          cpp = "::base::Time"
+          copyable_pass_by_value = true
+        },
+        {
           mojom = "mojo_base.mojom.TimeDelta"
           cpp = "::base::TimeDelta"
           copyable_pass_by_value = true
