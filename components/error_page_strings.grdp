@@ -262,8 +262,11 @@
   <message name="IDS_ERRORPAGES_HEADING_INSECURE_CONNECTION" desc="Heading in the error page for insecure connections.">
     This site can’t provide a secure connection
   </message>
-  <message name="IDS_ERRORPAGES_SUMMARY_BAD_SSL_CLIENT_AUTH_CERT" desc="Summary in the error page for SSL client certificate authentication failure.">
+  <message name="IDS_ERRORPAGES_SUMMARY_BAD_SSL_CLIENT_AUTH_CERT" desc="Summary in the error page when the server rejected the connection due to a SSL client certificate authentication failure.">
     <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> didn’t accept your login certificate, or one may not have been provided.
+  </message>
+  <message name="IDS_ERRORPAGES_SUMMARY_SSL_CLIENT_AUTH_SIGNATURE_FAILED" desc="Summary in the error page when authenticating with the user's SSL client certificate failed.">
+    There was a problem using your login certificate.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_EXTENSION" desc="Summary in the error page when an extension blocks a request.">
     This page has been blocked by an extension
