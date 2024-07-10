@@ -430,6 +430,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   ui::AXTreeID active_tree_id() { return controller_->model_.active_tree_id(); }
 
+  bool RequiresTreeLang() { return controller_->model_.requires_tree_lang(); }
   std::string LanguageCodeForSpeech() {
     return controller_->GetLanguageCodeForSpeech();
   }
@@ -2637,8 +2638,7 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOff_SavesHighlightState) {
   EXPECT_FALSE(IsHighlightOn());
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       GetLanguageCodeForSpeech_ReturnsCorrectLanguageCode) {
+TEST_F(ReadAnythingAppControllerTest, SetLanguageCode_UpdatesModelLanguage) {
   SetLanguageCode("es");
   ASSERT_EQ(LanguageCodeForSpeech(), "es");
 
@@ -2647,6 +2647,39 @@ TEST_F(ReadAnythingAppControllerTest,
 
   SetLanguageCode("zh-CN");
   ASSERT_EQ(LanguageCodeForSpeech(), "zh");
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       SetLanguageCode_EmptyCode_DoesNotUpdateModelLanguage) {
+  SetLanguageCode("es");
+  ASSERT_EQ(LanguageCodeForSpeech(), "es");
+  ASSERT_FALSE(RequiresTreeLang());
+
+  SetLanguageCode("");
+  ASSERT_EQ(LanguageCodeForSpeech(), "es");
+  ASSERT_TRUE(RequiresTreeLang());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       SetLanguageCode_EmptyCode_SetsRootLanguageOnceAvailable) {
+  ASSERT_EQ(LanguageCodeForSpeech(), "en");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+  update.root_id = 1;
+
+  ui::AXNodeData node;
+  node.id = 1;
+  node.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "yue");
+  update.nodes = {node};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({1});
+
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  SetLanguageCode("");
+  OnActiveAXTreeIDChanged(id_1);
+  ASSERT_EQ(LanguageCodeForSpeech(), "yue");
 }
 
 TEST_F(ReadAnythingAppControllerTest,

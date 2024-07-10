@@ -142,6 +142,8 @@ class ReadAnythingAppModel {
   void set_page_finished_loading(bool value) {
     page_finished_loading_ = value;
   }
+  bool requires_tree_lang() { return requires_tree_lang_; }
+  void set_requires_tree_lang(bool value) { requires_tree_lang_ = value; }
 
   const std::vector<ui::AXNodeID>& content_node_ids() const {
     return content_node_ids_;
@@ -349,6 +351,11 @@ class ReadAnythingAppModel {
 
   // Maps fonts to whether the current base_language_code_ supports that font.
   std::map<std::string_view, bool> supported_fonts_;
+  // If the page language can't be determined by the model, we can check the
+  // AX tree to see if it has that information, but the ax tree is created
+  // asynchronously from the language determination so we need to keep track of
+  // that here.
+  bool requires_tree_lang_ = false;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

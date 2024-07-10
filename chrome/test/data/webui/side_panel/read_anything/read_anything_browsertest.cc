@@ -101,12 +101,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContent) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentIntegration) {
-  RunSidePanelTest(
-      "side_panel/read_anything/update_content_integration_test.js",
-      "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppReceivesToolbarChanges) {
   RunSidePanelTest(
       "side_panel/read_anything/app_receives_toolbar_changes_test.js",
@@ -143,11 +137,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RateSelection) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentSelection) {
-  RunSidePanelTest("side_panel/read_anything/update_content_selection_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FakeTreeBuilderTest) {
   RunSidePanelTest("side_panel/read_anything/fake_tree_builder_test.js",
                    "mocha.run()");
@@ -173,10 +162,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelection) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Prefs) {
   RunSidePanelTest("side_panel/read_anything/prefs_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
-  RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -243,6 +228,22 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
                        WordBoundariesUsedForSpeech) {
   RunSidePanelTest(
       "side_panel/read_anything/word_boundaries_used_for_speech_test.js",
+      "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, Speech) {
+  RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, UpdateContentSelection) {
+  RunSidePanelTest("side_panel/read_anything/update_content_selection_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
+                       UpdateContentIntegration) {
+  RunSidePanelTest(
+      "side_panel/read_anything/update_content_integration_test.js",
       "mocha.run()");
 }
 

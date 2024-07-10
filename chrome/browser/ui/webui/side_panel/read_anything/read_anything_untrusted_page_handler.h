@@ -222,8 +222,6 @@ class ReadAnythingUntrustedPageHandler :
   // active when it is currently shown in the Side Panel.
   bool active_ = true;
 
-  // The default language code to use if the page language isn't determined.
-  std::string default_language_code_ = "en-US";
   // The current language being used in the app.
   std::string current_language_code_ = "en-US";
 

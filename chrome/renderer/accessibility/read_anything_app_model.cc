@@ -964,6 +964,7 @@ void ReadAnythingAppModel::ToggleImagesEnabled() {
 }
 
 void ReadAnythingAppModel::SetBaseLanguageCode(const std::string code) {
+  DCHECK(!code.empty());
   base_language_code_ = code;
   // Update whether each font is supported by the new language code.
   for (const auto& [font, font_info] : fonts::kFontInfos) {

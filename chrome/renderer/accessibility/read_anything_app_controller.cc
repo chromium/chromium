@@ -593,6 +593,14 @@ void ReadAnythingAppController::Distill() {
   if (!tree->root()) {
     return;
   }
+
+  if (model_.requires_tree_lang()) {
+    model_.set_requires_tree_lang(false);
+    std::string tree_lang = tree->root()->GetLanguage();
+    SetLanguageCode(tree_lang.empty()
+                        ? read_aloud_model_.default_language_code()
+                        : tree_lang);
+  }
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   model_.SetDistillationInProgress(true);
   distiller_->Distill(*tree, snapshot, model_.ukm_source_id());
@@ -1629,6 +1637,10 @@ void ReadAnythingAppController::SetLanguageForTesting(
 }
 
 void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
+  if (code.empty()) {
+    model_.set_requires_tree_lang(true);
+    return;
+  }
   std::string base_lang = std::string(language::ExtractBaseLanguage(code));
   model_.SetBaseLanguageCode(base_lang);
 
