@@ -484,7 +484,7 @@ export class FlagsAppElement extends CustomElement {
     this.getRequiredElement('#needs-restart').classList.toggle('show', show);
     // There is no restart button on iOS.
     // <if expr="not is_ios">
-    this.restartButton.setAttribute('tabindex', show ? '9' : '-1');
+    this.restartButton.disabled = !show;
     // </if>
     if (show) {
       this.getRequiredElement('#needs-restart').setAttribute('role', 'alert');

@@ -218,17 +218,20 @@ suite('FlagsAppTest', function() {
 
   test('restart toast shown and relaunch event fired', function() {
     const restartToast = app.getRequiredElement('#needs-restart');
+    const restartButton =
+        app.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
 
     // The restart toast is not visible initially.
     assertFalse(restartToast.classList.contains('show'));
+    // The restartButton should be disabled so that it is not in the tab order.
+    assertTrue(restartButton.disabled);
 
     // The reset all button is clicked and restart toast becomes visible.
     resetAllButton.click();
     assertTrue(restartToast.classList.contains('show'));
 
     // The restart button is clicked and a browserRestart event fired.
-    const restartButton =
-        app.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
+    assertFalse(restartButton.disabled);
     restartButton.click();
     return browserProxy.whenCalled('restartBrowser');
   });
