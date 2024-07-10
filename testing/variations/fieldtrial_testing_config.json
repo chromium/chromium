@@ -14107,6 +14107,21 @@
             ]
         }
     ],
+    "NoPreReadMainDll": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NoPreReadMainDll"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoThrottlingVisibleAgent": [
         {
             "platforms": [
@@ -16489,7 +16504,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "NoPreReadMainDll",
                         "PrefetchVirtualMemoryPolicy"
                     ]
                 }
