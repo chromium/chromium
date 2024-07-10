@@ -66,6 +66,7 @@ CreateUnmaskRequestDetailsForVcn3ds(
   request_details.card = context.card;
   request_details.billing_customer_number = GetBillingCustomerId(
       &client.GetPersonalDataManager()->payments_data_manager());
+  request_details.risk_data = context.risk_data;
   request_details.context_token = context.context_token;
 
   if (const url::Origin& origin =

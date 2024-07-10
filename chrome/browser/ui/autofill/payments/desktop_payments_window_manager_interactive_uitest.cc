@@ -330,6 +330,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
           response_details);
 
   EXPECT_EQ(unmask_request->context_token, kTestContextToken);
+  EXPECT_FALSE(unmask_request->risk_data.empty());
   ASSERT_TRUE(unmask_request->selected_challenge_option.has_value());
   EXPECT_EQ(
       unmask_request->selected_challenge_option->vcn_3ds_metadata->url_to_open,

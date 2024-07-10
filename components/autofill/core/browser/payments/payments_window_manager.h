@@ -56,6 +56,9 @@ class PaymentsWindowManager {
     // The context token that was returned from the Payments Server for the
     // ongoing VCN authentication flow.
     std::string context_token;
+    // The risk data that must be sent to the Payments Server during a VCN 3DS
+    // card unmask request.
+    std::string risk_data;
     // The challenge option that was returned from the server which contains
     // details required for the VCN 3DS authentication flow.
     CardUnmaskChallengeOption challenge_option;

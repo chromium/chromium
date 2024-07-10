@@ -243,6 +243,7 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
 void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
     RedirectCompletionResult redirect_completion_result,
     const std::string& risk_data) {
+  vcn_3ds_context_->risk_data = risk_data;
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->UnmaskCard(CreateUnmaskRequestDetailsForVcn3ds(
