@@ -150,7 +150,6 @@ static_library("test_support") {
     "//chromeos/ash/components/settings",
     "//chromeos/components/onc",
     "//chromeos/dbus/constants",
-    "//components/nacl/common:minimal_content_dummy",
     "//components/policy/core/common:common_constants",
     "//components/policy/proto",
     "//components/prefs",
