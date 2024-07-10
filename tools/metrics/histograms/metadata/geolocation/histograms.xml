@@ -129,6 +129,84 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.SystemGeolocationSourceWin.CheckAccessError"
+    enum="Hresult" expires_after="2025-05-27">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the HRESULT error code encountered while checking location access
+    status on Windows.
+  </summary>
+</histogram>
+
+<histogram
+    name="Geolocation.SystemGeolocationSourceWin.CreateAppCapabilityError"
+    enum="Hresult" expires_after="2025-05-27">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the HRESULT error code encountered while creating the location app
+    capability object on Windows.
+  </summary>
+</histogram>
+
+<histogram
+    name="Geolocation.SystemGeolocationSourceWin.InitialPermissionStatus"
+    enum="LocationSystemPermissionStatus" expires_after="2025-05-27">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value representing the current system location
+    permission state when SystemGeolocationSourceWin is initialized at browser
+    startup on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.SystemGeolocationSourceWin.LaunchSettingsResult"
+    enum="Hresult" expires_after="2025-05-27">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the HRESULT error code encountered while launching the Windows
+    settings page, or S_OK if the settings page was launched without errors.
+  </summary>
+</histogram>
+
+<histogram
+    name="Geolocation.SystemGeolocationSourceWin.PermissionStatusChanged"
+    enum="LocationSystemPermissionStatus" expires_after="2025-05-27">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value representing the current system location
+    permission state when SystemGeolocationSourceWin detects that the system
+    location permission has changed state. Not recorded if the permission
+    changed after showing the system permission prompt.
+  </summary>
+</histogram>
+
+<histogram
+    name="Geolocation.SystemGeolocationSourceWin.PermissionStatusChangedAfterPrompt"
+    enum="LocationSystemPermissionStatus" expires_after="2025-05-27">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value representing the system location permission
+    state following the first location permission state change after the Windows
+    system permission prompt was shown.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.SystemGeolocationSourceWin.RequestAccessResult"
+    enum="Hresult" expires_after="2025-05-27">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the HRESULT error code encountered while requesting location access,
+    or S_OK if location access was requested without errors.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

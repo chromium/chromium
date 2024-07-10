@@ -74,6 +74,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Authorized when in-use"/>
 </enum>
 
+<enum name="LocationSystemPermissionStatus">
+  <int value="0" label="kNotDetermined"/>
+  <int value="1" label="kDenied"/>
+  <int value="2" label="kAllowed"/>
+</enum>
+
 <enum name="NetworkLocationRequestEvent">
   <int value="0" label="REQUEST_START"/>
   <int value="1" label="REQUEST_CANCEL"/>

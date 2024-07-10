@@ -8,6 +8,11 @@
 namespace device {
 
 // System permission state.
+//
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "LocationSystemPermissionStatus" in
+// src/tools/metrics/histograms/metadata/geolocation/enums.xml.
 enum class LocationSystemPermissionStatus {
   kNotDetermined = 0,
   kDenied = 1,

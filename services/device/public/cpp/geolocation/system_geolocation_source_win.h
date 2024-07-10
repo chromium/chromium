@@ -64,6 +64,10 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceWin
       ABI::Windows::Devices::Geolocation::GeolocationAccessStatus>>
       request_location_access_op_;
 
+  // True if the user was prompted to grant location permissions and the
+  // permission status has not yet changed. Used for metrics logging.
+  bool has_pending_system_prompt_ = false;
+
   // Callback to invoke when the system permission status changes.
   PermissionUpdateCallback permission_update_callback_;
 

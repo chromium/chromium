@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/win/core_winrt_util.h"
@@ -25,6 +26,48 @@ using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
     IAppCapability;
 using ::Microsoft::WRL::ComPtr;
 
+void RecordUmaInitialPermissionStatus(LocationSystemPermissionStatus status) {
+  base::UmaHistogramEnumeration(
+      "Geolocation.SystemGeolocationSourceWin.InitialPermissionStatus", status);
+}
+
+void RecordUmaPermissionStatusChanged(LocationSystemPermissionStatus status,
+                                      bool after_prompt) {
+  // We don't know what caused the permission status to change. Assume that the
+  // first status change after showing the system permission prompt was caused
+  // by the user interacting with the prompt.
+  if (after_prompt) {
+    base::UmaHistogramEnumeration(
+        "Geolocation.SystemGeolocationSourceWin."
+        "PermissionStatusChangedAfterPrompt",
+        status);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Geolocation.SystemGeolocationSourceWin.PermissionStatusChanged",
+        status);
+  }
+}
+
+void RecordUmaCheckAccessError(HRESULT error) {
+  base::UmaHistogramSparse(
+      "Geolocation.SystemGeolocationSourceWin.CheckAccessError", error);
+}
+
+void RecordUmaCreateAppCapabilityError(HRESULT error) {
+  base::UmaHistogramSparse(
+      "Geolocation.SystemGeolocationSourceWin.CreateAppCapabilityError", error);
+}
+
+void RecordUmaLaunchSettingsResult(HRESULT result) {
+  base::UmaHistogramSparse(
+      "Geolocation.SystemGeolocationSourceWin.LaunchSettingsResult", result);
+}
+
+void RecordUmaRequestAccessResult(HRESULT result) {
+  base::UmaHistogramSparse(
+      "Geolocation.SystemGeolocationSourceWin.RequestAccessResult", result);
+}
+
 // Create an AppCapability object for the capability named `name`.
 ComPtr<IAppCapability> CreateAppCapability(std::string_view name) {
   using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
@@ -37,6 +80,7 @@ ComPtr<IAppCapability> CreateAppCapability(std::string_view name) {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to get IAppCapability statics: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaCreateAppCapabilityError(hr);
     return nullptr;
   }
   auto capability_name = base::win::ScopedHString::Create(name);
@@ -45,6 +89,7 @@ ComPtr<IAppCapability> CreateAppCapability(std::string_view name) {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to create IAppCapability: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaCreateAppCapabilityError(hr);
     return nullptr;
   }
   return app_capability;
@@ -68,6 +113,7 @@ LocationSystemPermissionStatus GetLocationSystemPermissionStatus(
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to get location access status: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaCheckAccessError(hr);
     return LocationSystemPermissionStatus::kNotDetermined;
   }
   if (access_status == AppCapabilityAccessStatus_Allowed) {
@@ -85,6 +131,7 @@ SystemGeolocationSourceWin::SystemGeolocationSourceWin()
     : location_capability_(CreateAppCapability("location")) {
   if (location_capability_) {
     PollPermissionStatus();
+    RecordUmaInitialPermissionStatus(permission_status_.value());
   }
 }
 
@@ -108,11 +155,13 @@ void SystemGeolocationSourceWin::RegisterPermissionUpdateCallback(
 void SystemGeolocationSourceWin::PollPermissionStatus() {
   // Poll the current permission status and notify if the status has changed.
   auto status = GetLocationSystemPermissionStatus(location_capability_);
-  if (!permission_status_.has_value() || status != permission_status_.value()) {
+  if (status != permission_status_) {
     permission_status_ = status;
     if (permission_update_callback_) {
       permission_update_callback_.Run(status);
     }
+    RecordUmaPermissionStatusChanged(status, has_pending_system_prompt_);
+    has_pending_system_prompt_ = false;
   }
 
   // Schedule next poll.
@@ -124,12 +173,14 @@ void SystemGeolocationSourceWin::PollPermissionStatus() {
 }
 
 void SystemGeolocationSourceWin::OnLaunchUriSuccess(uint8_t launched) {
+  RecordUmaLaunchSettingsResult(S_OK);
   launch_uri_op_.Reset();
 }
 
 void SystemGeolocationSourceWin::OnLaunchUriFailure(HRESULT result) {
   LOG(ERROR) << "LaunchUriAsync failed: "
              << logging::SystemErrorCodeToString(result);
+  RecordUmaLaunchSettingsResult(result);
   launch_uri_op_.Reset();
 }
 
@@ -148,6 +199,7 @@ void SystemGeolocationSourceWin::OpenSystemPermissionSetting() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to get IUriRuntimeClassFactory: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaLaunchSettingsResult(hr);
     return;
   }
   ComPtr<IUriRuntimeClass> uri_runtime_class;
@@ -158,6 +210,7 @@ void SystemGeolocationSourceWin::OpenSystemPermissionSetting() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to create IUriRuntimeClass: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaLaunchSettingsResult(hr);
     return;
   }
   ComPtr<ILauncherStatics> launcher_statics;
@@ -167,6 +220,7 @@ void SystemGeolocationSourceWin::OpenSystemPermissionSetting() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to get ILauncher statics: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaLaunchSettingsResult(hr);
     return;
   }
   hr = launcher_statics->LaunchUriAsync(uri_runtime_class.Get(),
@@ -174,6 +228,8 @@ void SystemGeolocationSourceWin::OpenSystemPermissionSetting() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to launch URI: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaLaunchSettingsResult(hr);
+    return;
   }
   hr = base::win::PostAsyncHandlers(
       launch_uri_op_.Get(),
@@ -184,6 +240,7 @@ void SystemGeolocationSourceWin::OpenSystemPermissionSetting() {
   if (FAILED(hr)) {
     LOG(ERROR) << "PostAsyncHandlers failed: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaLaunchSettingsResult(hr);
   }
 }
 
@@ -199,6 +256,7 @@ void SystemGeolocationSourceWin::RequestPermission() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to get IGeolocator statics: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaRequestAccessResult(hr);
     return;
   }
   // Geolocator::RequestAccessAsync will trigger the one-time-per-app prompt.
@@ -206,6 +264,7 @@ void SystemGeolocationSourceWin::RequestPermission() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Location access request failed: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaRequestAccessResult(hr);
     return;
   }
   hr = base::win::PostAsyncHandlers(
@@ -219,11 +278,15 @@ void SystemGeolocationSourceWin::RequestPermission() {
   if (FAILED(hr)) {
     LOG(ERROR) << "PostAsyncHandlers failed: "
                << logging::SystemErrorCodeToString(hr);
+    RecordUmaRequestAccessResult(hr);
+    return;
   }
+  has_pending_system_prompt_ = true;
 }
 
 void SystemGeolocationSourceWin::OnRequestLocationAccessSuccess(
     GeolocationAccessStatus status) {
+  RecordUmaRequestAccessResult(S_OK);
   request_location_access_op_.Reset();
 }
 
@@ -231,6 +294,7 @@ void SystemGeolocationSourceWin::OnRequestLocationAccessFailure(
     HRESULT result) {
   LOG(ERROR) << "RequestLocationAccess failed: "
              << logging::SystemErrorCodeToString(result);
+  RecordUmaRequestAccessResult(result);
   request_location_access_op_.Reset();
 }
 
