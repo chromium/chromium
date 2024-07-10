@@ -106,7 +106,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
  public:
   IOSurfaceImageBacking(
       gfx::ScopedIOSurface io_surface,
-      uint32_t io_surface_plane,
       gfx::GenericSharedMemoryId io_surface_id,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -209,7 +208,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void ProcessSharedEventsForBeginAccess(bool readonly, const Fn& fn);
 
   const gfx::ScopedIOSurface io_surface_;
-  const uint32_t io_surface_plane_;
   const gfx::Size io_surface_size_;
   const uint32_t io_surface_format_;
   const size_t io_surface_num_planes_;

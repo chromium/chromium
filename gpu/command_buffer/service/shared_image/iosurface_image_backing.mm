@@ -972,7 +972,6 @@ bool IOSurfaceImageBacking::DawnRepresentation::
 
 IOSurfaceImageBacking::IOSurfaceImageBacking(
     gfx::ScopedIOSurface io_surface,
-    uint32_t io_surface_plane,
     gfx::GenericSharedMemoryId io_surface_id,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
@@ -999,7 +998,6 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
                          /*is_thread_safe=*/false,
                          std::move(buffer_usage)),
       io_surface_(std::move(io_surface)),
-      io_surface_plane_(io_surface_plane),
       io_surface_size_(IOSurfaceGetWidth(io_surface_.get()),
                        IOSurfaceGetHeight(io_surface_.get())),
       io_surface_format_(IOSurfaceGetPixelFormat(io_surface_.get())),
@@ -1201,15 +1199,9 @@ base::trace_event::MemoryAllocatorDump* IOSurfaceImageBacking::OnMemoryDump(
                                                 client_tracing_id);
 
   size_t size_bytes = 0u;
-  if (format().is_single_plane()) {
-    size_bytes =
-        IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), io_surface_plane_) *
-        IOSurfaceGetHeightOfPlane(io_surface_.get(), io_surface_plane_);
-  } else {
-    for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
-      size_bytes += IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), plane) *
-                    IOSurfaceGetHeightOfPlane(io_surface_.get(), plane);
-    }
+  for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
+    size_bytes += IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), plane) *
+                  IOSurfaceGetHeightOfPlane(io_surface_.get(), plane);
   }
 
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
@@ -1486,7 +1478,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     return SkiaGraphiteDawnImageRepresentation::Create(
         std::move(dawn_representation), context_state,
         context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-        is_yuv_plane, static_cast<int>(io_surface_plane_));
+        is_yuv_plane);
 #else
   NOTREACHED_NORETURN();
 #endif
@@ -1654,10 +1646,8 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     std::vector<std::unique_ptr<gl::ScopedEGLSurfaceIOSurface>> egl_surfaces;
     for (int plane_index = 0; plane_index < format().NumberOfPlanes();
          plane_index++) {
-      int plane;
       gfx::BufferFormat buffer_format;
       if (format().is_single_plane()) {
-        plane = io_surface_plane_;
         buffer_format = ToBufferFormat(format());
         // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
         // RGBA versus BGRA when using Skia Ganesh GL backend or ANGLE.
@@ -1671,13 +1661,12 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
       } else {
         // For multiplanar formats (without external sampler) get planar buffer
         // format.
-        plane = plane_index;
         buffer_format = GetBufferFormatForPlane(format(), plane_index);
       }
 
       auto egl_surface = gl::ScopedEGLSurfaceIOSurface::Create(
           egl_state->egl_display_, egl_state->GetGLTarget(), io_surface_.get(),
-          plane, buffer_format);
+          plane_index, buffer_format);
       if (!egl_surface) {
         LOG(ERROR) << "Failed to create ScopedEGLSurfaceIOSurface.";
         return false;
@@ -1805,13 +1794,13 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeingDestroyed(
 
 bool IOSurfaceImageBacking::InitializePixels(
     base::span<const uint8_t> pixel_data) {
+  CHECK(format().is_single_plane());
   ScopedIOSurfaceLock io_surface_lock(io_surface_.get(),
                                       kIOSurfaceLockAvoidSync);
 
   uint8_t* dst_data = reinterpret_cast<uint8_t*>(
-      IOSurfaceGetBaseAddressOfPlane(io_surface_.get(), io_surface_plane_));
-  size_t dst_stride =
-      IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), io_surface_plane_);
+      IOSurfaceGetBaseAddressOfPlane(io_surface_.get(), 0));
+  size_t dst_stride = IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), 0);
 
   const uint8_t* src_data = pixel_data.data();
   const size_t src_stride = (format().BitsPerPixel() / 8) * size().width();

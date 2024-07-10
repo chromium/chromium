@@ -78,17 +78,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       gfx::GpuMemoryBufferHandle handle) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      gfx::GpuMemoryBufferHandle handle,
-      gfx::BufferFormat format,
-      gfx::BufferPlane plane,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label) override;
-  std::unique_ptr<SharedImageBacking> CreateSharedImage(
-      const Mailbox& mailbox,
       viz::SharedImageFormat format,
       SurfaceHandle surface_handle,
       const gfx::Size& size,
@@ -130,9 +119,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       uint32_t usage,
       std::string debug_label,
       gfx::GpuMemoryBufferHandle handle,
-      uint32_t io_surface_plane,
-      gfx::BufferPlane buffer_plane,
-      bool is_plane_format,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   const GrContextType gr_context_type_;
