@@ -41,7 +41,7 @@ class TaskQueueWebView {
   virtual void ScheduleIdleTask(base::OnceClosure task) = 0;
 
   // Used to post task to client thread.
-  virtual scoped_refptr<base::TaskRunner> GetClientTaskRunner() = 0;
+  virtual scoped_refptr<base::SingleThreadTaskRunner> GetClientTaskRunner() = 0;
 
   // Uniti tests can switch render thread.
   virtual void ResetRenderThreadForTesting() = 0;

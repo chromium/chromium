@@ -46,7 +46,7 @@ class TaskQueueViz : public TaskQueueWebView {
   void ScheduleTask(base::OnceClosure task, bool out_of_order) override;
   void ScheduleOrRetainTask(base::OnceClosure task) override;
   void ScheduleIdleTask(base::OnceClosure task) override;
-  scoped_refptr<base::TaskRunner> GetClientTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetClientTaskRunner() override;
   void InitializeVizThread(const scoped_refptr<base::SingleThreadTaskRunner>&
                                viz_task_runner) override;
   void ScheduleOnVizAndBlock(VizTask viz_task) override;
@@ -118,7 +118,8 @@ void TaskQueueViz::ScheduleIdleTask(base::OnceClosure task) {
   EmplaceTask(std::move(task));
 }
 
-scoped_refptr<base::TaskRunner> TaskQueueViz::GetClientTaskRunner() {
+scoped_refptr<base::SingleThreadTaskRunner>
+TaskQueueViz::GetClientTaskRunner() {
   DCHECK(viz_task_runner_);
   return viz_task_runner_;
 }

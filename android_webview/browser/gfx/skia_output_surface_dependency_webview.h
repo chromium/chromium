@@ -49,7 +49,7 @@ class SkiaOutputSurfaceDependencyWebView
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() override;
   void ScheduleGrContextCleanup() override;
   void ScheduleDelayedGPUTaskFromGPUThread(base::OnceClosure task) override;
-  scoped_refptr<base::TaskRunner> GetClientTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetClientTaskRunner() override;
   bool IsOffscreen() override;
   gpu::SurfaceHandle GetSurfaceHandle() override;
   scoped_refptr<gl::Presenter> CreatePresenter() override;

@@ -92,7 +92,7 @@ void SkiaOutputSurfaceDependencyWebView::ScheduleGrContextCleanup() {
   shared_context_state_->ScheduleSkiaCleanup();
 }
 
-scoped_refptr<base::TaskRunner>
+scoped_refptr<base::SingleThreadTaskRunner>
 SkiaOutputSurfaceDependencyWebView::GetClientTaskRunner() {
   return task_queue_->GetClientTaskRunner();
 }

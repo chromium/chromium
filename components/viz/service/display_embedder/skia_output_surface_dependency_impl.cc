@@ -171,7 +171,7 @@ base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CacheGLSurface(
   return base::ScopedClosureRunner(std::move(release_callback));
 }
 
-scoped_refptr<base::TaskRunner>
+scoped_refptr<base::SingleThreadTaskRunner>
 SkiaOutputSurfaceDependencyImpl::GetClientTaskRunner() {
   return client_thread_task_runner_;
 }

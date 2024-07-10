@@ -89,7 +89,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   void PostTaskToClientThread(base::OnceClosure closure) {
     GetClientTaskRunner()->PostTask(FROM_HERE, std::move(closure));
   }
-  virtual scoped_refptr<base::TaskRunner> GetClientTaskRunner() = 0;
+  virtual scoped_refptr<base::SingleThreadTaskRunner> GetClientTaskRunner() = 0;
 
   // This function schedules delayed task to be run on GPUThread. It can be
   // called only from GPU Thread.
