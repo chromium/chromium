@@ -12,7 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer.h"
+#include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 
@@ -29,7 +29,7 @@ class PLATFORM_EXPORT InstrumentedVideoEncoderWrapper
   InstrumentedVideoEncoderWrapper(
       int id,
       std::unique_ptr<webrtc::VideoEncoder> wrapped_encoder,
-      EncoderStateObserver* state_observer);
+      VideoEncoderStateObserver* state_observer);
   ~InstrumentedVideoEncoderWrapper() override;
 
   // webrtc::VideoEncoder implementations.
@@ -56,10 +56,11 @@ class PLATFORM_EXPORT InstrumentedVideoEncoderWrapper
   void OnDroppedFrame(webrtc::EncodedImageCallback::DropReason reason) override;
 
  private:
-  void ReportEncodeResult(const EncoderStateObserver::EncodeResult& result);
+  void ReportEncodeResult(
+      const VideoEncoderStateObserver::EncodeResult& result);
 
   const int id_;
-  const raw_ptr<EncoderStateObserver> state_observer_
+  const raw_ptr<VideoEncoderStateObserver> state_observer_
       GUARDED_BY_CONTEXT(encoder_sequence_);
   const scoped_refptr<base::SequencedTaskRunner> encoder_sequence_runner_;
   const std::unique_ptr<webrtc::VideoEncoder> wrapped_encoder_;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_ENCODER_STATE_OBSERVER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_ENCODER_STATE_OBSERVER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VIDEO_ENCODER_STATE_OBSERVER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VIDEO_ENCODER_STATE_OBSERVER_H_
 
 #include <optional>
 
@@ -16,10 +16,10 @@ class VideoCodec;
 }  // namespace webrtc
 
 namespace blink {
-// EncoderStateObserver is the interface used by
+// VideoEncoderStateObserver is the interface used by
 // blink::InstrumentedVideoEncoderWrapper to notify the state of its wrapping
 // encoder.
-class PLATFORM_EXPORT EncoderStateObserver {
+class PLATFORM_EXPORT VideoEncoderStateObserver {
  public:
   struct EncodeResult final {
     int width;
@@ -33,7 +33,7 @@ class PLATFORM_EXPORT EncoderStateObserver {
     bool is_hardware_accelerated;
   };
 
-  virtual ~EncoderStateObserver() = default;
+  virtual ~VideoEncoderStateObserver() = default;
 
   // The encoder with |encoder_id| is created with |config|.
   virtual void OnEncoderCreated(int encoder_id,
@@ -52,4 +52,4 @@ class PLATFORM_EXPORT EncoderStateObserver {
   virtual void OnEncodedImage(int encoder_id, const EncodeResult& result) = 0;
 };
 }  // namespace blink
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_ENCODER_STATE_OBSERVER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VIDEO_ENCODER_STATE_OBSERVER_H_

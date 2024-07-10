@@ -13,7 +13,7 @@ namespace webrtc {
 class VideoEncoderFactory;
 }  // namespace webrtc
 namespace blink {
-class EncoderStateObserver;
+class VideoEncoderStateObserver;
 
 // InstrumentedSimulcastAdapter is webrtc::SimulcastEncoderAdapter with
 // customized factories. It doesn't override webrtc::SimulcastEncoderAdapter
@@ -32,7 +32,7 @@ class PLATFORM_EXPORT InstrumentedSimulcastAdapter
       const webrtc::Environment& env,
       webrtc::VideoEncoderFactory* primary_encoder_factory,
       webrtc::VideoEncoderFactory* secondate_encoder_factory,
-      std::unique_ptr<EncoderStateObserver> encoder_state_observer,
+      std::unique_ptr<VideoEncoderStateObserver> encoder_state_observer,
       const webrtc::SdpVideoFormat& format);
 
   ~InstrumentedSimulcastAdapter() override;
@@ -43,11 +43,10 @@ class PLATFORM_EXPORT InstrumentedSimulcastAdapter
       const webrtc::Environment& env,
       std::unique_ptr<EncoderFactoryAdapter> primary_factory_adapter,
       std::unique_ptr<EncoderFactoryAdapter> secondary_factory_adapter,
-      std::unique_ptr<EncoderStateObserver> encoder_state_observer,
+      std::unique_ptr<VideoEncoderStateObserver> encoder_state_observer,
       const webrtc::SdpVideoFormat& format);
 
-  // TODO(hiroh): Add sequence check.
-  const std::unique_ptr<EncoderStateObserver> encoder_state_observer_;
+  const std::unique_ptr<VideoEncoderStateObserver> encoder_state_observer_;
   const std::unique_ptr<EncoderFactoryAdapter> primary_factory_adapter_;
   const std::unique_ptr<EncoderFactoryAdapter> secondary_factory_adapter_;
 };

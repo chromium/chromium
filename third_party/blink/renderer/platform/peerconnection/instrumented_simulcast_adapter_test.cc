@@ -13,9 +13,9 @@
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer_impl.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
+#include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer_impl.h"
 #include "third_party/webrtc/api/environment/environment_factory.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/media/engine/internal_encoder_factory.h"
@@ -75,7 +75,7 @@ class InstrumentedSimulcastAdapterTest : public ::testing::Test {
     return InstrumentedSimulcastAdapter::Create(
         webrtc::EnvironmentFactory().Create(), primary_encoder_factory_.get(),
         secondate_encoder_factory_.get(),
-        std::make_unique<EncoderStateObserverImpl>(
+        std::make_unique<VideoEncoderStateObserverImpl>(
             media::VideoCodecProfile::VP8PROFILE_ANY, base::NullCallback()),
         webrtc::SdpVideoFormat::VP8());
   }

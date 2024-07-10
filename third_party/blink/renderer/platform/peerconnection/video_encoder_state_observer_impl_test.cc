@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer_impl.h"
+#include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer_impl.h"
 
 #include <queue>
 
@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer.h"
+#include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/video/encoded_image.h"
 #include "third_party/webrtc/api/video/video_content_type.h"
@@ -207,24 +207,24 @@ std::tuple<size_t, size_t, size_t> GetActiveIndexInfo(
 }
 }  // namespace
 
-class EncoderStateObserverImplTest : public ::testing::Test {
+class VideoEncoderStateObserverImplTest : public ::testing::Test {
  public:
-  EncoderStateObserverImplTest() = default;
-  ~EncoderStateObserverImplTest() override = default;
+  VideoEncoderStateObserverImplTest() = default;
+  ~VideoEncoderStateObserverImplTest() override = default;
 
   void TearDown() override { observer_.reset(); }
 
  protected:
-  using TopLayerInfo = EncoderStateObserverImpl::TopLayerInfo;
-  using EncodeResult = EncoderStateObserver::EncodeResult;
+  using TopLayerInfo = VideoEncoderStateObserverImpl::TopLayerInfo;
+  using EncodeResult = VideoEncoderStateObserver::EncodeResult;
   using StatsKey = StatsCollector::StatsKey;
   using VideoStats = StatsCollector::VideoStats;
 
   void CreateObserver(media::VideoCodecProfile profile) {
-    observer_ = std::make_unique<EncoderStateObserverImpl>(
-        profile,
-        base::BindRepeating(&EncoderStateObserverImplTest::StoreProcessingStats,
-                            base::Unretained(this)));
+    observer_ = std::make_unique<VideoEncoderStateObserverImpl>(
+        profile, base::BindRepeating(
+                     &VideoEncoderStateObserverImplTest::StoreProcessingStats,
+                     base::Unretained(this)));
     ASSERT_TRUE(observer_);
   }
 
@@ -244,13 +244,13 @@ class EncoderStateObserverImplTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<EncoderStateObserverImpl> observer_;
+  std::unique_ptr<VideoEncoderStateObserverImpl> observer_;
   std::queue<std::pair<StatsKey, VideoStats>> processing_stats_;
 
  private:
   void ExpectTopLayer(int encoder_id, int spatial_id, int pixel_rate) {
     CHECK(observer_);
-    const std::optional<EncoderStateObserverImpl::TopLayerInfo> top_layer =
+    const std::optional<VideoEncoderStateObserverImpl::TopLayerInfo> top_layer =
         observer_->FindHighestActiveEncoding();
     ASSERT_TRUE(top_layer.has_value());
     EXPECT_EQ(top_layer->encoder_id, encoder_id);
@@ -264,7 +264,7 @@ class EncoderStateObserverImplTest : public ::testing::Test {
   }
 };
 
-TEST_F(EncoderStateObserverImplTest,
+TEST_F(VideoEncoderStateObserverImplTest,
        FindHighestActiveEncoding_CreateAndDestroy_VP8Vanilla_SingleEncoder) {
   constexpr int kEncoderId = 2;
   constexpr int kSimulcasts = 1;
@@ -274,7 +274,7 @@ TEST_F(EncoderStateObserverImplTest,
   CreateObserver(media::VP8PROFILE_ANY);
   observer_->OnEncoderCreated(kEncoderId, vp8);
 
-  std::optional<EncoderStateObserverImpl::TopLayerInfo> top_layer =
+  std::optional<VideoEncoderStateObserverImpl::TopLayerInfo> top_layer =
       observer_->FindHighestActiveEncoding();
   ASSERT_TRUE(top_layer.has_value());
   EXPECT_EQ(top_layer->encoder_id, kEncoderId);
@@ -286,7 +286,7 @@ TEST_F(EncoderStateObserverImplTest,
   EXPECT_FALSE(observer_->FindHighestActiveEncoding().has_value());
 }
 
-TEST_F(EncoderStateObserverImplTest,
+TEST_F(VideoEncoderStateObserverImplTest,
        FindHighestActiveEncoding_CreateAndDestroy_VP8Simulcast_SingleEncoder) {
   constexpr int kEncoderId = 8;
   constexpr int kSimulcasts = 3;
@@ -296,7 +296,7 @@ TEST_F(EncoderStateObserverImplTest,
   CreateObserver(media::VP8PROFILE_ANY);
   observer_->OnEncoderCreated(kEncoderId, vp8);
 
-  std::optional<EncoderStateObserverImpl::TopLayerInfo> top_layer =
+  std::optional<VideoEncoderStateObserverImpl::TopLayerInfo> top_layer =
       observer_->FindHighestActiveEncoding();
   ASSERT_TRUE(top_layer.has_value());
   EXPECT_EQ(top_layer->encoder_id, kEncoderId);
@@ -309,7 +309,7 @@ TEST_F(EncoderStateObserverImplTest,
 }
 
 TEST_F(
-    EncoderStateObserverImplTest,
+    VideoEncoderStateObserverImplTest,
     FindHighestActiveEncoding_CreateAndDestroy_VP8Simulcast_MultipleEncoders) {
   constexpr int kBaseEncoderId = 8;
   constexpr int kSimulcasts = 3;
@@ -340,7 +340,7 @@ TEST_F(
   EXPECT_FALSE(observer_->FindHighestActiveEncoding().has_value());
 }
 
-TEST_F(EncoderStateObserverImplTest,
+TEST_F(VideoEncoderStateObserverImplTest,
        FindHighestActiveEncoding_CreateAndDestroy_VP9kSVC_SingleEncoder) {
   constexpr int kEncoderId = 8;
   constexpr int kSpatialLayers = 3;
@@ -350,7 +350,7 @@ TEST_F(EncoderStateObserverImplTest,
   CreateObserver(media::VP9PROFILE_PROFILE0);
   observer_->OnEncoderCreated(kEncoderId, vp9);
 
-  std::optional<EncoderStateObserverImpl::TopLayerInfo> top_layer =
+  std::optional<VideoEncoderStateObserverImpl::TopLayerInfo> top_layer =
       observer_->FindHighestActiveEncoding();
   ASSERT_TRUE(top_layer.has_value());
   EXPECT_EQ(top_layer->encoder_id, kEncoderId);
@@ -362,7 +362,7 @@ TEST_F(EncoderStateObserverImplTest,
   EXPECT_FALSE(observer_->FindHighestActiveEncoding().has_value());
 }
 
-TEST_F(EncoderStateObserverImplTest,
+TEST_F(VideoEncoderStateObserverImplTest,
        FindHighestActiveEncoding_ActivateLayers_VP9kSVC_SingleEncoder) {
   constexpr int kEncoderId = 8;
   constexpr int kSpatialLayers = 3;
@@ -410,7 +410,7 @@ TEST_F(EncoderStateObserverImplTest,
   EXPECT_FALSE(observer_->FindHighestActiveEncoding().has_value());
 }
 
-TEST_F(EncoderStateObserverImplTest,
+TEST_F(VideoEncoderStateObserverImplTest,
        FindHighestActiveEncoding_ActivateLayers_VP8Simulcast_MultipleEncoders) {
   constexpr int kBaseEncoderId = 8;
   constexpr int kSimulcasts = 3;
@@ -466,7 +466,7 @@ TEST_F(EncoderStateObserverImplTest,
   EXPECT_FALSE(observer_->FindHighestActiveEncoding().has_value());
 }
 
-TEST_F(EncoderStateObserverImplTest,
+TEST_F(VideoEncoderStateObserverImplTest,
        OnEncodedImage_VP8Simulcast_SingleEncoder) {
   constexpr int kEncoderId = 8;
   constexpr int kSimulcasts = 3;
@@ -510,7 +510,7 @@ TEST_F(EncoderStateObserverImplTest,
   EXPECT_EQ(video_stats.p99_processing_time_ms, 1u);
 }
 
-TEST_F(EncoderStateObserverImplTest,
+TEST_F(VideoEncoderStateObserverImplTest,
        OnEncodedImage_VP8Simulcast_MultipleEncoders) {
   constexpr int kBaseEncoderId = 8;
   constexpr int kSimulcasts = 3;
@@ -555,7 +555,7 @@ TEST_F(EncoderStateObserverImplTest,
   }
 
   // kCheckUpdateStatsCollectionInterval in
-  // EncoderStateObserverImpl::UpdateStatsCollection().
+  // VideoEncoderStateObserverImpl::UpdateStatsCollection().
   // To activate stats collection.
   task_environment_.AdvanceClock(base::Seconds(5) + base::Milliseconds(10));
 
@@ -591,7 +591,8 @@ TEST_F(EncoderStateObserverImplTest,
   EXPECT_EQ(video_stats.p99_processing_time_ms, 1u);
 }
 
-TEST_F(EncoderStateObserverImplTest, OnEncodedImage_VP9kSVC_SingleEncoder) {
+TEST_F(VideoEncoderStateObserverImplTest,
+       OnEncodedImage_VP9kSVC_SingleEncoder) {
   constexpr int kEncoderId = 8;
   constexpr int kSpatialLayers = 3;
   constexpr int kTemporalLayers = 1;
@@ -631,7 +632,7 @@ TEST_F(EncoderStateObserverImplTest, OnEncodedImage_VP9kSVC_SingleEncoder) {
   EXPECT_EQ(video_stats.p99_processing_time_ms, 1u);
 }
 
-TEST_F(EncoderStateObserverImplTest,
+TEST_F(VideoEncoderStateObserverImplTest,
        DynamicLayerChange_OnEncodedImage_VP9kSVC_SingleEncoder) {
   constexpr int kEncoderId = 8;
   constexpr int kSpatialLayers = 3;

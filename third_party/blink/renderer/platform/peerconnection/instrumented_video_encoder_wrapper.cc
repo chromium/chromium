@@ -13,7 +13,7 @@ namespace blink {
 InstrumentedVideoEncoderWrapper::InstrumentedVideoEncoderWrapper(
     int id,
     std::unique_ptr<webrtc::VideoEncoder> wrapped_encoder,
-    EncoderStateObserver* state_observer)
+    VideoEncoderStateObserver* state_observer)
     : id_(id),
       state_observer_(state_observer),
       encoder_sequence_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
@@ -106,7 +106,7 @@ InstrumentedVideoEncoderWrapper::GetEncoderInfo() const {
 }
 
 void InstrumentedVideoEncoderWrapper::ReportEncodeResult(
-    const EncoderStateObserver::EncodeResult& result) {
+    const VideoEncoderStateObserver::EncodeResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   state_observer_->OnEncodedImage(id_, result);
 }
@@ -115,7 +115,7 @@ webrtc::EncodedImageCallback::Result
 InstrumentedVideoEncoderWrapper::OnEncodedImage(
     const webrtc::EncodedImage& encoded_image,
     const webrtc::CodecSpecificInfo* codec_specific_info) {
-  EncoderStateObserver::EncodeResult encode_result{
+  VideoEncoderStateObserver::EncodeResult encode_result{
       .width = base::checked_cast<int>(encoded_image._encodedWidth),
       .height = base::checked_cast<int>(encoded_image._encodedHeight),
       .keyframe =

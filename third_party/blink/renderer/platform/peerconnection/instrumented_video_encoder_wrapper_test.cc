@@ -7,7 +7,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer.h"
+#include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/video_codec.h"
@@ -21,10 +21,10 @@ using ::testing::Return;
 
 namespace blink {
 namespace {
-class MockEncoderStateObserver : public EncoderStateObserver {
+class MockVideoEncoderStateObserver : public VideoEncoderStateObserver {
  public:
-  MockEncoderStateObserver() = default;
-  ~MockEncoderStateObserver() override = default;
+  MockVideoEncoderStateObserver() = default;
+  ~MockVideoEncoderStateObserver() override = default;
 
   MOCK_METHOD(void,
               OnEncoderCreated,
@@ -140,13 +140,13 @@ class InstrumentedVideoEncoderWrapperTest : public ::testing::Test {
   InstrumentedVideoEncoderWrapperTest() = default;
   ~InstrumentedVideoEncoderWrapperTest() override = default;
   void SetUp() override {
-    mock_state_observer_ = std::make_unique<MockEncoderStateObserver>();
+    mock_state_observer_ = std::make_unique<MockVideoEncoderStateObserver>();
 
     auto fake_encoder = std::make_unique<FakeVideoEncoder>();
     fake_encoder_ = fake_encoder.get();
     wrapper_ = std::make_unique<InstrumentedVideoEncoderWrapper>(
         /*id=*/kEncoderId, std::move(fake_encoder),
-        static_cast<EncoderStateObserver*>(mock_state_observer_.get()));
+        static_cast<VideoEncoderStateObserver*>(mock_state_observer_.get()));
   }
   void TearDown() override {
     fake_encoder_ = nullptr;
@@ -155,11 +155,11 @@ class InstrumentedVideoEncoderWrapperTest : public ::testing::Test {
   }
 
  protected:
-  using EncodeResult = EncoderStateObserver::EncodeResult;
+  using EncodeResult = VideoEncoderStateObserver::EncodeResult;
 
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<MockEncoderStateObserver> mock_state_observer_;
+  std::unique_ptr<MockVideoEncoderStateObserver> mock_state_observer_;
 
   std::unique_ptr<InstrumentedVideoEncoderWrapper> wrapper_;
   raw_ptr<FakeVideoEncoder> fake_encoder_;

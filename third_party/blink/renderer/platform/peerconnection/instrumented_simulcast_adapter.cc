@@ -7,8 +7,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/peerconnection/instrumented_video_encoder_wrapper.h"
+#include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 namespace blink {
@@ -16,10 +16,10 @@ class InstrumentedSimulcastAdapter::EncoderFactoryAdapter
     : public webrtc::VideoEncoderFactory {
  public:
   EncoderFactoryAdapter(webrtc::VideoEncoderFactory* encoder_factory,
-                        EncoderStateObserver* state_callback,
+                        VideoEncoderStateObserver* state_observer,
                         bool is_primary)
       : encoder_factory_(encoder_factory),
-        state_callback_(state_callback),
+        state_observer_(state_observer),
         is_primary_(is_primary) {
     // The constructor is performed in the webrtc worker thread, not webrtc
     // encoder sequence.
@@ -54,7 +54,7 @@ class InstrumentedSimulcastAdapter::EncoderFactoryAdapter
         encoder_factory_->Create(env, format);
     next_encoder_id_ += is_primary_ ? 1 : -1;
     return std::make_unique<InstrumentedVideoEncoderWrapper>(
-        next_encoder_id_, std::move(encoder), state_callback_);
+        next_encoder_id_, std::move(encoder), state_observer_);
   }
   std::unique_ptr<webrtc::VideoEncoderFactory::EncoderSelectorInterface>
   GetEncoderSelector() const override {
@@ -63,7 +63,7 @@ class InstrumentedSimulcastAdapter::EncoderFactoryAdapter
 
  private:
   const raw_ptr<webrtc::VideoEncoderFactory> encoder_factory_;
-  const raw_ptr<EncoderStateObserver> state_callback_;
+  const raw_ptr<VideoEncoderStateObserver> state_observer_;
   const bool is_primary_;
 
   int next_encoder_id_ GUARDED_BY_CONTEXT(encoder_sequence_);
@@ -77,7 +77,7 @@ InstrumentedSimulcastAdapter::Create(
     const webrtc::Environment& env,
     webrtc::VideoEncoderFactory* primary_encoder_factory,
     webrtc::VideoEncoderFactory* secondary_encoder_factory,
-    std::unique_ptr<EncoderStateObserver> encoder_state_observer,
+    std::unique_ptr<VideoEncoderStateObserver> encoder_state_observer,
     const webrtc::SdpVideoFormat& format) {
   // InstrumentedSimulcastAdapter is created on the webrtc worker sequence.
   // The operations (e.g. InitEncode() and Encode()) are performed in the
@@ -105,7 +105,7 @@ InstrumentedSimulcastAdapter::~InstrumentedSimulcastAdapter() {
   // The destructor is executed in the encoder sequence. This is checked by
   // the sequence checker in EncoderFactoryAdapter.
 
-  // EncoderStateObserver must outlive encoders.
+  // VideoEncoderStateObserver must outlive encoders.
   DestroyStoredEncoders();
 }
 
@@ -113,7 +113,7 @@ InstrumentedSimulcastAdapter::InstrumentedSimulcastAdapter(
     const webrtc::Environment& env,
     std::unique_ptr<EncoderFactoryAdapter> primary_factory_adapter,
     std::unique_ptr<EncoderFactoryAdapter> secondary_factory_adapter,
-    std::unique_ptr<EncoderStateObserver> encoder_state_observer,
+    std::unique_ptr<VideoEncoderStateObserver> encoder_state_observer,
     const webrtc::SdpVideoFormat& format)
     : webrtc::SimulcastEncoderAdapter(env,
                                       primary_factory_adapter.get(),

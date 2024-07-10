@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/platform/peerconnection/encoder_state_observer_impl.h"
+#include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer_impl.h"
 
 #include <queue>
 
@@ -23,7 +23,7 @@ std::atomic_int g_encoder_counter_{0};
 
 }  // namespace
 
-class EncoderStateObserverImpl::EncoderState {
+class VideoEncoderStateObserverImpl::EncoderState {
  public:
   struct CodecConfig {
     webrtc::VideoCodec codec;
@@ -67,7 +67,7 @@ class EncoderStateObserverImpl::EncoderState {
     return encode_starts_.front();
   }
 
-  std::optional<EncoderStateObserverImpl::TopLayerInfo> TopLayer() const {
+  std::optional<VideoEncoderStateObserverImpl::TopLayerInfo> TopLayer() const {
     if (!codec_config_.active_spatial_layers.Contains(true)) {
       // No Active layers.
       return std::nullopt;
@@ -77,7 +77,7 @@ class EncoderStateObserverImpl::EncoderState {
     int active_vec_size =
         base::saturated_cast<int>(codec_config_.active_spatial_layers.size());
 
-    using TopLayerInfo = EncoderStateObserverImpl::TopLayerInfo;
+    using TopLayerInfo = VideoEncoderStateObserverImpl::TopLayerInfo;
     std::optional<TopLayerInfo> top_layer;
     if (codec.codecType == webrtc::VideoCodecType::kVideoCodecVP9 &&
         codec.VP9().numberOfSpatialLayers > 0) {
@@ -126,21 +126,21 @@ class EncoderStateObserverImpl::EncoderState {
   bool first_frame_encode_called_ = false;
 };
 
-EncoderStateObserverImpl::EncoderStateObserverImpl(
+VideoEncoderStateObserverImpl::VideoEncoderStateObserverImpl(
     media::VideoCodecProfile profile,
     const StatsCollector::StoreProcessingStatsCB& store_processing_stats_cb)
     : StatsCollector(/*is_decode=*/false, profile, store_processing_stats_cb) {
   DETACH_FROM_SEQUENCE(encoder_sequence_);
 }
 
-EncoderStateObserverImpl::~EncoderStateObserverImpl() {
+VideoEncoderStateObserverImpl::~VideoEncoderStateObserverImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   for (const auto& kv : encoder_state_by_id_) {
     OnEncoderDestroyed(kv.first);
   }
 }
 
-void EncoderStateObserverImpl::OnEncoderCreated(
+void VideoEncoderStateObserverImpl::OnEncoderCreated(
     int encoder_id,
     const webrtc::VideoCodec& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
@@ -159,7 +159,7 @@ void EncoderStateObserverImpl::OnEncoderCreated(
   top_encoder_info_ = FindHighestActiveEncoding();
 }
 
-void EncoderStateObserverImpl::OnEncoderDestroyed(int encoder_id) {
+void VideoEncoderStateObserverImpl::OnEncoderDestroyed(int encoder_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   EncoderState* encoder_state = GetEncoderState(encoder_id);
   if (!encoder_state) {
@@ -180,7 +180,7 @@ void EncoderStateObserverImpl::OnEncoderDestroyed(int encoder_id) {
   top_encoder_info_ = FindHighestActiveEncoding();
 }
 
-void EncoderStateObserverImpl::OnRatesUpdated(
+void VideoEncoderStateObserverImpl::OnRatesUpdated(
     int encoder_id,
     const Vector<bool>& active_spatial_layers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
@@ -193,9 +193,9 @@ void EncoderStateObserverImpl::OnRatesUpdated(
   top_encoder_info_ = FindHighestActiveEncoding();
 }
 
-EncoderStateObserverImpl::EncoderState*
-EncoderStateObserverImpl::GetEncoderState(int encoder_id,
-                                          base::Location location) {
+VideoEncoderStateObserverImpl::EncoderState*
+VideoEncoderStateObserverImpl::GetEncoderState(int encoder_id,
+                                               base::Location location) {
   auto it = encoder_state_by_id_.find(encoder_id);
   if (it == encoder_state_by_id_.end()) {
     LOG(WARNING) << "No encoder id: " << encoder_id << " ("
@@ -205,8 +205,8 @@ EncoderStateObserverImpl::GetEncoderState(int encoder_id,
   return it->second.get();
 }
 
-void EncoderStateObserverImpl::OnEncode(int encoder_id,
-                                        uint32_t rtp_timestamp) {
+void VideoEncoderStateObserverImpl::OnEncode(int encoder_id,
+                                             uint32_t rtp_timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   EncoderState* encoder_state = GetEncoderState(encoder_id);
   if (!encoder_state) {
@@ -220,8 +220,8 @@ void EncoderStateObserverImpl::OnEncode(int encoder_id,
   encoder_state->AppendEncodeStart(rtp_timestamp, base::TimeTicks::Now());
 }
 
-void EncoderStateObserverImpl::OnEncodedImage(int encoder_id,
-                                              const EncodeResult& result) {
+void VideoEncoderStateObserverImpl::OnEncodedImage(int encoder_id,
+                                                   const EncodeResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   if (!top_encoder_info_) {
     LOG(WARNING) << "Received encoded frame while no active encoder "
@@ -262,7 +262,7 @@ void EncoderStateObserverImpl::OnEncodedImage(int encoder_id,
                     result.keyframe, now);
 }
 
-void EncoderStateObserverImpl::UpdateStatsCollection(base::TimeTicks now) {
+void VideoEncoderStateObserverImpl::UpdateStatsCollection(base::TimeTicks now) {
   constexpr base::TimeDelta kCheckUpdateStatsCollectionInterval =
       base::Seconds(5);
   if ((now - last_update_stats_collection_time_) <
@@ -286,8 +286,8 @@ void EncoderStateObserverImpl::UpdateStatsCollection(base::TimeTicks now) {
   }
 }
 
-std::optional<EncoderStateObserverImpl::TopLayerInfo>
-EncoderStateObserverImpl::FindHighestActiveEncoding() const {
+std::optional<VideoEncoderStateObserverImpl::TopLayerInfo>
+VideoEncoderStateObserverImpl::FindHighestActiveEncoding() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
   std::optional<TopLayerInfo> top_info;
   for (const auto& kv : encoder_state_by_id_) {
