@@ -3,7 +3,7 @@ default: null
 desc: |-
   A URL to an image that will be used as an enterprise badge for the profile. The URL must point to an image.
 
-  This badge will be shown in in the toolbar.
+  This badge will be shown in the toolbar.
 
   If this policy is set at the browser level, all profiles will have this logo in the toolbar.
 
