@@ -7544,6 +7544,25 @@
             ]
         }
     ],
+    "DesktopNtpTabResumption": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpMostRelevantTabResumptionModule"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxCalculatorProvider": [
         {
             "platforms": [
@@ -14277,25 +14296,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NotificationsIgnoreRequireInteraction"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NtpTabResumption": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpTabResumptionModule"
                     ]
                 }
             ]

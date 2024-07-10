@@ -35,24 +35,6 @@ struct ModuleDetails {
   const char* tile_link;
 };
 
-ModuleDetails kTabResumptionModuleDetails = {
-    {{ntp_features::kNtpTabResumptionModule,
-      {{ntp_features::kNtpTabResumptionModuleDataParam, "Fake Data"}}},
-     {ntp_features::kNtpModulesRedesigned, {}}},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
-     "ntp-module-header-v2", "#menuButton"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
-     "ntp-module-header-v2", "cr-action-menu", "dialog"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
-     "ntp-module-header-v2", "#dismiss"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
-     "ntp-module-header-v2", "#disable"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
-     "#tabs", "a"},
-    kGooglePageUrl,
-};
-
 ModuleDetails kMostRelevantTabResumptionModuleDetails = {
     {{ntp_features::kNtpMostRelevantTabResumptionModule,
       {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam,
@@ -190,8 +172,7 @@ class NewTabPageModulesInteractiveUiTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     NewTabPageModulesInteractiveUiTest,
-    ::testing::Values(kTabResumptionModuleDetails,
-                      kMostRelevantTabResumptionModuleDetails));
+    ::testing::Values(kMostRelevantTabResumptionModuleDetails));
 
 // TODO(crbug.com/335214502): Re-enable this test.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
