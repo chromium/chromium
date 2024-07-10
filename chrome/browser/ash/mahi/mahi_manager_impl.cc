@@ -17,6 +17,7 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -47,11 +48,19 @@
 
 namespace {
 
+ash::MahiBrowserDelegateAsh* g_overriding_delegate_ptr_ = nullptr;
+
+// Aliases ---------------------------------------------------------------------
+
 using chromeos::MahiResponseStatus;
 using crosapi::mojom::MahiContextMenuActionType;
 
+// Constants -------------------------------------------------------------------
+
 const char kMahiCacheHit[] = "ChromeOS.Mahi.CacheStateOnAccess";
 const char kMahiResponseStatus[] = "ChromeOS.Mahi.ResponseStatusOnRequest";
+
+// CacheHit --------------------------------------------------------------------
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -61,6 +70,15 @@ enum class CacheHit {
   kContent = 2,
   kMaxValue = kContent,
 };
+
+// Helpers ---------------------------------------------------------------------
+
+ash::MahiBrowserDelegateAsh* GetBrowserDelegate() {
+  return g_overriding_delegate_ptr_ ? g_overriding_delegate_ptr_
+                                    : crosapi::CrosapiManager::Get()
+                                          ->crosapi_ash()
+                                          ->mahi_browser_delegate_ash();
+}
 
 MahiResponseStatus GetMahiResponseStatusFromMantaStatus(
     manta::MantaStatusCode code) {
@@ -453,9 +471,7 @@ bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
   }
 
   if (!mahi_browser_delegate_ash_) {
-    mahi_browser_delegate_ash_ = crosapi::CrosapiManager::Get()
-                                     ->crosapi_ash()
-                                     ->mahi_browser_delegate_ash();
+    mahi_browser_delegate_ash_ = GetBrowserDelegate();
   }
 
   if (weak_ptr_factory_for_requests_.HasWeakPtrs()) {
@@ -589,6 +605,19 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
     std::move(callback).Run(std::nullopt, latest_response_status_);
   }
   base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
+}
+
+// ScopedMahiBrowserDelegateOverrider ------------------------------------------
+
+ScopedMahiBrowserDelegateOverrider::ScopedMahiBrowserDelegateOverrider(
+    MahiBrowserDelegateAsh* delegate) {
+  CHECK(g_overriding_delegate_ptr_ == nullptr);
+  g_overriding_delegate_ptr_ = delegate;
+}
+
+ScopedMahiBrowserDelegateOverrider::~ScopedMahiBrowserDelegateOverrider() {
+  CHECK(g_overriding_delegate_ptr_ != nullptr);
+  g_overriding_delegate_ptr_ = nullptr;
 }
 
 }  // namespace ash

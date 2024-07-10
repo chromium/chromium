@@ -40,8 +40,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "fake_mahi_browser_delegate_ash.cc",
-    "fake_mahi_browser_delegate_ash.h",
     "mahi_browser_delegate_ash_unittest.cc",
     "mahi_cache_manager_unittest.cc",
     "mahi_manager_impl_unittest.cc",
@@ -49,6 +47,7 @@ source_set("unit_tests") {
 
   deps = [
     ":mahi",
+    ":test_util",
     "//ash",
     "//ash:test_support",
     "//ash/constants",
@@ -79,6 +78,7 @@ source_set("browser_tests") {
 
   deps = [
     ":mahi",
+    ":test_util",
     "//ash",
     "//ash/constants",
     "//base",
@@ -97,5 +97,20 @@ source_set("browser_tests") {
     "//ui/gfx",
     "//ui/views",
     "//url",
+  ]
+}
+
+source_set("test_util") {
+  testonly = true
+
+  sources = [
+    "fake_mahi_browser_delegate_ash.cc",
+    "fake_mahi_browser_delegate_ash.h",
+  ]
+
+  deps = [
+    ":mahi",
+    "//base",
+    "//chromeos/crosapi/mojom",
   ]
 }

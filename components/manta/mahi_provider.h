@@ -54,11 +54,12 @@ class COMPONENT_EXPORT(MANTA) MahiProvider : public BaseProvider {
   // Similar to `Summarize` but outlines the `input`.
   void Outline(const std::string& input, MantaGenericCallback done_callback);
 
+  // Virtual for testing.
   using MahiQAPair = std::pair<std::string, std::string>;
-  void QuestionAndAnswer(const std::string& content,
-                         const std::vector<MahiQAPair> QAHistory,
-                         const std::string& question,
-                         MantaGenericCallback done_callback);
+  virtual void QuestionAndAnswer(const std::string& content,
+                                 const std::vector<MahiQAPair> QAHistory,
+                                 const std::string& question,
+                                 MantaGenericCallback done_callback);
 
  protected:
   MahiProvider(

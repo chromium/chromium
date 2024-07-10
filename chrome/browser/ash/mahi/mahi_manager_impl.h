@@ -115,7 +115,7 @@ class MahiManagerImpl : public chromeos::MahiManager,
 
   std::unique_ptr<manta::MahiProvider> mahi_provider_;
 
-  raw_ptr<ash::MahiBrowserDelegateAsh> mahi_browser_delegate_ash_ = nullptr;
+  raw_ptr<MahiBrowserDelegateAsh> mahi_browser_delegate_ash_ = nullptr;
 
   // Keeps track of the latest result and code, used for feedback.
   std::u16string latest_summary_;
@@ -132,6 +132,20 @@ class MahiManagerImpl : public chromeos::MahiManager,
   base::UnguessableToken media_app_client_id_;
 
   base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_requests_{this};
+};
+
+// ScopedMahiBrowserDelegateOverrider ------------------------------------------
+
+// A helper class to override the Mahi browser delegate during its life cycle.
+// NOTE: This class should have at most one instance.
+class ScopedMahiBrowserDelegateOverrider {
+ public:
+  explicit ScopedMahiBrowserDelegateOverrider(MahiBrowserDelegateAsh* delegate);
+  ScopedMahiBrowserDelegateOverrider(
+      const ScopedMahiBrowserDelegateOverrider&) = delete;
+  ScopedMahiBrowserDelegateOverrider& operator=(
+      const ScopedMahiBrowserDelegateOverrider&) = delete;
+  ~ScopedMahiBrowserDelegateOverrider();
 };
 
 }  // namespace ash

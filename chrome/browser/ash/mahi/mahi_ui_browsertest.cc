@@ -5,6 +5,8 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
@@ -23,9 +25,15 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
+#include "base/version_info/channel.h"
+#include "chrome/browser/ash/mahi/fake_mahi_browser_delegate_ash.h"
+#include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
@@ -34,6 +42,12 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/manta/mahi_provider.h"
+#include "components/manta/manta_service.h"
+#include "components/manta/manta_service_callbacks.h"
+#include "components/manta/manta_status.h"
+#include "components/manta/provider_params.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -58,7 +72,92 @@ namespace {
 
 // Aliases ---------------------------------------------------------------------
 
+using ::testing::ByMove;
 using ::testing::NiceMock;
+using ::testing::Return;
+
+// MockMahiProvider ------------------------------------------------------------
+
+// The summary returned by `MockMahiProvider`.
+constexpr char kFakeSummary[] = "fake summary";
+
+// The answer returned by `MockMahiProvider`.
+constexpr char kFakeAnswer[] = "fake answer";
+
+// A mock Mahi provider that returns predefined results asyncly.
+class MockMahiProvider : public manta::MahiProvider {
+ public:
+  MockMahiProvider()
+      : manta::MahiProvider(
+            /*url_loader_factory=*/nullptr,
+            /*identity_manager=*/nullptr,
+            manta::ProviderParams()) {
+    ON_CALL(*this, Summarize)
+        .WillByDefault([](const std::string& input,
+                          manta::MantaGenericCallback done_callback) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  std::move(done_callback),
+                  base::Value::Dict().Set(/*key=*/"outputData", kFakeSummary),
+                  manta::MantaStatus{.status_code =
+                                         manta::MantaStatusCode::kOk}));
+        });
+
+    ON_CALL(*this, QuestionAndAnswer)
+        .WillByDefault(
+            [](const std::string& content,
+               const std::vector<manta::MahiProvider::MahiQAPair> QAHistory,
+               const std::string& question,
+               manta::MantaGenericCallback done_callback) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      std::move(done_callback),
+                      base::Value::Dict().Set(/*key=*/"outputData",
+                                              kFakeAnswer),
+                      manta::MantaStatus{.status_code =
+                                             manta::MantaStatusCode::kOk}));
+            });
+  }
+
+  // manta::MahiProvider:
+  MOCK_METHOD(void,
+              Summarize,
+              (const std::string&, manta::MantaGenericCallback),
+              (override));
+  MOCK_METHOD(void,
+              QuestionAndAnswer,
+              (const std::string&,
+               const std::vector<manta::MahiProvider::MahiQAPair>,
+               const std::string&,
+               manta::MantaGenericCallback),
+              (override));
+};
+
+// MockMantaService ------------------------------------------------------------
+
+class MockMantaService : public manta::MantaService {
+ public:
+  MockMantaService()
+      : manta::MantaService(
+            /*shared_url_loader_factory=*/nullptr,
+            /*identity_manager=*/nullptr,
+            /*is_demo_mode=*/false,
+            /*is_otr_profile=*/false,
+            /*chrome_version=*/"fake_version",
+            /*chrome_channel=*/version_info::Channel::DEFAULT,
+            /*locale=*/std::string()) {
+    ON_CALL(*this, CreateMahiProvider)
+        .WillByDefault(Return(ByMove(std::make_unique<MockMahiProvider>())));
+  }
+
+  // manta::MantaService:
+  MOCK_METHOD(std::unique_ptr<manta::MahiProvider>,
+              CreateMahiProvider,
+              (),
+              (override));
+};
 
 // ViewDeletionObserver --------------------------------------------------------
 
@@ -145,6 +244,11 @@ void WaitUntilUiUpdateReceived(MahiUiUpdateType target_type) {
   run_loop.Run();
 }
 
+std::unique_ptr<KeyedService> CreateMockMantaService(
+    content::BrowserContext* context) {
+  return std::make_unique<MockMantaService>();
+}
+
 }  // namespace
 
 class MahiUiBrowserTest : public SystemWebAppBrowserTestBase {
@@ -152,18 +256,25 @@ class MahiUiBrowserTest : public SystemWebAppBrowserTestBase {
   ui::test::EventGenerator& event_generator() { return *event_generator_; }
 
  private:
-  // SystemWebAppBrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SystemWebAppBrowserTestBase::SetUpCommandLine(command_line);
-
-    command_line->AppendSwitch(chromeos::switches::kUseFakeMahiManager);
-  }
-
   void SetUpOnMainThread() override {
     SystemWebAppBrowserTestBase::SetUpOnMainThread();
 
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         Shell::GetPrimaryRootWindow());
+
+    manta::MantaServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(), base::BindRepeating(&CreateMockMantaService));
+
+    // Configure `https_server_` so that the test page is accessible.
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+
+    // Navigate to the test page and wait until the page is ready.
+    content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL("/mahi/test_article.html"));
+    ASSERT_TRUE(render_frame_host);
+    content::MainThreadFrameObserver(render_frame_host->GetRenderWidgetHost())
+        .Wait();
   }
 
   base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
@@ -171,6 +282,10 @@ class MahiUiBrowserTest : public SystemWebAppBrowserTestBase {
   base::AutoReset<bool> ignore_mahi_secret_key_ =
       ash::switches::SetIgnoreMahiSecretKeyForTest();
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  net::EmbeddedTestServer https_server_;
+  FakeMahiBrowserDelegateAsh fake_browser_delegate_;
+  ScopedMahiBrowserDelegateOverrider browser_delegate_overrider_{
+      &fake_browser_delegate_};
 };
 
 IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, MahiMenuZOrder) {
@@ -265,9 +380,6 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
       chromeos::mahi::MahiMenuView::GetWidgetName());
   ASSERT_TRUE(mahi_menu_widget);
 
-  const std::u16string summary_text(u"sample summary");
-  GetMahiManager()->set_summary_text(summary_text);
-
   ui::ScopedAnimationDurationScaleMode zero_duration(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -321,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   // Verify that the clipboard data is `summary_text`.
   const ui::ClipboardData* data = clipboard->GetClipboardData(&data_dst);
   ASSERT_TRUE(data);
-  EXPECT_EQ(data->text(), base::UTF16ToASCII(summary_text));
+  EXPECT_EQ(data->text(), kFakeSummary);
 }
 
 IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuQuestionSent) {
@@ -397,11 +509,12 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuQuestionSent) {
             question_text);
 
   // Verify the answer label.
-  EXPECT_EQ(views::AsViewClass<views::Label>(
-                question_answer_view->children()[1]->GetViewByID(
-                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
-                ->GetText(),
-            u"Fake answer");
+  EXPECT_EQ(base::UTF16ToUTF8(
+                views::AsViewClass<views::Label>(
+                    question_answer_view->children()[1]->GetViewByID(
+                        mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                    ->GetText()),
+            kFakeAnswer);
 }
 
 }  // namespace ash

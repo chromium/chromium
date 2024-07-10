@@ -6,6 +6,7 @@
 #define COMPONENTS_MANTA_MANTA_SERVICE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -65,7 +66,9 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
   std::unique_ptr<AnchovyProvider> CreateAnchovyProvider();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<MahiProvider> CreateMahiProvider();
+  // Virtual for testing.
+  virtual std::unique_ptr<MahiProvider> CreateMahiProvider();
+
   std::unique_ptr<OrcaProvider> CreateOrcaProvider();
   virtual std::unique_ptr<SnapperProvider> CreateSnapperProvider();
   std::unique_ptr<SparkyProvider> CreateSparkyProvider(
