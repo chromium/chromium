@@ -34879,6 +34879,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3" label="Load failed and was redirected to NTP"/>
   <int value="4" label="Load failed and tab was closed"/>
   <int value="5" label="Load failed in preload and tab was never opened"/>
+  <int value="6" label="Load aborted before request returned"/>
 </enum>
 
 <enum name="WhatsNewStartupType">

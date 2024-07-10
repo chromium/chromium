@@ -23,7 +23,8 @@ enum class LoadEvent {
   kLoadFailAndFallbackToNtp = 3,
   kLoadFailAndCloseTab = 4,
   kLoadFailAndDoNotShow = 5,
-  kMaxValue = kLoadFailAndDoNotShow,
+  kLoadAbort = 6,
+  kMaxValue = kLoadAbort,
 };
 
 // Gets the server side URL for the What's New page for the current version of

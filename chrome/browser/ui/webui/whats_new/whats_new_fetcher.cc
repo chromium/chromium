@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
 
-#include <numeric>
-
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -228,12 +226,23 @@ class WhatsNewFetcher : public BrowserListObserver {
 
     base::UmaHistogramSparse("WhatsNew.LoadResponseCode",
                              error_or_response_code);
-    success = success && error_or_response_code >= 200 &&
-              error_or_response_code <= 299 && body;
+
+    if (user_education::features::IsWhatsNewV2()) {
+      // In V2, the server may respond with a 302 to indicate the requested
+      // page version does not exist but a suitable page has been found.
+      // This should not result in an error since the auto-opened page
+      // can still access a relevant resource.
+      success = success && error_or_response_code >= 200 &&
+                error_or_response_code <= 302 && body;
+    } else {
+      success = success && error_or_response_code >= 200 &&
+                error_or_response_code <= 299 && body;
+    }
 
     // If the browser was closed or moved to the background while What's New was
     // loading, return early before recording that the user saw the page.
     if (browser_closed_or_inactive_) {
+      LogLoadEvent(LoadEvent::kLoadAbort);
       return;
     }
 
