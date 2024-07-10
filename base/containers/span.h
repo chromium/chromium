@@ -1378,7 +1378,7 @@ constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
   return as_writable_bytes(span_from_ref(single_object));
 }
 
-// Converts a string literal (such as `"hello"`) to a span of `char` while
+// Converts a string literal (such as `"hello"`) to a span of `CharT` while
 // omitting the terminating NUL character. These two are equivalent:
 // ```
 // base::span<char, 5u> s1 = base::span_from_cstring("hello");
@@ -1390,14 +1390,15 @@ constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
 //
 // Internal NUL characters (ie. that are not at the end of the string) are
 // always preserved.
-template <size_t N>
-constexpr span<const char, N - 1> span_from_cstring(
-    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
-    ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
+template <class CharT, size_t N>
+constexpr span<const CharT, N - 1> span_from_cstring(
+    const CharT (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == CharT{0},
+                   "requires string literal as input") {
   return span(lit).template first<N - 1>();
 }
 
-// Converts a string literal (such as `"hello"`) to a span of `char` that
+// Converts a string literal (such as `"hello"`) to a span of `CharT` that
 // includes the terminating NUL character. These two are equivalent:
 // ```
 // base::span<char, 6u> s1 = base::span_with_nul_from_cstring("hello");
@@ -1407,15 +1408,16 @@ constexpr span<const char, N - 1> span_from_cstring(
 // ```
 //
 // If you do not want to include the NUL terminator, then use
-// `span_from_cstring()` or use a view type (`base::cstring_view` or
+// `span_from_cstring()` or use a view type (e.g. `base::cstring_view` or
 // `std::string_view`) in place of a string literal.
 //
 // Internal NUL characters (ie. that are not at the end of the string) are
 // always preserved.
-template <size_t N>
-constexpr span<const char, N> span_with_nul_from_cstring(
-    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
-    ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
+template <class CharT, size_t N>
+constexpr span<const CharT, N> span_with_nul_from_cstring(
+    const CharT (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == CharT{0},
+                   "requires string literal as input") {
   return span(lit);
 }
 

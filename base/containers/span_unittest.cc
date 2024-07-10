@@ -699,6 +699,37 @@ TEST(SpanTest, FromCString) {
   }
 }
 
+TEST(SpanTest, FromCStringOtherTypes) {
+  {
+    auto s = base::span_from_cstring("hello");
+    static_assert(std::same_as<decltype(s), span<const char, 5u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+  }
+  {
+    auto s = base::span_from_cstring(L"hello");
+    static_assert(std::same_as<decltype(s), span<const wchar_t, 5u>>);
+    EXPECT_EQ(s[0u], L'h');
+    EXPECT_EQ(s[1u], L'e');
+    EXPECT_EQ(s[4u], L'o');
+  }
+  {
+    auto s = base::span_from_cstring(u"hello");
+    static_assert(std::same_as<decltype(s), span<const char16_t, 5u>>);
+    EXPECT_EQ(s[0u], u'h');
+    EXPECT_EQ(s[1u], u'e');
+    EXPECT_EQ(s[4u], u'o');
+  }
+  {
+    auto s = base::span_from_cstring(U"hello");
+    static_assert(std::same_as<decltype(s), span<const char32_t, 5u>>);
+    EXPECT_EQ(s[0u], U'h');
+    EXPECT_EQ(s[1u], U'e');
+    EXPECT_EQ(s[4u], U'o');
+  }
+}
+
 TEST(SpanTest, ConvertNonConstIntegralToConst) {
   std::vector<int> vector = {1, 1, 2, 3, 5, 8};
 
