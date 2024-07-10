@@ -53,6 +53,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/nacl/common/buildflags.h"
@@ -233,9 +234,13 @@ void HandleInstallBasedOnId(
 
 namespace internal {
 
-using IwaInstallerTestParam = std::tuple<std::string_view,
-                                         std::string_view,
-                                         internal::IwaInstallerResult::Type>;
+struct IwaInstallerTestParam {
+  bool is_mgs_install_enabled;
+  bool is_user_session;
+  std::string bundle_id;
+  std::string manifest_url;
+  internal::IwaInstallerResult::Type result_type;
+};
 
 class IwaInstallerTest
     : public ::testing::TestWithParam<IwaInstallerTestParam> {
@@ -243,7 +248,16 @@ class IwaInstallerTest
   IwaInstallerTest()
       : shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_factory_)) {}
+                &test_factory_)) {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kIsolatedWebApps};
+    if (GetParam().is_mgs_install_enabled) {
+      enabled_features.push_back(
+          features::kIsolatedWebAppManagedGuestSessionInstall);
+    }
+    scoped_feature_list_.InitWithFeatures(std::move(enabled_features),
+                                          /*disabled_features=*/{});
+  }
 
  protected:
   using InstallResult = internal::IwaInstallerResult;
@@ -267,8 +281,10 @@ class IwaInstallerTest
     test_factory_.AddResponse("https://example.com/app7.swbn", "",
                               net::HttpStatusCode::HTTP_NOT_FOUND);
 
-    test_managed_guest_session_ =
-        std::make_unique<profiles::testing::ScopedTestManagedGuestSession>();
+    if (!GetParam().is_user_session) {
+      test_managed_guest_session_ =
+          std::make_unique<profiles::testing::ScopedTestManagedGuestSession>();
+    }
   }
 
   void TearDown() override { test_factory_.ClearResponses(); }
@@ -289,11 +305,12 @@ class IwaInstallerTest
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   IsolatedWebAppExternalInstallOptions install_options_ =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
-          CreatePolicyEntry(/*web_bundle_id=*/std::get<0>(GetParam()),
-                            /*update_manifest_url=*/std::get<1>(GetParam())))
+          CreatePolicyEntry(/*web_bundle_id=*/GetParam().bundle_id,
+                            /*update_manifest_url=*/GetParam().manifest_url))
           .value();
 };
 
@@ -318,8 +335,13 @@ TEST_P(IwaInstallerTest, MgsRegularFlow) {
                          std::move(install_command), log, future.GetCallback());
   installer.Start();
 
-  EXPECT_THAT(future.Get(), Property("type", &InstallResult::type,
-                                     Eq(std::get<2>(GetParam()))));
+  EXPECT_THAT(
+      future.Get(),
+      Property(
+          "type", &InstallResult::type,
+          Eq(!GetParam().is_user_session && !GetParam().is_mgs_install_enabled
+                 ? InstallResult::Type::kErrorManagedGuestSessionInstallDisabled
+                 : GetParam().result_type)));
 }
 
 TEST_P(IwaInstallerTest, NotMgs) {
@@ -343,7 +365,7 @@ TEST_P(IwaInstallerTest, NotMgs) {
   installer.Start();
 
   EXPECT_THAT(future.Get(), Property("type", &InstallResult::type,
-                                     Eq(std::get<2>(GetParam()))));
+                                     Eq(GetParam().result_type)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -352,31 +374,65 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(std::vector<IwaInstallerTestParam>{
         // App 1 represents the most general case: the Update Manifest has
         // several records. We should determine the latest version, download
-        // the
-        // appropriate file and install the app. It is successful case.
-        {kWebBundleId1, kUpdateManifestUrl1,
-         internal::IwaInstallerResult::Type::kSuccess},
+        // the appropriate file and install the app. It is successful case.
+        {.is_mgs_install_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId1,
+         .manifest_url = kUpdateManifestUrl1,
+         .result_type = internal::IwaInstallerResult::Type::kSuccess},
+        // Same as the previous test case, but inside a managed guest session.
+        {.is_mgs_install_enabled = true,
+         .is_user_session = false,
+         .bundle_id = kWebBundleId1,
+         .manifest_url = kUpdateManifestUrl1,
+         .result_type = internal::IwaInstallerResult::Type::kSuccess},
         // App 2 is similar to App 1 but has only one record in the Update
         // Manifest.
-        {kWebBundleId2, kUpdateManifestUrl2,
-         internal::IwaInstallerResult::Type::kSuccess},
+        {.is_mgs_install_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId2,
+         .manifest_url = kUpdateManifestUrl2,
+         .result_type = internal::IwaInstallerResult::Type::kSuccess},
         // We can't download Update Manifest for the app 3.
-        {kWebBundleId3, kUpdateManifestUrl3,
-         internal::IwaInstallerResult::Type::
+        {.is_mgs_install_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId3,
+         .manifest_url = kUpdateManifestUrl3,
+         .result_type = internal::IwaInstallerResult::Type::
              kErrorUpdateManifestDownloadFailed},
         // App 4 represents the case where the Update Manifest if not parsable.
-        {kWebBundleId4, kUpdateManifestUrl4,
-         internal::IwaInstallerResult::Type::kErrorUpdateManifestParsingFailed},
+        {.is_mgs_install_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId4,
+         .manifest_url = kUpdateManifestUrl4,
+         .result_type = internal::IwaInstallerResult::Type::
+             kErrorUpdateManifestParsingFailed},
         // The Web Bundle URL of the App 5 is not valid.
-        {kWebBundleId5, kUpdateManifestUrl5,
-         internal::IwaInstallerResult::Type::
+        {.is_mgs_install_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId5,
+         .manifest_url = kUpdateManifestUrl5,
+         .result_type = internal::IwaInstallerResult::Type::
              kErrorWebBundleUrlCantBeDetermined},
         // The Web Bundle of the App 6 can't be installed.
-        {kWebBundleId6, kUpdateManifestUrl6,
-         internal::IwaInstallerResult::Type::kErrorCantInstallFromWebBundle},
+        {.is_mgs_install_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId6,
+         .manifest_url = kUpdateManifestUrl6,
+         .result_type = internal::IwaInstallerResult::Type::
+             kErrorCantInstallFromWebBundle},
         // The Web Bundle file of the App 7 can't be downloaded.
-        {kWebBundleId7, kUpdateManifestUrl7,
-         internal::IwaInstallerResult::Type::kErrorCantDownloadWebBundle}}));
+        {.is_mgs_install_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId7,
+         .manifest_url = kUpdateManifestUrl7,
+         .result_type =
+             internal::IwaInstallerResult::Type::kErrorCantDownloadWebBundle},
+        {.is_mgs_install_enabled = false,
+         .is_user_session = false,
+         .bundle_id = kWebBundleId1,
+         .manifest_url = kUpdateManifestUrl1,
+         .result_type = internal::IwaInstallerResult::Type::kSuccess}}));
 
 }  // namespace internal
 
@@ -395,10 +451,24 @@ constexpr char kUpdateManifestValueApp2[] = R"(
 class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
  public:
   explicit IsolatedWebAppPolicyManagerTestBase(
+      bool is_mgs_session_install_enabled,
+      bool is_user_session,
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT)
-      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory(), time_source) {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory(), time_source),
+        is_mgs_session_install_enabled_(is_mgs_session_install_enabled),
+        is_user_session_(is_user_session) {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kIsolatedWebApps};
+    if (is_mgs_session_install_enabled_) {
+      enabled_features.push_back(
+          features::kIsolatedWebAppManagedGuestSessionInstall);
+    }
+
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        std::move(enabled_features),
+        /*disabled_features=*/{});
   }
 
   void SetUpServedIwas() {
@@ -432,8 +502,10 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
     SetUpServedIwas();
 
-    test_managed_guest_session_ =
-        std::make_unique<profiles::testing::ScopedTestManagedGuestSession>();
+    if (!is_user_session_) {
+      test_managed_guest_session_ =
+          std::make_unique<profiles::testing::ScopedTestManagedGuestSession>();
+    }
 
 #if BUILDFLAG(ENABLE_NACL)
     // Uninstalling an IWA will clear PNACL cache, which needs this delegate
@@ -461,10 +533,16 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
     ASSERT_THAT(web_app, testing::NotNull()) << "The app in not installed :(";
   }
 
+  bool IsManagedGuestSessionInstallEnabled() {
+    return is_mgs_session_install_enabled_;
+  }
+
   const web_package::SignedWebBundleId& get_app1_id() { return *lazy_app1_id_; }
   const web_package::SignedWebBundleId& get_app2_id() { return *lazy_app2_id_; }
 
  private:
+  const bool is_mgs_session_install_enabled_;
+  const bool is_user_session_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
@@ -479,6 +557,12 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
 
 class IsolatedWebAppPolicyManagerTest
     : public IsolatedWebAppPolicyManagerTestBase {
+ public:
+  IsolatedWebAppPolicyManagerTest()
+      : IsolatedWebAppPolicyManagerTestBase(
+            /*is_mgs_session_install_enabled=*/false,
+            /*is_user_session=*/true) {}
+
   // `IsolatedWebAppPolicyManagerTestBase`:
   void SetCommandScheduler() override {
     // For these tests we are fine with regular command scheduler.
@@ -594,6 +678,52 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
               Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
 }
 
+class ManagedGuestSessionInstallFlagTest
+    : public IsolatedWebAppPolicyManagerTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ManagedGuestSessionInstallFlagTest()
+      : IsolatedWebAppPolicyManagerTestBase(
+            /*is_mgs_session_install_enabled=*/GetParam(),
+            /*is_user_session=*/false) {}
+
+  // `IsolatedWebAppPolicyManagerTestBase`:
+  void SetCommandScheduler() override {
+    // For these tests we are fine with regular command scheduler.
+  }
+};
+
+TEST_P(ManagedGuestSessionInstallFlagTest, AppInstalledIfFlagEnabled) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app1_id());
+
+  PolicyGenerator policy_generator;
+  policy_generator.AddForceInstalledIwa(url_info.web_bundle_id(),
+                                        GURL(kUpdateManifestUrlApp1));
+  profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                             policy_generator.Generate());
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  task_environment()->RunUntilIdle();
+
+  const WebApp* web_app =
+      fake_provider().registrar_unsafe().GetAppById(url_info.app_id());
+  if (IsManagedGuestSessionInstallEnabled()) {
+    ASSERT_THAT(web_app, NotNull());
+    EXPECT_THAT(
+        web_app->GetSources(),
+        Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
+  } else {
+    ASSERT_THAT(web_app, IsNull());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ManagedGuestSessionInstallFlagTest,
+    // Determines whether managed guest session install is enabled.
+    testing::Bool());
+
 // This implementation of the command scheduler can't install an IWA. Instead
 // it hangs and waits for the signal to signalize the
 // invoker that the install failed.
@@ -633,6 +763,11 @@ template <typename T>
 class IsolatedWebAppPolicyManagerCustomSchedulerTest
     : public IsolatedWebAppPolicyManagerTestBase {
  public:
+  IsolatedWebAppPolicyManagerCustomSchedulerTest()
+      : IsolatedWebAppPolicyManagerTestBase(
+            /*is_mgs_session_install_enabled=*/false,
+            /*is_user_session=*/true) {}
+
   T* get_command_scheduler() { return scheduler_; }
   // `IsolatedWebAppPolicyManagerTestBase`:
   void SetCommandScheduler() override {
@@ -954,6 +1089,8 @@ class IsolatedWebAppRetryTest : public IsolatedWebAppPolicyManagerTestBase {
  public:
   IsolatedWebAppRetryTest()
       : IsolatedWebAppPolicyManagerTestBase(
+            /*is_mgs_session_install_enabled=*/false,
+            /*is_user_session=*/true,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
@@ -1238,7 +1375,10 @@ TEST_F(IsolatedWebAppRetryTest, RetryTriggeredWhenAllTasksDone) {
 
 class CleanupOrphanedBundlesTest : public IsolatedWebAppPolicyManagerTestBase {
  public:
-  CleanupOrphanedBundlesTest() = default;
+  CleanupOrphanedBundlesTest()
+      : IsolatedWebAppPolicyManagerTestBase(
+            /*is_mgs_session_install_enabled=*/false,
+            /*is_user_session=*/true) {}
 
   void SetUp() override {
     IsolatedWebAppPolicyManagerTestBase::SetUp();

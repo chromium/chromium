@@ -5163,6 +5163,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableIsolatedWebAppAutomaticUpdatesDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kIsolatedWebAppAutomaticUpdates)},
+    {"enable-isolated-web-app-managed-guest-session-install",
+     flag_descriptions::kEnableIsolatedWebAppManagedGuestSessionInstallName,
+     flag_descriptions::
+         kEnableIsolatedWebAppManagedGuestSessionInstallDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kIsolatedWebAppManagedGuestSessionInstall)},
     {"enable-isolated-web-app-unmanaged-install",
      flag_descriptions::kEnableIsolatedWebAppUnmanagedInstallName,
      flag_descriptions::kEnableIsolatedWebAppUnmanagedInstallDescription,

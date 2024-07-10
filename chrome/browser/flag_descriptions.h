@@ -823,6 +823,9 @@ extern const char kEnableIsolatedWebAppAutomaticUpdatesDescription[];
 
 extern const char kEnableIsolatedWebAppUnmanagedInstallName[];
 extern const char kEnableIsolatedWebAppUnmanagedInstallDescription[];
+
+extern const char kEnableIsolatedWebAppManagedGuestSessionInstallName[];
+extern const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[];
 #endif
 
 extern const char kEnableIsolatedWebAppDevModeName[];

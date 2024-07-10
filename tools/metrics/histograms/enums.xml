@@ -25513,6 +25513,8 @@ from previous Chrome versions.
   <int value="2014629801" label="view-passwords:disabled"/>
   <int value="2015300711" label="BorealisLinuxMode:enabled"/>
   <int value="2015335629" label="shelf-hover-previews"/>
+  <int value="2015542544"
+      label="IsolatedWebAppManagedGuestSessionInstall:disabled"/>
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
   <int value="2017283500" label="DragDropTabTearingEnableOEM:disabled"/>
   <int value="2018206979" label="FilesLocalImageSearch:disabled"/>
@@ -25531,6 +25533,8 @@ from previous Chrome versions.
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
   <int value="2025344937" label="SyncAndroidPromosWithIllustration:disabled"/>
   <int value="2025618564" label="AutofillShowAutocompleteDeleteButton:enabled"/>
+  <int value="2027013221"
+      label="IsolatedWebAppManagedGuestSessionInstall:enabled"/>
   <int value="2027492085" label="SuppressToolbarCaptures:disabled"/>
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
   <int value="2029145363"

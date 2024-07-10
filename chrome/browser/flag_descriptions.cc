@@ -1281,6 +1281,12 @@ const char kEnableIsolatedWebAppUnmanagedInstallName[] =
 const char kEnableIsolatedWebAppUnmanagedInstallDescription[] =
     "Enables the installation of Isolated Web Apps on devices that are not "
     "managed by an enterprise.";
+
+const char kEnableIsolatedWebAppManagedGuestSessionInstallName[] =
+    "Enable Isolated Web App installation in managed guest sessions";
+const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[] =
+    "Enables the installation of Isolated Web Apps for users that are logged "
+    "into a managed guest session.";
 #endif
 
 const char kEnableIsolatedWebAppDevModeName[] =

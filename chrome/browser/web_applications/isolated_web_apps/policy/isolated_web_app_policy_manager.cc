@@ -47,6 +47,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/prefs/pref_service.h"
@@ -215,6 +216,14 @@ IwaInstaller::~IwaInstaller() {
 }
 
 void IwaInstaller::Start() {
+  if (chromeos::IsManagedGuestSession() &&
+      !base::FeatureList::IsEnabled(
+          features::kIsolatedWebAppManagedGuestSessionInstall)) {
+    LOG(ERROR) << "IWA installation in managed guest sessions is disabled.";
+    Finish(Result(Result::Type::kErrorManagedGuestSessionInstallDisabled));
+    return;
+  }
+
   auto weak_ptr = weak_factory_.GetWeakPtr();
   RunChainedCallbacks(
       base::BindOnce(&IwaInstaller::CreateTempFile, weak_ptr),
@@ -463,6 +472,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kErrorCantDownloadWebBundle";
     case Type::kErrorCantInstallFromWebBundle:
       return os << "kErrorCantInstallFromWebBundle";
+    case Type::kErrorManagedGuestSessionInstallDisabled:
+      return os << "kErrorManagedGuestSessionInstallDisabled";
   }
 }
 
@@ -546,6 +557,15 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
     current_process_log_.Set(
         "error",
         "policy is ignored because isolated web apps are not enabled.");
+    OnPolicyProcessed();
+    return;
+  }
+
+  if (chromeos::IsManagedGuestSession() &&
+      !base::FeatureList::IsEnabled(
+          features::kIsolatedWebAppManagedGuestSessionInstall)) {
+    current_process_log_.Set(
+        "error", "IWA installation in managed guest sessions is disabled.");
     OnPolicyProcessed();
     return;
   }

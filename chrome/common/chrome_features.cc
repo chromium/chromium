@@ -855,6 +855,13 @@ BASE_FEATURE(kIsolatedWebAppUnmanagedInstall,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
+// Enables users to install isolated web apps in managed guest sessions.
+BASE_FEATURE(kIsolatedWebAppManagedGuestSessionInstall,
+             "IsolatedWebAppManagedGuestSessionInstall",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kKioskEnableSystemWebApps,
              "KioskEnableSystemWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);

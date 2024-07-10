@@ -52,6 +52,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -103,10 +104,16 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
  protected:
   explicit IsolatedWebAppPolicyManagerAshBrowserTestBase(bool is_user_session)
       : is_user_session_(is_user_session) {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kIsolatedWebApps};
     if (is_user_session_) {
       login_manager_mixin_.AppendRegularUsers(1);
+    } else {
+      enabled_features.push_back(
+          features::kIsolatedWebAppManagedGuestSessionInstall);
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
   }
 
   ~IsolatedWebAppPolicyManagerAshBrowserTestBase() override = default;
@@ -605,6 +612,7 @@ class CleanupOrphanedBundlesTest
   raw_ptr<Profile> last_simulate_orphaned_bundle_profile_ = nullptr;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
