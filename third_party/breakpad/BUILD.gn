@@ -57,24 +57,41 @@ if (is_win) {
 # - building it into both places temporarily
 # - updating a bunch of scripts in internal repositories.
 # - remove it from the default toolchain's outdir.
-if (is_ios || is_android || is_chromeos ||
-    # The breakpad exes do not compile successfully for Windows ARM.
-    (is_win && (current_cpu == "arm" || current_cpu == "arm64"))) {
-  # We build Windows ARM executables as Windows x64, targeting the host machine
-  # because they will run on the Arm machine still (through emulation) and
-  # because the code does not compile when targeting Windows ARM. This doesn't
-  # work for other hosts obviously.
-  assert(!is_win || host_os == "win")
+if (is_ios || is_android || is_chromeos) {
   _tests_launcher_toolchain = host_system_allocator_toolchain
   _tests_launcher_toolchain_has_exe_suffix = host_os == "win"
-  _symupload_toolchain = host_system_allocator_toolchain
-  _symupload_toolchain_has_exe_suffix = host_os == "win"
+  _include_google_converter = true
+} else if (is_win && (current_cpu == "arm" || current_cpu == "arm64")) {
+  # In a build for Windows-ARM, we choose between building things for the host
+  # machine, or for the target machine (Windows ARM64). If the host machine is
+  # Linux, then there is a problem with each of these:
+  # - If using the host (Linux), the `google_converter` tool can not be built as
+  #   it only has build rules for Windows.
+  # - If using the target (Windows ARM64), compilation will fail as these tools
+  #   simply do not build in that configuration.
+  #
+  # So we build these tools for the host machine. If the host is Windows-x64,
+  # the resulting binaries can still be run on the target. If the host is Linux,
+  # they can not, but we have no Linux-to-Windows-ARM builders at this time.
+  #
+  # The `google_converter` executable must be excluded from the build if the
+  # host is not Windows, as there's no way to build it for the host then.
+  #
+  # TODO(danakj): We could build these for "x86" cpu system-allocator instead,
+  # if we could find that toolchain. We don't want to do some hacky
+  # string-concat stuff here to invent the toolchain name, so we would want to
+  # add a `win_x86_system_allocator_toolchain` variable. See
+  # https://crrev.com/c/5690512/5 for this solution.
+  _tests_launcher_toolchain = host_system_allocator_toolchain
+  _tests_launcher_toolchain_has_exe_suffix = host_os == "win"
+  _include_google_converter = host_os == "win"
 } else {
   _tests_launcher_toolchain = default_system_allocator_toolchain
   _tests_launcher_toolchain_has_exe_suffix = current_os == "win"
-  _symupload_toolchain = host_system_allocator_toolchain
-  _symupload_toolchain_has_exe_suffix = host_os == "win"
+  _include_google_converter = true
 }
+_symupload_toolchain = host_system_allocator_toolchain
+_symupload_toolchain_has_exe_suffix = host_os == "win"
 
 # Copies an executable target to the root directory of the current toolchain.
 # Used to copy from another toolchain. This requires that the executable is
@@ -1155,9 +1172,11 @@ if (is_win) {
   } else if (current_toolchain == default_toolchain) {
     # The default toolchain builds the system-allocator binaries, which are
     # placed in the output dir of the default toolchain.
-    copy_exe("google_converter") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
-      target = ":$target_name($_tests_launcher_toolchain)"
+    if (_include_google_converter) {
+      copy_exe("google_converter") {
+        has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
+        target = ":$target_name($_tests_launcher_toolchain)"
+      }
     }
     copy_exe("symupload") {
       has_exe_suffix = _symupload_toolchain_has_exe_suffix
