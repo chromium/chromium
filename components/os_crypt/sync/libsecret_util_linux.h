@@ -8,6 +8,7 @@
 #include <libsecret/secret.h>
 
 #include <list>
+#include <memory>
 #include <string>
 
 #include "base/component_export.h"
@@ -55,15 +56,23 @@ class LibsecretLoader {
 
     bool success() { return !error_; }
 
-    GList* results() { return results_; }
-    GError* error() { return error_; }
+    GList* results() { return results_.get(); }
+    GError* error() { return error_.get(); }
 
    private:
+    struct GErrorDeleter {
+      inline void operator()(GError* error) { g_error_free(error); }
+    };
+
+    struct GListDeleter {
+      inline void operator()(GList* list) {
+        g_list_free_full(list, &g_object_unref);
+      }
+    };
+
     // |results_| and |error_| are C-style objects owned by this instance.
-    raw_ptr<GList> results_ = nullptr;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #addr-of
-    RAW_PTR_EXCLUSION GError* error_ = nullptr;
+    std::unique_ptr<GList, GListDeleter> results_ = nullptr;
+    std::unique_ptr<GError, GErrorDeleter> error_ = nullptr;
   };
 
   LibsecretLoader() = delete;

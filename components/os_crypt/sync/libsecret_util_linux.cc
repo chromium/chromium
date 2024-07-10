@@ -74,22 +74,19 @@ const LibsecretLoader::FunctionInfo LibsecretLoader::kFunctions[] = {
 };
 
 LibsecretLoader::SearchHelper::SearchHelper() = default;
-LibsecretLoader::SearchHelper::~SearchHelper() {
-  if (error_)
-    g_error_free(error_);
-  if (results_)
-    g_list_free_full(results_.ExtractAsDangling(), &g_object_unref);
-}
+LibsecretLoader::SearchHelper::~SearchHelper() = default;
 
 void LibsecretLoader::SearchHelper::Search(const SecretSchema* schema,
                                            GHashTable* attrs,
                                            int flags) {
   DCHECK(!results_);
-  results_ = LibsecretLoader::secret_service_search_sync(
+  GError* error = nullptr;
+  results_.reset(LibsecretLoader::secret_service_search_sync(
       nullptr,  // default secret service
       schema, attrs, static_cast<SecretSearchFlags>(flags),
       nullptr,  // no cancellable object
-      &error_);
+      &error));
+  error_.reset(error);
 }
 
 // static
