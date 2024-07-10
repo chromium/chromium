@@ -28,6 +28,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -47,6 +48,7 @@ public class SearchResumptionModuleMediator
     private final SigninManager mSignInManager;
     private final SyncService mSyncService;
     private final TemplateUrlService mTemplateUrlService;
+    private final TemplateUrlServiceObserver mTemplateUrlServiceObserver;
     private AutocompleteController mAutoComplete;
     private PropertyModel mModel;
     // Set the default values of these variable true since all of them have been checked before
@@ -76,7 +78,8 @@ public class SearchResumptionModuleMediator
                         SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM,
                         false);
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
-        mTemplateUrlService.addObserver(this::onTemplateURLServiceChanged);
+        mTemplateUrlServiceObserver = this::onTemplateURLServiceChanged;
+        mTemplateUrlService.addObserver(mTemplateUrlServiceObserver);
 
         if (cachedSuggestions != null) {
             showCachedSuggestions(cachedSuggestions);
@@ -183,7 +186,7 @@ public class SearchResumptionModuleMediator
         if (mSearchResumptionModuleBridge != null) {
             mSearchResumptionModuleBridge.destroy();
         }
-        mTemplateUrlService.removeObserver(this::onTemplateURLServiceChanged);
+        mTemplateUrlService.removeObserver(mTemplateUrlServiceObserver);
         mSignInManager.removeSignInStateObserver(this);
         mSyncService.removeSyncStateChangedListener(this);
     }
