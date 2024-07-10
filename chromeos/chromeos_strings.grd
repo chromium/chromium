@@ -4310,9 +4310,6 @@
         <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_ART_NOUVEAU" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
           art nouveau
         </message>
-        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_BAROQUE" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
-          baroque
-        </message>
         <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_BAUHAUS" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
           bauhaus
         </message>
@@ -4324,9 +4321,6 @@
         </message>
         <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_ABSTRACT" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
           abstract
-        </message>
-        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_POINTILLIST" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
-          pointillist
         </message>
         <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_GRAPHIC_DESIGN" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
           graphic design

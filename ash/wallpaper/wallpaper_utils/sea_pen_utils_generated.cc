@@ -2736,8 +2736,6 @@ ChipToOptionSet() {
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kVcBackgroundArtMovementArtNouveau,
                ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kVcBackgroundArtMovementBaroque,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
                    kVcBackgroundArtMovementBauhaus,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kVcBackgroundArtMovementClassicist,
@@ -2745,8 +2743,6 @@ ChipToOptionSet() {
                    kVcBackgroundArtMovementWatercolor,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kVcBackgroundArtMovementAbstract,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kVcBackgroundArtMovementPointillist,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kVcBackgroundArtMovementGraphicDesign,
                ash::personalization_app::mojom::SeaPenTemplateOption::

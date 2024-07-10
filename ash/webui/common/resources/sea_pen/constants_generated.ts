@@ -2501,13 +2501,6 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/art_nouveau.jpg',
             },
             {
-              value: SeaPenTemplateOption.kVcBackgroundArtMovementBaroque,
-              translation: loadTimeData.getString(
-                  'seaPenOptionVcBackgroundArtMovementBaroque'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/baroque.jpg',
-            },
-            {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementBauhaus,
               translation: loadTimeData.getString(
                   'seaPenOptionVcBackgroundArtMovementBauhaus'),
@@ -2534,13 +2527,6 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
                   'seaPenOptionVcBackgroundArtMovementAbstract'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/abstract.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kVcBackgroundArtMovementPointillist,
-              translation: loadTimeData.getString(
-                  'seaPenOptionVcBackgroundArtMovementPointillist'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pointillist.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementGraphicDesign,
