@@ -183,7 +183,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     @Test
     public void doesNotSendUserInteractionWhenIncognito() {
-        env.isIncognito = true;
+        env.isOffTheRecord = true;
         initializeTabForTest();
         List<TabObserver> tabObservers = captureTabObservers();
         for (TabObserver observer : tabObservers) {

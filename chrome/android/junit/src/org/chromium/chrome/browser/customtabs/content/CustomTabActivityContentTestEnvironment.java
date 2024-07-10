@@ -117,7 +117,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public Tab tabFromFactory;
 
-    public boolean isIncognito;
+    public boolean isOffTheRecord;
 
     @Override
     protected void starting(Description description) {
@@ -284,7 +284,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(tab.getWebContents()).thenReturn(webContents);
         NavigationController navigationController = mock(NavigationController.class);
         when(webContents.getNavigationController()).thenReturn(navigationController);
-        when(tab.isIncognito()).thenAnswer((mock) -> isIncognito);
+        when(tab.isIncognito()).thenAnswer((mock) -> isOffTheRecord);
+        when(tab.isOffTheRecord()).thenAnswer((mock) -> isOffTheRecord);
+        when(tab.isIncognitoBranded()).thenAnswer((mock) -> isOffTheRecord);
         return tab;
     }
 }

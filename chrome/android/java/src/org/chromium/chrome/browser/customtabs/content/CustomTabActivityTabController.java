@@ -477,7 +477,7 @@ public class CustomTabActivityTabController implements InflationObserver {
             tab.getView().requestFocus();
         }
 
-        if (!tab.isIncognito()) {
+        if (!tab.isOffTheRecord()) {
             TabObserver observer =
                     new EmptyTabObserver() {
                         @Override
