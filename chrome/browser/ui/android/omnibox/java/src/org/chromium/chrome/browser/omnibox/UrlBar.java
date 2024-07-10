@@ -63,7 +63,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
 
 /** The URL text entry view for the Omnibox. */
-public abstract class UrlBar extends AutocompleteEditText {
+public class UrlBar extends AutocompleteEditText {
     private static final String TAG = "UrlBar";
     @VisibleForTesting static final float LINE_HEIGHT_FACTOR = 1.15f;
 
@@ -106,7 +106,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     private final KeyboardHideHelper mKeyboardHideHelper;
 
     private final Rect mClipBounds = new Rect();
-    private final Runnable mEnforceMaxTextHeight = this::enforceMaxTextHeight;
+    @VisibleForTesting final Runnable mEnforceMaxTextHeight = this::enforceMaxTextHeight;
 
     private boolean mFocused;
     private boolean mFocusEventEmitted;
@@ -1019,7 +1019,11 @@ public abstract class UrlBar extends AutocompleteEditText {
     @Override
     public void layout(int left, int top, int right, int bottom) {
         super.layout(left, top, right, bottom);
-        post(mEnforceMaxTextHeight);
+        // Do not scale the Omnibox font size if our height is set to WRAP_CONTENT.
+        // This ensures we don't trigger the recurring layout/adjust/layout/adjust cycle.
+        if (getLayoutParams().height != LayoutParams.WRAP_CONTENT) {
+            post(mEnforceMaxTextHeight);
+        }
 
         // Note: this must happen after the *entire* layout cycle completes.
         // Running this during onLayout guarantees that isLayoutRequested will remain true,

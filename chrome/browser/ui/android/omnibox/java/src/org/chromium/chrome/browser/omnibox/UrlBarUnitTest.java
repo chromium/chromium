@@ -933,4 +933,18 @@ public class UrlBarUnitTest {
         mUrlBar.enforceMaxTextHeight();
         assertEquals(40, mUrlBar.getTextSize(), MathUtils.EPSILON);
     }
+
+    @Test
+    public void layout_adjustFontSizeWithFixedHeight() {
+        mUrlBar.setLayoutParams(new LayoutParams(123, 123));
+        mUrlBar.layout(0, 0, 123, 123);
+        verify(mUrlBar).post(mUrlBar.mEnforceMaxTextHeight);
+    }
+
+    @Test
+    public void layout_fixedFontSizeWithWrappingHeight() {
+        mUrlBar.setLayoutParams(new LayoutParams(123, LayoutParams.WRAP_CONTENT));
+        mUrlBar.layout(0, 0, 123, 123);
+        verify(mUrlBar, never()).post(mUrlBar.mEnforceMaxTextHeight);
+    }
 }
