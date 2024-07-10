@@ -48,7 +48,21 @@ AnimationFrameTimingMonitor::AnimationFrameTimingMonitor(Client& client,
 
 void AnimationFrameTimingMonitor::Shutdown() {
   enabled_ = false;
+  frame_handling_input_ = nullptr;
   Thread::Current()->RemoveTaskTimeObserver(this);
+}
+
+void AnimationFrameTimingMonitor::WillHandleInput(LocalFrame* frame) {
+  CHECK(frame);
+  if (frame == frame_handling_input_) {
+    return;
+  }
+
+  if (frame_handling_input_) {
+    multiple_focused_frames_in_same_task_ = true;
+  }
+
+  frame_handling_input_ = frame;
 }
 
 void AnimationFrameTimingMonitor::BeginMainFrame(
@@ -163,8 +177,19 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
 
   bool did_pause = false;
   bool did_see_ui_events = false;
+  bool multiple_focused_frames_in_same_task = false;
   std::swap(did_pause, did_pause_);
   std::swap(did_see_ui_events, did_see_ui_events_);
+  std::swap(multiple_focused_frames_in_same_task,
+            multiple_focused_frames_in_same_task_);
+
+  // Input tasks are not attributed to a frame, so we manually attribute it to
+  // the focused frame as received from WebFrameWidgetImpl.
+  LocalFrame* frame_handling_input = frame_handling_input_.Release();
+  if (!frame) {
+    frame = frame_handling_input;
+  }
+
   current_task_start_ = base::TimeTicks();
 
   base::TimeDelta task_duration = end_time - start_time;
@@ -197,6 +222,15 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   }
 
   bool should_report = client_.ShouldReportLongAnimationFrameTiming();
+
+  // Changing the focused frame mid-task should also schedule rendering.
+  // Marking as DUMP_WILL_BE_CHECK because failing this assumption is not
+  // critical.
+  // TODO(crbug/352077677): Verify this assumption if no dumps are created and
+  // turn into a CHECK.
+  DUMP_WILL_BE_CHECK(!multiple_focused_frames_in_same_task_ ||
+                     client_.RequestedMainFramePending());
+
   if (client_.RequestedMainFramePending() && should_report) {
     current_frame_timing_info_ =
         MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
@@ -476,6 +510,7 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
 void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(current_frame_timing_info_);
   visitor->Trace(current_scripts_);
+  visitor->Trace(frame_handling_input_);
 }
 
 namespace {

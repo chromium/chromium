@@ -102,7 +102,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void WillRunJavaScriptDialog();
   void DidRunJavaScriptDialog();
   void DidFinishSyncXHR(base::TimeDelta);
-
+  void WillHandleInput(LocalFrame*);
 
  private:
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
@@ -163,6 +163,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   base::TimeDelta longest_task_duration_;
   bool did_pause_ = false;
   bool did_see_ui_events_ = false;
+  WeakMember<LocalFrame> frame_handling_input_;
+  bool multiple_focused_frames_in_same_task_ = false;
 
   unsigned entry_point_depth_ = 0;
 

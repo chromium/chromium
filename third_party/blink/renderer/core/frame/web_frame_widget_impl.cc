@@ -2984,6 +2984,10 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
       content_capture_manager->NotifyInputEvent(input_event.GetType(),
                                                 *local_frame);
     }
+
+    if (animation_frame_timing_monitor_) {
+      animation_frame_timing_monitor_->WillHandleInput(local_frame);
+    }
   }
 
   // Skip the pointerrawupdate for mouse capture case.
