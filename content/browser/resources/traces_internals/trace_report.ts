@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './trace_report.html.js';
+import {getCss} from './trace_report.css.js';
+import {getHtml} from './trace_report.html.js';
 import type {ClientTraceReport} from './trace_report.mojom-webui.js';
 import {SkipUploadReason} from './trace_report.mojom-webui.js';
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
@@ -40,53 +40,54 @@ function downloadUrl(fileName: string, url: string): void {
   a.click();
 }
 
-export class TraceReportElement extends PolymerElement {
+export class TraceReportElement extends CrLitElement {
   static get is() {
     return 'trace-report';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      trace: Object,
+      trace: {type: Object},
       // Enable the html template to use UploadState
-      uploadStateEnum_: {
-        type: Object,
-        value: UploadState,
-        readOnly: true,
-      },
-      isLoading: Boolean,
+      uploadStateEnum_: {type: Object},
+      isLoading: {type: Boolean},
     };
   }
 
-  private trace: ClientTraceReport;
-  private isLoading: boolean = false;
+  protected trace: ClientTraceReport;
+  protected isLoading: boolean = false;
+  protected uploadStateEnum_: typeof UploadState = UploadState;
   private traceReportProxy_: TraceReportBrowserProxy =
       TraceReportBrowserProxy.getInstance();
 
-  private onCopyUuidClick_(): void {
+  protected onCopyUuidClick_(): void {
     // Get the text field
     assert(this.trace.uuid.high);
     assert(this.trace.uuid.low);
-    navigator.clipboard.writeText(`${this.tokenToString_(this.trace.uuid)}`);
+    navigator.clipboard.writeText(this.tokenToString_(this.trace.uuid));
   }
 
-  private onCopyScenarioClick_(): void {
+  protected onCopyScenarioClick_(): void {
     // Get the text field
     assert(this.trace.scenarioName);
     navigator.clipboard.writeText(this.trace.scenarioName);
   }
 
-  private onCopyUploadRuleClick_(): void {
+  protected onCopyUploadRuleClick_(): void {
     // Get the text field
     assert(this.trace.uploadRuleName);
     navigator.clipboard.writeText(this.trace.uploadRuleName);
   }
 
-  private getSkipReason_(skipReason: number): string {
+  protected getSkipReason_(): string {
     // Keep this in sync with the values of SkipUploadReason in
     // trace_report.mojom
     const skipReasonMap: string[] = [
@@ -97,19 +98,19 @@ export class TraceReportElement extends PolymerElement {
       'Upload timed out',
     ];
 
-    return skipReasonMap[skipReason];
+    return skipReasonMap[this.trace.skipReason];
   }
 
-  private isManualUploadPermitted_(skipReason: number): boolean {
+  protected isManualUploadPermitted_(skipReason: number): boolean {
     return skipReason !== SkipUploadReason.kNotAnonymized;
   }
 
-  private getTraceSize_(size: bigint): string {
+  protected getTraceSize_(): string {
     if (this.trace.totalSize < 1) {
       return '0 Bytes';
     }
 
-    let displayedSize = Number(size);
+    let displayedSize = Number(this.trace.totalSize);
     const k = 1024;
 
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -123,7 +124,7 @@ export class TraceReportElement extends PolymerElement {
     return `${displayedSize.toFixed(2)} ${sizes[i]}`;
   }
 
-  private dateToString_(mojoTime: Time): string {
+  protected dateToString_(mojoTime: Time): string {
     // The JS Date() is based off of the number of milliseconds since
     // the UNIX epoch (1970-01-01 00::00:00 UTC), while |internalValue|
     // of the base::Time (represented in mojom.Time) represents the
@@ -151,7 +152,7 @@ export class TraceReportElement extends PolymerElement {
             });
   }
 
-  private async onDownloadTraceClick_(): Promise<void> {
+  protected async onDownloadTraceClick_(): Promise<void> {
     this.isLoading = true;
     const {trace} =
         await this.traceReportProxy_.handler.downloadTrace(this.trace.uuid);
@@ -191,7 +192,7 @@ export class TraceReportElement extends PolymerElement {
     }
   }
 
-  private async onDeleteTraceClick_(): Promise<void> {
+  protected async onDeleteTraceClick_(): Promise<void> {
     this.isLoading = true;
     const {success} =
         await this.traceReportProxy_.handler.deleteSingleTrace(this.trace.uuid);
@@ -204,7 +205,7 @@ export class TraceReportElement extends PolymerElement {
     this.isLoading = false;
   }
 
-  private async onUploadTraceClick_(): Promise<void> {
+  protected async onUploadTraceClick_(): Promise<void> {
     this.isLoading = true;
     const {success} =
         await this.traceReportProxy_.handler.userUploadSingleTrace(
@@ -218,11 +219,11 @@ export class TraceReportElement extends PolymerElement {
     this.isLoading = false;
   }
 
-  private uploadStateEqual(value1: UploadState, value2: UploadState): boolean {
-    return value1 === value2;
+  protected uploadStateEqual_(state: UploadState): boolean {
+    return this.trace.uploadState === state as number;
   }
 
-  private tokenToString_(token: Token): string {
+  protected tokenToString_(token: Token): string {
     return `${token.high.toString(16)}-${token.low.toString(16)}`;
   }
 
@@ -234,20 +235,16 @@ export class TraceReportElement extends PolymerElement {
     }));
   }
 
-  private isDownloadDisabled_(isLoading: boolean, hasTraceContent: boolean):
-      boolean {
-    return isLoading || !hasTraceContent;
+  protected isDownloadDisabled_(): boolean {
+    return this.isLoading || !this.trace.hasTraceContent;
   }
 
-  private getDownloadTooltip_(hasTraceContent: boolean): string {
-    return hasTraceContent ? 'Dowload Trace' : 'Trace expired';
+  protected getDownloadTooltip_(): string {
+    return this.trace.hasTraceContent ? 'Dowload Trace' : 'Trace expired';
   }
 
   private dispatchReloadRequest_(): void {
-    this.dispatchEvent(new CustomEvent('refresh-traces-request', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('refresh-traces-request');
   }
 }
 

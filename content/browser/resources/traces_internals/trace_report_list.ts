@@ -6,17 +6,17 @@ import './trace_report.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ClientTraceReport} from './trace_report.mojom-webui.js';
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
-import {getTemplate} from './trace_report_list.html.js';
+import {getCss} from './trace_report_list.css.js';
+import {getHtml} from './trace_report_list.html.js';
+// clang-format on
 
 export enum NotificationTypeEnum {
   UPDATE = 'Update',
@@ -42,35 +42,45 @@ export interface TraceReportListElement {
   };
 }
 
-export class TraceReportListElement extends PolymerElement {
+export class TraceReportListElement extends CrLitElement {
   static get is() {
     return 'trace-report-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      traces: Array,
-      isLoading: Boolean,
-      notification: Notification,
+      traces: {
+        type: Array,
+      },
+      isLoading: {
+        type: Boolean,
+      },
+      notification: {
+        type: Notification,
+      },
     };
   }
 
   private traceReportProxy_: TraceReportBrowserProxy =
       TraceReportBrowserProxy.getInstance();
-  private traces: ClientTraceReport[] = [];
-  private isLoading: boolean = false;
-  private notification: Readonly<Notification>;
+  protected traces: ClientTraceReport[] = [];
+  protected isLoading: boolean = false;
+  protected notification: Readonly<Notification>;
 
   override connectedCallback(): void {
     super.connectedCallback();
     this.initializeList(true);
   }
 
-  private async initializeList(hasLoading: boolean = false): Promise<void> {
+  protected async initializeList(hasLoading: boolean = false): Promise<void> {
     this.isLoading = hasLoading;
     const {reports} = await this.traceReportProxy_.handler.getAllTraceReports();
     if (reports) {
@@ -85,14 +95,17 @@ export class TraceReportListElement extends PolymerElement {
     this.isLoading = false;
   }
 
-  private showToastHandler_(e: CustomEvent<Notification>): void {
+  protected showToastHandler_(e: CustomEvent<Notification>): void {
     assert(e.detail);
     this.notification = e.detail;
     this.$.toast.show();
   }
 
-  private getNotificationIcon_(type: NotificationTypeEnum): string {
-    switch (type) {
+  protected getNotificationIcon_(): string {
+    if (this.notification === undefined) {
+      return '';
+    }
+    switch (this.notification.type) {
       case NotificationTypeEnum.ANNOUNCEMENT:
         return 'cr:info-outline';
       case NotificationTypeEnum.ERROR:
@@ -104,8 +117,11 @@ export class TraceReportListElement extends PolymerElement {
     }
   }
 
-  private getNotificationStyling_(type: NotificationTypeEnum): string {
-    switch (type) {
+  protected getNotificationStyling_(): string {
+    if (this.notification === undefined) {
+      return '';
+    }
+    switch (this.notification.type) {
       case NotificationTypeEnum.ANNOUNCEMENT:
         return 'announcement';
       case NotificationTypeEnum.ERROR:
@@ -117,11 +133,11 @@ export class TraceReportListElement extends PolymerElement {
     }
   }
 
-  private hasTraces_(traces: ClientTraceReport[]): boolean {
-    return traces.length > 0;
+  protected hasTraces_(): boolean {
+    return this.traces.length > 0;
   }
 
-  private async onDeleteAllTracesClick_(): Promise<void> {
+  protected async onDeleteAllTracesClick_(): Promise<void> {
     const {success} = await this.traceReportProxy_.handler.deleteAllTraces();
     if (!success) {
       this.dispatchToast_('Failed to delete to delete all traces.');
