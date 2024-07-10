@@ -1200,7 +1200,6 @@ class CrossSiteDocumentBlockingServiceWorkerTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
-    ContentBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {

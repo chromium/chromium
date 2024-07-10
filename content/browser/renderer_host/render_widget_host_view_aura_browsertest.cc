@@ -635,7 +635,6 @@ class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 

@@ -55,7 +55,6 @@ class SmsBrowserTest : public ContentBrowserTest {
   ~SmsBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(switches::kWebOtpBackend,

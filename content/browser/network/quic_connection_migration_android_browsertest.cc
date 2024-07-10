@@ -114,8 +114,6 @@ class QuicConnectionMigrationTest : public ContentBrowserTest {
     // migrations while fetching the resource.
     net::QuicSimpleTestServer::SetResponseDelay("/simple.txt",
                                                 base::Seconds(2));
-
-    ContentBrowserTest::SetUpCommandLine(command_line);
   }
 
   void TearDown() override {

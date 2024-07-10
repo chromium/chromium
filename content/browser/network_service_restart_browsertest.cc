@@ -139,10 +139,6 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
   NetworkServiceRestartBrowserTest& operator=(
       const NetworkServiceRestartBrowserTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-  }
-
   void SetUpOnMainThread() override {
     embedded_test_server()->RegisterRequestMonitor(
         base::BindRepeating(&NetworkServiceRestartBrowserTest::MonitorRequest,

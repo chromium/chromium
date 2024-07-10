@@ -212,8 +212,6 @@ void ContentCaptureDeviceBrowserTestBase::SetUp() {
 
 void ContentCaptureDeviceBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
-  ContentBrowserTest::SetUpCommandLine(command_line);
-
   IsolateAllSitesForTesting(command_line);
 
   // Use a small window size to reduce test running time (since screen captures

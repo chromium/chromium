@@ -136,7 +136,6 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "VirtualKeyboard,EditContext");
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-    ContentBrowserTest::SetUpCommandLine(command_line);
   }
 
   RenderViewHost* GetRenderViewHost() const {

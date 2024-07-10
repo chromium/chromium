@@ -129,7 +129,6 @@ const int kPlayerId = 0;
 class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "MediaSession");
   }

@@ -14,6 +14,8 @@
 //
 // - void SetUpCommandLine(base::CommandLine* command_line), e.g. to add
 //   command-line flags to enable / configure the feature being tested.
+//   NOTE: There is no need to call ContentBrowserTest::SetUpCommandLine() from
+//   the override method, as ContentBrowserTest::SetUpCommandLine() is empty.
 //
 // - void SetUpOnMainThread(), to run test set-up steps on the browser main
 //   thread, e.g. installing hooks in the browser process for testing. Note that

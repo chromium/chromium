@@ -115,7 +115,6 @@ class RenderWidgetHostBrowserTest : public ContentBrowserTest {
 class RenderWidgetHostSitePerProcessTest : public ContentBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
     // Slow bots are flaky due to slower loading interacting with
     // deferred commits.

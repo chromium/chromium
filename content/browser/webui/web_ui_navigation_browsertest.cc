@@ -1181,7 +1181,6 @@ class AdditionalSchemesWebUINavigationBrowserTest : public ContentBrowserTest {
 
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kTestRegisterStandardScheme,
                                     kAdditionalScheme);
   }

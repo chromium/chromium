@@ -229,7 +229,6 @@ class WebAppSystemMediaControlsBrowserTest
         switches::autoplay::kNoUserGestureRequiredPolicy);
 
     feature_list_.InitAndEnableFeature(features::kWebAppSystemMediaControls);
-    ContentBrowserTest::SetUpCommandLine(command_line);
   }
 
  private:

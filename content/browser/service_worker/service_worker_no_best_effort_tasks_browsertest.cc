@@ -33,7 +33,6 @@ class ServiceWorkerNoBestEffortTasksTest : public ContentBrowserTest {
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableBestEffortTasks);
-    ContentBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {

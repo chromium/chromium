@@ -37,7 +37,6 @@ class LargestContentfulPaintTestBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "ExposeRenderTimeNonTaoDelayedImage");
   }

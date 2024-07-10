@@ -107,7 +107,6 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     // Set the scroll animation duration to a large number so that
     // we ensure secondary GestureScrollUpdates update the animation
     // instead of starting a new one.

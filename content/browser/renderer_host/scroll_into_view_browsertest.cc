@@ -190,7 +190,6 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
 
     // Need this to control page scale factor via script or check for root

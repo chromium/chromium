@@ -41,8 +41,6 @@ class SpareRenderProcessHostManagerTest : public ContentBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-
     // Platforms that don't isolate sites won't create spare processes and
     // the test will fail. Therefore, enforce the site isolation here.
     IsolateAllSitesForTesting(command_line);

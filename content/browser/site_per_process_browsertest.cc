@@ -474,7 +474,6 @@ std::string SitePerProcessBrowserTestBase::WaitForMessageScript(
 
 void SitePerProcessBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
-  ContentBrowserTest::SetUpCommandLine(command_line);
   IsolateAllSitesForTesting(command_line);
 
   command_line->AppendSwitch(input::switches::kValidateInputEventStream);

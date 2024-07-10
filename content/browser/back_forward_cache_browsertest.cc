@@ -202,7 +202,6 @@ void BackForwardCacheBrowserTest::NotifyNotRestoredReasons(
 
 void BackForwardCacheBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  ContentBrowserTest::SetUpCommandLine(command_line);
   mock_cert_verifier_.SetUpCommandLine(command_line);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -2228,7 +2227,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CspSandbox) {
     ASSERT_EQ("sandbox", root_csp[0]->header->header_value);
     ASSERT_EQ(network::mojom::WebSandboxFlags::kAll,
               current_frame_host()->active_sandbox_flags());
-  };
+  }
 
   // 2) Navigate to B. Expect the previous RenderFrameHost to enter the bfcache.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -2243,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CspSandbox) {
     ASSERT_EQ(0u, root_csp.size());
     ASSERT_EQ(network::mojom::WebSandboxFlags::kNone,
               current_frame_host()->active_sandbox_flags());
-  };
+  }
 
   // 3) Navigate back and expect the page to be restored, with the correct
   // CSP and sandbox flags.
@@ -2260,7 +2259,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CspSandbox) {
     ASSERT_EQ("sandbox", root_csp[0]->header->header_value);
     ASSERT_EQ(network::mojom::WebSandboxFlags::kAll,
               current_frame_host()->active_sandbox_flags());
-  };
+  }
 }
 
 // Check that about:blank is not cached.

@@ -168,8 +168,6 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-
     // Set the scroll animation duration to 1 second (artificially slow) to make
     // it likely that the second scroll interrupts the first scroll's animation.
     //

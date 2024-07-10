@@ -38,10 +38,6 @@ class PerformanceTimelineBrowserTest : public ContentBrowserTest {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-  }
-
   RenderFrameHostImpl* current_frame_host() {
     return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
@@ -241,9 +237,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelineNavigationIdBrowserTest,
 
     // Verify `rfh_a` is stored in back/forward cache in case back/forward cache
     // feature is enabled.
-    if (IsBackForwardCacheEnabled())
+    if (IsBackForwardCacheEnabled()) {
       ASSERT_TRUE(rfh_a->IsInBackForwardCache());
-    else {
+    } else {
       // Verify `rfh_a` is deleted in case back/forward cache feature is
       // disabled.
       ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());

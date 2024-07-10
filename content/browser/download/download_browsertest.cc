@@ -1008,7 +1008,6 @@ class DownloadContentTest : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
     // Some tests are flaky due to slower loading interacting with deferred
     // commits so allow early input.

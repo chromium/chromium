@@ -152,7 +152,6 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kExposeInternalsForTesting);
   }

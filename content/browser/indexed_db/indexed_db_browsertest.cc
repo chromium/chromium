@@ -104,7 +104,6 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     // Enable experimental web platform features to enable write access.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    ContentBrowserTest::SetUpCommandLine(command_line);
   }
 
   void TearDownOnMainThread() override { failure_injector_.reset(); }

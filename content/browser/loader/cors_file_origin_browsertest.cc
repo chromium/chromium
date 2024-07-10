@@ -113,8 +113,6 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
     if (AllowFileAccessFromFiles()) {
       command_line->AppendSwitch(switches::kAllowFileAccessFromFiles);
     }
-
-    ContentBrowserTest::SetUpCommandLine(command_line);
   }
   void SetUpOnMainThread() override {
     base::AutoLock lock(lock_);

@@ -42,8 +42,6 @@ class FileSystemAccessFileModificationHostImplBrowserTest
                                    temp_dir_.GetPath());
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-
-    ContentBrowserTest::SetUpCommandLine(command_line);
   }
 
   void RunOnIOThreadBlocking(base::OnceClosure task) {

@@ -463,8 +463,6 @@ class MediaSessionPictureInPictureContentBrowserTest
     : public VideoPictureInPictureContentBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "MediaSession");
     scoped_feature_list_.InitWithFeatures(

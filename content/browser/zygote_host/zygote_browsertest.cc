@@ -80,7 +80,6 @@ class LinuxZygoteDisabledBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kNoZygote);
     command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
   }

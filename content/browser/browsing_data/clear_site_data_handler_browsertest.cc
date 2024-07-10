@@ -213,7 +213,6 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
 class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     browsing_data_browsertest_utils::SetIgnoreCertificateErrors(command_line);
   }
 
@@ -1073,7 +1072,7 @@ class ClearSiteDataHandlerStorageBucketsBrowserTest
     : public ClearSiteDataHandlerBrowserTest,
       public testing::WithParamInterface<TestScenario> {
  public:
-  explicit ClearSiteDataHandlerStorageBucketsBrowserTest() {
+  ClearSiteDataHandlerStorageBucketsBrowserTest() {
     enum TestScenario test_scenario = GetParam();
     std::vector<base::test::FeatureRef> activated_features = {};
 
