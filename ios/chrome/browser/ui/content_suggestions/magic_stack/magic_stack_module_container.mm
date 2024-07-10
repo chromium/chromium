@@ -102,7 +102,7 @@ const CGFloat kSeparatorHeight = 0.5;
     _title.font = [self fontForTitle];
     _title.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _title.numberOfLines = 1;
-    _title.lineBreakMode = NSLineBreakByWordWrapping;
+    _title.lineBreakMode = NSLineBreakByTruncatingTail;
     _title.accessibilityTraits |= UIAccessibilityTraitHeader;
     [_title setContentHuggingPriority:UILayoutPriorityDefaultLow
                               forAxis:UILayoutConstraintAxisHorizontal];
