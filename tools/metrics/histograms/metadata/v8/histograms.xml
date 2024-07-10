@@ -160,8 +160,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileMicroSeconds" units="microseconds"
-    expires_after="2025-01-05">
-  <owner>yangguo@chromium.org</owner>
+    expires_after="M136">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
   <summary>
     Time spent in V8 compiler (full codegen) excluding parser.
 
@@ -185,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds" units="microseconds"
-    expires_after="2024-11-17">
+    expires_after="M136">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -422,7 +423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ExecuteMicroSeconds" units="microseconds"
-    expires_after="2024-07-21">
+    expires_after="M136">
   <owner>cbruni@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
