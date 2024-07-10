@@ -25,14 +25,6 @@ static_library("magic_boost") {
     "//components/prefs",
     "//mojo/public/cpp/bindings",
     "//ui/views",
-
-    # TODO: Use //chrome/browser/ash/input_method after fixing cyclic dependency.
-    "//chrome/common:buildflags",
-    "//chrome/common:url_constants",
-    "//chromeos/ash/services/orca/public/mojom",
-    "//components/paint_preview/buildflags",
-    "//components/translate/content/browser",
-    "//content/public/browser:browser_sources",
   ]
 }
 

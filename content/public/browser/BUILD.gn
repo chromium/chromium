@@ -26,19 +26,7 @@ group("browser") {
 
 source_set("browser_sources") {
   # External code should depend on via ":browser" above.
-  visibility = [
-    "//content/*",
-
-    # TODO: remove this after fixing cyclic dependency between
-    # //chrome/browser/ash/input_method and
-    # //chrome/browser/ash/magic_boost.
-    "//chrome/browser/ash/magic_boost",
-
-    # TODO: remove this after fixing cyclic dependency between
-    # //chrome/browser/ash/policy/dlp/dialogs and
-    # //chrome/browser.
-    "//chrome/browser/ash/policy/dlp/dialogs",
-  ]
+  visibility = [ "//content/*" ]
   sources = [
     "active_url_message_filter.cc",
     "active_url_message_filter.h",
