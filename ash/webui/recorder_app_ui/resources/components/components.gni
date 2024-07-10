@@ -26,5 +26,6 @@ component_files = [
   "settings-menu.ts",
   "settings-row.ts",
   "summarization-view.ts",
+  "transcription-consent-dialog.ts",
   "transcription-view.ts",
 ]

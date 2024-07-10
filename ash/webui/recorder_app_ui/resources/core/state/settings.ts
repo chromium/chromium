@@ -37,9 +37,6 @@ export enum TranscriptionEnableState {
    *
    * This is a separate state since an additional confirmation dialog will be
    * shown only when user never enabled transcription before.
-   *
-   * TODO(pihsun): Check if this is still needed after the onboarding dialog
-   * change.
    */
   DISABLED_FIRST = 'DISABLED_FIRST',
 

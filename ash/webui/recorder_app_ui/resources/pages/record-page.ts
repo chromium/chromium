@@ -13,12 +13,14 @@ import '../components/delete-recording-dialog.js';
 import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
 import '../components/transcription-view.js';
+import '../components/transcription-consent-dialog.js';
 
 import {
   classMap,
   createRef,
   css,
   html,
+  live,
   nothing,
   PropertyDeclarations,
   ref,
@@ -27,6 +29,9 @@ import {
 import {CraDialog} from '../components/cra/cra-dialog.js';
 import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
+import {
+  TranscriptionConsentDialog,
+} from '../components/transcription-consent-dialog.js';
 import {i18n, replacePlaceholderWithHtml} from '../core/i18n.js';
 import {
   usePlatformHandler,
@@ -321,6 +326,9 @@ export class RecordPage extends ReactiveLitElement {
 
   private readonly deleteDialog = createRef<DeleteRecordingDialog>();
 
+  private readonly transcriptionConsentDialog =
+    createRef<TranscriptionConsentDialog>();
+
   private async startRecording() {
     if (this.recordingSession.value !== null) {
       return;
@@ -451,11 +459,7 @@ export class RecordPage extends ReactiveLitElement {
         return;
       case TranscriptionEnableState.UNKNOWN:
       case TranscriptionEnableState.DISABLED_FIRST:
-        // TODO: b/344784638 - This should show the same dialog as in the
-        // onboarding dialog instead of directly enabling the setting.
-        settings.mutate((s) => {
-          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-        });
+        this.transcriptionConsentDialog.value?.show();
         return;
       default:
         assertExhaustive(settings.value.transcriptionEnabled);
@@ -540,13 +544,6 @@ export class RecordPage extends ReactiveLitElement {
             s.transcriptionEnabled = TranscriptionEnableState.DISABLED_FIRST;
           });
         }
-        function enableTranscription() {
-          // TODO: b/344784638 - This should show the same dialog as in the
-          // onboarding dialog instead of directly enabling the setting.
-          settings.mutate((s) => {
-            s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-          });
-        }
         return html`
           <div id="transcription-consent">
             <cra-image name="transcript"></cra-image>
@@ -564,7 +561,7 @@ export class RecordPage extends ReactiveLitElement {
               ></cra-button>
               <cra-button
                 .label=${i18n.recordTranscriptionEntryPointEnableButton}
-                @click=${enableTranscription}
+                @click=${this.toggleTranscriptionEnabled}
               ></cra-button>
             </div>
           </div>
@@ -646,7 +643,7 @@ export class RecordPage extends ReactiveLitElement {
       <cra-menu-item
         headline=${i18n.recordMenuToggleTranscriptionOption}
         itemEnd="switch"
-        .switchSelected=${this.transcriptionEnabled.value}
+        .switchSelected=${live(this.transcriptionEnabled.value)}
         @cros-menu-item-triggered=${this.toggleTranscriptionEnabled}
       >
       </cra-menu-item>
@@ -732,6 +729,8 @@ export class RecordPage extends ReactiveLitElement {
       >
       </delete-recording-dialog>
       ${this.renderExitRecordingDialog()}
+      <transcription-consent-dialog ${ref(this.transcriptionConsentDialog)}>
+      </transcription-consent-dialog>
     `;
   }
 }

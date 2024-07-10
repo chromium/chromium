@@ -28,6 +28,9 @@ export class CraDialog extends MdDialog {
         --md-dialog-supporting-text-line-height: var(--cros-body-1-line-height);
         --md-dialog-supporting-text-size: var(--cros-body-1-font-size);
         --md-dialog-supporting-text-weight: var(--cros-body-1-font-weight);
+
+        /* Want at least 80px left/right margin. */
+        max-width: min(512px, 100vw - 160px);
       }
 
       .scrim {

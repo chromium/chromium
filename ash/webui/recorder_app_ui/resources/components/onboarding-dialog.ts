@@ -61,7 +61,7 @@ export class OnboardingDialog extends ReactiveLitElement {
     }
 
     #content {
-      padding: 32px 32px 26px;
+      padding: 32px 32px 28px;
     }
 
     #header {
@@ -168,7 +168,6 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       case 1: {
-        // TODO: b/344785475 - Implement transcription enable/disable logic.
         const enableTranscription = () => {
           settings.mutate((s) => {
             s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
