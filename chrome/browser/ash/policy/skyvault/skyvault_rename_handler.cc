@@ -123,6 +123,9 @@ void SkyvaultRenameHandler::OnOneDriveUploadDone(
 
   auto reason = success ? download::DOWNLOAD_INTERRUPT_REASON_NONE
                         : download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
+  if (success) {
+    download_item_->SetDisplayName(file_url.path().BaseName());
+  }
   std::move(rename_callback_).Run(reason, file_url.path());
 }
 
