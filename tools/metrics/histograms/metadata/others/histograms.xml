@@ -5228,7 +5228,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImportantFile.FileReplaceRetryCount" units="attempt count"
-    expires_after="2024-12-15">
+    expires_after="never">
+<!-- expires-never: Detects failures to write important files. -->
+
   <owner>etienneb@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
