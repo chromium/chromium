@@ -3334,15 +3334,22 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
     // non-breakable and we need to continue handling the following InlineItems
     // in such case. However it's very difficult if annotation items remain.
     LayoutUnit limit = kIndefiniteSize;
+    LineBreakerMode mode = mode_;
     if (base_line_info.GetBreakToken()) {
       if (retry_size != kIndefiniteSize) {
         limit = line.Width() * base_line_info.Width() / base_intrinsic_size;
       } else {
         limit = available * line.Width() / ruby_size;
       }
+    } else {
+      // If the base is consumed entirely, the corresponding annotations should
+      // be consumed entirely too.
+      if (mode == LineBreakerMode::kMinContent) {
+        mode = LineBreakerMode::kMaxContent;
+      }
     }
     line = CreateSubLineInfo(annotation_data[i].start,
-                             annotation_data[i].end_item_index, mode_, limit,
+                             annotation_data[i].end_item_index, mode, limit,
                              WhitespaceState::kLeading);
     annotation_is_broken = annotation_is_broken || line.GetBreakToken();
   }

@@ -1224,6 +1224,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   // Pass if no division-by-zero.
 }
 
+// crbug.com/350122891
+TEST_F(LineBreakerTest, MinMaxWithEmptyRubyBase) {
+  InlineNode node = CreateInlineNode(R"HTML(
+<div id="container" style="display:inline-block;">
+<ruby><rt><wbr>++P}A[X9e+52FuYyMsuADbOcYXMu73ci73uDMfYQsD</ruby></div>)HTML");
+  ComputeMinMaxSizes(node);
+  // Pass if no CHECK failure.
+}
+
 struct CanBreakInsideTestData {
   bool can_break_insde;
   const char* html;
