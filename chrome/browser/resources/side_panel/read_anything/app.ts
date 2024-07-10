@@ -1910,6 +1910,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     this.highlightCurrentText_(
         highlightStartIndex, endIndex, element as HTMLElement);
+
+    this.scrollHighlightIntoView();
   }
 
   highlightNodes(nextTextIds: number[], scrollIntoView: boolean = true) {
@@ -1937,6 +1939,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
+    this.scrollHighlightIntoView();
+  }
+
+  private scrollHighlightIntoView() {
     // Ensure all the current highlights are in view.
     // TODO: b/40927698 - Handle if the highlight is longer than the full height
     // of the window (e.g. when font size is very large). Possibly using word
