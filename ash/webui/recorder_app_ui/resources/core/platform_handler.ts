@@ -125,4 +125,12 @@ export abstract class PlatformHandler {
    * Renders the UI needed on the dev page.
    */
   abstract renderDevUi(): RenderResult;
+
+  /**
+   * Handles an uncaught error and returns the error UI to be shown.
+   *
+   * Returns null if the error is not handled specifically by the platform
+   * handler.
+   */
+  abstract handleUncaughtError(error: unknown): RenderResult|null;
 }

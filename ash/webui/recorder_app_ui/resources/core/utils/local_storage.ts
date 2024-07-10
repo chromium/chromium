@@ -14,8 +14,11 @@ export type JsonSerializable =|JsonSerializable[]|boolean|number|string|
 export enum Key {
   SETTINGS = 'settings',
   SUMMARIZATION = 'summarization',
+
   /**
    * Settings that are only used by dev mode.
+   *
+   * TODO(pihsun): Move this into platforms/dev/.
    */
   DEV_SETTINGS = 'dev-settings',
 }

@@ -58,6 +58,8 @@ export class ErrorView extends LitElement {
 
   error: unknown = null;
 
+  platformHandler: PlatformHandler|null = null;
+
   override render(): RenderResult {
     if (this.error === null) {
       return nothing;
@@ -69,6 +71,12 @@ export class ErrorView extends LitElement {
         return this.error;
       }
     })();
+    if (this.platformHandler !== null) {
+      const errorUi = this.platformHandler.handleUncaughtError(this.error);
+      if (errorUi !== null) {
+        return errorUi;
+      }
+    }
     // TODO(pihsun): This is for dogfooding only, should remove this before
     // launch.
     if (this.error instanceof ValidationError) {
@@ -124,6 +132,7 @@ export async function init(platformHandler: PlatformHandler): Promise<void> {
   let dataDir: DataDir|null = null;
 
   const errorView = new ErrorView();
+  errorView.platformHandler = platformHandler;
   document.body.appendChild(errorView);
   function handleError(e: unknown) {
     console.error(e);

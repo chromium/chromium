@@ -13,14 +13,17 @@ export enum ColorTheme {
   DARK = 'dark',
 }
 
-const devSettingsSchema = z.object({
+export const devSettingsSchema = z.object({
   forceTheme: z.optional(z.nativeEnum(ColorTheme)),
+  // Simulate first time soda installation cross session.
+  sodaInstalled: z.boolean(),
 });
 
 type DevSettings = Infer<typeof devSettingsSchema>;
 
 const defaultSettings: DevSettings = {
   forceTheme: ColorTheme.LIGHT,
+  sodaInstalled: false,
 };
 
 export const devSettings = signal(defaultSettings);

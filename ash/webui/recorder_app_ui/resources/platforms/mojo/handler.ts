@@ -128,4 +128,8 @@ export class PlatformHandler extends PlatformHandlerBase {
   override renderDevUi(): RenderResult {
     return nothing;
   }
+
+  override handleUncaughtError(_error: unknown): RenderResult|null {
+    return null;
+  }
 }

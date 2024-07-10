@@ -10,7 +10,7 @@
 import 'chrome://resources/cros_components/dropdown/dropdown_option.js';
 import '../../components/cra/cra-dropdown.js';
 
-import {html, styleMap} from 'chrome://resources/mwc/lit/index.js';
+import {html, nothing, styleMap} from 'chrome://resources/mwc/lit/index.js';
 
 import {CraDropdown} from '../../components/cra/cra-dropdown.js';
 import {SAMPLE_RATE} from '../../core/audio_constants.js';
@@ -28,14 +28,21 @@ import {
   assertExists,
   assertInstanceof,
 } from '../../core/utils/assert.js';
+import * as localStorage from '../../core/utils/local_storage.js';
 import {
   Observer,
   ObserverList,
   Unsubscribe,
 } from '../../core/utils/observer_list.js';
+import {ValidationError} from '../../core/utils/schema.js';
 import {sleep} from '../../core/utils/utils.js';
 
-import {ColorTheme, devSettings, init as settingsInit} from './settings.js';
+import {
+  ColorTheme,
+  devSettings,
+  devSettingsSchema,
+  init as settingsInit,
+} from './settings.js';
 import {strings} from './strings.js';
 
 class ModelDev implements Model {
@@ -239,6 +246,9 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override async init(): Promise<void> {
     settingsInit();
+    if (devSettings.value.sodaInstalled) {
+      this.sodaState.value = {kind: 'installed'};
+    }
   }
 
   override async loadModel(_uuid: string): Promise<Model> {
@@ -259,6 +269,9 @@ export class PlatformHandler extends PlatformHandlerBase {
           // 4% per 200 ms -> simulate 5 seconds for the whole installation.
           progress += 4;
           if (progress >= 100) {
+            devSettings.mutate((s) => {
+              s.sodaInstalled = true;
+            });
             this.sodaState.value = {kind: 'installed'};
             return;
           }
@@ -318,5 +331,18 @@ export class PlatformHandler extends PlatformHandlerBase {
         </label>
       </div>
     `;
+  }
+
+  override handleUncaughtError(error: unknown): RenderResult|null {
+    if (error instanceof ValidationError &&
+        error.issue.schema === devSettingsSchema) {
+      // This is caused by dev settings schema change, clear the localStorage
+      // and refresh.
+      console.error('Detected dev settings schema change...');
+      localStorage.remove(localStorage.Key.DEV_SETTINGS);
+      window.location.reload();
+      return nothing;
+    }
+    return null;
   }
 }
