@@ -89,50 +89,18 @@ bool MatchMode(const display::DisplayMode& display_mode,
          display_mode.is_interlaced() == ModeIsInterlaced(m);
 }
 
-// Finds a mode from |modes| that matches the size and timing specified by
-// |request_mode| and writes the results to |out_mode|. Returns true if a
-// matching mode was found.
-bool FindMatchingMode(const display::DisplayMode& request_mode,
-                      const std::vector<drmModeModeInfo>& modes,
-                      drmModeModeInfo* out_mode) {
+// Finds all modes from |modes| that match the size and timing specified by
+// |request_mode| and returns a vector of pointers thereto.
+std::vector<const drmModeModeInfo*> FindMatchingModes(
+    const display::DisplayMode& request_mode,
+    const std::vector<drmModeModeInfo>& modes) {
+  std::vector<const drmModeModeInfo*> matches;
   for (const drmModeModeInfo& m : modes) {
     if (MatchMode(request_mode, m)) {
-      *out_mode = m;
-      return true;
+      matches.push_back(&m);
     }
   }
-  return false;
-}
-
-// Finds a mode that matches the size and timing specified by |request_mode| and
-// writes the results to |out_mode|. Prioritizes choosing modes natively
-// belonging to |display|, and attempts panel-fitting from |all_displays| if
-// needed. Returns true if a matching mode was found.
-bool FindModeForDisplay(
-    const display::DisplayMode& request_mode,
-    const DrmDisplay& display,
-    const std::vector<std::unique_ptr<DrmDisplay>>& all_displays,
-    drmModeModeInfo* out_mode) {
-  if (FindMatchingMode(request_mode, display.modes(), out_mode)) {
-    return true;
-  }
-
-  // If the display doesn't have the mode natively, then lookup the mode
-  // from other displays and try using it on the current display (some
-  // displays support panel fitting and they can use different modes even
-  // if the mode isn't explicitly declared).
-  for (const auto& other_display : all_displays) {
-    if (FindMatchingMode(request_mode, other_display->modes(), out_mode)) {
-      VLOG(3) << "Found matching mode from another display. Attempting to "
-                 "apply via panel fitting.";
-      return true;
-    }
-  }
-
-  LOG(ERROR) << "Failed to find mode: size=" << request_mode.size().ToString()
-             << " is_interlaced=" << request_mode.is_interlaced()
-             << " refresh_rate=" << request_mode.refresh_rate();
-  return false;
+  return matches;
 }
 
 std::string GetEventPropertyByKey(const std::string& key,
@@ -427,6 +395,8 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
     display::ModesetFlags modeset_flags) {
   const bool is_commit =
       modeset_flags.Has(display::ModesetFlag::kCommitModeset);
+  const bool is_seamless =
+      modeset_flags.Has(display::ModesetFlag::kSeamlessModeset);
   std::vector<ControllerConfigParams> controllers_to_configure;
   if (is_commit) {
     controllers_to_configure = GetLatestModesetTestConfig(config_requests);
@@ -442,19 +412,18 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
         return false;
       }
 
-      std::unique_ptr<drmModeModeInfo> mode_ptr =
-          request.mode ? std::make_unique<drmModeModeInfo>() : nullptr;
-      if (request.mode) {
-        if (!FindModeForDisplay(*request.mode, *display, displays_,
-                                mode_ptr.get())) {
-          return false;
-        }
+      std::unique_ptr<drmModeModeInfo> found_mode =
+          request.mode
+              ? FindModeForDisplay(*request.mode, *display, is_seamless)
+              : nullptr;
+      if (request.mode && !found_mode) {
+        return false;
       }
 
       scoped_refptr<DrmDevice> drm = display->drm();
       ControllerConfigParams params(display->display_id(), drm, display->crtc(),
                                     display->connector(), request.origin,
-                                    std::move(mode_ptr), request.enable_vrr,
+                                    std::move(found_mode), request.enable_vrr,
                                     display->base_connector_id());
       controllers_to_configure.push_back(std::move(params));
     }
@@ -854,6 +823,55 @@ DrmGpuDisplayManager::GetLatestModesetTestConfig(
   }
 
   return config_param_it->second;
+}
+
+std::unique_ptr<drmModeModeInfo> DrmGpuDisplayManager::FindModeForDisplay(
+    const display::DisplayMode& request_mode,
+    const DrmDisplay& display,
+    bool is_seamless) {
+  std::vector<const drmModeModeInfo*> matching_modes =
+      FindMatchingModes(request_mode, display.modes());
+
+  if (is_seamless) {
+    HardwareDisplayController* controller =
+        screen_manager_->GetDisplayController(display.drm(), display.crtc());
+    if (!controller) {
+      LOG(ERROR) << "Could not find HardwareDisplayController for display_id: "
+                 << display.display_id()
+                 << ". Continuing without seamless verification.";
+    } else {
+      std::erase_if(
+          matching_modes, [&display, &controller](const drmModeModeInfo* mode) {
+            return !controller->TestSeamlessMode(display.crtc(), *mode);
+          });
+    }
+  }
+
+  // If the display doesn't have the mode natively, then lookup the mode
+  // from other displays and try using it on the current display (some
+  // displays support panel fitting and they can use different modes even
+  // if the mode isn't explicitly declared).
+  if (matching_modes.empty() && !is_seamless) {
+    for (const auto& other_display : displays_) {
+      matching_modes = FindMatchingModes(request_mode, other_display->modes());
+      if (!matching_modes.empty()) {
+        VLOG(3) << "Found matching mode from another display. Attempting to "
+                   "apply via panel fitting.";
+        break;
+      }
+    }
+  }
+
+  if (matching_modes.empty()) {
+    LOG(ERROR) << "Failed to find mode: size=" << request_mode.size().ToString()
+               << " is_interlaced=" << request_mode.is_interlaced()
+               << " refresh_rate=" << request_mode.refresh_rate();
+    return nullptr;
+  }
+
+  auto out_mode = std::make_unique<drmModeModeInfo>();
+  *out_mode = *matching_modes.front();
+  return out_mode;
 }
 
 }  // namespace ui

@@ -681,7 +681,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 }
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
-       ConfigureDisplaysFallbackTestSuccessButCommitFailiure) {
+       ConfigureDisplaysFallbackTestSuccessButCommitFailure) {
   auto drm = AddDrmDevice();
   drm->ResetStateWithAllProperties();
 
@@ -881,7 +881,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 }
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
-       ConfigureDisplaysUseSuccesfulStateForCommit) {
+       ConfigureDisplaysUseSuccessfulStateForCommit) {
   auto drm = AddDrmDevice();
   drm->ResetStateWithAllProperties();
 
@@ -1080,6 +1080,117 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
       drm_gpu_display_manager_->GetSeamlessRefreshRates(wrong_display_id);
 
   ASSERT_FALSE(refresh_rates);
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureDisplaysModeMatching_UnsetMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[0];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(snapshot->display_id(),
+                                          snapshot->origin(), nullptr)};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureDisplaysModeMatching_ExistingMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[0];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), snapshot->native_mode())};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureDisplaysModeMatching_NonExistingMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[0];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
+  const display::DisplayMode nonmatching_mode = display::DisplayMode(
+      snapshot->native_mode()->size(), false, 600, 0, 0, 0);
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
+
+  EXPECT_FALSE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureDisplaysSeamlessModeMatching_UnsetMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[0];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(snapshot->display_id(),
+                                          snapshot->origin(), nullptr)};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureDisplaysSeamlessModeMatching_ExistingSeamlessMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[0];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), snapshot->native_mode())};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureDisplaysSeamlessModeMatching_ExistingNonSeamlessMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[0];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const display::DisplayMode* nonseamless_mode = snapshot->modes().back().get();
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), nonseamless_mode)};
+
+  const uint32_t seamless_test_flags = DRM_MODE_ATOMIC_TEST_ONLY;
+  EXPECT_CALL(*mock_drm_device_, CommitProperties(_, seamless_test_flags, _, _))
+      .Times(1)
+      .WillOnce(Return(false));
+  EXPECT_FALSE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureDisplaysSeamlessModeMatching_NonExistingMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[0];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const display::DisplayMode nonmatching_mode = display::DisplayMode(
+      snapshot->native_mode()->size(), false, 600, 0, 0, 0);
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
+
+  EXPECT_FALSE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
 }
 
 using TiledDisplayGetDisplaysTest = DrmGpuDisplayManagerTest;

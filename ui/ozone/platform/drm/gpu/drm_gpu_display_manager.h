@@ -110,6 +110,17 @@ class DrmGpuDisplayManager {
   std::vector<ControllerConfigParams> GetLatestModesetTestConfig(
       const std::vector<display::DisplayConfigurationParams>& config_requests);
 
+  // Finds a mode that matches the size and timing specified by |request_mode|
+  // and returns an owned copy. Prioritizes choosing modes natively belonging to
+  // |display|, and attempts panel-fitting from |all_displays| if needed. If
+  // |is_seamless| is true, performs additional verification that the returned
+  // mode can be configured seamlessly. Returns nullptr if no matching mode was
+  // found.
+  std::unique_ptr<drmModeModeInfo> FindModeForDisplay(
+      const display::DisplayMode& request_mode,
+      const DrmDisplay& display,
+      bool is_seamless);
+
   const raw_ptr<ScreenManager> screen_manager_;         // Not owned.
   const raw_ptr<DrmDeviceManager> drm_device_manager_;  // Not owned.
 
