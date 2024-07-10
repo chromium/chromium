@@ -10,7 +10,6 @@ import "mojo/public/mojom/base/time.mojom";
 import
   "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom";
 import "services/network/public/mojom/request_priority.mojom";
-import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
 
 // TimeDeltas below relative to navigation start.
