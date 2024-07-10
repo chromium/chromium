@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabpersistence;
 
 import android.os.SystemClock;
+import android.util.AtomicFile;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -261,6 +262,9 @@ public class TabStateFileManager {
      */
     private static TabState readState(File file, boolean encrypted)
             throws IOException, FileNotFoundException {
+        if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
+            return readStateFlatBuffer(file, encrypted);
+        }
         FileInputStream input = new FileInputStream(file);
         DataInputStream stream = null;
         try {
@@ -274,21 +278,6 @@ public class TabStateFileManager {
             if (encrypted && stream.readLong() != KEY_CHECKER) {
                 // Got the wrong key, skip the file
                 return null;
-            }
-            if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
-                FlatBufferTabStateSerializer serializer =
-                        new FlatBufferTabStateSerializer(encrypted);
-                if (encrypted) {
-                    int size = stream.readInt();
-                    byte[] res = new byte[size];
-                    stream.readFully(res);
-                    return serializer.deserialize(ByteBuffer.wrap(res));
-                } else {
-                    FileChannel channel = input.getChannel();
-                    ByteBuffer res =
-                            channel.map(MapMode.READ_ONLY, channel.position(), channel.size());
-                    return serializer.deserialize(res);
-                }
             }
             TabState tabState = new TabState();
             tabState.timestampMillis = stream.readLong();
@@ -431,6 +420,45 @@ public class TabStateFileManager {
         }
     }
 
+    private static TabState readStateFlatBuffer(File file, boolean encrypted) throws IOException {
+        AtomicFile atomicFile = new AtomicFile(file);
+        FileInputStream fileInputStream = null;
+        CipherInputStream cipherInputStream = null;
+        DataInputStream dataInputStream = null;
+        try {
+            FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(encrypted);
+            fileInputStream = atomicFile.openRead();
+            if (encrypted) {
+                Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
+                if (cipher == null) {
+                    Log.e(
+                            TAG,
+                            "Cannot restore encrypted TabState FlatBuffer file because cipher is"
+                                    + " null");
+                    return null;
+                }
+                cipherInputStream = new CipherInputStream(fileInputStream, cipher);
+                dataInputStream = new DataInputStream(cipherInputStream);
+                if (dataInputStream.readLong() != KEY_CHECKER) {
+                    Log.i(TAG, "Encryption key has changed, cannot restore incognito TabState");
+                    return null;
+                }
+                int size = dataInputStream.readInt();
+                byte[] res = new byte[size];
+                dataInputStream.readFully(res);
+                return serializer.deserialize(ByteBuffer.wrap(res));
+            } else {
+                FileChannel channel = fileInputStream.getChannel();
+                ByteBuffer res = channel.map(MapMode.READ_ONLY, channel.position(), channel.size());
+                return serializer.deserialize(res);
+            }
+        } finally {
+            StreamUtil.closeQuietly(dataInputStream);
+            StreamUtil.closeQuietly(cipherInputStream);
+            StreamUtil.closeQuietly(fileInputStream);
+        }
+    }
+
     public static byte[] getContentStateByteArray(final ByteBuffer buffer) {
         byte[] contentsStateBytes = new byte[buffer.limit()];
         buffer.rewind();
@@ -509,6 +537,10 @@ public class TabStateFileManager {
         DataOutputStream dataOutputStream = null;
         FileOutputStream fileOutputStream = null;
         try {
+            if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
+                saveStateFlatBuffer(file, state, encrypted, contentsStateBytes, startTime);
+                return;
+            }
             fileOutputStream = new FileOutputStream(file);
 
             if (encrypted) {
@@ -530,26 +562,6 @@ public class TabStateFileManager {
             }
 
             if (encrypted) dataOutputStream.writeLong(KEY_CHECKER);
-            if (file.getName().contains(FLATBUFFER_PREFIX)) {
-                try {
-                    FlatBufferTabStateSerializer serializer =
-                            new FlatBufferTabStateSerializer(encrypted);
-                    ByteBuffer data = serializer.serialize(state, contentsStateBytes);
-                    if (encrypted) {
-                        dataOutputStream.writeInt(data.remaining());
-                    }
-                    WritableByteChannel channel = Channels.newChannel(dataOutputStream);
-                    channel.write(data);
-                    RecordHistogram.recordTimesHistogram(
-                            "Tabs.TabState.SaveTime.FlatBuffer",
-                            SystemClock.elapsedRealtime() - startTime);
-                } catch (Throwable e) {
-                    // Catch all in case of an issue saving the FlatBuffer file. Avoid crashing
-                    // the app and simply log what went wrong.
-                    Log.i(TAG, "Exception writing " + file.getName(), e);
-                }
-                return;
-            }
 
             dataOutputStream.writeLong(state.timestampMillis);
             dataOutputStream.writeInt(contentsStateBytes.length);
@@ -583,6 +595,57 @@ public class TabStateFileManager {
         } finally {
             StreamUtil.closeQuietly(dataOutputStream);
             StreamUtil.closeQuietly(fileOutputStream);
+        }
+    }
+
+    private static void saveStateFlatBuffer(
+            File file,
+            TabState state,
+            boolean encrypted,
+            byte[] contentsStateBytes,
+            long startTime) {
+        FileOutputStream fileOutputStream = null;
+        CipherOutputStream cipherOutputStream = null;
+        DataOutputStream dataOutputStream = null;
+        boolean success = false;
+        AtomicFile atomicFile = new AtomicFile(file);
+        try {
+            fileOutputStream = atomicFile.startWrite();
+            FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(encrypted);
+            ByteBuffer data = serializer.serialize(state, contentsStateBytes);
+            if (encrypted) {
+                Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+                if (cipher == null) {
+                    Log.e(TAG, "Cannot save TabState FlatBuffer file because cipher is null");
+                    return;
+                }
+                cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
+                dataOutputStream = new DataOutputStream(cipherOutputStream);
+                dataOutputStream.writeLong(KEY_CHECKER);
+                int size = data.remaining();
+                dataOutputStream.writeInt(size);
+                WritableByteChannel channel = Channels.newChannel(dataOutputStream);
+                channel.write(data);
+            } else {
+                FileChannel channel = fileOutputStream.getChannel();
+                channel.write(data);
+            }
+            success = true;
+            RecordHistogram.recordTimesHistogram(
+                    "Tabs.TabState.SaveTime.FlatBuffer", SystemClock.elapsedRealtime() - startTime);
+        } catch (Throwable e) {
+            // Catch all in case of an issue saving the FlatBuffer file. Avoid crashing
+            // the app and simply log what went wrong.
+            Log.e(TAG, "Exception writing " + file.getName(), e);
+        } finally {
+            StreamUtil.closeQuietly(dataOutputStream);
+            StreamUtil.closeQuietly(cipherOutputStream);
+            StreamUtil.closeQuietly(fileOutputStream);
+            if (success) {
+                atomicFile.finishWrite(fileOutputStream);
+            } else {
+                atomicFile.failWrite(fileOutputStream);
+            }
         }
     }
 
