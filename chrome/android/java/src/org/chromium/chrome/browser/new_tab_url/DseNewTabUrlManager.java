@@ -105,7 +105,7 @@ public class DseNewTabUrlManager {
      * isNewTabSearchEngineUrlAndroidEnabled(), i.e., it doesn't check country code.
      */
     public static boolean isSwapOutNtpFlagEnabled() {
-        return ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled() && SWAP_OUT_NTP.getValue();
+        return SWAP_OUT_NTP.getValue();
     }
 
     /**
