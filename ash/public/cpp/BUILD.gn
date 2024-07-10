@@ -38,6 +38,7 @@ component("cpp") {
     "ambient/common/ambient_settings.h",
     "ambient/fake_ambient_backend_controller_impl.cc",
     "ambient/fake_ambient_backend_controller_impl.h",
+    "ambient/weather_info.h",
     "android_intent_helper.cc",
     "android_intent_helper.h",
     "annotator/annotations_overlay_view.cc",

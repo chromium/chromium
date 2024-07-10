@@ -13,6 +13,7 @@
 #include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "ash/public/cpp/ambient/weather_info.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
 #include "ui/gfx/geometry/size.h"
@@ -47,29 +48,6 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
   // the fetched image to determine it because the fetched image could be
   // cropped.
   bool is_portrait = false;
-};
-
-// WeatherInfo contains the weather information we need for rendering a
-// glanceable weather content on Ambient Mode. Corresponding to the
-// |backdrop::WeatherInfo| proto.
-struct ASH_PUBLIC_EXPORT WeatherInfo {
-  WeatherInfo();
-  WeatherInfo(const WeatherInfo&);
-  WeatherInfo& operator=(const WeatherInfo&);
-  ~WeatherInfo();
-
-  // The description of the weather condition.
-  std::optional<std::string> condition_description;
-
-  // The url of the weather condition icon image.
-  std::optional<std::string> condition_icon_url;
-
-  // Weather temperature in Fahrenheit.
-  std::optional<float> temp_f;
-
-  // If the temperature should be displayed in celsius. Conversion must happen
-  // before the value in temp_f is displayed.
-  bool show_celsius = false;
 };
 
 // Trimmed-down version of |backdrop::ScreenUpdate| proto from the backdrop

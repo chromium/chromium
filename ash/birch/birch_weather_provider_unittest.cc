@@ -71,6 +71,11 @@ class StubBirchClient : public BirchClient {
   bool did_wait_for_refresh_tokens_ = false;
 };
 
+BirchWeatherProvider* GetWeatherProvider() {
+  return static_cast<BirchWeatherProvider*>(
+      Shell::Get()->birch_model()->GetWeatherProviderForTest());
+}
+
 class BirchWeatherProviderTest : public AshTestBase {
  public:
   BirchWeatherProviderTest() {
@@ -341,6 +346,9 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
         EXPECT_TRUE(success);
       }));
 
+  // Ensure the cache isn't used.
+  GetWeatherProvider()->ResetCacheForTest();
+
   WeatherInfo info2;
   info2.condition_description = "Sunny";
   info2.condition_icon_url = "https://fake-icon-url";
@@ -362,6 +370,50 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
         EXPECT_FALSE(icon.IsEmpty());
         EXPECT_TRUE(success);
       }));
+}
+
+TEST_F(BirchWeatherProviderTest, RefetchUsesCache) {
+  auto* birch_model = Shell::Get()->birch_model();
+
+  // Set up weather.
+  WeatherInfo info1;
+  info1.condition_description = "Cloudy";
+  info1.condition_icon_url = "https://fake-icon-url";
+  info1.show_celsius = false;
+  info1.temp_f = 70.0f;
+  ambient_backend_controller_->SetWeatherInfo(info1);
+
+  // Make an initial fetch.
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The weather from `info1` is fetched.
+  auto& weather_items = birch_model->GetWeatherForTest();
+  ASSERT_EQ(1u, weather_items.size());
+  EXPECT_EQ(u"Cloudy", weather_items[0].title());
+  EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
+
+  // Set up different weather.
+  WeatherInfo info2;
+  info2.condition_description = "Sunny";
+  info2.condition_icon_url = "https://fake-icon-url";
+  info2.show_celsius = false;
+  info2.temp_f = 73.0f;
+  ambient_backend_controller_->SetWeatherInfo(info2);
+
+  // Make another request. This will hit the cache and not fetch `info2`.
+  base::RunLoop run_loop2;
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop2.QuitClosure());
+  run_loop2.Run();
+
+  // The data is from `info1` because it came from the cache.
+  auto& updated_weather_items = birch_model->GetWeatherForTest();
+  ASSERT_EQ(1u, updated_weather_items.size());
+  EXPECT_EQ(u"Cloudy", updated_weather_items[0].title());
+  EXPECT_FLOAT_EQ(70.f, updated_weather_items[0].temp_f());
 }
 
 TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
@@ -388,6 +440,9 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
         EXPECT_FALSE(icon.IsEmpty());
         EXPECT_TRUE(success);
       }));
+
+  // Ensure the cache isn't used.
+  GetWeatherProvider()->ResetCacheForTest();
 
   WeatherInfo info2;
   info2.show_celsius = false;
@@ -471,6 +526,9 @@ TEST_F(BirchWeatherProviderTest, IconCache) {
   info2.temp_f = 70.0f;
   ambient_backend_controller_->SetWeatherInfo(info2);
 
+  // Ensure the weather cache isn't used.
+  GetWeatherProvider()->ResetCacheForTest();
+
   base::RunLoop run_loop2;
   birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
                                      run_loop2.QuitClosure());
@@ -487,6 +545,9 @@ TEST_F(BirchWeatherProviderTest, IconCache) {
   info2.show_celsius = false;
   info2.temp_f = 73.0f;
   ambient_backend_controller_->SetWeatherInfo(info2);
+
+  // Ensure the weather cache isn't used.
+  GetWeatherProvider()->ResetCacheForTest();
 
   base::RunLoop run_loop3;
   birch_model->RequestBirchDataFetch(/*is_post_login=*/false,

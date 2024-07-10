@@ -542,6 +542,10 @@ void BirchModel::OnGeolocationPermissionChanged(bool enabled) {
   }
 }
 
+BirchDataProvider* BirchModel::GetWeatherProviderForTest() {
+  return weather_provider_.get();
+}
+
 void BirchModel::OverrideWeatherProviderForTest(
     std::unique_ptr<BirchDataProvider> weather_provider) {
   CHECK(weather_provider_);

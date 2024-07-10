@@ -164,6 +164,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // SimpleGeolocationProvider::Observer:
   void OnGeolocationPermissionChanged(bool enabled) override;
 
+  BirchDataProvider* GetWeatherProviderForTest();
   void OverrideWeatherProviderForTest(
       std::unique_ptr<BirchDataProvider> weather_provider);
   void OverrideClockForTest(base::Clock* clock);
