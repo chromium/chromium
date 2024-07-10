@@ -49,6 +49,16 @@ void HttpStreamPool::DecrementTotalHandedOutStreamCount() {
   --total_handed_out_stream_count_;
 }
 
+void HttpStreamPool::IncrementTotalConnectingStreamCount() {
+  CHECK_LT(TotalActiveStreamCount(), kMaxStreamSocketsPerPool);
+  ++total_connecting_stream_count_;
+}
+
+void HttpStreamPool::DecrementTotalConnectingStreamCount() {
+  CHECK_GT(total_connecting_stream_count_, 0u);
+  --total_connecting_stream_count_;
+}
+
 void HttpStreamPool::OnIPAddressChanged() {
   CHECK(cleanup_on_ip_address_change_);
   for (const auto& group : groups_) {

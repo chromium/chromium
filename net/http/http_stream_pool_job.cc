@@ -159,6 +159,14 @@ HttpNetworkSession* HttpStreamPool::Job::http_network_session() {
   return group_->http_network_session();
 }
 
+HttpStreamPool* HttpStreamPool::Job::pool() {
+  return group_->pool();
+}
+
+const HttpStreamPool* HttpStreamPool::Job::pool() const {
+  return group_->pool();
+}
+
 bool HttpStreamPool::Job::UsingTls() const {
   return GURL::SchemeIsCryptographic(stream_key().destination().scheme());
 }
@@ -181,8 +189,8 @@ bool HttpStreamPool::Job::ReachedMaxStreamLimit() const {
   // TODO(crbug.com/346835898): Check per-pool limit and support respinning
   // stalled groups/jobs in the pool.
 
-  if (group_->ActiveStreamSocketCount() + in_flight_attempts_.size() >=
-      group_->pool()->max_stream_sockets_per_group()) {
+  if (group_->ActiveStreamSocketCount() >=
+      pool()->max_stream_sockets_per_group()) {
     return true;
   }
 
@@ -239,6 +247,7 @@ void HttpStreamPool::Job::MaybeAttemptConnection() {
         std::make_unique<InFlightAttempt>(std::move(attempt));
     InFlightAttempt* raw_attempt = in_flight_attempt.get();
     in_flight_attempts_.emplace(std::move(in_flight_attempt));
+    pool()->IncrementTotalConnectingStreamCount();
 
     int rv = raw_attempt->attempt->Start(base::BindOnce(
         &Job::OnInFlightAttemptComplete, base::Unretained(this), raw_attempt));
@@ -356,6 +365,7 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   CHECK(it != in_flight_attempts_.end());
   std::unique_ptr<InFlightAttempt> in_flight_attempt =
       std::move(in_flight_attempts_.extract(it).value());
+  pool()->DecrementTotalConnectingStreamCount();
 
   if (rv != OK) {
     CHECK_NE(rv, ERR_IO_PENDING);

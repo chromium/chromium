@@ -455,6 +455,8 @@ TEST_F(HttpStreamPoolJobTest, SetPriority) {
   endpoint_request->add_endpoint(
       EndpointHelper().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointsUpdated();
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
+
   RunUntilIdle();
   ASSERT_FALSE(request1->completed());
   ASSERT_TRUE(request2->completed());
@@ -565,7 +567,8 @@ TEST_F(HttpStreamPoolJobTest, ReachedGroupLimit) {
   Group& group =
       pool().GetOrCreateGroupForTesting(requesters[0]->GetStreamKey());
   Job* job = group.GetJobForTesting();
-  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(job->InFlightAttemptCount(), kMaxPerGroup);
   ASSERT_EQ(job->PendingRequestCount(), 0u);
 
@@ -577,12 +580,14 @@ TEST_F(HttpStreamPoolJobTest, ReachedGroupLimit) {
   socket_factory()->AddSocketDataProvider(data.get());
   data_providers.emplace_back(std::move(data));
 
-  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(job->InFlightAttemptCount(), kMaxPerGroup);
   ASSERT_EQ(job->PendingRequestCount(), 1u);
 
   // Finish all in-flight attempts successfully.
   RunUntilIdle();
+  ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
   ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(job->InFlightAttemptCount(), 0u);
   ASSERT_EQ(job->PendingRequestCount(), 1u);
@@ -607,12 +612,14 @@ TEST_F(HttpStreamPoolJobTest, ReachedGroupLimit) {
   released_stream->Close(/*not_reusable=*/true);
   released_stream.reset();
 
-  ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup - 1);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(job->InFlightAttemptCount(), 1u);
   ASSERT_EQ(job->PendingRequestCount(), 0u);
 
   RunUntilIdle();
 
+  ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
   ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(job->InFlightAttemptCount(), 0u);
   ASSERT_EQ(job->PendingRequestCount(), 0u);

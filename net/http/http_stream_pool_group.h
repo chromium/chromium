@@ -42,6 +42,7 @@ class HttpStreamPool::Group {
 
   const HttpStreamKey& stream_key() const { return stream_key_; }
 
+  HttpStreamPool* pool() { return pool_; }
   const HttpStreamPool* pool() const { return pool_; }
 
   HttpNetworkSession* http_network_session() const {
@@ -80,9 +81,7 @@ class HttpStreamPool::Group {
   size_t IdleStreamSocketCount() const { return idle_stream_sockets_.size(); }
 
   // Returns the number of active streams.
-  size_t ActiveStreamSocketCount() const {
-    return handed_out_stream_count_ + idle_stream_sockets_.size();
-  }
+  size_t ActiveStreamSocketCount() const;
 
   // Increments the generation of this group. Closes idle streams. Streams
   // handed out before this increment won't be reused.

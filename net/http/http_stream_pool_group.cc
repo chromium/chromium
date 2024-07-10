@@ -150,6 +150,11 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
 }
 
+size_t HttpStreamPool::Group::ActiveStreamSocketCount() const {
+  return handed_out_stream_count_ + idle_stream_sockets_.size() +
+         (in_flight_job_ ? in_flight_job_->InFlightAttemptCount() : 0);
+}
+
 void HttpStreamPool::Group::IncrementGeneration() {
   ++generation_;
   CleanupIdleStreamSockets(CleanupMode::kForce);

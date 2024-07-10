@@ -106,6 +106,9 @@ class HttpStreamPool::Job
 
   HttpNetworkSession* http_network_session();
 
+  HttpStreamPool* pool();
+  const HttpStreamPool* pool() const;
+
   bool UsingTls() const;
 
   // Returns the current load state.

@@ -53,8 +53,13 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   void IncrementTotalHandedOutStreamCount();
   void DecrementTotalHandedOutStreamCount();
 
+  // Increments/Decrements the total number of connecting streams this pool.
+  void IncrementTotalConnectingStreamCount();
+  void DecrementTotalConnectingStreamCount();
+
   size_t TotalActiveStreamCount() const {
-    return total_handed_out_stream_count_ + total_idle_stream_count_;
+    return total_handed_out_stream_count_ + total_idle_stream_count_ +
+           total_connecting_stream_count_;
   }
 
   // NetworkChangeNotifier::IPAddressObserver methods:
@@ -99,6 +104,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   // The total number of idle streams in this pool.
   size_t total_idle_stream_count_ = 0;
+
+  // The total number of connecting streams in this pool.
+  size_t total_connecting_stream_count_ = 0;
 
   std::map<HttpStreamKey, std::unique_ptr<Group>> groups_;
 };
