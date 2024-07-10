@@ -941,10 +941,8 @@ bool SharedContextState::OnMemoryDump(
     }
   } else if (graphite_context()) {
     // NOTE: We cannot dump the memory statistics of the Viz compositor
-    // recorder here because it can be called only on the Viz thread.
-    // TODO(https://crbug.com/330806170): Wire up SkiaOutputSurfaceImpl as a
-    // MemoryDumpProvider and dump the statistics of the Viz compositor
-    // recorder there.
+    // recorder here because it can be called only on the Viz thread. Instead,
+    // we dump it in SkiaOutputSurfaceImpl.
     if (background) {
       raster::DumpBackgroundGraphiteMemoryStatistics(
           graphite_context(), gpu_main_graphite_recorder(), pmd);

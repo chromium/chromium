@@ -23,6 +23,7 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -55,6 +56,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "skia/ext/skia_trace_memory_dump_impl.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
@@ -324,6 +326,9 @@ SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
         std::make_unique<gpu::SharedImageRepresentationFactory>(manager,
                                                                 nullptr);
   }
+
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "SkiaOutputSurfaceImpl", dependency_->GetClientTaskRunner());
 }
 
 SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
@@ -353,6 +358,9 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
                  /*need_framebuffer=*/false);
   // Flush GPU tasks and block until all tasks are finished.
   FlushGpuTasksWithImpl(SyncMode::kWaitForTasksFinished, impl_on_gpu);
+
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
 }
 
 gpu::SurfaceHandle SkiaOutputSurfaceImpl::GetSurfaceHandle() const {
@@ -883,6 +891,25 @@ void SkiaOutputSurfaceImpl::ScheduleOutputSurfaceAsOverlay(
       base::Unretained(impl_on_gpu_.get()), std::move(output_surface_plane));
   EnqueueGpuTask(std::move(callback), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
+}
+
+bool SkiaOutputSurfaceImpl::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  if (graphite_recorder_) {
+    bool background = args.level_of_detail ==
+                      base::trace_event::MemoryDumpLevelOfDetail::kBackground;
+
+    // TODO(https://crbug.com/330806170): Dump background statistics once we've
+    // settled on how we're doing so for SharedContextState.
+    if (!background) {
+      skia::SkiaTraceMemoryDumpImpl trace_memory_dump(args.level_of_detail,
+                                                      pmd);
+      graphite_recorder_->dumpMemoryStatistics(&trace_memory_dump);
+    }
+  }
+
+  return true;
 }
 
 SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
