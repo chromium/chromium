@@ -102,11 +102,13 @@
 	],
     "es": [
       {
-        // "(?:no|núm|num).*int" would be simpler than splitting the number
-        // and "int" via "\\.?\\s+" but generates false positives
-        // (e.g. "enter *no.* of po*int*s").
-        // We also go some extra mile to make sure that "teléfono internacional"
-        // (which contains "no int" does not match this regex).
+        "__comment__" : [
+          "'(?:no|núm|num).*int' would be simpler than splitting the number",
+          "and 'int' via '\\.?\\s+' but generates false positives",
+          "(e.g. 'enter *no.* of po*int*s').",
+          "We also go some extra mile to make sure that 'teléfono internacional'",
+          "(which contains 'no int' does not match this regex)."
+        ],
         "positive_pattern": "interior|número.*apartamento|departamento|(?:(?<!teléfo)no|n[úu]m(?:ero)?)\\.?\\s*(int\\b|interno)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -210,9 +212,11 @@
     ],
     "es": [
       {
-        // "(?:no|núm|num).*ext" would be simpler than splitting the number
-        // and "ext" via "\\.?\\s+" but generates false positives
-        // (e.g. "*no*te_t*ext*").
+        "__comment__" : [
+          "'(?:no|núm|num).*ext' would be simpler than splitting the number",
+          "and 'ext' via '\\.?\\s+' but generates false positives",
+          "(e.g. '*no*te_t*ext*')."
+        ],
         "positive_pattern": "exterior|(?:no|n[úu]m(?:ero)?)\\.?\\s*ext",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -859,7 +863,7 @@
     ],
     "pl": [
       {
-        // "(?<!o)" exists to prevent "okrajov" and "okraj" from matching.
+        "__comment__" : "'(?<!o)' exists to prevent 'okrajov' and 'okraj' from matching.",
         "positive_pattern": "(?<!o)kraj|pa[nń]stwo",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1469,8 +1473,9 @@
     ]
   },
   "BETWEEN_STREETS_LINE_1": {
-    "es": [ // es-MX
+    "es": [
       {
+        "__comment__" : "es-MX",
         "positive_pattern": "entre.*calle(.*1)?",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1480,8 +1485,9 @@
     ]
   },
   "BETWEEN_STREETS_LINE_2": {
-    "es": [ // es-MX
+    "es": [
       {
+        "__comment__" : "es-MX",
         "positive_pattern": "entre.*calle(.*2)?|y.*calle",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1867,7 +1873,7 @@
     ],
     "de": [
       {
-        // kartenprüfnummer and kartenprüfnr.
+        "__comment__" : "kartenprüfnummer and kartenprüfnr.",
         "positive_pattern": "karten.?prüfn",
         "positive_score": 1.0,
         "negative_pattern": null,
