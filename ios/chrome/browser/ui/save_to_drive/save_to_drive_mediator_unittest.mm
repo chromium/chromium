@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -62,6 +64,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
     browser_state_ = TestChromeBrowserState::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(browser_state_.get());
@@ -112,6 +115,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;

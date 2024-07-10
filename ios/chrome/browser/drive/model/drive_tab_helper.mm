@@ -4,16 +4,20 @@
 
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 
+#import "base/feature_list.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_upload_task.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 using drive::DriveService;
 using drive::DriveServiceFactory;
 
 DriveTabHelper::DriveTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {}
+    : web_state_(web_state) {
+  DCHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
+}
 
 DriveTabHelper::~DriveTabHelper() = default;
 

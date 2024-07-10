@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 
+#import "base/test/scoped_feature_list.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/sharing_message/sharing_message_bridge.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -12,10 +14,14 @@
 // Test fixture for testing IOSSharingMessageBridgeFactory class.
 class IOSSharingMessageBridgeFactoryTest : public PlatformTest {
  protected:
-  IOSSharingMessageBridgeFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+  IOSSharingMessageBridgeFactoryTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        send_tab_to_self::kSendTabToSelfIOSPushNotifications);
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+  }
 
   // ChromeBrowserState needs thread.
+  base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };

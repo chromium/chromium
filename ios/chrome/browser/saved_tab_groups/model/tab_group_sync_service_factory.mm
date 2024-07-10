@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
@@ -67,6 +68,10 @@ TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
 std::unique_ptr<KeyedService>
 TabGroupSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  if (!IsTabGroupSyncEnabled()) {
+    return nullptr;
+  }
+
   auto model = std::make_unique<SavedTabGroupModel>();
   ChromeBrowserState* browser_state = static_cast<ChromeBrowserState*>(context);
   CHECK(!browser_state->IsOffTheRecord());

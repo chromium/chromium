@@ -8,6 +8,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/screen_time/model/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_history_deleter.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -38,6 +39,10 @@ ScreenTimeHistoryDeleterFactory::~ScreenTimeHistoryDeleterFactory() {}
 std::unique_ptr<KeyedService>
 ScreenTimeHistoryDeleterFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  if (!IsScreenTimeIntegrationEnabled()) {
+    return nullptr;
+  }
+
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   history::HistoryService* history_service =

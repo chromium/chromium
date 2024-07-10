@@ -4,19 +4,32 @@
 
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
 
 namespace tab_groups {
 
 class TabGroupSyncServiceFactoryTest : public PlatformTest {
  public:
   TabGroupSyncServiceFactoryTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            kTabGroupSync,
+            kTabGroupsIPad,
+            kModernTabStrip,
+            kTabGroupsInGrid,
+        },
+        /*disable_features=*/{});
     browser_state_ = TestChromeBrowserState::Builder().Build();
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };

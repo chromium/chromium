@@ -4,15 +4,20 @@
 
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/platform_test.h"
 
 class DriveServiceFactoryTest : public PlatformTest {
  protected:
-  DriveServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+  DriveServiceFactoryTest() {
+    scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+  }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
 };

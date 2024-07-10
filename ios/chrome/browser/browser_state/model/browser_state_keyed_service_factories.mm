@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
 
-#import "base/feature_list.h"
-#import "components/page_content_annotations/core/page_content_annotations_features.h"
-#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
@@ -115,7 +112,6 @@
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
@@ -159,7 +155,6 @@
 #endif
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-#import "ios/chrome/browser/screen_time/model/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_history_deleter_factory.h"
 #endif
 
@@ -183,6 +178,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   commerce::ShoppingServiceFactory::GetInstance();
   data_sharing::DataSharingServiceFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
+  drive::DriveServiceFactory::GetInstance();
   enterprise_idle::IdleServiceFactory::GetInstance();
   feature_engagement::TrackerFactory::GetInstance();
   ios::AboutSigninInternalsFactory::GetInstance();
@@ -213,6 +209,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ios::ZeroSuggestCacheServiceFactory::GetInstance();
   policy::UserPolicySigninServiceFactory::GetInstance();
   segmentation_platform::SegmentationPlatformServiceFactory::GetInstance();
+  tab_groups::TabGroupSyncServiceFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
 
   AboutThisSiteServiceFactory::GetInstance();
@@ -262,6 +259,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   IOSPasskeyModelFactory::GetInstance();
   IOSPasswordRequirementsServiceFactory::GetInstance();
   IOSProfileSessionDurationsServiceFactory::GetInstance();
+  IOSSharingMessageBridgeFactory::GetInstance();
   IOSTrustedVaultServiceFactory::GetInstance();
   IOSUserEventServiceFactory::GetInstance();
   JavaScriptConsoleFeatureFactory::GetInstance();
@@ -273,6 +271,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ModelTypeStoreServiceFactory::GetInstance();
   OhttpKeyServiceFactory::GetInstance();
   OptimizationGuideServiceFactory::GetInstance();
+  PageContentAnnotationsServiceFactory::GetInstance();
   PageImageServiceFactory::GetInstance();
   PhotosServiceFactory::GetInstance();
   PlusAddressServiceFactory::GetInstance();
@@ -315,34 +314,12 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   WebSessionStateCacheFactory::GetInstance();
   // Keep the above list alphabetized! Don't just add new entries at the end.
 
-  // All factories that are only conditionally added go below here.
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    drive::DriveServiceFactory::GetInstance();
-  }
-
-  if (page_content_annotations::features::
-          ShouldEnablePageContentAnnotations()) {
-    PageContentAnnotationsServiceFactory::GetInstance();
-  }
-
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
-    IOSSharingMessageBridgeFactory::GetInstance();
-  }
-
-  if (IsTabGroupSyncEnabled()) {
-    // Ensure that the tab group sync services are created to observe updates.
-    tab_groups::TabGroupSyncServiceFactory::GetInstance();
-  }
-
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();
 #endif
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-  if (IsScreenTimeIntegrationEnabled()) {
-    ScreenTimeHistoryDeleterFactory::GetInstance();
-  }
+  ScreenTimeHistoryDeleterFactory::GetInstance();
 #endif
 
   // Call other "Ensure...FactoriesBuilt" functions as necessary.
