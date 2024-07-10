@@ -29,6 +29,7 @@ void InitLogging() {
 void InitErrorHandling(const base::CommandLine& command_line) {
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
 #if BUILDFLAG(IS_WIN)
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(command_line);

@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/process/memory.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,6 +36,7 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
   // Make sure this process terminates on OOM in the same mode as other Chrome
   // processes.
   base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
 
   base::PlatformThread::SetName("CrashpadMainThread");
 

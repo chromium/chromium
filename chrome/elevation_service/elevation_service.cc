@@ -43,6 +43,7 @@ extern "C" int WINAPI wWinMain(HINSTANCE instance,
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(*base::CommandLine::ForCurrentProcess());
 

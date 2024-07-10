@@ -60,6 +60,7 @@
 #include "base/vlog.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/base/internal/raw_logging.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if !BUILDFLAG(IS_NACL)
@@ -642,6 +643,30 @@ void SetLogPrefix(const char* prefix) {
 
 void SetShowErrorDialogs(bool enable_dialogs) {
   show_error_dialogs = enable_dialogs;
+}
+
+namespace {
+
+[[noreturn]] void AbslAbortHook(const char* file,
+                                int line,
+                                const char* buf_start,
+                                const char* prefix_end,
+                                const char* buf_end) {
+  // This simulates a CHECK(false) at file:line instead of here. This is used
+  // instead of base::ImmediateCrash() to give better error messages locally
+  // (printed stack for one).
+  LogMessageFatal(file, line, LOGGING_FATAL).stream()
+      << "Check failed: false. " << prefix_end;
+}
+
+}  // namespace
+
+void RegisterAbslAbortHook() {
+  // TODO(pbos): Update this to not rely on a _internal namespace once there's
+  // a public API in absl::.
+  // Note: If this fails to compile because of an absl roll, this is fair to
+  // remove if you file a crbug.com/new and assign it to pbos@.
+  ::absl::raw_log_internal::RegisterAbortHook(&AbslAbortHook);
 }
 
 ScopedLogAssertHandler::ScopedLogAssertHandler(

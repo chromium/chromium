@@ -1396,6 +1396,7 @@ int SetupMain() {
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(cmd_line);
 

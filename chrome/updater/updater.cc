@@ -125,6 +125,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // Make the process more resilient to memory allocation issues.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
 
   InitializeThreadPool("updater");
   const base::ScopedClosureRunner shutdown_thread_pool(base::BindOnce([] {

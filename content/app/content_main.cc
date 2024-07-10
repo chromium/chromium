@@ -205,6 +205,7 @@ RunContentProcess(ContentMainParams params,
     allocator_shim::InitializeAllocatorShim();
 #endif
     base::EnableTerminationOnOutOfMemory();
+    logging::RegisterAbslAbortHook();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // The various desktop environments set this environment variable that

@@ -334,6 +334,11 @@ BASE_EXPORT void SetLogPrefix(const char* prefix);
 // Dialogs are not shown by default.
 BASE_EXPORT void SetShowErrorDialogs(bool enable_dialogs);
 
+// Registers an abort hook with absl that will crash the process similarly to a
+// `CHECK` failure in case of a FATAL error in absl (e.g., any operation that
+// would throw an exception).
+BASE_EXPORT void RegisterAbslAbortHook();
+
 // Sets the Log Assert Handler that will be used to notify of check failures.
 // Resets Log Assert Handler on object destruction.
 // The default handler shows a dialog box and then terminate the process,

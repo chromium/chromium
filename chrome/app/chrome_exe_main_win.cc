@@ -255,6 +255,7 @@ int main() {
   // Done here to ensure that OOMs that happen early in process initialization
   // are correctly signaled to the OS.
   base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
 
   // Initialize the CommandLine singleton from the environment.
   base::CommandLine::Init(0, nullptr);

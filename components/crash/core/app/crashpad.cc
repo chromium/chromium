@@ -15,10 +15,10 @@
 
 #include "base/auto_reset.h"
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -29,7 +29,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
-#include "third_party/abseil-cpp/absl/base/internal/raw_logging.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/client/annotation_list.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -56,18 +55,6 @@ crashpad::StringAnnotation<24>& PlatformStorage() {
 #endif  // BUILDFLAG(IS_IOS)
 
 namespace {
-
-void AbslAbortHook(const char* file,
-                   int line,
-                   const char* buf_start,
-                   const char* prefix_end,
-                   const char* buf_end) {
-  // This simulates that a CHECK(false) was done at file:line instead of here.
-  // This is used instead of base::ImmediateCrash() to give better error
-  // messages locally (printed stack for one).
-  logging::LogMessageFatal check_failure(file, line, logging::LOGGING_FATAL);
-  check_failure.stream() << "Check failed: false. " << prefix_end;
-}
 
 base::FilePath* g_database_path;
 
@@ -169,12 +156,6 @@ bool InitializeCrashpadImpl(bool initial_client,
   // preferable to having all occurrences show up in DumpWithoutCrashing() at
   // the same file and line.
   base::debug::SetDumpWithoutCrashingFunction(DumpWithoutCrashing);
-
-  // TODO(pbos): Update this to not rely on a _internal namespace once there's
-  // a public API in absl::.
-  // Note: If this fails to compile because of an absl roll, this is fair to
-  // remove if you file a crbug.com/new and assign it to pbos@.
-  absl::raw_log_internal::RegisterAbortHook(&AbslAbortHook);
 
 #if BUILDFLAG(IS_APPLE)
   // On Mac, we only want the browser to initialize the database, but not the
