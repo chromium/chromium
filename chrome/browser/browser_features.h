@@ -46,6 +46,7 @@ extern const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature;
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);
+extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
