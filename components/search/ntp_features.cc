@@ -396,12 +396,6 @@ BASE_FEATURE(kNtpMostRelevantTabResumptionModule,
              "NtpMostRelevantTabResumptionModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the Most Relevant Tab Resumption module will be shown with
-// local tabs included.
-BASE_FEATURE(kNtpMostRelevantTabResumptionModuleLocal,
-             "NtpMostRelevantTabResumptionModuleLocal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the Tab Resumption module with the device icon will be shown.
 BASE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon,
              "NtpMostRelevantTabResumptionModuleDeviceIcon",
@@ -509,6 +503,8 @@ const char kNtpMostRelevantTabResumptionModuleDataParam[] =
     "NtpMostRelevantTabResumptionModuleDataParam";
 const char kNtpTabResumptionModuleDataParam[] =
     "NtpTabResumptionModuleDataParam";
+const char kNtpTabResumptionModuleResultTypesParam[] =
+    "NtpTabResumptionModuleResultTypesParam";
 const char kNtpTabResumptionModuleTimeLimitParam[] =
     "NtpTabResumptionModuleTimeLimitParam";
 const char kNtpTabResumptionModuleVisibilityThresholdDataParam[] =
