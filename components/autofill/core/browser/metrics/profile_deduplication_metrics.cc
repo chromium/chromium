@@ -79,6 +79,12 @@ void LogDeduplicationStartupMetrics(
     // Don't pollute metrics with cases where obviously no duplicates exists.
     return;
   }
+  if (profiles.size() > 100) {
+    // Computing the metrics is quadratic in the number of profiles. To avoid
+    // startup time regressions, these metrics are restricted to users with at
+    // most 100 profiles (which covers the vast majority of users).
+    return;
+  }
   AutofillProfileComparator comparator(app_locale);
   for (const AutofillProfile* profile : profiles) {
     LogDeduplicationStartupMetricsForProfile(
