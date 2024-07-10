@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_report_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
@@ -80,6 +81,7 @@ using blink::mojom::blink::PublicKeyCredentialDescriptor;
 using blink::mojom::blink::PublicKeyCredentialDescriptorPtr;
 using blink::mojom::blink::PublicKeyCredentialParameters;
 using blink::mojom::blink::PublicKeyCredentialParametersPtr;
+using blink::mojom::blink::PublicKeyCredentialReportOptionsPtr;
 using blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr;
 using blink::mojom::blink::PublicKeyCredentialRpEntity;
 using blink::mojom::blink::PublicKeyCredentialRpEntityPtr;
@@ -1034,4 +1036,21 @@ Vector<Hint> TypeConverter<Vector<Hint>, Vector<String>>::Convert(
   return ret;
 }
 
+// static
+PublicKeyCredentialReportOptionsPtr
+TypeConverter<PublicKeyCredentialReportOptionsPtr,
+              blink::PublicKeyCredentialReportOptions>::
+    Convert(const blink::PublicKeyCredentialReportOptions& options) {
+  auto mojo_options =
+      blink::mojom::blink::PublicKeyCredentialReportOptions::New();
+
+  if (options.hasRpId()) {
+    mojo_options->relying_party_id = options.rpId();
+  }
+  if (options.hasUnknownCredentialId()) {
+    mojo_options->unknown_credential_id =
+        ConvertTo<Vector<uint8_t>>(options.unknownCredentialId());
+  }
+  return mojo_options;
+}
 }  // namespace mojo

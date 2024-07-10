@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_properties_output.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_credential_report_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_report_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
@@ -105,6 +107,8 @@ using MojoPublicKeyCredentialCreationOptions =
 using mojom::blink::MakeCredentialAuthenticatorResponsePtr;
 using MojoPublicKeyCredentialRequestOptions =
     mojom::blink::PublicKeyCredentialRequestOptions;
+using MojoPublicKeyCredentialReportOptions =
+    mojom::blink::PublicKeyCredentialReportOptions;
 using mojom::blink::GetAssertionAuthenticatorResponsePtr;
 using mojom::blink::RequestTokenStatus;
 using payments::mojom::blink::PaymentCredentialStorageStatus;
@@ -1005,6 +1009,21 @@ void OnSmsReceive(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     return;
   }
   resolver->Resolve(MakeGarbageCollected<OTPCredential>(otp));
+}
+
+void OnReportComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+                      AuthenticatorStatus status,
+                      WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+  auto* resolver = scoped_resolver->Release()->DowncastTo<IDLUndefined>();
+  const auto required_origin_type = RequiredOriginType::kSecure;
+  AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
+
+  if (status != AuthenticatorStatus::SUCCESS) {
+    resolver->Reject(
+        AuthenticatorStatusToDOMException(status, dom_exception_details));
+    return;
+  }
+  resolver->Resolve();
 }
 
 // Validates the "payment" extension for public key credential creation. The
@@ -1922,6 +1941,42 @@ AuthenticationCredentialsContainer::preventSilentAccess(
                     std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
+}
+
+ScriptPromise<IDLUndefined> AuthenticationCredentialsContainer::report(
+    ScriptState* script_state,
+    const CredentialReportOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           "Context is detached"));
+  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
+
+  mojom::blink::PublicKeyCredentialReportOptionsPtr mojo_options;
+  if (options->hasPublicKey()) {
+    mojo_options =
+        MojoPublicKeyCredentialReportOptions::From(*options->publicKey());
+  }
+
+  if (mojo_options) {
+    if (!mojo_options->relying_party_id) {
+      mojo_options->relying_party_id =
+          ExecutionContext::From(script_state)->GetSecurityOrigin()->Domain();
+    }
+    auto* authenticator =
+        CredentialManagerProxy::From(script_state)->Authenticator();
+    authenticator->Report(
+        std::move(mojo_options),
+        WTF::BindOnce(&OnReportComplete,
+                      std::make_unique<ScopedPromiseResolver>(resolver)));
+  } else {
+    resolver->Resolve();
+  }
+  return resolver->Promise();
 }
 
 void AuthenticationCredentialsContainer::Trace(Visitor* visitor) const {

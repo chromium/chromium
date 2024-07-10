@@ -24,6 +24,7 @@ import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
+import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -214,6 +215,11 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                 mPayment,
                 this::onSignResponse,
                 this::onError);
+    }
+
+    @Override
+    public void report(PublicKeyCredentialReportOptions options, Report_Response callback) {
+        callback.call(AuthenticatorStatus.NOT_IMPLEMENTED, null);
     }
 
     @Override

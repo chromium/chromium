@@ -42,7 +42,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     kMakeCredential,
     kMakePaymentCredential,
     kGetAssertion,
-    kGetPaymentCredentialAssertion
+    kGetPaymentCredentialAssertion,
+    kReport
   };
 
   // A RemoteValidation represents a pending remote validation of an RP ID.

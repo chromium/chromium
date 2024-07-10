@@ -96,6 +96,9 @@ class ChromeWebAuthenticationDelegate final
   content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
       content::BrowserContext* browser_context,
       const url::Origin& caller_origin) override;
+  void DeletePasskey(content::BrowserContext* browser_context,
+                     const std::vector<uint8_t>& passkey_credential_id,
+                     const std::string& relying_party_id) override;
   void BrowserProvidedPasskeysAvailable(
       content::BrowserContext* browser_context,
       base::OnceCallback<void(bool)> callback) override;

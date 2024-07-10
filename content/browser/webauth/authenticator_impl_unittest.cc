@@ -176,6 +176,8 @@ using blink::mojom::PublicKeyCredentialDescriptor;
 using blink::mojom::PublicKeyCredentialDescriptorPtr;
 using blink::mojom::PublicKeyCredentialParameters;
 using blink::mojom::PublicKeyCredentialParametersPtr;
+using blink::mojom::PublicKeyCredentialReportOptions;
+using blink::mojom::PublicKeyCredentialReportOptionsPtr;
 using blink::mojom::PublicKeyCredentialRequestOptions;
 using blink::mojom::PublicKeyCredentialRequestOptionsPtr;
 using blink::mojom::PublicKeyCredentialRpEntity;
@@ -377,6 +379,8 @@ using TestGetAssertionFuture =
                            GetAssertionAuthenticatorResponsePtr,
                            WebAuthnDOMExceptionDetailsPtr>;
 using TestRequestStartedFuture = base::test::TestFuture<void>;
+using TestReportFuture =
+    base::test::TestFuture<AuthenticatorStatus, WebAuthnDOMExceptionDetailsPtr>;
 
 std::vector<uint8_t> GetTestChallengeBytes() {
   return std::vector<uint8_t>(std::begin(kTestChallengeBytes),
@@ -453,6 +457,14 @@ GetTestPublicKeyCredentialRequestOptions() {
   options->timeout = base::Minutes(1);
   options->user_verification = device::UserVerificationRequirement::kPreferred;
   options->allow_credentials = GetTestCredentials();
+  return options;
+}
+
+PublicKeyCredentialReportOptionsPtr GetTestPublicKeyCredentialReportOptions() {
+  auto options = PublicKeyCredentialReportOptions::New();
+  options->relying_party_id = std::string(kTestRelyingPartyId);
+  std::vector<uint8_t> id(32, 0x0A);
+  options->unknown_credential_id = id;
   return options;
 }
 
@@ -786,6 +798,21 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     return {status, std::move(response)};
   }
 
+  AuthenticatorStatus AuthenticatorReport() {
+    return AuthenticatorReport(GetTestPublicKeyCredentialReportOptions());
+  }
+
+  AuthenticatorStatus AuthenticatorReport(
+      PublicKeyCredentialReportOptionsPtr options) {
+    mojo::Remote<blink::mojom::Authenticator> authenticator =
+        ConnectToAuthenticator();
+    TestReportFuture future;
+    authenticator->Report(std::move(options), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    auto [status, dom_exception] = future.Take();
+    return status;
+  }
+
   AuthenticatorStatus TryAuthenticationWithAppId(const std::string& origin,
                                                  const std::string& appid) {
     const GURL origin_url(origin);
@@ -1036,6 +1063,25 @@ TEST_F(AuthenticatorImplTest, GetAssertionOriginAndRpIds) {
     options->relying_party_id = test_case.claimed_authority;
 
     EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+              test_case.expected_status);
+  }
+}
+
+// Verify behavior for various combinations of origins and RP IDs.
+TEST_F(AuthenticatorImplTest, ReportOriginAndRpIds) {
+  // These instances should return security errors (for circumstances
+  // that would normally crash the renderer).
+  for (const OriginClaimedAuthorityPair& test_case :
+       kInvalidRelyingPartyTestCases) {
+    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
+                 std::string(test_case.origin));
+
+    NavigateAndCommit(GURL(test_case.origin));
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = test_case.claimed_authority;
+
+    EXPECT_EQ(AuthenticatorReport(std::move(options)),
               test_case.expected_status);
   }
 }
@@ -1439,6 +1485,29 @@ TEST_F(AuthenticatorImplTest, GetAssertionPendingRequest) {
       GetTestPublicKeyCredentialRequestOptions();
   TestGetAssertionFuture future2;
   authenticator->GetAssertion(std::move(options2), future2.GetCallback());
+  EXPECT_TRUE(future2.Wait());
+
+  EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST, std::get<0>(future2.Get()));
+
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(AuthenticatorImplTest, ReportPendingRequest) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+
+  // Make first request.
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  TestGetAssertionFuture future;
+  authenticator->GetAssertion(std::move(options), future.GetCallback());
+
+  // Make second request.
+  PublicKeyCredentialReportOptionsPtr options2 =
+      GetTestPublicKeyCredentialReportOptions();
+  TestReportFuture future2;
+  authenticator->Report(std::move(options2), future2.GetCallback());
   EXPECT_TRUE(future2.Wait());
 
   EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST, std::get<0>(future2.Get()));

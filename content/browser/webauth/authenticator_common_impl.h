@@ -126,6 +126,13 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   RenderFrameHost* GetRenderFrameHost() const override;
   void EnableRequestProxyExtensionsAPISupport() override;
 
+  // Report attempts to report a WebAuthn credential on behalf of
+  // `caller_origin` using the supplied `options` and invokes `callback` with
+  // the result.
+  void Report(url::Origin caller_origin,
+              blink::mojom::PublicKeyCredentialReportOptionsPtr options,
+              blink::mojom::Authenticator::ReportCallback callback);
+
  protected:
   // MaybeCreateRequestDelegate returns the embedder-provided implementation of
   // AuthenticatorRequestClientDelegate, which encapsulates per-request state
@@ -177,6 +184,10 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
           callback,
       std::optional<bool> is_uvpaa_override);
+
+  void ContinueReportAfterRpIdCheck(
+      blink::mojom::PublicKeyCredentialReportOptionsPtr options,
+      blink::mojom::AuthenticatorStatus rp_id_validation_result);
 
   // Replaces the current |request_handler_| with a
   // |MakeCredentialRequestHandler|, effectively restarting the request.
@@ -263,6 +274,11 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
 
   AuthenticatorRequestClientDelegate::RequestSource RequestSource() const;
   BrowserContext* GetBrowserContext() const;
+
+  // Runs |report_response_callback_| and then Cleanup().
+  void CompleteReportRequest(blink::mojom::AuthenticatorStatus status,
+                             blink::mojom::WebAuthnDOMExceptionDetailsPtr
+                                 dom_exception_details = nullptr);
 
   // Returns the FidoDiscoveryFactory for the current request. This may be a
   // real instance, or one injected by the Virtual Authenticator environment, or

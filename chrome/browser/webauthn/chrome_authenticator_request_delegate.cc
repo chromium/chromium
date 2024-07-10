@@ -613,6 +613,24 @@ ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
   return service && service->IsActive(caller_origin) ? service : nullptr;
 }
 
+void ChromeWebAuthenticationDelegate::DeletePasskey(
+    content::BrowserContext* browser_context,
+    const std::vector<uint8_t>& passkey_credential_id,
+    const std::string& relying_party_id) {
+  webauthn::PasskeyModel* passkey_store =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+
+  CHECK(passkey_store);
+  std::string credential_id(passkey_credential_id.begin(),
+                            passkey_credential_id.end());
+  std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
+      passkey_store->GetPasskeyByCredentialId(relying_party_id, credential_id);
+  if (credential_specifics) {
+    passkey_store->DeletePasskey(std::move(credential_id), FROM_HERE);
+  }
+}
+
 #if BUILDFLAG(IS_MAC)
 // static
 ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig

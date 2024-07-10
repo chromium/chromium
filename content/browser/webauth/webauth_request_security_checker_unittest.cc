@@ -91,6 +91,9 @@ std::ostream& operator<<(std::ostream& out, const TestCase& test_case) {
     case WebAuthRequestSecurityChecker::RequestType::kMakeCredential:
       out << "Make Credential";
       break;
+    case WebAuthRequestSecurityChecker::RequestType::kReport:
+      out << "Report";
+      break;
   }
   return out;
 }

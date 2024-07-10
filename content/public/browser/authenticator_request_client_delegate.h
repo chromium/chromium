@@ -135,6 +135,12 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       BrowserContext* browser_context,
       const url::Origin& caller_origin);
 
+  // DeletePasskey removes a passkey from the credential storage provider using
+  // the provided credential ID and relying party ID.
+  virtual void DeletePasskey(BrowserContext* browser_context,
+                             const std::vector<uint8_t>& passkey_credential_id,
+                             const std::string& relying_party_id);
+
   // Invokes the callback with true when passkeys provided by browser sync are
   // available for use, and false otherwise. The callback can be invoked
   // synchronously or asynchronously.

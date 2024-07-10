@@ -100,6 +100,11 @@ WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
   return nullptr;
 }
 
+void WebAuthenticationDelegate::DeletePasskey(
+    BrowserContext* browser_context,
+    const std::vector<uint8_t>& passkey_credential_id,
+    const std::string& relying_party_id) {}
+
 void WebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
     BrowserContext* browser_context,
     base::OnceCallback<void(bool)> callback) {

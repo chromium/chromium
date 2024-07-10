@@ -310,6 +310,11 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
           blink::mojom::PermissionsPolicyFeature::kPayment)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
+  // TODO(crbug.com/347727501): Add a permissions policy for report.
+  if (type == RequestType::kReport) {
+    return blink::mojom::AuthenticatorStatus::SUCCESS;
+  }
+
   return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
 }
 

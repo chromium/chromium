@@ -598,6 +598,12 @@ struct WebAuthnDOMExceptionDetails {
   string message;
 };
 
+// Parameters passed into calls to Report.
+struct PublicKeyCredentialReportOptions{
+  string relying_party_id;
+  array<uint8> unknown_credential_id;
+};
+
 // Interface to direct authenticators to create or use a public key credential.
 interface Authenticator {
   // Gets the credential info for a new public key credential created by an
@@ -630,6 +636,13 @@ interface Authenticator {
   // "mediation" parameter of a webauthn get call and have the browser autofill
   // webauthn credentials on form inputs.
   IsConditionalMediationAvailable() => (bool available);
+
+  // Reports the credentials info so that credentials can be updated or removed
+  // from a credential storage provider for the given
+  // |PublicKeyCredentialReportOptions|.
+  Report(PublicKeyCredentialReportOptions options)
+      => (AuthenticatorStatus status,
+          WebAuthnDOMExceptionDetails? dom_exception_details);
 
   // Cancel an ongoing MakeCredential or GetAssertion request
   // Only one MakeCredential or GetAssertion call at a time is allowed,

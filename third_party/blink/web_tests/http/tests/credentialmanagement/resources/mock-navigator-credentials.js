@@ -59,6 +59,10 @@ export class MockCredentialManager {
     return {};
   }
 
+  async report() {
+    return {};
+  }
+
   // Resets state of mock CredentialManager.
   reset() {
     this.error_ = CredentialManagerError.SUCCESS;
@@ -136,6 +140,12 @@ export class MockAuthenticator {
     let status = this.status_;
     this.reset();
     return {status, credential: response};
+  }
+
+  async report(options) {
+    let status = this.status_;
+    this.reset();
+    return { status };
   }
 
   async isUserVerifyingPlatformAuthenticatorAvailable() {

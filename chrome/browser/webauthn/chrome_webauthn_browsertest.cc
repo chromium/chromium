@@ -483,6 +483,40 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, FilterGPMPasskeys) {
               testing::ElementsAre(expected));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportGPMPasskeys) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  // Set up GPM Passkey
+  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+      PasskeyModelFactory::GetInstance()->SetTestingFactoryAndUse(
+          browser()->profile(),
+          base::BindRepeating(
+              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                return std::make_unique<webauthn::TestPasskeyModel>();
+              })));
+
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID, kUserId1, kUsername1, kDisplayName1));
+
+  // Reports the credential ID matching the passkey created.
+  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                     R"(
+  navigator.credentials.report({
+    publicKey: {
+      rpId: "www.example.com",
+      unknownCredentialId:
+        new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]),
+    }
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )"));
+
+  // After reporting the passkey, it should be deleted from the credentials
+  // list, so the vector of passkeys matching the relying party should be empty.
+  EXPECT_TRUE(
+      passkey_model->GetPasskeysForRelyingPartyId("www.example.com").empty());
+}
+
 class WebAuthnHintsTest : public WebAuthnBrowserTest {
   class Observer : public ChromeAuthenticatorRequestDelegate::TestObserver {
    public:

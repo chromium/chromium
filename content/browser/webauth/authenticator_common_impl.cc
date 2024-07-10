@@ -603,6 +603,7 @@ struct AuthenticatorCommonImpl::RequestState {
       make_credential_response_callback;
   blink::mojom::Authenticator::GetAssertionCallback
       get_assertion_response_callback;
+  blink::mojom::Authenticator::ReportCallback report_response_callback;
   std::string client_data_json;
   // conditional_ui_treatment tracks any non-standard conditional UI behaviours
   // that have been requested.
@@ -1579,6 +1580,63 @@ void AuthenticatorCommonImpl::
 #endif
 }
 
+void AuthenticatorCommonImpl::Report(
+    url::Origin caller_origin,
+    blink::mojom::PublicKeyCredentialReportOptionsPtr options,
+    blink::mojom::Authenticator::ReportCallback callback) {
+  if (req_state_) {
+    std::move(callback).Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST,
+                            nullptr);
+    return;
+  }
+  req_state_ = std::make_unique<RequestState>();
+  req_state_->report_response_callback = std::move(callback);
+  req_state_->caller_origin = std::move(caller_origin);
+  req_state_->relying_party_id = options->relying_party_id;
+
+  bool is_cross_origin_iframe = false;
+  blink::mojom::AuthenticatorStatus status =
+      security_checker_->ValidateAncestorOrigins(
+          req_state_->caller_origin,
+          WebAuthRequestSecurityChecker::RequestType::kReport,
+          &is_cross_origin_iframe);
+
+  // TODO(crbug.com/347727501): Add test for ValidateAncestorOrigins's status.
+  if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
+    CompleteReportRequest(status);
+    return;
+  }
+  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
+      remote_validation = security_checker_->ValidateDomainAndRelyingPartyID(
+          req_state_->caller_origin, req_state_->relying_party_id,
+          WebAuthRequestSecurityChecker::RequestType::kReport,
+          /*remote_desktop_client_override=*/nullptr,
+          base::BindOnce(&AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck,
+                         weak_factory_.GetWeakPtr(), std::move(options)));
+
+  // TODO(crbug.com/347727501): Add a test to cover the case when
+  // remote_validation is not null. If `remote_validation` is nullptr then the
+  // request may already have completed.
+  if (remote_validation) {
+    req_state_->remote_rp_id_validation = std::move(remote_validation);
+  }
+}
+
+void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
+    blink::mojom::PublicKeyCredentialReportOptionsPtr options,
+    blink::mojom::AuthenticatorStatus rp_id_validation_result) {
+  req_state_->remote_rp_id_validation.reset();
+
+  if (rp_id_validation_result != blink::mojom::AuthenticatorStatus::SUCCESS) {
+    CompleteReportRequest(rp_id_validation_result);
+    return;
+  }
+  GetWebAuthenticationDelegate()->DeletePasskey(GetBrowserContext(),
+                                                options->unknown_credential_id,
+                                                req_state_->relying_party_id);
+  CompleteReportRequest(blink::mojom::AuthenticatorStatus::SUCCESS, nullptr);
+}
+
 void AuthenticatorCommonImpl::Cancel() {
   CancelWithStatus(blink::mojom::AuthenticatorStatus::ABORT_ERROR);
 }
@@ -2357,6 +2415,15 @@ void AuthenticatorCommonImpl::CompleteGetAssertionRequest(
 
   std::move(req_state_->get_assertion_response_callback)
       .Run(status, std::move(response), std::move(dom_exception_details));
+  Cleanup();
+}
+
+void AuthenticatorCommonImpl::CompleteReportRequest(
+    blink::mojom::AuthenticatorStatus status,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+  DCHECK(req_state_->report_response_callback);
+  std::move(req_state_->report_response_callback)
+      .Run(status, std::move(dom_exception_details));
   Cleanup();
 }
 
