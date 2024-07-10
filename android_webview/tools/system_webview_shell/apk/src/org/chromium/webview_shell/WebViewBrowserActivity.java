@@ -25,9 +25,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.webkit.TracingConfig;
 import androidx.webkit.TracingController;
 import androidx.webkit.WebSettingsCompat;
@@ -74,8 +78,11 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         ContextUtils.initApplicationContext(getApplicationContext());
+
+        setupEdgeToEdge();
         setContentView(R.layout.activity_webview_browser);
         setSupportActionBar((Toolbar) findViewById(R.id.browser_toolbar));
         mWebViewVersion = WebViewCompat.getCurrentWebViewPackage(this).versionName;
@@ -431,5 +438,19 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    private void setupEdgeToEdge() {
+        ViewCompat.setOnApplyWindowInsetsListener(
+                findViewById(android.R.id.content),
+                (v, windowInsets) -> {
+                    Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    // Apply the insets paddings to the view.
+                    v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+
+                    // Return CONSUMED to indicate we have handled the insets for this view
+                    // and don't want them to be passed down to descendant views.
+                    return WindowInsetsCompat.CONSUMED;
+                });
     }
 }
