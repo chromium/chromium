@@ -26,6 +26,10 @@ class AudioParameters;
 class Mp4MuxerDelegateFragment;
 enum VideoCodecProfile;
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+class H264AnnexBToAvcBitstreamConverter;
+#endif
+
 class Mp4MuxerDelegateInterface {
  public:
   virtual ~Mp4MuxerDelegateInterface() = default;
@@ -91,14 +95,14 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   void BuildMovieVideoTrack(
       const Muxer::VideoParameters& params,
-      std::string encoded_data,
+      std::string_view encoded_data,
       std::optional<VideoEncoder::CodecDescription> codec_description);
-  void AddDataToVideoFragment(std::string encoded_data, bool is_key_frame);
+  void AddDataToVideoFragment(std::string_view encoded_data, bool is_key_frame);
   void BuildMovieAudioTrack(
       const AudioParameters& params,
-      std::string encoded_data,
+      std::string_view encoded_data,
       std::optional<AudioEncoder::CodecDescription> codec_description);
-  void AddDataToAudioFragment(std::string encoded_data);
+  void AddDataToAudioFragment(std::string_view encoded_data);
 
   void AddLastSampleTimestamp(int track_index, base::TimeDelta inverse_of_rate);
   int GetNextTrackIndex();
@@ -113,6 +117,10 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   size_t MaybeFlushMoovBox();
   void MaybeFlushMoofAndMfraBoxes(size_t written_offset);
   size_t GetAudioOnlyFragmentCount() const;
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  std::string ConvertNALUData(std::string_view encoded_data);
+#endif
 
   std::unique_ptr<Mp4MuxerContext> context_;
   Muxer::WriteDataCB write_callback_;
@@ -163,6 +171,10 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   static constexpr uint32_t kAudioFragmentCount = 1000u;
 
   const size_t audio_sample_count_per_fragment_;
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  std::unique_ptr<media::H264AnnexBToAvcBitstreamConverter> h264_converter_;
+#endif
 
   Muxer::WriteDataCB write_data_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   SEQUENCE_CHECKER(sequence_checker_);

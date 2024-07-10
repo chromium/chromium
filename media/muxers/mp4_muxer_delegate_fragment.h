@@ -42,8 +42,8 @@ class Mp4MuxerDelegateFragment {
   size_t GetAudioSampleSize() const;
   size_t GetVideoSampleSize() const;
 
-  void AddAudioData(std::string encoded_data, base::TimeTicks timestamp);
-  void AddVideoData(std::string encoded_data, base::TimeTicks timestamp);
+  void AddAudioData(std::string_view encoded_data, base::TimeTicks timestamp);
+  void AddVideoData(std::string_view encoded_data, base::TimeTicks timestamp);
   void AddAudioLastTimestamp(base::TimeDelta timestamp);
   void AddVideoLastTimestamp(base::TimeDelta timestamp);
 
@@ -60,10 +60,10 @@ class Mp4MuxerDelegateFragment {
  private:
   void AddNewTrack(uint32_t track_index);
   void AddDataToRun(mp4::writable_boxes::TrackFragmentRun& trun,
-                    std::string encoded_data,
+                    std::string_view encoded_data,
                     base::TimeTicks timestamp);
   void AddDataToMdat(std::vector<uint8_t>& track_data,
-                     std::string encoded_data);
+                     std::string_view encoded_data);
   void AddLastTimestamp(mp4::writable_boxes::TrackFragmentRun& trun,
                         base::TimeDelta timestamp);
   void SetBaseDecodeTime(base::TimeTicks start_audio_time,
