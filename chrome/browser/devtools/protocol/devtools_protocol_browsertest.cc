@@ -14,6 +14,8 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/test_switches.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -147,6 +149,44 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(chrome::kChromeUINewTabURL, wc->GetLastCommittedURL().spec());
 
   // Should not crash by this point.
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       CreateBrowserContextAcceptsProxyServer) {
+  AttachToBrowserTarget();
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
+            std::make_unique<net::test_server::BasicHttpResponse>());
+        http_response->set_code(net::HTTP_OK);
+        http_response->set_content_type("text/html");
+        http_response->set_content("<title>Hello from proxy server!</title>");
+        return std::move(http_response);
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  base::Value::Dict params;
+  params.Set("proxyServer",
+             embedded_test_server()->host_port_pair().ToString());
+  const base::Value::Dict* result =
+      SendCommandSync("Target.createBrowserContext", std::move(params));
+  std::string context_id = *result->FindString("browserContextId");
+
+  content::WebContentsAddedObserver observer;
+
+  params = base::Value::Dict();
+  params.Set("url", "http://this-page-does-not-exist.com/site.html");
+  params.Set("browserContextId", context_id);
+  result = SendCommandSync("Target.createTarget", std::move(params));
+
+  content::WebContents* wc = observer.GetWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(wc));
+
+  EXPECT_EQ(GURL("http://this-page-does-not-exist.com/site.html"),
+            wc->GetURL());
+
+  EXPECT_EQ("Hello from proxy server!", base::UTF16ToUTF8(wc->GetTitle()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateInDefaultContextById) {

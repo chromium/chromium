@@ -1430,12 +1430,21 @@ void TargetHandler::DisposeBrowserContext(
 void TargetHandler::ApplyNetworkContextParamsOverrides(
     BrowserContext* browser_context,
     network::mojom::NetworkContextParams* context_params) {
-  // Under certain conditions, storage partition is created synchronously for
+  //   Note #1: below we clear the proxy config client receiver,
+  // and effectively disable proxy updates based on the OS settings.
+  // This way our "initial proxy config" is not overridden by any
+  // OS settings and stays the same.
+  //   This relies on ApplyNetworkContextParamsOverrides() being called
+  // after the client receiver was setup for the network context.
+  //
+  //   Note #2: Under certain conditions, storage partition is created
+  // synchronously for
   // the browser context. Account for this use case.
   if (pending_proxy_config_) {
     context_params->initial_proxy_config =
         net::ProxyConfigWithAnnotation(std::move(*pending_proxy_config_),
                                        kSettingsProxyConfigTrafficAnnotation);
+    context_params->proxy_config_client_receiver = mojo::NullReceiver();
     pending_proxy_config_.reset();
     return;
   }
@@ -1443,6 +1452,7 @@ void TargetHandler::ApplyNetworkContextParamsOverrides(
   if (it != contexts_with_overridden_proxy_.end()) {
     context_params->initial_proxy_config = net::ProxyConfigWithAnnotation(
         std::move(it->second), kSettingsProxyConfigTrafficAnnotation);
+    context_params->proxy_config_client_receiver = mojo::NullReceiver();
     contexts_with_overridden_proxy_.erase(browser_context->UniqueId());
   }
 }

@@ -57,9 +57,6 @@ void HeadlessProtocolBrowserTest::SetUpCommandLine(
     // in one process (harness.test) and tests in another.
     command_line->AppendSwitch(::switches::kSitePerProcess);
   }
-  // Make sure proxy related tests are not affected by a platform specific
-  // system proxy configuration service.
-  command_line->AppendSwitch(switches::kNoSystemProxyConfigService);
 }
 
 bool HeadlessProtocolBrowserTest::RequiresSitePerProcess() {
