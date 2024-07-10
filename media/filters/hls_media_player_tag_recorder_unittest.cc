@@ -112,14 +112,14 @@ TEST_F(HlsMediaPlayerTagRecorderTest, TestReadManifestParseBeforeOkSignal) {
   recorder->Start(GURL(kURL));
 
   EXPECT_NO_UMA(ht, "Media.HLS.PlaylistSegmentExtension", 0);
-  EXPECT_NO_UMA(ht, "Media.HLS.AdvancedFeatureTagType", 4);
+  EXPECT_NO_UMA(ht, "Media.HLS.AdvancedFeatureTags", 4);
   EXPECT_NO_UMA(ht, "Media.HLS.MultivariantPlaylist", 0);
   EXPECT_NO_UMA(ht, "Media.HLS.EncryptionMode", 1);
 
   recorder->AllowRecording();
 
   EXPECT_UMA(ht, "Media.HLS.PlaylistSegmentExtension", 0);
-  EXPECT_UMA(ht, "Media.HLS.AdvancedFeatureTagType", 4);
+  EXPECT_UMA(ht, "Media.HLS.AdvancedFeatureTags", 4);
   EXPECT_UMA(ht, "Media.HLS.MultivariantPlaylist", 0);
   EXPECT_UMA(ht, "Media.HLS.EncryptionMode", 1);
 }
@@ -131,14 +131,14 @@ TEST_F(HlsMediaPlayerTagRecorderTest, TestReadManifestParseAfterOkSignal) {
   recorder->AllowRecording();
 
   EXPECT_NO_UMA(ht, "Media.HLS.PlaylistSegmentExtension", 0);
-  EXPECT_NO_UMA(ht, "Media.HLS.AdvancedFeatureTagType", 4);
+  EXPECT_NO_UMA(ht, "Media.HLS.AdvancedFeatureTags", 4);
   EXPECT_NO_UMA(ht, "Media.HLS.MultivariantPlaylist", 0);
   EXPECT_NO_UMA(ht, "Media.HLS.EncryptionMode", 1);
 
   recorder->Start(GURL(kURL));
 
   EXPECT_UMA(ht, "Media.HLS.PlaylistSegmentExtension", 0);
-  EXPECT_UMA(ht, "Media.HLS.AdvancedFeatureTagType", 4);
+  EXPECT_UMA(ht, "Media.HLS.AdvancedFeatureTags", 4);
   EXPECT_UMA(ht, "Media.HLS.MultivariantPlaylist", 0);
   EXPECT_UMA(ht, "Media.HLS.EncryptionMode", 1);
 }

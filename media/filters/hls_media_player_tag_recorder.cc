@@ -174,7 +174,7 @@ void HlsMediaPlayerTagRecorder::SetAdvancedFeaturePresent(
     AdvancedFeatureTagType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (recording_enabled_ && !advanced_feature_bitfield_.has_value()) {
-    base::UmaHistogramEnumeration("Media.HLS.AdvancedFeatureTagType", type);
+    base::UmaHistogramEnumeration("Media.HLS.AdvancedFeatureTags", type);
   }
   advanced_feature_bitfield_ = advanced_feature_bitfield_.value_or(0) |
                                (1 << static_cast<uint32_t>(type));
@@ -218,7 +218,7 @@ void HlsMediaPlayerTagRecorder::AllowRecording() {
   }
   if (advanced_feature_bitfield_.has_value()) {
     LogBitfieldHistogram<AdvancedFeatureTagType>(
-        advanced_feature_bitfield_.value(), "Media.HLS.AdvancedFeatureTagType");
+        advanced_feature_bitfield_.value(), "Media.HLS.AdvancedFeatureTags");
   }
   if (playlist_segment_bitfield_.has_value()) {
     LogBitfieldHistogram<PlaylistSegmentType>(
