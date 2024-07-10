@@ -263,6 +263,7 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
   private getAnnotationBrush_(annotationTool: AnnotationTool): AnnotationBrush {
     const brush: AnnotationBrush = {
       type: annotationTool.tool as AnnotationBrushType,
+      size: annotationTool.size,
     };
 
     if (annotationTool.color !== undefined) {
@@ -271,11 +272,10 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
       const hexColor = annotationTool.color;
       assert(/^#[0-9a-f]{6}$/.test(hexColor));
 
-      brush.params = {
-        colorR: parseInt(hexColor.substring(1, 3), 16),
-        colorG: parseInt(hexColor.substring(3, 5), 16),
-        colorB: parseInt(hexColor.substring(5, 7), 16),
-        size: annotationTool.size,
+      brush.color = {
+        r: parseInt(hexColor.substring(1, 3), 16),
+        g: parseInt(hexColor.substring(3, 5), 16),
+        b: parseInt(hexColor.substring(5, 7), 16),
       };
     }
 

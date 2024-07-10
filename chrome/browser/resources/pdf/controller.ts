@@ -6,9 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 // <if expr="enable_pdf_ink2">
-import type {AnnotationBrush, AnnotationBrushParams, AnnotationBrushType} from './constants.js';
-// </if>
-import type {NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
+import type {AnnotationBrush, NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
 import type {PdfPluginElement} from './internal_plugin.js';
 import type {Viewport} from './viewport.js';
 import {PinchPhase} from './viewport.js';
@@ -46,9 +44,9 @@ interface ThumbnailMessageData {
 
 // <if expr="enable_pdf_ink2">
 // The message sent to the backend to set the annotation brush.
-interface AnnotationBrushMessage extends Partial<AnnotationBrushParams> {
+interface AnnotationBrushMessage {
   type: string;
-  brushType: AnnotationBrushType;
+  data: Partial<AnnotationBrush>;
 }
 // </if>
 
@@ -202,8 +200,7 @@ export class PluginController implements ContentController {
   setAnnotationBrush(brush: AnnotationBrush) {
     const message: AnnotationBrushMessage = {
       type: 'setAnnotationBrush',
-      brushType: brush.type,
-      ...brush.params,
+      data: brush,
     };
 
     this.postMessage_(message);

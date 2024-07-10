@@ -175,13 +175,19 @@ class PdfInkModuleTest : public testing::Test {
       const AnnotationBrushMessageParams* params) {
     base::Value::Dict message;
     message.Set("type", "setAnnotationBrush");
-    message.Set("brushType", type);
+
+    base::Value::Dict data;
+    data.Set("type", type);
     if (params) {
-      message.Set("colorR", params->color_r);
-      message.Set("colorG", params->color_g);
-      message.Set("colorB", params->color_b);
-      message.Set("size", params->size);
+      base::Value::Dict color;
+      color.Set("r", params->color_r);
+      color.Set("g", params->color_g);
+      color.Set("b", params->color_b);
+      data.Set("color", std::move(color));
+
+      data.Set("size", params->size);
     }
+    message.Set("data", std::move(data));
     return message;
   }
 

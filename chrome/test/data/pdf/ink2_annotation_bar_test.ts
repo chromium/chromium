@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotationBrushParams} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -17,29 +17,30 @@ const mockPlugin = createMockPdfPluginForTest();
 controller.setPluginForTesting(mockPlugin);
 
 /**
- * Test that the annotation brush is of type `type`, and has the `params`, if
- * necessary. Clears all messages from `mockPlugin` after, otherwise subsequent
- * calls would continue to find and use the same message.
- * @param type The type of the annotation brush.
- * @param params The params for the annotation brush, if necessary for the type
- *     of brush.
+ * Tests that the current annotation brush matches `expectedBrush`. Clears all
+ * messages from `mockPlugin` after, otherwise subsequent calls would continue
+ * to find and use the same message.
+ * @param expectedBrush The expected brush that the current annotation brush
+ * should match.
  */
-function assertAnnotationBrush(
-    type: AnnotationBrushType, params?: AnnotationBrushParams) {
+function assertAnnotationBrush(expectedBrush: AnnotationBrush) {
   const setAnnotationBrushMessage =
       mockPlugin.findMessage('setAnnotationBrush');
   chrome.test.assertTrue(setAnnotationBrushMessage !== undefined);
   chrome.test.assertEq('setAnnotationBrush', setAnnotationBrushMessage.type);
-  chrome.test.assertEq(type, setAnnotationBrushMessage.brushType);
-  const hasParams = params !== undefined;
+  chrome.test.assertEq(expectedBrush.type, setAnnotationBrushMessage.data.type);
+  const hasColor = expectedBrush.color !== undefined;
   chrome.test.assertEq(
-      hasParams ? params.colorR : undefined, setAnnotationBrushMessage.colorR);
-  chrome.test.assertEq(
-      hasParams ? params.colorG : undefined, setAnnotationBrushMessage.colorG);
-  chrome.test.assertEq(
-      hasParams ? params.colorB : undefined, setAnnotationBrushMessage.colorB);
-  chrome.test.assertEq(
-      hasParams ? params.size : undefined, setAnnotationBrushMessage.size);
+      hasColor, setAnnotationBrushMessage.data.color !== undefined);
+  if (hasColor) {
+    chrome.test.assertEq(
+        expectedBrush.color!.r, setAnnotationBrushMessage.data.color.r);
+    chrome.test.assertEq(
+        expectedBrush.color!.g, setAnnotationBrushMessage.data.color.g);
+    chrome.test.assertEq(
+        expectedBrush.color!.b, setAnnotationBrushMessage.data.color.b);
+  }
+  chrome.test.assertEq(expectedBrush.size, setAnnotationBrushMessage.data.size);
 
   mockPlugin.clearMessages();
 }
@@ -76,9 +77,11 @@ chrome.test.runTests([
     const annotationBar = getAnnotationsBar(viewerToolbar);
 
     // Default to pen.
-    assertAnnotationBrush(
-        AnnotationBrushType.PEN,
-        {colorR: 0, colorG: 0, colorB: 0, size: 0.1429});
+    assertAnnotationBrush({
+      type: AnnotationBrushType.PEN,
+      color: {r: 0, g: 0, b: 0},
+      size: 0.1429,
+    });
 
     // Change the pen size.
     const penOptions =
@@ -89,8 +92,11 @@ chrome.test.runTests([
     assert(sizeButton);
     sizeButton.click();
 
-    assertAnnotationBrush(
-        AnnotationBrushType.PEN, {colorR: 0, colorG: 0, colorB: 0, size: 1});
+    assertAnnotationBrush({
+      type: AnnotationBrushType.PEN,
+      color: {r: 0, g: 0, b: 0},
+      size: 1,
+    });
 
     // Change the pen color.
     const colorButton = penOptions.shadowRoot!.querySelector<HTMLElement>(
@@ -98,19 +104,21 @@ chrome.test.runTests([
     assert(colorButton);
     colorButton.click();
 
-    assertAnnotationBrush(
-        AnnotationBrushType.PEN,
-        {colorR: 0, colorG: 176, colorB: 255, size: 1});
+    assertAnnotationBrush({
+      type: AnnotationBrushType.PEN,
+      color: {r: 0, g: 176, b: 255},
+      size: 1,
+    });
     chrome.test.succeed();
   },
   // Test that the eraser can be selected.
   function testSelectEraser() {
     const annotationBar = getAnnotationsBar(viewerToolbar);
 
-    // Switch to eraser. It shouldn't have any params.
+    // Switch to eraser. It shouldn't have any color.
     annotationBar.$.eraser.click();
 
-    assertAnnotationBrush(AnnotationBrushType.ERASER);
+    assertAnnotationBrush({type: AnnotationBrushType.ERASER, size: 1});
     chrome.test.succeed();
   },
   // Test that the pen can be selected again, and should have the same settings
@@ -121,9 +129,11 @@ chrome.test.runTests([
     // Switch back to pen. It should have the previous settings.
     annotationBar.$.pen.click();
 
-    assertAnnotationBrush(
-        AnnotationBrushType.PEN,
-        {colorR: 0, colorG: 176, colorB: 255, size: 1});
+    assertAnnotationBrush({
+      type: AnnotationBrushType.PEN,
+      color: {r: 0, g: 176, b: 255},
+      size: 1,
+    });
     chrome.test.succeed();
   },
   // Test that the highlighter can be selected. Test that the dropdown menu can
@@ -135,9 +145,15 @@ chrome.test.runTests([
     const highlighter = annotationBar.$.highlighter;
     highlighter.click();
 
-    assertAnnotationBrush(
-        AnnotationBrushType.HIGHLIGHTER,
-        {colorR: 255, colorG: 188, colorB: 0, size: 0.7143});
+    assertAnnotationBrush({
+      type: AnnotationBrushType.HIGHLIGHTER,
+      color: {
+        r: 255,
+        g: 188,
+        b: 0,
+      },
+      size: 0.7143,
+    });
 
     // Fail to change the highlighter color to a hidden color. The
     // highlighter dropdown needs to be expanded to change to the color, so
@@ -161,9 +177,11 @@ chrome.test.runTests([
     chrome.test.assertFalse(collapsedColorButton.disabled);
     collapsedColorButton.click();
 
-    assertAnnotationBrush(
-        AnnotationBrushType.HIGHLIGHTER,
-        {colorR: 209, colorG: 196, colorB: 233, size: 0.7143});
+    assertAnnotationBrush({
+      type: AnnotationBrushType.HIGHLIGHTER,
+      color: {r: 209, g: 196, b: 233},
+      size: 0.7143,
+    });
 
     // Change the highlighter size.
     const sizeButton =
@@ -172,9 +190,11 @@ chrome.test.runTests([
     assert(sizeButton);
     sizeButton.click();
 
-    assertAnnotationBrush(
-        AnnotationBrushType.HIGHLIGHTER,
-        {colorR: 209, colorG: 196, colorB: 233, size: 1});
+    assertAnnotationBrush({
+      type: AnnotationBrushType.HIGHLIGHTER,
+      color: {r: 209, g: 196, b: 233},
+      size: 1,
+    });
     chrome.test.succeed();
   },
   // Test the behavior of the undo and redo buttons.

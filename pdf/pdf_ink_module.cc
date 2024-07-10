@@ -523,17 +523,23 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
     const base::Value::Dict& message) {
   CHECK(enabled_);
 
-  const std::string& brush_type_string = *message.FindString("brushType");
+  const base::Value::Dict* data = message.FindDict("data");
+  CHECK(data);
+
+  const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
     current_tool_state_.emplace<EraserState>();
     return;
   }
 
   // All brush types except the eraser should have a color and size.
-  int color_r = message.FindInt("colorR").value();
-  int color_g = message.FindInt("colorG").value();
-  int color_b = message.FindInt("colorB").value();
-  double size = message.FindDouble("size").value();
+  const base::Value::Dict* color = data->FindDict("color");
+  CHECK(color);
+
+  int color_r = color->FindInt("r").value();
+  int color_g = color->FindInt("g").value();
+  int color_b = color->FindInt("b").value();
+  double size = data->FindDouble("size").value();
 
   CheckColorIsWithinRange(color_r);
   CheckColorIsWithinRange(color_g);
