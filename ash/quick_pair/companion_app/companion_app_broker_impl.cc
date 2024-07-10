@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/companion_app/companion_app_broker_impl.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 
@@ -54,12 +55,17 @@ bool CompanionAppBrokerImpl::MaybeShowCompanionAppActions(
   // TODO(b/274973687): Make this logic more generalized once metadata
   // includes companion app ID.
   const auto metadata_id = device->metadata_id();
+
+  const std::string& device_ids =
+      ash::features::kFastPairPwaCompanionDeviceIds.Get();
+
   std::set<std::string> target_ids{
       "08A97F", "5A36A5", "6EDAF7", "9ADB11", "A7D7A0", "C8E228",
       "D87A3E", "F2020E", "F58DE7", "30346C", "7862CE",
   };
 
-  if (!target_ids.contains(metadata_id)) {
+  if (!target_ids.contains(metadata_id) &&
+      device_ids.find(metadata_id) == std::string::npos) {
     return false;
   }
 

@@ -320,6 +320,8 @@ extern const base::FeatureParam<std::string> kFastPairPwaCompanionAppId;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<std::string> kFastPairPwaCompanionPlayStoreUri;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<std::string> kFastPairPwaCompanionDeviceIds;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double>
     kFastPairDeviceLostNotificationTimeoutMinutes;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnterpriseReportingUI);

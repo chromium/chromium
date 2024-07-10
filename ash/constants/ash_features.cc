@@ -1034,6 +1034,13 @@ const base::FeatureParam<std::string> kFastPairPwaCompanionPlayStoreUri{
     &kFastPairPwaCompanion, "pwa-companion-play-store-uri",
     /*default*/ ""};
 
+// Comma separated list of Device IDs that the companion app supports
+// e.g.
+// "C8D56AB,D24F34F,9C7B5A"
+const base::FeatureParam<std::string> kFastPairPwaCompanionDeviceIds{
+    &kFastPairPwaCompanion, "pwa-companion-device-ids",
+    /*default*/ ""};
+
 // Enables support for software-based scanning on devices that don't support
 // hardware-based BLE advertisement filtering.
 BASE_FEATURE(kFastPairSoftwareScanningSupport,
