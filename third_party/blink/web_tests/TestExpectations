@@ -1354,6 +1354,7 @@ crbug.com/1353560 [ Mac ] external/wpt/css/css-content/quotes-006.html [ Failure
 crbug.com/1353560 [ Mac ] external/wpt/css/css-content/quotes-009.html [ Failure ]
 crbug.com/1353560 [ Mac ] external/wpt/css/css-content/quotes-013.html [ Failure ]
 crbug.com/1353560 [ Mac ] external/wpt/css/css-content/quotes-014.html [ Failure ]
+crbug.com/1353560 [ Mac10.15 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/1353560 [ Mac11 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/1353560 [ Mac11-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/1353560 [ Mac12 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
@@ -2594,11 +2595,6 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/352100866 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--cover--percent-width-omitted-height.html [ Failure ]
-crbug.com/352088183 [ Mac10.15 ] external/wpt/css/css-content/quotes-020.html [ Timeout ]
-crbug.com/352189747 [ Mac10.15 ] external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Timeout ]
-crbug.com/352191292 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Timeout ]
-crbug.com/352191318 [ Mac10.15 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Timeout ]
-crbug.com/352177982 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-selection-with-non-primary-mouse-button.tentative.html?secondary [ Timeout ]
 crbug.com/352177983 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/fence-report-event-cross-origin-urn-iframe-no-subframe-opt-in.https.html [ Timeout ]
 crbug.com/352191344 [ Mac10.15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/window-open.https.sub.html [ Timeout ]
 crbug.com/352088182 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/going-back.sub.https.html [ Timeout ]
@@ -4992,6 +4988,7 @@ crbug.com/1229802 fast/events/pointerevents/multi-touch-events.html [ Failure Pa
 crbug.com/1181886 external/wpt/pointerevents/pointerevent_movementxy.html?* [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-22
+crbug.com/1231596 [ Mac10.15 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 crbug.com/1231596 [ Mac12 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 crbug.com/1231596 [ Mac12-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 crbug.com/1231989 [ Linux ] external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html [ Failure Pass ]
@@ -6752,6 +6749,7 @@ crbug.com/1491918 [ Mac ] fast/scrolling/scroll-animation-on-by-default.html [ F
 
 # Gardener 2023-10-12
 crbug.com/1491587 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-selection-with-non-primary-mouse-button.tentative.html?middle [ Failure ]
+crbug.com/1491587 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-selection-with-non-primary-mouse-button.tentative.html?secondary [ Failure ]
 
 # Gardener 2023-10-13
 crbug.com/1492371 [ Mac ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/event-breakpoints.js [ Pass Timeout ]
@@ -6989,16 +6987,7 @@ crbug.com/328303424 [ Mac ] css3/blending/svg-blend-color.html [ Failure ]
 # Suppressing color conversion failures while fixing functionality.
 # Also reported as flakey on Linux crbug.com/1481730 and failing on macOS (crbug.com/1493342)
 crbug.com/40230609 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-video.html [ Failure ]
-crbug.com/40230609 [ Linux ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
-crbug.com/40230609 [ Mac11 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
-crbug.com/40230609 [ Mac11-arm64 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
-crbug.com/40230609 [ Mac12 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
-crbug.com/40230609 [ Mac12-arm64 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
-crbug.com/40230609 [ Mac13 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
-crbug.com/40230609 [ Mac13-arm64 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
-crbug.com/40230609 [ Mac14 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
-crbug.com/40230609 [ Mac14-arm64 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
-crbug.com/40230609 [ Win ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
+crbug.com/40230609 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
 
 # Gardener 2023-03-08
 crbug.com/328719549 [ Linux ] inspector-protocol/memory/sampling-native-snapshot.js [ Failure Pass Timeout ]
