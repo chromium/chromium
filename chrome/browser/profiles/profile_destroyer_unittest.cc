@@ -98,12 +98,12 @@ class ProfileDestroyerTest : public testing::Test,
  protected:
   const bool is_primary_otr_ = GetParam();
 
+  raw_ptr<TestingProfile> original_profile_;
+  std::vector<raw_ptr<TestingProfile>> otr_profiles_;
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-
-  raw_ptr<TestingProfile> original_profile_;
-  std::vector<raw_ptr<TestingProfile>> otr_profiles_;
 
   std::unique_ptr<ScopedProfileKeepAlive> original_profile_keep_alive_;
   std::vector<scoped_refptr<content::SiteInstance>> site_instances_;
