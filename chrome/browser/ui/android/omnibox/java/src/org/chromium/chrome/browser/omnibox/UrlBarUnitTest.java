@@ -291,6 +291,77 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void performClick_emitsTouchEvents() {
+        mUrlBar.performClick();
+        verify(mUrlBarDelegate).onFocusByTouch();
+        // No subsequent events.
+        mUrlBar.performClick();
+        verifyNoMoreInteractions(mUrlBarDelegate);
+
+        // Simulate focus lost, then applied programmatically.
+        // This will reset the internal state, and then enable alternative event.
+        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.onFocusChanged(true, 0, null);
+
+        mUrlBar.performClick();
+        verify(mUrlBarDelegate).onTouchAfterFocus();
+        // No subsequent events.
+        mUrlBar.performClick();
+        verifyNoMoreInteractions(mUrlBarDelegate);
+    }
+
+    @Test
+    public void onTouchEvent_touchDownIsIgnored() {
+        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+        verify(mUrlBarDelegate, never()).onTouchAfterFocus();
+    }
+
+    @Test
+    public void onTouchEvent_touchUpEmitsTouchEvents() {
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        verify(mUrlBarDelegate).onFocusByTouch();
+        // No subsequent events.
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        verifyNoMoreInteractions(mUrlBarDelegate);
+
+        // Simulate focus lost, then applied programmatically.
+        // This will reset the internal state, and then enable alternative event.
+        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.onFocusChanged(true, 0, null);
+
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        verify(mUrlBarDelegate).onTouchAfterFocus();
+        // No subsequent events.
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        verifyNoMoreInteractions(mUrlBarDelegate);
+    }
+
+    @Test
+    public void performClick_emittedOnlyOnce() {
+        mUrlBar.performClick();
+        verify(mUrlBarDelegate).onFocusByTouch();
+
+        clearInvocations(mUrlBarDelegate);
+
+        mUrlBar.performClick();
+        verifyNoMoreInteractions(mUrlBarDelegate);
+
+        // Simluate focus lost. This should re-set recorded state and permit the UrlBar to emit
+        // focus events once more.
+        mUrlBar.onFocusChanged(false, 0, null);
+
+        mUrlBar.performClick();
+        verify(mUrlBarDelegate).onFocusByTouch();
+    }
+
+    @Test
+    public void performClick_safeWithNoDelegate() {
+        mUrlBar.setDelegate(null);
+        mUrlBar.performClick();
+    }
+
+    @Test
     public void testTruncation_NoTruncationWhileFocused() {
         mUrlBar.onFocusChanged(true, 0, null);
 
@@ -299,13 +370,6 @@ public class UrlBarUnitTest {
         assertEquals(mLongDomain, text);
 
         mUrlBar.onFocusChanged(false, 0, null);
-    }
-
-    @Test
-    public void testOnTouchEvent_handleTouchAfterFocus() {
-        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
-        verify(mUrlBarDelegate).onTouchAfterFocus();
     }
 
     @Test

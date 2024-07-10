@@ -109,6 +109,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     private final Runnable mEnforceMaxTextHeight = this::enforceMaxTextHeight;
 
     private boolean mFocused;
+    private boolean mFocusEventEmitted;
     private boolean mAllowFocus = true;
     private boolean mTypingStartedEventSent;
 
@@ -344,6 +345,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
         mTypingStartedEventSent = false;
         mFocused = focused;
+        if (!mFocused) mFocusEventEmitted = false;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
         setHorizontalFadingEdgeEnabled(!focused);
@@ -461,17 +463,32 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getActionMasked() == MotionEvent.ACTION_UP && mUrlBarDelegate != null) {
-            if (!mFocused) {
-                mUrlBarDelegate.onFocusByTouch();
-            } else {
-                // If the URL bar is already focused, give it an opportunity to handle a tap for a
-                // special case requiring to trigger focus animations when a hardware keyboard is
-                // connected. See the implementation(s) of this method for details.
-                mUrlBarDelegate.onTouchAfterFocus();
-            }
+        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            performClick();
         }
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean performClick() {
+        boolean result = super.performClick();
+        if (mUrlBarDelegate == null) return result;
+
+        // Don't emit subsequent events if we already notified the Delegate about how the Omnibox
+        // was activated.
+        if (mFocusEventEmitted) return result;
+        mFocusEventEmitted = true;
+
+        if (!mFocused) {
+            // The Omnibox was inactive. This is the activation event.
+            mUrlBarDelegate.onFocusByTouch();
+        } else {
+            // The Omnibox was was activated programmatically (e.g. on LFF devices with hardware
+            // keyboard attached). Now, the user has explicitly clicked/touched the UrlBar.
+            mUrlBarDelegate.onTouchAfterFocus();
+        }
+
+        return result;
     }
 
     /**
@@ -1208,7 +1225,6 @@ public abstract class UrlBar extends AutocompleteEditText {
         }
     }
 
-    @VisibleForTesting
     /* package */ boolean hasPendingDisplayTextScrollForTesting() {
         return mPendingScroll;
     }
