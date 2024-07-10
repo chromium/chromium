@@ -118,7 +118,11 @@ void ContextualPanelTabHelper::DidStartNavigation(
     return;
   }
 
-  is_contextual_panel_currently_opened_ = false;
+  if (IsContextualPanelCurrentlyOpened()) {
+    [contextual_sheet_handler_ hideContextualSheet];
+    CloseContextualPanel();
+  }
+
   loud_moment_entrypoint_shown_for_curent_page_navigation_ = false;
 
   // Clear the configs and notify the observers.
