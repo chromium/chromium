@@ -9,7 +9,6 @@
 #include "base/android/build_info.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -299,46 +298,6 @@ void MaybeActivateSplitStoresAndLocalUpm(
   }
 }
 
-// Called on startup from `MaybeDeactivateSplitStoresAndLocalUpm` to delete the
-// login data files for users migrated to UPM. Must only be called if the value
-// of the state pref `PasswordsUseUPMLocalAndSeparateStores` is `On` and there
-// is no need for deactivation of local UPM.
-void MaybeDeleteLoginDataFiles(PrefService* prefs,
-                               const base::FilePath& login_db_directory) {
-  CHECK(password_manager::UsesSplitStoresAndUPMForLocal(prefs));
-
-  base::FilePath profile_db_path =
-      login_db_directory.Append(password_manager::kLoginDataForProfileFileName);
-  base::FilePath account_db_path =
-      login_db_directory.Append(password_manager::kLoginDataForAccountFileName);
-  base::FilePath profile_db_journal_path = login_db_directory.Append(
-      password_manager::kLoginDataJournalForProfileFileName);
-  base::FilePath account_db_journal_path = login_db_directory.Append(
-      password_manager::kLoginDataJournalForAccountFileName);
-
-  // Delete the login data files for the user migrated to UPM.
-  // In the unlikely case that the deletion operation fails, it will be
-  // retried upon next startup as part of
-  // `MaybeDeactivateSplitStoresAndLocalUpm`.
-  if (PathExists(profile_db_path)) {
-    bool success = base::DeleteFile(profile_db_path);
-    base::UmaHistogramBoolean("PasswordManager.ProfileLoginData.RemovalStatus",
-                              success);
-    if (success) {
-      prefs->SetBoolean(
-          password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
-    }
-  }
-  base::DeleteFile(profile_db_journal_path);
-
-  if (PathExists(account_db_path)) {
-    bool success = base::DeleteFile(account_db_path);
-    base::UmaHistogramBoolean("PasswordManager.AccountLoginData.RemovalStatus",
-                              success);
-  }
-  base::DeleteFile(account_db_journal_path);
-}
-
 // Must only be called if the state pref is kOn or kOffAndMigrationPending, to
 // set it to kOff if any of these happened:
 // - The user downgraded GmsCore and can no longer use the local UPM properly.
@@ -409,12 +368,6 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
     base::FeatureList::IsEnabled(
         password_manager::features::
             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::
-                kClearLoginDatabaseForAllMigratedUPMUsers)) {
-      MaybeDeleteLoginDataFiles(pref_service, login_db_directory);
-    }
-
     return;
   }
 
