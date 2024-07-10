@@ -439,8 +439,6 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
     return RespondNow(Error(keys::kNoExtensionError, extension_id_));
   }
 
-  bool should_enable = params->enabled;
-
   const ManagementPolicy* policy =
       ExtensionSystem::Get(browser_context())->management_policy();
   if (!policy->ExtensionMayModifySettings(extension(), target_extension,
@@ -448,73 +446,91 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
     return RespondNow(Error(keys::kUserCantModifyError, extension_id_));
   }
 
+  // Do nothing if method wants to enable an already enabled extension, and
+  // vice-versa.
+  bool should_enable = params->enabled;
+  bool currently_enabled =
+      registry->enabled_extensions().Contains(extension_id_) ||
+      registry->terminated_extensions().Contains(extension_id_);
+  if ((should_enable && currently_enabled) ||
+      (!should_enable && !currently_enabled)) {
+    return RespondNow(NoArguments());
+  }
+
   if (PlatformSupportsApprovalFlowForExtensions() &&
-      IsExtensionApprovalFlowRequired(target_extension)) {
+      IsSupervisedExtensionApprovalFlowRequired(target_extension)) {
     // Either ask for parent permission or notify the child that their parent
     // has disabled this action.
-    auto extension_approval_callback = base::BindOnce(
-        &ManagementSetEnabledFunction::OnExtensionApprovalDone, this);
-    AddRef();  // Matched in OnExtensionApprovalDone().
+    auto approval_callback = base::BindOnce(
+        &ManagementSetEnabledFunction::OnSupervisedExtensionApprovalDone, this);
+    AddRef();  // Matched in OnSupervisedExtensionApprovalDone().
 
     SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
         ManagementAPI::GetFactoryInstance()
             ->Get(browser_context())
             ->GetSupervisedUserExtensionsDelegate();
     CHECK(supervised_user_extensions_delegate)
-        << "Implied by IsExtensionApprovalFlowRequired";
+        << "Implied by IsSupervisedExtensionApprovalFlowRequired";
     supervised_user_extensions_delegate->RequestToEnableExtensionOrShowError(
         *target_extension, GetSenderWebContents(),
         SupervisedUserExtensionParentApprovalEntryPoint::
             kOnExtensionManagementSetEnabledOperation,
-        std::move(extension_approval_callback));
+        std::move(approval_callback));
     return RespondLater();
   }
 
-  if (should_enable &&
-      policy->MustRemainDisabled(target_extension, /*reason=*/nullptr,
-                                 /*error=*/nullptr)) {
-    return RespondNow(Error(keys::kUserCantModifyError, extension_id_));
-  }
-
-  bool currently_enabled =
-      registry->enabled_extensions().Contains(extension_id_) ||
-      registry->terminated_extensions().Contains(extension_id_);
-
-  if (!currently_enabled && should_enable) {
-    ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
-    if (prefs->DidExtensionEscalatePermissions(extension_id_)) {
-      if (!user_gesture())
-        return RespondNow(Error(keys::kGestureNeededForEscalationError));
-
-      AddRef();  // Matched in OnInstallPromptDone().
-      install_prompt_ = delegate->SetEnabledFunctionDelegate(
-          GetSenderWebContents(), browser_context(), target_extension,
-          base::BindOnce(&ManagementSetEnabledFunction::OnInstallPromptDone,
-                         this));
-      return RespondLater();
-    }
-    if (HasUnsupportedRequirements(extension_id_)) {
-      // Recheck the requirements.
-      requirements_checker_ =
-          std::make_unique<RequirementsChecker>(target_extension);
-      requirements_checker_->Start(
-          base::BindOnce(&ManagementSetEnabledFunction::OnRequirementsChecked,
-                         this));  // This bind creates a reference.
-      return RespondLater();
-    }
-    delegate->EnableExtension(browser_context(), extension_id_);
-  } else if (currently_enabled && !params->enabled) {
+  // Disable extension pathflow.
+  if (!should_enable) {
     delegate->DisableExtension(
         browser_context(), extension(), extension_id_,
         Manifest::IsPolicyLocation(target_extension->location())
             ? disable_reason::DISABLE_BLOCKED_BY_POLICY
             : disable_reason::DISABLE_USER_ACTION);
+    return RespondNow(NoArguments());
   }
 
+  // Enable extension pathflow.
+
+  // Cannot enable policy disabled extensions.
+  if (policy->MustRemainDisabled(target_extension, /*reason=*/nullptr,
+                                 /*error=*/nullptr)) {
+    return RespondNow(Error(keys::kUserCantModifyError, extension_id_));
+  }
+
+  // Notify the user if there are new permissions before enabling the extension.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
+  if (prefs->DidExtensionEscalatePermissions(extension_id_)) {
+    if (!user_gesture()) {
+      return RespondNow(Error(keys::kGestureNeededForEscalationError));
+    }
+
+    AddRef();  // Matched in OnPermissionsIncreasePromptDone().
+    install_prompt_ = delegate->SetEnabledFunctionDelegate(
+        GetSenderWebContents(), browser_context(), target_extension,
+        base::BindOnce(
+            &ManagementSetEnabledFunction::OnPermissionsIncreasePromptDone,
+            this));
+    return RespondLater();
+  }
+
+  // Verify requirements are supported.
+  if (HasUnsupportedRequirements(extension_id_)) {
+    // Recheck the requirements.
+    requirements_checker_ =
+        std::make_unique<RequirementsChecker>(target_extension);
+
+    AddRef();  // Matched in OnRequirementsChecked().
+    requirements_checker_->Start(base::BindOnce(
+        &ManagementSetEnabledFunction::OnRequirementsChecked, this));
+    return RespondLater();
+  }
+
+  delegate->EnableExtension(browser_context(), extension_id_);
   return RespondNow(NoArguments());
 }
 
-void ManagementSetEnabledFunction::OnInstallPromptDone(bool did_accept) {
+void ManagementSetEnabledFunction::OnPermissionsIncreasePromptDone(
+    bool did_accept) {
   if (did_accept) {
     ManagementAPI::GetFactoryInstance()
         ->Get(browser_context())
@@ -531,11 +547,11 @@ void ManagementSetEnabledFunction::OnInstallPromptDone(bool did_accept) {
 bool ManagementSetEnabledFunction::HasUnsupportedRequirements(
     const ExtensionId& extension_id) const {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
-  return prefs->GetDisableReasons(extension_id) &
-         disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT;
+  return prefs->HasDisableReason(
+      extension_id, disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT);
 }
 
-bool ManagementSetEnabledFunction::IsExtensionApprovalFlowRequired(
+bool ManagementSetEnabledFunction::IsSupervisedExtensionApprovalFlowRequired(
     const Extension* target_extension) const {
   SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
       ManagementAPI::GetFactoryInstance()
@@ -574,9 +590,11 @@ void ManagementSetEnabledFunction::OnRequirementsChecked(
     Respond(Error(keys::kMissingRequirementsError,
                   base::UTF16ToUTF8(requirements_checker_->GetErrorMessage())));
   }
+
+  Release();  // Balanced in Run().
 }
 
-void ManagementSetEnabledFunction::OnExtensionApprovalDone(
+void ManagementSetEnabledFunction::OnSupervisedExtensionApprovalDone(
     SupervisedUserExtensionsDelegate::ExtensionApprovalResult result) {
   // TODO(crbug.com/1320442): Investigate whether ENABLE_SUPERVISED_USERS can
   // be ported to //extensions.

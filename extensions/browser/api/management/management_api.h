@@ -113,20 +113,29 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnInstallPromptDone(bool did_accept);
-
-  bool HasUnsupportedRequirements(const ExtensionId& extension_id) const;
-
-  bool IsExtensionApprovalFlowRequired(const Extension* target_extension) const;
-
-  void OnRequirementsChecked(const PreloadCheck::Errors& errors);
-
-  // Called when the extension approval flow is completed.
-  void OnExtensionApprovalDone(
+  // Called when supervised extension approval flow is completed.
+  void OnSupervisedExtensionApprovalDone(
       SupervisedUserExtensionsDelegate::ExtensionApprovalResult result);
 
+  // Called when the permissions increase prompt is completed.
+  void OnPermissionsIncreasePromptDone(bool did_accept);
+
+  // Called when requirements have been checked, with `errors` if any.
+  void OnRequirementsChecked(const PreloadCheck::Errors& errors);
+
+  // Returns whether `extension_id` has any unsupported requirements.
+  bool HasUnsupportedRequirements(const ExtensionId& extension_id) const;
+
+  // Returns whether `target_extension` needs supervised approval.
+  bool IsSupervisedExtensionApprovalFlowRequired(
+      const Extension* target_extension) const;
+
+  // Extension to be enabled or disabled.
   ExtensionId extension_id_;
 
+  // Permissions increase delegate, which uses an install prompt to show the
+  // dialog (crbug.com/352038135: permissions increase should have its own
+  // separate dialog).
   std::unique_ptr<InstallPromptDelegate> install_prompt_;
 
   std::unique_ptr<RequirementsChecker> requirements_checker_;
