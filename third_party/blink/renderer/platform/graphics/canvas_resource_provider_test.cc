@@ -492,7 +492,8 @@ TEST_F(CanvasResourceProviderTest,
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_NE(resource->GetClientSharedImage(kOrderingBarrier)->mailbox(),
             provider->ProduceCanvasResource(FlushReason::kTesting)
-                ->GetMailbox(kOrderingBarrier));
+                ->GetClientSharedImage(kOrderingBarrier)
+                ->mailbox());
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {

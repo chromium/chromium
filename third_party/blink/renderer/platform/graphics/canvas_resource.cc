@@ -370,13 +370,6 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
   shared_mapping_ = {};
 }
 
-const gpu::Mailbox& CanvasResourceSharedBitmap::GetMailbox(
-    MailboxSyncMode sync_mode) {
-  // By contract this method is valid to call only if
-  // SupportsAcceleratedCompositing() is true.
-  NOTREACHED_NORETURN();
-}
-
 void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
   SkImageInfo image_info = SkImageInfo::Make(
       SkISize::Make(Size().width(), Size().height()), GetSkColorInfo());
@@ -737,11 +730,6 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   owning_thread_data().sync_token = sii->GenUnverifiedSyncToken();
 }
 
-const gpu::Mailbox& CanvasResourceSharedImage::GetMailbox(
-    MailboxSyncMode sync_mode) {
-  return GetClientSharedImage(sync_mode)->mailbox();
-}
-
 scoped_refptr<gpu::ClientSharedImage>
 CanvasResourceSharedImage::GetClientSharedImage(MailboxSyncMode sync_mode) {
   CHECK(client_shared_image());
@@ -894,13 +882,6 @@ void ExternalCanvasResource::TearDown() {
   Abandon();
 }
 
-const gpu::Mailbox& ExternalCanvasResource::GetMailbox(
-    MailboxSyncMode sync_mode) {
-  TRACE_EVENT0("blink", "ExternalCanvasResource::GetMailbox");
-  DCHECK_EQ(sync_mode, kVerifiedSyncToken);
-  return transferable_resource_.mailbox();
-}
-
 bool ExternalCanvasResource::HasGpuMailbox() const {
   return !transferable_resource_.is_empty();
 }
@@ -1049,12 +1030,6 @@ void CanvasResourceSwapChain::TearDown() {
                           std::move(front_buffer_shared_image_));
   sii->DestroySharedImage(gpu::SyncToken(),
                           std::move(back_buffer_shared_image_));
-}
-
-const gpu::Mailbox& CanvasResourceSwapChain::GetMailbox(
-    MailboxSyncMode sync_mode) {
-  auto client_shared_image = GetClientSharedImage(sync_mode);
-  return client_shared_image ? client_shared_image->mailbox() : empty_mailbox_;
 }
 
 scoped_refptr<gpu::ClientSharedImage>

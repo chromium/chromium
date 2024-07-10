@@ -138,12 +138,6 @@ class PLATFORM_EXPORT CanvasResource
   // Whether this is origin top-left or bottom-left image.
   virtual bool IsOriginTopLeft() const { return true; }
 
-  // The mailbox which can be used to reference this resource in GPU commands.
-  // The sync mode indicates how the sync token for the resource should be
-  // prepared.
-  // NOTE: Valid to call only if SupportsAcceleratedCompositing() is true.
-  virtual const gpu::Mailbox& GetMailbox(MailboxSyncMode) = 0;
-
   // Whether this resource uses ClientSharedImage.
   // TODO(crbug.com/351275962): Remove this method once
   // CanvasResourceSharedBitmap holds ClientSharedImage and
@@ -324,7 +318,6 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool flag) final { is_origin_clean_ = flag; }
-  const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
   void NotifyResourceLost() override;
 
  private:
@@ -392,7 +385,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   }
   bool IsLost() const { return owning_thread_data().is_lost; }
   void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image);
-  const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
   bool UsesClientSharedImage() override { return true; }
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage(
       MailboxSyncMode) override;
@@ -522,7 +514,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   void NotifyResourceLost() override { resource_is_lost_ = true; }
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
-  const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
   viz::ReleaseCallback TakeVizReleaseCallback() override {
     return std::move(release_callback_);
   }
@@ -598,7 +589,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   }
 
   void PresentSwapChain();
-  const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
   bool UsesClientSharedImage() override { return true; }
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage(
       MailboxSyncMode) override;
@@ -624,7 +614,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   GLuint back_buffer_texture_id_ = 0u;
   gpu::SyncToken sync_token_;
   const bool use_oop_rasterization_;
-  const gpu::Mailbox empty_mailbox_;
 
   bool is_origin_clean_ = true;
 };
