@@ -556,6 +556,11 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
 }
 
 bool OpenXrApiWrapper::UpdateAndGetSessionEnded() {
+  // Early return if we already know that the session doesn't exist.
+  if (!IsInitialized()) {
+    return true;
+  }
+
   // Ensure we have the latest state from the OpenXR runtime.
   if (XR_FAILED(ProcessEvents())) {
     DCHECK(!session_running_);
@@ -1232,9 +1237,15 @@ void OpenXrApiWrapper::EnsureEventPolling() {
 }
 
 XrResult OpenXrApiWrapper::ProcessEvents() {
+  // If we have no instance, we cannot process events. In this case the session
+  // has likely already been ended.
+  if (!HasInstance()) {
+    return XR_ERROR_INSTANCE_LOST;
+  }
+
   // If we've received an exit gesture from any of the input sources, end the
   // session.
-  if (input_helper_->ReceivedExitGesture()) {
+  if (input_helper_ && input_helper_->ReceivedExitGesture()) {
     XrResult xr_result = xrEndSession(session_);
     Uninitialize();
     return xr_result;
