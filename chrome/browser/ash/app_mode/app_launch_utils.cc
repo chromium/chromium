@@ -14,19 +14,16 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
@@ -58,23 +55,6 @@ AccountId ToAccountId(const std::string* account_id_string) {
 }
 
 }  // namespace
-
-void LaunchAppOrDie(Profile* profile, const KioskAppId& kiosk_app_id) {
-  auto* launcher =
-      new CrashRecoveryLauncher(CHECK_DEREF(profile), kiosk_app_id);
-  launcher->Start(base::BindOnce(
-      [](CrashRecoveryLauncher* launcher, const KioskAppId& kiosk_app_id,
-         Profile* profile, bool success,
-         const std::optional<std::string>& app_name) {
-        delete launcher;
-        if (success) {
-          CreateKioskSystemSession(kiosk_app_id, profile, app_name);
-        } else {
-          chrome::AttemptUserExit();
-        }
-      },
-      launcher, kiosk_app_id, profile));
-}
 
 void ResetEphemeralKioskPreferences(PrefService* prefs) {
   CHECK(prefs);
@@ -120,13 +100,6 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
          // of enterprise rollback, when keeping the enrollment, policy, not
          // clearing TPM, but wiping stateful partition.
          StartupUtils::IsOobeCompleted();
-}
-
-void CreateKioskSystemSession(const KioskAppId& kiosk_app_id,
-                              Profile* profile,
-                              const std::optional<std::string>& app_name) {
-  KioskController::Get().InitializeKioskSystemSession(profile, kiosk_app_id,
-                                                      app_name);
 }
 
 bool ShouldOneTimeAutoLaunchKioskApp(const base::CommandLine& command_line,

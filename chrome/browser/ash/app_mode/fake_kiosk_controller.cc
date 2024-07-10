@@ -31,6 +31,9 @@ void FakeKioskController::StartSession(const KioskAppId& app,
                                        bool is_auto_launch,
                                        LoginDisplayHost* host) {}
 
+void FakeKioskController::StartSessionAfterCrash(const KioskAppId& app,
+                                                 Profile* profile) {}
+
 bool FakeKioskController::IsSessionStarting() const {
   return false;
 }

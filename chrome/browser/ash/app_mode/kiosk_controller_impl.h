@@ -13,6 +13,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -25,6 +26,7 @@
 
 namespace ash {
 
+class CrashRecoveryLauncher;
 class KioskLaunchController;
 
 class KioskControllerImpl : public KioskController,
@@ -40,10 +42,10 @@ class KioskControllerImpl : public KioskController,
   std::optional<KioskApp> GetAppById(const KioskAppId& app_id) const override;
   std::optional<KioskApp> GetAutoLaunchApp() const override;
 
-  // Launches a kiosk session running the given app.
   void StartSession(const KioskAppId& app,
                     bool is_auto_launch,
                     LoginDisplayHost* host) override;
+  void StartSessionAfterCrash(const KioskAppId& app, Profile* profile) override;
 
   bool IsSessionStarting() const override;
   void CancelSessionStart() override;
@@ -72,6 +74,10 @@ class KioskControllerImpl : public KioskController,
   void OnUserLoggedIn(const user_manager::User& user) override;
 
   void OnLaunchComplete(std::optional<KioskAppLaunchError::Error> error);
+  void OnLaunchCompleteAfterCrash(const KioskAppId& app,
+                                  Profile* profile,
+                                  bool success,
+                                  const std::optional<std::string>& app_name);
 
   void DeleteLaunchControllerAsync();
   void DeleteLaunchController();
@@ -86,6 +92,8 @@ class KioskControllerImpl : public KioskController,
   // kiosk launch.
   std::unique_ptr<KioskLaunchController> GUARDED_BY_CONTEXT(sequence_checker_)
       launch_controller_;
+  std::unique_ptr<CrashRecoveryLauncher> GUARDED_BY_CONTEXT(sequence_checker_)
+      crash_recovery_launcher_;
 
   // Created once the Kiosk session is launched successfully. `nullopt` before
   // Kiosk launch and generally when outside Kiosk.

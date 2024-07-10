@@ -32,6 +32,7 @@ class FakeKioskController : public KioskController {
   void StartSession(const KioskAppId& app,
                     bool is_auto_launch,
                     LoginDisplayHost* host) override;
+  void StartSessionAfterCrash(const KioskAppId& app, Profile* profile) override;
   bool IsSessionStarting() const override;
   void CancelSessionStart() override;
   void AddProfileLoadFailedObserver(

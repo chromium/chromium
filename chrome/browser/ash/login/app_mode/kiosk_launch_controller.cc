@@ -690,7 +690,8 @@ void KioskLaunchController::OnAppWindowCreated(
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
   if (!TestOverrides::block_system_session_creation) {
-    CreateKioskSystemSession(kiosk_app_id_, profile_, app_name);
+    KioskController::Get().InitializeKioskSystemSession(profile_, kiosk_app_id_,
+                                                        app_name);
   }
   // If timer is running, do not remove splash screen for a few
   // more seconds to give the user ability to exit kiosk session.

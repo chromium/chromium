@@ -20,9 +20,11 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/app_mode/app_launch_utils.h"
+#include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -35,6 +37,7 @@
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
@@ -156,10 +159,20 @@ void KioskControllerImpl::StartSession(const KioskAppId& app,
   launch_controller_->Start(app, is_auto_launch);
 }
 
+void KioskControllerImpl::StartSessionAfterCrash(const KioskAppId& app,
+                                                 Profile* profile) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  crash_recovery_launcher_ =
+      std::make_unique<CrashRecoveryLauncher>(CHECK_DEREF(profile), app);
+  crash_recovery_launcher_->Start(
+      base::BindOnce(&KioskControllerImpl::OnLaunchCompleteAfterCrash,
+                     // Safe since `this` owns the `crash_recovery_launcher_`.
+                     base::Unretained(this), app, profile));
+}
+
 bool KioskControllerImpl::IsSessionStarting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return launch_controller_ != nullptr;
+  return launch_controller_ != nullptr || crash_recovery_launcher_ != nullptr;
 }
 
 void KioskControllerImpl::CancelSessionStart() {
@@ -283,6 +296,22 @@ void KioskControllerImpl::DeleteLaunchController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   launch_controller_.reset();
+}
+
+void KioskControllerImpl::OnLaunchCompleteAfterCrash(
+    const KioskAppId& app,
+    Profile* profile,
+    bool success,
+    const std::optional<std::string>& app_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (success) {
+    InitializeKioskSystemSession(profile, app, app_name);
+  } else {
+    chrome::AttemptUserExit();
+  }
+
+  // Delete launcher so it doesn't end up with dangling references.
+  crash_recovery_launcher_.reset();
 }
 
 }  // namespace ash

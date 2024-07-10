@@ -43,6 +43,10 @@ class KioskController {
   virtual void StartSession(const KioskAppId& app,
                             bool is_auto_launch,
                             LoginDisplayHost* host) = 0;
+  // Launches a kiosk session after a browser crash, which is a faster launch
+  // without any UI.
+  virtual void StartSessionAfterCrash(const KioskAppId& app,
+                                      Profile* profile) = 0;
 
   // Returns true if a kiosk launch is in progress. Will return false at any
   // other time, including when the kiosk launch is finished.
