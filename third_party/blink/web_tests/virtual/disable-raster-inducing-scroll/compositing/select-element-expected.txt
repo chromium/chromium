@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] scrollable
+  assert_equals: {\n  "layers": [\n    {\n      "name": "Scrolling background of LayoutView #document",\n      "bounds": [800, 600],\n      "contentsOpaque": true,\n      "backgroundColor": "#FFFFFF"\n    }\n  ]\n}\n expected 2 but got 1
+Harness: the test ran to completion.
+

@@ -1,0 +1,48 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [804, 604],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 4016],
+      "backgroundColor": "#FF0000",
+      "invalidations": [
+        [777, 8, 15, 4000]
+      ],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='overlay'",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 2, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -3416, 0, 1]
+      ]
+    }
+  ]
+}
+

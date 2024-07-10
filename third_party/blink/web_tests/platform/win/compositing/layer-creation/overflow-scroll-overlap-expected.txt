@@ -17,6 +17,12 @@
       "name": "LayoutBlockFlow (positioned) DIV id='scroller' class='overflow'",
       "position": [20, 20],
       "bounds": [306, 206]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [308, 23],
+      "bounds": [15, 200],
+      "contentsOpaque": true
     }
   ],
   "transforms": [

@@ -24,9 +24,14 @@
       "position": [8, 500],
       "bounds": [300, 155],
       "invalidations": [
-        [8, 8, 29, 19],
-        [285, 0, 15, 150]
+        [8, 8, 29, 19]
       ]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [293, 500],
+      "bounds": [15, 150],
+      "contentsOpaque": true
     },
     {
       "name": "VerticalScrollbar",

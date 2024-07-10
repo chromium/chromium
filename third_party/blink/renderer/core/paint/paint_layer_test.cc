@@ -275,12 +275,18 @@ class ReorderOverlayOverflowControlsTest
   OverlayType GetOverlayType() const { return GetParam(); }
 
   void InitOverflowStyle(const char* id) {
-    GetElementById(id)->setAttribute(
-        html_names::kStyleAttr,
-        AtomicString(GetOverlayType() == kOverlayScrollbars
-                         ? "overflow: auto"
-                         : "overflow: hidden; resize: both"));
+    auto* element = GetElementById(id);
+    element->setAttribute(html_names::kStyleAttr,
+                          AtomicString(GetOverlayType() == kOverlayScrollbars
+                                           ? "overflow: auto"
+                                           : "overflow: hidden; resize: both"));
     UpdateAllLifecyclePhasesForTest();
+    if (GetOverlayType() == kOverlayScrollbars) {
+      element->GetLayoutBox()
+          ->GetScrollableArea()
+          ->SetScrollbarsHiddenIfOverlay(false);
+      UpdateAllLifecyclePhasesForTest();
+    }
   }
 
   void RemoveOverflowStyle(const char* id) {

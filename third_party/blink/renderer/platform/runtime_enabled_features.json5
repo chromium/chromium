@@ -3262,6 +3262,7 @@
     },
     {
       name: "RasterInducingScroll",
+      status: "test",
     },
     {
       name: "ReadableStreamAsyncIterable",

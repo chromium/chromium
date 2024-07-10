@@ -1,0 +1,69 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='scroller' class='overflow')",
+      "position": [12, 12],
+      "bounds": [306, 206],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box'",
+      "position": [23, 58],
+      "bounds": [200, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 3
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV class='box')",
+      "position": [23, 213],
+      "bounds": [210, 100],
+      "backgroundColor": "#0000FF",
+      "transform": 3
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -49, 0, 1]
+      ]
+    }
+  ]
+}
+

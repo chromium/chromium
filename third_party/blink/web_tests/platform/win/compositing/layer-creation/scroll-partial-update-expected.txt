@@ -18,6 +18,12 @@ scroll me
       "position": [10, 8],
       "bounds": [400, 204],
       "backgroundColor": "#FFFF0080"
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [387, 10],
+      "bounds": [15, 200],
+      "contentsOpaque": true
     }
   ],
   "transforms": [

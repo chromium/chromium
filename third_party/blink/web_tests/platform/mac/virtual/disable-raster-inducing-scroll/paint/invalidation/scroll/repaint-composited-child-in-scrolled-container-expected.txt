@@ -1,0 +1,84 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='outer'",
+      "bounds": [285, 285],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 285],
+      "bounds": [285, 15],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [285, 0],
+      "bounds": [15, 285],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "Scroll corner of LayoutBlockFlow (positioned, children-inline) DIV id='outer'",
+      "position": [285, 285],
+      "bounds": [15, 15],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='outer'",
+      "bounds": [650, 600],
+      "backgroundColor": "#0000FF80",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container'",
+      "bounds": [600, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "invalidations": [
+        [0, 0, 600, 600]
+      ],
+      "transform": 3
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-365, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [50, 0, 0, 1]
+      ]
+    }
+  ]
+}
+

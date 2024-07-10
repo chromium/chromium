@@ -13,18 +13,12 @@
       "name": "VerticalScrollbar",
       "position": [94, 1],
       "bounds": [7, 100],
-      "invalidations": [
-        [0, 0, 7, 100]
-      ],
       "transform": 2
     },
     {
       "name": "VerticalScrollbar",
       "position": [394, 1],
-      "bounds": [7, 300],
-      "invalidations": [
-        [0, 0, 7, 300]
-      ]
+      "bounds": [7, 300]
     }
   ],
   "transforms": [

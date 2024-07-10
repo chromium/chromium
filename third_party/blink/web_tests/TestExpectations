@@ -775,6 +775,19 @@ virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/* [ Failure Ski
 
 crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 
+crbug.com/350265138 virtual/threaded/external/wpt/css/css-backgrounds/animations/background-color-scroll-into-viewport.html [ Failure ]
+
+# Could not load the requested resource.
+crbug.com/350292231 [ Fuchsia ] scrollbars/scrollbar-visibility-hidden.html [ Failure ]
+crbug.com/350292231 [ Fuchsia ] fast/block/float/centered-float-avoidance-complexity.html [ Failure ]
+crbug.com/350292231 [ Fuchsia ] fast/events/reveal-link-when-focused.html [ Failure ]
+crbug.com/350292231 [ Fuchsia ] fast/overflow/position-fixed-transform-clipping.html [ Failure ]
+crbug.com/350292231 [ Fuchsia ] fast/table/border-collapsing/004.html [ Failure ]
+crbug.com/350292231 [ Fuchsia ] tables/mozilla/bugs/bug2479-3.html [ Failure ]
+crbug.com/350292231 [ Fuchsia ] tables/mozilla/bugs/bug2479-4.html [ Failure ]
+crbug.com/350292231 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug2479-5.html [ Failure ]
+crbug.com/350292231 [ Fuchsia ] virtual/text-antialias/international/003.html [ Failure ]
+
 # ====== Paint team owned tests to here ======
 
 # WPT speculative-parsing tests failing
@@ -1083,11 +1096,6 @@ crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Fai
 crbug.com/1311206 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-038.html [ Failure ]
 crbug.com/1228023 external/wpt/css/css-flexbox/justify-content-007.html [ Failure ]
 crbug.com/1306037 external/wpt/css/css-flexbox/abspos/dynamic-align-self-001.html [ Failure ]
-
-
-crbug.com/1299946 [ Mac10.15 Release ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
-crbug.com/1299946 [ Mac11 Release ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
-crbug.com/1299946 [ Mac12 ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
 
 # These tests need to change to accommodate the new intrinsic size algorithm.
 # The revisions are in https://chromium-review.googlesource.com/c/chromium/src/+/3733177/14
@@ -3039,8 +3047,6 @@ crbug.com/626703 [ Mac13 ] external/wpt/css/css-content/quotes-020.html [ Failur
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]
-crbug.com/626703 [ Mac13 Release ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout ]
-crbug.com/626703 [ Mac13 Release ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
@@ -6315,8 +6321,6 @@ crbug.com/1443871 [ Mac10.15 ] virtual/text-antialias/mac-system-ui-weight.html 
 crbug.com/1294251 http/tests/devtools/elements/styles-3/styles-add-invalid-property.js [ Failure Pass Timeout ]
 
 # Failures on Mac13 2023-05-18
-crbug.com/1446037 [ Debug Mac13 ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout ]
-crbug.com/1446037 [ Debug Mac13 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout ]
 crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.html [ Failure Pass ]
 [ Debug Mac13 ] jquery/traversing.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/interaction/focus/chrome-object-tab-focus-bug.html [ Failure ]
@@ -7005,8 +7009,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 [ Mac14 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
 [ Mac14 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]
-[ Mac14 ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
-[ Mac14 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout ]
 [ Mac14 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 [ Mac14 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure Timeout ]
 [ Mac14 ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure ]
@@ -7057,8 +7059,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 [ Mac14-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
 [ Mac14-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]
-[ Mac14-arm64 ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Failure Timeout ]
-[ Mac14-arm64 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Failure Timeout ]
 [ Mac14-arm64 ] external/wpt/css/css-transforms/animation/canvas-webgl-translate-in-animation.html [ Timeout ]
 [ Mac14-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Timeout ]
 [ Mac14-arm64 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
@@ -7217,7 +7217,7 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?13-last [ Failure Pass ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?8-8 [ Failure ]
 [ Debug Mac14 ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-thumb-inactive-pseudo.html [ Failure Pass ]
-[ Debug Mac14 ] virtual/raster-inducing-scroll/scrollbars/custom-scrollbar-thumb-focus-iframe-inactive-pseudo.html [ Failure Pass ]
+[ Debug Mac14 ] scrollbars/custom-scrollbar-thumb-focus-iframe-inactive-pseudo.html [ Failure Pass ]
 [ Debug Mac14 ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/shared-storage.js [ Failure Pass ]
 [ Debug Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/response-code-successful.html?code=201 [ Failure Pass ]
 [ Debug Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/response-code-successful.html?code=203 [ Failure Pass ]
@@ -7233,7 +7233,7 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Debug Mac14-arm64 ] scrollbars/custom-scrollbar-inactive-only-on-windowinactive-selector.html [ Failure Pass ]
 [ Debug Mac14-arm64 ] scrollbars/scrollbar-iframe-click-does-not-blur-content.html [ Failure Pass ]
 [ Debug Mac14-arm64 ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/shared-storage.js [ Failure Pass ]
-[ Debug Mac14-arm64 ] virtual/raster-inducing-scroll/scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
+[ Debug Mac14-arm64 ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
 crbug.com/40777750 fast/peerconnection/RTCPeerConnection-undelivered-events-gc.html [ Failure Pass ]
 [ Debug Mac14-arm64 ] virtual/stable/http/tests/navigation/form-targets-cross-site-frame-get.html [ Failure Pass ]
 [ Debug Mac14-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/disallowed-navigations-dangling-markup-urn.https.html [ Failure Pass ]

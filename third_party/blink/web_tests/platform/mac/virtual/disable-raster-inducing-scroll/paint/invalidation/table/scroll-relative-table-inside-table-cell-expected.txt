@@ -1,0 +1,86 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1566, 1781],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutTableCell (relative positioned) TD id='cellToScroll' class='relative'",
+      "position": [2, 2],
+      "bounds": [435, 450],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [2, 452],
+      "bounds": [435, 15],
+      "contentsOpaque": true,
+      "transform": 2
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [437, 2],
+      "bounds": [15, 465],
+      "transform": 2
+    },
+    {
+      "name": "LayoutTableCell (relative positioned) TD id='cellToScroll' class='relative'",
+      "position": [2, 2],
+      "bounds": [950, 450],
+      "transform": 3
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 585],
+      "bounds": [785, 15],
+      "contentsOpaque": true
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 585],
+      "contentsOpaque": true
+    },
+    {
+      "name": "Scroll corner of LayoutView #document",
+      "position": [785, 585],
+      "bounds": [15, 15]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-781, -1196, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [1112, 1312, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-515, 0, 0, 1]
+      ]
+    }
+  ]
+}
+

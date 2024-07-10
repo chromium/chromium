@@ -7,6 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
+      "name": "VerticalScrollbar",
+      "position": [185, 0],
+      "bounds": [15, 185],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
       "name": "LayoutBlockFlow DIV id='foo2'",
       "bounds": [150, 1000],
       "contentsOpaque": true,

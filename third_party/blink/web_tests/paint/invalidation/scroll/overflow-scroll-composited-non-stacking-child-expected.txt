@@ -17,10 +17,14 @@
     {
       "name": "LayoutBlockFlow HTML",
       "position": [8, 60],
-      "bounds": [784, 200],
-      "invalidations": [
-        [300, 5, 15, 175]
-      ]
+      "bounds": [784, 200]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [290, 5],
+      "bounds": [15, 175],
+      "contentsOpaque": true,
+      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='icon'",

@@ -157,18 +157,26 @@
     "owners": ["wangxianzhu@chromium.org"],
     "expires": "Jul 30, 2024"
   },
+
+  "Exclusive tests due to crbug.com/349939555",
   {
-    "prefix": "raster-inducing-scroll",
-    "platforms": ["Linux", "Mac"],
+    "prefix": "disable-raster-inducing-scroll",
+    "platforms": ["Linux", "Mac", "Win"],
     "bases": ["compositing",
               "paint",
               "scrollbars",
               "external/wpt/acid/acid2/reftest.html",
-              "fast/scroll-behavior"],
-    "args": ["--enable-features=RasterInducingScroll"],
+              "fast/scroll-behavior",
+              "fast/events/touch/compositor-touch-hit-rects-iframes.html",
+              "fast/events/touch/compositor-touch-hit-rects-non-composited-scroll-overflow-with-handler.html",
+              "fast/events/touch/compositor-touch-hit-rects-non-composited-scroll.html"],
+    "exclusive_tests": ["scrollbars/auto-scrollbar-fades-out.html",
+                        "scrollbars/hidden-scrollbars-invisible.html"],
+    "args": ["--disable-features=RasterInducingScroll"],
     "owners": ["wangxianzhu@chromium.org"],
-    "expires": "Sep 30, 2024"
+    "expires": "Dev 31, 2024"
   },
+
   {
     "prefix": "attribution-reporting-in-browser-migration",
     "platforms": ["Linux", "Mac", "Win"],
@@ -901,15 +909,19 @@
     "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
+
+  "RasterInducingScroll disabled due to crbug.com/349939555",
   {
     "prefix": "fluent-overlay-scrollbar",
     "platforms": ["Linux", "Win"],
     "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html",
               "virtual/fluent-non-overlay-scrollbar/main/hover-over-main-thread.html",
               "virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html"],
+    "exclusive_tests": ["virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html"],
     "args": ["--enable-features=FluentOverlayScrollbar",
              "--enable-threaded-compositing",
-             "--disable-smooth-scrolling"],
+             "--disable-smooth-scrolling",
+             "--disable-features=RasterInducingScroll"],
     "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
@@ -923,6 +935,7 @@
     "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
+
   {
     "prefix": "text-antialias",
     "owners": ["drott@chromium.org"],

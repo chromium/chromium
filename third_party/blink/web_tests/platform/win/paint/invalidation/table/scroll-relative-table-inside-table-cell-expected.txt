@@ -5,10 +5,13 @@
       "bounds": [1566, 1781],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "invalidations": [
-        [1114, 1314, 435, 450],
-        [1114, 1764, 435, 15]
-      ],
+      "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [1114, 1764],
+      "bounds": [435, 15],
+      "contentsOpaque": true,
       "transform": 1
     },
     {

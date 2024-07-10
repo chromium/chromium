@@ -13,8 +13,8 @@ crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-s
 crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]
 crbug.com/1517878 external/wpt/css/filter-effects/backdrop-filter-clip-rect-2.html [ Failure ]
 
-# Don't bother for now
-crbug.com/40517276 virtual/raster-inducing-scroll/* [ Skip ]
+# ==== Expectation filename too long ======
+virtual/disable-raster-inducing-scroll/fast/events/touch/compositor-touch-hit-rects-non-composited-scroll-overflow-with-handler.html [ Skip ]
 
 # ==== Timeouts =======
 crbug.com/1517847 virtual/scalefactor200/css3/filters/effect-reference-composite-hw.html [ Pass Timeout ]

@@ -1,0 +1,84 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [7, 7, 183, 38]
+      ]
+    },
+    {
+      "name": "LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
+      "position": [1, 1],
+      "bounds": [179, 19],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "Scroll corner of LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
+      "position": [150, 5],
+      "bounds": [30, 30],
+      "invalidations": [
+        [0, 0, 30, 30]
+      ],
+      "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [1, 20],
+      "bounds": [164, 15],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
+      "position": [1, 1],
+      "bounds": [472, 19],
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [0, 0, 472, 19]
+      ],
+      "transform": 2
+    },
+    {
+      "name": "Caret",
+      "position": [471, 3],
+      "bounds": [1, 15],
+      "contentsOpaque": true,
+      "transform": 2
+    },
+    {
+      "name": "LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
+      "position": [-1, -1],
+      "bounds": [183, 38],
+      "invalidations": [
+        [0, 0, 183, 38]
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-293, 0, 0, 1]
+      ]
+    }
+  ]
+}
+
