@@ -345,7 +345,7 @@ class AutomationWebContentsObserver
 #if defined(USE_AURA)
     mouse_location = aura::Env::GetInstance()->last_mouse_location();
 #endif
-    CHECK_NE(content_event_bundle.ax_tree_id, ui::AXTreeIDUnknown());
+
     AutomationEventRouter* router = AutomationEventRouter::GetInstance();
     router->DispatchAccessibilityEvents(
         content_event_bundle.ax_tree_id, content_event_bundle.updates,
