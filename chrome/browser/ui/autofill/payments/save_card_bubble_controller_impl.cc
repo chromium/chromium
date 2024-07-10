@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -53,6 +54,75 @@
 #include "ui/base/resource/resource_bundle.h"
 
 namespace autofill {
+
+namespace {
+
+UpdatedDesktopUiTreatmentArm GetUpdatedDesktopUiTreatmentArm() {
+  if (!base::FeatureList::IsEnabled(features::kAutofillUpstreamUpdatedUi)) {
+    return UpdatedDesktopUiTreatmentArm::kDefault;
+  }
+
+  switch (features::kAutofillUpstreamUpdatedUiTreatment.Get()) {
+    case 1:
+      return UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic;
+    case 2:
+      return UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated;
+    case 3:
+      return UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic;
+    case 4:
+      return UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated;
+    case 5:
+      return UpdatedDesktopUiTreatmentArm::kEducationFocusStatic;
+    case 6:
+      return UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated;
+    default:
+      return UpdatedDesktopUiTreatmentArm::kDefault;
+  }
+}
+
+std::u16string GetWindowTitleForUploadSave() {
+  switch (GetUpdatedDesktopUiTreatmentArm()) {
+    case UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic:
+    case UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY);
+    case UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic:
+    case UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE);
+    case UpdatedDesktopUiTreatmentArm::kEducationFocusStatic:
+    case UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION);
+    default:
+      return features::ShouldShowImprovedUserConsentForCreditCardSave()
+                 ? l10n_util::GetStringUTF16(
+                       IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4)
+                 : l10n_util::GetStringUTF16(
+                       IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
+  }
+}
+
+std::optional<std::u16string> GetUpdatedExplanatoryMessageForUploadSave() {
+  switch (GetUpdatedDesktopUiTreatmentArm()) {
+    case UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic:
+    case UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
+    case UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic:
+    case UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE);
+    case UpdatedDesktopUiTreatmentArm::kEducationFocusStatic:
+    case UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION);
+    default:
+      return std::nullopt;
+  }
+}
+
+}  // namespace
 
 static bool g_ignore_window_activation_for_testing = false;
 
@@ -230,11 +300,7 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
           IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL);
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::UPLOAD_IN_PROGRESS:
-      return features::ShouldShowImprovedUserConsentForCreditCardSave()
-                 ? l10n_util::GetStringUTF16(
-                       IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4)
-                 : l10n_util::GetStringUTF16(
-                       IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
+      return GetWindowTitleForUploadSave();
     case BubbleType::UPLOAD_CVC_SAVE:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD);
@@ -275,6 +341,11 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
   if (current_bubble_type_ != BubbleType::UPLOAD_SAVE &&
       current_bubble_type_ != BubbleType::UPLOAD_IN_PROGRESS) {
     return std::u16string();
+  }
+
+  if (std::optional<std::u16string> updated_ui_explanatory_message =
+          GetUpdatedExplanatoryMessageForUploadSave()) {
+    return updated_ui_explanatory_message.value();
   }
 
   if (base::FeatureList::IsEnabled(

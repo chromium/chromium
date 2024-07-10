@@ -18,6 +18,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -42,6 +43,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using base::Bucket;
 using testing::ElementsAre;
@@ -1586,6 +1588,115 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
       SaveCardBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec);
   EXPECT_TRUE(did_on_confirmation_closed_callback_run_);
   EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+}
+
+using UploadCardUpdatedDesktopUiTestData =
+    std::tuple<UpdatedDesktopUiTreatmentArm, int, int>;
+
+// Ensures that the AutofillUpstreamUpdatedUi feature displays the correct UI
+// based on which treatment arm the user is in.
+// Param of the UploadCardUpdatedDesktopUiTest:
+// -- UploadCardUpdatedDesktopUiTestData: A trio of 1) which arm of the
+//    experiment is active, 2) the expected bubble title text message ID for
+//    that arm, and 3) the expected bubble explanatory message ID for that arm.
+class UploadCardUpdatedDesktopUiTest
+    : public SaveCardBubbleControllerImplTest,
+      public testing::WithParamInterface<UploadCardUpdatedDesktopUiTestData> {
+ public:
+  UploadCardUpdatedDesktopUiTest()
+      : treatment_arm_(std::get<0>(GetParam())),
+        expected_title_id_(std::get<1>(GetParam())),
+        expected_explanatory_message_id_(std::get<2>(GetParam())) {
+    std::string treatment_arm_number;
+    switch (treatment_arm_) {
+      case UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic:
+        treatment_arm_number = "1";
+        break;
+      case UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated:
+        treatment_arm_number = "2";
+        break;
+      case UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic:
+        treatment_arm_number = "3";
+        break;
+      case UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated:
+        treatment_arm_number = "4";
+        break;
+      case UpdatedDesktopUiTreatmentArm::kEducationFocusStatic:
+        treatment_arm_number = "5";
+        break;
+      case UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated:
+        treatment_arm_number = "6";
+        break;
+      case UpdatedDesktopUiTreatmentArm::kDefault:
+        // For the default arm, disable the experiment flag.
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kAutofillUpstreamUpdatedUi);
+        return;
+    }
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAutofillUpstreamUpdatedUi,
+        {{"autofill_upstream_updated_ui_treatment", treatment_arm_number}});
+  }
+
+  ~UploadCardUpdatedDesktopUiTest() override = default;
+
+ protected:
+  const UpdatedDesktopUiTreatmentArm treatment_arm_;
+  const int expected_title_id_;
+  const int expected_explanatory_message_id_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    UploadCardUpdatedDesktopUiTest,
+    testing::Values(
+        UploadCardUpdatedDesktopUiTestData(
+            UpdatedDesktopUiTreatmentArm::kDefault,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4,
+#else
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3,
+#endif
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3),
+        UploadCardUpdatedDesktopUiTestData(
+            UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY),
+        UploadCardUpdatedDesktopUiTestData(
+            UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY),
+        UploadCardUpdatedDesktopUiTestData(
+            UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE),
+        UploadCardUpdatedDesktopUiTestData(
+            UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE),
+        UploadCardUpdatedDesktopUiTestData(
+            UpdatedDesktopUiTreatmentArm::kEducationFocusStatic,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION),
+        UploadCardUpdatedDesktopUiTestData(
+            UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION,
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION)));
+
+TEST_P(UploadCardUpdatedDesktopUiTest, ReturnsApplicableWindowTitle) {
+  ShowUploadBubble();
+  EXPECT_EQ(l10n_util::GetStringUTF16(expected_title_id_),
+            controller()->GetWindowTitle());
+}
+
+TEST_P(UploadCardUpdatedDesktopUiTest, ReturnsApplicableExplanatoryMessage) {
+  ShowUploadBubble();
+  EXPECT_EQ(l10n_util::GetStringUTF16(expected_explanatory_message_id_),
+            controller()->GetExplanatoryMessage());
 }
 
 }  // namespace autofill
