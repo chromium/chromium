@@ -33,6 +33,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Dismissed"/>
 </enum>
 
+<enum name="VisitedURLRankingRequestStepStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="SuccessEmpty"/>
+  <int value="3" label="Failed"/>
+  <int value="4" label="FailedNotFound"/>
+  <int value="5" label="FailedMissingBackend"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

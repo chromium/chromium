@@ -19,20 +19,22 @@ namespace visited_url_ranking {
 // A series of supported data transforms that modify a collection of
 // `URLVisitAggregate` objects.
 enum class URLVisitAggregatesTransformType {
+  // Do not use! Internal purposes only.
+  kUnspecified = 0,
   // Set bookmark related fields.
-  kBookmarkData = 0,
+  kBookmarkData = 1,
   // Set shopping related fields.
-  kShoppingData = 1,
+  kShoppingData = 2,
   // Filter based on visibility score field.
-  kHistoryVisibilityScoreFilter = 2,
+  kHistoryVisibilityScoreFilter = 3,
   // Filter based on categories field.
-  kHistoryCategoriesFilter = 3,
+  kHistoryCategoriesFilter = 4,
   // Filter based on whether the URL can be opened by default apps.
-  kDefaultAppUrlFilter = 4,
+  kDefaultAppUrlFilter = 5,
   // Filter based on last active timestamp.
-  kRecencyFilter = 5,
+  kRecencyFilter = 6,
   // Set segmenation metrics related fields.
-  kSegmentationMetricsData = 6,
+  kSegmentationMetricsData = 7,
 };
 
 // The options that may be specified when fetching URL visit data.
@@ -75,10 +77,6 @@ struct FetchOptions {
       base::EnumSet<Source, Source::kNotApplicable, Source::kForeign>;
   FetchOptions(
       std::map<URLType, ResultOption> result_sources_arg,
-      base::Time begin_time_arg,
-      std::vector<URLVisitAggregatesTransformType> transforms_arg = {});
-  // TODO(ssid): DEPRECATED, remove this and migrate the tests.
-  FetchOptions(
       std::map<Fetcher, FetchSources> fetcher_sources_arg,
       base::Time begin_time_arg,
       std::vector<URLVisitAggregatesTransformType> transforms_arg = {});

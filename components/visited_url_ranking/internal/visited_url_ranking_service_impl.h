@@ -9,6 +9,7 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -33,6 +34,21 @@ class SegmentationPlatformService;
 }  // namespace segmentation_platform
 
 namespace visited_url_ranking {
+
+// The status of an execution step performed by the service when handling a
+// request. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(URLVisitAggregatesTransformType)
+enum class VisitedURLRankingRequestStepStatus {
+  kUnknown = 0,
+  kSuccess = 1,
+  kSuccessEmpty = 2,
+  kFailed = 3,
+  kFailedNotFound = 4,
+  kFailedMissingBackend = 5,
+  kMaxValue = kFailedMissingBackend
+};
+// LINT.ThenChange(/tools/metrics/histograms/visited_url_ranking/enums.xml:VisitedURLRankingRequestStepStatus)
 
 enum class Status;
 
@@ -78,13 +94,15 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
       GetURLVisitAggregatesCallback callback,
       const FetchOptions& options,
       const std::vector<URLVisitAggregatesTransformType>& ordered_transforms,
-      std::vector<FetchResult> fetcher_visits);
+      std::vector<std::pair<Fetcher, FetchResult>> fetcher_results);
 
   // Callback invoked when the various transformers have completed.
   void TransformVisitsAndCallback(
       GetURLVisitAggregatesCallback callback,
       const FetchOptions& options,
       std::queue<URLVisitAggregatesTransformType> transform_type_queue,
+      URLVisitAggregatesTransformType transform_type,
+      size_t previous_aggregates_count,
       URLVisitAggregatesTransformer::Status status,
       std::vector<URLVisitAggregate> aggregates);
 

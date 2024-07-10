@@ -73,6 +73,8 @@ class MockHistoryService : public history::HistoryService {
 namespace visited_url_ranking {
 
 using Source = URLVisit::Source;
+using URLType = visited_url_ranking::FetchOptions::URLType;
+using ResultOption = visited_url_ranking::FetchOptions::ResultOption;
 
 class HistoryURLVisitDataFetcherTest
     : public testing::Test,
@@ -137,9 +139,16 @@ class HistoryURLVisitDataFetcherTest
 
 TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
   SetHistoryServiceExpectations(GetSampleAnnotatedVisits());
-  FetchOptions options =
-      FetchOptions({{Fetcher::kHistory, FetchOptions::kOriginSources}},
-                   base::Time::Now() - base::Days(1));
+
+  FetchOptions options = FetchOptions(
+      {
+          {URLType::kLocalVisit, {.age_limit = base::Days(1)}},
+          {URLType::kRemoteVisit, {.age_limit = base::Days(1)}},
+      },
+      {
+          {Fetcher::kHistory, {FetchOptions::kOriginSources}},
+      },
+      base::Time::Now() - base::Days(1));
   auto result = FetchAndGetResult(options);
   EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
   EXPECT_EQ(result.data.size(), 2u);
@@ -163,9 +172,13 @@ TEST_F(HistoryURLVisitDataFetcherTest,
                            /*originator_cache_guid=*/""));
   SetHistoryServiceExpectations(std::move(annotated_visits));
 
-  FetchOptions options =
-      FetchOptions({{Fetcher::kHistory, FetchOptions::kOriginSources}},
-                   base::Time::Now() - base::Days(1));
+  FetchOptions options = FetchOptions(
+      {
+          {URLType::kLocalVisit, {.age_limit = base::Days(1)}},
+          {URLType::kRemoteVisit, {.age_limit = base::Days(1)}},
+      },
+      {{Fetcher::kHistory, FetchOptions::kOriginSources}},
+      base::Time::Now() - base::Days(1));
   auto result = FetchAndGetResult(options);
   EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
   EXPECT_EQ(result.data.size(), 1u);
@@ -182,9 +195,21 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(HistoryURLVisitDataFetcherTest, FetchURLVisitData) {
   SetHistoryServiceExpectations(GetSampleAnnotatedVisits());
+
   const auto source = GetParam();
-  FetchOptions options = FetchOptions({{Fetcher::kHistory, {source}}},
-                                      base::Time::Now() - base::Days(1));
+  ResultOption result_option{.age_limit = base::Days(1)};
+  std::map<URLType, ResultOption> result_sources = {};
+  if (source == Source::kLocal) {
+    result_sources.emplace(URLType::kLocalVisit, std::move(result_option));
+  } else if (source == Source::kForeign) {
+    result_sources.emplace(URLType::kRemoteVisit, std::move(result_option));
+  }
+  std::map<Fetcher, FetchOptions::FetchSources> fetcher_sources;
+  fetcher_sources.emplace(Fetcher::kHistory,
+                          FetchOptions::FetchSources({source}));
+  FetchOptions options =
+      FetchOptions(std::move(result_sources), std::move(fetcher_sources),
+                   base::Time::Now() - base::Days(1));
   auto result = FetchAndGetResult(options);
   EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
   EXPECT_EQ(result.data.size(), 1u);

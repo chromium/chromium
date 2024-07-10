@@ -23,7 +23,8 @@ struct FetchResult {
 
   using URLVisitVariant = URLVisitAggregate::URLVisitVariant;
 
-  FetchResult(Status status, std::map<URLMergeKey, URLVisitVariant> data);
+  FetchResult(Status status_arg,
+              std::map<URLMergeKey, URLVisitVariant> data_arg);
   FetchResult(const FetchResult&) = delete;
   FetchResult(FetchResult&& other);
   FetchResult& operator=(FetchResult&& other);

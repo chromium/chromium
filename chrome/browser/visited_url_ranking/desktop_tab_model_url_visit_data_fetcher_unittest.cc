@@ -69,8 +69,15 @@ TEST_F(DesktopTabModelURLVisitDataFetcherTest, FetchURLVisitData) {
                     base::NumberToString(kSampleTabCount));
   }
 
-  auto options = FetchOptions({{Fetcher::kTabModel, {Source::kLocal}}},
-                              base::Time::Now() - base::Days(1));
+  auto options = FetchOptions(
+      {
+          {FetchOptions::URLType::kActiveLocalTab,
+           {.age_limit = base::Days(1)}},
+      },
+      {
+          {Fetcher::kTabModel, FetchOptions::FetchSources({Source::kLocal})},
+      },
+      base::Time::Now() - base::Days(1));
   auto result = FetchAndGetResult(options);
   EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
   EXPECT_EQ(result.data.size(), 3u);
@@ -94,8 +101,15 @@ TEST_F(DesktopTabModelURLVisitDataFetcherTest,
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tab_strip_model->MoveWebContentsAt(0, kNumTabs - 1, true);
 
-  auto options = FetchOptions({{Fetcher::kTabModel, {Source::kLocal}}},
-                              base::Time::Now() - base::Days(1));
+  auto options = FetchOptions(
+      {
+          {FetchOptions::URLType::kActiveLocalTab,
+           {.age_limit = base::Days(1)}},
+      },
+      {
+          {Fetcher::kTabModel, FetchOptions::FetchSources({Source::kLocal})},
+      },
+      base::Time::Now() - base::Days(1));
   auto result = FetchAndGetResult(options);
   EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
   EXPECT_EQ(result.data.size(), 1u);

@@ -9,6 +9,7 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -71,16 +73,58 @@ const char* EventNameForAction(ScoredURLUserAction action) {
   }
 }
 
+const char* URLVisitAggregatesTransformTypeName(
+    URLVisitAggregatesTransformType type) {
+  switch (type) {
+    case URLVisitAggregatesTransformType::kUnspecified:
+      return "Unspecified";
+    case URLVisitAggregatesTransformType::kBookmarkData:
+      return "BookmarkData";
+    case URLVisitAggregatesTransformType::kShoppingData:
+      return "ShoppingData";
+    case URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter:
+      return "HistoryVisibilityScoreFilter";
+    case URLVisitAggregatesTransformType::kHistoryCategoriesFilter:
+      return "HistoryCategoriesFilter";
+    case URLVisitAggregatesTransformType::kDefaultAppUrlFilter:
+      return "DefaultAppUrlFilter";
+    case URLVisitAggregatesTransformType::kRecencyFilter:
+      return "RecencyFilter";
+    case URLVisitAggregatesTransformType::kSegmentationMetricsData:
+      return "SegmentationMetricsData";
+  }
+}
+
+const char* URLVisitAggregatesFetcherName(Fetcher fetcher) {
+  switch (fetcher) {
+    case Fetcher::kTabModel:
+      return "TabModel";
+    case Fetcher::kSession:
+      return "Session";
+    case Fetcher::kHistory:
+      return "History";
+  }
+}
+
 // Combines `URLVisitVariant` data obtained from various fetchers into
 // `URLVisitAggregate` objects. Leverages the `URLMergeKey` in order to
 // reconcile what data belongs to the same aggregate object.
 std::vector<URLVisitAggregate> ComputeURLVisitAggregates(
-    std::vector<FetchResult> fetch_results) {
+    std::vector<std::pair<Fetcher, FetchResult>> fetcher_results) {
   std::map<URLMergeKey, URLVisitAggregate> url_visit_map = {};
-  for (FetchResult& result : fetch_results) {
+  for (auto& result_pair : fetcher_results) {
+    FetchResult& result = result_pair.second;
+    base::UmaHistogramEnumeration(
+        "VisitedURLRanking.Request.Step.Fetch.Status",
+        result.status == FetchResult::Status::kSuccess
+            ? VisitedURLRankingRequestStepStatus::kSuccess
+            : VisitedURLRankingRequestStepStatus::kFailed);
+    base::UmaHistogramBoolean(
+        base::StringPrintf("VisitedURLRanking.Fetch.%s.Success",
+                           URLVisitAggregatesFetcherName(result_pair.first)),
+        result.status == FetchResult::Status::kSuccess);
+
     if (result.status != FetchResult::Status::kSuccess) {
-      // TODO(romanarora): Capture a metric for how often a specific fetcher
-      // failed.
       continue;
     }
 
@@ -133,6 +177,11 @@ void SortScoredAggregatesAndCallback(
               << " " << *visit.score;
     }
   }
+
+  base::UmaHistogramEnumeration("VisitedURLRanking.Request.Step.Rank.Status",
+                                VisitedURLRankingRequestStepStatus::kSuccess);
+  base::UmaHistogramCounts100("VisitedURLRanking.Rank.NumVisits",
+                              scored_visits.size());
   std::move(callback).Run(ResultStatus::kSuccess, std::move(scored_visits));
 }
 
@@ -166,19 +215,29 @@ void VisitedURLRankingServiceImpl::FetchURLVisitAggregates(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      options, options.transforms);
 
-  const auto fetch_barrier_callback = base::BarrierCallback<FetchResult>(
-      options.fetcher_sources.size(), std::move(merge_visits_and_callback));
+  const auto fetch_barrier_callback =
+      base::BarrierCallback<std::pair<Fetcher, FetchResult>>(
+          options.fetcher_sources.size(), std::move(merge_visits_and_callback));
 
   for (const auto& fetcher_entry : options.fetcher_sources) {
     if (!data_fetchers_.count(fetcher_entry.first)) {
       // Some fetchers may not be available (e.g. due to policy) and the client
       // of the service may not know it, so handle the case silently for now.
       // TODO(crbug/346822243): check if there is a better fallback behavior.
-      fetch_barrier_callback.Run(FetchResult(FetchResult::Status::kSuccess, {}));
+      fetch_barrier_callback.Run(std::make_pair(
+          fetcher_entry.first, FetchResult(FetchResult::Status::kSuccess, {})));
       continue;
     }
     const auto& data_fetcher = data_fetchers_.at(fetcher_entry.first);
-    data_fetcher->FetchURLVisitData(options, fetch_barrier_callback);
+    data_fetcher->FetchURLVisitData(
+        options,
+        base::BindOnce(
+            [](base::RepeatingCallback<void(std::pair<Fetcher, FetchResult>)>
+                   barrier_callback,
+               Fetcher fetcher, FetchResult result) {
+              barrier_callback.Run(std::make_pair(fetcher, std::move(result)));
+            },
+            fetch_barrier_callback, fetcher_entry.first));
   }
 }
 
@@ -187,6 +246,9 @@ void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
     std::vector<URLVisitAggregate> visit_aggregates,
     RankURLVisitAggregatesCallback callback) {
   if (visit_aggregates.empty()) {
+    base::UmaHistogramEnumeration(
+        "VisitedURLRanking.Request.Step.Rank.Status",
+        VisitedURLRankingRequestStepStatus::kSuccessEmpty);
     std::move(callback).Run(ResultStatus::kSuccess, {});
     return;
   }
@@ -195,6 +257,9 @@ void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
       !base::FeatureList::IsEnabled(
           segmentation_platform::features::
               kSegmentationPlatformURLVisitResumptionRanker)) {
+    base::UmaHistogramEnumeration(
+        "VisitedURLRanking.Request.Step.Rank.Status",
+        VisitedURLRankingRequestStepStatus::kFailedMissingBackend);
     std::move(callback).Run(ResultStatus::kError, {});
     return;
   }
@@ -262,7 +327,7 @@ void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
     GetURLVisitAggregatesCallback callback,
     const FetchOptions& options,
     const std::vector<URLVisitAggregatesTransformType>& ordered_transforms,
-    std::vector<FetchResult> fetcher_results) {
+    std::vector<std::pair<Fetcher, FetchResult>> fetcher_results) {
   std::queue<URLVisitAggregatesTransformType> transform_type_queue;
   for (const auto& transform_type : ordered_transforms) {
     transform_type_queue.push(transform_type);
@@ -270,6 +335,8 @@ void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
 
   TransformVisitsAndCallback(
       std::move(callback), options, std::move(transform_type_queue),
+      URLVisitAggregatesTransformType::kUnspecified,
+      /*previous_aggregates_count=*/0,
       URLVisitAggregatesTransformer::Status::kSuccess,
       ComputeURLVisitAggregates(std::move(fetcher_results)));
 }
@@ -278,11 +345,32 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
     GetURLVisitAggregatesCallback callback,
     const FetchOptions& options,
     std::queue<URLVisitAggregatesTransformType> transform_type_queue,
+    URLVisitAggregatesTransformType transform_type,
+    size_t previous_aggregates_count,
     URLVisitAggregatesTransformer::Status status,
     std::vector<URLVisitAggregate> aggregates) {
+  if (transform_type != URLVisitAggregatesTransformType::kUnspecified) {
+    base::UmaHistogramEnumeration(
+        "VisitedURLRanking.Request.Step.Transform.Status",
+        status == URLVisitAggregatesTransformer::Status::kSuccess
+            ? VisitedURLRankingRequestStepStatus::kSuccess
+            : VisitedURLRankingRequestStepStatus::kFailed);
+    base::UmaHistogramBoolean(
+        base::StringPrintf("VisitedURLRanking.TransformType.%s.Success",
+                           URLVisitAggregatesTransformTypeName(transform_type)),
+        status == URLVisitAggregatesTransformer::Status::kSuccess);
+  }
+
   if (status == URLVisitAggregatesTransformer::Status::kError) {
     std::move(callback).Run(ResultStatus::kError, {});
     return;
+  }
+
+  if (previous_aggregates_count > 0) {
+    base::UmaHistogramCustomCounts(
+        base::StringPrintf("VisitedURLRanking.TransformType.%s.InOutPercentage",
+                           URLVisitAggregatesTransformTypeName(transform_type)),
+        (aggregates.size() / previous_aggregates_count) * 100, 1, 100, 100);
   }
 
   if (transform_type_queue.empty() || aggregates.empty()) {
@@ -290,18 +378,28 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
     return;
   }
 
-  auto transform_type = transform_type_queue.front();
+  transform_type = transform_type_queue.front();
   transform_type_queue.pop();
   const auto it = transformers_.find(transform_type);
   if (it == transformers_.end()) {
+    base::UmaHistogramEnumeration(
+        "VisitedURLRanking.Request.Step.Transform.Status",
+        VisitedURLRankingRequestStepStatus::kFailedNotFound);
+    base::UmaHistogramBoolean(
+        base::StringPrintf("VisitedURLRanking.TransformType.%s.Success",
+                           URLVisitAggregatesTransformTypeName(transform_type)),
+        false);
     std::move(callback).Run(ResultStatus::kError, {});
     return;
   }
+
+  size_t aggregates_count = aggregates.size();
   it->second->Transform(
       std::move(aggregates), options,
       base::BindOnce(&VisitedURLRankingServiceImpl::TransformVisitsAndCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     options, std::move(transform_type_queue)));
+                     options, std::move(transform_type_queue), transform_type,
+                     aggregates_count));
 }
 
 void VisitedURLRankingServiceImpl::GetNextResult(

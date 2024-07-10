@@ -125,13 +125,13 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchNormalTabsWithData) {
       ->GetLastCommittedItem()
       ->SetTimestamp(now - base::Hours(1));
 
-  // Second WebState has time now - 25 hours. It should be ignored.
+  // Second WebState has time now -7days, 1 hour. It should be ignored.
   EXPECT_EQ(GURL(normal_urls[1]),
             web_state_list->GetWebStateAt(1)->GetLastCommittedURL());
   web_state_list->GetWebStateAt(1)
       ->GetNavigationManager()
       ->GetLastCommittedItem()
-      ->SetTimestamp(now - base::Hours(25));
+      ->SetTimestamp(now - base::Hours(169));
 
   // Third WebState is in a group and has time now - 23 hours.
   tab_groups::TabGroupVisualData visual_data(
