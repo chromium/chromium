@@ -117,7 +117,6 @@ class ClipboardMap {
   base::Time GetLastModifiedTime() const;
   void ClearLastModifiedTime();
   bool HasFormat(const ClipboardFormatType& format);
-  std::vector<ClipboardFormatType> GetFormats();
   void OnPrimaryClipboardChanged();
   void OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms);
   void Set(const ClipboardFormatType& format, std::string_view data);
@@ -258,46 +257,6 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
 
   // Android unsupported format types, check local only.
   return base::Contains(map_, format);
-}
-
-std::vector<ClipboardFormatType> ClipboardMap::GetFormats() {
-  base::AutoLock lock(lock_);
-  std::vector<ClipboardFormatType> formats;
-  formats.reserve(map_.size());
-
-  // Check with Android for Android clipboard supported formats.
-  if (map_state_ != MapState::kUpToDate) {
-    JNIEnv* env = AttachCurrentThread();
-    if (Java_Clipboard_hasCoercedText(env, clipboard_manager_)) {
-      formats.push_back(ClipboardFormatType::PlainTextType());
-    }
-    if (Java_Clipboard_hasHTMLOrStyledText(env, clipboard_manager_)) {
-      formats.push_back(ClipboardFormatType::HtmlType());
-    }
-    if (Java_Clipboard_hasUrl(env, clipboard_manager_)) {
-      formats.push_back(ClipboardFormatType::UrlType());
-    }
-    if (Java_Clipboard_hasImage(env, clipboard_manager_)) {
-      formats.push_back(ClipboardFormatType::BitmapType());
-      formats.push_back(ClipboardFormatType::PngType());
-    }
-  }
-
-  // Check local cache, since the formats not supported by Android clipboard are
-  // not synced on any other layer.
-  for (const auto& it : map_) {
-    if (map_state_ != MapState::kUpToDate &&
-        (it.first == ClipboardFormatType::PlainTextType() ||
-         it.first == ClipboardFormatType::HtmlType() ||
-         it.first == ClipboardFormatType::UrlType() ||
-         it.first == ClipboardFormatType::BitmapType() ||
-         it.first == ClipboardFormatType::PngType())) {
-      continue;
-    }
-    formats.push_back(it.first);
-  }
-
-  return formats;
 }
 
 void ClipboardMap::OnPrimaryClipboardChanged() {
