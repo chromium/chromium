@@ -8908,6 +8908,9 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(focused_element_change_observers_);
   visitor->Trace(pending_link_header_preloads_);
   visitor->Trace(elements_needing_shadow_tree_);
+#if BUILDFLAG(IS_ANDROID)
+  visitor->Trace(payment_link_handler_);
+#endif  // BUILDFLAG(IS_ANDROID)
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
@@ -9379,6 +9382,24 @@ void Document::ScheduleShadowTreeCreation(HTMLInputElement& element) {
 void Document::UnscheduleShadowTreeCreation(HTMLInputElement& element) {
   elements_needing_shadow_tree_.erase(&element);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void Document::HandlePaymentLink(const KURL& href) {
+  // Only the first payment link is expected to be handled in a page.
+  if (payment_link_handled_) {
+    return;
+  }
+  // TODO(crbug.com/344997566): Validate the href before triggering the IPC
+  // call.
+  if (!payment_link_handler_.is_bound()) {
+    GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+        payment_link_handler_.BindNewPipeAndPassReceiver(
+            GetExecutionContext()->GetTaskRunner(TaskType::kDOMManipulation)));
+  }
+  payment_link_handled_ = true;
+  payment_link_handler_->HandlePaymentLink(href);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void Document::ProcessScheduledShadowTreeCreationsNow() {
   if (elements_needing_shadow_tree_.empty()) {

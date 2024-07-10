@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/facilitated_payments/payment_link_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
@@ -87,6 +88,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -2105,6 +2107,12 @@ class CORE_EXPORT Document : public ContainerNode,
   void ScheduleShadowTreeCreation(HTMLInputElement& element);
   void UnscheduleShadowTreeCreation(HTMLInputElement& element);
 
+#if BUILDFLAG(IS_ANDROID)
+  // This method is invoked when a payment link element is encountered. It
+  // passes the payment link back to browser process through the mojo pipe.
+  void HandlePaymentLink(const KURL& href);
+#endif
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -2878,6 +2886,14 @@ class CORE_EXPORT Document : public ContainerNode,
   // certain state, when the insertion is triggered via the state-preserving
   // atomic move API (so far, `Node#moveBefore()`).
   bool state_preserving_atomic_move_in_progress_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  HeapMojoRemote<payments::facilitated::mojom::blink::PaymentLinkHandler>
+      payment_link_handler_{nullptr};
+
+  // If a payment link is handled before.
+  bool payment_link_handled_ = false;
+#endif
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

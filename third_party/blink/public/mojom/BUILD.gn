@@ -1164,6 +1164,7 @@ mojom("android_mojo_bindings") {
     "contacts/contacts_manager.mojom",
     "digital_goods/digital_goods.mojom",
     "document_metadata/document_metadata.mojom",
+    "facilitated_payments/payment_link_handler.mojom",
     "font_unique_name_lookup/font_unique_name_lookup.mojom",
     "handwriting/handwriting.mojom",
     "input/input_host.mojom",

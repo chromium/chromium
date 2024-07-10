@@ -29,8 +29,6 @@
  */
 
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/core/page/page_animator.h"
 
 #include <algorithm>
 #include <memory>
@@ -42,6 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -80,6 +79,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
@@ -2383,5 +2383,99 @@ TEST_F(DocumentTest, LifecycleState_DirtyStyle_NoBody) {
   EXPECT_EQ(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kVisualUpdatePending);
 }
+
+class TestPaymentLinkHandler
+    : public payments::facilitated::mojom::blink::PaymentLinkHandler {
+ public:
+  void HandlePaymentLink(const KURL& url) override {
+    ++payment_link_handled_counter_;
+    handled_url_ = url;
+    std::move(on_link_handled_callback_).Run();
+  }
+
+  int get_payment_link_handled_counter() const {
+    return payment_link_handled_counter_;
+  }
+
+  const KURL& get_handled_url() const { return handled_url_; }
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(mojo::PendingReceiver<
+                   payments::facilitated::mojom::blink::PaymentLinkHandler>(
+        std::move(handle)));
+  }
+
+  void set_on_link_handled_callback(
+      base::OnceClosure on_link_handled_callback) {
+    on_link_handled_callback_ = std::move(on_link_handled_callback);
+  }
+
+ private:
+  int payment_link_handled_counter_ = 0;
+  KURL handled_url_;
+  mojo::Receiver<payments::facilitated::mojom::blink::PaymentLinkHandler>
+      receiver_{this};
+  base::OnceClosure on_link_handled_callback_;
+};
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DocumentTest, PaymentLinkHandling_SinglePaymentLink) {
+  TestPaymentLinkHandler test_payment_link_handler;
+  base::RunLoop run_loop;
+  test_payment_link_handler.set_on_link_handled_callback(
+      run_loop.QuitClosure());
+
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      payments::facilitated::mojom::blink::PaymentLinkHandler::Name_,
+      base::BindRepeating(&TestPaymentLinkHandler::Bind,
+                          base::Unretained(&test_payment_link_handler)));
+
+  ScopedPaymentLinkDetectionForTest payment_link_detection(true);
+
+  SetHtmlInnerHTML(R"HTML(
+    <head>
+      <link rel="payment" href="upi://payment_link_1">
+    </head>
+  )HTML");
+
+  // Run the message loop to ensure Mojo messages are dispatched.
+  run_loop.Run();
+
+  // Check if the correct payment link was handled.
+  EXPECT_EQ(test_payment_link_handler.get_payment_link_handled_counter(), 1);
+  EXPECT_EQ(test_payment_link_handler.get_handled_url(),
+            KURL("upi://payment_link_1"));
+}
+
+TEST_F(DocumentTest, PaymentLinkHandling_MultiplePaymentLink) {
+  TestPaymentLinkHandler test_payment_link_handler;
+  base::RunLoop run_loop;
+  test_payment_link_handler.set_on_link_handled_callback(
+      run_loop.QuitClosure());
+
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      payments::facilitated::mojom::blink::PaymentLinkHandler::Name_,
+      base::BindRepeating(&TestPaymentLinkHandler::Bind,
+                          base::Unretained(&test_payment_link_handler)));
+
+  ScopedPaymentLinkDetectionForTest payment_link_detection(true);
+
+  SetHtmlInnerHTML(R"HTML(
+    <head>
+      <link rel="payment" href="upi://payment_link_1">
+      <link rel="payment" href="upi://payment_link_2">
+    </head>
+  )HTML");
+
+  // Run the message loop to ensure Mojo messages are dispatched.
+  run_loop.Run();
+
+  // Check if the correct payment link was handled and the payment link handling
+  // was invoked only once.
+  EXPECT_EQ(test_payment_link_handler.get_payment_link_handled_counter(), 1);
+  EXPECT_EQ(test_payment_link_handler.get_handled_url(),
+            KURL("upi://payment_link_1"));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

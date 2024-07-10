@@ -6,6 +6,8 @@ import("//testing/test.gni")
 
 static_library("util") {
   sources = [
+    "payment_link_validator.cc",
+    "payment_link_validator.h",
     "pix_code_validator.cc",
     "pix_code_validator.h",
   ]
@@ -23,6 +25,7 @@ static_library("util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "payment_link_validator_unittest.cc",
     "pix_code_validator_fuzzer_util_unittest.cc",
     "pix_code_validator_unittest.cc",
   ]

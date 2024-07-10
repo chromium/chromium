@@ -35,8 +35,8 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/translate/translate_frame_binder.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
@@ -106,6 +106,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
+#include "third_party/blink/public/mojom/facilitated_payments/payment_link_handler.mojom.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
@@ -144,6 +145,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/dom_distiller/distiller_ui_handle_android.h"
+#include "chrome/browser/facilitated_payments/payment_link_handler_factory.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
@@ -1101,6 +1103,13 @@ void PopulateChromeFrameBinders(
     map->Add<blink::mojom::TranslationManager>(
         base::BindRepeating(&TranslationManagerImpl::Create));
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(blink::features::kPaymentLinkDetection)) {
+    map->Add<payments::facilitated::mojom::PaymentLinkHandler>(
+        base::BindRepeating(&CreatePaymentLinkHandler));
+  }
+#endif
 }
 
 void PopulateChromeWebUIFrameBinders(

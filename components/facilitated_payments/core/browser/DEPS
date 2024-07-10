@@ -1,5 +1,7 @@
 include_rules = [
+  "-content",
   "+components/autofill/core/browser",
+  "+components/facilitated_payments/core/util",
   "+components/optimization_guide/core",
   "+components/signin/public",
   "+services/data_decoder/public/cpp",
