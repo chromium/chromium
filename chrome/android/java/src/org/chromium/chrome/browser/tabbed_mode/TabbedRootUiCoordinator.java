@@ -833,7 +833,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)) {
             int privacySandboxStorageActivityType =
-                    ActivityTypeMapper.toPrivacySandboxStorageActivityType(mActivityType);
+                    ActivityTypeMapper.toPrivacySandboxStorageActivityType(ActivityType.TABBED);
 
             PrivacySandboxBridge privacySandboxBridge = new PrivacySandboxBridge(profile);
             privacySandboxBridge.recordActivityType(privacySandboxStorageActivityType);
