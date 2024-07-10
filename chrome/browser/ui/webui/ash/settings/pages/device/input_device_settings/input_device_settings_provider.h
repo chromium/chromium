@@ -25,6 +25,21 @@
 
 namespace ash::settings {
 
+// Note that these values are persisted to histograms so existing values
+// should remain unchanged and new values should be added to the end.
+enum class KeyboardAmbientLightSensorDisabledCause {
+  // The keyboard ambient light sensor was disabled directly through the
+  // settings app by the user.
+  kUserRequestSettingsApp = 0,
+  // The keyboard ambient light sensor was disabled as a result of the user
+  // manually adjusting the brightness.
+  kBrightnessUserRequest = 1,
+  // The keyboard ambient light sensor was disabled as a result of the user
+  // adjusting the brightness through the settings app.
+  kBrightnessUserRequestSettingsApp = 2,
+  kMaxValue = kBrightnessUserRequestSettingsApp,
+};
+
 class InputDeviceSettingsProvider
     : public mojom::InputDeviceSettingsProvider,
       public InputDeviceSettingsController::Observer,

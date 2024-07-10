@@ -1333,4 +1333,53 @@ TEST_F(InputDeviceSettingsProviderTest,
       /*sample=*/false, /*expected_count=*/1);
 }
 
+TEST_F(InputDeviceSettingsProviderTest,
+       RecordKeyboardAmbientLightSensorDisabledCause) {
+  // No histograms should have been recorded yet.
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Keyboard.UserInitiated."
+      "AmbientLightSensorDisabledCause",
+      /*expected_count=*/0);
+
+  // Verify histogram recording when ALS is disabled via settings app.
+  {
+    power_manager::AmbientLightSensorChange cause_settings_app;
+    cause_settings_app.set_sensor_enabled(false);
+    cause_settings_app.set_cause(
+        power_manager::
+            AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+    provider_->KeyboardAmbientLightSensorEnabledChanged(cause_settings_app);
+    histogram_tester_->ExpectUniqueSample(
+        "ChromeOS.Settings.Keyboard.UserInitiated."
+        "AmbientLightSensorDisabledCause",
+        KeyboardAmbientLightSensorDisabledCause::kUserRequestSettingsApp, 1);
+  }
+
+  // Ensure enabling ALS does not emit histogram.
+  {
+    power_manager::AmbientLightSensorChange cause_settings_app;
+    cause_settings_app.set_sensor_enabled(true);
+    cause_settings_app.set_cause(
+        power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+    provider_->KeyboardAmbientLightSensorEnabledChanged(cause_settings_app);
+    histogram_tester_->ExpectTotalCount(
+        "ChromeOS.Settings.Keyboard.UserInitiated."
+        "AmbientLightSensorDisabledCause",
+        /*expected_count=*/1);
+  }
+
+  // Test histogram update when ALS is disabled due to brightness change.
+  {
+    power_manager::AmbientLightSensorChange cause_user_request;
+    cause_user_request.set_sensor_enabled(false);
+    cause_user_request.set_cause(
+        power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+    provider_->KeyboardAmbientLightSensorEnabledChanged(cause_user_request);
+    histogram_tester_->ExpectBucketCount(
+        "ChromeOS.Settings.Keyboard.UserInitiated."
+        "AmbientLightSensorDisabledCause",
+        KeyboardAmbientLightSensorDisabledCause::kBrightnessUserRequest, 1);
+  }
+}
+
 }  // namespace ash::settings

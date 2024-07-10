@@ -146,6 +146,33 @@ std::vector<T> SanitizeAndSortDeviceList(std::vector<T> devices) {
   return devices_no_duplicates;
 }
 
+void RecordKeyboardAmbientLightSensorDisabledCause(
+    const power_manager::AmbientLightSensorChange_Cause& cause) {
+  KeyboardAmbientLightSensorDisabledCause disabled_cause;
+  switch (cause) {
+    case power_manager::
+        AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP:
+      disabled_cause =
+          KeyboardAmbientLightSensorDisabledCause::kUserRequestSettingsApp;
+      break;
+    case power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST:
+      disabled_cause =
+          KeyboardAmbientLightSensorDisabledCause::kBrightnessUserRequest;
+      break;
+    case power_manager::
+        AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST_SETTINGS_APP:
+      disabled_cause = KeyboardAmbientLightSensorDisabledCause::
+          kBrightnessUserRequestSettingsApp;
+      break;
+    default:
+      return;  // Exit function if none of the specified cases match
+  }
+  base::UmaHistogramEnumeration(
+      "ChromeOS.Settings.Keyboard.UserInitiated."
+      "AmbientLightSensorDisabledCause",
+      disabled_cause);
+}
+
 }  // namespace
 
 InputDeviceSettingsProvider::InputDeviceSettingsProvider() {
@@ -254,6 +281,11 @@ void InputDeviceSettingsProvider::KeyboardAmbientLightSensorEnabledChanged(
   if (keyboard_ambient_light_sensor_observer_.is_bound()) {
     keyboard_ambient_light_sensor_observer_
         ->OnKeyboardAmbientLightSensorEnabledChanged(change.sensor_enabled());
+  }
+
+  if (features::IsKeyboardBacklightControlInSettingsEnabled() &&
+      !change.sensor_enabled()) {
+    RecordKeyboardAmbientLightSensorDisabledCause(change.cause());
   }
 }
 

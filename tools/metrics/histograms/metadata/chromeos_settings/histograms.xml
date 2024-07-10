@@ -534,6 +534,20 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram
+    name="ChromeOS.Settings.Keyboard.UserInitiated.AmbientLightSensorDisabledCause"
+    enum="UserInitiatedAmbientLightSensorDisabledCause"
+    expires_after="2025-05-01">
+  <owner>longbowei@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the cause when the keyboard ambient light sensor was disabled by the
+    user, whether explicitly via the settings app or implicitly through keyboard
+    brightness adjustments. This histogram is triggered each time the keyboard
+    ambient light sensor is disabled due to user actions.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Languages.Interaction"
     enum="SettingsLanguagesPageInteraction" expires_after="2025-01-05">
   <owner>myy@chromium.org</owner>
