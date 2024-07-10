@@ -114,6 +114,10 @@ message FeatureSpecificFields {
   // receiving device.
   // If not set, the in-app message type will be assumed.
   optional SyncEnums.SendTabReceivingType send_tab_to_self_receiving_type = 2;
+
+  // Tracks the last time this device signed-in with the floating workspace
+  // feature enabled. As of 07/2024, this feature is only supported on ChromeOS.
+  optional int64 floating_workspace_last_signin_time_windows_epoch_micros = 3;
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end
