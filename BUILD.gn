@@ -907,6 +907,9 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
       "//remoting/host:host",
       "//tools/traffic_annotation:annotations_xml",
     ]
+    if (enable_enterprise_companion) {
+      deps += [ "//chrome/enterprise_companion" ]
+    }
   }
 }
 

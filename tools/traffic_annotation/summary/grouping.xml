@@ -337,6 +337,7 @@ after discussions on the right group.
       <annotation id="nearby_connections_wifi_direct"/>
       <annotation id="autofill_password_favicon_fetch"/>
       <annotation id="peripherals_companion_app"/>
+      <annotation id="enterprise_companion_event_logging"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

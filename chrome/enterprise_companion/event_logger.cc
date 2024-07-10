@@ -44,16 +44,31 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         semantics {
           sender: "Chrome Enterprise Companion App"
           description:
-            "Service logging for the Chrome Enterprise Companion App"
+            "Service logging for the Chrome Enterprise Companion App."
           trigger: "Periodic tasks."
           data: "Metrics about the Chrome Enterprise Companion App."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "noahrose@google.com"
+            }
+            contacts {
+              email: "chrome-updates-dev@chromium.org"
+            }
+          }
+          last_reviewed: "2024-07-08"
+          user_data {
+            type: NONE
+          }
         }
         policy {
           cookies_allowed: NO
           setting:
             "This feature cannot be disabled other than by uninstalling the "
             "Chrome Enterprise Companion App."
+          policy_exception_justification:
+            "This request is made by the Chrome Enterprise Companion App, not "
+            "Chrome itself."
         })");
 
 // An individual event logger. Events are locally batched and flushed to the
