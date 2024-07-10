@@ -210,7 +210,7 @@ std::string ReplaceVariables(std::string templates,
   } else {
     // Device identifiers are only replaced for affiliated users.
     LOG(WARNING)
-        << "Skiping device variables replacement for unaffiliated user";
+        << "Skipping device variables replacement for unaffiliated user";
   }
 
   base::ReplaceSubstringsAfterOffset(
