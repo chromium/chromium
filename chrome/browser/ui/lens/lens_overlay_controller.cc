@@ -43,6 +43,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/zoom/zoom_controller.h"
@@ -935,6 +936,10 @@ const GURL& LensOverlayController::GetPageURLForTesting() {
   return GetPageURL();
 }
 
+SessionID LensOverlayController::GetTabIdForTesting() {
+  return GetTabId();
+}
+
 metrics::OmniboxEventProto::PageClassification
 LensOverlayController::GetPageClassificationForTesting() {
   return GetPageClassification();
@@ -1484,6 +1489,10 @@ void LensOverlayController::OnOmniboxFocusChanged(
 const GURL& LensOverlayController::GetPageURL() const {
   // TODO(b/335234545): Return the page URL when appropriate.
   return GURL::EmptyGURL();
+}
+
+SessionID LensOverlayController::GetTabId() const {
+  return sessions::SessionTabHelper::IdForTab(tab_->GetContents());
 }
 
 metrics::OmniboxEventProto::PageClassification

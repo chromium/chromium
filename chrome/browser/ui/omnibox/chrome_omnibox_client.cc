@@ -156,9 +156,7 @@ bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
 }
 
 SessionID ChromeOmniboxClient::GetSessionID() const {
-  return sessions::SessionTabHelper::FromWebContents(
-             location_bar_->GetWebContents())
-      ->session_id();
+  return sessions::SessionTabHelper::IdForTab(location_bar_->GetWebContents());
 }
 
 PrefService* ChromeOmniboxClient::GetPrefs() {

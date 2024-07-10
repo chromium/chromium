@@ -53,6 +53,7 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
@@ -1422,6 +1423,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->GetLensResponseForTesting().has_suggest_signals());
   EXPECT_EQ(controller->GetLensResponseForTesting().suggest_signals(),
             kTestSuggestSignals);
+
+  // The tab ID should have been correctly set for use by the searchbox.
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab_web_contents);
+  EXPECT_EQ(controller->GetTabIdForTesting(), tab_id);
 
   // TODO(b/335234545): The current page URL should be made available for use by
   // the searchbox.

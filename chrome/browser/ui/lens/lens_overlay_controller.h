@@ -401,6 +401,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Returns the current page URL for testing.
   const GURL& GetPageURLForTesting();
 
+  // Returns the current tab ID for testing.
+  SessionID GetTabIdForTesting();
+
   // Returns the current searchbox page classification for testing.
   metrics::OmniboxEventProto::PageClassification
   GetPageClassificationForTesting();
@@ -637,6 +640,7 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
+  SessionID GetTabId() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification()
       const override;
   std::string& GetThumbnail() override;

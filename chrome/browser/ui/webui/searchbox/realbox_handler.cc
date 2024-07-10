@@ -163,6 +163,9 @@ bool RealboxOmniboxClient::IsPasteAndGoEnabled() const {
 }
 
 SessionID RealboxOmniboxClient::GetSessionID() const {
+  if (lens_searchbox_client_) {
+    return lens_searchbox_client_->GetTabId();
+  }
   return sessions::SessionTabHelper::IdForTab(web_contents_);
 }
 
