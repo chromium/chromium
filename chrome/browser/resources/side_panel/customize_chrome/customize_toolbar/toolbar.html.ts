@@ -20,9 +20,10 @@ export function getHtml(this: ToolbarElement) {
     </svg>
   </div>
   <div class="intro-text">$i18n{chooseToolbarIconsLabel}</div>
-  <cr-button id="resetToDefaultButton" @click="${this.onResetToDefaultClicked_}"
-      class="floating-button">
-    <img id="resetToDefaultIcon" slot="prefix-icon" src="icons/undo.svg">
+  <cr-button id="resetToDefaultButton" class="floating-button"
+      @click="${this.onResetToDefaultClicked_}"
+      ?disabled="${this.resetToDefaultDisabled_}">
+    <div id="resetToDefaultIcon" class="cr-icon" slot="prefix-icon"></div>
     $i18n{resetToDefaultButtonLabel}
   </cr-button>
 </div>

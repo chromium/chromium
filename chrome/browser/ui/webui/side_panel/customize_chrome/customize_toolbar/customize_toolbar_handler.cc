@@ -245,6 +245,13 @@ void CustomizeToolbarHandler::PinAction(
   model_->UpdatePinnedState(chrome_action.value(), pin);
 }
 
+void CustomizeToolbarHandler::GetIsCustomized(
+    GetIsCustomizedCallback callback) {
+  // By default, no actions are pinned.
+  // TODO(323962536): Chrome Labs should be pinned by default.
+  std::move(callback).Run(model_->PinnedActionIds().size() > 0);
+}
+
 void CustomizeToolbarHandler::ResetToDefault() {
   // By default, no actions are pinned.
   // TODO(323962536): Chrome Labs should be pinned by default.

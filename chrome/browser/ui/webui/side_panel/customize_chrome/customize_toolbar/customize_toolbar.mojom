@@ -75,6 +75,8 @@ interface CustomizeToolbarHandler {
   ListCategories() => (array<Category> categories);
   // Pins the action with id `action_id` to (or unpins it from) the toolbar.
   PinAction(ActionId action_id, bool pinned);
+  // Returns true if any action items have a non-default pin state.
+  GetIsCustomized() => (bool customized);
   // Resets the set of pinned action items to default.
   ResetToDefault();
 };

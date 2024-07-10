@@ -33,6 +33,7 @@ class CustomizeToolbarHandler
   void ListCategories(ListCategoriesCallback callback) override;
   void PinAction(side_panel::customize_chrome::mojom::ActionId action_id,
                  bool pin) override;
+  void GetIsCustomized(GetIsCustomizedCallback callback) override;
   void ResetToDefault() override;
 
   // PinnedToolbarActionsModel::Observer:

@@ -27,6 +27,8 @@ suite('CustomizerToolbarTest', () => {
       categories: Category[] = []): Promise<ToolbarElement> {
     handler.setResultFor('listActions', Promise.resolve({actions}));
     handler.setResultFor('listCategories', Promise.resolve({categories}));
+    handler.setResultFor(
+        'getIsCustomized', Promise.resolve({customized: false}));
     toolbarElement = document.createElement('customize-chrome-toolbar');
     document.body.appendChild(toolbarElement);
     return toolbarElement;

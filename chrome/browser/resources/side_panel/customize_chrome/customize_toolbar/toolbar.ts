@@ -39,6 +39,7 @@ export class ToolbarElement extends CrLitElement {
     return {
       actions_: {type: Array},
       categories_: {type: Array},
+      resetToDefaultDisabled_: {type: Boolean},
     };
   }
 
@@ -47,6 +48,7 @@ export class ToolbarElement extends CrLitElement {
 
   protected actions_: Action[] = [];
   protected categories_: Category[] = [];
+  protected resetToDefaultDisabled_: boolean = true;
 
   constructor() {
     super();
@@ -61,6 +63,8 @@ export class ToolbarElement extends CrLitElement {
     this.handler_.listCategories().then(({categories}) => {
       this.categories_ = categories;
     });
+
+    this.updateResetToDefaultDisabled();
   }
 
   override connectedCallback() {
@@ -103,6 +107,14 @@ export class ToolbarElement extends CrLitElement {
       }
 
       return action;
+    });
+
+    this.updateResetToDefaultDisabled();
+  }
+
+  private updateResetToDefaultDisabled() {
+    this.handler_.getIsCustomized().then(({customized}) => {
+      this.resetToDefaultDisabled_ = !customized;
     });
   }
 }
