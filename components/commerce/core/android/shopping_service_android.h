@@ -68,6 +68,7 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                  const JavaParamRef<jstring>& j_seen_offer_id,
                  jlong j_seen_price,
                  const JavaParamRef<jstring>& j_seen_country,
+                 const JavaParamRef<jstring>& j_seen_locale,
                  const JavaParamRef<jobject>& j_callback);
 
   void Unsubscribe(JNIEnv* env,

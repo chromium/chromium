@@ -27,10 +27,15 @@ public class CommerceSubscription {
         /** Country code of the offer. */
         public final String countryCode;
 
-        public UserSeenOffer(String offerId, long userSeenPrice, String countryCode) {
+        /** Locale of the offer. */
+        public final String locale;
+
+        public UserSeenOffer(
+                String offerId, long userSeenPrice, String countryCode, String locale) {
             this.offerId = offerId;
             this.userSeenPrice = userSeenPrice;
             this.countryCode = countryCode;
+            this.locale = locale;
         }
     }
 

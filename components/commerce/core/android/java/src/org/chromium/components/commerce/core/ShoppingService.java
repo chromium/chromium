@@ -273,6 +273,7 @@ public class ShoppingService {
                         sub.userSeenOffer.offerId,
                         sub.userSeenOffer.userSeenPrice,
                         sub.userSeenOffer.countryCode,
+                        sub.userSeenOffer.locale,
                         callback);
     }
 
@@ -598,6 +599,7 @@ public class ShoppingService {
                 String seenOfferId,
                 long seenPrice,
                 String seenCountry,
+                String seenLocale,
                 Callback<Boolean> callback);
 
         void unsubscribe(

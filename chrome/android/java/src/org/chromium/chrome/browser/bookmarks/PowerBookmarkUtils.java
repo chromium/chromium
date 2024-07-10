@@ -97,7 +97,8 @@ public class PowerBookmarkUtils {
                 new UserSeenOffer(
                         UnsignedLongs.toString(shoppingSpecifics.getOfferId()),
                         shoppingSpecifics.getCurrentPrice().getAmountMicros(),
-                        shoppingSpecifics.getCountryCode());
+                        shoppingSpecifics.getCountryCode(),
+                        shoppingSpecifics.getLocale());
         return new CommerceSubscription(
                 SubscriptionType.PRICE_TRACK,
                 IdentifierType.PRODUCT_CLUSTER_ID,
