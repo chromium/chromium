@@ -77,7 +77,7 @@ class ProgramManagerTestBase : public GpuServiceTest, public DecoderClient {
   }
   void SetUp() override {
     // Parameters same as GpuServiceTest::SetUp
-    SetUpBase("2.0", "GL_EXT_framebuffer_object");
+    SetUpBase("OpenGL ES 2.0", "GL_EXT_framebuffer_object");
   }
   void TearDown() override {
     manager_->Destroy(false);

@@ -81,18 +81,11 @@ class BaseGpuTest : public GpuServiceTest {
  protected:
   void SetUp() override {
     g_fakeCPUTime = 0;
-    const char* gl_version = "3.2";
+    const char* gl_version = "OpenGL ES 3.0";
     const char* extensions = "";
-    if (GetTimerType() == gl::GPUTiming::kTimerTypeEXT) {
-      gl_version = "2.1";
-      extensions = "GL_EXT_timer_query";
-    } else if (GetTimerType() == gl::GPUTiming::kTimerTypeDisjoint) {
+    if (GetTimerType() == gl::GPUTiming::kTimerTypeDisjoint) {
       gl_version = "OpenGL ES 3.0";
       extensions = "GL_EXT_disjoint_timer_query";
-    } else if (GetTimerType() == gl::GPUTiming::kTimerTypeARB) {
-      // TODO(sievers): The tracer should not depend on ARB_occlusion_query.
-      // Try merge Query APIs (core, ARB, EXT) into a single binding each.
-      extensions = "GL_ARB_timer_query GL_ARB_occlusion_query";
     }
     GpuServiceTest::SetUpWithGLVersion(gl_version, extensions);
 
@@ -651,7 +644,7 @@ class GPUTracerTest : public GpuServiceTest {
  protected:
   void SetUp() override {
     g_fakeCPUTime = 0;
-    GpuServiceTest::SetUpWithGLVersion("3.2", "");
+    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 2.0", "");
     decoder_ = std::make_unique<MockGLES2Decoder>(
         &client_, &command_buffer_service_, &outputter_);
     EXPECT_CALL(*decoder_, GetGLContext())

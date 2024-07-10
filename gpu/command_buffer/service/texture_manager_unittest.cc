@@ -498,47 +498,6 @@ TEST_F(TextureManagerTest, ValidForTargetNPOT) {
   manager.Destroy();
 }
 
-TEST_F(TextureManagerTest, AlphaLuminanceCompatibilityProfile) {
-  const GLuint kClientId = 1;
-  const GLuint kServiceId = 11;
-
-  SetupFeatureInfo("", "2.1", CONTEXT_TYPE_OPENGLES2);
-  TestHelper::SetupTextureManagerInitExpectations(gl_.get(), false, false, {},
-                                                  kUseDefaultTextures);
-  TextureManager manager(nullptr, feature_info_.get(), kMaxTextureSize,
-                         kMaxCubeMapTextureSize, kMaxRectangleTextureSize,
-                         kMax3DTextureSize, kMaxArrayTextureLayers,
-                         kUseDefaultTextures, nullptr, &discardable_manager_);
-  manager.Initialize();
-
-  // Create a texture.
-  manager.CreateTexture(kClientId, kServiceId);
-  scoped_refptr<TextureRef> texture_ref(manager.GetTexture(kClientId));
-  manager.SetTarget(texture_ref.get(), GL_TEXTURE_2D);
-
-  Texture* texture = texture_ref->texture();
-
-  // GL_ALPHA emulation
-  manager.SetLevelInfo(texture_ref.get(), GL_TEXTURE_2D, 0, GL_ALPHA, 1, 1, 1,
-      0, GL_ALPHA, GL_UNSIGNED_BYTE, gfx::Rect(1, 1));
-  texture->ApplyFormatWorkarounds(feature_info_.get());
-
-  // GL_LUMINANCE emulation
-  manager.SetLevelInfo(texture_ref.get(), GL_TEXTURE_2D, 0, GL_LUMINANCE, 1, 1,
-      1, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, gfx::Rect(1, 1));
-  texture->ApplyFormatWorkarounds(feature_info_.get());
-
-  // GL_LUMINANCE_ALPHA emulation
-  manager.SetLevelInfo(texture_ref.get(), GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA,
-      1, 1, 1, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, gfx::Rect(1, 1));
-  texture->ApplyFormatWorkarounds(feature_info_.get());
-
-  EXPECT_CALL(*gl_, DeleteTextures(1, ::testing::Pointee(kServiceId)))
-      .Times(1)
-      .RetiresOnSaturation();
-  manager.RemoveTexture(kClientId);
-}
-
 class TextureTestBase : public GpuServiceTest {
  public:
   static const GLint kMaxTextureSize = 32;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -71,9 +72,12 @@ void GLVersionInfo::ParseVersionString(const char* version_str) {
     return;
   std::string_view lstr(version_str);
   constexpr std::string_view kESPrefix = "OpenGL ES ";
-  if (base::StartsWith(lstr, kESPrefix, base::CompareCase::SENSITIVE)) {
-    lstr.remove_prefix(kESPrefix.size());
+  if (!base::StartsWith(lstr, kESPrefix, base::CompareCase::SENSITIVE)) {
+    LOG(FATAL) << "Chrome runs only on top of OpenGL ES "
+               << "through either ANGLE or native: " << "VERSION = "
+               << version_str;
   }
+  lstr.remove_prefix(kESPrefix.size());
   std::vector<std::string_view> pieces = base::SplitStringPiece(
       lstr, " -()@", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (pieces.size() == 0) {

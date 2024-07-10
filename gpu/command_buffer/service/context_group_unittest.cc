@@ -84,7 +84,7 @@ TEST_F(ContextGroupTest, Basic) {
 
 TEST_F(ContextGroupTest, InitializeNoExtensions) {
   TestHelper::SetupContextGroupInitExpectations(
-      gl_.get(), DisallowedFeatures(), "", "",
+      gl_.get(), DisallowedFeatures(), "ANGLE", "OpenGL ES 2.0",
       CONTEXT_TYPE_OPENGLES2, kBindGeneratesResource);
   group_->Initialize(decoder_.get(), CONTEXT_TYPE_OPENGLES2,
                      DisallowedFeatures());
@@ -123,7 +123,7 @@ TEST_F(ContextGroupTest, MultipleContexts) {
   std::unique_ptr<MockGLES2Decoder> decoder2_(
       new MockGLES2Decoder(&client2, &command_buffer_service2, &outputter));
   TestHelper::SetupContextGroupInitExpectations(
-      gl_.get(), DisallowedFeatures(), "", "",
+      gl_.get(), DisallowedFeatures(), "ANGLE", "OpenGL ES 2.0",
       CONTEXT_TYPE_OPENGLES2, kBindGeneratesResource);
   EXPECT_EQ(group_->Initialize(decoder_.get(), CONTEXT_TYPE_OPENGLES2,
                                DisallowedFeatures()),

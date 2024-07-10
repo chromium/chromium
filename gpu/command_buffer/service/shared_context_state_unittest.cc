@@ -54,7 +54,7 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
 
     auto surface = base::MakeRefCounted<gl::GLSurfaceStub>();
     auto context = base::MakeRefCounted<gl::GLContextStub>();
-    const char gl_version[] = "2.1";
+    const char gl_version[] = "OpenGL ES 2.0";
     context->SetGLVersionString(gl_version);
     const char gl_extensions[] = "GL_KHR_robustness";
     context->SetExtensionsString(gl_extensions);
@@ -69,7 +69,7 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, gpu_feature_info);
     gles2::TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
-        &gl_interface, gl_extensions, "", gl_version, context_type);
+        &gl_interface, gl_extensions, "ANGLE", gl_version, context_type);
     feature_info->Initialize(gpu::CONTEXT_TYPE_OPENGLES2,
                              false /* passthrough */,
                              gles2::DisallowedFeatures());

@@ -447,8 +447,8 @@ void TestHelper::SetupContextGroupInitExpectations(
 
 void TestHelper::SetupFeatureInfoInitExpectations(::gl::MockGLInterface* gl,
                                                   const char* extensions) {
-  SetupFeatureInfoInitExpectationsWithGLVersion(gl, extensions, "", "",
-      CONTEXT_TYPE_OPENGLES2);
+  SetupFeatureInfoInitExpectationsWithGLVersion(
+      gl, extensions, "ANGLE", "OpenGL ES 2.0", CONTEXT_TYPE_OPENGLES2);
 }
 
 void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(

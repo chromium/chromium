@@ -110,7 +110,7 @@ class FeatureInfoTest
       const gpu::GpuDriverBugWorkarounds& workarounds) {
     GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0", extensions);
     TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
-        gl_.get(), extensions, "", "", GetContextType());
+        gl_.get(), extensions, "ANGLE", "OpenGL ES 3.0", GetContextType());
     info_ = new FeatureInfo(workarounds, GpuFeatureInfo());
     info_->Initialize(GetContextType(), false, DisallowedFeatures());
   }
@@ -302,24 +302,28 @@ TEST_P(FeatureInfoTest, InitializeNoExtensions) {
 }
 
 TEST_P(FeatureInfoTest, InitializeWithANGLE) {
-  SetupInitExpectationsWithGLVersion("", kGLRendererStringANGLE, "");
+  SetupInitExpectationsWithGLVersion("", kGLRendererStringANGLE,
+                                     "OpenGL ES 2.0");
   EXPECT_TRUE(info_->gl_version_info().is_angle);
 }
 
 TEST_P(FeatureInfoTest, InitializeWithANGLED3D9Ex) {
-  SetupInitExpectationsWithGLVersion("", "ANGLE (foo bar Direct3D9Ex baz)", "");
+  SetupInitExpectationsWithGLVersion("", "ANGLE (foo bar Direct3D9Ex baz)",
+                                     "OpenGL ES 2.0");
   EXPECT_TRUE(info_->gl_version_info().is_angle);
   EXPECT_TRUE(info_->gl_version_info().is_d3d);
 }
 
 TEST_P(FeatureInfoTest, InitializeWithANGLED3D11) {
-  SetupInitExpectationsWithGLVersion("", "ANGLE (foo bar Direct3D11 baz)", "");
+  SetupInitExpectationsWithGLVersion("", "ANGLE (foo bar Direct3D11 baz)",
+                                     "OpenGL ES 2.0");
   EXPECT_TRUE(info_->gl_version_info().is_angle);
   EXPECT_TRUE(info_->gl_version_info().is_d3d);
 }
 
 TEST_P(FeatureInfoTest, InitializeWithANGLEOpenGL) {
-  SetupInitExpectationsWithGLVersion("", "ANGLE (foo bar OpenGL baz)", "");
+  SetupInitExpectationsWithGLVersion("", "ANGLE (foo bar OpenGL baz)",
+                                     "OpenGL ES 2.0");
   EXPECT_TRUE(info_->gl_version_info().is_angle);
   EXPECT_FALSE(info_->gl_version_info().is_d3d);
 }
@@ -739,7 +743,8 @@ TEST_P(FeatureInfoTest, InitializeGLES3_texture_storage) {
 // 9- ANGLE will add the GL_CHROMIUM_renderbuffer_format_BGRA8888 extension and
 // the GL_BGRA8_EXT render buffer format.
 TEST_P(FeatureInfoTest, InitializeWithANGLE_BGRA8) {
-  SetupInitExpectationsWithGLVersion("", kGLRendererStringANGLE, "");
+  SetupInitExpectationsWithGLVersion("", kGLRendererStringANGLE,
+                                     "OpenGL ES 2.0");
   EXPECT_TRUE(info_->gl_version_info().is_angle);
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
                                 "GL_CHROMIUM_renderbuffer_format_BGRA8888"));
@@ -863,8 +868,8 @@ TEST_P(FeatureInfoTest, InitializeEXT_framebuffer_multisample) {
 }
 
 TEST_P(FeatureInfoTest, InitializeANGLE_framebuffer_multisample) {
-  SetupInitExpectationsWithGLVersion(
-      "GL_ANGLE_framebuffer_multisample", kGLRendererStringANGLE, "");
+  SetupInitExpectationsWithGLVersion("GL_ANGLE_framebuffer_multisample",
+                                     kGLRendererStringANGLE, "OpenGL ES 2.0");
   EXPECT_TRUE(info_->feature_flags().chromium_framebuffer_multisample);
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
                                 "GL_CHROMIUM_framebuffer_multisample"));
@@ -1286,8 +1291,8 @@ TEST_P(FeatureInfoTest, InitializeWithNVDrawBuffers) {
 }
 
 TEST_P(FeatureInfoTest, InitializeWithPreferredEXTDrawBuffers) {
-  SetupInitExpectationsWithGLVersion(
-      "GL_NV_draw_buffers GL_EXT_draw_buffers", "", "OpenGL ES 3.0");
+  SetupInitExpectationsWithGLVersion("GL_NV_draw_buffers GL_EXT_draw_buffers",
+                                     "ANGLE", "OpenGL ES 3.0");
   bool is_es2 = GetContextType() == CONTEXT_TYPE_OPENGLES2;
   EXPECT_FALSE(info_->feature_flags().nv_draw_buffers);
   EXPECT_EQ(is_es2, info_->feature_flags().ext_draw_buffers);
@@ -1304,7 +1309,7 @@ TEST_P(FeatureInfoTest, BlendEquationAdvancedDisabled) {
 }
 
 TEST_P(FeatureInfoTest, InitializeNoKHR_blend_equation_advanced) {
-  SetupInitExpectationsWithGLVersion("GL_ARB_compatibility", "", "4.3");
+  SetupInitExpectationsWithGLVersion("", "ANGLE", "OpenGL ES 3.0");
   EXPECT_FALSE(info_->feature_flags().blend_equation_advanced);
   EXPECT_FALSE(
       gfx::HasExtension(info_->extensions(), "GL_KHR_blend_equation_advanced"));
@@ -1325,7 +1330,7 @@ TEST_P(FeatureInfoTest, InitializeNV_blend_equations_advanced) {
 }
 
 TEST_P(FeatureInfoTest, InitializeNoKHR_blend_equation_advanced_coherent) {
-  SetupInitExpectationsWithGLVersion("GL_ARB_compatibility ", "", "4.3");
+  SetupInitExpectationsWithGLVersion("", "ANGLE", "OpenGL ES 3.0");
   EXPECT_FALSE(info_->feature_flags().blend_equation_advanced_coherent);
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
                                  "GL_KHR_blend_equation_advanced_coherent"));

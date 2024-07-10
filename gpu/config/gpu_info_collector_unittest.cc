@@ -89,9 +89,9 @@ class GPUInfoCollectorTest
         test_values_.gpu.driver_version = "195.36.24";
         test_values_.pixel_shader_version = "1.50";
         test_values_.vertex_shader_version = "1.50";
-        test_values_.gl_renderer = "Quadro FX 380/PCI/SSE2";
-        test_values_.gl_vendor = "NVIDIA Corporation";
-        test_values_.gl_version = "3.2.0 NVIDIA 195.36.24";
+        test_values_.gl_renderer = "ANGLE (Quadro FX 380/PCI/SSE2)";
+        test_values_.gl_vendor = "Google Inc. (NVIDIA Corporation)";
+        test_values_.gl_version = "OpenGL ES 3.2.0 NVIDIA 195.36.24";
         test_values_.gl_extensions =
             "GL_OES_packed_depth_stencil GL_EXT_texture_format_BGRA8888 "
             "GL_EXT_read_format_bgra GL_NV_framebuffer_multisample";
@@ -105,9 +105,10 @@ class GPUInfoCollectorTest
         test_values_.gpu.driver_version = "1.6.18";
         test_values_.pixel_shader_version = "1.20";
         test_values_.vertex_shader_version = "1.20";
-        test_values_.gl_renderer = "NVIDIA GeForce GT 120 OpenGL Engine";
-        test_values_.gl_vendor = "NVIDIA Corporation";
-        test_values_.gl_version = "2.1 NVIDIA-1.6.18";
+        test_values_.gl_renderer =
+            "ANGLE (NVIDIA GeForce GT 120 OpenGL Engine)";
+        test_values_.gl_vendor = "Google Inc. (NVIDIA Corporation)";
+        test_values_.gl_version = "OpenGL ES 2.1 NVIDIA-1.6.18";
         test_values_.gl_extensions =
             "GL_OES_packed_depth_stencil GL_EXT_texture_format_BGRA8888 "
             "GL_EXT_read_format_bgra GL_EXT_framebuffer_multisample";
@@ -121,9 +122,9 @@ class GPUInfoCollectorTest
         test_values_.gpu.driver_version = "";
         test_values_.pixel_shader_version = "1.40";
         test_values_.vertex_shader_version = "1.40";
-        test_values_.gl_renderer = "Quadro FX 380/PCI/SSE2";
-        test_values_.gl_vendor = "NVIDIA Corporation";
-        test_values_.gl_version = "3.1.0";
+        test_values_.gl_renderer = "ANGLE (Quadro FX 380/PCI/SSE2)";
+        test_values_.gl_vendor = "Google Inc. (NVIDIA Corporation)";
+        test_values_.gl_version = "OpenGL ES 3.1.0";
         test_values_.gl_extensions =
             "GL_OES_packed_depth_stencil GL_EXT_texture_format_BGRA8888 "
             "GL_EXT_read_format_bgra GL_ANGLE_framebuffer_multisample";
