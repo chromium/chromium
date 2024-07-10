@@ -91,11 +91,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "publisher_helper_unittest.cc",
     "web_app_publisher_helper_unittest.cc",
     "web_app_publisher_unittest.cc",
-    "web_apps_with_shortcuts_test.cc",
-    "web_apps_with_shortcuts_test.h",
   ]
 
   deps = [
@@ -114,22 +111,6 @@ source_set("unit_tests") {
     "//content/public/common",
     "//testing/gtest",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [ "browser_shortcuts_unittest.cc" ]
-    deps += [
-      "//base",
-      "//build:chromeos_buildflags",
-      "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:test_support",
-      "//chrome/browser/profiles:profile",
-      "//chrome/common",
-      "//chrome/test:test_support",
-      "//components/app_constants",
-      "//components/services/app_service/public/cpp/shortcut",
-      "//content/test:test_support",
-    ]
-  }
 
   if (is_chromeos_lacros) {
     deps += [

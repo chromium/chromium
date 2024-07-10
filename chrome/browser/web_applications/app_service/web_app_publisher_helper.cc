@@ -487,9 +487,6 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
   if (!publisher_helper_) {
     return;
   }
-  if (IsAppServiceShortcut(app_id, *publisher_helper_->provider_)) {
-    return;
-  }
   apps::AppPtr app =
       publisher_helper_->app_notifications_.CreateAppWithHasBadgeStatus(
           publisher_helper_->app_type(), app_id);
@@ -1330,9 +1327,6 @@ bool WebAppPublisherHelper::IsShuttingDown() const {
 
 void WebAppPublisherHelper::OnWebAppFileHandlerApprovalStateChanged(
     const webapps::AppId& app_id) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return;
-  }
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     delegate_->PublishWebApp(CreateWebApp(web_app));
@@ -1340,9 +1334,6 @@ void WebAppPublisherHelper::OnWebAppFileHandlerApprovalStateChanged(
 }
 
 void WebAppPublisherHelper::OnWebAppInstalled(const webapps::AppId& app_id) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return;
-  }
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     delegate_->PublishWebApp(CreateWebApp(web_app));
@@ -1351,9 +1342,6 @@ void WebAppPublisherHelper::OnWebAppInstalled(const webapps::AppId& app_id) {
 
 void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(
     const webapps::AppId& app_id) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return;
-  }
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     delegate_->PublishWebApp(CreateWebApp(web_app));
@@ -1362,9 +1350,6 @@ void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(
 
 void WebAppPublisherHelper::OnWebAppManifestUpdated(
     const webapps::AppId& app_id) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return;
-  }
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     auto app = CreateWebApp(web_app);
@@ -1414,9 +1399,6 @@ void WebAppPublisherHelper::OnAppRegistrarDestroyed() {
 void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
     const std::string& app_id,
     const base::Time& last_launch_time) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return;
-  }
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return;
@@ -1428,10 +1410,6 @@ void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
 void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
     const webapps::AppId& app_id,
     mojom::UserDisplayMode user_display_mode) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return;
-  }
-
   // If the app that changed display mode is not registered in app service, it
   // is because this was considered as a shortcut and now considered as an app
   // due to display mode change, in this case we should publish the full app.
@@ -1451,9 +1429,6 @@ void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
 void WebAppPublisherHelper::OnWebAppRunOnOsLoginModeChanged(
     const webapps::AppId& app_id,
     RunOnOsLoginMode run_on_os_login_mode) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return;
-  }
   PublishRunOnOsLoginModeUpdate(app_id, run_on_os_login_mode);
 }
 
@@ -1463,9 +1438,6 @@ void WebAppPublisherHelper::OnWebAppRunOnOsLoginModeChanged(
 void WebAppPublisherHelper::OnWebAppDisabledStateChanged(
     const webapps::AppId& app_id,
     bool is_disabled) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return;
-  }
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return;
@@ -1493,9 +1465,6 @@ void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
     // called and this method will update visibility and readiness of the newly
     // enabled app.
     if (provider_->policy_manager().IsWebAppInDisabledList(id)) {
-      if (IsAppServiceShortcut(id, *provider_)) {
-        continue;
-      }
       const WebApp* web_app = GetWebApp(id);
       if (!web_app) {
         continue;
@@ -1530,9 +1499,6 @@ void WebAppPublisherHelper::OnNotificationClosed(
   app_notifications_.RemoveNotification(notification_id);
 
   for (const auto& app_id : app_ids) {
-    if (IsAppServiceShortcut(app_id, *provider_)) {
-      continue;
-    }
     auto app =
         app_notifications_.CreateAppWithHasBadgeStatus(app_type(), app_id);
     DCHECK(app->has_badge.has_value());
@@ -1554,9 +1520,6 @@ void WebAppPublisherHelper::OnIsCapturingVideoChanged(
   if (!app_id) {
     return;
   }
-  if (IsAppServiceShortcut(*app_id, *provider_)) {
-    return;
-  }
   auto result = media_requests_.UpdateCameraState(*app_id, web_contents,
                                                   is_capturing_video);
   delegate_->ModifyWebAppCapabilityAccess(*app_id, result.camera,
@@ -1568,9 +1531,6 @@ void WebAppPublisherHelper::OnIsCapturingAudioChanged(
     bool is_capturing_audio) {
   const webapps::AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
   if (!app_id) {
-    return;
-  }
-  if (IsAppServiceShortcut(*app_id, *provider_)) {
     return;
   }
   auto result = media_requests_.UpdateMicrophoneState(*app_id, web_contents,
@@ -1592,9 +1552,6 @@ void WebAppPublisherHelper::OnContentSettingChanged(
   }
 
   for (const WebApp& web_app : registrar().GetApps()) {
-    if (IsAppServiceShortcut(web_app.app_id(), *provider_)) {
-      continue;
-    }
     if (primary_pattern.Matches(web_app.start_url())) {
       auto app = std::make_unique<apps::App>(app_type(), web_app.app_id());
       app->permissions = CreatePermissions(&web_app);
@@ -1607,9 +1564,6 @@ void WebAppPublisherHelper::OnWebAppSettingsPolicyChanged() {
   DCHECK(!IsShuttingDown());
 
   for (const WebApp& web_app : registrar().GetApps()) {
-    if (IsAppServiceShortcut(web_app.app_id(), *provider_)) {
-      continue;
-    }
     delegate_->PublishWebApp(CreateWebApp(&web_app));
   }
 }
@@ -1688,9 +1642,6 @@ IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {
 
 const WebApp* WebAppPublisherHelper::GetWebApp(
     const webapps::AppId& app_id) const {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return nullptr;
-  }
   return registrar().GetAppById(app_id);
 }
 
@@ -1833,9 +1784,6 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
 bool WebAppPublisherHelper::MaybeAddNotification(
     const std::string& app_id,
     const std::string& notification_id) {
-  if (IsAppServiceShortcut(app_id, *provider_)) {
-    return false;
-  }
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return false;

@@ -11,7 +11,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/app_service/web_apps_with_shortcuts_test.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -42,8 +41,7 @@ namespace web_app {
 
 // Test the publishing of web apps in all platforms, will test both
 // lacros_web_apps_controller and web_apps.
-class WebAppPublisherTest : public testing::Test,
-                            public WebAppsWithShortcutsTest {
+class WebAppPublisherTest : public testing::Test {
  public:
   // testing::Test implementation.
   void SetUp() override {
@@ -107,96 +105,6 @@ class WebAppPublisherTest : public testing::Test,
   std::unique_ptr<LoopbackCrosapiAppServiceProxy> loopback_crosapi_ = nullptr;
 #endif
 };
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(WebAppPublisherTest, ShortcutNotPublishedAsWebApp) {
-  EnableCrosWebAppShortcutUiUpdate(true);
-  apps::AppServiceTest app_service_test;
-  app_service_test.SetUp(profile());
-  auto app_id = CreateWebApp(GURL("https://example.com/"), "App");
-  auto shortcut_id =
-      CreateShortcut(GURL("https://example-shortcut.com/"), "Shortcut");
-
-  // Reinitialize web app publisher to verify web app initialization only
-  // publish web apps.
-  InitializeWebAppPublisher();
-  apps::AppReadinessWaiter(profile(), app_id).Await();
-
-  apps::AppRegistryCache& cache = proxy()->AppRegistryCache();
-  EXPECT_FALSE(cache.IsAppInstalled(shortcut_id));
-
-  size_t num_app_after_web_app_init = cache.GetAllApps().size();
-
-  // Install new web app and verify only web app get published.
-  auto new_app_id = CreateWebApp(GURL("https://new-example.com/"), "NewApp");
-  auto new_shortcut_id =
-      CreateShortcut(GURL("https://new-example-shortcut.com/"), "NewShortcut");
-  EXPECT_EQ(num_app_after_web_app_init + 1, cache.GetAllApps().size());
-  EXPECT_EQ(cache.GetAppType(new_app_id), apps::AppType::kWeb);
-}
-#endif
-
-// For non ChromeOS platforms or when the kCrosWebAppShortcutUiUpdate is off,
-// we still want to publish shortcuts as web app. This is checking old behaviour
-// does not break.
-TEST_F(WebAppPublisherTest, ShortcutPublishedAsWebApp) {
-  EnableCrosWebAppShortcutUiUpdate(false);
-  auto app_id = CreateWebApp(GURL("https://example.com/"), "App");
-  auto shortcut_id =
-      CreateShortcut(GURL("https://example-shortcut.com/"), "Shortcut");
-
-  // Reinitialize web app publisher to verify web app initialization publish
-  // both web apps and shortcuts.
-  InitializeWebAppPublisher();
-  apps::AppReadinessWaiter(profile(), app_id).Await();
-  apps::AppReadinessWaiter(profile(), shortcut_id).Await();
-
-  apps::AppRegistryCache& cache = proxy()->AppRegistryCache();
-  size_t num_app_after_web_app_init = cache.GetAllApps().size();
-
-  // Install new web app and verify only web app get published.
-  auto new_app_id = CreateWebApp(GURL("https://new-example.com/"), "NewApp");
-  auto new_shortcut_id =
-      CreateShortcut(GURL("https://new-example-shortcut.com/"), "NewShortcut");
-  EXPECT_EQ(num_app_after_web_app_init + 2, cache.GetAllApps().size());
-  EXPECT_EQ(cache.GetAppType(new_shortcut_id), apps::AppType::kWeb);
-  EXPECT_EQ(cache.GetAppType(new_app_id), apps::AppType::kWeb);
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(WebAppPublisherTest, UninstallWebApp_AppServiceShortcutEnabled) {
-  EnableCrosWebAppShortcutUiUpdate(true);
-
-  InitializeWebAppPublisher();
-
-  // Verify that web app can be installed and uninstalled as normal.
-  auto web_app_id = CreateWebApp(GURL("https://example.com/"), "App");
-  apps::AppRegistryCache& cache = proxy()->AppRegistryCache();
-  bool found = cache.ForOneApp(web_app_id, [](const apps::AppUpdate& update) {
-    EXPECT_TRUE(apps_util::IsInstalled(update.Readiness()));
-  });
-  ASSERT_TRUE(found);
-
-  web_app::test::UninstallWebApp(profile(), web_app_id);
-  cache.ForOneApp(web_app_id, [](const apps::AppUpdate& update) {
-    EXPECT_FALSE(apps_util::IsInstalled(update.Readiness()));
-  });
-
-  // Verify that shortcuts are not published to app registry cache on
-  // installation and uninstallation.
-  auto web_shortcut_id =
-      CreateShortcut(GURL("https://shortcut_example.com/"), "App");
-
-  found =
-      cache.ForOneApp(web_shortcut_id, [](const apps::AppUpdate& update) {});
-  ASSERT_FALSE(found);
-
-  web_app::test::UninstallWebApp(profile(), web_shortcut_id);
-  found =
-      cache.ForOneApp(web_shortcut_id, [](const apps::AppUpdate& update) {});
-  ASSERT_FALSE(found);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

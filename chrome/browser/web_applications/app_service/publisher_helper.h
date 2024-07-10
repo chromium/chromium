@@ -26,10 +26,6 @@ webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
 bool IsAppServiceShortcut(const webapps::AppId& web_app_id,
                           const WebAppProvider& provider);
 
-// Converts WebAppManagement Type to ShortcutSource.
-apps::ShortcutSource ConvertWebAppManagementTypeToShortcutSource(
-    WebAppManagement::Type management_type);
-
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_PUBLISHER_HELPER_H_

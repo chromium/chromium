@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 // TODO(crbug.com/40251079): Remove circular dependencies on //c/b/ui.
 #include "chrome/browser/ui/startup/first_run_service.h"  // nogncheck
-#include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -126,9 +125,6 @@ void LacrosWebAppsController::OnReady() {
 
   std::vector<apps::AppPtr> apps;
   for (const WebApp& web_app : registrar().GetApps()) {
-    if (IsAppServiceShortcut(web_app.app_id(), *provider_)) {
-      continue;
-    }
     apps.push_back(publisher_helper().CreateWebApp(&web_app));
   }
   PublishWebApps(std::move(apps));
@@ -416,11 +412,6 @@ void LacrosWebAppsController::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (!remote_publisher_) {
     return;
   }
-  // Make sure none of the shortcuts that are supposed to be published as
-  // apps::Shortcut instead of apps::App get published here.
-  for (auto& app : apps) {
-    CHECK(!IsAppServiceShortcut(app->app_id, *provider_));
-  }
 
   remote_publisher_->OnApps(std::move(apps));
 }
@@ -429,9 +420,6 @@ void LacrosWebAppsController::PublishWebApp(apps::AppPtr app) {
   if (!remote_publisher_) {
     return;
   }
-  // Make sure none of the shortcuts that are supposed to be published as
-  // apps::Shortcut instead of apps::App get published here.
-  CHECK(!IsAppServiceShortcut(app->app_id, *provider_));
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));

@@ -20,7 +20,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/web_applications/app_service/web_apps_with_shortcuts_test.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -41,42 +40,23 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/badging/badge_manager.h"
-#include "chrome/browser/badging/badge_manager_factory.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/stub_notification_display_service.h"
-#include "components/ukm/test_ukm_recorder.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
-#endif
 
 namespace web_app {
 
 namespace {
 
 class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
- public:
-  int num_publish_called() { return num_publish_called_; }
-
- private:
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::AppPtr> apps) override {}
-  void PublishWebApp(apps::AppPtr app) override { num_publish_called_++; }
+  void PublishWebApp(apps::AppPtr app) override {}
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
       std::optional<bool> accessing_camera,
       std::optional<bool> accessing_microphone) override {}
-  int num_publish_called_ = 0;
 };
 
 bool HandlesIntent(const apps::AppPtr& app, const apps::IntentPtr& intent) {
@@ -90,8 +70,7 @@ bool HandlesIntent(const apps::AppPtr& app, const apps::IntentPtr& intent) {
 
 }  // namespace
 
-class WebAppPublisherHelperTest : public testing::Test,
-                                  public WebAppsWithShortcutsTest {
+class WebAppPublisherHelperTest : public testing::Test {
  public:
   WebAppPublisherHelperTest() = default;
   WebAppPublisherHelperTest(const WebAppPublisherHelperTest&) = delete;
@@ -319,214 +298,6 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
   EXPECT_EQ(file_cond.condition_values[1]->match_type,
             apps::PatternMatchType::kFileExtension);
   EXPECT_EQ(file_cond.condition_values[1]->value, ".txt");
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesNotPublishDelta) {
-  EnableCrosWebAppShortcutUiUpdate(true);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LoopbackCrosapiAppServiceProxy loopback(profile());
-#endif
-
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-  GURL shortcut_url("https://example-shortcut.com/");
-  auto shortcut_id = CreateShortcut(shortcut_url, "Shortcut");
-
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->install_manager().NotifyWebAppInstalled(shortcut_id);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->install_manager().NotifyWebAppInstalledWithOsHooks(shortcut_id);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->install_manager().NotifyWebAppSourceRemoved(shortcut_id);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->install_manager().NotifyWebAppUninstalled(
-      shortcut_id, webapps::WebappUninstallSource::kUnknown);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->install_manager().NotifyWebAppManifestUpdated(shortcut_id);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->registrar_unsafe().NotifyWebAppFileHandlerApprovalStateChanged(
-      shortcut_id);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->registrar_unsafe().NotifyWebAppDisabledStateChanged(shortcut_id,
-                                                                 false);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  // TODO(crbug.com/40255408): Test OnWebAppsDisabledModeChanged;
-
-  provider_->registrar_unsafe().NotifyWebAppLastLaunchTimeChanged(shortcut_id,
-                                                                  base::Time());
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->registrar_unsafe().NotifyWebAppUserDisplayModeChanged(
-      shortcut_id, mojom::UserDisplayMode::kBrowser);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->registrar_unsafe().NotifyWebAppRunOnOsLoginModeChanged(
-      shortcut_id, RunOnOsLoginMode::kNotRun);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  provider_->registrar_unsafe().NotifyWebAppSettingsPolicyChanged();
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  // Stub notification service doesn't notify display, use the real one for
-  // testing.
-  auto* notification_display_service_ =
-      NotificationDisplayServiceFactory::GetForProfile(profile());
-  const GURL origin = shortcut_url.DeprecatedGetOriginAsURL();
-  const std::string notification_id = "notification-id";
-  auto notification = std::make_unique<message_center::Notification>(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      std::u16string(), std::u16string(), ui::ImageModel(),
-      base::UTF8ToUTF16(origin.host()), origin,
-      message_center::NotifierId(origin),
-      message_center::RichNotificationData(), nullptr);
-  auto metadata = std::make_unique<PersistentNotificationMetadata>();
-  metadata->service_worker_scope = shortcut_url.GetWithoutFilename();
-  notification_display_service_->Display(
-      NotificationHandler::Type::WEB_PERSISTENT, *notification,
-      std::move(metadata));
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  auto* stub_display_service = static_cast<StubNotificationDisplayService*>(
-      NotificationDisplayServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), base::BindRepeating(
-                         &StubNotificationDisplayService::FactoryForTests)));
-  stub_display_service->AddObserver(publisher_.get());
-  stub_display_service->Display(NotificationHandler::Type::WEB_PERSISTENT,
-                                *notification, nullptr);
-  stub_display_service->ProcessNotificationOperation(
-      NotificationOperation::kClose, NotificationHandler::Type::WEB_PERSISTENT,
-      origin, notification_id, std::nullopt, std::nullopt, true);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-  stub_display_service->RemoveObserver(publisher_.get());
-
-  HostContentSettingsMap* content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  content_settings_map->SetContentSettingDefaultScope(
-      shortcut_url, shortcut_url, ContentSettingsType::MEDIASTREAM_CAMERA,
-      CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-
-  ukm::TestUkmRecorder test_recorder;
-  badging::BadgeManagerFactory::GetForProfile(profile())->SetBadgeForTesting(
-      shortcut_id, 1, &test_recorder);
-  EXPECT_EQ(0, no_op_delegate_.num_publish_called());
-}
-#endif
-
-// For non ChromeOS platforms or when the kCrosWebAppShortcutUiUpdate is off,
-// we still want to publish shortcuts as web app. This is checking old behaviour
-// does not break.
-TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesPublishDelta) {
-  EnableCrosWebAppShortcutUiUpdate(false);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LoopbackCrosapiAppServiceProxy loopback(profile());
-#endif
-  int expected_called_num = 0;
-  EXPECT_EQ(expected_called_num, no_op_delegate_.num_publish_called());
-  GURL shortcut_url("https://example-shortcut.com/");
-  auto shortcut_id = CreateShortcut(shortcut_url, "Shortcut");
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS builds enable os integration in the `CreateShortcut` method, which
-  // results in an extra publish call.
-  ++expected_called_num;
-#endif
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-  provider_->install_manager().NotifyWebAppInstalled(shortcut_id);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-  provider_->install_manager().NotifyWebAppInstalledWithOsHooks(shortcut_id);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-  provider_->install_manager().NotifyWebAppUninstalled(
-      shortcut_id, webapps::WebappUninstallSource::kUnknown);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-  provider_->install_manager().NotifyWebAppManifestUpdated(shortcut_id);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-  provider_->registrar_unsafe().NotifyWebAppFileHandlerApprovalStateChanged(
-      shortcut_id);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  provider_->registrar_unsafe().NotifyWebAppDisabledStateChanged(shortcut_id,
-                                                                 false);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-  // TODO(crbug.com/40255408): Test OnWebAppsDisabledModeChanged;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  provider_->registrar_unsafe().NotifyWebAppLastLaunchTimeChanged(shortcut_id,
-                                                                  base::Time());
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-  provider_->registrar_unsafe().NotifyWebAppUserDisplayModeChanged(
-      shortcut_id, mojom::UserDisplayMode::kBrowser);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-  provider_->registrar_unsafe().NotifyWebAppRunOnOsLoginModeChanged(
-      shortcut_id, RunOnOsLoginMode::kNotRun);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-  provider_->registrar_unsafe().NotifyWebAppSettingsPolicyChanged();
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Stub notification service doesn't notify display, use the real one for
-  // testing.
-  auto* notification_display_service_ =
-      NotificationDisplayServiceFactory::GetForProfile(profile());
-  const GURL origin = shortcut_url.DeprecatedGetOriginAsURL();
-  const std::string notification_id = "notification-id";
-  auto notification = std::make_unique<message_center::Notification>(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      std::u16string(), std::u16string(), ui::ImageModel(),
-      base::UTF8ToUTF16(origin.host()), origin,
-      message_center::NotifierId(origin),
-      message_center::RichNotificationData(), nullptr);
-  auto metadata = std::make_unique<PersistentNotificationMetadata>();
-  metadata->service_worker_scope = shortcut_url.GetWithoutFilename();
-  notification_display_service_->Display(
-      NotificationHandler::Type::WEB_PERSISTENT, *notification,
-      std::move(metadata));
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-  auto* stub_display_service = static_cast<StubNotificationDisplayService*>(
-      NotificationDisplayServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), base::BindRepeating(
-                         &StubNotificationDisplayService::FactoryForTests)));
-  stub_display_service->AddObserver(publisher_.get());
-  stub_display_service->Display(NotificationHandler::Type::WEB_PERSISTENT,
-                                *notification, nullptr);
-  stub_display_service->ProcessNotificationOperation(
-      NotificationOperation::kClose, NotificationHandler::Type::WEB_PERSISTENT,
-      origin, notification_id, std::nullopt, std::nullopt, true);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-  stub_display_service->RemoveObserver(publisher_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  HostContentSettingsMap* content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  content_settings_map->SetContentSettingDefaultScope(
-      shortcut_url, shortcut_url, ContentSettingsType::MEDIASTREAM_CAMERA,
-      CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ukm::TestUkmRecorder test_recorder;
-  badging::BadgeManagerFactory::GetForProfile(profile())->SetBadgeForTesting(
-      shortcut_id, 1, &test_recorder);
-  EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 class WebAppPublisherHelperTest_WebLockScreenApi

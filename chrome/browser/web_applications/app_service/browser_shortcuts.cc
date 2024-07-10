@@ -71,43 +71,12 @@ void BrowserShortcuts::InitBrowserShortcuts() {
   // Register publisher for shortcuts created from browser.
   RegisterShortcutPublisher(apps::AppType::kChromeApp);
 
-  for (const webapps::AppId& web_app_id :
-       provider_->registrar_unsafe().GetAppIds()) {
-    MaybePublishBrowserShortcut(web_app_id);
-  }
-
   install_manager_observation_.Observe(&provider_->install_manager());
   registrar_observation_.Observe(&provider_->registrar_unsafe());
 
   if (*GetInitializedCallbackForTesting()) {
     std::move(*GetInitializedCallbackForTesting()).Run();
   }
-}
-
-void BrowserShortcuts::MaybePublishBrowserShortcut(const webapps::AppId& app_id,
-                                                   bool raw_icon_updated) {
-  if (!IsAppServiceShortcut(app_id, *provider_)) {
-    return;
-  }
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
-  if (!web_app) {
-    return;
-  }
-  apps::ShortcutPtr shortcut = std::make_unique<apps::Shortcut>(
-      app_constants::kChromeAppId, web_app->app_id());
-  shortcut->name =
-      provider_->registrar_unsafe().GetAppShortName(web_app->app_id());
-  shortcut->shortcut_source = ConvertWebAppManagementTypeToShortcutSource(
-      web_app->GetHighestPrioritySource());
-
-  apps::IconEffects icon_effects = apps::IconEffects::kRoundCorners;
-  icon_effects |= web_app->is_generated_icon()
-                      ? apps::IconEffects::kCrOsStandardMask
-                      : apps::IconEffects::kCrOsStandardIcon;
-  shortcut->icon_key = apps::IconKey(raw_icon_updated, icon_effects);
-  shortcut->allow_removal =
-      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id());
-  apps::ShortcutPublisher::PublishShortcut(std::move(shortcut));
 }
 
 void BrowserShortcuts::LaunchShortcut(const std::string& host_app_id,
@@ -124,24 +93,7 @@ void BrowserShortcuts::LaunchShortcut(const std::string& host_app_id,
 void BrowserShortcuts::RemoveShortcut(const std::string& host_app_id,
                                       const std::string& local_shortcut_id,
                                       apps::UninstallSource uninstall_source) {
-  if (!IsAppServiceShortcut(local_shortcut_id, *provider_)) {
-    return;
-  }
-
-  const WebApp* web_app =
-      provider_->registrar_unsafe().GetAppById(local_shortcut_id);
-  if (!web_app) {
-    return;
-  }
-
-  auto origin = url::Origin::Create(web_app->start_url());
-
-  CHECK(
-      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()));
-  webapps::WebappUninstallSource webapp_uninstall_source =
-      ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
-  provider_->scheduler().RemoveUserUninstallableManagements(
-      web_app->app_id(), webapp_uninstall_source, base::DoNothing());
+  // Not supported, because Shortstand project was discontinued.
 }
 
 void BrowserShortcuts::GetCompressedIconData(
@@ -156,12 +108,10 @@ void BrowserShortcuts::GetCompressedIconData(
 }
 
 void BrowserShortcuts::OnWebAppInstalled(const webapps::AppId& app_id) {
-  MaybePublishBrowserShortcut(app_id);
 }
 
 void BrowserShortcuts::OnWebAppInstalledWithOsHooks(
     const webapps::AppId& app_id) {
-  MaybePublishBrowserShortcut(app_id);
 }
 
 void BrowserShortcuts::OnWebAppInstallManagerDestroyed() {
@@ -192,7 +142,6 @@ void BrowserShortcuts::OnAppRegistrarDestroyed() {
 void BrowserShortcuts::OnWebAppUserDisplayModeChanged(
     const webapps::AppId& app_id,
     mojom::UserDisplayMode user_display_mode) {
-  MaybePublishBrowserShortcut(app_id);
 }
 
 }  // namespace web_app

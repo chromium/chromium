@@ -47,13 +47,6 @@ class BrowserShortcuts final : public apps::ShortcutPublisher,
 
   void InitBrowserShortcuts();
 
-  // Publish web app identified by `app_id` as browser shortcut to the
-  // AppService if the web app is considered as shortcut in ChromeOS.
-  // `raw_icon_updated` should be set when the manifest raw icon has
-  // changed to allow AppService icon directory to clear the old icons.
-  void MaybePublishBrowserShortcut(const webapps::AppId& app_id,
-                                   bool raw_icon_updated = false);
-
   // apps::ShortcutPublisher:
   void LaunchShortcut(const std::string& host_app_id,
                       const std::string& local_id,
