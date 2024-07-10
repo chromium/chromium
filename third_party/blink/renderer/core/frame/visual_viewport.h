@@ -304,8 +304,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   //
   // A VisualViewport is created in renderers for remote frames / nested pages;
   // however, in those cases it is "inert", it cannot change scale or location
-  // values. Only a <portal> or outermost main frame can have an active
-  // viewport.
+  // values. Only an outermost main frame can have an active viewport.
   bool IsActiveViewport() const;
 
   OverscrollType GetOverscrollType() const { return overscroll_type_; }

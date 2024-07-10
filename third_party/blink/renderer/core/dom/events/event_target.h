@@ -54,7 +54,6 @@ class MessagePort;
 class Node;
 class Observable;
 class ObservableEventListenerOptions;
-class PortalHost;
 class ScriptState;
 class ServiceWorker;
 class V8EventListener;
@@ -145,7 +144,6 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   virtual LocalDOMWindow* ToLocalDOMWindow();
   virtual MessagePort* ToMessagePort();
   virtual ServiceWorker* ToServiceWorker();
-  virtual PortalHost* ToPortalHost();
 
   // This method is called when the enqueued event is dispatched.
   // The input is the event type of the current dispatched event.

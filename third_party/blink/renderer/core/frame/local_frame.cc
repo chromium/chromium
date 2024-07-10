@@ -1810,20 +1810,6 @@ bool LocalFrame::ShouldThrottleRendering() const {
   return View() && View()->ShouldThrottleRendering();
 }
 
-void LocalFrame::PortalStateChanged() {
-  if (GetDocument()) {
-    GetDocument()->RefreshAccessibilityTree();
-  }
-
-  if (IsOutermostMainFrame()) {
-    intersection_state_.occlusion_state =
-        mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded;
-  } else {
-    intersection_state_.occlusion_state =
-        mojom::blink::FrameOcclusionState::kUnknown;
-  }
-}
-
 LocalFrame::LocalFrame(LocalFrameClient* client,
                        Page& page,
                        FrameOwner* owner,
@@ -1848,7 +1834,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
             inheriting_agent_factory),
       frame_scheduler_(page.GetPageScheduler()->CreateFrameScheduler(
           this,
-          /*TODO(crbug.com/1170350): Set for portals*/ IsInFencedFrameTree(),
+          IsInFencedFrameTree(),
           IsMainFrame() ? FrameScheduler::FrameType::kMainFrame
                         : FrameScheduler::FrameType::kSubframe)),
       loader_(this),

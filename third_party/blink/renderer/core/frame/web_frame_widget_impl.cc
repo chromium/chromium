@@ -361,10 +361,6 @@ bool WebFrameWidgetImpl::ForTopMostMainFrame() const {
   return ForMainFrame() && !main_data().is_for_nested_main_frame;
 }
 
-void WebFrameWidgetImpl::SetIsNestedMainFrameWidget(bool is_nested) {
-  main_data().is_for_nested_main_frame = is_nested;
-}
-
 void WebFrameWidgetImpl::Close() {
   // TODO(bokan): This seems wrong since the page may have other still-active
   // frame widgets. See also: https://crbug.com/1344531.

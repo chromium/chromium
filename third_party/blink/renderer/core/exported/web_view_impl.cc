@@ -636,8 +636,6 @@ WebViewImpl::WebViewImpl(
         prerender_param->should_warm_up_compositor);
   }
 
-  // TODO(crbug.com/40287334): Remove the is_inside_portal parameter.
-
   if (fenced_frame_mode && features::IsFencedFramesEnabled()) {
     page_->SetIsMainFrameFencedFrameRoot();
     page_->SetDeprecatedFencedFrameMode(*fenced_frame_mode);

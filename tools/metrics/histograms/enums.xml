@@ -9175,13 +9175,15 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3093" label="RegisterProtocolHandlerCrossOriginSubframe"/>
   <int value="3094" label="WebNfcNdefReaderScan"/>
   <int value="3095" label="WebNfcNdefWriterWrite"/>
-  <int value="3096" label="HTMLPortalElement"/>
-  <int value="3097" label="V8HTMLPortalElement_Activate_Method"/>
-  <int value="3098" label="V8HTMLPortalElement_PostMessage_Method"/>
-  <int value="3099" label="V8Window_PortalHost_AttributeGetter"/>
-  <int value="3100" label="V8PortalHost_PostMessage_Method"/>
-  <int value="3101" label="V8PortalActivateEvent_Data_AttributeGetter"/>
-  <int value="3102" label="V8PortalActivateEvent_AdoptPredecessor_Method"/>
+  <int value="3096" label="OBSOLETE_HTMLPortalElement"/>
+  <int value="3097" label="OBSOLETE_V8HTMLPortalElement_Activate_Method"/>
+  <int value="3098" label="OBSOLETE_V8HTMLPortalElement_PostMessage_Method"/>
+  <int value="3099" label="OBSOLETE_V8Window_PortalHost_AttributeGetter"/>
+  <int value="3100" label="OBSOLETE_V8PortalHost_PostMessage_Method"/>
+  <int value="3101"
+      label="OBSOLETE_V8PortalActivateEvent_Data_AttributeGetter"/>
+  <int value="3102"
+      label="OBSOLETE_V8PortalActivateEvent_AdoptPredecessor_Method"/>
   <int value="3103" label="LinkRelPrefetchForSignedExchanges"/>
   <int value="3104" label="MessageEventSharedArrayBufferSameOrigin"/>
   <int value="3105" label="MessageEventSharedArrayBufferSameAgentCluster"/>

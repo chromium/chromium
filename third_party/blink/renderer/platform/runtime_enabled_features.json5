@@ -1688,10 +1688,9 @@
       name: "FencedFrames",
       base_feature: "none",
       // This helps enable and expose the <fencedframe> element, but note that
-      // blink::features::kFencedFrames must be enabled as well, similar to
-      // Portals, as we require the support of the browser process to fully
-      // enable the feature. Enabling this runtime enabled feature alone has no
-      // effect.
+      // blink::features::kFencedFrames must be enabled as well, as we require
+      // the support of the browser process to fully enable the feature.
+      // Enabling this runtime enabled feature alone has no effect.
       public: true,
       status: "stable",
     },

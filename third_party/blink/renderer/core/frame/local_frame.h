@@ -468,9 +468,6 @@ class CORE_EXPORT LocalFrame final
 
   bool ShouldThrottleRendering() const;
 
-  // Called on the main frame of the portal is activated or adopted.
-  void PortalStateChanged();
-
   // Returns frame scheduler for this frame.
   // FrameScheduler is destroyed during frame detach and nullptr will be
   // returned after it.
@@ -631,8 +628,8 @@ class CORE_EXPORT LocalFrame final
   bool IsAdScriptInStack() const;
 
   // The evidence for or against a frame being an ad. `std::nullopt` if not yet
-  // set or if the frame is a subfiltering root frame (outermost main frame or
-  // portal) as only child frames can be tagged as ads.
+  // set or if the frame is a subfiltering root frame (outermost main frame) as
+  // only child frames can be tagged as ads.
   const std::optional<blink::FrameAdEvidence>& AdEvidence() const {
     return ad_evidence_;
   }

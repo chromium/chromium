@@ -153,7 +153,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // the root Document in a WebContents). See content::Page for detailed
   // documentation.
   // This is false for main frames created for fenced-frames.
-  // TODO(khushalsagar) : Should also be the case for portals.
   bool IsOutermostMainFrame() const;
 
   // Returns true if and only if:

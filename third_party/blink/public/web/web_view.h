@@ -112,7 +112,6 @@ class BLINK_EXPORT WebView {
   // |prerender_param| defines a set of parameters for prerendering views. It is
   // set iff the view is created for a prerendering page. (see
   // content/browser/preloading/prerender/README.md).
-  // [is_inside_portal] defines whether the page is inside_portal.
   // [is_fenced_frame] defines whether the page is for a fenced frame.
   // |compositing_enabled| dictates whether accelerated compositing should be
   // enabled for the page. It must be false if no clients are provided, or if a

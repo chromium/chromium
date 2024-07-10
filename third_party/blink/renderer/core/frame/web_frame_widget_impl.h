@@ -171,12 +171,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // If this widget is for the top most main frame. This is different than
   // |ForMainFrame| because |ForMainFrame| could return true but this method
   // returns false. If this widget is a MainFrame widget embedded in another
-  // widget, for example embedding a portal.
+  // widget, for example embedding a <webview>.
   bool ForTopMostMainFrame() const;
-
-  // Adjusts whether the widget is nested or not. This is called during portal
-  // transitions.
-  void SetIsNestedMainFrameWidget(bool is_nested);
 
   // Returns true if this widget is for a local root that is a child frame,
   // false otherwise.
@@ -1195,8 +1191,8 @@ class CORE_EXPORT WebFrameWidgetImpl
     // Last background color sent to the browser. Only set for main frames.
     std::optional<SkColor> last_background_color;
     // This bit is used to tell if this is a nested widget (an "inner web
-    // contents") like a <webview> or <portal> widget. If false, the widget is
-    // the top level widget.
+    // contents") like a <webview>. If false, the widget is the top level
+    // widget.
     bool is_for_nested_main_frame = false;
   } main_frame_data_;
 
@@ -1216,7 +1212,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // all embedded scenarios).
   const bool is_for_child_local_root_;
 
-  // Whether this widget is for a portal, guest view, or top level frame.
+  // Whether this widget is for a guest view, or top level frame.
   // These may have a page scale node, so it is important to plumb this
   // information through to avoid breaking assumptions.
   const bool is_for_scalable_page_;

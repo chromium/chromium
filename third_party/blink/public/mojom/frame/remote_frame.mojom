@@ -313,7 +313,7 @@ interface RemoteFrame {
   SetReplicatedName(string name, string unique_name);
 
   // Sent to dispatch a load event in the frame's owner element.
-  // (eg. the iframe, portal, or object element).
+  // (eg. the iframe, or object element).
   DispatchLoadEventForFrameOwner();
 
   // Sent to the remote frame placeholder in the parent process to indicate the

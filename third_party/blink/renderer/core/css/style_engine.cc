@@ -234,7 +234,7 @@ StyleEngine::StyleEngine(Document& document)
 
     // Viewport styles are only processed in the main frame of a page with an
     // active viewport. That is, a pages that their own independently zoomable
-    // viewport: the outermost main frame and portals.
+    // viewport: the outermost main frame.
     DCHECK(document.GetPage());
     VisualViewport& viewport = document.GetPage()->GetVisualViewport();
     if (document.IsInMainFrame() && viewport.IsActiveViewport()) {

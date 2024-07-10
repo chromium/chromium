@@ -244,7 +244,6 @@
     "popstate",
     "popoverhide",
     "popovershow",
-    "portalactivate",
     "prerenderingchange",
     "prioritychange",
     "progress",

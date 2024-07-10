@@ -125,14 +125,9 @@ RemoteFrame::RemoteFrame(
       task_runner_(page.GetPageScheduler()
                        ->GetAgentGroupScheduler()
                        .DefaultTaskRunner()) {
-  // TODO(crbug.com/1094850): Remove this check once the renderer is correctly
-  // handling errors during the creation of HTML portal elements, which would
-  // otherwise cause RemoteFrame() being created with empty frame tokens.
-  if (!frame_token.value().is_empty()) {
-    auto frame_tracking_result = GetRemoteFramesMap().insert(
-        RemoteFrameToken::Hasher()(frame_token), this);
-    CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
-  }
+  auto frame_tracking_result = GetRemoteFramesMap().insert(
+      RemoteFrameToken::Hasher()(frame_token), this);
+  CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
 
   dom_window_ = MakeGarbageCollected<RemoteDOMWindow>(*this);
 

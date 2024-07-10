@@ -460,10 +460,8 @@ class PLATFORM_EXPORT WidgetBase
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;
   // Indicates this is for a child local root or a nested main frame.
-  // TODO(crbug.com/1254770): revisit this for portals.
   const bool is_embedded_ = false;
-  // Indicates that this widget is for a portal element, top level frame, or a
-  // GuestView.
+  // Indicates that this widget is for a top level frame, or a GuestView.
   const bool is_for_scalable_page_ = false;
   // Set true by initialize functions, used to check that only one is called.
   bool initialized_ = false;
