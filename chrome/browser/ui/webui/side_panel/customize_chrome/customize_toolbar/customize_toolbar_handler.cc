@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -131,6 +136,15 @@ CustomizeToolbarHandler::CustomizeToolbarHandler(
       browser_(browser),
       model_(PinnedToolbarActionsModel::Get(browser_->profile())) {
   model_observation_.Observe(model_);
+  pref_change_registrar_.Init(prefs());
+  pref_change_registrar_.Add(
+      prefs::kShowHomeButton,
+      base::BindRepeating(&CustomizeToolbarHandler::OnShowHomeButtonChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kShowForwardButton,
+      base::BindRepeating(&CustomizeToolbarHandler::OnShowForwardButtonChanged,
+                          base::Unretained(this)));
 }
 
 CustomizeToolbarHandler::~CustomizeToolbarHandler() = default;
@@ -147,6 +161,32 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(browser_->window()->GetNativeWindow())
           .device_scale_factor();
+
+  auto home_action = side_panel::customize_chrome::mojom::Action::New(
+      MojoActionForChromeAction(kActionHome).value(),
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_HOME)),
+      prefs()->GetBoolean(prefs::kShowHomeButton),
+      side_panel::customize_chrome::mojom::CategoryId::kNavigation,
+      GURL(webui::EncodePNGAndMakeDataURI(
+          ui::ImageModel::FromVectorIcon(kNavigateHomeChromeRefreshIcon,
+                                         ui::kColorIcon)
+              .Rasterize(provider),
+          scale_factor)));
+
+  actions.push_back(std::move(home_action));
+
+  auto forward_action = side_panel::customize_chrome::mojom::Action::New(
+      MojoActionForChromeAction(kActionForward).value(),
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD)),
+      prefs()->GetBoolean(prefs::kShowForwardButton),
+      side_panel::customize_chrome::mojom::CategoryId::kNavigation,
+      GURL(webui::EncodePNGAndMakeDataURI(
+          ui::ImageModel::FromVectorIcon(
+              vector_icons::kForwardArrowChromeRefreshIcon, ui::kColorIcon)
+              .Rasterize(provider),
+          scale_factor)));
+
+  actions.push_back(std::move(forward_action));
 
   const auto add_action =
       [&actions, model, provider, scale_factor, scope_action](
@@ -167,10 +207,6 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
         actions.push_back(std::move(mojo_action));
       };
 
-  add_action(kActionHome,
-             side_panel::customize_chrome::mojom::CategoryId::kNavigation);
-  add_action(kActionForward,
-             side_panel::customize_chrome::mojom::CategoryId::kNavigation);
   add_action(kActionNewIncognitoWindow,
              side_panel::customize_chrome::mojom::CategoryId::kNavigation);
 
@@ -242,19 +278,35 @@ void CustomizeToolbarHandler::PinAction(
     mojo::ReportBadMessage("PinAction called with an unsupported action.");
     return;
   }
-  model_->UpdatePinnedState(chrome_action.value(), pin);
+
+  switch (chrome_action.value()) {
+    case kActionHome:
+      prefs()->SetBoolean(prefs::kShowHomeButton, pin);
+      break;
+    case kActionForward:
+      prefs()->SetBoolean(prefs::kShowForwardButton, pin);
+      break;
+    default:
+      model_->UpdatePinnedState(chrome_action.value(), pin);
+  }
 }
 
 void CustomizeToolbarHandler::GetIsCustomized(
     GetIsCustomizedCallback callback) {
-  // By default, no actions are pinned.
-  // TODO(323962536): Chrome Labs should be pinned by default.
-  std::move(callback).Run(model_->PinnedActionIds().size() > 0);
+  // By default, only forward is pinned.
+  // TODO(323962536): Chrome Labs should be pinned by default, if it exists.
+  const bool is_default = !prefs()->GetBoolean(prefs::kShowHomeButton) &&
+                          prefs()->GetBoolean(prefs::kShowForwardButton) &&
+                          model_->PinnedActionIds().size() == 0;
+  std::move(callback).Run(!is_default);
 }
 
 void CustomizeToolbarHandler::ResetToDefault() {
-  // By default, no actions are pinned.
-  // TODO(323962536): Chrome Labs should be pinned by default.
+  prefs()->ClearPref(prefs::kShowHomeButton);
+  prefs()->ClearPref(prefs::kShowForwardButton);
+
+  // By default, only forward is pinned.
+  // TODO(323962536): Chrome Labs should be pinned by default, if it exists.
   const std::vector<actions::ActionId> pinned_ids = model_->PinnedActionIds();
   for (actions::ActionId id : pinned_ids) {
     model_->UpdatePinnedState(id, false);
@@ -278,4 +330,18 @@ void CustomizeToolbarHandler::OnActionPinnedChanged(actions::ActionId id,
   }
 
   client_->SetActionPinned(mojo_action_id.value(), pinned);
+}
+
+void CustomizeToolbarHandler::OnShowHomeButtonChanged() {
+  OnActionPinnedChanged(kActionHome,
+                        prefs()->GetBoolean(prefs::kShowHomeButton));
+}
+
+void CustomizeToolbarHandler::OnShowForwardButtonChanged() {
+  OnActionPinnedChanged(kActionForward,
+                        prefs()->GetBoolean(prefs::kShowForwardButton));
+}
+
+PrefService* CustomizeToolbarHandler::prefs() const {
+  return browser_->profile()->GetPrefs();
 }

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -46,6 +47,10 @@ class CustomizeToolbarHandler
 
  private:
   void OnActionPinnedChanged(actions::ActionId id, bool pinned);
+  void OnShowHomeButtonChanged();
+  void OnShowForwardButtonChanged();
+
+  PrefService* prefs() const;
 
   mojo::Remote<side_panel::customize_chrome::mojom::CustomizeToolbarClient>
       client_;
@@ -58,6 +63,8 @@ class CustomizeToolbarHandler
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       model_observation_{this};
+
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_TOOLBAR_CUSTOMIZE_TOOLBAR_HANDLER_H_

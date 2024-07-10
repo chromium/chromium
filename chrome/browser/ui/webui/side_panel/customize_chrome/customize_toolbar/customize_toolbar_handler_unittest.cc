@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -184,10 +185,10 @@ TEST_F(CustomizeToolbarHandlerTest, ListActions) {
       side_panel::customize_chrome::mojom::ActionId::kShowReadingList));
   // EXPECT_TRUE(contains_action(
   //     side_panel::customize_chrome::mojom::ActionId::kShowSideSearch));
-  // EXPECT_TRUE(
-  //     contains_action(side_panel::customize_chrome::mojom::ActionId::kHome));
-  // EXPECT_TRUE(contains_action(
-  //     side_panel::customize_chrome::mojom::ActionId::kForward));
+  EXPECT_TRUE(
+      contains_action(side_panel::customize_chrome::mojom::ActionId::kHome));
+  EXPECT_TRUE(
+      contains_action(side_panel::customize_chrome::mojom::ActionId::kForward));
   EXPECT_TRUE(contains_action(
       side_panel::customize_chrome::mojom::ActionId::kNewIncognitoWindow));
   // EXPECT_TRUE(contains_action(
@@ -236,6 +237,31 @@ TEST_F(CustomizeToolbarHandlerTest, PinAction) {
   EXPECT_EQ(pin, false);
 }
 
+TEST_F(CustomizeToolbarHandlerTest, PinHome) {
+  ASSERT_EQ(false, profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kHome,
+                      true);
+  EXPECT_EQ(true, profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kHome,
+                      false);
+  EXPECT_EQ(false, profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+}
+
+TEST_F(CustomizeToolbarHandlerTest, PinForward) {
+  ASSERT_EQ(true, profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
+
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kForward,
+                      false);
+  EXPECT_EQ(false,
+            profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
+
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kForward,
+                      true);
+  EXPECT_EQ(true, profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
+}
+
 TEST_F(CustomizeToolbarHandlerTest, ActionAddedRemoved) {
   bool pin;
   side_panel::customize_chrome::mojom::ActionId id;
@@ -252,6 +278,42 @@ TEST_F(CustomizeToolbarHandlerTest, ActionAddedRemoved) {
   mock_page_.FlushForTesting();
   EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kDevTools);
   EXPECT_EQ(pin, false);
+}
+
+TEST_F(CustomizeToolbarHandlerTest, HomePrefUpdated) {
+  bool pin;
+  side_panel::customize_chrome::mojom::ActionId id;
+  EXPECT_CALL(mock_page_, SetActionPinned)
+      .Times(2)
+      .WillRepeatedly(DoAll(SaveArg<0>(&id), SaveArg<1>(&pin)));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  mock_page_.FlushForTesting();
+  EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kHome);
+  EXPECT_EQ(pin, true);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, false);
+  mock_page_.FlushForTesting();
+  EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kHome);
+  EXPECT_EQ(pin, false);
+}
+
+TEST_F(CustomizeToolbarHandlerTest, ForwardPrefUpdated) {
+  bool pin;
+  side_panel::customize_chrome::mojom::ActionId id;
+  EXPECT_CALL(mock_page_, SetActionPinned)
+      .Times(2)
+      .WillRepeatedly(DoAll(SaveArg<0>(&id), SaveArg<1>(&pin)));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton, false);
+  mock_page_.FlushForTesting();
+  EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kForward);
+  EXPECT_EQ(pin, false);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton, true);
+  mock_page_.FlushForTesting();
+  EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kForward);
+  EXPECT_EQ(pin, true);
 }
 
 TEST_F(CustomizeToolbarHandlerTest, ResetToDefault) {
