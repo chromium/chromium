@@ -384,7 +384,7 @@ class TrackingProtectionSettingsStartupTest
  public:
   void SetUp() override {
     // Profiles gets onboarded before the settings service is started.
-    onboarding_service()->MaybeMarkEligible();
+    onboarding_service()->MaybeMarkModeBEligible();
     onboarding_service()->NoticeShown(
         TrackingProtectionOnboarding::SurfaceType::kDesktop,
         TrackingProtectionOnboarding::NoticeType::kModeBOnboarding);

@@ -352,7 +352,7 @@ void TrackingProtectionOnboarding::OnSilentOnboardingPrefChanged() const {
   }
 }
 
-void TrackingProtectionOnboarding::MaybeMarkEligible() {
+void TrackingProtectionOnboarding::MaybeMarkModeBEligible() {
   auto status = GetInternalOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kIneligible) {
     base::UmaHistogramBoolean(
@@ -370,7 +370,7 @@ void TrackingProtectionOnboarding::MaybeMarkEligible() {
       "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible", true);
 }
 
-void TrackingProtectionOnboarding::MaybeMarkIneligible() {
+void TrackingProtectionOnboarding::MaybeMarkModeBIneligible() {
   auto status = GetInternalOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kEligible) {
     base::UmaHistogramBoolean(
@@ -387,7 +387,7 @@ void TrackingProtectionOnboarding::MaybeMarkIneligible() {
       "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible", true);
 }
 
-void TrackingProtectionOnboarding::MaybeMarkSilentEligible() {
+void TrackingProtectionOnboarding::MaybeMarkModeBSilentEligible() {
   auto status = GetInternalSilentOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kIneligible) {
     RecordSilentOnboardingMarkEligibleHistogram(false);
@@ -402,7 +402,7 @@ void TrackingProtectionOnboarding::MaybeMarkSilentEligible() {
   RecordSilentOnboardingMarkEligibleHistogram(true);
 }
 
-void TrackingProtectionOnboarding::MaybeMarkSilentIneligible() {
+void TrackingProtectionOnboarding::MaybeMarkModeBSilentIneligible() {
   auto status = GetInternalSilentOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kEligible) {
     RecordSilentOnboardingMarkIneligibleHistogram(false);
@@ -416,7 +416,7 @@ void TrackingProtectionOnboarding::MaybeMarkSilentIneligible() {
   RecordSilentOnboardingMarkIneligibleHistogram(true);
 }
 
-void TrackingProtectionOnboarding::MaybeResetOnboardingPrefs() {
+void TrackingProtectionOnboarding::MaybeResetModeBOnboardingPrefs() {
   // Clearing the prefs is only allowed in Beta, Canary and Dev for testing.
   switch (channel_) {
     case version_info::Channel::BETA:

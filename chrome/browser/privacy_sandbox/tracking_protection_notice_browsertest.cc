@@ -144,7 +144,7 @@ class TrackingProtectionOnboardingNoticeBrowserTest
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewTabEligiblePage) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   browser()->window()->Activate();
   // Action: Navigate to an HTTPS eligible page in current tab.
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        SecondEligibleNavigation) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   browser()->window()->Activate();
   // Action: Navigate to an HTTPS eligible page in current tab.
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NoticeWasShowingWhenAckPrefUpdated) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   browser()->window()->Activate();
   // Action: Navigate to an HTTPS eligible page in current tab.
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewBackgroundTabEligiblePage) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   browser()->window()->Activate();
   // Action: Navigate to an HTTPS eligible page in current tab and New
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewTabIneligiblePage) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   browser()->window()->Activate();
   // Action: Navigate to an HTTP ineligible page in current tab. ( No lock icon)
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Action: Profile becomes eligible.
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   // Verification
   // Notice is not yet showing.
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewPopupEligiblePage) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   browser()->window()->Activate();
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewWindowEligiblePage) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   browser()->window()->Activate();
 
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        FirstWindowEligibleSecondWindowEligible) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   browser()->window()->Activate();
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        OnboardedNotAck) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
   // Telling the OnboardingService that the notice has been shown so it marks
   // the profile as Onboarded.
   onboarding_service()->OnboardingNoticeShown();
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        AcknowledgesTheNotice) {
   // Action
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
   // Navigates to eligible page.
   browser()->window()->Activate();
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   onboarding_service()->channel_ = version_info::Channel::CANARY;
 
   // Action Onboarding and ack the user
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
   browser()->window()->Activate();
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
       browser(), https_server_.GetURL("a.test", "/empty.html"), 1,
@@ -475,9 +475,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   PressPromoButton(browser(), PromoButton::kNonDefault);
 
   // Then reset the user prefs.
-  onboarding_service()->MaybeResetOnboardingPrefs();
+  onboarding_service()->MaybeResetModeBOnboardingPrefs();
   // Then mark as eligible again
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   EXPECT_EQ(onboarding_service()->GetOnboardingStatus(),
             privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        StartsObserving) {
   // Action
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
   browser()->window()->Activate();
   // Verification
   EXPECT_TRUE(TabStripModelObserver::IsObservingAny(notice_service()));
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        StopsObserving) {
   // Action
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
   // Navigates to eligible page.
   browser()->window()->Activate();
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NoticeServiceEventHistogramCheck) {
   // Setup
-  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->MaybeMarkModeBEligible();
 
   browser()->window()->Activate();
 
@@ -634,7 +634,7 @@ class TrackingProtectionSilentOnboardingNoticeBrowserTest
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        NewTabEligiblePage) {
   // Setup
-  onboarding_service()->MaybeMarkSilentEligible();
+  onboarding_service()->MaybeMarkModeBSilentEligible();
 
   browser()->window()->Activate();
   // Action: Navigate to an HTTPS eligible page in current tab.
@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        NewBackgroundTabEligiblePage) {
   // Setup
-  onboarding_service()->MaybeMarkSilentEligible();
+  onboarding_service()->MaybeMarkModeBSilentEligible();
 
   browser()->window()->Activate();
   // Action: Navigate to an HTTPS eligible page in current tab and New
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        NewTabIneligiblePage) {
   // Setup
-  onboarding_service()->MaybeMarkSilentEligible();
+  onboarding_service()->MaybeMarkModeBSilentEligible();
 
   browser()->window()->Activate();
   // Action: Navigate to an HTTP ineligible page in current tab. ( No lock icon)
@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Action: Profile becomes eligible.
-  onboarding_service()->MaybeMarkSilentEligible();
+  onboarding_service()->MaybeMarkModeBSilentEligible();
 
   // This selects the second tab (ineligible). Promo shouldn't show, and profile
   // not yet onboarded.
@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        NewPopupEligiblePage) {
   // Setup
-  onboarding_service()->MaybeMarkSilentEligible();
+  onboarding_service()->MaybeMarkModeBSilentEligible();
 
   browser()->window()->Activate();
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        StartsObserving) {
   // Action
-  onboarding_service()->MaybeMarkSilentEligible();
+  onboarding_service()->MaybeMarkModeBSilentEligible();
   browser()->window()->Activate();
   // Verification
   EXPECT_TRUE(TabStripModelObserver::IsObservingAny(notice_service()));
@@ -795,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        StopsObserving) {
   // Action
-  onboarding_service()->MaybeMarkSilentEligible();
+  onboarding_service()->MaybeMarkModeBSilentEligible();
   // Navigates to eligible page.
   browser()->window()->Activate();
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
@@ -824,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 // Profile is onboarded. Notice Service is not observing tab changes.
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        OnboardedProfileDoesntStartObserving) {
-  onboarding_service()->MaybeMarkSilentEligible();
+  onboarding_service()->MaybeMarkModeBSilentEligible();
   // Telling the OnboardingService that the notice has been shown so it marks
   // the profile as Onboarded.
   onboarding_service()->SilentOnboardingNoticeShown();

@@ -151,23 +151,23 @@ class TrackingProtectionOnboarding : public KeyedService {
 
   // To be called by the Mode B experiment service to indicate that the profile
   // is eligible for onboarding.
-  void MaybeMarkEligible();
+  void MaybeMarkModeBEligible();
 
   // To be called by the Mode B experiment service to indicate that the profile
   // is no longer eligible for onboarding.
-  void MaybeMarkIneligible();
+  void MaybeMarkModeBIneligible();
 
   // To be called by the experiment service to indicate that the profile is
   // eligible for silent onboarding.
-  void MaybeMarkSilentEligible();
+  void MaybeMarkModeBSilentEligible();
 
   // To be called by the experiment service to indicate that the profile is no
   // longer eligible for silent onboarding.
-  void MaybeMarkSilentIneligible();
+  void MaybeMarkModeBSilentIneligible();
 
   // To be called by the Mode B experiment service in BETA, DEV and CANARY only
   // to reset the user's prefs for testing.
-  void MaybeResetOnboardingPrefs();
+  void MaybeResetModeBOnboardingPrefs();
 
   // Indicates the onboarding status for the user. Return value is the enum
   // defined above.

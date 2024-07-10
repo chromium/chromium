@@ -69,10 +69,10 @@ class TrackingProtectionReminderServiceTest : public testing::Test {
 
   void ShowOnboardingNotice(bool is_silent) {
     if (is_silent) {
-      onboarding_service()->MaybeMarkSilentEligible();
+      onboarding_service()->MaybeMarkModeBSilentEligible();
       onboarding_service()->SilentOnboardingNoticeShown();
     } else {
-      onboarding_service()->MaybeMarkEligible();
+      onboarding_service()->MaybeMarkModeBEligible();
       onboarding_service()->OnboardingNoticeShown();
     }
   }

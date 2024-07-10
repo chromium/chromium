@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
 
   auto* onboarding_service =
       TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
-  onboarding_service->MaybeMarkIneligible();
+  onboarding_service->MaybeMarkModeBIneligible();
 
   // Ensures the cookie deprecation label is updated in the network context.
   FlushNetworkInterface();
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
         "label_test");
   }
 
-  onboarding_service->MaybeMarkEligible();
+  onboarding_service->MaybeMarkModeBEligible();
 
   // Ensures the cookie deprecation label is updated in the network context.
   FlushNetworkInterface();
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(EligibilityServiceSilentOnboardingBrowserTest,
 
   auto* onboarding_service =
       TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
-  onboarding_service->MaybeMarkSilentIneligible();
+  onboarding_service->MaybeMarkModeBSilentIneligible();
 
   // Ensures the cookie deprecation label is updated in the network context.
   FlushNetworkInterface();
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(EligibilityServiceSilentOnboardingBrowserTest,
   ASSERT_FALSE(base::Contains(response_b_b->http_request()->headers,
                               "Sec-Cookie-Deprecation"));
 
-  onboarding_service->MaybeMarkSilentEligible();
+  onboarding_service->MaybeMarkModeBSilentEligible();
 
   // Ensures the cookie deprecation label is updated in the network context.
   FlushNetworkInterface();

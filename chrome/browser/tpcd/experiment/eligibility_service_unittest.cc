@@ -188,7 +188,7 @@ TEST_F(EligibilityServiceTest, VersionChange_OnboardingPrefsReset) {
   SetChannelVersion(version_info::Channel::BETA);
 
   // Simulate onboarding a profile.
-  onboarding_service_->MaybeMarkEligible();
+  onboarding_service_->MaybeMarkModeBEligible();
   onboarding_service_->OnboardingNoticeShown();
   onboarding_service_->NoticeActionTaken(
       privacy_sandbox::TrackingProtectionOnboarding::SurfaceType::kDesktop,

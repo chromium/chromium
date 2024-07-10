@@ -675,7 +675,7 @@ TEST_P(CookieDeprecationLabelAllowedTest, IsClientEligibleChecked) {
     auto* onboarding_service =
         TrackingProtectionOnboardingFactory::GetForProfile(profile());
     // Simulate onboarding a profile.
-    onboarding_service->MaybeMarkEligible();
+    onboarding_service->MaybeMarkModeBEligible();
     onboarding_service->OnboardingNoticeShown();
   }
 
@@ -820,7 +820,7 @@ TEST_P(ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest,
     auto* onboarding_service =
         TrackingProtectionOnboardingFactory::GetForProfile(profile());
     // Simulate onboarding a profile.
-    onboarding_service->MaybeMarkEligible();
+    onboarding_service->MaybeMarkModeBEligible();
     onboarding_service->OnboardingNoticeShown();
   }
 

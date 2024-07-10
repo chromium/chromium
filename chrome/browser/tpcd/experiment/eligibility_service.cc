@@ -66,7 +66,7 @@ EligibilityService::EligibilityService(
     onboarding_observation_.Observe(onboarding_service_);
 
     if (experiment_manager_->DidVersionChange()) {
-      onboarding_service_->MaybeResetOnboardingPrefs();
+      onboarding_service_->MaybeResetModeBOnboardingPrefs();
     }
   }
 
@@ -124,21 +124,21 @@ void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
   // Update the eligibility for the onboarding UX flow.
   if (onboarding_service_) {
     if (kDisable3PCookies.Get()) {
-      onboarding_service_->MaybeMarkSilentIneligible();
+      onboarding_service_->MaybeMarkModeBSilentIneligible();
       if (is_client_eligible) {
-        onboarding_service_->MaybeMarkEligible();
+        onboarding_service_->MaybeMarkModeBEligible();
       } else {
-        onboarding_service_->MaybeMarkIneligible();
+        onboarding_service_->MaybeMarkModeBIneligible();
       }
       MaybeNotifyManagerTrackingProtectionOnboarded(
           onboarding_service_->GetOnboardingStatus());
     } else {
-      onboarding_service_->MaybeMarkIneligible();
+      onboarding_service_->MaybeMarkModeBIneligible();
       if (kEnableSilentOnboarding.Get()) {
         if (is_client_eligible) {
-          onboarding_service_->MaybeMarkSilentEligible();
+          onboarding_service_->MaybeMarkModeBSilentEligible();
         } else {
-          onboarding_service_->MaybeMarkSilentIneligible();
+          onboarding_service_->MaybeMarkModeBSilentIneligible();
         }
         MaybeNotifyManagerTrackingProtectionSilentOnboarded(
             onboarding_service_->GetSilentOnboardingStatus());
