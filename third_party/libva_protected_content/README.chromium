@@ -2,6 +2,7 @@ Name: Protected Content Interface for libva
 Short Name: libva_protected_content
 URL: https://github.com/intel/libva
 Version: 2.9.0
+Revision: 87a25a4e6935bccc729a7b0d3bbcb7c8740c4024
 Date: 2020-11-02
 License: MIT
 License File: LICENSE
