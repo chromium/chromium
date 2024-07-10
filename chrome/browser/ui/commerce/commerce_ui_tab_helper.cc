@@ -364,6 +364,7 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
                                   price_insights_label_type_);
   }
 
+  UpdateProductSpecificationsIconView();
   UpdatePriceTrackingIconView();
   UpdatePriceInsightsIconView();
 }
