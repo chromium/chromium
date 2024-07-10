@@ -15,23 +15,18 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 
 import {getTemplate} from './signin_fatal_error.html.js';
 
 const SigninFatalErrorBase =
-    mixinBehaviors(
-        [OobeDialogHostBehavior, LoginScreenBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 interface SigninFatalErrorScreenData {
   errorState: OobeTypes.FatalErrorCode;
@@ -123,6 +118,7 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
    * @param data Screen init payload.
    */
   override onBeforeShow(data: SigninFatalErrorScreenData) {
+    super.onBeforeShow(data);
     this.params = data;
     this.errorState = data.errorState;
     this.keyboardHint = data.keyboardHint;
@@ -130,7 +126,7 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
     this.helpLinkText = data.helpLinkText;
   }
 
-  private onClick() {
+  private onClick(): void {
     this.userActed('screen-dismissed');
   }
 

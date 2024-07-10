@@ -22,13 +22,13 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {Oobe} from '../../cr_ui.js';
 
 import {getTemplate} from './user_creation.html.js';
@@ -41,12 +41,7 @@ export interface UserCreation {
 }
 
 export const UserCreationScreenElementBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, MultiStepBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * UI mode for the dialog.
@@ -206,7 +201,8 @@ export class UserCreation extends UserCreationScreenElementBase {
     return UserCreationUIState;
   }
 
-  onBeforeShow(): void {
+  override onBeforeShow(): void {
+    super.onBeforeShow();
     if (this.isOobeSoftwareUpdateEnabled_) {
       this.restoreOobeUIState();
       if (!loadTimeData.getBoolean('isOobeFlow')) {

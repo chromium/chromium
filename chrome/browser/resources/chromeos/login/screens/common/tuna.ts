@@ -12,24 +12,19 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
 import {assertInstanceof} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {TunaPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
 import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './tuna.html.js';
 
 export const TunaScreenElementBase =
-    mixinBehaviors(
-        [OobeDialogHostBehavior, LoginScreenBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-        OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * Data that is passed to the screen during onBeforeShow.
@@ -74,6 +69,7 @@ export class TunaScreen extends TunaScreenElementBase {
   }
 
   override onBeforeShow(data: TunaScreenData): void {
+    super.onBeforeShow(data);
     this.backButtonVisible = data['backButtonVisible'];
   }
 

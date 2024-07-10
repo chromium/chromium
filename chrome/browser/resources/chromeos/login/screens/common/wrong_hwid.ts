@@ -13,24 +13,19 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './wrong_hwid.html.js';
 
-const WronHwIdBase =
-    mixinBehaviors(
-        [OobeDialogHostBehavior, LoginScreenBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
-    };
+const WrongHwIdBase =
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
-export class WronHwId extends WronHwIdBase {
+export class WrongHwId extends WrongHwIdBase {
   static get is() {
     return 'wrong-hwid-element' as const;
   }
@@ -61,8 +56,8 @@ export class WronHwId extends WronHwIdBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [WronHwId.is]: WronHwId;
+    [WrongHwId.is]: WrongHwId;
   }
 }
 
-customElements.define(WronHwId.is, WronHwId);
+customElements.define(WrongHwId.is, WrongHwId);

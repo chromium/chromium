@@ -14,11 +14,11 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './autolaunch.html.js';
 
@@ -27,13 +27,8 @@ interface AppData {
   appIconUrl: string;
 }
 
-const AutolaunchBase = mixinBehaviors(
-    [LoginScreenBehavior, OobeDialogHostBehavior],
-    OobeI18nMixin(PolymerElement)) as { new (): PolymerElement
-      & OobeI18nMixinInterface
-      & LoginScreenBehaviorInterface
-      & OobeDialogHostBehaviorInterface,
-    };
+const AutolaunchBase =
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 export class Autolaunch extends AutolaunchBase {
   static get is() {
@@ -87,6 +82,7 @@ export class Autolaunch extends AutolaunchBase {
    * Event handler invoked when the page is shown and ready.
    */
   override onBeforeShow(): void {
+    super.onBeforeShow();
     chrome.send('autolaunchVisible');
   }
 

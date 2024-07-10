@@ -18,13 +18,13 @@ import '../../components/buttons/oobe_back_button.js';
 import {SetLocalPasswordInputElement} from '//resources/ash/common/auth_setup/set_local_password_input.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './local_password_setup.html.js';
 
@@ -37,17 +37,8 @@ enum LocalPasswordSetupState {
   PROGRESS = 'progress',
 }
 
-const LocalPasswordSetupBase = mixinBehaviors(
-                                   [
-                                     OobeDialogHostBehavior,
-                                     LoginScreenBehavior,
-                                     MultiStepBehavior,
-                                   ],
-                                   OobeI18nMixin(PolymerElement)) as {
-  new (): PolymerElement & OobeI18nMixinInterface &
-      LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface &
-      MultiStepBehaviorInterface,
-};
+const LocalPasswordSetupBase = OobeDialogHostMixin(
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement))));
 
 /**
  * Data that is passed to the screen during onBeforeShow.
@@ -123,6 +114,7 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
    * @param data Screen initial payload
    */
   override onBeforeShow(data: LocalPasswordSetupScreenData): void {
+    super.onBeforeShow(data);
     this.reset();
     this.backButtonVisible = data['showBackButton'];
     this.isRecoveryFlow = data['isRecoveryFlow'];

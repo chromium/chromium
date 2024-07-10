@@ -12,19 +12,15 @@ import '../../components/throbber_notice.js';
 import {assert} from '//resources/js/assert.js';
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './app_launch_splash.html.js';
 
-const AppLaunchSplashBase =
-    mixinBehaviors([LoginScreenBehavior], OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface,
-    };
+const AppLaunchSplashBase = LoginScreenMixin(OobeI18nMixin(PolymerElement));
 
 interface AppData {
   name: string;
@@ -109,7 +105,8 @@ class AppLaunchSplash extends AppLaunchSplashBase {
    * Event handler that is invoked just before the frame is shown.
    * @param data Screen init payload.
    */
-  onBeforeShow(data?: AppLaunchSplashScreenData): void {
+  override onBeforeShow(data?: AppLaunchSplashScreenData): void {
+    super.onBeforeShow(data);
     assert(this.shadowRoot);
     this.shadowRoot.getElementById('configNetwork')!.hidden = true;
     this.toggleNetworkConfig(false);

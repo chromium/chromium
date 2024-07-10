@@ -14,23 +14,18 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './smart_privacy_protection.html.js';
 
 
 
 export const SmartPrivacyProtectionScreenElementBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, OobeDialogHostBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 
 export class SmartPrivacyProtectionScreen extends

@@ -22,14 +22,14 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {ContentType, WebViewHelper} from '../../components/web_view_helper.js';
 import {WebViewLoader} from '../../components/web_view_loader.js';
 import {Oobe} from '../../cr_ui.js';
@@ -81,15 +81,8 @@ enum ConsolidatedConsentUserAction {
   MAX = 11,
 }
 
-const ConsolidatedConsentScreenElementBase = mixinBehaviors(
-  [
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
-  OobeI18nMixin(PolymerElement)) as {
-  new (): PolymerElement & OobeI18nMixinInterface &
-      LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-};
+const ConsolidatedConsentScreenElementBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * Data that is passed to the screen during onBeforeShow.
@@ -271,7 +264,8 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.updateLocalizedContent();
   }
 
-  onBeforeShow(data: ConsolidatedConsentScreenData): void {
+  override onBeforeShow(data: ConsolidatedConsentScreenData): void {
+    super.onBeforeShow(data);
     window.setTimeout(this.applyOobeConfiguration);
 
     this.isPrivacyHubLocationEnabled = data['isPrivacyHubLocationEnabled'];

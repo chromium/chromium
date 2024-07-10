@@ -19,22 +19,15 @@ import './dialogs/oobe_adaptive_dialog.js';
 
 import {PinKeyboardElement} from '//resources/ash/common/quick_unlock/pin_keyboard.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from './behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from './mixins/oobe_i18n_mixin.js';
+import {OobeDialogHostMixin} from './mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
 import {OobeTypes} from './oobe_types.js';
 import {getTemplate} from './security_token_pin.html.js';
 
-const SecurityTokenPinBase = mixinBehaviors(
-                                 [
-                                   OobeDialogHostBehavior,
-                                 ],
-                                 OobeI18nMixin(PolymerElement)) as {
-  new (): PolymerElement & OobeI18nMixinInterface &
-      OobeDialogHostBehaviorInterface,
-};
+const SecurityTokenPinBase = OobeDialogHostMixin(OobeI18nMixin(PolymerElement));
 
 /**
  * @polymer

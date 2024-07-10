@@ -15,12 +15,12 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {EncryptionMigrationPage_UIState, EncryptionMigrationPageCallbackRouter, EncryptionMigrationPageHandlerRemote} from '../../mojom-webui/screens_login.mojom-webui.js';
 import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
@@ -40,13 +40,8 @@ enum EncryptionMigrationUiState {
   NOT_ENOUGH_SPACE = 'not-enough-space',
 }
 
-const EncryptionMigrationBase = mixinBehaviors(
-    [LoginScreenBehavior, MultiStepBehavior],
-    OobeI18nMixin(PolymerElement)) as { new (): PolymerElement
-      & OobeI18nMixinInterface
-      & LoginScreenBehaviorInterface
-      & MultiStepBehaviorInterface,
-  };
+const EncryptionMigrationBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 export class EncryptionMigration extends EncryptionMigrationBase {
   static get is() {

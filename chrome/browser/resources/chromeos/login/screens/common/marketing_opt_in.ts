@@ -22,24 +22,19 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import type {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import type {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
 import {getTemplate} from './marketing_opt_in.html.js';
 
 const MarketingScreenElementBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, MultiStepBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * Enum to represent each page in the marketing opt in screen.
@@ -151,7 +146,8 @@ export class MarketingOptIn extends MarketingScreenElementBase {
   /**
    * @param data Screen init payload.
    */
-  onBeforeShow(data: MarketingScreenData) {
+  override onBeforeShow(data: MarketingScreenData) {
+    super.onBeforeShow(data);
     this.marketingOptInVisible =
         'optInVisibility' in data && data.optInVisibility;
     this.shadowRoot!

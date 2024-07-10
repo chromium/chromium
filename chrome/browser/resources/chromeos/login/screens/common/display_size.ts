@@ -16,23 +16,18 @@ import '../../components/oobe_display_size_selector.js';
 import '../../components/oobe_icons.html.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import type {OobeDisplaySizeSelector} from '../../components/oobe_display_size_selector.js';
 
 import {getTemplate} from './display_size.html.js';
 
-export const DisplaySizeScreenElementBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, MultiStepBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+const DisplaySizeScreenElementBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 
 /**
@@ -96,7 +91,8 @@ class DisplaySizeScreen extends DisplaySizeScreenElementBase {
   /**
    * @param {DisplaySizeScreenData} data Screen init payload.
    */
-  onBeforeShow(data: DisplaySizeScreenData): void {
+  override onBeforeShow(data: DisplaySizeScreenData): void {
+    super.onBeforeShow(data);
     this.shadowRoot!.querySelector<OobeDisplaySizeSelector>('#sizeSelector')!
         .init(data['availableSizes'], data['currentSize']);
     this.shouldShowReturn_ = data['shouldShowReturn'];

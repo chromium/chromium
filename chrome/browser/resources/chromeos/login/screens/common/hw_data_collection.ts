@@ -17,22 +17,17 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './hw_data_collection.html.js';
 
 
 const HwDataCollectionScreenElementBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, MultiStepBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 enum HwDataCollectionStep {
   OVERVIEW = 'overview',
@@ -79,7 +74,8 @@ export class HwDataCollectionScreen extends HwDataCollectionScreenElementBase {
    * Event handler that is invoked just before the screen is shown.
    * param data Screen init payload
    */
-  onBeforeShow(data: HwDataCollectionScreenData): void {
+  override onBeforeShow(data: HwDataCollectionScreenData): void {
+    super.onBeforeShow(data);
     this.dataUsageChecked =
         'hwDataUsageEnabled' in data && data.hwDataUsageEnabled;
   }

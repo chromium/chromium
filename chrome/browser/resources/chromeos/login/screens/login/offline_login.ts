@@ -14,17 +14,17 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/dialogs/oobe_content_dialog.js';
-
 import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrDialogElement} from '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+
+import type {CrDialogElement} from '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './offline_login.html.js';
 
@@ -38,12 +38,7 @@ enum LoginSection {
 }
 
 const OfflineLoginBase =
-    mixinBehaviors(
-        [OobeDialogHostBehavior, LoginScreenBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeDialogHostBehaviorInterface &
-          OobeI18nMixinInterface & LoginScreenBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 interface OfflineLoginScreenData {
   enterpriseDomainManager: string;
@@ -180,6 +175,7 @@ export class OfflineLogin extends OfflineLoginBase {
   }
 
   override onBeforeShow(params: OfflineLoginScreenData): void {
+    super.onBeforeShow(params);
     this.reset();
     if ('enterpriseDomainManager' in params) {
       this.manager = params['enterpriseDomainManager'];

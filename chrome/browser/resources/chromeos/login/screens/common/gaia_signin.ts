@@ -21,18 +21,17 @@ import {Authenticator, AuthFlow, AuthMode, SUPPORTED_PARAMS} from '//oobe/gaia_a
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import type {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
 import type {GaiaDialog} from '../../components/gaia_dialog.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import type {SecurityTokenPin} from '../../components/security_token_pin.js';
 import {Oobe} from '../../cr_ui.js';
-import {invokePolymerMethod} from '../../display_manager.js';
 
 import {getTemplate} from './gaia_signin.html.js';
 
@@ -87,12 +86,7 @@ enum EnrollmentNudgeUserAction {
 }
 
 const GaiaSigninElementBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, MultiStepBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 interface GaiaSigninScreenData {
   hasUserPods: boolean;
@@ -541,7 +535,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
    * Event handler that is invoked just before the frame is shown.
    * @param data Screen init payload
    */
-  onBeforeShow(data: GaiaSigninScreenData): void {
+  override onBeforeShow(data: GaiaSigninScreenData): void {
     // Re-enable navigation in case it was disabled before refresh.
     this.navigationEnabled = true;
 
@@ -554,7 +548,9 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     const pinDialog =
         this.shadowRoot?.querySelector<SecurityTokenPin>('#pinDialog');
     assert(!!pinDialog);
-    invokePolymerMethod(pinDialog, 'onBeforeShow');
+    pinDialog.onBeforeShow();
+
+    super.onBeforeShow(data);
   }
 
   // Used in tests.
@@ -568,7 +564,8 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
   /**
    * Event handler that is invoked just before the screen is hidden.
    */
-  onBeforeHide(): void {
+  override onBeforeHide(): void {
+    super.onBeforeHide();
     this.isShown = false;
     this.authenticator.resetWebview();
   }

@@ -15,13 +15,13 @@ import '../../components/oobe_icons.html.js';
 
 import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {ArcVmDataMigrationPageCallbackRouter, ArcVmDataMigrationPageHandlerRemote} from '../../mojom-webui/screens_login.mojom-webui.js';
 import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
@@ -37,17 +37,8 @@ enum ArcVmDataMigrationUiState {
   FAILURE = 'failure',
 }
 
-const ArcVmDataMigrationScreenElementBase = mixinBehaviors(
-  [
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
-  OobeI18nMixin(PolymerElement)) as {
-  new (): PolymerElement & OobeDialogHostBehaviorInterface &
-      OobeI18nMixinInterface & LoginScreenBehaviorInterface &
-      MultiStepBehaviorInterface,
-};
+const ArcVmDataMigrationScreenElementBase = OobeDialogHostMixin(
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement))));
 
 export class ArcVmDataMigrationScreen extends
     ArcVmDataMigrationScreenElementBase {

@@ -17,13 +17,13 @@ import '../../components/network_select_login.js';
 import {SanitizeInnerHtmlOpts} from '//resources/ash/common/parse_html_subset.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {Oobe} from '../../cr_ui.js';
 
 import {getTemplate} from './error_message.html.js';
@@ -78,15 +78,8 @@ const ERROR_STATES = [
   ErrorState.KIOSK_ONLINE,
 ];
 
-const ErrorMessageScreenBase = mixinBehaviors(
-                                   [
-                                     OobeDialogHostBehavior,
-                                     LoginScreenBehavior,
-                                   ],
-                                   OobeI18nMixin(PolymerElement)) as {
-  new (): PolymerElement & OobeI18nMixinInterface &
-      LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
-};
+const ErrorMessageScreenBase =
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * Data that is passed to the screen during onBeforeShow.
@@ -394,6 +387,7 @@ export class ErrorMessageScreen extends ErrorMessageScreenBase {
    * param data Screen init payload.
    */
   override onBeforeShow(data: ErrorScreenData): void {
+    super.onBeforeShow(data);
     this.enableWifiScans = true;
     this.isCloseable = data && ('isCloseable' in data) && data.isCloseable;
     const backButton =
@@ -405,7 +399,8 @@ export class ErrorMessageScreen extends ErrorMessageScreenBase {
   /**
    * Event handler that is invoked just before the screen is hidden.
    */
-  onBeforeHide(): void {
+  override onBeforeHide(): void {
+    super.onBeforeHide();
     this.enableWifiScans = false;
     Oobe.getInstance().setOobeUiState(OobeUiState.HIDDEN);
     this.isCloseable = true;

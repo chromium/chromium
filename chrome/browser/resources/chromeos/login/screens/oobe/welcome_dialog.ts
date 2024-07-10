@@ -10,29 +10,25 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/oobe_vars/oobe_shared_vars.css.js';
 import '../../components/buttons/oobe_icon_button.js';
 import '../../components/hd_iron_icon.js';
-
-import {assert} from '//resources/js/assert.js';
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
-import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {LongTouchDetector} from '../../components/long_touch_detector.js';
-import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import '../../components/quick_start_entry_point.js';
 
-import {getTemplate} from './welcome_dialog.html.js';
-import { OobeTextButton } from '../../components/buttons/oobe_text_button.js';
-import { OobeIconButton } from '../../components/buttons/oobe_icon_button.js';
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {assert} from '//resources/js/assert.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-const OobeWelcomeDialogBase = mixinBehaviors(
-  [OobeDialogHostBehavior],
-  OobeI18nMixin(PolymerElement)) as { new (): PolymerElement
-    & OobeI18nMixinInterface
-    & OobeDialogHostBehaviorInterface,
-  };
+import {OobeIconButton} from '../../components/buttons/oobe_icon_button.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import {LongTouchDetector} from '../../components/long_touch_detector.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
+
+import {getTemplate} from './welcome_dialog.html.js';
+
+const OobeWelcomeDialogBase =
+    OobeDialogHostMixin(OobeI18nMixin(PolymerElement));
 
 export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
   static get is() {
@@ -167,6 +163,7 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
   }
 
   override onBeforeShow() {
+    super.onBeforeShow();
     this.setVideoPlay(true);
   }
 

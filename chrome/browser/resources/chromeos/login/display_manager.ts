@@ -32,48 +32,6 @@ const MAX_SCREEN_TRANSITION_DURATION = 1200;
 const TRIGGERDOWN_FALLBACK_DELAY = 10000;
 
 /**
- * As Polymer behaviors do not provide true inheritance, when two behaviors
- * would declare same method one of them will be hidden. Also, if element
- * re-declares the method it needs explicitly iterate over behaviors and call
- * method on them. This function simplifies such interaction by calling
- * method on element and all behaviors in the same order as lifecycle
- * callbacks are called.
- * @param name function name
- * @param args arguments for the function
- */
-export function invokePolymerMethod(
-    element: HTMLElement, name: string, ...args: any[]) {
-  const method = element[name as keyof typeof element];
-  if (!method || typeof method !== 'function') {
-    return;
-  }
-  (method as any).apply(element, args);
-  if (!('behaviors' in element)) {
-    return;
-  }
-  if (!Array.isArray(element.behaviors)) {
-    return;
-  }
-
-  // If element has behaviors call functions on them in reverse order,
-  // ignoring case when method on element was derived from behavior.
-  for (let i = element.behaviors.length - 1; i >= 0; i--) {
-    const behavior = element.behaviors[i];
-    if (!(name in behavior)) {
-      continue;
-    }
-    const behaviorMethod = behavior[name];
-    if (!behaviorMethod || typeof behaviorMethod !== 'function') {
-      continue;
-    }
-    if (behaviorMethod === method) {
-      continue;
-    }
-    behaviorMethod.apply(element, args);
-  }
-}
-
-/**
  * A display manager that manages initialization of screens,
  * transitions, error messages display.
  */
@@ -224,10 +182,16 @@ export class DisplayManager {
         loadTimeData.getBoolean('isBootAnimationEnabled');
 
     if (oldStep) {
-      invokePolymerMethod(oldStep, 'onBeforeHide');
+      if ('onBeforeHide' in oldStep &&
+          typeof oldStep.onBeforeHide === 'function') {
+        oldStep.onBeforeHide();
+      }
+
       if ('defaultControl' in oldStep &&
-          oldStep.defaultControl instanceof HTMLElement) {
-        invokePolymerMethod(oldStep.defaultControl, 'onBeforeHide');
+          oldStep.defaultControl instanceof HTMLElement &&
+          'onBeforeHide' in oldStep.defaultControl &&
+          typeof oldStep.defaultControl.onBeforeHide === 'function') {
+        oldStep.defaultControl.onBeforeHide();
       }
     }
 
@@ -244,12 +208,17 @@ export class DisplayManager {
       this.setOobeUiState(OobeUiState.HIDDEN);
     }
 
-    invokePolymerMethod(newStep, 'onBeforeShow', screenData);
+    if ('onBeforeShow' in newStep &&
+        typeof newStep.onBeforeShow === 'function') {
+      newStep.onBeforeShow(screenData);
+    }
 
     // Default control to be focused (if specified).
     if ('defaultControl' in newStep &&
-        newStep.defaultControl instanceof HTMLElement) {
-      invokePolymerMethod(newStep.defaultControl, 'onBeforeShow', screenData);
+        newStep.defaultControl instanceof HTMLElement &&
+        'onBeforeShow' in newStep.defaultControl &&
+        typeof newStep.defaultControl.onBeforeShow === 'function') {
+      newStep.defaultControl.onBeforeShow(screenData);
     }
 
     newStep.classList.remove('hidden');

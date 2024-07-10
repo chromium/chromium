@@ -10,11 +10,11 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './cryptohome_recovery.html.js';
 
@@ -25,12 +25,7 @@ enum CryptohomeRecoveryUIState {
 }
 
 const CryptohomeRecoveryBase =
-    mixinBehaviors(
-      [LoginScreenBehavior, MultiStepBehavior],
-      OobeI18nMixin(PolymerElement)) as {
-        new (): PolymerElement & OobeI18nMixinInterface &
-            LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-  };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 class CryptohomeRecovery extends CryptohomeRecoveryBase {
   static get is() {
@@ -88,7 +83,8 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
   /**
    * Invoked just before being shown.
    */
-  onBeforeShow(): void {
+  override onBeforeShow(): void {
+    super.onBeforeShow();
     this.reset();
   }
 

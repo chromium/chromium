@@ -8,25 +8,20 @@
 
 import '../../assistant_optin/assistant_optin_flow.js';
 
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {OobeUiState} from '../../components/display_manager_types.js';
 // TODO(b/320439437) Migrate AssistantOptInFlow to ts
 // import {AssistantOptInFlow} from
 // '../../assistant_optin/assistant_optin_flow.js'
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
-import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './assistant_optin.html.js';
 
 const AssistantOptinBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, OobeDialogHostBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 export class AssistantOptin extends AssistantOptinBase {
   static get is() {
@@ -69,6 +64,7 @@ export class AssistantOptin extends AssistantOptinBase {
    * Event handler that is invoked just before the frame is shown.
    */
   override onBeforeShow(): void {
+    super.onBeforeShow();
     const card = this.shadowRoot?.querySelector('#card');
     if (card) {
       (card as any).onShow();

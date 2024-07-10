@@ -13,15 +13,15 @@ import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/throbber_notice.js';
 
-import {assert} from '//resources/js/assert.js';
-import {MultiDeviceSetupDelegate} from '//resources/ash/common/multidevice_setup/multidevice_setup_delegate.js';
 import {MultiDeviceSetup} from '//resources/ash/common/multidevice_setup/multidevice_setup.js';
+import {MultiDeviceSetupDelegate} from '//resources/ash/common/multidevice_setup/multidevice_setup_delegate.js';
 import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
+import {assert} from '//resources/js/assert.js';
+import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from '//resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from '//resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
+import {LoginScreenMixin, LoginScreenMixinInterface} from '../../components/mixins/login_screen_mixin.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './multidevice_setup.html.js';
@@ -72,11 +72,12 @@ export class MultiDeviceSetupScreenDelegate implements MultiDeviceSetupDelegate{
   }
 }
 
-const MultiDeviceSetupScreenBase = mixinBehaviors(
-    [LoginScreenBehavior, WebUIListenerBehavior],
-    OobeI18nMixin(PolymerElement)) as {
+const MultiDeviceSetupScreenBase =
+    mixinBehaviors(
+        [WebUIListenerBehavior],
+        LoginScreenMixin(OobeI18nMixin(PolymerElement))) as {
       new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & WebUIListenerBehavior,
+          LoginScreenMixinInterface & WebUIListenerBehavior,
     };
 
 export class MultiDeviceSetupScreen extends MultiDeviceSetupScreenBase {

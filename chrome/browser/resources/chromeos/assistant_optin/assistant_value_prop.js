@@ -22,9 +22,9 @@ import './assistant_icons.html.js';
 import './setting_zippy.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeDialogHostBehavior} from '../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostMixin} from '../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -42,7 +42,7 @@ const VALUE_PROP_SCREEN_ID = 'ValuePropScreen';
  * @extends {PolymerElement}
  */
 const AssistantValuePropBase =
-    mixinBehaviors([OobeDialogHostBehavior], OobeI18nMixin(PolymerElement));
+    OobeDialogHostMixin(OobeI18nMixin(PolymerElement));
 
 /**
  * @polymer
@@ -488,7 +488,7 @@ class AssistantValueProp extends AssistantValuePropBase {
     // The webview animation only starts playing when it is focused (in order
     // to make sure the animation and the caption are in sync).
     this.valuePropView_.focus();
-    this.async(() => {
+    setTimeout(() => {
       this.buttonsDisabled = false;
       if (!this.isMinorMode_) {
         this.$['next-button'].focus();

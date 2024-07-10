@@ -15,23 +15,18 @@ import '../../components/buttons/oobe_text_button.js';
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './factor_setup_success.html.js';
 
 const FactorSetupSuccessBase =
-    mixinBehaviors(
-        [OobeDialogHostBehavior, LoginScreenBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 // LINT.IfChange
 /**
@@ -128,6 +123,7 @@ export class FactorSetupSuccessScreen extends FactorSetupSuccessBase {
    * Invoked just before being shown. Contains all the data for the screen.
    */
   override onBeforeShow(data: FactorSetupSuccessScreenData): void {
+    super.onBeforeShow(data);
     this.factors = data['modifiedFactors'];
     this.changeMode = data['changeMode'];
     this.hasNextStep = this.changeMode === ChangeMode.INITIAL_SETUP;

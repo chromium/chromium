@@ -25,11 +25,11 @@ found in the LICENSE file.
   <div slot="bottom-buttons">
     <oobe-text-button id="restartButton" hidden$="[[!isRestartRequired]]"
         inverse class="focus-on-show" text-key="resetButtonRestart"
-        on-tap="onRestart">
+        on-click="onRestart">
     </oobe-text-button>
     <oobe-text-button id="resetButton" hidden$="[[isRestartRequired]]"
         inverse class="focus-on-show" text-key="resetButtonPowerwash"
-        on-tap="onPowerwash">
+        on-click="onPowerwash">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

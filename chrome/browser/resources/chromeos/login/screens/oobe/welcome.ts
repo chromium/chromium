@@ -7,25 +7,25 @@
  */
 
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
-import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {OobeA11yOption} from '../../components/oobe_a11y_option.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/oobe_i18n_dropdown.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {assert} from '//resources/js/assert.js';
+import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {OobeA11yOption} from '../../components/oobe_a11y_option.js';
 import {getSelectedTitle} from '../../components/oobe_select.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
@@ -65,13 +65,8 @@ export interface A11yStatuses {
   virtualKeyboardEnabled: boolean;
 }
 
-const OobeWelcomeScreenBase = mixinBehaviors(
-    [LoginScreenBehavior, MultiStepBehavior],
-    OobeI18nMixin(PolymerElement)) as { new (): PolymerElement
-      & OobeI18nMixinInterface
-      & LoginScreenBehaviorInterface
-      & MultiStepBehaviorInterface,
-    };
+const OobeWelcomeScreenBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * Data that is passed to the screen during onBeforeShow.
@@ -271,7 +266,8 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * Event handler that is invoked just before the screen is shown.
    * @param data Screen init payload.
    */
-  onBeforeShow(data: WelcomeScreenData): void {
+  override onBeforeShow(data: WelcomeScreenData): void {
+    super.onBeforeShow(data);
     this.debuggingLinkVisible =
         data && 'isDeveloperMode' in data && data['isDeveloperMode'];
 
@@ -292,7 +288,8 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /**
    * Event handler that is invoked just before the screen is hidden.
    */
-  onBeforeHide(): void {
+  override onBeforeHide(): void {
+    super.onBeforeHide();
     this.cleanupChromeVoxHint();
   }
 

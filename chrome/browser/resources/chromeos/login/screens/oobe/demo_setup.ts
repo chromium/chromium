@@ -18,12 +18,12 @@ import '../../components/progress_list_item.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './demo_setup.html.js';
 
@@ -35,17 +35,8 @@ enum DemoSetupUiState {
   ERROR = 'error',
 }
 
-export const DemoSetupScreenBase = mixinBehaviors(
-                                       [
-                                         OobeDialogHostBehavior,
-                                         LoginScreenBehavior,
-                                         MultiStepBehavior,
-                                       ],
-                                       OobeI18nMixin(PolymerElement)) as {
-  new (): PolymerElement & OobeI18nMixinInterface &
-      OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface &
-      MultiStepBehaviorInterface,
-};
+export const DemoSetupScreenBase = OobeDialogHostMixin(
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement))));
 
 class DemoSetupScreen extends DemoSetupScreenBase {
   static get is() {
@@ -115,6 +106,7 @@ class DemoSetupScreen extends DemoSetupScreenBase {
   }
 
   override onBeforeShow(): void {
+    super.onBeforeShow();
     this.reset();
   }
 

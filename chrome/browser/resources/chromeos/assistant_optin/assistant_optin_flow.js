@@ -18,10 +18,10 @@ import './assistant_value_prop.js';
 import './setting_zippy.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MultiStepBehavior} from '../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior} from '../components/behaviors/oobe_dialog_host_behavior.js';
+import {MultiStepMixin} from '../components/mixins/multi_step_mixin.js';
+import {OobeDialogHostMixin} from '../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
 import {AssistantOptinFlowType, BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
@@ -42,9 +42,8 @@ const AssistantUIState = {
  * @constructor
  * @extends {PolymerElement}
  */
-const AssistantOptInFlowBase = mixinBehaviors(
-    [OobeDialogHostBehavior, MultiStepBehavior],
-    OobeI18nMixin(PolymerElement));
+const AssistantOptInFlowBase =
+    OobeDialogHostMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * @polymer
@@ -61,10 +60,13 @@ export class AssistantOptInFlow extends AssistantOptInFlowBase {
   constructor() {
     super();
 
-    this.UI_STEPS = AssistantUIState;
-
     /** @private {!BrowserProxy} */
     this.browserProxy_ = BrowserProxyImpl.getInstance();
+  }
+
+  /** @override */
+  UI_STEPS() {
+    return AssistantUIState;
   }
 
   /** @override */

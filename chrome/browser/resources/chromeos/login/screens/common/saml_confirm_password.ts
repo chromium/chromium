@@ -18,13 +18,13 @@ import '../../components/buttons/oobe_text_button.js';
 import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
 import {getTemplate} from './saml_confirm_password.html.js';
@@ -35,12 +35,7 @@ enum SamlConfirmPasswordState {
 }
 
 const SamlConfirmPasswordBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, MultiStepBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 interface SamlConfirmPasswordScreenData {
   email: string;
@@ -108,7 +103,8 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
    * Event handler that is invoked just before the screen is shown.
    * @param data Screen init payload
    */
-  onBeforeShow(data: SamlConfirmPasswordScreenData) {
+  override onBeforeShow(data: SamlConfirmPasswordScreenData) {
+    super.onBeforeShow(data);
     this.reset();
     this.email = data['email'];
     this.isManualInput = data['manualPasswordInput'];

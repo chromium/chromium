@@ -19,14 +19,14 @@ import '../../components/dialogs/oobe_modal_dialog.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './os_install.html.js';
 
@@ -39,17 +39,8 @@ enum OsInstallScreenSteps {
 }
 
 
-const OsInstallScreenElementBase = mixinBehaviors(
-                                       [
-                                         OobeDialogHostBehavior,
-                                         LoginScreenBehavior,
-                                         MultiStepBehavior,
-                                       ],
-                                       OobeI18nMixin(PolymerElement)) as {
-  new (): PolymerElement & OobeDialogHostBehaviorInterface &
-      OobeI18nMixinInterface & LoginScreenBehaviorInterface &
-      MultiStepBehaviorInterface,
-};
+const OsInstallScreenElementBase = OobeDialogHostMixin(
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement))));
 
 export class OsInstall extends OsInstallScreenElementBase {
   static get is() {

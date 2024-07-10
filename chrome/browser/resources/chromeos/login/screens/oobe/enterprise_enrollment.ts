@@ -24,16 +24,16 @@ import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
 import {GaiaDialog} from '../../components/gaia_dialog.js';
 import {InjectedKeyboardUtils} from '../../components/keyboard_utils.js';
 import {globalOobeKeyboard, KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_oobe.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import * as OobeDebugger from '../../debug/debug.js';
@@ -41,12 +41,7 @@ import * as OobeDebugger from '../../debug/debug.js';
 import {getTemplate} from './enterprise_enrollment.html.js';
 
 const EnterpriseEnrollmentElementBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, MultiStepBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * Data that is passed to the screen during onBeforeShow.
@@ -311,8 +306,9 @@ export class EnterpriseEnrollmentElement extends
    * Event handler that is invoked just before the frame is shown.
    * @param data Screen init payload, contains the signin frame URL.
    */
-  onBeforeShow(data?: EnterpriseEnrollmentScreenData): void {
+  override onBeforeShow(data?: EnterpriseEnrollmentScreenData): void {
     if (data === undefined) {
+      super.onBeforeShow(data);
       return;
     }
 
@@ -382,6 +378,8 @@ export class EnterpriseEnrollmentElement extends
           this.isAutoEnroll ? OobeTypes.EnrollmentStep.WORKING :
                               OobeTypes.EnrollmentStep.LOADING);
     }
+
+    super.onBeforeShow(data);
   }
 
   /**

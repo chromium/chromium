@@ -18,12 +18,12 @@ import '../../components/oobe_carousel.js';
 import '../../components/oobe_slide.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import {ConsumerUpdatePage_ConsumerUpdateStep, ConsumerUpdatePageCallbackRouter, ConsumerUpdatePageHandlerRemote} from '../../mojom-webui/screens_oobe.mojom-webui.js';
 import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
@@ -31,12 +31,7 @@ import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.j
 import {getTemplate} from './consumer_update.html.js';
 
 const ConsumerUpdateScreenElementBase =
-    mixinBehaviors(
-        [LoginScreenBehavior, MultiStepBehavior],
-        OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface
-      & LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 const UNREACHABLE_PERCENT = 1000;
 // Thresholds which are used to determine when update status announcement should
@@ -205,7 +200,8 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
     this.isSkipButtonHidden = false;
   }
 
-  onBeforeHide(): void {
+  override onBeforeHide(): void {
+    super.onBeforeHide();
     const animation = this.shadowRoot?.querySelector('#checkingAnimation');
     if (animation instanceof OobeCrLottie) {
       animation.playing = false;

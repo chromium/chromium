@@ -11,20 +11,16 @@ import './oobe_content_dialog.js';
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../mixins/oobe_i18n_mixin.js';
+import {OobeDialogHostMixin} from '../mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../mixins/oobe_i18n_mixin.js';
 import {OobeCrLottie} from '../oobe_cr_lottie.js';
 
 import {getTemplate} from './oobe_loading_dialog.html.js';
 
 const OobeLoadingDialogBase =
-    mixinBehaviors(
-        [OobeDialogHostBehavior], OobeI18nMixin(PolymerElement)) as {
-      new (): PolymerElement & OobeI18nMixinInterface &
-          OobeDialogHostBehaviorInterface,
-    };
+    OobeDialogHostMixin(OobeI18nMixin(PolymerElement));
 
 export class OobeLoadingDialog extends OobeLoadingDialogBase {
   static get is() {
@@ -72,10 +68,12 @@ export class OobeLoadingDialog extends OobeLoadingDialogBase {
   }
 
   override onBeforeShow(): void {
+    super.onBeforeShow();
     this.getSpinner().playing = true;
   }
 
-  onBeforeHide(): void {
+  override onBeforeHide(): void {
+    super.onBeforeHide();
     this.getSpinner().playing = false;
   }
 
