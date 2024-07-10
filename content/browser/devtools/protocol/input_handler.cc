@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -136,19 +137,22 @@ base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
 }
 
 bool SetKeyboardEventText(
-    char16_t (&to)[blink::WebKeyboardEvent::kTextLengthCap],
+    base::span<char16_t, blink::WebKeyboardEvent::kTextLengthCap> to,
     Maybe<std::string> from) {
   if (!from.has_value()) {
     return true;
   }
 
   std::u16string text16 = base::UTF8ToUTF16(from.value());
-  if (text16.size() >= blink::WebKeyboardEvent::kTextLengthCap)
+  if (text16.size() >= to.size()) {
     return false;
+  }
 
-  for (size_t i = 0; i < text16.size(); ++i)
-    to[i] = text16[i];
-  to[text16.size()] = 0;
+  base::span<char16_t> to_text;
+  base::span<char16_t> to_nul;
+  std::tie(to_text, to_nul) = to.split_at(text16.size());
+  to_text.copy_from(text16);
+  to_nul.front() = 0;
   return true;
 }
 

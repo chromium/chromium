@@ -6,6 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/containers/span.h"
 #include "components/input/web_input_event_builders_mac.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -34,10 +35,10 @@ int modifiersForEvent(int modifiers) {
   return flags;
 }
 
-size_t WebKeyboardEventTextLength(const char16_t* text) {
+size_t WebKeyboardEventTextLength(
+    base::span<const char16_t, blink::WebKeyboardEvent::kTextLengthCap> text) {
   size_t text_length = 0;
-  while (text_length < blink::WebKeyboardEvent::kTextLengthCap &&
-         text[text_length]) {
+  while (text_length < text.size() && text[text_length]) {
     ++text_length;
   }
   return text_length;
@@ -74,11 +75,11 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
   }
 
   NSString* text = [[NSString alloc]
-      initWithCharacters:reinterpret_cast<const UniChar*>(web_event.text)
+      initWithCharacters:reinterpret_cast<const UniChar*>(web_event.text.data())
                   length:text_length];
   NSString* unmodified_text =
       [[NSString alloc] initWithCharacters:reinterpret_cast<const UniChar*>(
-                                               web_event.unmodified_text)
+                                               web_event.unmodified_text.data())
                                     length:unmod_text_length];
 
   os_event = base::apple::OwnedNSEvent([NSEvent

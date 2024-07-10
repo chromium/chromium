@@ -189,17 +189,12 @@ void AppendCharEvent(const WebInputEvent& event,
   // character in it, but may be zero or more than one. The text array is
   // just padded with 0 values for the unused ones, but is not necessarily
   // null-terminated.
-  //
-  // Here we see how many UTF-16 characters we have.
-  size_t utf16_char_count = 0;
-  while (utf16_char_count < WebKeyboardEvent::kTextLengthCap &&
-         key_event.text[utf16_char_count])
-    utf16_char_count++;
+  const std::u16string_view key_event_text_view(
+      key_event.text.begin(), std::ranges::find(key_event.text, 0));
 
   // Make a separate InputEventData for each Unicode character in the input.
-  for (base::i18n::UTF16CharIterator iter(
-           std::u16string_view(key_event.text, utf16_char_count));
-       !iter.end(); iter.Advance()) {
+  for (base::i18n::UTF16CharIterator iter(key_event_text_view); !iter.end();
+       iter.Advance()) {
     InputEventData result = GetEventWithCommonFieldsAndType(event);
     result.event_modifiers = ConvertEventModifiers(key_event.GetModifiers());
     base::WriteUnicodeCharacter(iter.get(), &result.character_text);
@@ -451,13 +446,13 @@ WebKeyboardEvent* BuildCharEvent(const InputEventData& event) {
 
   // Make sure to not read beyond the buffer in case some bad code doesn't
   // NULL-terminate it (this is called from plugins).
-  size_t text_length_cap = WebKeyboardEvent::kTextLengthCap;
   std::u16string text16 = base::UTF8ToUTF16(event.character_text);
 
-  std::fill_n(key_event->text, text_length_cap, 0);
-  std::fill_n(key_event->unmodified_text, text_length_cap, 0);
-  for (size_t i = 0; i < std::min(text_length_cap, text16.size()); ++i)
+  std::ranges::fill(key_event->text, 0);
+  std::ranges::fill(key_event->unmodified_text, 0);
+  for (size_t i = 0; i < std::min(key_event->text.size(), text16.size()); ++i) {
     key_event->text[i] = text16[i];
+  }
   return key_event;
 }
 
