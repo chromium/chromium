@@ -259,6 +259,7 @@ the generic promo launch. -->
   <int value="45" label="Autofill passwords"/>
   <int value="46" label="Autofill contacts"/>
   <int value="47" label="Autofill others"/>
+  <int value="48" label="StartWritingTools"/>
 </enum>
 
 <enum name="IOSEditMenuError">
