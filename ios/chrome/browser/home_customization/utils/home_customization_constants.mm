@@ -3,3 +3,5 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+
+NSString* const kBottomSheetDetentIdentifier = @"BottomSheetDetentIdentifier";

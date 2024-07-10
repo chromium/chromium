@@ -108,6 +108,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/follow/model:browser_agent",
     "//ios/chrome/browser/follow/model:enums",
     "//ios/chrome/browser/follow/model:service",
+    "//ios/chrome/browser/home_customization/coordinator",
+    "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

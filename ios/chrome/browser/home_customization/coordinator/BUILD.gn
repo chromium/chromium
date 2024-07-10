@@ -4,8 +4,10 @@
 
 source_set("coordinator") {
   sources = [
+    "home_customization_coordinator+Testing.h",
     "home_customization_coordinator.h",
     "home_customization_coordinator.mm",
+    "home_customization_delegate.h",
     "home_customization_mediator.h",
     "home_customization_mediator.mm",
   ]
@@ -15,4 +17,24 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "home_customization_coordinator_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/home_customization/ui",
+    "//ios/chrome/browser/home_customization/utils",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
 }

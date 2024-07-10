@@ -7,10 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+
+@protocol HomeCustomizationDelegate;
 
 // The coordinator for the Home surface's customization menu.
 @interface HomeCustomizationCoordinator : ChromeCoordinator
+
+// Delegate for communicating back to the Home surface.
+@property(nonatomic, weak) id<HomeCustomizationDelegate> delegate;
+
+// Opens the customization menu as a sheet.
+- (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page;
 
 @end
 

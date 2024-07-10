@@ -35,6 +35,9 @@
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/followed_web_site.h"
 #import "ios/chrome/browser/follow/model/followed_web_site_state.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -130,6 +133,7 @@
                                      FeedMenuCoordinatorDelegate,
                                      FeedSignInPromoDelegate,
                                      FeedWrapperViewControllerDelegate,
+                                     HomeCustomizationDelegate,
                                      HomeStartDataSource,
                                      IdentityManagerObserverBridgeDelegate,
                                      NewTabPageContentDelegate,
@@ -261,6 +265,8 @@
   SharingCoordinator* _sharingCoordinator;
   // Coordinator in charge of fast account menu.
   AccountMenuCoordinator* _accountMenuCoordinator;
+  // Coordinator for presenting the Home customization menu.
+  HomeCustomizationCoordinator* _customizationCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -430,6 +436,9 @@
 
   [_sharingCoordinator stop];
   _sharingCoordinator = nil;
+
+  [_customizationCoordinator stop];
+  _customizationCoordinator = nil;
 
   [self stopAccountMenuCoordinator];
 
@@ -866,7 +875,16 @@
 }
 
 - (void)customizationMenuWasTapped:(UIView*)customizationMenu {
-  // TODO(crbug.com/350990359): Handle customization menu.
+  if (!_customizationCoordinator) {
+    _customizationCoordinator = [[HomeCustomizationCoordinator alloc]
+        initWithBaseViewController:self.NTPViewController
+                           browser:self.browser];
+    _customizationCoordinator.delegate = self;
+    [_customizationCoordinator start];
+  }
+  [_customizationCoordinator
+      presentCustomizationMenuAtPage:CustomizationMenuPage::
+                                         kCustomizationMenuPageMain];
 }
 
 #pragma mark - FeedMenuCoordinatorDelegate
@@ -1733,6 +1751,14 @@
 - (void)acountMenuCoordinatorShouldStop:(AccountMenuCoordinator*)coordinator {
   CHECK_EQ(coordinator, _accountMenuCoordinator);
   [self stopAccountMenuCoordinator];
+}
+
+#pragma mark - HomeCustomizationDelegate
+
+- (void)handleCustomizationMenuDismissed:
+    (HomeCustomizationCoordinator*)coordinator {
+  [_customizationCoordinator stop];
+  _customizationCoordinator = nil;
 }
 
 @end

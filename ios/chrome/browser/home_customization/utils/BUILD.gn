@@ -7,6 +7,6 @@ source_set("utils") {
     "home_customization_constants.h",
     "home_customization_constants.mm",
   ]
-  deps = []
+  deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
   frameworks = [ "UIKit.framework" ]
 }
