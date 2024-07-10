@@ -13,8 +13,7 @@
 namespace base {
 namespace android {
 
-// Disable test on Android due to flakiness: crbug.com/807080, crbug/1054637.
-TEST(ContentUriUtilsTest, DISABLED_Test) {
+TEST(ContentUriUtilsTest, Test) {
   // Get the test image path.
   FilePath data_dir;
   ASSERT_TRUE(PathService::Get(DIR_TEST_DATA, &data_dir));
