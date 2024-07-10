@@ -1662,6 +1662,9 @@ enum class ToolbarKind {
 #pragma mark - AutofillCommands
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
+  if (self.passwordSuggestionBottomSheetCoordinator) {
+    return;
+  }
   self.passwordSuggestionBottomSheetCoordinator =
       [[PasswordSuggestionBottomSheetCoordinator alloc]
           initWithBaseViewController:self.viewController
