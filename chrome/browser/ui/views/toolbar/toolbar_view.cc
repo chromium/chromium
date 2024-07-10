@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
@@ -69,6 +68,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
+#include "chrome/browser/ui/views/profiles/management_toolbar_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
@@ -452,6 +452,12 @@ void ToolbarView::Init() {
   if (send_tab_to_self_button)
     send_tab_to_self_button_ =
         container_view_->AddChildView(std::move(send_tab_to_self_button));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  management_toolbar_button_ =
+      container_view_->AddChildView(std::make_unique<ManagementToolbarButton>(
+          browser_view_, browser_->profile()));
+#endif
 
   avatar_ = container_view_->AddChildView(
       std::make_unique<AvatarToolbarButton>(browser_view_));
@@ -1161,10 +1167,11 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
 }
 
 AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {
-  if (avatar_)
-    return avatar_;
+  return avatar_;
+}
 
-  return nullptr;
+ManagementToolbarButton* ToolbarView::GetManagementToolbarButton() {
+  return management_toolbar_button_;
 }
 
 ToolbarButton* ToolbarView::GetBackButton() {

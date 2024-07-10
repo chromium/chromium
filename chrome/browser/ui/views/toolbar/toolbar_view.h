@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/profiles/management_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -179,6 +180,10 @@ class ToolbarView : public views::AccessiblePaneView,
 
   views::View* new_tab_button_for_testing() { return new_tab_button_; }
 
+  ManagementToolbarButton* management_toolbar_button() const {
+    return management_toolbar_button_;
+  }
+
   // LocationBarView::Delegate:
   content::WebContents* GetWebContents() override;
   LocationBarModel* GetLocationBarModel() override;
@@ -244,6 +249,7 @@ class ToolbarView : public views::AccessiblePaneView,
   views::View* GetAnchorView(std::optional<PageActionIconType> type) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;
+  ManagementToolbarButton* GetManagementToolbarButton() override;
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
   IntentChipButton* GetIntentChipButton() override;
@@ -297,6 +303,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<PinnedToolbarActionsContainer> pinned_toolbar_actions_container_ =
       nullptr;
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
+  raw_ptr<ManagementToolbarButton> management_toolbar_button_ = nullptr;
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
   raw_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>
       send_tab_to_self_button_ = nullptr;

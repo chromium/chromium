@@ -252,6 +252,8 @@ extern const base::FeatureParam<int> kUpdateTextOptionNumber;
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadging);
 BASE_DECLARE_FEATURE(kEnterpriseUpdatedProfileCreationScreen);
 
+BASE_DECLARE_FEATURE(kManagementToolbarButton);
+
 BASE_DECLARE_FEATURE(kWebUIBubblePerProfilePersistence);
 
 BASE_DECLARE_FEATURE(kWebUITabStrip);
