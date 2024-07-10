@@ -250,9 +250,7 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
     const std::optional<url::Origin>& initiator_origin,
     const GURL& upstream_url,
     const GURL& target_url) {
-  if (!extension) {
-    return false;
-  }
+  CHECK(extension);
   CHECK(target_url.SchemeIs(kExtensionScheme));
   CHECK(upstream_url.is_empty() || upstream_url.SchemeIs(kExtensionScheme));
 
