@@ -175,7 +175,8 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
                                 const Extension* extension,
                                 bool extension_enabled_in_incognito,
                                 const ExtensionSet& extensions,
-                                const ProcessMap& process_map) {
+                                const ProcessMap& process_map,
+                                const GURL& upstream_url) {
   const bool is_main_frame =
       destination == network::mojom::RequestDestination::kDocument;
   if (is_incognito &&
@@ -219,7 +220,7 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
   // Allow the extension module embedder to grant permission for loads.
   if (ExtensionsBrowserClient::Get()->AllowCrossRendererResourceLoad(
           request, destination, page_transition, child_id, is_incognito,
-          extension, extensions, process_map)) {
+          extension, extensions, process_map, upstream_url)) {
     return true;
   }
 
@@ -499,8 +500,9 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
     // new_url isn't expected to have a value, but prefer it if it's populated.
-    if (new_url.has_value())
+    if (new_url.has_value()) {
       request_.url = new_url.value();
+    }
 
     Start();
   }
@@ -568,6 +570,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         extension && request_.url.host() == extension->guid()) {
       GURL::Replacements replace_host;
       replace_host.SetHostStr(extension->id());
+      upstream_url_ = request_.url;
       GURL new_url = request_.url.ReplaceComponents(replace_host);
       request_.url = new_url;
       net::RedirectInfo redirect_info;
@@ -585,7 +588,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
             static_cast<ui::PageTransition>(request_.transition_type),
             render_process_id_, browser_context_->IsOffTheRecord(),
             extension.get(), incognito_enabled, enabled_extensions,
-            *process_map)) {
+            *process_map, upstream_url_)) {
       CompleteRequestAndDeleteThis(net::ERR_BLOCKED_BY_CLIENT);
       return;
     }
@@ -699,8 +702,8 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
           request_.request_initiator->GetTupleOrPrecursorTupleIfOpaque()
               .GetURL());
       bool is_web_accessible_resource =
-          WebAccessibleResourcesInfo::IsResourceWebAccessible(
-              extension.get(), request_.url.path(), &origin);
+          WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
+              extension.get(), origin, upstream_url_, request_.url);
       base::UmaHistogramBoolean(
           "Extensions.SandboxedPageLoad.IsWebAccessibleResource",
           is_web_accessible_resource);
@@ -838,6 +841,9 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
 
   // Tracker for favicon callback.
   std::unique_ptr<base::CancelableTaskTracker> tracker_;
+
+  // Used for determining if `target_url` is allowed to be requested.
+  GURL upstream_url_;
 
   base::WeakPtrFactory<ExtensionURLLoader> weak_ptr_factory_{this};
 };

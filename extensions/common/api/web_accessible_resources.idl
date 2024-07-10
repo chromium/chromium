@@ -24,6 +24,8 @@
     // dynamic ID. This is an identifier that uniquely identifies the extension
     // and is generated each session. The corresponding dynamic extension URL
     // is available through $(ref:runtime.getURL).
+    // Dynamic resources can be loaded regardless of the value. However, if
+    // true, resources must be can only be loaded using the dynamic URL.
     boolean? use_dynamic_url;
   };
 

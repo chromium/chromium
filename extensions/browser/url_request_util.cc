@@ -21,13 +21,13 @@
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-namespace extensions {
-namespace url_request_util {
+namespace extensions::url_request_util {
 
 bool AllowCrossRendererResourceLoad(
     const network::ResourceRequest& request,
@@ -38,6 +38,7 @@ bool AllowCrossRendererResourceLoad(
     const Extension* extension,
     const ExtensionSet& extensions,
     const ProcessMap& process_map,
+    const GURL& upstream_url,
     bool* allowed) {
   const GURL& url = request.url;
   std::string_view resource_path = url.path_piece();
@@ -121,9 +122,9 @@ bool AllowCrossRendererResourceLoad(
 
   // Allow web accessible extension resources to be loaded as
   // subresources/sub-frames.
-  if (WebAccessibleResourcesInfo::IsResourceWebAccessible(
-          extension, std::string(resource_path),
-          base::OptionalToPtr(request.request_initiator))) {
+  if (url.SchemeIs(extensions::kExtensionScheme) &&
+      WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
+          extension, request.request_initiator, upstream_url, url)) {
     *allowed = true;
     return true;
   }
@@ -169,5 +170,4 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
   return false;
 }
 
-}  // namespace url_request_util
-}  // namespace extensions
+}  // namespace extensions::url_request_util

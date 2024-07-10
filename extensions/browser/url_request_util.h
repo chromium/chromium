@@ -12,6 +12,8 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/base/page_transition_types.h"
 
+class GURL;
+
 namespace network {
 struct ResourceRequest;
 }
@@ -37,6 +39,7 @@ bool AllowCrossRendererResourceLoad(
     const Extension* extension,
     const ExtensionSet& extensions,
     const ProcessMap& process_map,
+    const GURL& upstream_url,
     bool* allowed);
 
 // Helper method that is called by both AllowCrossRendererResourceLoad and

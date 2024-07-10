@@ -245,7 +245,8 @@ class ExtensionsBrowserClient {
       bool is_incognito,
       const Extension* extension,
       const ExtensionSet& extensions,
-      const ProcessMap& process_map) = 0;
+      const ProcessMap& process_map,
+      const GURL& upstream_url) = 0;
 
   // Returns the PrefService associated with |context|.
   virtual PrefService* GetPrefServiceForContext(

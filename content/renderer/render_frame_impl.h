@@ -102,6 +102,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document_loader.h"
@@ -620,7 +621,8 @@ class CONTENT_EXPORT RenderFrameImpl
       int element_id,
       const gfx::Rect& image_ad_rect) override;
   void WillSendRequest(blink::WebURLRequest& request,
-                       ForRedirect for_redirect) override;
+                       ForRedirect for_redirect,
+                       const blink::WebURL& upstream_url) override;
   void OnOverlayPopupAdDetected() override;
   void OnLargeStickyAdDetected() override;
   void DidLoadResourceFromMemoryCache(
@@ -1070,7 +1072,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void WillSendRequestInternal(blink::WebURLRequest& request,
                                bool for_outermost_main_frame,
                                ui::PageTransition transition_type,
-                               ForRedirect for_redirect);
+                               ForRedirect for_redirect,
+                               const GURL& upstream_url);
 
   // Returns the URL being loaded by the |frame_|'s request.
   GURL GetLoadingUrl() const;

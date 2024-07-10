@@ -209,7 +209,8 @@ ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
 void ChromeExtensionsRendererClient::WillSendRequest(
     blink::WebLocalFrame* frame,
     ui::PageTransition transition_type,
-    const blink::WebURL& url,
+    const blink::WebURL& upstream_url,
+    const blink::WebURL& target_url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin* initiator_origin,
     GURL* new_url) {
@@ -237,19 +238,20 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   }
 
   // The rest of this method is only concerned with extensions URLs.
-  if (!url.ProtocolIs(extensions::kExtensionScheme)) {
+  if (!target_url.ProtocolIs(extensions::kExtensionScheme)) {
     return;
   }
 
-  if (url.ProtocolIs(extensions::kExtensionScheme) &&
+  if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
       !resource_request_policy_->CanRequestResource(
-          GURL(url), frame, transition_type, initiator_origin)) {
+          upstream_url, GURL(target_url), frame, transition_type,
+          initiator_origin)) {
     *new_url = GURL(chrome::kExtensionInvalidRequestURL);
   }
 
   // TODO(crbug.com/41240557): Remove metrics after bug is fixed.
-  GURL request_url(url);
-  if (url.ProtocolIs(extensions::kExtensionScheme) &&
+  GURL request_url(target_url);
+  if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
       request_url.host_piece() == extension_misc::kDocsOfflineExtensionId) {
     if (!ukm_recorder_) {
       mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;

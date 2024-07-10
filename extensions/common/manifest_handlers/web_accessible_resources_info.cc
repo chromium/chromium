@@ -12,7 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
+#include "base/types/optional_util.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/api/web_accessible_resources.h"
 #include "extensions/common/api/web_accessible_resources_mv2.h"
@@ -162,18 +162,12 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
   return info;
 }
 
-}  // namespace
-
-WebAccessibleResourcesInfo::WebAccessibleResourcesInfo() = default;
-
-WebAccessibleResourcesInfo::~WebAccessibleResourcesInfo() = default;
-
-// static
-bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
-    const Extension* extension,
-    const std::string& relative_path,
-    const url::Origin* initiator_origin) {
-  // Initialize `initiator_url`.
+bool IsResourceWebAccessibleImpl(
+    const Extension& extension,
+    const std::optional<url::Origin>& initiator_origin,
+    const GURL& upstream_url,
+    const GURL& target_url) {
+  std::string relative_path = target_url.path();
   GURL initiator_url;
   if (initiator_origin) {
     if (initiator_origin->opaque()) {
@@ -184,35 +178,84 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     }
   }
 
-  const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
+  const WebAccessibleResourcesInfo* info = GetResourcesInfo(&extension);
   if (!info) {
     return false;
   }
 
   // Look for the first match in the array of web accessible resources.
   for (const auto& entry : info->web_accessible_resources) {
-    if (extension->ResourceMatches(entry.resources, relative_path)) {
+    if (extension.ResourceMatches(entry.resources, relative_path)) {
+      bool result = true;
+
       // Prior to MV3, web-accessible resources were accessible by any
       // site. Preserve this behavior.
-      if (extension->manifest_version() < 3) {
-        return true;
+      if (extension.manifest_version() < 3) {
+        return result;
+      }
+
+      // If the manifest declares `use_dynamic_url`, then only load the resource
+      // if the dynamic url is used.
+      if (entry.use_dynamic_url) {
+        std::string_view upstream_or_target_url =
+            !upstream_url.is_empty() ? upstream_url.host_piece()
+                                     : target_url.host_piece();
+        result = extension.guid() == upstream_or_target_url;
+        if (!result) {
+          continue;
+        }
       }
 
       // Match patterns.
       if (entry.matches.MatchesURL(initiator_url)) {
-        return true;
+        return result;
       }
+
+      // Allow if a wildcard was used, the initiator origin matches the
+      // extension, or if the initiator host matches an entry extension id.
       if (initiator_url.SchemeIs(extensions::kExtensionScheme) &&
           (entry.allow_all_extensions ||
-           extension->id() == initiator_url.host() ||
+           extension.id() == initiator_url.host() ||
            base::Contains(entry.extension_ids, initiator_url.host()))) {
-        return true;
+        return result;
       }
     }
   }
 
   // No match found.
   return false;
+}
+
+}  // namespace
+
+WebAccessibleResourcesInfo::WebAccessibleResourcesInfo() = default;
+
+WebAccessibleResourcesInfo::~WebAccessibleResourcesInfo() = default;
+
+// static
+// Returns true if the specified resource is web accessible.
+bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
+    const Extension* extension,
+    const std::string& relative_path,
+    const url::Origin* initiator_origin) {
+  CHECK(extension);
+  return IsResourceWebAccessibleImpl(
+      *extension, base::OptionalFromPtr(initiator_origin), GURL(),
+      extension->GetResourceURL(relative_path));
+}
+
+// static
+bool WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
+    const Extension* extension,
+    const std::optional<url::Origin>& initiator_origin,
+    const GURL& upstream_url,
+    const GURL& target_url) {
+  CHECK(extension);
+  CHECK(target_url.SchemeIs(kExtensionScheme));
+  CHECK(upstream_url.is_empty() || upstream_url.SchemeIs(kExtensionScheme));
+
+  return IsResourceWebAccessibleImpl(*extension, initiator_origin, upstream_url,
+                                     target_url);
 }
 
 // static

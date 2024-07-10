@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -1434,7 +1435,8 @@ ChromeContentRendererClient::GetProtocolHandlerSecurityLevel(
 void ChromeContentRendererClient::WillSendRequest(
     WebLocalFrame* frame,
     ui::PageTransition transition_type,
-    const blink::WebURL& url,
+    const blink::WebURL& upstream_url,
+    const blink::WebURL& target_url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin* initiator_origin,
     GURL* new_url) {
@@ -1442,22 +1444,24 @@ void ChromeContentRendererClient::WillSendRequest(
   // Check whether the request should be allowed. If not allowed, we reset the
   // URL to something invalid to prevent the request and cause an error.
   ChromeExtensionsRendererClient::GetInstance()->WillSendRequest(
-      frame, transition_type, url, site_for_cookies, initiator_origin, new_url);
+      frame, transition_type, upstream_url, target_url, site_for_cookies,
+      initiator_origin, new_url);
   if (!new_url->is_empty())
     return;
 #endif
 
-  if (!url.ProtocolIs(chrome::kChromeSearchScheme))
+  if (!target_url.ProtocolIs(chrome::kChromeSearchScheme)) {
     return;
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   SearchBox* search_box =
       SearchBox::Get(content::RenderFrame::FromWebFrame(frame->LocalRoot()));
   if (search_box) {
     // Note: this GURL copy could be avoided if host() were added to WebURL.
-    GURL gurl(url);
+    GURL gurl(target_url);
     if (gurl.host_piece() == chrome::kChromeUIFaviconHost)
-      search_box->GenerateImageURLFromTransientURL(url, new_url);
+      search_box->GenerateImageURLFromTransientURL(target_url, new_url);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -1790,20 +1794,23 @@ blink::WebFrame* ChromeContentRendererClient::FindFrame(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
-bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& from_url,
-                                                       const GURL& to_url) {
+bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& upstream_url,
+                                                       const GURL& target_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (to_url.SchemeIs(extensions::kExtensionScheme)) {
+  if (target_url.SchemeIs(extensions::kExtensionScheme)) {
     const extensions::Extension* extension =
-        extensions::RendererExtensionRegistry::Get()->GetByID(to_url.host());
-    if (!extension)
+        extensions::RendererExtensionRegistry::Get()->GetByID(
+            target_url.host());
+    if (!extension) {
       return false;
+    }
     // TODO(solomonkinard): Use initiator_origin and add tests.
-    if (extensions::WebAccessibleResourcesInfo::IsResourceWebAccessible(
-            extension, to_url.path(), nullptr)) {
+    if (extensions::WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
+            extension, /*initiator_origin=*/std::nullopt, upstream_url,
+            target_url)) {
       return true;
     }
-    return extension->guid() == from_url.host();
+    return extension->guid() == upstream_url.host();
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return true;

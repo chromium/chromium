@@ -374,12 +374,19 @@ void LocalFrameClientImpl::Detached(FrameDetachType type) {
 }
 
 void LocalFrameClientImpl::DispatchWillSendRequest(ResourceRequest& request) {
+  // Set upstream url based on the request's redirect info.
+  KURL upstream_url;
+  if (request.GetRedirectInfo().has_value()) {
+    upstream_url = KURL(request.GetRedirectInfo()->previous_url);
+  }
+
   // Give the WebLocalFrameClient a crack at the request.
   if (web_frame_->Client()) {
     WrappedResourceRequest webreq(request);
     web_frame_->Client()->WillSendRequest(
-        webreq, WebLocalFrameClient::ForRedirect(
-                    request.GetRedirectInfo().has_value()));
+        webreq,
+        WebLocalFrameClient::ForRedirect(request.GetRedirectInfo().has_value()),
+        upstream_url);
   }
 }
 

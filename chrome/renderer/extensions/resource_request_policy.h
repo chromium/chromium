@@ -36,11 +36,12 @@ class ResourceRequestPolicy {
   void OnExtensionLoaded(const Extension& extension);
   void OnExtensionUnloaded(const ExtensionId& extension);
 
-  // Returns true if the chrome-extension:// |resource_url| can be requested
-  // from |frame_url|. In some cases this decision is made based upon how
+  // Returns true if the chrome-extension:// `target_url` can be requested
+  // from `upstream_url`. In some cases this decision is made based upon how
   // this request was generated. Web triggered transitions are more restrictive
   // than those triggered through UI.
-  bool CanRequestResource(const GURL& resource_url,
+  bool CanRequestResource(const GURL& upstream_url,
+                          const GURL& target_url,
                           blink::WebLocalFrame* frame,
                           ui::PageTransition transition_type,
                           const url::Origin* initiator_origin);

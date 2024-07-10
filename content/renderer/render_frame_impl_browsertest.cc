@@ -502,7 +502,8 @@ TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
     WebURLRequest request;
     request.SetUrl(GURL(test_case.original));
     GetMainRenderFrame()->WillSendRequest(
-        request, blink::WebLocalFrameClient::ForRedirect(false));
+        request, blink::WebLocalFrameClient::ForRedirect(false),
+        /*upstream_url=*/GURL());
     EXPECT_EQ(test_case.transformed, request.Url().GetString().Utf8());
   }
 }

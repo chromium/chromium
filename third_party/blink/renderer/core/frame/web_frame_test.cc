@@ -7937,7 +7937,8 @@ class TestSameDocumentWithImageWebFrameClient
 
   // frame_test_helpers::TestWebFrameClient:
   void WillSendRequest(WebURLRequest& request,
-                       ForRedirect for_redirect) override {
+                       ForRedirect for_redirect,
+                       const blink::WebURL& /*upstream_url*/) override {
     if (request.GetRequestContext() ==
         mojom::blink::RequestContextType::IMAGE) {
       num_of_image_requests_++;
@@ -11986,7 +11987,8 @@ class TestResourcePriorityWebFrameClient
 
   // frame_test_helpers::TestWebFrameClient:
   void WillSendRequest(WebURLRequest& request,
-                       ForRedirect for_redirect) override {
+                       ForRedirect for_redirect,
+                       const blink::WebURL& upstream_url) override {
     ExpectedRequest* expected_request = expected_requests_.at(request.Url());
     DCHECK(expected_request);
     EXPECT_EQ(expected_request->priority, request.GetPriority());

@@ -4472,11 +4472,12 @@ void RenderFrameImpl::OnLargeStickyAdDetected() {
 }
 
 void RenderFrameImpl::WillSendRequest(blink::WebURLRequest& request,
-                                      ForRedirect for_redirect) {
+                                      ForRedirect for_redirect,
+                                      const blink::WebURL& upstream_url) {
   // This method is called for subresources, while transition type is
   // a navigation concept. We pass ui::PAGE_TRANSITION_LINK as default one.
   WillSendRequestInternal(request, /*for_outermost_main_frame=*/false,
-                          ui::PAGE_TRANSITION_LINK, for_redirect);
+                          ui::PAGE_TRANSITION_LINK, for_redirect, upstream_url);
   for (auto& observer : observers_) {
     observer.WillSendRequest(request);
   }
@@ -4486,7 +4487,8 @@ void RenderFrameImpl::WillSendRequestInternal(
     blink::WebURLRequest& request,
     bool for_outermost_main_frame,
     ui::PageTransition transition_type,
-    ForRedirect for_redirect) {
+    ForRedirect for_redirect,
+    const GURL& upstream_url) {
   if (GetWebView()->GetRendererPreferences().enable_do_not_track) {
     request.SetHttpHeaderField(
         blink::WebString::FromUTF8(blink::kDoNotTrackHeader), "1");
@@ -4499,8 +4501,9 @@ void RenderFrameImpl::WillSendRequestInternal(
           ? std::optional<url::Origin>()
           : std::optional<url::Origin>(request.RequestorOrigin());
   GetContentClient()->renderer()->WillSendRequest(
-      frame_, transition_type, request.Url(), request.SiteForCookies(),
-      base::OptionalToPtr(initiator_origin), &new_url);
+      frame_, transition_type, upstream_url, request.Url(),
+      request.SiteForCookies(), base::OptionalToPtr(initiator_origin),
+      &new_url);
   if (!new_url.is_empty())
     request.SetUrl(WebURL(new_url));
 
@@ -6047,8 +6050,11 @@ void RenderFrameImpl::BeginNavigationInternal(
   // TODO(clamy): Make sure that navigation requests are not modified somewhere
   // else in blink.
   bool for_outermost_main_frame = frame_->IsOutermostMainFrame();
+  // upstream_url can be false here because ForRedirect(false) implies that this
+  // isn't a browser intiated navigation.
   WillSendRequestInternal(info->url_request, for_outermost_main_frame,
-                          transition_type, ForRedirect(false));
+                          transition_type, ForRedirect(false),
+                          /*upstream_url=*/GURL());
   // The extra data was created in WillSendRequestInternal if it didn't exist.
   DCHECK(info->url_request.GetURLRequestExtraData());
 

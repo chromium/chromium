@@ -77,7 +77,8 @@ class WebFrameTestProxy : public RenderFrameImpl,
       const std::optional<gfx::Point>&) override;
   void DidDispatchPingLoader(const blink::WebURL& url) override;
   void WillSendRequest(blink::WebURLRequest& request,
-                       ForRedirect for_redirect) override;
+                       ForRedirect for_redirect,
+                       const blink::WebURL& upstream_url) override;
   void BeginNavigation(std::unique_ptr<blink::WebNavigationInfo> info) override;
   void PostAccessibilityEvent(const ui::AXEvent& event) override;
   void CheckIfAudioSinkExistsAndIsAuthorized(

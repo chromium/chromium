@@ -21,6 +21,7 @@ namespace extensions {
 
 namespace {
 
+// Test dynamic origins in web accessible resources.
 class DynamicOriginBrowserTest : public ExtensionBrowserTest {
  public:
   DynamicOriginBrowserTest() {
@@ -70,7 +71,7 @@ class DynamicOriginBrowserTest : public ExtensionBrowserTest {
   ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};
 };
 
-// Web Accessible Resources.
+// Test a dynamic url as a web accessible resource.
 IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, DynamicUrl) {
   auto* extension = GetExtension();
 

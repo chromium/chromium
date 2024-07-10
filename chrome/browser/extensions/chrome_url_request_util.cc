@@ -38,6 +38,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
+#include "url/gurl.h"
 
 using extensions::ExtensionsBrowserClient;
 
@@ -240,10 +241,11 @@ bool AllowCrossRendererResourceLoad(
     const Extension* extension,
     const ExtensionSet& extensions,
     const ProcessMap& process_map,
+    const GURL& upstream_url,
     bool* allowed) {
   if (url_request_util::AllowCrossRendererResourceLoad(
           request, destination, page_transition, child_id, is_incognito,
-          extension, extensions, process_map, allowed)) {
+          extension, extensions, process_map, upstream_url, allowed)) {
     return true;
   }
 
