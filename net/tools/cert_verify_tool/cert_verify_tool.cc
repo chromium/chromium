@@ -21,6 +21,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/do_nothing_ct_verifier.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
@@ -205,6 +206,8 @@ class DummySystemTrustStore : public net::SystemTrustStore {
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  net::PlatformTrustStore* GetPlatformTrustStore() override { return nullptr; }
+
   bool IsLocallyTrustedRoot(
       const bssl::ParsedCertificate* trust_anchor) override {
     return false;

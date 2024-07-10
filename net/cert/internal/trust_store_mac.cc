@@ -31,6 +31,7 @@
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/network_notification_thread_mac.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/test_keychain_search_list_mac.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_apple.h"
@@ -1086,6 +1087,12 @@ bssl::CertificateTrust TrustStoreMac::GetTrust(
   }
 
   return bssl::CertificateTrust::ForUnspecified();
+}
+
+std::vector<net::PlatformTrustStore::CertWithTrust>
+TrustStoreMac::GetAllUserAddedCerts() {
+  // TODO(crbug.com/40928765): implement this.
+  return {};
 }
 
 // static

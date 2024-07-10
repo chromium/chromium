@@ -10,6 +10,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/gtest_prod_util.h"
 #include "net/base/net_export.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
@@ -21,7 +22,7 @@ namespace net {
 // methods may be called from multiple threads simultaneously. It is the owner's
 // responsibility to ensure the TrustStoreMac object outlives any threads
 // accessing it.
-class NET_EXPORT TrustStoreMac : public bssl::TrustStore {
+class NET_EXPORT TrustStoreMac : public PlatformTrustStore {
  public:
   // NOTE: When updating this enum, also update ParamToTrustImplType in
   // system_trust_store.cc
@@ -53,6 +54,10 @@ class NET_EXPORT TrustStoreMac : public bssl::TrustStore {
   void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                         bssl::ParsedCertificateList* issuers) override;
   bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
+
+  // net::PlatformTrustStore implementation:
+  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
+      override;
 
  private:
   class TrustImpl;

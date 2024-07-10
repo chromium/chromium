@@ -52,6 +52,21 @@ struct ChromeRootStoreInfo {
   array<ChromeRootCertInfo> root_cert_info;
 };
 
+enum CertificateTrust {
+  kUnspecified,
+  kDistrusted,
+  kTrusted,
+};
+
+struct PlatformCertInfo {
+  array<uint8> cert;
+  CertificateTrust trust_setting;
+};
+
+struct PlatformRootStoreInfo {
+  array<PlatformCertInfo> user_added_certs;
+};
+
 // Parent interface for the CertVerifierProcess. Hands out new
 // CertVerifierService's, which have their own underlying CertVerifier's
 // underneath.
@@ -93,4 +108,8 @@ interface CertVerifierServiceFactory {
   // Returns information about the current Chrome Root Store.
   [EnableIf=is_chrome_root_store_supported]
   GetChromeRootStoreInfo() => (ChromeRootStoreInfo root_store_info);
+
+  // Returns information about the current Platform Root Store.
+  [EnableIf=is_chrome_root_store_supported]
+  GetPlatformRootStoreInfo() => (PlatformRootStoreInfo root_store_info);
 };

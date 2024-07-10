@@ -5,11 +5,14 @@
 #ifndef NET_CERT_INTERNAL_TRUST_STORE_WIN_H_
 #define NET_CERT_INTERNAL_TRUST_STORE_WIN_H_
 
+#include <vector>
+
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/net_export.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
@@ -19,7 +22,7 @@ namespace net {
 // the Windows builtin trust anchors. This bssl::TrustStore is thread-safe (we
 // think).
 // TODO(crbug.com/40784682): confirm this is thread safe.
-class NET_EXPORT TrustStoreWin : public bssl::TrustStore {
+class NET_EXPORT TrustStoreWin : public PlatformTrustStore {
  public:
   struct NET_EXPORT_PRIVATE CertStores {
     ~CertStores();
@@ -78,6 +81,10 @@ class NET_EXPORT TrustStoreWin : public bssl::TrustStore {
                         bssl::ParsedCertificateList* issuers) override;
 
   bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
+
+  // net::PlatformTrustStore implementation:
+  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
+      override;
 
  private:
   // Inner Impl class for use in initializing stores.

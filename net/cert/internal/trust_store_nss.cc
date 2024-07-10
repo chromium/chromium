@@ -29,6 +29,7 @@
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/features.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
@@ -509,6 +510,12 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
   }
 
   return bssl::CertificateTrust::ForUnspecified();
+}
+
+std::vector<net::PlatformTrustStore::CertWithTrust>
+TrustStoreNSS::GetAllUserAddedCerts() {
+  // TODO(crbug.com/40928765): implement this.
+  return {};
 }
 
 }  // namespace net

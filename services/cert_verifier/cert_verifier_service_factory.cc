@@ -25,6 +25,9 @@
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/internal/platform_trust_store.h"
+#include "net/cert/internal/system_trust_store.h"
+#include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
@@ -350,6 +353,48 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
     info_ptr->root_cert_info.push_back(mojom::ChromeRootCertInfo::New(
         GetHash(*cert),
         std::vector<uint8_t>(cert_bytes.begin(), cert_bytes.end())));
+  }
+
+  std::move(callback).Run(std::move(info_ptr));
+}
+
+// TODO(crbug.com/40928765): look into adding a test here. Possible ways to do
+// this:
+//  * add a SetSystemTrustStoreForTesting() call, have code use that if its set.
+//  * save a SystemTrustStore upon first call add a
+//  UpdateSystemTrustStoreForTesting
+void CertVerifierServiceFactoryImpl::GetPlatformRootStoreInfo(
+    GetPlatformRootStoreInfoCallback callback) {
+  mojom::PlatformRootStoreInfoPtr info_ptr =
+      mojom::PlatformRootStoreInfo::New();
+  std::unique_ptr<net::SystemTrustStore> system_trust_store =
+      net::CreateSslSystemTrustStoreChromeRoot(
+          std::make_unique<net::TrustStoreChrome>());
+
+  net::PlatformTrustStore* platform_trust_store =
+      system_trust_store->GetPlatformTrustStore();
+  if (!platform_trust_store) {
+    std::move(callback).Run(std::move(info_ptr));
+    return;
+  }
+
+  for (const auto& cert_with_trust :
+       platform_trust_store->GetAllUserAddedCerts()) {
+    mojom::CertificateTrust mojo_trust;
+    switch (cert_with_trust.trust.type) {
+      case bssl::CertificateTrustType::DISTRUSTED:
+        mojo_trust = mojom::CertificateTrust::kDistrusted;
+        break;
+      case bssl::CertificateTrustType::UNSPECIFIED:
+        mojo_trust = mojom::CertificateTrust::kUnspecified;
+        break;
+      case bssl::CertificateTrustType::TRUSTED_ANCHOR:
+      case bssl::CertificateTrustType::TRUSTED_LEAF:
+      case bssl::CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
+        mojo_trust = mojom::CertificateTrust::kTrusted;
+    }
+    info_ptr->user_added_certs.push_back(
+        mojom::PlatformCertInfo::New(cert_with_trust.cert_bytes, mojo_trust));
   }
 
   std::move(callback).Run(std::move(info_ptr));

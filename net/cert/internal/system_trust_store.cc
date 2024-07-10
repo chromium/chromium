@@ -119,8 +119,9 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
   // outlive this object.
   explicit SystemTrustStoreChromeWithUnOwnedSystemStore(
       std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-      bssl::TrustStore* trust_store_system)
-      : trust_store_chrome_(std::move(trust_store_chrome)) {
+      net::PlatformTrustStore* trust_store_system)
+      : trust_store_chrome_(std::move(trust_store_chrome)),
+        platform_trust_store_(trust_store_system) {
 #if BUILDFLAG(IS_CHROMEOS)
     if (GetChromeOSTestTrustStore()) {
       // The fake_root_ca_certs.pem file is only intended for testing purposes,
@@ -165,10 +166,15 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
     return trust_store_chrome_->GetConstraintsForCert(cert);
   }
 
+  net::PlatformTrustStore* GetPlatformTrustStore() override {
+    return platform_trust_store_;
+  }
+
  private:
   std::unique_ptr<TrustStoreChrome> trust_store_chrome_;
   bssl::TrustStoreCollection trust_store_collection_;
   bssl::TrustStoreCollection non_crs_trust_store_collection_;
+  net::PlatformTrustStore* platform_trust_store_;
 };
 
 std::unique_ptr<SystemTrustStore> CreateChromeOnlySystemTrustStore(
@@ -184,19 +190,19 @@ class SystemTrustStoreChrome
   // |trust_store_chrome| and local trust settings from |trust_store_system|.
   explicit SystemTrustStoreChrome(
       std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-      std::unique_ptr<bssl::TrustStore> trust_store_system)
+      std::unique_ptr<net::PlatformTrustStore> trust_store_system)
       : SystemTrustStoreChromeWithUnOwnedSystemStore(
             std::move(trust_store_chrome),
             trust_store_system.get()),
         trust_store_system_(std::move(trust_store_system)) {}
 
  private:
-  std::unique_ptr<bssl::TrustStore> trust_store_system_;
+  std::unique_ptr<net::PlatformTrustStore> trust_store_system_;
 };
 
 std::unique_ptr<SystemTrustStore> CreateSystemTrustStoreChromeForTesting(
     std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-    std::unique_ptr<bssl::TrustStore> trust_store_system) {
+    std::unique_ptr<net::PlatformTrustStore> trust_store_system) {
   return std::make_unique<SystemTrustStoreChrome>(
       std::move(trust_store_chrome), std::move(trust_store_system));
 }

@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "net/net_buildflags.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
@@ -40,6 +41,14 @@ class SystemTrustStore {
   virtual bool IsKnownRoot(const bssl::ParsedCertificate* cert) const = 0;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // Returns the PlatformTrustStore that can be used to look for
+  // platform-specific user-added trust settings. This pointer is non-owned,
+  // and valid only for the lifetime of |this|. Any net::PlatformTrustStore
+  // objects returned from this method must be thread-safe.
+  //
+  // May return null if there is no PlatformTrustStore.
+  virtual net::PlatformTrustStore* GetPlatformTrustStore() = 0;
+
   // IsLocallyTrustedRoot returns true if the given certificate is trusted in
   // the user-installed root store. (It may *also* be trusted in the Chrome
   // Root Store.)
@@ -82,7 +91,7 @@ NET_EXPORT std::unique_ptr<SystemTrustStore> CreateChromeOnlySystemTrustStore(
 NET_EXPORT_PRIVATE std::unique_ptr<SystemTrustStore>
 CreateSystemTrustStoreChromeForTesting(
     std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-    std::unique_ptr<bssl::TrustStore> trust_store_system);
+    std::unique_ptr<net::PlatformTrustStore> trust_store_system);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 #if BUILDFLAG(IS_MAC)

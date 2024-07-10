@@ -8,8 +8,11 @@
 #include <cert.h>
 #include <certt.h>
 
+#include <vector>
+
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/scoped_nss_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
@@ -18,7 +21,7 @@ namespace net {
 
 // TrustStoreNSS is an implementation of bssl::TrustStore which uses NSS to find
 // trust anchors for path building. This bssl::TrustStore is thread-safe.
-class NET_EXPORT TrustStoreNSS : public bssl::TrustStore {
+class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
  public:
   struct UseTrustFromAllUserSlots : absl::monostate {};
   using UserSlotTrustSetting =
@@ -45,6 +48,10 @@ class NET_EXPORT TrustStoreNSS : public bssl::TrustStore {
 
   // bssl::TrustStore implementation:
   bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
+
+  // net::PlatformTrustStore implementation:
+  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
+      override;
 
   struct ListCertsResult {
     ListCertsResult(ScopedCERTCertificate cert, bssl::CertificateTrust trust);

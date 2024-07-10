@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
@@ -362,6 +363,51 @@ TEST_F(TrustStoreWinTest, GetIssuers) {
     EXPECT_THAT(issuers, testing::UnorderedElementsAre(ParsedCertEq(c_by_d_),
                                                        ParsedCertEq(c_by_e_)));
   }
+}
+
+MATCHER_P(CertWithTrustEq, expected_cert_with_trust, "") {
+  return arg.cert_bytes == expected_cert_with_trust.cert_bytes &&
+         arg.trust.ToDebugString() ==
+             expected_cert_with_trust.trust.ToDebugString();
+}
+
+TEST_F(TrustStoreWinTest, GetAllUserAddedCerts) {
+  ASSERT_TRUE(AddToStore(stores_.roots.get(), d_by_d_));
+  ASSERT_TRUE(
+      AddToStoreWithEKURestriction(stores_.roots.get(), c_by_d_, nullptr));
+
+  ASSERT_TRUE(AddToStore(stores_.intermediates.get(), c_by_e_));
+  ASSERT_TRUE(AddToStore(stores_.intermediates.get(), f_by_e_));
+
+  ASSERT_TRUE(AddToStore(stores_.trusted_people.get(), b_by_c_));
+
+  ASSERT_TRUE(AddToStore(stores_.disallowed.get(), b_by_f_));
+
+  std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
+
+  std::vector<net::PlatformTrustStore::CertWithTrust> certs =
+      trust_store_win->GetAllUserAddedCerts();
+  ASSERT_EQ(5U, certs.size());
+  EXPECT_THAT(certs, testing::UnorderedElementsAre(
+                         CertWithTrustEq(net::PlatformTrustStore::CertWithTrust(
+                             base::ToVector(d_by_d_->der_cert()),
+                             bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+                                 .WithEnforceAnchorExpiry()
+                                 .WithEnforceAnchorConstraints()
+                                 .WithRequireLeafSelfSigned())),
+                         CertWithTrustEq(net::PlatformTrustStore::CertWithTrust(
+                             base::ToVector(c_by_e_->der_cert()),
+                             bssl::CertificateTrust::ForUnspecified())),
+                         CertWithTrustEq(net::PlatformTrustStore::CertWithTrust(
+                             base::ToVector(f_by_e_->der_cert()),
+                             bssl::CertificateTrust::ForUnspecified())),
+                         CertWithTrustEq(net::PlatformTrustStore::CertWithTrust(
+                             base::ToVector(b_by_c_->der_cert()),
+                             bssl::CertificateTrust::ForTrustedLeaf()
+                                 .WithRequireLeafSelfSigned())),
+                         CertWithTrustEq(net::PlatformTrustStore::CertWithTrust(
+                             base::ToVector(b_by_f_->der_cert()),
+                             bssl::CertificateTrust::ForDistrusted()))));
 }
 
 }  // namespace

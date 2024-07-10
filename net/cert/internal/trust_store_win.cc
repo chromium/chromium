@@ -11,6 +11,7 @@
 
 #include <string_view>
 
+#include "base/containers/to_vector.h"
 #include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -27,6 +28,19 @@
 namespace net {
 
 namespace {
+
+// Certificates in the Windows roots store may be used as either trust
+// anchors or trusted leafs (if self-signed).
+constexpr bssl::CertificateTrust kRootCertTrust =
+    bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+        .WithEnforceAnchorExpiry()
+        .WithEnforceAnchorConstraints()
+        .WithRequireLeafSelfSigned();
+
+// Certificates in the Trusted People store may be trusted leafs (if
+// self-signed).
+constexpr bssl::CertificateTrust kTrustedPeopleTrust =
+    bssl::CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned();
 
 // Returns true if the cert can be used for server authentication, based on
 // certificate properties.
@@ -85,6 +99,15 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
     }
   }
   return false;
+}
+
+void AddCertWithTrust(
+    PCCERT_CONTEXT cert,
+    const bssl::CertificateTrust trust,
+    std::vector<net::PlatformTrustStore::CertWithTrust>* certs) {
+  certs->push_back(net::PlatformTrustStore::CertWithTrust(
+      base::ToVector(base::make_span(cert->pbCertEncoded, cert->cbCertEncoded)),
+      trust));
 }
 
 }  // namespace
@@ -325,12 +348,7 @@ class TrustStoreWin::Impl {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {
-          // Certificates in the Roots store may be used as either trust
-          // anchors or trusted leafs (if self-signed).
-          return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
-              .WithEnforceAnchorExpiry()
-              .WithEnforceAnchorConstraints()
-              .WithRequireLeafSelfSigned();
+          return kRootCertTrust;
         }
       }
     }
@@ -344,10 +362,7 @@ class TrustStoreWin::Impl {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {
-          // Certificates in the Trusted People store may be trusted leafs (if
-          // self-signed).
-          return bssl::CertificateTrust::ForTrustedLeaf()
-              .WithRequireLeafSelfSigned();
+          return kTrustedPeopleTrust;
         }
       }
     }
@@ -364,6 +379,44 @@ class TrustStoreWin::Impl {
     //
     // (b) Haven't found the cert. Tell everyone Unspecified.
     return bssl::CertificateTrust::ForUnspecified();
+  }
+
+  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts() {
+    std::vector<net::PlatformTrustStore::CertWithTrust> certs;
+    if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
+        !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
+        !disallowed_cert_store_.get()) {
+      return certs;
+    }
+
+    PCCERT_CONTEXT cert_from_store = nullptr;
+    while ((cert_from_store = CertEnumCertificatesInStore(
+                disallowed_cert_store_.get(), cert_from_store))) {
+      AddCertWithTrust(cert_from_store, bssl::CertificateTrust::ForDistrusted(),
+                       &certs);
+    }
+
+    while ((cert_from_store = CertEnumCertificatesInStore(
+                trusted_people_cert_store_.get(), cert_from_store))) {
+      if (IsCertTrustedForServerAuth(cert_from_store)) {
+        AddCertWithTrust(cert_from_store, kTrustedPeopleTrust, &certs);
+      }
+    }
+
+    while ((cert_from_store = CertEnumCertificatesInStore(
+                root_cert_store_.get(), cert_from_store))) {
+      if (IsCertTrustedForServerAuth(cert_from_store)) {
+        AddCertWithTrust(cert_from_store, kRootCertTrust, &certs);
+      }
+    }
+
+    while ((cert_from_store = CertEnumCertificatesInStore(
+                intermediate_cert_store_.get(), cert_from_store))) {
+      AddCertWithTrust(cert_from_store,
+                       bssl::CertificateTrust::ForUnspecified(), &certs);
+    }
+
+    return certs;
   }
 
  private:
@@ -448,6 +501,11 @@ void TrustStoreWin::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 bssl::CertificateTrust TrustStoreWin::GetTrust(
     const bssl::ParsedCertificate* cert) {
   return MaybeInitializeAndGetImpl()->GetTrust(cert);
+}
+
+std::vector<net::PlatformTrustStore::CertWithTrust>
+TrustStoreWin::GetAllUserAddedCerts() {
+  return MaybeInitializeAndGetImpl()->GetAllUserAddedCerts();
 }
 
 }  // namespace net

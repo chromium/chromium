@@ -14,6 +14,9 @@
 #include "third_party/boringssl/src/pki/trust_store.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include <vector>
+
+#include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
@@ -21,6 +24,32 @@ namespace net {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/data/ssl/chrome_root_store/chrome-root-store-test-data-inc.cc"  // nogncheck
+
+class TestPlatformTrustStore : public PlatformTrustStore {
+ public:
+  explicit TestPlatformTrustStore(std::unique_ptr<bssl::TrustStore> trust_store)
+      : trust_store_(std::move(trust_store)) {}
+
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) override {
+    trust_store_->SyncGetIssuersOf(cert, issuers);
+  }
+
+  // bssl::TrustStore implementation:
+  bssl::CertificateTrust GetTrust(
+      const bssl::ParsedCertificate* cert) override {
+    return trust_store_->GetTrust(cert);
+  }
+
+  // net::PlatformTrustStore implementation:
+  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
+      override {
+    return {};
+  }
+
+ private:
+  std::unique_ptr<bssl::TrustStore> trust_store_;
+};
 
 TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
   CertificateList certs = CreateCertificateListFromFile(
@@ -42,10 +71,14 @@ TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
           base::span<const ChromeRootCertInfo>(kChromeRootCertList),
           /*version=*/1);
 
+  std::unique_ptr<net::PlatformTrustStore> test_platform_trust_store =
+      std::make_unique<TestPlatformTrustStore>(
+          std::move(test_system_trust_store));
+
   std::unique_ptr<SystemTrustStore> system_trust_store_chrome =
       CreateSystemTrustStoreChromeForTesting(
           std::move(test_trust_store_chrome),
-          std::move(test_system_trust_store));
+          std::move(test_platform_trust_store));
 
   // With no trust settings in the fake system trust store, the cert is trusted
   // by the test chrome root store.
@@ -81,10 +114,14 @@ TEST(SystemTrustStoreChrome, SystemLeafTrustDoesNotOverrideChromeTrust) {
           base::span<const ChromeRootCertInfo>(kChromeRootCertList),
           /*version=*/1);
 
+  std::unique_ptr<net::PlatformTrustStore> test_platform_trust_store =
+      std::make_unique<TestPlatformTrustStore>(
+          std::move(test_system_trust_store));
+
   std::unique_ptr<SystemTrustStore> system_trust_store_chrome =
       CreateSystemTrustStoreChromeForTesting(
           std::move(test_trust_store_chrome),
-          std::move(test_system_trust_store));
+          std::move(test_platform_trust_store));
 
   // With no trust settings in the fake system trust store, the cert is trusted
   // by the test chrome root store.

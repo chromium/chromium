@@ -75,6 +75,9 @@ class CertVerifierServiceFactoryImpl
   // Will not return anchors that are not trusted for the current running
   // version of Chrome.
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
+
+  void GetPlatformRootStoreInfo(
+      GetPlatformRootStoreInfoCallback callback) override;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   void SetUseChromeRootStore(bool use_crs,

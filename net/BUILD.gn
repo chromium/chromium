@@ -332,6 +332,8 @@ component("net") {
     "cert/ev_root_ca_metadata.h",
     "cert/internal/cert_issuer_source_aia.cc",
     "cert/internal/cert_issuer_source_aia.h",
+    "cert/internal/platform_trust_store.cc",
+    "cert/internal/platform_trust_store.h",
     "cert/internal/revocation_checker.cc",
     "cert/internal/revocation_checker.h",
     "cert/internal/system_trust_store.cc",

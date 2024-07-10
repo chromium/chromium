@@ -142,6 +142,8 @@ class MockSystemTrustStore : public SystemTrustStore {
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  net::PlatformTrustStore* GetPlatformTrustStore() override { return nullptr; }
+
   void SetMockIsLocallyTrustedRoot(bool is_locally_trusted_root) {
     mock_is_locally_trusted_root_ = is_locally_trusted_root;
   }

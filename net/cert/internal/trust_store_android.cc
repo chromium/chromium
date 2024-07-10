@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "net/android/network_library.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
@@ -117,6 +118,12 @@ void TrustStoreAndroid::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 bssl::CertificateTrust TrustStoreAndroid::GetTrust(
     const bssl::ParsedCertificate* cert) {
   return MaybeInitializeAndGetImpl()->GetTrust(cert);
+}
+
+std::vector<net::PlatformTrustStore::CertWithTrust>
+TrustStoreAndroid::GetAllUserAddedCerts() {
+  // TODO(crbug.com/40928765): implement this.
+  return {};
 }
 
 }  // namespace net
