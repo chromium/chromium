@@ -40,10 +40,8 @@ std::optional<UserVisibleFeatureKey> GetModelExecutionFeature(
       // TODO(b/345562875): Add a UserVisibleFeatureKey for HistoryAnswer, or
       // use the same UserVisibleFeatureKey as HistoryQuery.
       return std::nullopt;
-    case proto::LogAiDataRequest::FeatureCase::
-        kHistoryQuery:  // Not implemented yet.
-      // TODO(b/335659433): Add a UserVisibleFeatureKey for HistoryQuery.
-      return std::nullopt;
+    case proto::LogAiDataRequest::FeatureCase::kHistoryQuery:
+      return UserVisibleFeatureKey::kHistorySearch;
     case proto::LogAiDataRequest::FeatureCase::kTabOrganization:
       return UserVisibleFeatureKey::kTabOrganization;
     case proto::LogAiDataRequest::FeatureCase::kWallpaperSearch:
