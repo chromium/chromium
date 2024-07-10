@@ -4454,10 +4454,11 @@ const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[] =
     "url given to it. This is an experimental feature and may reduce "
     "performance.";
 
-const char kSegmentationPlatformAndroidHomeModuleRankerName[] =
-    "Segmentation platform Android home module ranker";
-const char kSegmentationPlatformAndroidHomeModuleRankerDescription[] =
-    "Allow using segmentation platform to rank home modules on Android.";
+const char kSegmentationPlatformAndroidHomeModuleRankerV2Name[] =
+    "Segmentation platform Android home module ranker V2";
+const char kSegmentationPlatformAndroidHomeModuleRankerV2Description[] =
+    "Enable on-demand segmentation platform service to rank home modules on "
+    "Android.";
 
 const char kMediaPickerAdoptionStudyName[] = "Android Media Picker Adoption";
 const char kMediaPickerAdoptionStudyDescription[] =

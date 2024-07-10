@@ -38,8 +38,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -621,14 +619,14 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
+    @EnableFeatures({
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2
+    })
     public void testCreateContextInputEnabled_Empty() {
-        setFieldTrialForUseFreshnessScoreParam("true");
         assertTrue(
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
-                        HomeModulesMediator.USE_FRESHNESS_SCORE_PARAM,
-                        false));
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2));
 
         // Verifies that createInputContext() returns an empty one with invalid score value.
         InputContext inputContext = mMediator.createInputContext();
@@ -638,13 +636,11 @@ public class HomeModulesMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
+    @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2})
     public void testCreateContextInputEnabled_NoFreshnessScore() {
-        setFieldTrialForUseFreshnessScoreParam("true");
-        assertTrue(
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
-                        HomeModulesMediator.USE_FRESHNESS_SCORE_PARAM,
-                        false));
+        assertFalse(
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2));
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
 
         // Verifies that createInputContext() returns an empty one with invalid score value if the
@@ -657,14 +653,14 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
+    @EnableFeatures({
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2
+    })
     public void testCreateContextInputEnabled() {
-        setFieldTrialForUseFreshnessScoreParam("true");
         assertTrue(
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
-                        HomeModulesMediator.USE_FRESHNESS_SCORE_PARAM,
-                        false));
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2));
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
 
         // Verifies that if the logged time is longer than the threshold, the freshness score is
@@ -808,15 +804,6 @@ public class HomeModulesMediatorUnitTest {
         TextUtils.equals(
                 expectedFreshnessString,
                 HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType));
-    }
-
-    private void setFieldTrialForUseFreshnessScoreParam(String useFreshnessScoreParamValue) {
-        FeatureList.TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
-                HomeModulesMediator.USE_FRESHNESS_SCORE_PARAM,
-                useFreshnessScoreParamValue);
-        FeatureList.setTestValues(testValues);
     }
 
     private void verifyInputContext(InputContext inputContext, int[] scores) {

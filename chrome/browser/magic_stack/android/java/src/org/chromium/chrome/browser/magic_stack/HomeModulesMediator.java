@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 /** The mediator which implements the logic to add, update and remove modules. */
 public class HomeModulesMediator {
-    static final String USE_FRESHNESS_SCORE_PARAM = "use_freshness_score";
     private static final int INVALID_INDEX = -1;
     @VisibleForTesting static final int INVALID_FRESHNESS_SCORE = -1;
 
@@ -642,10 +641,8 @@ public class HomeModulesMediator {
     InputContext createInputContext() {
         InputContext inputContext = new InputContext();
         boolean useFreshnessScore =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
-                        USE_FRESHNESS_SCORE_PARAM,
-                        false);
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2);
 
         for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
             inputContext.addEntry(

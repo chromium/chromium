@@ -121,6 +121,10 @@ BASE_FEATURE(kSegmentationPlatformAndroidHomeModuleRanker,
              "SegmentationPlatformAndroidHomeModuleRanker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSegmentationPlatformAndroidHomeModuleRankerV2,
+             "SegmentationPlatformAndroidHomeModuleRankerV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSegmentationPlatformTimeDelaySampling,
              "SegmentationPlatformTimeDelaySampling",
              base::FEATURE_DISABLED_BY_DEFAULT);

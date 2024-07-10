@@ -129,6 +129,8 @@ public class HomeModulesCoordinatorUnitTest {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER, true);
+        testValues.addFeatureFlagOverride(
+                ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2, true);
         FeatureList.setTestValues(testValues);
     }
 

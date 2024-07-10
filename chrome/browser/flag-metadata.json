@@ -3863,7 +3863,7 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-segmentation-platform-android-home-module-ranker",
+    "name": "enable-segmentation-platform-android-home-module-ranker-v2",
     "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "clank-start@chromium.org" ],
     "expiry_milestone": 140
   },

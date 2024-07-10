@@ -86,6 +86,10 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRanker);
 // Feature flag for enabling android home module ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformAndroidHomeModuleRanker);
 
+// Feature flag for enabling on-demand service for ranking android
+// home modules.
+BASE_DECLARE_FEATURE(kSegmentationPlatformAndroidHomeModuleRankerV2);
+
 // Feature flag for controlling sampling of training data collection.
 BASE_DECLARE_FEATURE(kSegmentationPlatformTimeDelaySampling);
 

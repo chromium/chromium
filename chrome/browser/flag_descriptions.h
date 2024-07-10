@@ -2629,8 +2629,8 @@ extern const char kMagicStackAndroidDescription[];
 extern const char kMayLaunchUrlUsesSeparateStoragePartitionName[];
 extern const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[];
 
-extern const char kSegmentationPlatformAndroidHomeModuleRankerName[];
-extern const char kSegmentationPlatformAndroidHomeModuleRankerDescription[];
+extern const char kSegmentationPlatformAndroidHomeModuleRankerV2Name[];
+extern const char kSegmentationPlatformAndroidHomeModuleRankerV2Description[];
 
 extern const char kMediaPickerAdoptionStudyName[];
 extern const char kMediaPickerAdoptionStudyDescription[];

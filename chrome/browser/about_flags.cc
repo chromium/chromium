@@ -2495,19 +2495,6 @@ const FeatureEntry::FeatureVariation kMagicStackAndroidVariations[] = {
 };
 
 const FeatureEntry::FeatureParam
-    kSegmentationPlatformAndroidHomeModuleRanker_use_freshness_score[] = {
-        {"use_freshness_score", "true"}};
-
-const FeatureEntry::FeatureVariation
-    kSegmentationPlatformAndroidHomeModuleRankerVariations[] = {
-        {"Use freshness score",
-         kSegmentationPlatformAndroidHomeModuleRanker_use_freshness_score,
-         std::size(
-             kSegmentationPlatformAndroidHomeModuleRanker_use_freshness_score),
-         nullptr},
-};
-
-const FeatureEntry::FeatureParam
     kAccountReauthenticationRecentTimeWindow_0Minutes[] = {
         {"account_reauthentication_recent_time_window_minutes", "0"},
 };
@@ -7489,15 +7476,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kMayLaunchUrlUsesSeparateStoragePartition)},
 
-    {"enable-segmentation-platform-android-home-module-ranker",
-     flag_descriptions::kSegmentationPlatformAndroidHomeModuleRankerName,
-     flag_descriptions::kSegmentationPlatformAndroidHomeModuleRankerDescription,
+    {"enable-segmentation-platform-android-home-module-ranker-v2",
+     flag_descriptions::kSegmentationPlatformAndroidHomeModuleRankerV2Name,
+     flag_descriptions::
+         kSegmentationPlatformAndroidHomeModuleRankerV2Description,
      kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::
-             kSegmentationPlatformAndroidHomeModuleRanker,
-         kSegmentationPlatformAndroidHomeModuleRankerVariations,
-         "SegmentationPlatformAndroidHomeModuleRanker")},
+     FEATURE_VALUE_TYPE(segmentation_platform::features::
+                            kSegmentationPlatformAndroidHomeModuleRankerV2)},
 
     {"enable-logo-polish", flag_descriptions::kLogoPolishName,
      flag_descriptions::kLogoPolishDescription, kOsAndroid,

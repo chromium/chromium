@@ -22243,6 +22243,8 @@ from previous Chrome versions.
       label="CrossOriginOpenerPolicyAccessReporting:enabled"/>
   <int value="643637203" label="FastPairSoftwareScanningSupport:enabled"/>
   <int value="643725031" label="disable-touch-feedback"/>
+  <int value="643930230"
+      label="SegmentationPlatformAndroidHomeModuleRankerV2:enabled"/>
   <int value="644084236" label="CloseButtonsInactiveTabs:enabled"/>
   <int value="644189071" label="PermissionsBlacklist:enabled"/>
   <int value="644526367" label="TerminalMultiProfile:disabled"/>
@@ -24736,6 +24738,8 @@ from previous Chrome versions.
       label="AndroidTabDeclutterArchiveAllButActiveTab:disabled"/>
   <int value="1700394127" label="OverlayScrollbar:disabled"/>
   <int value="1700875006" label="AutofillMoreProminentPopup:disabled"/>
+  <int value="1701136718"
+      label="SegmentationPlatformAndroidHomeModuleRankerV2:disabled"/>
   <int value="1701295056"
       label="AutofillEnableVirtualCardManagementInDesktopSettingsPage:enabled"/>
   <int value="1701972870" label="NTPSnippetsIncreasedVisibility:enabled"/>
