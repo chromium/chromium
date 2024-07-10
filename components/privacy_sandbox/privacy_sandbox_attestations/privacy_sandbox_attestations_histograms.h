@@ -9,6 +9,14 @@ namespace privacy_sandbox {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// Note: The attestation component used to have a sentinel guard. It creates a
+// sentinel file when attestation parsing crashes to prevent subsequent parsing
+// attempts. It has been removed. The enum entries related to this sentinel
+// guard is no longer used.
+//
+// TODO(crbug.com/351843800): Clean up unused enums and update histogram
+// "PrivacySandbox.Attestations.Parsing.Status".
 enum class ParsingStatus {
   kSuccess = 0,
   kNotNewerVersion = 1,
@@ -34,8 +42,6 @@ inline constexpr char kAttestationsFileParsingStatusUMA[] =
     "PrivacySandbox.Attestations.Parsing.Status";
 inline constexpr char kAttestationsFileSource[] =
     "PrivacySandbox.Attestations.IsSiteAttested.FileSource";
-inline constexpr char kSentinelVersionUMA[] =
-    "PrivacySandbox.Attestations.Parsing.SentinelVersion";
 inline constexpr char kAttestationsFileParsingTimeUMA[] =
     "PrivacySandbox.Attestations.InitializationDuration.Parsing";
 inline constexpr char kAttestationsMapMemoryUsageUMA[] =

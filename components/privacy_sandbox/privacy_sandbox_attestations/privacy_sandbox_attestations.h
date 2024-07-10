@@ -32,9 +32,6 @@ namespace privacy_sandbox {
 
 enum class ParsingStatus;
 
-const base::FilePath::CharType kSentinelFileName[] =
-    FILE_PATH_LITERAL("attestations_sentinel");
-
 using PrivacySandboxAttestationsGatedAPISet =
     base::EnumSet<PrivacySandboxAttestationsGatedAPI,
                   PrivacySandboxAttestationsGatedAPI::kTopics,

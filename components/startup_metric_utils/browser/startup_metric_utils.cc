@@ -533,17 +533,10 @@ void BrowserStartupMetricRecorder::RecordExternalStartupMetric(
 // a) Component registration, when there is existing component file on disk.
 // b) Component installation, when the component is downloaded.
 //
-// There are several factors that affect the timing of `ComponentReady()`:
-// 1. Feature `kPrivacySandboxAttestationsHigherComponentRegistrationPriority`
-// controls whether a higher task priority is used for component registration.
-// - When feature on, registration takes place almost immediately after opening
-// the browser.
-// - When feature off, registration takes place in a few seconds after opening
-// the browser.
-// 2. Non-browser UI during startup, for example, profile picker.
-// - When the above feature is off, and the user stays at the profile picker
-// indefinitely. The registration takes place in around 4 minutes after opening
-// the browser.
+// The following factors affect the timing of `ComponentReady()`:
+// Non-browser UI during startup, for example, profile picker.
+// - When the user stays at the profile picker indefinitely. The registration
+// takes place in around 4 minutes after opening the browser.
 //
 // The purpose of this metric is to understand the time gap between the time
 // users are able to navigate and the time the Privacy Sandbox attestations map

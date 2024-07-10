@@ -84,92 +84,8 @@ bool IsOverriddenByFlags(const net::SchemefulSite& site) {
   return false;
 }
 
-// The sentinel file is used to prevent crash-looping if the attestations file
-// crashes during parsing, which takes place right after startup.
-// The sentinel file is placed in the attestations component installation
-// directory just before parsing. Upon successful parsing, it is removed. If a
-// sentinel file is found on next start-up, this implies the previous parsing
-// has crashed. In this case no further parsing will be attempted.
-// The content of the sentinel file is the version number of the attestation
-// list that is attempted to parse.
-// Once there is a new version downloaded by the component updater, the old
-// version, along with any sentinel file, will be removed.
-class SentinelFile {
- public:
-  explicit SentinelFile(const base::FilePath& install_dir)
-      : path_(install_dir.Append(kSentinelFileName)) {}
-
-  SentinelFile(const SentinelFile&) = delete;
-  SentinelFile& operator=(const SentinelFile&) = delete;
-
-  bool IsPresent() { return base::PathExists(path_); }
-
-  bool Create(std::string_view version) {
-    return base::WriteFile(path_, version);
-  }
-
-  bool Remove() { return base::DeleteFile(path_); }
-  std::string GetVersion() {
-    std::string version;
-    if (!base::ReadFileToString(path_, &version)) {
-      return std::string();
-    }
-    return version;
-  }
-
- private:
-  base::FilePath path_;
-};
-
 void RecordParsingStatusHistogram(ParsingStatus status) {
   base::UmaHistogramEnumeration(kAttestationsFileParsingStatusUMA, status);
-}
-
-// Convert the attestations file version to an integer in order to record it
-// in a histogram. Return -1 if the version does not match the YYYY.MM.DD.VV
-// format.
-int ConvertVersionToInt(const base::Version version) {
-  if (!version.IsValid()) {
-    return -1;
-  }
-
-  const std::vector<uint32_t>& full_version = version.components();
-  if (full_version.size() != 4) {
-    return -1;
-  }
-
-  int year = base::checked_cast<int>(full_version.at(0));
-  if (year < 2023 || year > 2147) {
-    // 2023 is the year Privacy Sandbox Attestations starts to be enforced.
-    // The year is capped at 2147 to prevent overflow. INT_MAX is 2,147,483,647.
-    return -1;
-  }
-
-  int month = base::checked_cast<int>(full_version.at(1));
-  if (month < 1 || month > 12) {
-    return -1;
-  }
-
-  int day = base::checked_cast<int>(full_version.at(2));
-  if (day < 1 || day > 31) {
-    return -1;
-  }
-
-  int intraday_version = base::checked_cast<int>(full_version.at(3));
-  if (intraday_version < 0 || intraday_version > 99) {
-    return -1;
-  }
-
-  int result = year;
-
-  result *= 100;
-  result += month;
-  result *= 100;
-  result += day;
-  result *= 100;
-  result += intraday_version;
-
-  return result;
 }
 
 // Trigger the opening and parsing of the attestations file. Returns the
@@ -192,33 +108,6 @@ LoadAttestationsInternal(base::FilePath installed_file_path,
     return base::unexpected(ParsingStatus::kFileNotExist);
   }
 
-  std::optional<SentinelFile> sentinel_file =
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAttestationSentinel)
-          ? std::optional<SentinelFile>(installed_file_path.DirName())
-          : std::nullopt;
-  if (sentinel_file.has_value() && sentinel_file->IsPresent()) {
-    // An existing sentinel file implies previous parsing has crashed.
-    std::string sentinel_version_str = sentinel_file->GetVersion();
-    // The sentinel file may not have version number in its content. When it was
-    // first added to the codebase, the sentinel file was set to have an empty
-    // content. Please see crbug.com/1512626.
-    base::Version sentinel_version(sentinel_version_str);
-    base::UmaHistogramSparse(kSentinelVersionUMA,
-                             ConvertVersionToInt(sentinel_version));
-
-    return base::unexpected(ParsingStatus::kSentinelFilePresent);
-  }
-
-  if (sentinel_file.has_value() &&
-      !sentinel_file->Create(version.GetString())) {
-    // Failed to create the sentinel file.
-    return base::unexpected(ParsingStatus::kCannotCreateSentinel);
-  }
-
-  // If there is any error or crash during parsing, the sentinel file will
-  // persist in the installation directory. It will prevent this version of
-  // the attestations file from being parsed again.
   base::ElapsedTimer parsing_timer;
   std::optional<PrivacySandboxAttestationsMap> attestations_map =
       ParseAttestationsFromString(proto_str);
@@ -237,11 +126,6 @@ LoadAttestationsInternal(base::FilePath installed_file_path,
   base::UmaHistogramCounts10000(
       kAttestationsMapMemoryUsageUMA,
       base::trace_event::EstimateMemoryUsage(attestations_map.value()) / 1024);
-
-  if (sentinel_file.has_value() && !sentinel_file->Remove()) {
-    // Failed to remove the sentinel file.
-    return base::unexpected(ParsingStatus::kCannotRemoveSentinel);
-  }
 
   return base::ok(std::move(attestations_map.value()));
 }

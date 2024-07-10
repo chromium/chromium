@@ -1122,17 +1122,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.Attestations.Parsing.SentinelVersion"
-    units="version" expires_after="2024-11-17">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>xiaochenzh@chromium.org</owner>
-  <summary>
-    Records the version of the sentinel file when the sentinel file prevents the
-    parsing of the attestation list. The version of the sentinel file is the
-    same as the attestation list which failed to be parsed in the first place.
-  </summary>
-</histogram>
-
 <histogram name="PrivacySandbox.Attestations.Parsing.Status"
     enum="PrivacySandboxAttestationParsingStatus" expires_after="2025-01-05">
   <owner>shivanisha@chromium.org</owner>
