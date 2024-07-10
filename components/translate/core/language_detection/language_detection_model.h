@@ -30,12 +30,13 @@ enum class LanguageDetectionModelState {
   kUnknown,
   // The provided model file was not valid.
   kModelFileInvalid,
-  // The language model is memory-mapped and available for
-  // use with TFLite.
-  kModelFileValidAndMemoryMapped,
+  // The language model's `base::File` is valid.
+  kModelFileValid,
+  // The language model is available for use with TFLite.
+  kModelAvailable,
 
   // New values above this line.
-  kMaxValue = kModelFileValidAndMemoryMapped,
+  kMaxValue = kModelAvailable,
 };
 
 // A language detection model that will use a TFLite model to determine the

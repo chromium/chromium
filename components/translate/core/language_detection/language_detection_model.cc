@@ -79,8 +79,7 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   if (!model_file.IsValid())
     return;
 
-  recorder.set_state(
-      LanguageDetectionModelState::kModelFileValidAndMemoryMapped);
+  recorder.set_state(LanguageDetectionModelState::kModelFileValid);
 
   tflite::task::text::NLClassifierOptions options;
   options.set_input_tensor_index(0);
@@ -122,6 +121,8 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
                             true);
     return;
   }
+
+  recorder.set_state(LanguageDetectionModelState::kModelAvailable);
 
   lang_detection_model_ = std::move(*statusor_classifier);
 }

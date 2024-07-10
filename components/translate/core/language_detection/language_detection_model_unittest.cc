@@ -64,9 +64,23 @@ TEST(LanguageDetectionModelTest, UnsupportedModelFileProvided) {
   EXPECT_FALSE(language_detection_model.IsAvailable());
   histogram_tester.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
-      LanguageDetectionModelState::kModelFileValidAndMemoryMapped, 1);
+      LanguageDetectionModelState::kModelFileValid, 1);
   histogram_tester.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.InvalidModelFile", true, 1);
+}
+
+TEST(LanguageDetectionModelTest, ValidModelFileProvided) {
+  base::HistogramTester histogram_tester;
+
+  base::File file = GetValidModelFile();
+  LanguageDetectionModel language_detection_model;
+  language_detection_model.UpdateWithFile(std::move(file));
+  EXPECT_TRUE(language_detection_model.IsAvailable());
+  histogram_tester.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
+      LanguageDetectionModelState::kModelAvailable, 1);
+  histogram_tester.ExpectTotalCount(
+      "LanguageDetection.TFLiteModel.InvalidModelFile", 0);
 }
 
 TEST(LanguageDetectionModelTest, ReliableLanguageDetermination) {
