@@ -171,7 +171,6 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
 
   // TODO(crbug.com/40227557): Consider merging with CreateFormatExtensions() to
   // avoid converting back and forth.
-  // TODO(crbug.com/40227557): Extract from sequence header instead?
   VideoColorSpace color_space = pic.get_colorspace();
 
   VideoCodecProfile profile;

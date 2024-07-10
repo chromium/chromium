@@ -133,7 +133,7 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
 
   // TODO(crbug.com/40227557): Consider merging with CreateFormatExtensions() to
   // avoid converting back and forth.
-  VideoColorSpace color_space = pic->frame_hdr->GetColorSpace();
+  VideoColorSpace color_space = pic->get_colorspace();
 
   VideoCodecProfile profile;
   switch (pic->frame_hdr->profile) {
