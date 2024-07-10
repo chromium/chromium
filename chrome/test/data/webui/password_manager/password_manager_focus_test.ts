@@ -8,6 +8,7 @@ import {CheckupSubpage, Page, PasswordManagerImpl, Router} from 'chrome://passwo
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createCredentialGroup, createPasswordEntry, makeInsecureCredential, makePasswordCheckStatus} from './test_util.js';
@@ -85,6 +86,7 @@ suite('PasswordManagerAppTest', function() {
         assertTrue(!!passwordListItem);
         passwordListItem.click();
         await flushTasks();
+        await microtasksFinished();
 
         // Verify that password details page is shown with back button focused.
         assertEquals(
@@ -99,6 +101,7 @@ suite('PasswordManagerAppTest', function() {
 
         passwordDetailsPage.$.backButton.click();
         await flushTasks();
+        await microtasksFinished();
 
         // Verify that passwords page is opened and the password item is
         // focused.
@@ -136,6 +139,7 @@ suite('PasswordManagerAppTest', function() {
                 assertTrue(!!listRow);
                 listRow.click();
                 await flushTasks();
+                await microtasksFinished();
 
                 // Verify that checkup details page is shown with back button
                 // focused.
@@ -152,6 +156,7 @@ suite('PasswordManagerAppTest', function() {
 
                 checkupDetailsPage.$.backButton.click();
                 await flushTasks();
+                await microtasksFinished();
 
                 // Verify that checkup page is opened and the correct row is
                 // focused.

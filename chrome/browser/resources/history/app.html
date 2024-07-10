@@ -141,11 +141,9 @@
           history-clusters-visible="{{historyClustersVisible_}}"
           hidden$="[[hasDrawer_]]">
       </history-side-bar>
-      <iron-pages id="content" attr-for-selected="path"
-          fallback-selection="history"
-          selected="[[getSelectedPage_(selectedPage_, items)]]"
-          on-selected-item-changed="updateScrollTarget_"
-          items="{{items}}">
+      <cr-page-selector id="content" attr-for-selected="path"
+          selected="[[contentPage_]]"
+          on-iron-select="updateScrollTarget_">
         <div id="tabs-container" path="history">
           <div id="historyEmbeddingsDisclaimer" class="history-cards"
               hidden$="[[!enableHistoryEmbeddings_]]">
@@ -189,11 +187,9 @@
                 </template>
               </div>
             </template>
-            <iron-pages id="tabs-content" attr-for-selected="path"
-                fallback-selection="history"
-                selected="[[getSelectedPage_(selectedPage_, items)]]"
-                on-selected-item-changed="updateScrollTarget_"
-                items="{{items}}">
+            <cr-page-selector id="tabs-content" attr-for-selected="path"
+                selected="[[tabsContentPage_]]"
+                on-iron-select="updateScrollTarget_">
               <history-list id="history" query-state="[[queryState_]]"
                   searched-term="[[queryResult_.info.term]]"
                   pending-delete="{{pendingDelete_}}"
@@ -212,7 +208,7 @@
                     scroll-offset="[[tabContentScrollOffset_]]">
                 </history-clusters>
               </template>
-            </iron-pages>
+            </cr-page-selector>
           </div>
         </div>
         <template is="dom-if" if="[[syncedTabsSelected_(selectedPage_)]]">

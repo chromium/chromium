@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import './history_embeddings_promo.js';
 import './history_list.js';
 import './history_toolbar.js';
@@ -29,6 +29,7 @@ import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import type {FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import type {WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -38,7 +39,6 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
-import type {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -129,12 +129,12 @@ export function listenForPrivilegedLinkClicks() {
 
 export interface HistoryAppElement {
   $: {
-    'content': IronPagesElement,
+    'content': CrPageSelectorElement,
     'content-side-bar': HistorySideBarElement,
     'drawer': CrLazyRenderElement<CrDrawerElement>,
     'history': HistoryListElement,
     'tabs-container': Element,
-    'tabs-content': IronPagesElement,
+    'tabs-content': CrPageSelectorElement,
     'toolbar': HistoryToolbarElement,
     tabsScrollContainer: HTMLElement,
     router: HistoryRouterElement,
@@ -166,6 +166,16 @@ export class HistoryAppElement extends HistoryAppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableHistoryEmbeddings'),
         reflectToAttribute: true,
+      },
+
+      contentPage_: {
+        type: String,
+        value: Page.HISTORY,
+      },
+
+      tabsContentPage_: {
+        type: String,
+        value: Page.HISTORY,
       },
 
       // The id of the currently selected page.
@@ -283,6 +293,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private historyClustersVisible_: boolean;
   private isUserSignedIn_: boolean = loadTimeData.getBoolean('isUserSignedIn');
   private lastSelectedTab_: number;
+  private contentPage_: string;
+  private tabsContentPage_: string;
   private pendingDelete_: boolean;
   private queryResult_: QueryResult;
   private queryState_: QueryState;
@@ -663,7 +675,29 @@ export class HistoryAppElement extends HistoryAppElementBase {
     return querying && !incremental && searchTerm !== '';
   }
 
+  private updateContentPage_() {
+    switch (this.selectedPage_) {
+      case Page.SYNCED_TABS:
+        this.contentPage_ = Page.SYNCED_TABS;
+        break;
+      case Page.PRODUCT_SPECIFICATIONS_LISTS:
+        this.contentPage_ = Page.PRODUCT_SPECIFICATIONS_LISTS;
+        break;
+      default:
+        this.contentPage_ = Page.HISTORY;
+    }
+  }
+
+  private updateTabsContentPage_() {
+    this.tabsContentPage_ = (this.selectedPage_ === Page.HISTORY_CLUSTERS &&
+                             this.historyClustersEnabled_) ?
+        Page.HISTORY_CLUSTERS :
+        Page.HISTORY;
+  }
+
   private selectedPageChanged_(newPage: string, oldPage: string) {
+    this.updateContentPage_();
+    this.updateTabsContentPage_();
     this.unselectAll();
     this.historyViewChanged_();
     this.maybeUpdateSelectedHistoryTab_();
@@ -694,6 +728,16 @@ export class HistoryAppElement extends HistoryAppElementBase {
     } else {
       this.scrollTarget = null;
     }
+
+    // Notify iron-list parents of potential resize, since the selected
+    // page or tab has changed.
+    setTimeout(() => {
+      this.$.history.notifyResize();
+      const clusters = this.shadowRoot!.querySelector('history-clusters');
+      if (clusters) {
+        clusters.notifyResize();
+      }
+    }, 0);
   }
 
   private selectedTabChanged_() {
@@ -740,16 +784,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     if (!this.hasDrawer_ && drawer && drawer.open) {
       drawer.cancel();
     }
-  }
-
-  /**
-   * This computed binding is needed to make the iron-pages selector update
-   * when <synced-device-manager> or <history-clusters> is instantiated for the
-   * first time. Otherwise the fallback selection will continue to be used after
-   * the corresponding item is added as a child of iron-pages.
-   */
-  private getSelectedPage_(selectedPage: string, _items: any[]): string {
-    return selectedPage;
   }
 
   private closeDrawer_() {

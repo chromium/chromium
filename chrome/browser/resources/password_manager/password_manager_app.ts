@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
+import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import '/shared/settings/prefs/prefs.js';
 import './checkup_section.js';
 import './checkup_details_section.js';
@@ -23,11 +23,11 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement, listenOnce} from 'chrome://resources/js/util.js';
-import type {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -64,7 +64,7 @@ export type ValueCopiedEvent = CustomEvent<{toastMessage: string}>;
 export interface PasswordManagerAppElement {
   $: {
     checkup: CheckupSectionElement,
-    content: IronPagesElement,
+    content: CrPageSelectorElement,
     drawer: CrDrawerElement,
     drawerTemplate: DomIf,
     passwords: PasswordsSectionElement,
@@ -95,7 +95,10 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
        */
       prefs_: Object,
 
-      selectedPage_: String,
+      selectedPage_: {
+        type: String,
+        value: Page.PASSWORDS,
+      },
 
       narrow_: {
         type: Boolean,

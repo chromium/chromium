@@ -145,7 +145,9 @@ export class CheckupDetailsSectionElement extends
     this.insecurityType_ = route.details as unknown as CheckupSubpage;
     // Focus back button when it's not direct navigation.
     if (oldRoute !== undefined) {
-      this.$.backButton.focus();
+      setTimeout(() => {  // Async to allow page to load.
+        this.$.backButton.focus();
+      });
     }
   }
 

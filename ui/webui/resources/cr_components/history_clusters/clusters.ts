@@ -217,6 +217,11 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     this.onQueryChangedByUserListenerId_ = null;
   }
 
+  // Notifies the iron-list of this element being potentially resized.
+  notifyResize() {
+    this.$.clusters.notifyResize();
+  }
+
   //============================================================================
   // Event handlers
   //============================================================================
@@ -457,7 +462,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   }
 
   private onScrollTargetChanged_() {
-    this.$.clusters.notifyResize();
+    this.notifyResize();
   }
 
   private computeIsEmpty_() {

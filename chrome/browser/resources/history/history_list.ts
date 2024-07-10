@@ -281,6 +281,11 @@ export class HistoryListElement extends HistoryListElementBase {
     button.focus();
   }
 
+  // Notifies the iron-list of this element being potentially resized.
+  notifyResize() {
+    this.$['infinite-list'].notifyResize();
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // Private methods:
 

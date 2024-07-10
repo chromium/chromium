@@ -97,7 +97,9 @@ export class PasswordDetailsSectionElement extends
     if (group && group.name) {
       this.selectedGroup_ = group;
       this.startListeningForUpdates_();
-      this.$.backButton.focus();
+      setTimeout(() => {  // Async to allow page to load.
+        this.$.backButton.focus();
+      });
     } else {
       // Navigation happened directly. Find group with matching name.
       PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
