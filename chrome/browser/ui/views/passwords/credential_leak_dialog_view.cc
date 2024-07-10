@@ -55,7 +55,7 @@ CredentialLeakDialogView::CredentialLeakDialogView(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   using ControllerClosureFn = void (CredentialLeakDialogController::*)();
-  auto close_callback = [](CredentialLeakDialogController** controller,
+  auto close_callback = [](raw_ptr<CredentialLeakDialogController>* controller,
                            ControllerClosureFn fn) {
     // Null out the controller pointer stored in the parent object, to avoid any
     // further calls to the controller and inhibit recursive closes that would
@@ -64,7 +64,9 @@ CredentialLeakDialogView::CredentialLeakDialogView(
     //
     // Note that when this lambda gets bound it closes over &controller_, not
     // controller_ itself!
-    (std::exchange(*controller, nullptr)->*(fn))();
+    auto* raw_controller = controller->get();
+    *controller = nullptr;
+    (raw_controller->*(fn))();
   };
 
   SetAcceptCallback(

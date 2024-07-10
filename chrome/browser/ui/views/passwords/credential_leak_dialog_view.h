@@ -41,9 +41,7 @@ class CredentialLeakDialogView : public views::DialogDelegateView,
   void InitWindow();
 
   // A weak pointer to the controller.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION CredentialLeakDialogController* controller_ = nullptr;
+  raw_ptr<CredentialLeakDialogController> controller_ = nullptr;
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_ = nullptr;
 };
