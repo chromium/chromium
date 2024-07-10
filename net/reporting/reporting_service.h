@@ -69,6 +69,8 @@ class NET_EXPORT ReportingService {
   // |user_agent| is the User-Agent header that was used for the request.
   // |group| is the endpoint group to which the report should be delivered.
   // |type| is the type of the report. |body| is the body of the report.
+  // |target_type| is used to tag the report as either a web developer report
+  // or an enterprise report.
   //
   // The Reporting system will take ownership of |body|; all other parameters
   // will be copied.
