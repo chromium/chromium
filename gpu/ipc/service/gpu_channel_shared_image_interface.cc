@@ -146,8 +146,6 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
   // the textures.
   backing->SetCleared();
 
-  // auto* shared_image_manager = helper_->GetSharedImageManager();
-  // auto* memory_type_tracker = helper_->GetMemoryTypeTracker();
   DCHECK(shared_image_stub_->channel()
              ->gpu_channel_manager()
              ->shared_image_manager());
