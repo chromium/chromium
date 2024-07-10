@@ -4,11 +4,14 @@
 
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -30,6 +33,34 @@
 #include "url/gurl.h"
 
 namespace safe_browsing {
+
+namespace {
+
+constexpr char kUrlFilteringEndpointFlag[] = "url-filtering-endpoint";
+
+std::optional<GURL> GetUrlOverride() {
+  // Ignore this flag on Stable and Beta to avoid abuse.
+  if (!g_browser_process || !g_browser_process->browser_policy_connector()
+                                 ->IsCommandLineSwitchSupported()) {
+    return std::nullopt;
+  }
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kUrlFilteringEndpointFlag)) {
+    GURL url =
+        GURL(command_line->GetSwitchValueASCII(kUrlFilteringEndpointFlag));
+    if (url.is_valid()) {
+      return url;
+    } else {
+      LOG(ERROR) << "--" << kUrlFilteringEndpointFlag
+                 << " is set to an invalid URL";
+    }
+  }
+
+  return std::nullopt;
+}
+
+}  // namespace
 
 ChromeEnterpriseRealTimeUrlLookupService::
     ChromeEnterpriseRealTimeUrlLookupService(
@@ -136,10 +167,9 @@ ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
 }
 
 GURL ChromeEnterpriseRealTimeUrlLookupService::GetRealTimeLookupUrl() const {
-  std::string endpoint =
-      "https://enterprise-safebrowsing.googleapis.com/"
-      "safebrowsing/clientreport/realtime";
-  return GURL(endpoint);
+  return GetUrlOverride().value_or(
+      GURL("https://enterprise-safebrowsing.googleapis.com/"
+           "safebrowsing/clientreport/realtime"));
 }
 
 net::NetworkTrafficAnnotationTag
