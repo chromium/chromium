@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/system/network/network_list_mobile_header_view.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/tray/hover_highlight_view.h"

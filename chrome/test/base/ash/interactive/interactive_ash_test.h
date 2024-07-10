@@ -59,6 +59,10 @@ class InteractiveAshTest
       ash::SystemWebAppType type,
       const ui::ElementIdentifier& element_id);
 
+  // Finds the system web app of type `type` and returns the Kombucha context
+  // for the app window.
+  ui::ElementContext FindSystemWebApp(ash::SystemWebAppType type);
+
   // Attempts to close the system web app of type `type`.
   void CloseSystemWebApp(ash::SystemWebAppType type);
 

@@ -11,6 +11,7 @@ source_set("interactive_ui_tests") {
 
   sources = [
     "esim_installation_interactive_uitest.cc",
+    "esim_interactive_uitest.cc",
     "esim_ui_elements_interactive_uitest.cc",
     "rename_esim_profile_interactive_uitest.cc",
     "toggle_cellular_from_os_settings_interactive_uitest.cc",
@@ -20,6 +21,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     ":test_support",
+    "//ash",
     "//chrome/app:generated_resources_grit",
     "//chrome/test/base/ash/interactive:test_support",
     "//chrome/test/base/ash/interactive/network:test_support",
@@ -27,10 +29,12 @@ source_set("interactive_ui_tests") {
     "//chromeos/ash/components/dbus/hermes:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
+    "//chromeos/strings:strings_grit",
     "//content/test:test_support",
     "//dbus",
     "//ui/base:base",
     "//ui/base:test_support",
+    "//ui/views:test_support",
   ]
 }
 

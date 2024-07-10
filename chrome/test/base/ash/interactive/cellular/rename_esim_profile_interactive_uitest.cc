@@ -120,9 +120,9 @@ IN_PROC_BROWSER_TEST_F(RenameEsimProfileInteractiveUiTest,
       WaitForElementDoesNotExist(
           kOSSettingsId,
           ash::settings::cellular::CellularSubpageMenuRenameDialog()),
-      WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::CellularDetailsSubpageTitle(),
-          /*text=*/kNewProfileNickname),
+      WaitForElementTextContains(kOSSettingsId,
+                                 settings::SettingsSubpageTitle(),
+                                 /*text=*/kNewProfileNickname),
 
       Log("Test complete"));
 }

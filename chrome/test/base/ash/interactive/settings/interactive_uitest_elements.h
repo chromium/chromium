@@ -12,7 +12,11 @@ namespace ash::settings {
 // Top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery InternetPage();
 
+// The "more options" / "three dots" button on the network details page.
 WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton();
+
+// The title of a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle();
 
 namespace cellular {
 

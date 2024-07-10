@@ -158,12 +158,17 @@ ui::ElementContext InteractiveAshTest::LaunchSystemWebApp(
     const ui::ElementIdentifier& element_id) {
   Profile* profile = GetActiveUserProfile();
   CHECK(profile);
-  Browser* browser = nullptr;
   RunTestSequence(InstrumentNextTab(element_id, AnyBrowser()),
                   Do([&]() { LaunchSystemWebAppAsync(profile, type); }),
-                  InAnyContext(WaitForShow(element_id)), Do([&]() {
-                    browser = FindSystemWebAppBrowser(profile, type);
-                  }));
+                  InAnyContext(WaitForShow(element_id)));
+  return FindSystemWebApp(type);
+}
+
+ui::ElementContext InteractiveAshTest::FindSystemWebApp(
+    ash::SystemWebAppType type) {
+  Profile* profile = GetActiveUserProfile();
+  CHECK(profile);
+  Browser* browser = FindSystemWebAppBrowser(profile, type);
   CHECK(browser);
   return browser->window()->GetElementContext();
 }
@@ -245,9 +250,9 @@ InteractiveAshTest::NavigateToInternetDetailsPage(
                                     network_list_item_title, network_name),
       ClickAnyElementTextContains(element_id, network_list,
                                   network_list_item_title, network_name),
-      WaitForElementTextContains(
-          element_id, ash::settings::cellular::CellularDetailsSubpageTitle(),
-          /*text=*/network_name.c_str()));
+      WaitForElementTextContains(element_id,
+                                 ash::settings::SettingsSubpageTitle(),
+                                 /*text=*/network_name.c_str()));
 }
 
 Profile* InteractiveAshTest::GetActiveUserProfile() {

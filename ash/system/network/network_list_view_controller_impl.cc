@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -37,6 +38,8 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -284,6 +287,8 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     if (ShouldAddESimEntry()) {
       mobile_item_index = CreateConfigureNetworkEntry(
           &add_esim_entry_, GetMobileSectionNetworkType(), mobile_item_index);
+      add_esim_entry_->SetProperty(views::kElementIdentifierKey,
+                                   kNetworkAddEsimElementId);
     } else {
       RemoveAndResetViewIfExists(&add_esim_entry_);
     }

@@ -24,6 +24,10 @@ WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton() {
          "cr-icon-button#moreNetworkDetail";
 }
 
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle() {
+  return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
+}
+
 namespace cellular {
 
 WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem() {
