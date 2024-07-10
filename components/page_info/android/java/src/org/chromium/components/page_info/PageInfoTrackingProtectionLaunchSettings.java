@@ -145,7 +145,6 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         mTpSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     boolean boolValue = (Boolean) newValue;
-                    mTpStatus.setTrackingProtectionStatus(boolValue);
                     params.onThirdPartyCookieToggleChanged.onResult(boolValue);
                     return true;
                 });
@@ -195,12 +194,14 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         for (TrackingProtectionFeature feature : features) {
             if (feature.enforcement == CookieControlsEnforcement.NO_ENFORCEMENT) {
                 regularCount++;
-                mTpStatus.setVisible(feature.featureType, true);
+                mTpStatus.updateStatus(feature, true);
+                mManagedStatus.updateStatus(feature, false);
             } else {
                 // Set the managed title and status to visible if they're not already.
                 mManagedTitle.setVisible(true);
                 mManagedStatus.setVisible(true);
-                mManagedStatus.setVisible(feature.featureType, true, feature.enforcement);
+                mManagedStatus.updateStatus(feature, true);
+                mTpStatus.updateStatus(feature, false);
             }
             if (feature.featureType == TrackingProtectionFeatureType.THIRD_PARTY_COOKIES) {
                 cookiesFeaturePresent = true;
@@ -224,8 +225,6 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         if (!controlsVisible) return;
 
         mTpSwitch.setChecked(protectionsOn);
-        mTpStatus.setTrackingProtectionStatus(protectionsOn);
-        mManagedStatus.setTrackingProtectionStatus(protectionsOn);
 
         boolean permanentException = (expiration == 0);
 

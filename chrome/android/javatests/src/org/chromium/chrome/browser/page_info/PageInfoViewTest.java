@@ -757,6 +757,8 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtectionLaunch() throws IOException {
         setBlockAll3PC(false);
+        // TODO(crbug.com/330745124: Remove when the backend logic is updated for the Launch flag)
+        enableTrackingProtection();
         launchAndCheckTrackingProtectionLaunchUI();
         mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Toggle_Off");
         // Check that the cookie toggle is displayed and try clicking it.
@@ -774,6 +776,7 @@ public class PageInfoViewTest {
     })
     @Features.DisableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING)
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
     public void testShowCookiesSubpageTrackingProtectionLaunchIPP() throws IOException {
         setBlockAll3PC(false);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -799,6 +802,7 @@ public class PageInfoViewTest {
     })
     @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
     public void testShowCookiesSubpageTrackingProtectionLaunchFPP() throws IOException {
         setBlockAll3PC(false);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -824,6 +828,7 @@ public class PageInfoViewTest {
         ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING
     })
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
     public void testShowCookiesSubpageTrackingProtectionLaunchFPPIPP() throws IOException {
         setBlockAll3PC(false);
         TestThreadUtils.runOnUiThreadBlocking(

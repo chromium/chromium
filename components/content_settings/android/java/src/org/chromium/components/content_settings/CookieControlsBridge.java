@@ -89,6 +89,15 @@ public class CookieControlsBridge {
         public @CookieControlsEnforcement int enforcement;
         // The status of the feature (whether it's allowed, blocked, limited, etc).
         public @TrackingProtectionBlockingStatus int status;
+
+        public TrackingProtectionFeature(
+                @TrackingProtectionFeatureType int featureType,
+                @CookieControlsEnforcement int enforcement,
+                @TrackingProtectionBlockingStatus int status) {
+            this.featureType = featureType;
+            this.enforcement = enforcement;
+            this.status = status;
+        }
     }
 
     @CalledByNative
@@ -102,10 +111,8 @@ public class CookieControlsBridge {
             @TrackingProtectionFeatureType int featureType,
             @CookieControlsEnforcement int enforcement,
             @TrackingProtectionBlockingStatus int status) {
-        TrackingProtectionFeature feature = new TrackingProtectionFeature();
-        feature.featureType = featureType;
-        feature.enforcement = enforcement;
-        feature.status = status;
+        TrackingProtectionFeature feature =
+                new TrackingProtectionFeature(featureType, enforcement, status);
 
         if (list != null) list.add(feature);
     }

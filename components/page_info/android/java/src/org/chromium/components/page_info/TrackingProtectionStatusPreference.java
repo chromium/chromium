@@ -4,6 +4,7 @@
 
 package org.chromium.components.page_info;
 
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -14,7 +15,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.components.content_settings.CookieControlsBridge.TrackingProtectionFeature;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
+import org.chromium.components.content_settings.TrackingProtectionBlockingStatus;
 import org.chromium.components.content_settings.TrackingProtectionFeatureType;
 
 import java.util.ArrayList;
@@ -22,15 +25,13 @@ import java.util.List;
 
 public class TrackingProtectionStatusPreference extends Preference {
 
-    private static class ShowAction {
-        public @TrackingProtectionFeatureType int type;
-        public @CookieControlsEnforcement int enforcement;
+    private static class UpdateAction {
+        public TrackingProtectionFeature feature;
+        public boolean visible;
 
-        public ShowAction(
-                @TrackingProtectionFeatureType int type,
-                @CookieControlsEnforcement int enforcement) {
-            this.type = type;
-            this.enforcement = enforcement;
+        public UpdateAction(TrackingProtectionFeature feature, boolean visible) {
+            this.feature = feature;
+            this.visible = visible;
         }
     }
 
@@ -45,7 +46,7 @@ public class TrackingProtectionStatusPreference extends Preference {
 
     private boolean mBlockAll3PC;
     private boolean mStatus;
-    private List<ShowAction> mElementsToShow;
+    private List<UpdateAction> mStatusUpdates;
 
     /** Constructor for Java code. */
     public TrackingProtectionStatusPreference(Context context) {
@@ -55,7 +56,7 @@ public class TrackingProtectionStatusPreference extends Preference {
     /** Constructor from xml. */
     public TrackingProtectionStatusPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mElementsToShow = new ArrayList<ShowAction>();
+        mStatusUpdates = new ArrayList<UpdateAction>();
         mBlockAll3PC = false;
         mStatus = true;
         setLayoutResource(R.layout.tracking_protection_status);
@@ -68,110 +69,146 @@ public class TrackingProtectionStatusPreference extends Preference {
         mCookieStatus = (TextView) holder.findViewById(R.id.cookie_status);
         mIpStatus = (TextView) holder.findViewById(R.id.ip_status);
         mFingerprintStatus = (TextView) holder.findViewById(R.id.fingerprint_status);
-        for (ShowAction action : mElementsToShow) {
-            setVisible(action.type, true, action.enforcement);
+        for (UpdateAction action : mStatusUpdates) {
+            updateStatus(action.feature, action.visible);
         }
-        mElementsToShow.clear();
-        setTrackingProtectionStatus(mStatus);
+        mStatusUpdates.clear();
     }
 
     public void setBlockAll3PC(boolean block) {
         mBlockAll3PC = block;
     }
 
-    public void setVisible(@TrackingProtectionFeatureType int type, boolean visible) {
-        setVisible(type, visible, CookieControlsEnforcement.NO_ENFORCEMENT);
-    }
-
-    public void setVisible(
-            @TrackingProtectionFeatureType int type,
-            boolean visible,
-            @CookieControlsEnforcement int enforcement) {
-        // View is not created completely. Delay this until it is.
-        if (mCookieStatus == null) {
-            // Initially everything is hidden, so only need to remember what to show.
-            if (!visible) return;
-            var action = new ShowAction(type, enforcement);
-            mElementsToShow.add(action);
-            return;
-        }
-        Drawable managedIcon = null;
+    private Drawable managedIconForEnforcement(@CookieControlsEnforcement int enforcement) {
         switch (enforcement) {
             case CookieControlsEnforcement.NO_ENFORCEMENT:
             case CookieControlsEnforcement.ENFORCED_BY_EXTENSION:
             case CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT:
-                managedIcon = null;
-                break;
+                return null;
             case CookieControlsEnforcement.ENFORCED_BY_POLICY:
-                managedIcon =
-                        AppCompatResources.getDrawable(getContext(), R.drawable.enterprise_icon);
-                break;
+                return AppCompatResources.getDrawable(getContext(), R.drawable.enterprise_icon);
             case CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING:
-                managedIcon =
-                        AppCompatResources.getDrawable(
-                                getContext(), R.drawable.ic_settings_gear_24dp);
-                break;
+                return AppCompatResources.getDrawable(
+                        getContext(), R.drawable.ic_settings_gear_24dp);
             default:
                 assert false : "Invalid CookieControlsEnforcement value";
-        }
-        int visibility = visible ? View.VISIBLE : View.GONE;
-        switch (type) {
-            case TrackingProtectionFeatureType.THIRD_PARTY_COOKIES:
-                mCookieStatus.setVisibility(visibility);
-                mManagedCookieIcon = managedIcon;
-                return;
-            case TrackingProtectionFeatureType.FINGERPRINTING_PROTECTION:
-                mFingerprintStatus.setVisibility(visibility);
-                mManagedFingerprintIcon = managedIcon;
-                return;
-            case TrackingProtectionFeatureType.IP_PROTECTION:
-                mIpStatus.setVisibility(visibility);
-                mManagedIpIcon = managedIcon;
-                return;
-            default:
-                assert false : "Invalid TrackingProtectionFeatureType";
+                return null;
         }
     }
 
-    public void setTrackingProtectionStatus(boolean enabled) {
-        mStatus = enabled;
-        // View is not created completely. Delay this until it is.
-        if (mCookieStatus == null) return;
-
-        Drawable cookieIcon =
-                AppCompatResources.getDrawable(
-                        getContext(), enabled ? R.drawable.tp_cookie_off : R.drawable.tp_cookie);
-        Drawable ipIcon =
-                AppCompatResources.getDrawable(
-                        getContext(), enabled ? R.drawable.tp_ip_off : R.drawable.tp_ip);
-        Drawable fingerprintIcon =
-                AppCompatResources.getDrawable(
-                        getContext(),
-                        enabled ? R.drawable.tp_fingerprint_off : R.drawable.tp_fingerprint);
-
-        if (enabled) {
-            mCookieStatus.setText(
-                    mBlockAll3PC
-                            ? R.string.page_info_tracking_protection_site_info_button_label_blocked
-                            : R.string
-                                    .page_info_tracking_protection_site_info_button_label_limited);
-        } else {
-            mCookieStatus.setText(
-                    R.string.page_info_tracking_protection_site_info_button_label_allowed);
+    private int statusIconForFeature(TrackingProtectionFeature feature) {
+        switch (feature.featureType) {
+            case TrackingProtectionFeatureType.THIRD_PARTY_COOKIES:
+                switch (feature.status) {
+                    case TrackingProtectionBlockingStatus.ALLOWED:
+                        return R.drawable.tp_cookie;
+                    case TrackingProtectionBlockingStatus.BLOCKED:
+                    case TrackingProtectionBlockingStatus.LIMITED:
+                        return R.drawable.tp_cookie_off;
+                    default:
+                        assert false : "Invalid TrackingProtectionBlockingStatus value for 3PC";
+                        return 0;
+                }
+            case TrackingProtectionFeatureType.FINGERPRINTING_PROTECTION:
+                switch (feature.status) {
+                    case TrackingProtectionBlockingStatus.ALLOWED:
+                        return R.drawable.tp_fingerprint;
+                    case TrackingProtectionBlockingStatus.LIMITED:
+                        return R.drawable.tp_fingerprint_off;
+                    default:
+                        assert false : "Invalid TrackingProtectionBlockingStatus value for FPP";
+                        return 0;
+                }
+            case TrackingProtectionFeatureType.IP_PROTECTION:
+                switch (feature.status) {
+                    case TrackingProtectionBlockingStatus.VISIBLE:
+                        return R.drawable.tp_ip;
+                    case TrackingProtectionBlockingStatus.HIDDEN:
+                        return R.drawable.tp_ip_off;
+                    default:
+                        assert false : "Invalid TrackingProtectionBlockingStatus value for IPP";
+                        return 0;
+                }
+            default:
+                assert false : "Invalid TrackingProtectionFeatureType";
+                return 0;
         }
-        mCookieStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                cookieIcon, null, mManagedCookieIcon, null);
-        mIpStatus.setText(
-                enabled
-                        ? R.string.page_info_tracking_protection_ip_protection_on
-                        : R.string.page_info_tracking_protection_ip_protection_off);
-        mIpStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                ipIcon, null, mManagedIpIcon, null);
-        mFingerprintStatus.setText(
-                enabled
-                        ? R.string.page_info_tracking_protection_anti_fingerprinting_on
-                        : R.string.page_info_tracking_protection_anti_fingerprinting_off);
-        mFingerprintStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                fingerprintIcon, null, mManagedFingerprintIcon, null);
+    }
+
+    private int statusStringForFeature(TrackingProtectionFeature feature) {
+        switch (feature.featureType) {
+            case TrackingProtectionFeatureType.THIRD_PARTY_COOKIES:
+                switch (feature.status) {
+                    case TrackingProtectionBlockingStatus.ALLOWED:
+                        return R.string
+                                .page_info_tracking_protection_site_info_button_label_allowed;
+                    case TrackingProtectionBlockingStatus.BLOCKED:
+                        return R.string
+                                .page_info_tracking_protection_site_info_button_label_blocked;
+                    case TrackingProtectionBlockingStatus.LIMITED:
+                        return R.string
+                                .page_info_tracking_protection_site_info_button_label_limited;
+                    default:
+                        assert false : "Invalid TrackingProtectionBlockingStatus value for 3PC";
+                        return 0;
+                }
+            case TrackingProtectionFeatureType.FINGERPRINTING_PROTECTION:
+                switch (feature.status) {
+                    case TrackingProtectionBlockingStatus.ALLOWED:
+                        return R.string.page_info_tracking_protection_anti_fingerprinting_off;
+                    case TrackingProtectionBlockingStatus.LIMITED:
+                        return R.string.page_info_tracking_protection_anti_fingerprinting_on;
+                    default:
+                        assert false : "Invalid TrackingProtectionBlockingStatus value for FPP";
+                        return 0;
+                }
+            case TrackingProtectionFeatureType.IP_PROTECTION:
+                switch (feature.status) {
+                    case TrackingProtectionBlockingStatus.VISIBLE:
+                        return R.string.page_info_tracking_protection_ip_protection_off;
+                    case TrackingProtectionBlockingStatus.HIDDEN:
+                        return R.string.page_info_tracking_protection_ip_protection_on;
+                    default:
+                        assert false : "Invalid TrackingProtectionBlockingStatus value for IPP";
+                        return 0;
+                }
+            default:
+                assert false : "Invalid TrackingProtectionFeatureType";
+                return 0;
+        }
+    }
+
+    public void updateStatus(TrackingProtectionFeature feature, boolean visible) {
+        // View is not created completely. Delay this until it is.
+        if (mCookieStatus == null) {
+            var action = new UpdateAction(feature, visible);
+            mStatusUpdates.add(action);
+            return;
+        }
+        // Fetch the individual UI elements corresponding to the new state.
+        Drawable statusIcon =
+                AppCompatResources.getDrawable(getContext(), statusIconForFeature(feature));
+        int stringRes = statusStringForFeature(feature);
+        Drawable managedIcon = managedIconForEnforcement(feature.enforcement);
+        int visibility = visible ? View.VISIBLE : View.GONE;
+
+        TextView viewToUpdate = null;
+        switch (feature.featureType) {
+            case TrackingProtectionFeatureType.THIRD_PARTY_COOKIES:
+                viewToUpdate = mCookieStatus;
+                break;
+            case TrackingProtectionFeatureType.FINGERPRINTING_PROTECTION:
+                viewToUpdate = mFingerprintStatus;
+                break;
+            case TrackingProtectionFeatureType.IP_PROTECTION:
+                viewToUpdate = mIpStatus;
+                break;
+            default:
+                assert false : "Invalid TrackingProtectionFeatureType";
+        }
+        viewToUpdate.setVisibility(visibility);
+        viewToUpdate.setText(stringRes);
+        viewToUpdate.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                statusIcon, null, managedIcon, null);
     }
 }

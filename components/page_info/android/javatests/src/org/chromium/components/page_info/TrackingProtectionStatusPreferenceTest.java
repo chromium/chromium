@@ -26,10 +26,13 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
+import org.chromium.components.content_settings.CookieControlsBridge.TrackingProtectionFeature;
+import org.chromium.components.content_settings.CookieControlsEnforcement;
+import org.chromium.components.content_settings.TrackingProtectionBlockingStatus;
 import org.chromium.components.content_settings.TrackingProtectionFeatureType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Tests for TrackingProtectionStatusPreference. */
@@ -40,14 +43,20 @@ public class TrackingProtectionStatusPreferenceTest {
         public @TrackingProtectionFeatureType int feature;
         public String protectionOn;
         public String protectionOff;
+        public @TrackingProtectionBlockingStatus int statusOn;
+        public @TrackingProtectionBlockingStatus int statusOff;
 
         public TestElement(
                 @TrackingProtectionFeatureType int feature,
                 String protectionOn,
-                String protectionOff) {
+                String protectionOff,
+                @TrackingProtectionBlockingStatus int statusOn,
+                @TrackingProtectionBlockingStatus int statusOff) {
             this.feature = feature;
             this.protectionOn = protectionOn;
             this.protectionOff = protectionOff;
+            this.statusOn = statusOn;
+            this.statusOff = statusOff;
         }
     }
 
@@ -68,22 +77,26 @@ public class TrackingProtectionStatusPreferenceTest {
     }
 
     void populateTestElements() {
-        mTestElements = new ArrayList<TestElement>();
-        mTestElements.add(
-                new TestElement(
-                        TrackingProtectionFeatureType.THIRD_PARTY_COOKIES,
-                        "Third-party cookies limited",
-                        "Third-party cookies allowed"));
-        mTestElements.add(
-                new TestElement(
-                        TrackingProtectionFeatureType.FINGERPRINTING_PROTECTION,
-                        "Digital fingerprinting limited",
-                        "Digital fingerprinting allowed"));
-        mTestElements.add(
-                new TestElement(
-                        TrackingProtectionFeatureType.IP_PROTECTION,
-                        "IP address hidden",
-                        "IP address visible"));
+        mTestElements =
+                Arrays.asList(
+                        new TestElement(
+                                TrackingProtectionFeatureType.THIRD_PARTY_COOKIES,
+                                "Third-party cookies limited",
+                                "Third-party cookies allowed",
+                                TrackingProtectionBlockingStatus.LIMITED,
+                                TrackingProtectionBlockingStatus.ALLOWED),
+                        new TestElement(
+                                TrackingProtectionFeatureType.FINGERPRINTING_PROTECTION,
+                                "Digital fingerprinting limited",
+                                "Digital fingerprinting allowed",
+                                TrackingProtectionBlockingStatus.LIMITED,
+                                TrackingProtectionBlockingStatus.ALLOWED),
+                        new TestElement(
+                                TrackingProtectionFeatureType.IP_PROTECTION,
+                                "IP address hidden",
+                                "IP address visible",
+                                TrackingProtectionBlockingStatus.HIDDEN,
+                                TrackingProtectionBlockingStatus.VISIBLE));
     }
 
     @Test
@@ -91,23 +104,34 @@ public class TrackingProtectionStatusPreferenceTest {
     public void testToggleTrackingProtection() {
         var preference = new TrackingProtectionStatusPreference(mActivity);
         mPreferenceScreen.addPreference(preference);
-        // Set all the features to visible.
-        for (TestElement element : mTestElements) {
-            preference.setVisible(element.feature, true);
-        }
         // 3PCD are limited and not completely blocked.
         preference.setBlockAll3PC(false);
-        // Tracking Protection is on.
-        preference.setTrackingProtectionStatus(true);
+        // Simulate updates as if Tracking Protection is on.
+        for (TestElement element : mTestElements) {
+            preference.updateStatus(
+                    new TrackingProtectionFeature(
+                            element.feature,
+                            CookieControlsEnforcement.NO_ENFORCEMENT,
+                            element.statusOn),
+                    true);
+        }
 
         // Check each element is there and in the correct state.
         for (TestElement element : mTestElements) {
             onView(withText(containsString(element.protectionOn))).check(matches(isDisplayed()));
         }
 
+        // Simulate updates as if Tracking Protection is off.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    preference.setTrackingProtectionStatus(false);
+                    for (TestElement element : mTestElements) {
+                        preference.updateStatus(
+                                new TrackingProtectionFeature(
+                                        element.feature,
+                                        CookieControlsEnforcement.NO_ENFORCEMENT,
+                                        element.statusOff),
+                                true);
+                    }
                 });
         // Check each element is there and in the protection off state.
         for (TestElement element : mTestElements) {
@@ -122,21 +146,29 @@ public class TrackingProtectionStatusPreferenceTest {
         mPreferenceScreen.addPreference(preference);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Set all the features to visible.
-                    for (TestElement element : mTestElements) {
-                        preference.setVisible(element.feature, true);
-                    }
                     // 3PCD are limited and not completely blocked.
                     preference.setBlockAll3PC(false);
-                    // Tracking Protection is on.
-                    preference.setTrackingProtectionStatus(true);
+                    // Set all the features to visible.
+                    for (TestElement element : mTestElements) {
+                        preference.updateStatus(
+                                new TrackingProtectionFeature(
+                                        element.feature,
+                                        CookieControlsEnforcement.NO_ENFORCEMENT,
+                                        element.statusOn),
+                                true);
+                    }
                 });
 
         // Check that hiding each element works.
         for (TestElement element : mTestElements) {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        preference.setVisible(element.feature, false);
+                        preference.updateStatus(
+                                new TrackingProtectionFeature(
+                                        element.feature,
+                                        CookieControlsEnforcement.NO_ENFORCEMENT,
+                                        element.statusOn),
+                                false);
                     });
             onView(withText(containsString(element.protectionOn)))
                     .check(matches(not(isDisplayed())));
@@ -150,7 +182,12 @@ public class TrackingProtectionStatusPreferenceTest {
             // Reenable.
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        preference.setVisible(element.feature, true);
+                        preference.updateStatus(
+                                new TrackingProtectionFeature(
+                                        element.feature,
+                                        CookieControlsEnforcement.NO_ENFORCEMENT,
+                                        element.statusOn),
+                                true);
                     });
             onView(withText(containsString(element.protectionOn))).check(matches(isDisplayed()));
         }
@@ -160,14 +197,17 @@ public class TrackingProtectionStatusPreferenceTest {
     @LargeTest
     public void testDelayedVisibility() {
         var preference = new TrackingProtectionStatusPreference(mActivity);
-        // Set all the features to visible.
-        for (TestElement element : mTestElements) {
-            preference.setVisible(element.feature, true);
-        }
         // 3PCD are limited and not completely blocked.
         preference.setBlockAll3PC(false);
-        // Tracking Protection is on.
-        preference.setTrackingProtectionStatus(true);
+        // Set all the features to visible.
+        for (TestElement element : mTestElements) {
+            preference.updateStatus(
+                    new TrackingProtectionFeature(
+                            element.feature,
+                            CookieControlsEnforcement.NO_ENFORCEMENT,
+                            element.statusOn),
+                    true);
+        }
 
         // Only add to the PreferenceScreen after configuring.
         mPreferenceScreen.addPreference(preference);
