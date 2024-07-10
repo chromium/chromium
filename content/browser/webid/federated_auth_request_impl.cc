@@ -1213,13 +1213,9 @@ void FederatedAuthRequestImpl::OnIdpSigninStatusReceived(
     return;
   }
 
-  // Since the user has gone through the IDP login flow with this IDP, the next
-  // accounts dialog will only include this IDP.
-  idp_order_.clear();
   for (const auto& [get_idp_config_url, get_info] : token_request_get_infos_) {
     if (url::Origin::Create(get_idp_config_url) == idp_config_origin) {
       permission_delegate_->RemoveIdpSigninStatusObserver(this);
-      idp_order_.push_back(get_idp_config_url);
       FetchEndpointsForIdps({get_idp_config_url}, /*for_idp_signin=*/true);
       break;
     }
@@ -1570,24 +1566,25 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
         IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kButton)) {
       if (!login_url_.is_empty() &&
           login_url_ == idp_info_it->second->metadata.idp_login_url) {
-        std::vector<IdentityRequestAccount> reordered_accounts_list;
+        std::vector<IdentityRequestAccount> new_accounts_list;
+        std::vector<IdentityRequestAccount> old_accounts_list;
         for (const auto& account : idp_info_it->second->data->accounts) {
           if (!account_ids_before_login_.contains(account.id)) {
-            // Even though it is theoretically possible for more than one
-            // account to be new, just show the first one we encounter.
-            // TODO(crbug.com/342194490): Consider case when there's more than
-            // one newly signed in account.
-            new_account_idp = idp_info_it->second->data;
-            new_account_idp->accounts = {account};
-            reordered_accounts_list.emplace(reordered_accounts_list.begin(),
-                                            account);
+            new_accounts_list.emplace_back(account);
           } else {
-            reordered_accounts_list.emplace_back(account);
+            old_accounts_list.emplace_back(account);
           }
         }
         account_ids_before_login_.clear();
-        idp_info_it->second->data->accounts =
-            std::move(reordered_accounts_list);
+        if (!new_accounts_list.empty()) {
+          new_account_idp = idp_info_it->second->data;
+          new_account_idp->accounts = new_accounts_list;
+          new_accounts_list.insert(
+              new_accounts_list.end(),
+              std::make_move_iterator(old_accounts_list.begin()),
+              std::make_move_iterator(old_accounts_list.end()));
+          idp_info_it->second->data->accounts = std::move(new_accounts_list);
+        }
       }
     }
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {

@@ -242,7 +242,10 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       AccountSelectionViewBase(web_contents,
                                observer,
                                widget_observer,
-                               std::move(url_loader_factory)) {
+                               std::move(url_loader_factory)),
+      top_frame_for_display_(top_frame_for_display),
+      iframe_for_display_(iframe_for_display),
+      rp_context_(rp_context) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(kBubbleWidth);
   set_margins(idp_title.has_value()
@@ -264,15 +267,14 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       idp_title.has_value() ||
       base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
 
-  rp_context_ = rp_context;
-  title_ = webid::GetTitle(top_frame_for_display, iframe_for_display, idp_title,
-                           rp_context);
+  title_ = webid::GetTitle(top_frame_for_display_, iframe_for_display_,
+                           idp_title, rp_context);
   accessible_title_ = webid::GetAccessibleTitle(
-      top_frame_for_display, iframe_for_display, idp_title, rp_context);
+      top_frame_for_display_, iframe_for_display_, idp_title, rp_context_);
   SetAccessibleTitle(accessible_title_);
 
   if (iframe_for_display.has_value()) {
-    subtitle_ = webid::GetSubtitle(top_frame_for_display);
+    subtitle_ = webid::GetSubtitle(top_frame_for_display_);
   }
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -310,7 +312,14 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
   // passed will be unused since there will be no `header_icon_view_`.
   // Therefore, it is fine to pass the first one into UpdateHeader().
   DCHECK(idp_display_data_list.size() == 1u || !header_icon_view_);
-  UpdateHeader(idp_display_data_list[0].idp_metadata, title_, subtitle_,
+  std::u16string title =
+      webid::GetTitle(top_frame_for_display_, iframe_for_display_,
+                      idp_display_data_list.size() > 1u
+                          ? std::nullopt
+                          : std::make_optional<std::u16string>(
+                                idp_display_data_list[0].idp_etld_plus_one),
+                      rp_context_);
+  UpdateHeader(idp_display_data_list[0].idp_metadata, title, subtitle_,
                show_back_button);
 
   RemoveNonHeaderChildViews();

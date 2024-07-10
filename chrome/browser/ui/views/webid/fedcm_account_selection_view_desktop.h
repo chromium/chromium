@@ -192,6 +192,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     // select an account.
     MULTI_ACCOUNT_PICKER,
 
+    // User is shown the list of newly logged in accounts. Used when the user
+    // logs in to an IDP.
+    NEWLY_LOGGED_IN_ACCOUNT_PICKER,
+
     // User is prompted to grant permission for a specific account they have
     // with IDP to communicate with RP on the button flow modal.
     REQUEST_PERMISSION,
@@ -320,8 +324,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   std::vector<IdentityProviderDisplayData> idp_display_data_list_;
 
   // This class needs to own the IDP display data for a newly logged in account
-  // since the AccountSelectionBubbleView does not take ownership.
-  std::optional<IdentityProviderDisplayData> new_account_idp_display_data_;
+  // since the AccountSelectionBubbleView does not take ownership. This is a
+  // vector so it is easy to pass to CreateMultipleAccountChooser in case there
+  // are multiple accounts, but it is size 0 when there are no new accounts and
+  // size 1 when there are new accounts.
+  std::vector<IdentityProviderDisplayData> new_account_idp_display_data_;
 
   std::u16string top_frame_for_display_;
 

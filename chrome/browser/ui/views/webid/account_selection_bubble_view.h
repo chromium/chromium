@@ -179,6 +179,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // The initial subtitle for the dialog.
   std::u16string subtitle_;
 
+  // The descriptions of the frames to be used in the dialog.
+  std::u16string top_frame_for_display_;
+  std::optional<std::u16string> iframe_for_display_;
+
   // The relying party context to show in the title.
   blink::mojom::RpContext rp_context_;
 

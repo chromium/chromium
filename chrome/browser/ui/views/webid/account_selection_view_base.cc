@@ -285,7 +285,6 @@ class AccountHoverButton : public HoverButton {
   void OnPressed(const ui::Event& event) {
     // Log the metric before invoking the callback since the callback may
     // destroy this object.
-    LOG(ERROR) << button_position_;
     base::UmaHistogramCustomCounts("Blink.FedCm.AccountChosenPosition.Desktop",
                                    button_position_,
                                    /*min=*/0,

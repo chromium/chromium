@@ -127,10 +127,13 @@ bool FedCmAccountSelectionView::Show(
   idp_display_data_list_.clear();
   started_as_single_returning_account_ = false;
 
-  size_t accounts_size = 0u;
+  size_t accounts_or_mismatches_size = 0u;
+  bool supports_add_account = false;
   size_t returning_accounts_size = 0u;
   blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn;
   for (const auto& identity_provider : identity_provider_data_list) {
+    DCHECK(identity_provider.accounts.size() ||
+           identity_provider.has_login_status_mismatch);
     idp_display_data_list_.emplace_back(
         base::UTF8ToUTF16(identity_provider.idp_for_display),
         identity_provider.idp_metadata, identity_provider.client_metadata,
@@ -139,7 +142,11 @@ bool FedCmAccountSelectionView::Show(
     // TODO(crbug.com/40252518): Decide what we should display if the IdPs use
     // different contexts here.
     rp_context = identity_provider.rp_context;
-    accounts_size += identity_provider.accounts.size();
+    // If `identity_provider` has no accounts, we show the login button for it.
+    accounts_or_mismatches_size += identity_provider.accounts.size()
+                                       ? identity_provider.accounts.size()
+                                       : 1u;
+    supports_add_account |= identity_provider.idp_metadata.supports_add_account;
     returning_accounts_size += std::count_if(
         identity_provider.accounts.begin(), identity_provider.accounts.end(),
         [](const auto& account) {
@@ -200,12 +207,14 @@ bool FedCmAccountSelectionView::Show(
   } else if (new_account_idp) {
     // When we just logged in to an account that is not a single returning
     // account: on the modal, we'd show all the accounts and on the bubble, we'd
-    // show only that account.
-    new_account_idp_display_data_ = IdentityProviderDisplayData(
+    // show only the new accounts.
+    new_account_idp_display_data_ = {IdentityProviderDisplayData(
         base::UTF8ToUTF16(new_account_idp->idp_for_display),
         new_account_idp->idp_metadata, new_account_idp->client_metadata,
         new_account_idp->accounts, new_account_idp->request_permission,
-        new_account_idp->has_login_status_mismatch);
+        new_account_idp->has_login_status_mismatch)};
+    const IdentityProviderDisplayData& new_idp_data =
+        new_account_idp_display_data_[0];
 
     if (GetDialogType() == DialogType::MODAL) {
       // TODO(crbug.com/342194490): Consider case when there's more than one
@@ -216,21 +225,19 @@ bool FedCmAccountSelectionView::Show(
       // logged in with a returning account from the LOADING state, we do not
       // skip the next UI when mediation mode is `required` because there was
       // not user mediation acquired yet in this case.
-      bool should_skip_dialog = new_account_idp_display_data_->accounts[0]
-                                        .browser_trusted_login_state ==
-                                    Account::LoginState::kSignIn &&
-                                state_ != State::LOADING;
+      bool should_skip_dialog =
+          new_idp_data.accounts[0].browser_trusted_login_state ==
+              Account::LoginState::kSignIn &&
+          state_ != State::LOADING;
       // The IDP claimed login state controls whether we show disclosure text,
       // if we do not skip the next dialog.
       bool should_hide_disclosure_text =
-          new_account_idp_display_data_->accounts[0].login_state ==
-          Account::LoginState::kSignIn;
+          new_idp_data.accounts[0].login_state == Account::LoginState::kSignIn;
 
       if (should_skip_dialog) {
         state_ = State::VERIFYING;
         // ShowVerifyingSheet will call delegate_->OnAccountSelected to proceed.
-        if (!ShowVerifyingSheet(new_account_idp_display_data_->accounts[0],
-                                *new_account_idp_display_data_)) {
+        if (!ShowVerifyingSheet(new_idp_data.accounts[0], new_idp_data)) {
           return false;
         }
       } else if (should_hide_disclosure_text) {
@@ -247,25 +254,33 @@ bool FedCmAccountSelectionView::Show(
       } else {
         state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(
-            top_frame_for_display_, new_account_idp_display_data_->accounts[0],
-            *new_account_idp_display_data_);
+            top_frame_for_display_, new_idp_data.accounts[0], new_idp_data);
       }
     } else {
-      state_ = State::SINGLE_ACCOUNT_PICKER;
-      account_selection_view_->ShowSingleAccountConfirmDialog(
-          top_frame_for_display_, iframe_for_display_,
-          new_account_idp_display_data_->accounts[0],
-          *new_account_idp_display_data_,
-          /*show_back_button=*/accounts_size > 1u);
+      if (new_idp_data.accounts.size() == 1u) {
+        state_ = State::SINGLE_ACCOUNT_PICKER;
+        account_selection_view_->ShowSingleAccountConfirmDialog(
+            top_frame_for_display_, iframe_for_display_,
+            new_idp_data.accounts[0], new_idp_data,
+            /*show_back_button=*/accounts_or_mismatches_size > 1u ||
+                supports_add_account);
+      } else {
+        state_ = State::NEWLY_LOGGED_IN_ACCOUNT_PICKER;
+        account_selection_view_->ShowMultiAccountPicker(
+            new_account_idp_display_data_,
+            /*show_back_button=*/accounts_or_mismatches_size >
+                new_idp_data.accounts.size());
+      }
     }
-  } else if (idp_display_data_list_.size() == 1u && accounts_size == 1u) {
+  } else if (idp_display_data_list_.size() == 1u &&
+             accounts_or_mismatches_size == 1u) {
     if (GetDialogType() == DialogType::MODAL) {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
           top_frame_for_display_, iframe_for_display_,
           idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
           /*show_back_button=*/false);
-    } else if (idp_display_data_list_[0].idp_metadata.supports_add_account) {
+    } else if (supports_add_account) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
       state_ = State::MULTI_ACCOUNT_PICKER;

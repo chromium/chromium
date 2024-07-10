@@ -525,9 +525,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   FetchData fetch_data_;
 
   // List of config URLs of IDPs in the same order as the providers specified in
-  // the navigator.credentials.get call. This vector is reset to a single IDP
-  // when the user logins to an IDP, so as to only show the newly logged in
-  // account.
+  // the navigator.credentials.get call.
   std::vector<GURL> idp_order_;
 
   // If dialog_type_ is kConfirmIdpLogin, this is the login URL for the IDP. If
