@@ -107,6 +107,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/login/auth",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
@@ -117,9 +118,6 @@ static_library("app_mode") {
     "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth/public:authpublic",
-
-    # TODO(b/335293584): Remove dep on connections manager with c/b/a/login/ui.
-    "//chromeos/ash/components/nearby/common/connections_manager",
     "//components/crx_file",
     "//components/ownership",
     "//components/policy:policy_code_generate",
@@ -139,6 +137,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/ui",
   ]
 }
 

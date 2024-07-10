@@ -251,6 +251,7 @@ static_library("screens") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/login/smart_lock",
+    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/sync",
@@ -324,6 +325,7 @@ static_library("screens") {
     "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/ui",
   ]
 }
 
@@ -452,6 +454,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/screens/chromevox_hint",
+    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/profiles:profile",

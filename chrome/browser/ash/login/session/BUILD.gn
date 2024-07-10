@@ -155,6 +155,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/ui",
     "//chrome/browser/google",
     "//chrome/browser/ui",
     "//chrome/common:non_code_constants",

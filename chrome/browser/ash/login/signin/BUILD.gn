@@ -109,6 +109,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/ui",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/ui",
     "//chrome/common:constants",

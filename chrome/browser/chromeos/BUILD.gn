@@ -766,6 +766,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:test_support",
+      "//chrome/browser/ash/login/ui:test_support",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/system_web_apps/test_support:test_support",
       "//chrome/browser/extensions:test_support",

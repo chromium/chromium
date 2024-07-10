@@ -19,6 +19,7 @@ static_library("first_run") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -41,5 +42,8 @@ static_library("first_run") {
     "//url",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/ui",
+  ]
 }

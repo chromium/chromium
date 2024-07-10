@@ -18,6 +18,7 @@ static_library("events") {
     "//ash/public/cpp",
     "//ash/public/mojom",
     "//base",
+    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/extensions",
     "//chrome/common",
