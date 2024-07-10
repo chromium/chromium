@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
@@ -385,6 +387,8 @@ public class WarmupManager {
         CctContextWrapper context =
                 new CctContextWrapper(
                         applyContextOverrides(baseContext), ActivityUtils.getThemeId());
+        applyThemeOverlays(context);
+
         mMainView = inflateViewHierarchy(context, toolbarContainerId, toolbarId);
         mToolbarContainerId = toolbarContainerId;
     }
@@ -397,7 +401,27 @@ public class WarmupManager {
             DisplayUtil.scaleUpConfigurationForAutomotive(baseContext, config);
             return baseContext.createConfigurationContext(config);
         }
+
         return baseContext;
+    }
+
+    static void applyThemeOverlays(Context context) {
+        // TODO(twellington): Look at improving code sharing with ChromeBaseAppCompatActivity
+        // if the number of these overlays grows. The two below are experimental / are planned to be
+        // removed by mid 2025 or sooner.
+        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()) {
+            int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
+            context.getTheme().applyStyle(elegantTextHeightOverlay, true);
+        }
+
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU
+                && ChromeFeatureList.sAndroidGoogleSansText.isEnabled()) {
+            int defaultFontFamilyOverlay =
+                    ChromeBaseAppCompatActivity.DEFAULT_FONT_FAMILY_TESTING.getValue()
+                            ? R.style.ThemeOverlay_BrowserUI_DevTestingDefaultFontFamilyThemeOverlay
+                            : R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
+            context.getTheme().applyStyle(defaultFontFamilyOverlay, true);
+        }
     }
 
     /**

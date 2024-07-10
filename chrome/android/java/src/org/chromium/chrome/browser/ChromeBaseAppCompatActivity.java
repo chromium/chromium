@@ -321,6 +321,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /** Apply theme overlay to this activity class. */
     @CallSuper
     protected void applyThemeOverlays() {
+        // Note that if you're adding new overlays here, it's quite likely they're needed
+        // in org.chromium.chrome.browser.WarmupManager#applyContextOverrides for Custom Tabs
+        // UI that's pre-inflated using a themed application context as part of CCT warmup.
         DynamicColors.applyToActivityIfAvailable(this);
 
         DeferredStartupHandler.getInstance()
