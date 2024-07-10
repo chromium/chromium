@@ -250,6 +250,7 @@ static_library("screens") {
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/signin",
+    "//chrome/browser/ash/login/smart_lock",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/sync",

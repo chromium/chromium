@@ -8808,6 +8808,7 @@ test("unit_tests") {
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/input_method",
       "//chrome/browser/ash/login/quick_unlock",
+      "//chrome/browser/ash/login/smart_lock",
       "//chrome/browser/ash/magic_boost",
       "//chrome/browser/ash/magic_boost:test_support",
       "//chrome/browser/ash/multidevice_setup",
