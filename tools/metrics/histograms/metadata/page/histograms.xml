@@ -939,6 +939,7 @@ chromium-metrics-reviews@google.com.
     for the navigation is emitted when the navigation finishes committing or it
     gets abandoned for the first time.
   </summary>
+  <token key="NavigationMilestone" variants="NavigationMilestone"/>
 </histogram>
 
 <histogram
@@ -955,6 +956,8 @@ chromium-metrics-reviews@google.com.
     before the abandonment). The metric is emitted when the navigation gets
     abandoned for the first time.
   </summary>
+  <token key="NavigationMilestone" variants="NavigationMilestone"/>
+  <token key="NavigationAbandonReason" variants="NavigationAbandonReason"/>
 </histogram>
 
 <histogram
