@@ -136,20 +136,33 @@ std::optional<PaddingSizes> CalculateExplicitPaddingForSamePaddingMode(
     uint32_t input_size,
     uint32_t filter_size,
     uint32_t stride,
-    uint32_t dilation) {
-  auto checked_output_size =
-      (base::MakeCheckedNum<uint32_t>(input_size) + stride - 1) / stride;
+    uint32_t dilation,
+    bool is_transposed_conv2d) {
   auto checked_dilated_filter_size =
       (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  auto checked_needed_input_size =
-      (checked_output_size - 1) * stride + checked_dilated_filter_size;
-  if (!checked_needed_input_size.IsValid()) {
-    return std::nullopt;
+  auto checked_input_size = base::MakeCheckedNum<uint32_t>(input_size);
+  base::CheckedNumeric<uint32_t> checked_total_padding;
+  if (is_transposed_conv2d) {
+    // The checked_total_padding (beginningPadding + endingPadding) can be
+    // calculated from the expression `outputSize = (inputSize - 1) * stride +
+    // (filterSize - 1) * dilation + 1 - beginningPadding - endingPadding` that
+    // is documented in the section of computing convtranspose output size:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-convtranspose2d
+    checked_total_padding = (checked_input_size - 1) * stride +
+                            checked_dilated_filter_size -
+                            checked_input_size * stride;
+  } else {
+    auto checked_output_size = (checked_input_size + stride - 1) / stride;
+    auto checked_needed_input_size =
+        (checked_output_size - 1) * stride + checked_dilated_filter_size;
+    if (!checked_needed_input_size.IsValid()) {
+      return std::nullopt;
+    }
+    checked_total_padding = checked_needed_input_size.ValueOrDie() > input_size
+                                ? checked_needed_input_size - input_size
+                                : base::MakeCheckedNum<uint32_t>(0);
   }
-  auto checked_total_padding =
-      checked_needed_input_size.ValueOrDie() > input_size
-          ? checked_needed_input_size - input_size
-          : base::MakeCheckedNum<uint32_t>(0);
+
   // Same upper padding.
   auto checked_padding_begin = checked_total_padding / 2;
   auto checked_padding_end = (checked_total_padding + 1) / 2;
@@ -173,7 +186,8 @@ base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
     const webnn::Size2d<uint32_t>& input,
     const webnn::Size2d<uint32_t>& filter,
     const mojom::Size2d& stride,
-    const mojom::Size2d& dilation) {
+    const mojom::Size2d& dilation,
+    bool is_transposed_conv2d) {
   // WebNN explicit padding is in [beginning_height, ending_height,
   // beginning_width, ending_width] sequence.
   std::array<uint32_t, 4> explicit_padding = {
@@ -188,9 +202,11 @@ base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
   // operator need to be inserted if the calculated padding are not the same as
   // explicit padding.
   const auto padding_height = CalculateExplicitPaddingForSamePaddingMode(
-      input.height, filter.height, stride.height, dilation.height);
+      input.height, filter.height, stride.height, dilation.height,
+      is_transposed_conv2d);
   const auto padding_width = CalculateExplicitPaddingForSamePaddingMode(
-      input.width, filter.width, stride.width, dilation.width);
+      input.width, filter.width, stride.width, dilation.width,
+      is_transposed_conv2d);
   if (!padding_height || !padding_width) {
     return base::unexpected("Failed to calculate explicit padding.");
   }
@@ -1079,7 +1095,8 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
   ASSIGN_OR_RETURN(
       TfLitePadding padding_mode,
       GetTfLitePaddingMode(*conv2d.padding, input_size2d, filter_size2d,
-                           *conv2d.strides, *conv2d.dilations));
+                           *conv2d.strides, *conv2d.dilations,
+                           conv2d.kind == mojom::Conv2d::Kind::kTransposed));
   const int32_t input_index = operand_to_index_map_.at(conv2d.input_operand_id);
   // Insert a Pad operator before TfLite Conv2d if needed for explicit padding.
   std::optional<int32_t> explicit_pad_index;
@@ -1915,7 +1932,8 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
   ASSIGN_OR_RETURN(
       TfLitePadding padding_mode,
       GetTfLitePaddingMode(*pool2d.padding, input_size2d, filter_size2d,
-                           *pool2d.strides, *pool2d.dilations));
+                           *pool2d.strides, *pool2d.dilations,
+                           /*is_transposed_conv2d=*/false));
   // Insert a Pad operator before TfLite Pool2d if needed for explicit padding.
   std::optional<int32_t> explicit_pad_index;
   const int32_t input_index = operand_to_index_map_.at(pool2d.input_operand_id);
