@@ -34,154 +34,159 @@
     width: 250px;
   }
 
+  #container {
+    display: flex;
+    overflow: auto;
+    align-items: flex-start;
+  }
+
 </style>
 
 <cr-toolbar page-name="[[i18n('certificateManagerV2Title')]]"
     show-search="[[showSearch_]]" always-show-logo>
 </cr-toolbar>
 
-<div id="sidebar" role="navigation">
-  <cr-menu-selector id="menu" selectable="a" attr-for-selected="path"
-      selected-attribute="selected"
-      selected="[[getSelectedTopLevelPage_(selectedPage_)]]"
-      on-iron-select="onMenuItemSelect_">
-    <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
-        path="localcerts" href="/localcerts" on-click="onMenuItemClick_">
-      [[i18n('certificateManagerV2LocalCerts')]]
-    </a>
-    <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
-        path="clientcerts" href="/clientcerts" on-click="onMenuItemClick_">
-      [[i18n('certificateManagerV2ClientCerts')]]
-    </a>
-    <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
-        path="crscerts" href="/crscerts" on-click="onMenuItemClick_">
-      [[i18n('certificateManagerV2CRSCerts')]]
-    </a>
-  </cr-menu-selector>
-</div>
-
-<!-- TODO(crbug.com/40928765): localize strings -->
-<!-- TODO(crbug.com/40928765): migrate off of iron-pages. See:
-  https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md#polymer-iron_paper-elements-alternatives -->
-<iron-pages id="main" attr-for-selected="path" fallback-selection="localcerts"
-    selected="[[selectedPage_]]">
-
-  <div id="clientCertSection" path="clientcerts">
-    Client certificates are certificates that identify you to other servers.
-
-    <if expr="is_win or is_macosx or is_linux">
-      <certificate-list-v2
-          id="provisionedClientCerts"
-          cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
-          header-text="From your administrator"
-          hide-export
-          on-hash-copied="onHashCopied_">
-      </certificate-list-v2>
-    </if>
-    <if expr="is_chromeos">
-      <certificate-list-v2
-          id="extensionsClientCerts"
-          cert-source="[[certificateSourceEnum_.kExtensionsClientCert]]"
-          header-text="From extensions"
-          hide-export
-          on-hash-copied="onHashCopied_">
-      </certificate-list-v2>
-    </if>
-
-    <h3>Windows</h3>
-    <!-- TODO(crbug.com/40928765): platform client certs list should be on a
-      sub-page -->
-    <certificate-list-v2
-        id="platformClientCerts"
-        cert-source="[[certificateSourceEnum_.kPlatformClientCert]]"
-        header-text="Client certificates from platform"
-        hide-export
-        on-hash-copied="onHashCopied_">
-    </certificate-list-v2>
-    <if expr="is_win or is_macosx">
-      <cr-link-row external id="manageOsImportedClientCerts"
-          label="Manage imported certificates from Windows"
-          on-click="onManageCertsExternal_">
-      </cr-link-row>
-    </if>
+<div id="container">
+  <div id="sidebar" role="navigation">
+    <cr-menu-selector id="menu" selectable="a" attr-for-selected="path"
+        selected-attribute="selected"
+        selected="[[getSelectedTopLevelPage_(selectedPage_)]]"
+        on-iron-select="onMenuItemSelect_">
+      <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
+          path="localcerts" href="/localcerts" on-click="onMenuItemClick_">
+        [[i18n('certificateManagerV2LocalCerts')]]
+      </a>
+      <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
+          path="clientcerts" href="/clientcerts" on-click="onMenuItemClick_">
+        [[i18n('certificateManagerV2ClientCerts')]]
+      </a>
+      <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
+          path="crscerts" href="/crscerts" on-click="onMenuItemClick_">
+        [[i18n('certificateManagerV2CRSCerts')]]
+      </a>
+    </cr-menu-selector>
   </div>
 
-  <div id="localCertSection" class="cr-centered-card-container" path="localcerts">
-    Local certificates that have been added by your operating system or your
-    administrator.
+  <!-- TODO(crbug.com/40928765): localize strings -->
+  <!-- TODO(crbug.com/40928765): migrate off of iron-pages. See:
+    https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md#polymer-iron_paper-elements-alternatives -->
+  <iron-pages id="main" attr-for-selected="path" fallback-selection="localcerts"
+      selected="[[selectedPage_]]">
 
-    <!-- TODO(crbug.com/40928765): wire up all of the dynamic content
-      in the local certificates section (
-      * # of imported OS certs
-      * viewing/managing imported certs from OS
-      * # of admin policy certs
-      * viewing admin policy certs
-      * Dynamically figuring out OS name
-      * Allow user modifications of trust settings here when allowed
-        by enterprise.
-      -->
-    <h3> Windows </h3>
-    <div class="cr-row">
-      <div class="cr-padded-text">
-        <div>
-          Use imported local certificates from your operating system
-        </div>
-        <div class="cr-secondary-text" hidden="[[!importOsCertsEnabled_]]">
-          56 leaf certs
-        </div>
-      </div>
-      <cr-toggle id="importOsCerts" class="push-left"
-          aria-label="Toggle operating system certificate imports"
-          checked="[[importOsCertsEnabled_]]" disabled>
-      </cr-toggle>
+    <div id="clientCertSection" path="clientcerts">
+      Client certificates are certificates that identify you to other servers.
 
-      <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
-          class="enterprise-icon" hidden="[[!importOsCertsEnabledManaged_]]">
-      </cr-icon>
+      <if expr="is_win or is_macosx or is_linux">
+        <certificate-list-v2
+            id="provisionedClientCerts"
+            cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
+            header-text="From your administrator"
+            hide-export
+            on-hash-copied="onHashCopied_">
+        </certificate-list-v2>
+      </if>
+      <if expr="is_chromeos">
+        <certificate-list-v2
+            id="extensionsClientCerts"
+            cert-source="[[certificateSourceEnum_.kExtensionsClientCert]]"
+            header-text="From extensions"
+            hide-export
+            on-hash-copied="onHashCopied_">
+        </certificate-list-v2>
+      </if>
+
+      <h3>Windows</h3>
+      <!-- TODO(crbug.com/40928765): platform client certs list should be on a
+        sub-page -->
+      <certificate-list-v2
+          id="platformClientCerts"
+          cert-source="[[certificateSourceEnum_.kPlatformClientCert]]"
+          header-text="Client certificates from platform"
+          hide-export
+          on-hash-copied="onHashCopied_">
+      </certificate-list-v2>
+      <if expr="is_win or is_macosx">
+        <cr-link-row external id="manageOsImportedClientCerts"
+            label="Manage imported certificates from Windows"
+            on-click="onManageCertsExternal_">
+        </cr-link-row>
+      </if>
     </div>
 
-    <cr-link-row id="viewOsImportedCerts"
-        label="View imported certificates from Windows"
-        hidden="[[!importOsCertsEnabled_]]">
-    </cr-link-row>
-    <if expr="is_win or is_macosx">
-      <cr-link-row external id="manageOsImportedCerts"
-          label="Manage imported certificates from Windows"
-          on-click="onManageCertsExternal_"
+    <div id="localCertSection" class="cr-centered-card-container" path="localcerts">
+      Local certificates that have been added by your operating system or your
+      administrator.
+
+      <!-- TODO(crbug.com/40928765): wire up all of the dynamic content
+        in the local certificates section (
+        * # of imported OS certs
+        * viewing/managing imported certs from OS
+        * # of admin policy certs
+        * viewing admin policy certs
+        * Dynamically figuring out OS name
+        * Allow user modifications of trust settings here when allowed
+          by enterprise.
+        -->
+      <h3> Windows </h3>
+      <div class="cr-row">
+        <div class="cr-padded-text">
+          <div>
+            Use imported local certificates from your operating system
+          </div>
+          <div class="cr-secondary-text" hidden="[[!importOsCertsEnabled_]]">
+            56 leaf certs
+          </div>
+        </div>
+        <cr-toggle id="importOsCerts" class="push-left"
+            aria-label="Toggle operating system certificate imports"
+            checked="[[importOsCertsEnabled_]]" disabled>
+        </cr-toggle>
+
+        <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
+            class="enterprise-icon" hidden="[[!importOsCertsEnabledManaged_]]">
+        </cr-icon>
+      </div>
+
+      <cr-link-row id="viewOsImportedCerts"
+          label="View imported certificates from Windows"
           hidden="[[!importOsCertsEnabled_]]">
       </cr-link-row>
-    </if>
+      <if expr="is_win or is_macosx">
+        <cr-link-row external id="manageOsImportedCerts"
+            label="Manage imported certificates from Windows"
+            on-click="onManageCertsExternal_"
+            hidden="[[!importOsCertsEnabled_]]">
+        </cr-link-row>
+      </if>
 
-    <template is="dom-if" if="[[showCustomSection_(certPolicy_)]]">
-      <div id="customCertsSection">
-        <h3>Custom</h3>
-        <cr-link-row id="adminCertsInstalledLinkRow"
-            label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
-            sub-label="[[getPolicyCertsString_(certPolicy_)]]"
-            on-click="onAdminCertsInstalledLinkRowClick_">
-       </cr-link-row>
-      </div>
-    </template>
-  </div>
+      <template is="dom-if" if="[[showCustomSection_(certPolicy_)]]">
+        <div id="customCertsSection">
+          <h3>Custom</h3>
+          <cr-link-row id="adminCertsInstalledLinkRow"
+              label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
+              sub-label="[[getPolicyCertsString_(certPolicy_)]]"
+              on-click="onAdminCertsInstalledLinkRowClick_">
+         </cr-link-row>
+        </div>
+      </template>
+    </div>
 
-  <!-- Chrome Root Store section -->
-  <div id="crsCertSection" path="crscerts">
-    <certificate-list-v2
-        id="crsCerts"
-        cert-source="[[certificateSourceEnum_.kChromeRootStore]]"
-        header-text="Trusted Certificates"
-        on-hash-copied="onHashCopied_">
-    </certificate-list-v2>
-  </div>
+    <!-- Chrome Root Store section -->
+    <div id="crsCertSection" path="crscerts">
+      <certificate-list-v2
+          id="crsCerts"
+          cert-source="[[certificateSourceEnum_.kChromeRootStore]]"
+          header-text="Trusted Certificates"
+          on-hash-copied="onHashCopied_">
+      </certificate-list-v2>
+    </div>
 
-  <certificate-enterprise-certs-v2 id="adminCertsSection" path="admincerts"
-      on-hash-copied="onHashCopied_"
-      on-navigate-back="onNavigateBack_">
-  </certificate-enterprise-certs-v2>
-
-
-</iron-pages>
-
+    <certificate-enterprise-certs-v2 id="adminCertsSection" path="admincerts"
+        on-hash-copied="onHashCopied_"
+        on-navigate-back="onNavigateBack_">
+    </certificate-enterprise-certs-v2>
+  </iron-pages>
+</div>
 <cr-toast id="toast" duration="5000">
   <span id="toast-message">[[toastMessage_]]</span>
 </cr-toast>
