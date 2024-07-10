@@ -42,7 +42,12 @@ class DawnAHardwareBufferImageRepresentation : public DawnImageRepresentation {
   wgpu::Device device_;
   wgpu::TextureFormat format_;
   std::vector<wgpu::TextureFormat> view_formats_;
+  // There is a SharedTextureMemory per representation with how this works
+  // currently. Switching to a single cached SharedTextureMemory for the backing
+  // needs some care as multiple representations would use the same VkImage and
+  // layout/queue transitions might be problematic.
   wgpu::SharedTextureMemory shared_texture_memory_;
+  AccessMode access_mode_ = AccessMode::kNone;
 };
 
 }  // namespace gpu
