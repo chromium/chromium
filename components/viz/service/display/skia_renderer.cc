@@ -1988,10 +1988,13 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
           quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
     // If the renderpass has filters, the filters may modify the effective
     // geometry beyond the quad's visible_rect, so it's not safe to pre-clip.
+    // Note: no need to check against the backdrop filters, as they are always
+    // restricted to the visible rect of a quad.
     auto pass_id = quad_pass->render_pass_id;
-    if (renderer->FiltersForPass(pass_id) ||
-        renderer->BackdropFiltersForPass(pass_id))
+    if (const auto* filters = renderer->FiltersForPass(pass_id);
+        filters && filters->HasFilterThatMovesPixels()) {
       return;
+    }
   }
 
   // If the intersection of the scissor and the quad's visible_rect results in
