@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_scoring_model_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/model/provider_state_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
@@ -187,6 +188,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ios::AccountConsistencyServiceFactory::GetInstance();
   ios::AccountReconcilorFactory::GetInstance();
   ios::AutocompleteClassifierFactory::GetInstance();
+  ios::AutocompleteScoringModelServiceFactory::GetInstance();
   ios::BookmarkModelFactory::GetInstance();
   ios::BookmarkUndoServiceFactory::GetInstance();
   ios::CookieSettingsFactory::GetInstance();
