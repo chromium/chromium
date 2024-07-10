@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <sstream>
 #include <string>
 #include <utility>
 
@@ -11,7 +10,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/access_control_list.h"
 #include "base/win/security_descriptor.h"
@@ -20,7 +18,6 @@
 #include "remoting/base/breakpad_utils.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/version.h"
-#include "third_party/breakpad/breakpad/src/client/windows/crash_generation/client_info.h"
 #include "third_party/breakpad/breakpad/src/client/windows/crash_generation/crash_generation_server.h"
 
 namespace remoting {
@@ -35,68 +32,6 @@ using base::win::WellKnownSid::kLocalSystem;
 // Passed as a flag in the named pipe DACL entry to indicate no inheritance.
 constexpr bool kNoInheritance = false;
 
-void OnClientConnectedCallback(void* context,
-                               const google_breakpad::ClientInfo* client_info) {
-  if (!client_info) {
-    LOG(WARNING) << "OnClientConnectedCallback called with invalid client_info";
-    return;
-  }
-
-  std::stringstream ss;
-  ss << "OOP Crash client connected: { ";
-  for (size_t i = 0; i < client_info->custom_client_info().count; i++) {
-    const auto* info = &client_info->custom_client_info().entries[i];
-    ss << "<" << info->name << ": " << info->value << "> ";
-  }
-  ss << "}";
-  HOST_LOG << ss.str();
-}
-
-void OnClientDumpRequestCallback(void* context,
-                                 const google_breakpad::ClientInfo* client_info,
-                                 const std::wstring* file_path) {
-  if (!client_info) {
-    LOG(ERROR) << "OnClientDumpRequestCallback called with invalid client_info";
-    return;
-  }
-  if (!file_path) {
-    LOG(ERROR) << "OnClientDumpRequestCallback called with invalid file_path";
-    return;
-  }
-  base::FilePath dump_file(*file_path);
-  if (!GetMinidumpDirectoryPath().IsParent(dump_file)) {
-    LOG(ERROR) << "Minidump written to an unexpected location: " << dump_file;
-    return;
-  }
-
-  base::Value::Dict metadata;
-  for (size_t i = 0; i < client_info->custom_client_info().count; i++) {
-    const auto* info = &client_info->custom_client_info().entries[i];
-    metadata.Set(base::WideToASCII(info->name), base::WideToASCII(info->value));
-  }
-
-  std::vector required_keys{kBreakpadProcessIdKey, kBreakpadProcessNameKey,
-                            kBreakpadProcessStartTimeKey,
-                            kBreakpadProductVersionKey};
-  for (auto* key : required_keys) {
-    auto* value = metadata.FindString(key);
-    if (value == nullptr || value->empty()) {
-      LOG(ERROR) << "ClientInfo missing required value: " << key;
-      return;
-    }
-  }
-
-  time_t start_time_t = 0;
-  base::StringToInt64(*metadata.FindString(kBreakpadProcessStartTimeKey),
-                      &start_time_t);
-  auto process_start_time = base::Time::FromTimeT(start_time_t);
-  auto process_uptime = base::Time::NowFromSystemTime() - process_start_time;
-  metadata.Set(kBreakpadProcessUptimeKey,
-               base::NumberToString(process_uptime.InMilliseconds()));
-
-  WriteMetadataForMinidump(dump_file, std::move(metadata));
-}
-
 class BreakpadServer {
  public:
   BreakpadServer();
@@ -108,9 +43,52 @@ class BreakpadServer {
 
   static BreakpadServer& GetInstance();
 
+  void set_client_connected_time(base::Time client_connected_time) {
+    client_connected_time_ = client_connected_time;
+  }
+  base::Time get_client_connected_time() { return client_connected_time_; }
+
  private:
+  base::Time client_connected_time_;
   std::unique_ptr<google_breakpad::CrashGenerationServer> crash_server_;
 };
+
+void OnClientConnectedCallback(void* context,
+                               const google_breakpad::ClientInfo* client_info) {
+  HOST_LOG << "OOP Crash client connected";
+  BreakpadServer::GetInstance().set_client_connected_time(
+      base::Time::NowFromSystemTime());
+}
+
+void OnClientDumpRequestCallback(void* context,
+                                 const google_breakpad::ClientInfo* client_info,
+                                 const std::wstring* file_path) {
+  if (!file_path) {
+    LOG(ERROR) << "OnClientDumpRequestCallback called with invalid file_path";
+    return;
+  }
+  base::FilePath dump_file(*file_path);
+  if (!GetMinidumpDirectoryPath().IsParent(dump_file)) {
+    LOG(ERROR) << "Minidump written to an unexpected location: " << dump_file;
+    return;
+  }
+
+  base::Value::Dict metadata;
+  // Use the crash server version since we update all host components in the
+  // same package and we've seen problems trying to use the metadata provided
+  // by the client process, see crbug.com/350725178.
+  metadata.Set(kBreakpadProductVersionKey, REMOTING_VERSION_STRING);
+
+  // We only have one OOP client so we can use the value of the 'last connected'
+  // client to determine an approximate uptime for that process.
+  auto process_start_time =
+      BreakpadServer::GetInstance().get_client_connected_time();
+  auto process_uptime = base::Time::NowFromSystemTime() - process_start_time;
+  metadata.Set(kBreakpadProcessUptimeKey,
+               base::NumberToString(process_uptime.InMilliseconds()));
+
+  WriteMetadataForMinidump(dump_file, std::move(metadata));
+}
 
 BreakpadServer::BreakpadServer() {
   base::win::SecurityDescriptor sd;

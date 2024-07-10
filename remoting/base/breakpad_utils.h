@@ -39,11 +39,6 @@ extern bool WriteMetadataForMinidump(const base::FilePath& minidump_file_path,
                                      base::Value::Dict custom_client_info);
 
 #if BUILDFLAG(IS_WIN)
-// CustomClientInfo keys.
-extern const wchar_t kCustomClientInfoVersionKey[];
-extern const wchar_t kCustomClientInfoProcessStartTimeKey[];
-extern const wchar_t kCustomClientInfoProcessIdKey[];
-extern const wchar_t kCustomClientInfoProcessNameKey[];
 
 // The name of the pipe to use for OOP crash reporting.
 extern const wchar_t kCrashServerPipeName[];

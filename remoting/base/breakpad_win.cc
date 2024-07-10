@@ -19,12 +19,10 @@
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_number_conversions_win.h"
 #include "base/time/time.h"
 #include "base/win/wrapped_window_proc.h"
 #include "remoting/base/breakpad_utils.h"
 #include "remoting/base/version.h"
-#include "third_party/breakpad/breakpad/src/client/windows/common/ipc_protocol.h"
 #include "third_party/breakpad/breakpad/src/client/windows/handler/exception_handler.h"
 
 namespace remoting {
@@ -34,33 +32,6 @@ namespace {
 // Minidump with stacks, PEB, TEBs and unloaded module list.
 const MINIDUMP_TYPE kMinidumpType = static_cast<MINIDUMP_TYPE>(
     MiniDumpWithProcessThreadData | MiniDumpWithUnloadedModules);
-
-// A data class used to hold values which are referenced in the CustomClientInfo
-// structure for this process. These must not be destroyed as we want them to be
-// available in the case of a crash during destruction.
-struct CustomClientInfoData {
-  std::wstring process_id;
-  std::wstring program_name;
-  std::wstring process_start_time;
-};
-
-// Returns the CustomClientInfo to be used for crash reporting.
-google_breakpad::CustomClientInfo* GetCustomClientInfo() {
-  static base::NoDestructor<CustomClientInfoData> data{
-      base::NumberToWString(base::GetCurrentProcId()),
-      base::CommandLine::ForCurrentProcess()->GetProgram().BaseName().value(),
-      base::NumberToWString(base::Time::NowFromSystemTime().ToTimeT()),
-  };
-  static google_breakpad::CustomInfoEntry entries[] = {
-      {kCustomClientInfoVersionKey, REMOTING_VERSION_WSTRING},
-      {kCustomClientInfoProcessIdKey, data->process_id.data()},
-      {kCustomClientInfoProcessNameKey, data->program_name.data()},
-      {kCustomClientInfoProcessStartTimeKey, data->process_start_time.data()},
-  };
-  static google_breakpad::CustomClientInfo custom_info = {entries,
-                                                          std::size(entries)};
-  return &custom_info;
-}
 
 class BreakpadWin {
  public:
@@ -144,7 +115,7 @@ void BreakpadWin::Initialize(
       minidump_directory.value(), FilterCallback, MinidumpCallback,
       /*callback_context=*/nullptr,
       google_breakpad::ExceptionHandler::HANDLER_ALL, kMinidumpType,
-      pipe_handle, GetCustomClientInfo());
+      pipe_handle, /*custom_client_info=*/nullptr);
 
   bool using_oop_handler = breakpad_->IsOutOfProcess();
   LOG_IF(ERROR, register_oop_handler != using_oop_handler)
