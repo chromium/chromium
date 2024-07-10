@@ -18,11 +18,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
@@ -45,7 +46,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Test for user flows around {@link ContentSettingsType.REQUEST_DESKTOP_SITE}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// TODO(crbug.com/344665252): Failing when batched, batch this again.
+@Batch(Batch.PER_CLASS)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class RequestDesktopSiteTest {
@@ -67,7 +68,6 @@ public class RequestDesktopSiteTest {
                 .when(mMockTracker)
                 .shouldTriggerHelpUI(ArgumentMatchers.anyString());
         mActivityTestRule.startMainActivityOnBlankPage();
-        assertContentSettingsHistogramRecorded();
         mMenuObserver = new CallbackHelper();
         mActivityTestRule
                 .getAppMenuCoordinator()
@@ -114,10 +114,13 @@ public class RequestDesktopSiteTest {
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
                 });
         mMenuObserver.waitForCallback(0);
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.RequestDesktopSite.UserSwitchToDesktop", true);
         toggleFromAppMenu(tab);
         assertUsingDesktopUserAgent(
                 tab, true, "User agent should be desktop according to site settings.");
-        assertChangeUserActionRecorded(true);
+        histogramExpectation.assertExpected();
 
         mActivityTestRule.loadUrl(URL_2);
         assertUsingDesktopUserAgent(
@@ -229,31 +232,6 @@ public class RequestDesktopSiteTest {
                 errorMessage,
                 useDesktopUserAgent,
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent());
-    }
-
-    private void assertContentSettingsHistogramRecorded() {
-        Assert.assertEquals(
-                "<ContentSettings.RegularProfile.DefaultRequestDesktopSiteSetting> is not"
-                        + " recorded.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "ContentSettings.RegularProfile.DefaultRequestDesktopSiteSetting"));
-        Assert.assertEquals(
-                "<ContentSettings.RegularProfile.Exceptions.request-desktop-site> is not recorded.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "ContentSettings.RegularProfile.Exceptions.request-desktop-site"));
-    }
-
-    private void assertChangeUserActionRecorded(boolean switchToDesktop) {
-        int sample = switchToDesktop ? 1 : 0;
-        Assert.assertEquals(
-                "<Android.RequestDesktopSite.UserSwitchToDesktop> for sample <"
-                        + sample
-                        + "> is not recorded,",
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.RequestDesktopSite.UserSwitchToDesktop", sample));
     }
 
     private void updateGlobalSetting(Tab tab, boolean setting) {
