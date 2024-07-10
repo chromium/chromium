@@ -30,8 +30,8 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/spdy/spdy_session.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_constants.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_static_table.h"
+#include "net/third_party/quiche/src/quiche/http2/hpack/hpack_constants.h"
+#include "net/third_party/quiche/src/quiche/http2/hpack/hpack_static_table.h"
 
 namespace net {
 
