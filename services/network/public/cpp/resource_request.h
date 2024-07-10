@@ -223,7 +223,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   net::StorageAccessApiStatus storage_access_api_status =
       net::StorageAccessApiStatus::kNone;
   network::mojom::AttributionSupport attribution_reporting_support =
-      network::mojom::AttributionSupport::kWeb;
+      network::mojom::AttributionSupport::kUnset;
   mojom::AttributionReportingEligibility attribution_reporting_eligibility =
       mojom::AttributionReportingEligibility::kUnset;
   network::AttributionReportingRuntimeFeatures

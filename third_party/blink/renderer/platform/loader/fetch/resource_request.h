@@ -785,7 +785,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
       net::StorageAccessApiStatus::kNone;
 
   network::mojom::AttributionSupport attribution_reporting_support_ =
-      network::mojom::AttributionSupport::kWeb;
+      network::mojom::AttributionSupport::kUnset;
 
   network::mojom::AttributionReportingEligibility
       attribution_reporting_eligibility_ =

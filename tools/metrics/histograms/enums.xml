@@ -3580,12 +3580,17 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_report_network_sender.cc:Status) -->
 
+<!-- LINT.IfChange(ConversionRequestSupportHeader) -->
+
 <enum name="ConversionRequestSupportHeader">
   <int value="0" label="Web"/>
   <int value="1" label="Web and OS"/>
   <int value="2" label="OS"/>
   <int value="3" label="None"/>
+  <int value="4" label="Unset"/>
 </enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/attribution.mojom:AttributionSupport) -->
 
 <!-- LINT.IfChange(ConversionSourceRegistrationError) -->
 

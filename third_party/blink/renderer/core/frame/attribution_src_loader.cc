@@ -338,6 +338,7 @@ class AttributionSrcLoader::ResourceClient
     DCHECK(loader_->local_frame_);
     DCHECK(loader_->local_frame_->IsAttached());
     CHECK(data_host_.is_bound());
+    CHECK_NE(support_, network::mojom::AttributionSupport::kUnset);
   }
 
   ~ResourceClient() override = default;

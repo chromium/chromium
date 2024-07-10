@@ -214,6 +214,8 @@ std::string GetAttributionSupportHeader(
       grease1 = "os";
       grease2 = "web";
       break;
+    case mojom::AttributionSupport::kUnset:
+      NOTREACHED_NORETURN();
   }
 
   ApplyGrease(registrars, options, grease1, grease2);

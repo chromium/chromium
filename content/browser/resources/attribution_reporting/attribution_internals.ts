@@ -832,6 +832,7 @@ const attributionSupportText: Readonly<Record<AttributionSupport, string>> = {
   [AttributionSupport.kWebAndOs]: 'os, web',
   [AttributionSupport.kOs]: 'os',
   [AttributionSupport.kNone]: '',
+  [AttributionSupport.kUnset]: 'unset',
 };
 
 class AttributionInternals implements ObserverInterface {

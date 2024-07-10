@@ -18,12 +18,18 @@ struct TriggerVerification {
 // See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(AttributionSupport)
 enum AttributionSupport {
-  kWeb,
-  kWebAndOs,
-  kOs,
-  kNone,
+  kWeb = 0,
+  kWebAndOs = 1,
+  kOs = 2,
+  // Neither web nor OS is supported.
+  kNone = 3,
+  // The support value is unknown, e.g. within service worker.
+  kUnset = 4,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionRequestSupportHeader)
 
 // Controls the value of the Attribution-Reporting-Eligible request header, if
 // any. This header controls which registrations a response is allowed to

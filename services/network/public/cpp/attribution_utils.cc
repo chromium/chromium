@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/attribution_utils.h"
 
+#include "base/notreached.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 
 namespace network {
@@ -16,6 +17,8 @@ bool HasAttributionOsSupport(mojom::AttributionSupport attribution_support) {
     case mojom::AttributionSupport::kWeb:
     case mojom::AttributionSupport::kNone:
       return false;
+    case mojom::AttributionSupport::kUnset:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -27,6 +30,8 @@ bool HasAttributionWebSupport(mojom::AttributionSupport attribution_support) {
     case mojom::AttributionSupport::kOs:
     case mojom::AttributionSupport::kNone:
       return false;
+    case mojom::AttributionSupport::kUnset:
+      NOTREACHED_NORETURN();
   }
 }
 

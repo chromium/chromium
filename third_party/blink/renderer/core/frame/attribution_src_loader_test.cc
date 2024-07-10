@@ -66,6 +66,7 @@ namespace blink {
 namespace {
 
 using ::network::mojom::AttributionReportingEligibility;
+using ::network::mojom::AttributionSupport;
 
 using blink::url_test_helpers::RegisterMockedErrorURLLoad;
 using blink::url_test_helpers::RegisterMockedURLLoad;
@@ -74,6 +75,14 @@ using blink::url_test_helpers::ToKURL;
 const char kAttributionReportingSupport[] = "Attribution-Reporting-Support";
 
 const char kUrl[] = "https://example1.com/foo.html";
+
+ResourceRequest GetAttributionRequest(
+    const KURL& url,
+    AttributionSupport support = AttributionSupport::kWeb) {
+  ResourceRequest request(url);
+  request.SetAttributionReportingSupport(support);
+  return request;
+}
 
 class AttributionSrcLocalFrameClient : public EmptyLocalFrameClient {
  public:
@@ -268,6 +277,8 @@ class AttributionSrcLoaderTest : public PageTestBase {
 
     attribution_src_loader_ =
         MakeGarbageCollected<AttributionSrcLoader>(&GetFrame());
+
+    GetPage().SetAttributionSupport(AttributionSupport::kWeb);
   }
 
   void TearDown() override {
@@ -294,7 +305,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTrigger) {
     SCOPED_TRACE("Eligibility: " + test_case.name);
     KURL test_url = ToKURL("https://example1.com/foo.html");
 
-    ResourceRequest request(test_url);
+    ResourceRequest request = GetAttributionRequest(test_url);
     if (test_case.eligibility) {
       request.SetAttributionReportingEligibility(test_case.eligibility.value());
     }
@@ -321,7 +332,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTrigger) {
 TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
-  ResourceRequest request(test_url);
+  ResourceRequest request = GetAttributionRequest(test_url);
   request.SetAttributionReportingEligibility(
       AttributionReportingEligibility::kEventSourceOrTrigger);
   ResourceResponse response(test_url);
@@ -506,7 +517,7 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
 }
 
 TEST_F(AttributionSrcLoaderTest, NoneSupported_CannotRegister) {
-  GetPage().SetAttributionSupport(network::mojom::AttributionSupport::kNone);
+  GetPage().SetAttributionSupport(AttributionSupport::kNone);
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
@@ -518,10 +529,10 @@ TEST_F(AttributionSrcLoaderTest, NoneSupported_CannotRegister) {
 TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
-  for (auto attribution_support : {network::mojom::AttributionSupport::kNone,
-                                   network::mojom::AttributionSupport::kOs}) {
-    ResourceRequest request(test_url);
-    request.SetAttributionReportingSupport(attribution_support);
+  for (auto attribution_support :
+       {AttributionSupport::kNone, AttributionSupport::kOs}) {
+    ResourceRequest request =
+        GetAttributionRequest(test_url, attribution_support);
     ResourceResponse response(test_url);
     response.SetHttpStatusCode(200);
     response.SetHttpHeaderField(
@@ -550,7 +561,7 @@ TEST_F(AttributionSrcLoaderTest, HeadersSize_RecordsMetrics) {
   AtomicString register_source_json(
       R"({"source_event_id":"5","destination":"https://destination.example"})");
 
-  ResourceRequest request(test_url);
+  ResourceRequest request = GetAttributionRequest(test_url);
   request.SetAttributionReportingEligibility(
       AttributionReportingEligibility::kTrigger);
   ResourceResponse response(test_url);
@@ -584,8 +595,7 @@ class AttributionSrcLoaderCrossAppWebRuntimeDisabledTest
 
 TEST_F(AttributionSrcLoaderCrossAppWebRuntimeDisabledTest,
        OsTriggerNotRegistered) {
-  GetPage().SetAttributionSupport(
-      network::mojom::AttributionSupport::kWebAndOs);
+  GetPage().SetAttributionSupport(AttributionSupport::kWebAndOs);
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
@@ -614,7 +624,7 @@ class AttributionSrcLoaderCrossAppWebEnabledTest
 };
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
-  auto attribution_support = network::mojom::AttributionSupport::kWebAndOs;
+  auto attribution_support = AttributionSupport::kWebAndOs;
 
   GetPage().SetAttributionSupport(attribution_support);
 
@@ -632,7 +642,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
        SupportHeader_RegisterNavigation) {
-  auto attribution_support = network::mojom::AttributionSupport::kWebAndOs;
+  auto attribution_support = AttributionSupport::kWebAndOs;
 
   GetPage().SetAttributionSupport(attribution_support);
 
@@ -654,9 +664,8 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
-  ResourceRequest request(test_url);
-  request.SetAttributionReportingSupport(
-      network::mojom::AttributionSupport::kWebAndOs);
+  ResourceRequest request =
+      GetAttributionRequest(test_url, AttributionSupport::kWebAndOs);
   ResourceResponse response(test_url);
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
@@ -686,11 +695,10 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
   KURL test_url = ToKURL("https://example1.com/foo.html");
   AtomicString os_registration(R"("https://r.test/x")");
 
-  ResourceRequest request(test_url);
+  ResourceRequest request =
+      GetAttributionRequest(test_url, AttributionSupport::kWebAndOs);
   request.SetAttributionReportingEligibility(
       AttributionReportingEligibility::kTrigger);
-  request.SetAttributionReportingSupport(
-      network::mojom::AttributionSupport::kWebAndOs);
   ResourceResponse response(test_url);
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
@@ -731,7 +739,7 @@ TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   for (bool is_keep_alive : {true, false}) {
-    ResourceRequest request(test_url);
+    ResourceRequest request = GetAttributionRequest(test_url);
     request.SetKeepalive(is_keep_alive);
     request.SetAttributionReportingEligibility(
         AttributionReportingEligibility::kTrigger);
@@ -752,7 +760,7 @@ TEST_F(
     MaybeRegisterAttributionHeadersNonKeepAlive_ResponseViaServiceWorkerProcessed) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
-  ResourceRequest request(test_url);
+  ResourceRequest request = GetAttributionRequest(test_url);
   request.SetKeepalive(true);
   request.SetAttributionReportingEligibility(
       AttributionReportingEligibility::kTrigger);
@@ -772,7 +780,7 @@ struct PreferredPlatformTestCase {
   const char* info_header;
   bool has_web_header;
   bool has_os_header;
-  network::mojom::AttributionSupport support;
+  AttributionSupport support;
   bool expected_web;
   bool expected_os;
 };
@@ -782,7 +790,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = nullptr,
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .support = AttributionSupport::kWebAndOs,
         .expected_web = false,
         .expected_os = false,
     },
@@ -790,7 +798,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .support = AttributionSupport::kWebAndOs,
         .expected_web = false,
         .expected_os = true,
     },
@@ -798,7 +806,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kOs,
+        .support = AttributionSupport::kOs,
         .expected_web = false,
         .expected_os = true,
     },
@@ -806,7 +814,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWeb,
+        .support = AttributionSupport::kWeb,
         .expected_web = true,
         .expected_os = false,
     },
@@ -814,7 +822,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kNone,
+        .support = AttributionSupport::kNone,
         .expected_web = false,
         .expected_os = false,
     },
@@ -822,7 +830,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = false,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWeb,
+        .support = AttributionSupport::kWeb,
         .expected_web = false,
         .expected_os = false,
     },
@@ -830,7 +838,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = false,
-        .support = network::mojom::AttributionSupport::kWeb,
+        .support = AttributionSupport::kWeb,
         .expected_web = false,
         .expected_os = false,
     },
@@ -838,7 +846,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .support = AttributionSupport::kWebAndOs,
         .expected_web = true,
         .expected_os = false,
     },
@@ -846,7 +854,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWeb,
+        .support = AttributionSupport::kWeb,
         .expected_web = true,
         .expected_os = false,
     },
@@ -854,7 +862,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kOs,
+        .support = AttributionSupport::kOs,
         .expected_web = false,
         .expected_os = true,
     },
@@ -862,7 +870,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kNone,
+        .support = AttributionSupport::kNone,
         .expected_web = false,
         .expected_os = false,
     },
@@ -870,7 +878,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = false,
-        .support = network::mojom::AttributionSupport::kOs,
+        .support = AttributionSupport::kOs,
         .expected_web = false,
         .expected_os = false,
     },
@@ -878,7 +886,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = false,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kOs,
+        .support = AttributionSupport::kOs,
         .expected_web = false,
         .expected_os = false,
     },
@@ -900,10 +908,9 @@ TEST_P(AttributionSrcLoaderPreferredPlatformSourceTest, PreferredPlatform) {
 
   const auto& test_case = GetParam();
 
-  ResourceRequest request(test_url);
+  ResourceRequest request = GetAttributionRequest(test_url, test_case.support);
   request.SetAttributionReportingEligibility(
       AttributionReportingEligibility::kEventSourceOrTrigger);
-  request.SetAttributionReportingSupport(test_case.support);
   ResourceResponse response(test_url);
   response.SetHttpStatusCode(200);
   if (test_case.has_web_header) {
@@ -950,10 +957,9 @@ TEST_P(AttributionSrcLoaderPreferredPlatformTriggerTest, PreferredPlatform) {
 
   const auto& test_case = GetParam();
 
-  ResourceRequest request(test_url);
+  ResourceRequest request = GetAttributionRequest(test_url, test_case.support);
   request.SetAttributionReportingEligibility(
       AttributionReportingEligibility::kEventSourceOrTrigger);
-  request.SetAttributionReportingSupport(test_case.support);
   ResourceResponse response(test_url);
   response.SetHttpStatusCode(200);
   if (test_case.has_web_header) {
@@ -1010,11 +1016,9 @@ TEST_F(AttributionSrcLoaderTest, InvalidWebHeader_ErrorReported) {
     for (const bool report_header_errors : {false, true}) {
       SCOPED_TRACE(report_header_errors);
 
-      ResourceRequest request(test_url);
+      ResourceRequest request = GetAttributionRequest(test_url);
       request.SetAttributionReportingEligibility(
           AttributionReportingEligibility::kEventSourceOrTrigger);
-      request.SetAttributionReportingSupport(
-          network::mojom::AttributionSupport::kWeb);
       ResourceResponse response(test_url);
       response.SetHttpStatusCode(200);
       response.SetHttpHeaderField(test_case.header_name,
@@ -1104,11 +1108,10 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
     for (const bool report_header_errors : {false, true}) {
       SCOPED_TRACE(report_header_errors);
 
-      ResourceRequest request(test_url);
+      ResourceRequest request =
+          GetAttributionRequest(test_url, AttributionSupport::kOs);
       request.SetAttributionReportingEligibility(
           AttributionReportingEligibility::kEventSourceOrTrigger);
-      request.SetAttributionReportingSupport(
-          network::mojom::AttributionSupport::kOs);
       ResourceResponse response(test_url);
       response.SetHttpStatusCode(200);
       response.SetHttpHeaderField(test_case.header_name,

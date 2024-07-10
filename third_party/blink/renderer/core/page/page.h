@@ -723,7 +723,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   BrowsingContextGroupInfo browsing_context_group_info_;
 
   network::mojom::AttributionSupport attribution_support_ =
-      network::mojom::AttributionSupport::kWeb;
+      network::mojom::AttributionSupport::kUnset;
 
   Member<CloseTaskHandler> close_task_handler_;
 };

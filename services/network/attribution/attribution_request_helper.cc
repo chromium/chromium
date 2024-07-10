@@ -347,14 +347,17 @@ void SetAttributionReportingHeaders(net::URLRequest& url_request,
     base::UmaHistogramEnumeration("Conversions.RequestSupportHeader",
                                   request.attribution_reporting_support);
 
-    url_request.SetExtraRequestHeaderByName(
-        "Attribution-Reporting-Support",
-        GetAttributionSupportHeader(
-            request.attribution_reporting_support,
-            AttributionReportingHeaderGreaseOptions::FromBits(grease_bits &
-                                                              0xff)),
-        /*overwrite=*/true);
-    grease_bits >>= 8;
+    if (request.attribution_reporting_support !=
+        network::mojom::AttributionSupport::kUnset) {
+      url_request.SetExtraRequestHeaderByName(
+          "Attribution-Reporting-Support",
+          GetAttributionSupportHeader(
+              request.attribution_reporting_support,
+              AttributionReportingHeaderGreaseOptions::FromBits(grease_bits &
+                                                                0xff)),
+          /*overwrite=*/true);
+      grease_bits >>= 8;
+    }
   }
 }
 
