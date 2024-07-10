@@ -110,15 +110,12 @@ class EncodedDataHelper {
   // from the current position in the stream, and advance the current position
   // to after the returned fragment.
   scoped_refptr<DecoderBuffer> GetNextBuffer();
-  static bool HasConfigInfo(const uint8_t* data,
-                            size_t size,
-                            VideoCodecProfile profile);
 
-  void Rewind() { next_pos_to_decode_ = 0; }
-  bool AtHeadOfStream() const { return next_pos_to_decode_ == 0; }
-  bool ReachEndOfStream() const { return next_pos_to_decode_ == data_.size(); }
+  static bool HasConfigInfo(const uint8_t* data, size_t size, VideoCodec codec);
 
-  size_t num_skipped_fragments() { return num_skipped_fragments_; }
+  void Rewind() { next_pos_to_parse_ = 0; }
+  bool AtHeadOfStream() const { return next_pos_to_parse_ == 0; }
+  bool ReachEndOfStream() const { return next_pos_to_parse_ == data_.size(); }
 
  private:
   // For h.264/HEVC.
@@ -131,12 +128,11 @@ class EncodedDataHelper {
   // Helpers for GetBytesForNextFragment above.
   size_t GetBytesForNextNALU(size_t pos);
   bool IsNALHeader(const std::string& data, size_t pos);
-  bool LookForSPS(size_t* skipped_fragments_count);
+  bool LookForSPS();
 
   std::string data_;
   const VideoCodec codec_;
-  size_t next_pos_to_decode_ = 0;
-  size_t num_skipped_fragments_ = 0;
+  size_t next_pos_to_parse_ = 0;
 };
 
 #if defined(ARCH_CPU_ARM_FAMILY)

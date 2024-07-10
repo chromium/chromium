@@ -39,20 +39,27 @@ namespace {
 constexpr uint16_t kIvfFileHeaderSize = 32;
 constexpr size_t kIvfFrameHeaderSize = 12;
 
+constexpr size_t kNALUHeaderSize = 4;
+constexpr size_t kNALUReducedHeaderSize = 3;
+
 bool IsH264SPSNALU(const uint8_t* data, size_t size) {
-  // Check if this is an H264 SPS NALU w/ a 3 or 4 byte start code.
-  return (size >= 4 && data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x1 &&
-          (data[3] & 0x1f) == 0x7) ||
-         (size >= 5 && data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x0 &&
-          data[3] == 0x1 && (data[4] & 0x1f) == 0x7);
+  // Check if this is an H264 SPS NALU w/ a 3 or kNALUHeaderSize byte start
+  // code.
+  return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+          data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x1f) == 0x7) ||
+         (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+          data[2] == 0x0 && data[3] == 0x1 &&
+          (data[kNALUHeaderSize] & 0x1f) == 0x7);
 }
 
 bool IsHevcSPSNALU(const uint8_t* data, size_t size) {
-  // Check if this is an HEVC SPS NALU w/ a 3 or 4 byte start code.
-  return (size >= 4 && data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x1 &&
-          (data[3] & 0x7e) == 0x42) ||
-         (size >= 5 && data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x0 &&
-          data[3] == 0x1 && (data[4] & 0x7e) == 0x42);
+  // Check if this is an HEVC SPS NALU w/ a 3 or kNALUHeaderSize byte start
+  // code.
+  return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+          data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x7e) == 0x42) ||
+         (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+          data[2] == 0x0 && data[3] == 0x1 &&
+          (data[kNALUHeaderSize] & 0x7e) == 0x42);
 }
 
 // If |reverse| is true , GetNextFrame() for a frame returns frames in a
@@ -185,53 +192,51 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
 }
 
 scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFragment() {
-  if (next_pos_to_decode_ == 0) {
-    size_t skipped_fragments_count = 0;
-    if (!LookForSPS(&skipped_fragments_count)) {
-      next_pos_to_decode_ = 0;
+  if (next_pos_to_parse_ == 0) {
+    if (!LookForSPS()) {
+      next_pos_to_parse_ = 0;
       return nullptr;
     }
-    num_skipped_fragments_ += skipped_fragments_count;
   }
 
-  size_t start_pos = next_pos_to_decode_;
+  size_t start_pos = next_pos_to_parse_;
   size_t next_nalu_pos = GetBytesForNextNALU(start_pos);
 
-  // Update next_pos_to_decode_.
-  next_pos_to_decode_ = next_nalu_pos;
+  // Update next_pos_to_parse_.
+  next_pos_to_parse_ = next_nalu_pos;
   return DecoderBuffer::CopyFrom(
       base::as_byte_span(data_).subspan(start_pos, next_nalu_pos - start_pos));
 }
 
 size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
   size_t pos = start_pos;
-  if (pos + 4 > data_.size())
+  if (pos + kNALUHeaderSize > data_.size()) {
     return pos;
+  }
   if (!IsNALHeader(data_, pos)) {
     ADD_FAILURE();
     return std::numeric_limits<std::size_t>::max();
   }
-  pos += 4;
-  while (pos + 4 <= data_.size() && !IsNALHeader(data_, pos)) {
+  pos += kNALUHeaderSize;
+  while (pos + kNALUHeaderSize <= data_.size() && !IsNALHeader(data_, pos)) {
     ++pos;
   }
-  if (pos + 3 >= data_.size())
+  if (pos + kNALUReducedHeaderSize >= data_.size()) {
     pos = data_.size();
+  }
   return pos;
 }
 
-bool EncodedDataHelper::LookForSPS(size_t* skipped_fragments_count) {
-  *skipped_fragments_count = 0;
-  while (next_pos_to_decode_ + 4 < data_.size()) {
+bool EncodedDataHelper::LookForSPS() {
+  while (next_pos_to_parse_ + kNALUHeaderSize < data_.size()) {
     if (codec_ == VideoCodec::kH264 &&
-        (data_[next_pos_to_decode_ + 4] & 0x1f) == 0x7) {
+        (data_[next_pos_to_parse_ + kNALUHeaderSize] & 0x1f) == 0x7) {
       return true;
     } else if (codec_ == VideoCodec::kHEVC &&
-               (data_[next_pos_to_decode_ + 4] & 0x7e) == 0x42) {
+               (data_[next_pos_to_parse_ + kNALUHeaderSize] & 0x7e) == 0x42) {
       return true;
     }
-    *skipped_fragments_count += 1;
-    next_pos_to_decode_ = GetBytesForNextNALU(next_pos_to_decode_);
+    next_pos_to_parse_ = GetBytesForNextNALU(next_pos_to_parse_);
   }
   return false;
 }
@@ -240,18 +245,18 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
   // Helpful description: http://wiki.multimedia.cx/index.php?title=IVF
   // Only IVF video files are supported. The first 4bytes of an IVF video file's
   // header should be "DKIF".
-  if (next_pos_to_decode_ == 0) {
+  if (next_pos_to_parse_ == 0) {
     if (data_.size() < kIvfFileHeaderSize) {
       LOG(ERROR) << "data is too small";
       return nullptr;
     }
     auto ivf_header = GetIvfFileHeader(base::span<const uint8_t>(
         reinterpret_cast<const uint8_t*>(&data_[0]), kIvfFileHeaderSize));
-    if (strncmp(ivf_header.signature, "DKIF", 4) != 0) {
+    if (strncmp(ivf_header.signature, "DKIF", kNALUHeaderSize) != 0) {
       LOG(ERROR) << "Unexpected data encountered while parsing IVF header";
       return nullptr;
     }
-    next_pos_to_decode_ = kIvfFileHeaderSize;  // Skip IVF header.
+    next_pos_to_parse_ = kIvfFileHeaderSize;  // Skip IVF header.
   }
 
   std::vector<IvfFrame> ivf_frames;
@@ -318,7 +323,7 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
 }
 
 std::optional<IvfFrameHeader> EncodedDataHelper::GetNextIvfFrameHeader() const {
-  const size_t pos = next_pos_to_decode_;
+  const size_t pos = next_pos_to_parse_;
   // Read VP8/9 frame size from IVF header.
   if (pos + kIvfFrameHeaderSize > data_.size()) {
     LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
@@ -334,17 +339,17 @@ std::optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
     return std::nullopt;
 
   // Skip IVF frame header.
-  const size_t pos = next_pos_to_decode_ + kIvfFrameHeaderSize;
+  const size_t pos = next_pos_to_parse_ + kIvfFrameHeaderSize;
 
   // Make sure we are not reading out of bounds.
   if (pos + frame_header->frame_size > data_.size()) {
     LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
-    next_pos_to_decode_ = data_.size();
+    next_pos_to_parse_ = data_.size();
     return std::nullopt;
   }
 
-  // Update next_pos_to_decode_.
-  next_pos_to_decode_ = pos + frame_header->frame_size;
+  // Update next_pos_to_parse_.
+  next_pos_to_parse_ = pos + frame_header->frame_size;
 
   return IvfFrame{*frame_header, reinterpret_cast<uint8_t*>(&data_[pos])};
 }
@@ -352,16 +357,13 @@ std::optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
 // static
 bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
                                       size_t size,
-                                      VideoCodecProfile profile) {
-  if (profile >= H264PROFILE_MIN && profile <= H264PROFILE_MAX) {
-    // Check if this is an SPS NALU w/ a 3 or 4 byte start code.
+                                      VideoCodec codec) {
+  CHECK(codec == media::VideoCodec::kH264 || codec == media::VideoCodec::kHEVC)
+      << "Unsupported codec " << GetCodecName(codec);
+  if (codec == media::VideoCodec::kH264) {
     return IsH264SPSNALU(data, size);
-  } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
-    return IsHevcSPSNALU(data, size);
   }
-
-  LOG(FATAL) << "HasConfigInfo() should be called only for H264/HEVC stream: "
-             << GetProfileName(profile);
+  return IsHevcSPSNALU(data, size);
 }
 
 struct AlignedDataHelper::VideoFrameData {
