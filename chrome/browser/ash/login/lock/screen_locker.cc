@@ -460,7 +460,10 @@ void ScreenLocker::OnPinAttemptDone(std::unique_ptr<UserContext> user_context,
                                     std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     // PIN authentication has failed; try submitting as a normal password.
+    // Clear the label value so auth performer will look up the label for
+    // the password factor.
     user_context->SetIsUsingPin(false);
+    user_context->GetKey()->SetLabel("");
     ContinueAuthenticate(std::move(user_context));
     return;
   }
