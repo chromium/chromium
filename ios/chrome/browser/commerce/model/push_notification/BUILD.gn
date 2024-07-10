@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("push_notification") {
+source_set("push_notification") {
   sources = [
     "commerce_push_notification_client.h",
     "commerce_push_notification_client.mm",

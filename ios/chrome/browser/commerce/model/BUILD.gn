@@ -28,7 +28,7 @@ source_set("model") {
   ]
 }
 
-static_library("shopping_service") {
+source_set("shopping_service") {
   sources = [
     "shopping_service_factory.h",
     "shopping_service_factory.mm",
@@ -62,7 +62,7 @@ static_library("shopping_service") {
   ]
 }
 
-static_library("session_proto_db") {
+source_set("session_proto_db") {
   sources = [
     "session_proto_db_factory.h",
     "session_proto_db_factory.mm",
