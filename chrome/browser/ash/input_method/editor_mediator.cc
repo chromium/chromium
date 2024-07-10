@@ -63,8 +63,19 @@ void EditorMediator::BindEditorClient(
 
 void EditorMediator::OnEditorServiceConnected(bool is_connection_successful) {}
 
-void EditorMediator::SetUpNewEditorService() {
+void EditorMediator::SetupEditorService() {
   if (editor_service_connector_.SetUpNewEditorService()) {
+    BindNewEditorConnection();
+  }
+}
+
+void EditorMediator::BindNewEditorConnection() {
+  if (editor_service_connector_.IsBound()) {
+    system_actuator_.reset();
+    text_query_provider_.reset();
+    editor_client_connector_.reset();
+    editor_event_proxy_.reset();
+
     mojo::PendingAssociatedRemote<orca::mojom::SystemActuator>
         system_actuator_remote;
     mojo::PendingAssociatedRemote<orca::mojom::TextQueryProvider>
@@ -129,8 +140,9 @@ void EditorMediator::OnFocus(int context_id) {
   }
 
   if (IsAllowedForUse() && !editor_service_connector_.IsBound()) {
-    SetUpNewEditorService();
+    SetupEditorService();
   }
+
   GetTextFieldContextualInfo(
       base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -149,6 +161,10 @@ void EditorMediator::OnBlur() {
 
 void EditorMediator::OnActivateIme(std::string_view engine_id) {
   editor_context_.OnActivateIme(engine_id);
+
+  if (base::FeatureList::IsEnabled(ash::features::kOrcaServiceConnection)) {
+    BindNewEditorConnection();
+  }
 }
 
 void EditorMediator::OnDisplayTabletStateChanged(display::TabletState state) {

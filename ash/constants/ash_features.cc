@@ -2267,6 +2267,11 @@ BASE_FEATURE(kOrcaOnWorkspace,
              "OrcaOnWorkspace",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables new Orca service connection logic.
+BASE_FEATURE(kOrcaServiceConnection,
+             "OrcaServiceConnection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, Orca will only be available in English locales.
 BASE_FEATURE(kOrcaOnlyInEnglishLocales,
              "OrcaOnlyInEnglishLocales",

@@ -77,12 +77,15 @@ void EditorPanelManager::BindReceiver(
 }
 
 void EditorPanelManager::BindEditorClient() {
-  if (!editor_client_remote_.is_bound()) {
-    delegate_->BindEditorClient(
-        editor_client_remote_.BindNewPipeAndPassReceiver());
-
-    editor_client_remote_.reset_on_disconnect();
+  if (editor_client_remote_.is_bound() &&
+      !base::FeatureList::IsEnabled(ash::features::kOrcaServiceConnection)) {
+    return;
   }
+
+  editor_client_remote_.reset();
+  delegate_->BindEditorClient(
+      editor_client_remote_.BindNewPipeAndPassReceiver());
+  editor_client_remote_.reset_on_disconnect();
 }
 
 void EditorPanelManager::GetEditorPanelContext(

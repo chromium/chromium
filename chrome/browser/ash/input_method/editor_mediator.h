@@ -129,8 +129,8 @@ class EditorMediator : public EditorContext::Observer,
 
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 
-  void SetUpNewEditorService();
-  void BindEditor();
+  void SetupEditorService();
+  void BindNewEditorConnection();
   void OnEditorServiceConnected(bool is_connection_bound);
 
   bool GetUserPref();
