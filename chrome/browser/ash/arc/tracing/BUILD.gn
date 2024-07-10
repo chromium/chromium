@@ -49,6 +49,7 @@ static_library("tracing") {
     "//ash/constants",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:factories",
     "//components/app_restore",
     "//components/exo",
     "//components/keyed_service/core",

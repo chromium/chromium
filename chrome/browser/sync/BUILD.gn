@@ -175,13 +175,7 @@ source_set("sync") {
       "//components/desks_storage",
       "//ui/events/ash",
     ]
-
-    # TODO(crbug.com/40251079): Remove circular dependencies.
-    allow_circular_includes_from = [
-      "//chrome/browser/ash/arc/tracing",
-      "//chrome/browser/ash/login/session",
-      "//chrome/browser/ash/printing/oauth2",
-    ]
+    allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
   }
 }
 

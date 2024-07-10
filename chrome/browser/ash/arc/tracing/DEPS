@@ -20,7 +20,7 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
-  "+chrome/browser/sync",
+  "+chrome/browser/sync/sync_service_factory.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/test/base",
 
