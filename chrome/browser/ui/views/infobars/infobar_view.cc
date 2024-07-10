@@ -30,6 +30,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/common_theme.h"
@@ -226,6 +227,14 @@ void InfoBarView::OnThemeChanged() {
         label->SetAutoColorReadabilityEnabled(false);
       }
     }
+  }
+
+  // Set dark mode status so that it can be used to set a different icon image
+  // that is more suitable for a dark background.
+  delegate()->set_dark_mode(
+      color_utils::IsDark(cp->GetColor(kColorInfoBarBackground)));
+  if (icon_) {
+    icon_->SetImage(delegate()->GetIcon());
   }
 }
 

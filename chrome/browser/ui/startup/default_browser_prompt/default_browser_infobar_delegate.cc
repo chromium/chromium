@@ -26,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_switches.h"
@@ -76,7 +77,8 @@ DefaultBrowserInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& DefaultBrowserInfoBarDelegate::GetVectorIcon() const {
-  return vector_icons::kProductIcon;
+  return dark_mode() ? omnibox::kProductChromeRefreshIcon
+                     : vector_icons::kProductIcon;
 }
 
 bool DefaultBrowserInfoBarDelegate::ShouldExpire(

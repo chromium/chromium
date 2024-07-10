@@ -294,11 +294,14 @@ class InfoBarDelegate {
 
   void set_infobar(InfoBar* infobar) { infobar_ = infobar; }
   void set_nav_entry_id(int nav_entry_id) { nav_entry_id_ = nav_entry_id; }
+  void set_dark_mode(bool dark_mode) { dark_mode_ = dark_mode; }
 
  protected:
   InfoBarDelegate();
 
   InfoBar* infobar() { return infobar_; }
+
+  bool dark_mode() const { return dark_mode_; }
 
  private:
   // The InfoBar associated with us.
@@ -306,6 +309,12 @@ class InfoBarDelegate {
 
   // The ID of the active navigation entry at the time we became owned.
   int nav_entry_id_ = 0;
+
+  // Whether the background of the InfoBar is dark. Normally, this is a UI-level
+  // concern that delegates need not worry about. However, some delegates need
+  // to change their behavior in this case, e.g. by returning a different icon
+  // entirely, not just one with a different color.
+  bool dark_mode_ = false;
 };
 
 }  // namespace infobars

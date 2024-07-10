@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "chrome/browser/ui/color/color_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/compose/buildflags.h"
 #include "ui/color/color_id.h"
@@ -277,12 +278,17 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFrameCaptionInactive] = {ui::kColorSysOnHeaderPrimaryInactive};
   mixer[kColorTabHoverCardSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorInfoBarBackground] = {ui::kColorSysBase};
-  mixer[kColorInfoBarButtonIcon] = {kColorInfoBarForeground};
+  mixer[kColorInfoBarButtonIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorInfoBarButtonIconDisabled] = {ui::kColorSysStateDisabled};
-  mixer[kColorInfoBarForeground] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[ui::kColorInfoBarIcon] =
-      ui::PickGoogleColor(ui::kColorSysPrimary, kColorInfoBarBackground,
-                          color_utils::kMinimumVisibleContrastRatio);
+  if (base::FeatureList::IsEnabled(features::kInfoBarIconMonochrome)) {
+    mixer[kColorInfoBarForeground] = {ui::kColorSysOnSurface};
+    mixer[ui::kColorInfoBarIcon] = {ui::kColorSysOnSurfaceSubtle};
+  } else {
+    mixer[kColorInfoBarForeground] = {ui::kColorSysOnSurfaceSubtle};
+    mixer[ui::kColorInfoBarIcon] =
+        ui::PickGoogleColor(ui::kColorSysPrimary, kColorInfoBarBackground,
+                            color_utils::kMinimumVisibleContrastRatio);
+  }
   mixer[kColorMediaRouterIconActive] =
       ui::PickGoogleColor(ui::kColorSysPrimary, kColorToolbar,
                           color_utils::kMinimumVisibleContrastRatio);
