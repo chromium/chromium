@@ -14,6 +14,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "third_party/omnibox_proto/answer_data.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
@@ -65,10 +66,10 @@ class OmniboxTextView : public views::View {
   // |fragment_index| specifies where to start appending and styling text from.
   void SetTextWithStyling(const omnibox::FormattedString& formatted_string,
                           size_t fragment_index,
-                          const SuggestionAnswer::AnswerType& answer_type);
+                          const omnibox::AnswerType& answer_type);
   // Sets |render_text_| to be multiline whenever necessary.
   void SetMultilineText(const omnibox::FormattedString& formatted_string,
-                        const SuggestionAnswer::AnswerType& answer_type);
+                        const omnibox::AnswerType& answer_type);
 
   // Adds the "additional" and "status" text from |line|, if any.
   void AppendExtraText(const SuggestionAnswer::ImageLine& line);

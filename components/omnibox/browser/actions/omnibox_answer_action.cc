@@ -15,34 +15,31 @@
 #endif
 
 namespace {
-constexpr const char* ToUmaUsageHistogramName(
-    SuggestionAnswer::AnswerType answer_type) {
+constexpr const char* ToUmaUsageHistogramName(omnibox::AnswerType answer_type) {
   switch (answer_type) {
-    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+    case omnibox::ANSWER_TYPE_DICTIONARY:
       return "Omnibox.AnswerAction.UsageByType.Dictionary";
-    case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+    case omnibox::ANSWER_TYPE_FINANCE:
       return "Omnibox.AnswerAction.UsageByType.Finance";
-    case SuggestionAnswer::ANSWER_TYPE_KNOWLEDGE_GRAPH:
+    case omnibox::ANSWER_TYPE_GENERIC_ANSWER:
       return "Omnibox.AnswerAction.UsageByType.KnowledgeGraph";
-    case SuggestionAnswer::ANSWER_TYPE_LOCAL:
-      return "Omnibox.AnswerAction.UsageByType.Local";
-    case SuggestionAnswer::ANSWER_TYPE_SPORTS:
+    case omnibox::ANSWER_TYPE_SPORTS:
       return "Omnibox.AnswerAction.UsageByType.Sports";
-    case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+    case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
       return "Omnibox.AnswerAction.UsageByType.Sunrise";
-    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+    case omnibox::ANSWER_TYPE_TRANSLATION:
       return "Omnibox.AnswerAction.UsageByType.Translation";
-    case SuggestionAnswer::ANSWER_TYPE_WEATHER:
+    case omnibox::ANSWER_TYPE_WEATHER:
       return "Omnibox.AnswerAction.UsageByType.Weather";
-    case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+    case omnibox::ANSWER_TYPE_WHEN_IS:
       return "Omnibox.AnswerAction.UsageByType.WhenIs";
-    case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+    case omnibox::ANSWER_TYPE_CURRENCY:
       return "Omnibox.AnswerAction.UsageByType.Currency";
-    case SuggestionAnswer::ANSWER_TYPE_LOCAL_TIME:
+    case omnibox::ANSWER_TYPE_LOCAL_TIME:
       return "Omnibox.AnswerAction.UsageByType.LocalTime";
-    case SuggestionAnswer::ANSWER_TYPE_PLAY_INSTALL:
+    case omnibox::ANSWER_TYPE_PLAY_INSTALL:
       return "Omnibox.AnswerAction.UsageByType.PlayInstall";
-    case SuggestionAnswer::ANSWER_TYPE_INVALID:
+    case omnibox::ANSWER_TYPE_UNSPECIFIED:
     default:
       return "Omnibox.AnswerAction.UsageByType.Invalid";
   }
@@ -53,7 +50,7 @@ constexpr const char* ToUmaUsageHistogramName(
 OmniboxAnswerAction::OmniboxAnswerAction(
     omnibox::SuggestionEnhancement enhancement,
     TemplateURLRef::SearchTermsArgs search_terms_args,
-    SuggestionAnswer::AnswerType answer_type)
+    omnibox::AnswerType answer_type)
     : OmniboxAction(
           OmniboxAction::LabelStrings(
               base::UTF8ToUTF16(enhancement.display_text()),
@@ -82,13 +79,11 @@ OmniboxAnswerAction::GetOrCreateJavaObject(JNIEnv* env) const {
 
 void OmniboxAnswerAction::RecordActionShown(size_t position,
                                             bool executed) const {
-  base::UmaHistogramEnumeration(
-      "Omnibox.AnswerAction.Shown", answer_type_,
-      SuggestionAnswer::AnswerType::ANSWER_TYPE_TOTAL_COUNT);
+  base::UmaHistogramEnumeration("Omnibox.AnswerAction.Shown", answer_type_,
+                                omnibox::AnswerType_MAX);
   if (executed) {
-    base::UmaHistogramEnumeration(
-        "Omnibox.AnswerAction.Used", answer_type_,
-        SuggestionAnswer::AnswerType::ANSWER_TYPE_TOTAL_COUNT);
+    base::UmaHistogramEnumeration("Omnibox.AnswerAction.Used", answer_type_,
+                                  omnibox::AnswerType_MAX);
   }
 
   base::UmaHistogramBoolean(ToUmaUsageHistogramName(answer_type_), executed);

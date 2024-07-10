@@ -25,6 +25,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/omnibox_proto/answer_data.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -333,7 +334,7 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
               ntp_features::kRealboxCr23ExpandedStateIcons) ||
           base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
         mojom_match->is_weather_answer_suggestion =
-            match.answer_type == SuggestionAnswer::ANSWER_TYPE_WEATHER;
+            match.answer_type == omnibox::ANSWER_TYPE_WEATHER;
       }
     } else if (match.answer.has_value()) {
       const auto& additional_text =

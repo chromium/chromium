@@ -252,6 +252,13 @@ omnibox::NavigationalIntent NavigationalIntentForNumber(int value) {
   return omnibox::NavigationalIntent::NAV_INTENT_NONE;
 }
 
+omnibox::AnswerType AnswerTypeForNumber(int value) {
+  if (omnibox::AnswerType_IsValid(value)) {
+    return static_cast<omnibox::AnswerType>(value);
+  }
+  return omnibox::ANSWER_TYPE_UNSPECIFIED;
+}
+
 // SearchSuggestionParser::Result ----------------------------------------------
 
 SearchSuggestionParser::Result::Result(
@@ -408,7 +415,7 @@ void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
 }
 
 void SearchSuggestionParser::SuggestResult::SetAnswerType(
-    const SuggestionAnswer::AnswerType& answer_type) {
+    const omnibox::AnswerType& answer_type) {
   answer_type_ = answer_type;
 }
 
@@ -859,8 +866,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::optional<int> suggestion_group_id;
       omnibox::EntityInfo entity_info;
       omnibox::RichAnswerTemplate answer_template;
-      SuggestionAnswer::AnswerType answer_type =
-          SuggestionAnswer::ANSWER_TYPE_INVALID;
+      omnibox::AnswerType answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&
           !(*suggestion_details)[index].GetDict().empty()) {
@@ -896,15 +902,17 @@ bool SearchSuggestionParser::ParseSuggestResults(
               suggestion_detail.FindString("google:templateinfo");
           bool template_parsed_successfully = false;
           // Check that answer type string can be mapped to
-          // SuggestionAnswer::AnswerType.
+          // omnibox::AnswerType.
           int numeric_answer_type = 0;
           if (base::StringToInt(base::UTF8ToUTF16(*answer_type_str),
                                 &numeric_answer_type)) {
-            answer_type =
-                static_cast<SuggestionAnswer::AnswerType>(numeric_answer_type);
+            answer_type = AnswerTypeForNumber(numeric_answer_type);
           }
+          // TODO (327497146): Remove omnibox::ANSWER_TYPE_WEB_ANSWER check
+          // after fully deprecating SuggestionAnswer::AnswerType.
           if (answer_template_string &&
-              answer_type != SuggestionAnswer::ANSWER_TYPE_INVALID) {
+              (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED &&
+               answer_type != omnibox::ANSWER_TYPE_WEB_ANSWER)) {
             omnibox::RichSuggestTemplate suggest_template;
             template_parsed_successfully =
                 DecodeProtoFromBase64<omnibox::RichSuggestTemplate>(
@@ -920,7 +928,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
           if (!template_parsed_successfully && answer_json) {
             if (omnibox_feature_configs::SuggestionAnswerMigration::Get()
                     .enabled &&
-                answer_type != SuggestionAnswer::ANSWER_TYPE_INVALID &&
+                (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED &&
+                 answer_type != omnibox::ANSWER_TYPE_WEB_ANSWER) &&
                 omnibox::answer_data_parser::ParseJsonToAnswerData(
                     *answer_json, &answer_template)) {
             } else if (SuggestionAnswer::ParseAnswer(

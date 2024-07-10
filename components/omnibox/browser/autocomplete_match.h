@@ -29,6 +29,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
@@ -804,8 +805,7 @@ struct AutocompleteMatch {
   std::optional<omnibox::RichAnswerTemplate> answer_template;
 
   // AnswerType for answer verticals, including rich answers.
-  SuggestionAnswer::AnswerType answer_type{
-      SuggestionAnswer::ANSWER_TYPE_INVALID};
+  omnibox::AnswerType answer_type{omnibox::ANSWER_TYPE_UNSPECIFIED};
 
   // The transition type to use when the user opens this match.  By default,
   // this is TYPED.  Providers whose matches do not look like URLs should set

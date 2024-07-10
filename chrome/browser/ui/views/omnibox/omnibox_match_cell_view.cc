@@ -26,6 +26,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/common/color_parser.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -333,7 +334,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
     // Determine if we have a local icon (or else it will be downloaded).
     if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
         match.answer_template.has_value()) {
-      if (match.answer_type == SuggestionAnswer::ANSWER_TYPE_WEATHER) {
+      if (match.answer_type == omnibox::ANSWER_TYPE_WEATHER) {
         // Weather icons are downloaded. We just need to set the correct size.
         answer_image_view_->SetImageSize(
             gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
@@ -342,7 +343,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
             AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer_type));
       }
     } else if (match.answer) {
-      if (match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER) {
+      if (match.answer->type() == omnibox::ANSWER_TYPE_WEATHER) {
         // Weather icons are downloaded. We just need to set the correct size.
         answer_image_view_->SetImageSize(
             gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
@@ -411,7 +412,7 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
   bool is_weather_answer =
       omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled
           ? (match.answer_template.has_value() &&
-             match.answer_type == SuggestionAnswer::ANSWER_TYPE_WEATHER)
+             match.answer_type == omnibox::ANSWER_TYPE_WEATHER)
           : (match.answer &&
              match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER);
 

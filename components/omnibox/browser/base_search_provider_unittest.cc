@@ -32,6 +32,7 @@
 #include "components/search_engines/template_url_service_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
@@ -877,7 +878,7 @@ TEST_F(BaseSearchProviderTest, CreateAnswerAction) {
 
     auto action = BaseSearchProvider::CreateAnswerAction(
         std::move(*enhancement), search_terms_args,
-        SuggestionAnswer::ANSWER_TYPE_FINANCE);
+        omnibox::ANSWER_TYPE_FINANCE);
 
     auto* answer_action = OmniboxAnswerAction::FromAction(action.get());
     // Ensure search terms additional params match. Checking the exact value is

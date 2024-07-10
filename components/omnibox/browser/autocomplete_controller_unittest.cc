@@ -30,6 +30,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
 class AutocompleteControllerTest : public testing::Test {
@@ -2269,7 +2270,7 @@ TEST_F(AutocompleteControllerTest, UpdateSearchboxStatsForAnswerAction) {
   enhancement.set_display_text("Similar and opposite words");
   auto answer_action = base::MakeRefCounted<OmniboxAnswerAction>(
       std::move(enhancement), TemplateURLRef::SearchTermsArgs(),
-      SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
+      omnibox::ANSWER_TYPE_DICTIONARY);
   AutocompleteMatch match1 = CreateSearchMatch("match1", true, 1300);
   match1.actions.push_back(answer_action);
 

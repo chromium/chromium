@@ -142,7 +142,7 @@ UIColor* DimColorIncognito() {
         [[NSMutableAttributedString alloc] initWithString:@""];
     NSAttributedString* spacer = [[self class] spacerAttributedString];
 
-    if (_match.answer_type == SuggestionAnswer::ANSWER_TYPE_DICTIONARY) {
+    if (_match.answer_type == omnibox::ANSWER_TYPE_DICTIONARY) {
       auto subheadFragments =
           _match.answer_template->answers(0).subhead().fragments();
 
@@ -220,8 +220,7 @@ UIColor* DimColorIncognito() {
 
 - (NSInteger)numberOfLines {
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
-    return _match.answer_type == SuggestionAnswer::ANSWER_TYPE_DICTIONARY ? 3
-                                                                          : 1;
+    return _match.answer_type == omnibox::ANSWER_TYPE_DICTIONARY ? 3 : 1;
   }
   // Answers specify their own limit on the number of lines to show but are
   // additionally capped here at 3 to guard against unreasonable values.
@@ -306,7 +305,7 @@ UIColor* DimColorIncognito() {
         [[NSMutableAttributedString alloc] initWithString:@""];
     NSAttributedString* spacer = [[self class] spacerAttributedString];
 
-    if (_match.answer_type == SuggestionAnswer::ANSWER_TYPE_DICTIONARY) {
+    if (_match.answer_type == omnibox::ANSWER_TYPE_DICTIONARY) {
       auto headlineFragments =
           _match.answer_template->answers(0).headline().fragments();
 
@@ -598,7 +597,7 @@ UIColor* DimColorIncognito() {
     }
     default:
       BOOL isFinanceDetailText =
-          _match.answer_type == SuggestionAnswer::ANSWER_TYPE_FINANCE &&
+          _match.answer_type == omnibox::ANSWER_TYPE_FINANCE &&
           useDeemphasizedStyling;
       return @{
         NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor

@@ -274,7 +274,7 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
 scoped_refptr<OmniboxAction> BaseSearchProvider::CreateAnswerAction(
     omnibox::SuggestionEnhancement enhancement,
     TemplateURLRef::SearchTermsArgs search_terms_args,
-    SuggestionAnswer::AnswerType answer_type) {
+    omnibox::AnswerType answer_type) {
   // Define actions destination URL.
   std::string query_params;
   for (const auto& param : enhancement.query_cgi_params()) {

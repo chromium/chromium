@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -33,7 +34,7 @@ TEST_F(OmniboxAnswerActionTest, ActionHasLabelsFromEnhancement) {
   enhancement->set_display_text(display_text);
   auto action = base::MakeRefCounted<OmniboxAnswerAction>(
       std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
-      SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
+      omnibox::ANSWER_TYPE_DICTIONARY);
   const auto& labels = action->GetLabelStrings();
 
   // Ensure actions have the correct labels.
@@ -53,7 +54,7 @@ TEST_F(OmniboxAnswerActionTest, ConvertAction) {
   scoped_refptr<OmniboxAction> upcasted_action =
       base::MakeRefCounted<OmniboxAnswerAction>(
           std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
-          SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
+          omnibox::ANSWER_TYPE_DICTIONARY);
   auto* downcasted_action =
       OmniboxAnswerAction::FromAction(upcasted_action.get());
   EXPECT_EQ(upcasted_action.get(), downcasted_action);
@@ -67,11 +68,11 @@ TEST_F(OmniboxAnswerActionTest, RecordMetrics) {
   {
     auto action = base::MakeRefCounted<OmniboxAnswerAction>(
         std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
-        SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
+        omnibox::ANSWER_TYPE_DICTIONARY);
     base::HistogramTester histograms;
     action->RecordActionShown(1, /*executed = */ false);
     histograms.ExpectBucketCount("Omnibox.AnswerAction.Shown",
-                                 SuggestionAnswer::ANSWER_TYPE_DICTIONARY, 1);
+                                 omnibox::ANSWER_TYPE_DICTIONARY, 1);
     histograms.ExpectTotalCount("Omnibox.AnswerAction.Shown", 1);
     histograms.ExpectTotalCount("Omnibox.AnswerAction.Used", 0);
   }
@@ -79,11 +80,11 @@ TEST_F(OmniboxAnswerActionTest, RecordMetrics) {
   {
     auto action = base::MakeRefCounted<OmniboxAnswerAction>(
         std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
-        SuggestionAnswer::ANSWER_TYPE_FINANCE);
+        omnibox::ANSWER_TYPE_FINANCE);
     base::HistogramTester histograms;
     action->RecordActionShown(1, /*executed = */ false);
     histograms.ExpectBucketCount("Omnibox.AnswerAction.Shown",
-                                 SuggestionAnswer::ANSWER_TYPE_FINANCE, 1);
+                                 omnibox::ANSWER_TYPE_FINANCE, 1);
     histograms.ExpectTotalCount("Omnibox.AnswerAction.Shown", 1);
     histograms.ExpectTotalCount("Omnibox.AnswerAction.Used", 0);
   }
@@ -91,14 +92,14 @@ TEST_F(OmniboxAnswerActionTest, RecordMetrics) {
   {
     auto action = base::MakeRefCounted<OmniboxAnswerAction>(
         std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
-        SuggestionAnswer::ANSWER_TYPE_FINANCE);
+        omnibox::ANSWER_TYPE_FINANCE);
     base::HistogramTester histograms;
     action->RecordActionShown(1, /*executed = */ true);
     histograms.ExpectBucketCount("Omnibox.AnswerAction.Shown",
-                                 SuggestionAnswer::ANSWER_TYPE_FINANCE, 1);
+                                 omnibox::ANSWER_TYPE_FINANCE, 1);
     histograms.ExpectTotalCount("Omnibox.AnswerAction.Shown", 1);
     histograms.ExpectBucketCount("Omnibox.AnswerAction.Used",
-                                 SuggestionAnswer::ANSWER_TYPE_FINANCE, 1);
+                                 omnibox::ANSWER_TYPE_FINANCE, 1);
     histograms.ExpectTotalCount("Omnibox.AnswerAction.Used", 1);
   }
 }
