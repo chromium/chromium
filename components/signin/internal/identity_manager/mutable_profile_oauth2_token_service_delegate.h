@@ -81,7 +81,7 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Overridden from NetworkConnectionTracker::NetworkConnectionObserver.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  bool FixRequestErrorIfPossible() override;
+  bool FixAccountErrorIfPossible() override;
 
   // Returns the account's refresh token used for testing purposes.
   std::string GetRefreshTokenForTest(const CoreAccountId& account_id) const;

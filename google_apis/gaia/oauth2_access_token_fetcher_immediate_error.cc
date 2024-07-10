@@ -8,32 +8,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-OAuth2AccessTokenFetcherImmediateError::FailCaller::FailCaller(
-    OAuth2AccessTokenFetcherImmediateError* fetcher)
-    : fetcher_(fetcher) {
-}
-
-OAuth2AccessTokenFetcherImmediateError::FailCaller::~FailCaller() {
-}
-
-void OAuth2AccessTokenFetcherImmediateError::FailCaller::run() {
-  if (fetcher_) {
-    fetcher_->Fail();
-    fetcher_ = nullptr;
-  }
-}
-
-void OAuth2AccessTokenFetcherImmediateError::FailCaller::detach() {
-  fetcher_ = nullptr;
-}
-
-
 OAuth2AccessTokenFetcherImmediateError::OAuth2AccessTokenFetcherImmediateError(
     OAuth2AccessTokenConsumer* consumer,
     const GoogleServiceAuthError& error)
     : OAuth2AccessTokenFetcher(consumer),
       immediate_error_(error) {
-  DCHECK(immediate_error_ != GoogleServiceAuthError::AuthErrorNone());
+  CHECK_NE(immediate_error_, GoogleServiceAuthError::AuthErrorNone());
 }
 
 OAuth2AccessTokenFetcherImmediateError::
@@ -41,22 +21,15 @@ OAuth2AccessTokenFetcherImmediateError::
   CancelRequest();
 }
 
-void OAuth2AccessTokenFetcherImmediateError::CancelRequest() {
-  if (failer_) {
-    failer_->detach();
-    failer_ = nullptr;
-  }
-}
+void OAuth2AccessTokenFetcherImmediateError::CancelRequest() {}
 
 void OAuth2AccessTokenFetcherImmediateError::Start(
     const std::string& client_id,
     const std::string& client_secret,
     const std::vector<std::string>& scopes) {
-  failer_ = new FailCaller(this);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OAuth2AccessTokenFetcherImmediateError::FailCaller::run,
-                     failer_));
+      FROM_HERE, base::BindOnce(&OAuth2AccessTokenFetcherImmediateError::Fail,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OAuth2AccessTokenFetcherImmediateError::Fail() {

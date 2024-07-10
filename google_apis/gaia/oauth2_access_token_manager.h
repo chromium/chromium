@@ -54,10 +54,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
     // |false| otherwise.
     virtual bool HasRefreshToken(const CoreAccountId& account_id) const = 0;
 
-    // Attempts to fix the error if possible.  Returns true if the error was
-    // fixed and false otherwise. Default implementation returns false.
-    virtual bool FixRequestErrorIfPossible();
-
     // Returns a SharedURLLoaderFactory object that will be used as part of
     // fetching access tokens. Default implementation returns nullptr.
     virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()

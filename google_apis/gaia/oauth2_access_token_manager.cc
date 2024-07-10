@@ -35,10 +35,6 @@ OAuth2AccessTokenManager::Delegate::Delegate() = default;
 
 OAuth2AccessTokenManager::Delegate::~Delegate() = default;
 
-bool OAuth2AccessTokenManager::Delegate::FixRequestErrorIfPossible() {
-  return false;
-}
-
 scoped_refptr<network::SharedURLLoaderFactory>
 OAuth2AccessTokenManager::Delegate::GetURLLoaderFactory() const {
   return nullptr;
@@ -193,7 +189,6 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
           const std::string& consumer_name,
           base::WeakPtr<RequestImpl> waiting_request);
   void Start();
-  bool ShouldRetry(const GoogleServiceAuthError& error) const;
   void InformFetchCompleted(
       base::expected<OAuth2AccessTokenConsumer::TokenResponse,
                      GoogleServiceAuthError> response);
@@ -289,6 +284,8 @@ void OAuth2AccessTokenManager::Fetcher::Start() {
 void OAuth2AccessTokenManager::Fetcher::OnGetTokenSuccess(
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   CHECK(fetcher_);
+  OAuth2AccessTokenConsumer::TokenResponse fetcher_token_response =
+      token_response;
   fetcher_.reset();
 
   RecordOAuth2TokenFetchResult(GoogleServiceAuthError::NONE);
@@ -297,20 +294,21 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenSuccess(
   // we still inform all waiting Consumers of a successful token fetch below.
   // This is intentional -- some consumers may need the token for cleanup
   // tasks. https://chromiumcodereview.appspot.com/11312124/
-  InformFetchCompleted(token_response);
+  InformFetchCompleted(fetcher_token_response);
 }
 
 void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
     const GoogleServiceAuthError& error) {
   CHECK(fetcher_);
+  GoogleServiceAuthError fetcher_error = error;
   fetcher_.reset();
 
-  if (ShouldRetry(error) && RetryIfPossible(error)) {
+  if (fetcher_error.IsTransientError() && RetryIfPossible(fetcher_error)) {
     return;
   }
 
-  RecordOAuth2TokenFetchResult(error.state());
-  InformFetchCompleted(base::unexpected(error));
+  RecordOAuth2TokenFetchResult(fetcher_error.state());
+  InformFetchCompleted(base::unexpected(fetcher_error));
 }
 
 std::string OAuth2AccessTokenManager::Fetcher::GetConsumerName() const {
@@ -356,14 +354,6 @@ bool OAuth2AccessTokenManager::Fetcher::RetryIfPossible(
   }
 
   return false;
-}
-
-bool OAuth2AccessTokenManager::Fetcher::ShouldRetry(
-    const GoogleServiceAuthError& error) const {
-  // Give the delegate a chance to correct the error first. This is a best
-  // effort only.
-  return error.IsTransientError() || oauth2_access_token_manager_->GetDelegate()
-                                         ->FixRequestErrorIfPossible();
 }
 
 void OAuth2AccessTokenManager::Fetcher::InformFetchCompleted(
@@ -746,9 +736,6 @@ void OAuth2AccessTokenManager::ProcessOnFetchComplete(
     error = std::move(response).error();
   }
 
-  // `delegate_` might cancel all pending fetchers, so it's important to call it
-  // only after `fetcher` was removed from the map. See
-  // https://crbug.com/1186630.
   delegate_->OnAccessTokenFetched(request_parameters.account_id, error);
 
   const OAuth2AccessTokenConsumer::TokenResponse* entry =

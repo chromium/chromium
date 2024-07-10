@@ -177,9 +177,10 @@ class ProfileOAuth2TokenServiceDelegate {
   void ExtractCredentials(ProfileOAuth2TokenService* to_service,
                           const CoreAccountId& account_id);
 
-  // Attempts to fix the error if possible.  Returns true if the error was fixed
-  // and false otherwise.
-  virtual bool FixRequestErrorIfPossible();
+  // Attempts to fix account error. This is only possible for some cases where
+  // signin happens with a credential provider. See
+  // `signin_util::SigninWithCredentialProviderIfPossible()`.
+  virtual bool FixAccountErrorIfPossible();
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Triggers platform specific implementation to reload accounts from system.

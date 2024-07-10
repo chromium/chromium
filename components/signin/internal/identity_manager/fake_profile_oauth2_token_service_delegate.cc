@@ -141,8 +141,8 @@ FakeProfileOAuth2TokenServiceDelegate::GetURLLoaderFactory() const {
   return shared_factory_;
 }
 
-bool FakeProfileOAuth2TokenServiceDelegate::FixRequestErrorIfPossible() {
-  return fix_request_if_possible_;
+bool FakeProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {
+  return fix_account_if_possible_ ? fix_account_if_possible_.Run() : false;
 }
 
 #if BUILDFLAG(IS_ANDROID)

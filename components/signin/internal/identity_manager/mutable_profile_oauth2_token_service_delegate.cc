@@ -761,7 +761,7 @@ void MutableProfileOAuth2TokenServiceDelegate::OnConnectionChanged(
   ResetBackOffEntry();
 }
 
-bool MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorIfPossible() {
+bool MutableProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {
   return !fix_request_error_callback_.is_null()
              ? fix_request_error_callback_.Run()
              : false;

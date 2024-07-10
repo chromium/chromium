@@ -88,7 +88,6 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
       OAuth2AccessTokenConsumer* consumer,
       const std::string& token_binding_challenge) override;
   bool HasRefreshToken(const CoreAccountId& account_id) const override;
-  bool FixRequestErrorIfPossible() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
   void OnAccessTokenInvalidated(
@@ -276,6 +275,8 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
 
  private:
   friend class signin::IdentityManager;
+
+  void FixAccountErrorIfPossible();
 
   // ProfileOAuth2TokenServiceObserver implementation.
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override;

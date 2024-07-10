@@ -63,8 +63,8 @@ ProfileOAuth2TokenService::CreateAccessTokenFetcher(
                                              consumer, token_binding_challenge);
 }
 
-bool ProfileOAuth2TokenService::FixRequestErrorIfPossible() {
-  return delegate_->FixRequestErrorIfPossible();
+void ProfileOAuth2TokenService::FixAccountErrorIfPossible() {
+  delegate_->FixAccountErrorIfPossible();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -87,6 +87,12 @@ void ProfileOAuth2TokenService::OnAccessTokenFetched(
   // Update the auth error state so auth errors are appropriately communicated
   // to the user.
   delegate_->UpdateAuthError(account_id, error);
+  if (error.IsPersistentError()) {
+    // Needed for Enterprise on Windows to allow
+    // `signin_util::ReauthWithCredentialProviderIfPossible()` to fix the
+    // account.
+    FixAccountErrorIfPossible();
+  }
 }
 
 bool ProfileOAuth2TokenService::HasRefreshToken(

@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -47,7 +48,7 @@ class FakeProfileOAuth2TokenServiceDelegate
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
 
-  bool FixRequestErrorIfPossible() override;
+  bool FixAccountErrorIfPossible() override;
 
   std::string GetRefreshToken(const CoreAccountId& account_id) const;
 
@@ -55,8 +56,8 @@ class FakeProfileOAuth2TokenServiceDelegate
     return &test_url_loader_factory_;
   }
 
-  void set_fix_request_if_possible(bool value) {
-    fix_request_if_possible_ = value;
+  void set_fix_request_if_possible(base::RepeatingCallback<bool()> callback) {
+    fix_account_if_possible_ = std::move(callback);
   }
 
  private:
@@ -92,6 +93,6 @@ class FakeProfileOAuth2TokenServiceDelegate
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
-  bool fix_request_if_possible_ = false;
+  base::RepeatingCallback<bool()> fix_account_if_possible_;
 };
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_

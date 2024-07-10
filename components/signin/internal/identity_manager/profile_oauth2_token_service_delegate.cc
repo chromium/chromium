@@ -290,7 +290,7 @@ void ProfileOAuth2TokenServiceDelegate::UpdateCredentials(
   );
 }
 
-bool ProfileOAuth2TokenServiceDelegate::FixRequestErrorIfPossible() {
+bool ProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {
   return false;
 }
 
