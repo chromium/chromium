@@ -153,7 +153,7 @@ suite(`emoji-picker-validation-gif`, () => {
       `recently used gif group should contain the ` +
           `correct gifs after it is has been validated.`,
       async () => {
-        emojiPicker.updateIncognitoState(false);
+        await emojiPicker.updateIncognitoState(false);
 
         // Whilst history originally had 5 GIFs, there should now only be 3
         // valid GIFs.
@@ -183,7 +183,7 @@ suite(`emoji-picker-validation-gif`, () => {
       'Trending appends GIFs correctly via scrolling when' +
           ' recently used group exists',
       async () => {
-        emojiPicker.updateIncognitoState(false);
+        await emojiPicker.updateIncognitoState(false);
 
         const categoryButton =
             findInEmojiPicker('emoji-search')!.shadowRoot!
@@ -275,7 +275,7 @@ suite(`emoji-picker-validation-gif`, () => {
       'Trending appends GIFs correctly via selecting group' +
           ' when recently used group exists',
       async () => {
-        emojiPicker.updateIncognitoState(false);
+        await emojiPicker.updateIncognitoState(false);
 
         const categoryButton =
             findInEmojiPicker('emoji-search')!.shadowRoot!

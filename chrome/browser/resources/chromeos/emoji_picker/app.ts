@@ -1173,7 +1173,7 @@ export class EmojiPickerApp extends PolymerElement {
    * change of incognito state.
    *
    */
-  updateIncognitoState(incognito: boolean) {
+  async updateIncognitoState(incognito: boolean) {
     this.incognito = incognito;
     this.updateEmojiPreferencesStore();
 
@@ -1181,6 +1181,7 @@ export class EmojiPickerApp extends PolymerElement {
     for (const category of Object.values(CategoryEnum)) {
       this.categoriesHistory[category] =
           incognito ? null : new RecentlyUsedStore(category);
+      await this.categoriesHistory[category]?.mergeWithPrefsHistory();
       this.categoryHistoryUpdated(category);
     }
   }

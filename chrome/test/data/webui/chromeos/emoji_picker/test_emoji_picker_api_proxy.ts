@@ -419,4 +419,13 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
   override insertGif() {
     // Fake the backend operation of copying gif to clipboard by doing nothing
   }
+
+  override updateHistoryInPrefs() {
+    // Fake the backend operation of updating prefs by doing nothing
+  }
+
+  override getHistoryFromPrefs() {
+    // Fake backend of returning an empty history from prefs.
+    return Promise.resolve({history: []});
+  }
 }

@@ -83,12 +83,12 @@ export class RecentlyUsedStore {
   constructor(private readonly category: CategoryEnum) {
     this.store =
         new Store(`${category}-recently-used`, {history: [], preference: {}});
-    if (category !== CategoryEnum.GIF) {
-      this.mergeWithPrefsHistory();
-    }
   }
 
-  private async mergeWithPrefsHistory() {
+  async mergeWithPrefsHistory() {
+    if (this.category === CategoryEnum.GIF) {
+      return;
+    }
     const prefsHistory =
         await EmojiPickerApiProxy.getInstance().getHistoryFromPrefs(
             convertCategoryEnum(this.category));
