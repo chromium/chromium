@@ -188,7 +188,14 @@ void OnGetReauthenticationRequired(
     base::expected<ODFSMetadata, base::File::Error> metadata) {
   bool reauthentication_required = false;
   if (metadata.has_value()) {
-    reauthentication_required = metadata->reauthentication_required;
+    // TODO(b/330786891): Only query account_state once
+    // reauthentication_required is no longer needed for backwards compatibility
+    // with ODFS.
+    reauthentication_required =
+        metadata->reauthentication_required ||
+        (metadata->account_state.has_value() &&
+         metadata->account_state.value() ==
+             OdfsAccountState::kReauthenticationRequired);
   } else {
     LOG(ERROR) << "Failed to get reauthentication required state: "
                << metadata.error();

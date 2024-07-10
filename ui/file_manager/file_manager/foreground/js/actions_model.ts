@@ -14,7 +14,7 @@ import {strf} from '../../common/js/translations.js';
 import {visitURL} from '../../common/js/util.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 
-import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, FSP_ACTION_HIDDEN_ONEDRIVE_URL, FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL} from './constants.js';
+import {FSP_ACTIONS_HIDDEN} from './constants.js';
 import type {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
 import type {ActionModelUi} from './ui/action_model_ui.js';
@@ -430,16 +430,7 @@ export class ActionsModel extends EventTarget {
                         // Skip fake actions that should not be displayed to the
                         // user, for example actions that just expose OneDrive
                         // URLs.
-                        // TODO(b/237216270): Restrict to the ODFS extension ID.
-                        if (action.id === FSP_ACTION_HIDDEN_ONEDRIVE_URL) {
-                          return;
-                        }
-                        if (action.id ===
-                            FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL) {
-                          return;
-                        }
-                        if (action.id ===
-                            FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED) {
+                        if (FSP_ACTIONS_HIDDEN.includes(action.id)) {
                           return;
                         }
                         actions[action.id] = new CustomAction(

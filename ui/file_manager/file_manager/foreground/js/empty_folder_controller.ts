@@ -15,7 +15,7 @@ import type {FileKey, State, Volume, VolumeId} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 import type {Store} from '../../state/store.js';
 
-import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL, ODFS_EXTENSION_ID} from './constants.js';
+import {FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE, FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL, ODFS_EXTENSION_ID} from './constants.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {ProvidersModel} from './providers_model.js';
 
@@ -45,9 +45,20 @@ const ODFS_REAUTHENTICATION_REQUIRED = 'foreground/images/files/ui/' +
     'odfs_reauthentication_required.svg#odfs_reauthentication_required';
 
 
+/**
+ * The state of the user's OneDrive account. Matches the enum in ODFS.
+ */
+enum OdfsAccountState {
+  NORMAL = 'NORMAL',
+  REAUTHENTICATION_REQUIRED = 'REAUTHENTICATION_REQUIRED',
+}
+
 interface OdfsMetadata {
   userEmail?: string;
+  // TODO(b/330786891): Remove reauthenticationRequired once no longer needed
+  // for backwards compatibility with ODFS.
   reauthenticationRequired?: boolean;
+  accountState?: OdfsAccountState;
 }
 
 export type ScanFailedEvent = CustomEvent<{error: DOMError}>;
@@ -154,6 +165,21 @@ export class EmptyFolderController {
                 case FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED:
                   metadata.reauthenticationRequired = action.title === 'true';
                   continue;
+                case FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE:
+                  if (!action.title) {
+                    continue;
+                  }
+                  switch (action.title) {
+                    case OdfsAccountState.NORMAL:
+                      metadata.accountState = OdfsAccountState.NORMAL;
+                      continue;
+                    case OdfsAccountState.REAUTHENTICATION_REQUIRED:
+                      metadata.accountState =
+                          OdfsAccountState.REAUTHENTICATION_REQUIRED;
+                      continue;
+                    default:
+                      continue;
+                  }
                 default:
                   continue;
               }
@@ -192,7 +218,13 @@ export class EmptyFolderController {
     this.getOdfsMetadata_(currentVolumeInfo)
         .then((odfsMetadata: OdfsMetadata) => {
           let svgRef = null;
-          if (odfsMetadata.reauthenticationRequired) {
+          // TODO(b/330786891): Remove odfsMetadata.reauthenticationRequired
+          // once no longer needed for backwards compatibility with ODFS.
+          if ((odfsMetadata.reauthenticationRequired ||
+               odfsMetadata.accountState ===
+                   OdfsAccountState.REAUTHENTICATION_REQUIRED) &&
+              event.detail.error.name ===
+                  FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR) {
             svgRef = ODFS_REAUTHENTICATION_REQUIRED;
           }
           if (svgRef !== null && isInteractiveVolume(currentVolumeInfo)) {

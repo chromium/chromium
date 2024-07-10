@@ -5,6 +5,7 @@
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {createChild} from '../../common/js/dom_utils.js';
 import {isInteractiveVolume} from '../../common/js/entry_utils.js';
 import type {FakeEntry} from '../../common/js/files_app_entry_types.js';
@@ -14,7 +15,7 @@ import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
+import {FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE, FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import {clearSearch, updateSearch} from '../../state/ducks/search.js';
 import {convertVolumeInfoAndMetadataToVolume} from '../../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../../state/for_tests.js';
@@ -82,6 +83,21 @@ export function setUp() {
       chrome.fileManagerPrivate.FileCategory.ALL);
   emptyFolderController = new TestEmptyFolderController(
       element, directoryModel, providersModel, recentEntry);
+}
+
+function addODFSToStore(): VolumeInfo {
+  setUpFileManagerOnWindow();
+  const initialState = getEmptyState();
+  const {volumeManager} = window.fileManager;
+  const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', ODFS_EXTENSION_ID);
+  volumeManager.volumeInfoList.add(odfsVolumeInfo);
+  const volume = convertVolumeInfoAndMetadataToVolume(
+      odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));
+  initialState.volumes[volume.volumeId] = volume;
+  setupStore(initialState);
+
+  return odfsVolumeInfo;
 }
 
 /**
@@ -170,18 +186,7 @@ export function testHiddenForFiles() {
  * |isInteractive| state of the volume can be read.
  */
 export function testHiddenForODFSOnSuccess() {
-  // Add ODFS volume to the store.
-  setUpFileManagerOnWindow();
-  const initialState = getEmptyState();
-  const {volumeManager} = window.fileManager;
-  const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', ODFS_EXTENSION_ID);
-  volumeManager.volumeInfoList.add(odfsVolumeInfo);
-  const volume = convertVolumeInfoAndMetadataToVolume(
-      odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));
-  initialState.volumes[volume.volumeId] = volume;
-
-  setupStore(initialState);
+  const odfsVolumeInfo = addODFSToStore();
 
   // Set ODFS as the volume.
   directoryModel.getCurrentVolumeInfo = function() {
@@ -202,6 +207,9 @@ export function testHiddenForODFSOnSuccess() {
   assertTrue(isInteractiveVolume(odfsVolumeInfo));
 }
 
+// TODO(b/330786891): Remove this test once
+// FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED is no longer needed for
+// backwards compatibility with ODFS.
 /**
  * Tests that the empty folder element is hidden and ODFS is still interactive
  * if the scan failed from a NO_MODIFICATION_ALLOWED_ERR (access denied) but
@@ -228,18 +236,69 @@ export async function testHiddenForODFSOnFailureWithoutReauthRequired() {
   };
   installMockChrome(mockChrome);
 
-  // Add ODFS volume to the store.
-  setUpFileManagerOnWindow();
-  const initialState = getEmptyState();
-  const {volumeManager} = window.fileManager;
-  const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', ODFS_EXTENSION_ID);
-  volumeManager.volumeInfoList.add(odfsVolumeInfo);
-  const volume = convertVolumeInfoAndMetadataToVolume(
-      odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));
-  initialState.volumes[volume.volumeId] = volume;
+  const odfsVolumeInfo = addODFSToStore();
 
-  setupStore(initialState);
+  // Set ODFS as the volume.
+  directoryModel.getCurrentVolumeInfo = function() {
+    return odfsVolumeInfo;
+  };
+
+  // Initialise the element to be shown to detect when it becomes hidden.
+  element.hidden = false;
+
+  // Expect that ODFS is interactive.
+  assertTrue(isInteractiveVolume(odfsVolumeInfo));
+
+  // Pass a NO_MODIFICATION_ALLOWED_ERR error (triggers a call to
+  // getCustomActions).
+  const event = new CustomEvent('cur-dir-scan-failed', {
+    detail: {
+      error: {
+        name: FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR,
+        message: '',
+      },
+    },
+  });
+  emptyFolderController.onScanFailed(event);
+
+  // Expect that the empty-folder element is hidden. Need to wait for |updateUi|
+  // (where the element is hidden) to be called as the check for
+  // reauthentication is required is asynchronous.
+  await waitUntil(() => element.hidden);
+  assertEquals('', emptyFolderController.label.innerText);
+
+  // Expect that ODFS is still interactive.
+  assertTrue(isInteractiveVolume(odfsVolumeInfo));
+}
+
+/**
+ * Tests that the empty folder element is hidden and ODFS is still interactive
+ * if the scan failed from a NO_MODIFICATION_ALLOWED_ERR (access denied) but
+ * reauthentication is not required. Add ODFS to the store so that the
+ * |isInteractive| state of the volume can be read.
+ */
+export async function
+testHiddenForODFSOnFailureWithoutReauthRequiredAccountState() {
+  // Mock fileManagerPrivate.getCustomActions which is called when determining
+  // if reauth is required.
+  const mockChrome = {
+    fileManagerPrivate: {
+      getCustomActions: function(
+          _: Entry[],
+          callback: (customActions: chrome.fileManagerPrivate
+                         .FileSystemProviderAction[]) => void) {
+        // Reauthentication is not required.
+        const actions = [{
+          id: FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE,
+          title: 'NORMAL',
+        }];
+        callback(actions);
+      },
+    },
+  };
+  installMockChrome(mockChrome);
+
+  const odfsVolumeInfo = addODFSToStore();
 
   // Set ODFS as the volume.
   directoryModel.getCurrentVolumeInfo = function() {
@@ -285,13 +344,16 @@ export function testShownForTrash() {
   assertTrue(text.includes(str('EMPTY_TRASH_FOLDER_TITLE')));
 }
 
+// TODO(b/330786891): Remove test once
+// FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED is no longer needed
+// for backwards compatibility with ODFS.
 /**
  * Tests that the reauthentication required image shows up and ODFS becomes
  * non-interactive when the scan failed from a NO_MODIFICATION_ALLOWED_ERR
  * (access denied) and reauthentication is required. Add ODFS to the store so
  * that the |isInteractive| state of the volume can be set and read.
  */
-export async function testShownForODFSOnFailureFromReauthReq(
+export async function testShownForODFSOnFailureFromReauthReqWithOldAction(
     done: VoidCallback) {
   // Mock fileManagerPrivate.getCustomActions which is called when determining
   // if reauth is required.
@@ -312,18 +374,71 @@ export async function testShownForODFSOnFailureFromReauthReq(
   };
   installMockChrome(mockChrome);
 
-  // Add ODFS volume to the store.
-  setUpFileManagerOnWindow();
-  const initialState = getEmptyState();
-  const {volumeManager} = window.fileManager;
-  const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', ODFS_EXTENSION_ID);
-  volumeManager.volumeInfoList.add(odfsVolumeInfo);
-  const volume = convertVolumeInfoAndMetadataToVolume(
-      odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));
-  initialState.volumes[volume.volumeId] = volume;
+  const odfsVolumeInfo = addODFSToStore();
 
-  setupStore(initialState);
+  // Set ODFS as the volume.
+  directoryModel.getCurrentVolumeInfo = function() {
+    return odfsVolumeInfo;
+  };
+
+  // Expect that ODFS is interactive.
+  assertTrue(isInteractiveVolume(odfsVolumeInfo));
+
+  // Initialise the element to be hidden to detect when it becomes shown.
+  element.hidden = true;
+
+  // Pass a NO_MODIFICATION_ALLOWED_ERR error (triggers a call to
+  // getCustomActions).
+  const event = new CustomEvent('cur-dir-scan-failed', {
+    detail: {
+      error: {
+        name: FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR,
+        message: '',
+      },
+    },
+  });
+  emptyFolderController.onScanFailed(event);
+
+  // Expect that the empty-folder element is shown and the sign in link is
+  // present. Need to wait for |updateUi| (where the element is shown) to be
+  // called as the check for reauthentication is required is asynchronous.
+  await waitUntil(() => !element.hidden);
+  await waitUntil(
+      () => emptyFolderController.label.querySelector('.sign-in') !== null);
+
+  // Expect that ODFS is non-interactive.
+  assertFalse(isInteractiveVolume(odfsVolumeInfo));
+  done();
+}
+
+/**
+ * Tests that the reauthentication required image shows up and ODFS becomes
+ * non-interactive when the scan failed from a NO_MODIFICATION_ALLOWED_ERR
+ * (access denied) and reauthentication is required. Add ODFS to the store so
+ * that the |isInteractive| state of the volume can be set and read.
+ */
+export async function testShownForODFSOnFailureFromReauthReq(
+    done: VoidCallback) {
+  // Mock fileManagerPrivate.getCustomActions which is called when determining
+  // if reauth is required.
+  const mockChrome = {
+    fileManagerPrivate: {
+      getCustomActions: function(
+          _: Entry[],
+          callback: (customActions: chrome.fileManagerPrivate
+                         .FileSystemProviderAction[]) => void) {
+        // Reauthentication is required.
+        const actions = [{
+          id: FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE,
+          title: 'REAUTHENTICATION_REQUIRED',
+        }];
+        callback(actions);
+      },
+    },
+  };
+  installMockChrome(mockChrome);
+
+  const odfsVolumeInfo = addODFSToStore();
 
   // Set ODFS as the volume.
   directoryModel.getCurrentVolumeInfo = function() {

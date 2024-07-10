@@ -293,8 +293,8 @@ bool UrlIsOnODFS(const FileSystemURL& url) {
 }
 
 // Convert |actions| to |ODFSMetadata| and pass the result to |callback|.
-// The action id's for the metadata are HIDDEN_ONEDRIVE_USER_EMAIL and
-// HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED.
+// The action id's for the metadata are HIDDEN_ONEDRIVE_USER_EMAIL,
+// HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED and HIDDEN_ONEDRIVE_ACCOUNT_STATE.
 void OnODFSMetadataActions(GetODFSMetadataCallback callback,
                            const Actions& actions,
                            base::File::Error result) {
@@ -309,6 +309,12 @@ void OnODFSMetadataActions(GetODFSMetadataCallback callback,
   for (const Action& action : actions) {
     if (action.id == kReauthenticationRequiredId) {
       metadata.reauthentication_required = action.title == "true";
+    } else if (action.id == kAccountStateId) {
+      if (action.title == "NORMAL") {
+        metadata.account_state = OdfsAccountState::kNormal;
+      } else if (action.title == "REAUTHENTICATION_REQUIRED") {
+        metadata.account_state = OdfsAccountState::kReauthenticationRequired;
+      }
     } else if (action.id == kUserEmailActionId) {
       metadata.user_email = action.title;
     }

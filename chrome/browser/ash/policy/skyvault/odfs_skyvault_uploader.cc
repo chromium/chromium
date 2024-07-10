@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace ash::cloud_upload {
 
@@ -140,8 +143,14 @@ void OdfsSkyvaultUploader::CheckReauthenticationAndStartIOTask(
     // Try the move anyway.
     LOG(ERROR) << "Failed to get reauthentication required state: "
                << metadata_or_error.error();
-  } else if (metadata_or_error->reauthentication_required) {
+  } else if (metadata_or_error->reauthentication_required ||
+             (metadata_or_error->account_state.has_value() &&
+              metadata_or_error->account_state.value() ==
+                  OdfsAccountState::kReauthenticationRequired)) {
     // TODO(b/340451159): Show notification asking the user to mount or sign-in.
+    // TODO(b/330786891): Only query account_state once
+    // reauthentication_required is no longer needed for backwards compatibility
+    // with ODFS.
   }
 
   std::unique_ptr<file_manager::io_task::IOTask> task =

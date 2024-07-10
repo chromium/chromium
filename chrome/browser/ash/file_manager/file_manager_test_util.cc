@@ -400,6 +400,9 @@ FakeProvidedFileSystemOneDrive::GetActions(
         {ash::cloud_upload::kUserEmailActionId, kSampleUserEmail1});
     actions.push_back({ash::cloud_upload::kReauthenticationRequiredId,
                        reauthentication_required_ ? "true" : "false"});
+    actions.push_back(
+        {ash::cloud_upload::kAccountStateId,
+         reauthentication_required_ ? "REAUTHENTICATION_REQUIRED" : "NORMAL"});
     std::move(callback).Run(actions, base::File::FILE_OK);
     return ash::file_system_provider::AbortCallback();
   }

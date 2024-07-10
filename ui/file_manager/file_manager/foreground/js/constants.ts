@@ -90,12 +90,31 @@ export const FSP_ACTION_HIDDEN_ONEDRIVE_URL = 'HIDDEN_ONEDRIVE_URL';
 export const FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL =
     'HIDDEN_ONEDRIVE_USER_EMAIL';
 
+// TODO(b/330786891): Remove this once it's no longer needed for backwards
+// compatibility with ODFS.
 /**
  * ID of the fake fileSystemProvider custom action containing OneDrive document
  * Reauthentication Required state.
  */
 export const FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED =
     'HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED';
+
+/**
+ * ID of the fake fileSystemProvider custom action containing OneDrive document
+ * Account state.
+ */
+export const FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE =
+    'HIDDEN_ONEDRIVE_ACCOUNT_STATE';
+
+/**
+ * An array of IDs of fake fileSystemProvider custom actions for ODFS.
+ */
+export const FSP_ACTIONS_HIDDEN = [
+  FSP_ACTION_HIDDEN_ONEDRIVE_URL,
+  FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL,
+  FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED,
+  FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE,
+];
 
 /**
  * All icon types.

@@ -23,8 +23,18 @@ class Profile;
 
 namespace ash::cloud_upload {
 
+// The state of the user's OneDrive account. Matches the enum in ODFS.
+enum class OdfsAccountState {
+  kNormal = 0,
+  kReauthenticationRequired = 1,
+};
+
 struct ODFSMetadata {
+  // TODO(b/330786891): Remove reauthentication_required and make the
+  // account_state non-optional once no longer needed for backwards
+  // compatibility with ODFS.
   bool reauthentication_required = false;
+  std::optional<OdfsAccountState> account_state;
   std::string user_email;
 };
 
@@ -299,8 +309,11 @@ const char kODFSMetadataQueryPath[] = "/";
 // Custom action ids passed from ODFS.
 const char kOneDriveUrlActionId[] = "HIDDEN_ONEDRIVE_URL";
 const char kUserEmailActionId[] = "HIDDEN_ONEDRIVE_USER_EMAIL";
+// TODO(b/330786891): Remove this once it's no longer needed for backwards
+// compatibility with ODFS.
 const char kReauthenticationRequiredId[] =
     "HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED";
+const char kAccountStateId[] = "HIDDEN_ONEDRIVE_ACCOUNT_STATE";
 
 // Get generic error message for uploading office files.
 std::string GetGenericErrorMessage();
