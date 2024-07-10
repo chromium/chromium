@@ -88,7 +88,9 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
                        [](GlobalRenderFrameHostId render_frame_host_id) {
                          RenderFrameHostImpl* host =
                              RenderFrameHostImpl::FromID(render_frame_host_id);
-                         if (host) {
+                         if (host && host->HasMediaStreams(
+                                         RenderFrameHostImpl::MediaStreamType::
+                                             kCapturingMediaStream)) {
                            host->OnMediaStreamRemoved(
                                RenderFrameHostImpl::MediaStreamType::
                                    kCapturingMediaStream);

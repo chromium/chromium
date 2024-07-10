@@ -35,12 +35,13 @@ void NotifyFrameHostOfAudioStreamStopped(int render_process_id,
                                          bool is_capturing) {
   auto impl = [](int render_process_id, int render_frame_id,
                  bool is_capturing) {
-    if (auto* host =
-            RenderFrameHostImpl::FromID(render_process_id, render_frame_id)) {
-      const auto type =
-          is_capturing
-              ? RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream
-              : RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream;
+    RenderFrameHostImpl* host =
+        RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+    const auto type =
+        is_capturing
+            ? RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream
+            : RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream;
+    if (host && host->HasMediaStreams(type)) {
       host->OnMediaStreamRemoved(type);
     }
   };
