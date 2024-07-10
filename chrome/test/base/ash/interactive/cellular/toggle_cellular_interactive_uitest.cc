@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "ash/ash_element_identifiers.h"
+#include "ash/style/switch.h"
 #include "base/time/time.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
@@ -16,7 +18,7 @@
 namespace ash {
 namespace {
 
-class ToggleCellularFromOsSettingsUiTest : public InteractiveAshTest {
+class ToggleCellularUiTest : public InteractiveAshTest {
  protected:
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
@@ -30,8 +32,47 @@ class ToggleCellularFromOsSettingsUiTest : public InteractiveAshTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ToggleCellularFromOsSettingsUiTest,
-                       EnableDisableMobileData) {
+IN_PROC_BROWSER_TEST_F(ToggleCellularUiTest,
+                       EnableDisableMobileDataFromQuickSettings) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
+                                      kMobileDataPoweredState);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequence(
+      ObserveState(
+          kMobileDataPoweredState,
+          std::make_unique<ShillDevicePowerStateObserver>(
+              ShillManagerClient::Get(), NetworkTypePattern::Mobile())),
+
+      Log("Opening the Quick Settings bubble"),
+
+      OpenQuickSettings(), NavigateQuickSettingsToNetworkPage(),
+
+      Log("Opening the Quick Settings bubble and navigating to the network "
+          "page"),
+
+      WaitForState(kMobileDataPoweredState, true),
+      CheckViewProperty(ash::kNetworkDetailedViewMobileDataToggleElementId,
+                        &views::ToggleButton::GetIsOn, true),
+
+      Log("Disabling mobile data"),
+
+      MoveMouseTo(ash::kNetworkDetailedViewMobileDataToggleElementId),
+      ClickMouse(), WaitForState(kMobileDataPoweredState, false),
+      CheckViewProperty(ash::kNetworkDetailedViewMobileDataToggleElementId,
+                        &views::ToggleButton::GetIsOn, false),
+
+      Log("Enabling mobile data"),
+
+      MoveMouseTo(ash::kNetworkDetailedViewMobileDataToggleElementId),
+      ClickMouse(),
+      WaitForState(kMobileDataPoweredState, true),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ToggleCellularUiTest,
+                       EnableDisableMobileDataFromOsSettings) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
                                       kMobileDataPoweredState);
