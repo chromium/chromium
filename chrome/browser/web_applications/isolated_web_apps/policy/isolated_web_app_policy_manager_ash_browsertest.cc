@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -552,6 +554,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class CleanupOrphanedBundlesTest
     : public IsolatedWebAppPolicyManagerAshBrowserTestBase,
+      public ProfileManagerObserver,
       public testing::WithParamInterface<bool> {
  public:
   CleanupOrphanedBundlesTest()
@@ -561,40 +564,47 @@ class CleanupOrphanedBundlesTest
   void SetUpOnMainThread() override {
     iwa_installer_factory_.SetUp(GetProfileForTest());
     IsolatedWebAppPolicyManagerAshBrowserTestBase::SetUpOnMainThread();
+    profile_manager_observation_.Observe(g_browser_process->profile_manager());
   }
 
-  void SimulateOrphanedBundle(const std::string& bundle_directory) {
-    base::FilePath bundle_path = GetProfileForTest()
-                                     ->GetPath()
+  void TearDownOnMainThread() override {
+    last_simulate_orphaned_bundle_profile_ = nullptr;
+  }
+
+  void SimulateOrphanedBundle(Profile* profile,
+                              const std::string& bundle_directory) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateDirectory(CHECK_DEREF(profile)
+                                          .GetPath()
+                                          .Append(kIwaDirName)
+                                          .Append(bundle_directory)));
+  }
+
+  bool CheckBundleDirectoryExists(Profile* profile,
+                                  const std::string& bundle_directory) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    return base::DirectoryExists(CHECK_DEREF(profile)
+                                     .GetPath()
                                      .Append(kIwaDirName)
-                                     .Append(bundle_directory);
-    base::test::TestFuture<bool> future;
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&base::CreateDirectory, std::move(bundle_path)),
-        future.GetCallback());
-    ASSERT_TRUE(future.Get());
+                                     .Append(bundle_directory));
   }
 
-  bool CheckBundleDirectoryExists(const std::string& bundle_directory) {
-    const base::FilePath bundle_path = GetProfileForTest()
-                                           ->GetPath()
-                                           .Append(kIwaDirName)
-                                           .Append(bundle_directory);
-    base::test::TestFuture<bool> future;
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&base::DirectoryExists, bundle_path),
-        future.GetCallback());
-    return future.Get();
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override {
+    last_simulate_orphaned_bundle_profile_ = profile;
+    SimulateOrphanedBundle(profile, kOrphanedBundleDirectory);
+    ASSERT_TRUE(CheckBundleDirectoryExists(profile, kOrphanedBundleDirectory));
+  }
+
+  void OnProfileManagerDestroying() override {
+    profile_manager_observation_.Reset();
   }
 
  protected:
   TestIwaInstallerFactory iwa_installer_factory_;
+  raw_ptr<Profile> last_simulate_orphaned_bundle_profile_ = nullptr;
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 };
 
 IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
@@ -603,18 +613,19 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
 
   AddUser(/*set_iwa_policy_on_login=*/false);
 
-  SimulateOrphanedBundle(kOrphanedBundleDirectory);
-  ASSERT_TRUE(CheckBundleDirectoryExists(kOrphanedBundleDirectory));
-
   // Login to the session.
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
 
-  WebAppProvider::GetForTest(GetProfileForTest())
+  Profile* const profile = GetProfileForTest();
+  WebAppProvider::GetForTest(profile)
       ->command_manager()
       .AwaitAllCommandsCompleteForTesting();
 
-  EXPECT_FALSE(CheckBundleDirectoryExists(kOrphanedBundleDirectory));
+  // Make sure we simulated the orphaned bundle for the profile we run the
+  // cleanup command on.
+  EXPECT_EQ(last_simulate_orphaned_bundle_profile_, profile);
+  EXPECT_FALSE(CheckBundleDirectoryExists(profile, kOrphanedBundleDirectory));
 }
 
 IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
@@ -631,12 +642,13 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
 
-  WebAppProvider* provider = WebAppProvider::GetForTest(GetProfileForTest());
+  Profile* const profile = GetProfileForTest();
+  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
   WebAppCommandManager& command_manager = provider->command_manager();
   command_manager.AwaitAllCommandsCompleteForTesting();
 
-  SimulateOrphanedBundle(kOrphanedBundleDirectory);
-  ASSERT_TRUE(CheckBundleDirectoryExists(kOrphanedBundleDirectory));
+  SimulateOrphanedBundle(profile, kOrphanedBundleDirectory);
+  ASSERT_TRUE(CheckBundleDirectoryExists(profile, kOrphanedBundleDirectory));
 
   // Try to install an isolated web app, which should fail. This should trigger
   // a cleanup.
@@ -654,7 +666,7 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
   // Wait until the cleanup is done.
   command_manager.AwaitAllCommandsCompleteForTesting();
   EXPECT_EQ(0u, command_manager.GetCommandCountForTesting());
-  EXPECT_FALSE(CheckBundleDirectoryExists(kOrphanedBundleDirectory));
+  EXPECT_FALSE(CheckBundleDirectoryExists(profile, kOrphanedBundleDirectory));
 }
 
 INSTANTIATE_TEST_SUITE_P(
