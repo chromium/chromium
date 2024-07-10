@@ -93,8 +93,8 @@ class WebRtcImageCaptureBrowserTestBase
   void SetUpCommandLine(base::CommandLine* command_line) override {
     UsingRealWebcam_WebRtcWebcamBrowserTest::SetUpCommandLine(command_line);
 
-    ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-        switches::kUseFakeDeviceForMediaStream));
+    ASSERT_FALSE(
+        command_line->HasSwitch(switches::kUseFakeDeviceForMediaStream));
   }
 
   void SetUp() override {

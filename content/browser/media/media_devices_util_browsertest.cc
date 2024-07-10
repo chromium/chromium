@@ -86,8 +86,7 @@ blink::mojom::StreamSelectionInfoPtr NewSearchBySessionId(
 class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kUseFakeDeviceForMediaStream);
+    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
   }
 
   void SetUpOnMainThread() override {

@@ -30,8 +30,8 @@ class AccessibilityObjectModelBrowserTest : public ContentBrowserTest {
   ~AccessibilityObjectModelBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "AccessibilityObjectModel");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AccessibilityObjectModel");
   }
 
  protected:

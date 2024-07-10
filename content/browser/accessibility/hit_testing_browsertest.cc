@@ -52,7 +52,7 @@ AccessibilityHitTestingBrowserTest::~AccessibilityHitTestingBrowserTest() =
 void AccessibilityHitTestingBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   auto device_scale_factor = GetParam();
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+  command_line->AppendSwitchASCII(
       switches::kForceDeviceScaleFactor,
       base::StringPrintf("%.2f", device_scale_factor));
 }

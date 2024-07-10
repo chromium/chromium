@@ -88,24 +88,24 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   DumpAccessibilityTestBase::SetUpCommandLine(command_line);
   // Enable KeyboardFocusableScrollers, used by AccessibilityScrollableOverflow.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "KeyboardFocusableScrollers");
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "KeyboardFocusableScrollers");
   // Enable AccessibilityAriaVirtualContent.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "AccessibilityAriaVirtualContent");
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "AccessibilityAriaVirtualContent");
   // Enable ComputedAccessibilityInfo.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "ComputedAccessibilityInfo");
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "ComputedAccessibilityInfo");
   // Enable accessibility object model, used in other tests.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "AccessibilityObjectModel");
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "AccessibilityObjectModel");
   // Enable HTMLSelectListElement, used by AccessibilitySelectList and
   // AccessibilitySelectListOpen.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "HTMLSelectListElement");
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "HTMLSelectListElement");
   // Enable aria-colindextext and aria-rowindextext.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "AriaRowColIndexText");
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "AriaRowColIndexText");
 }
 
 std::vector<std::string> DumpAccessibilityTreeTest::Dump(ui::AXMode mode) {
@@ -2828,9 +2828,8 @@ class DumpAccessibilityTreeWithSpeakAsDescriptorTest
     : public DumpAccessibilityTreeTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures,
-        "CSSAtRuleCounterStyleSpeakAsDescriptor");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "CSSAtRuleCounterStyleSpeakAsDescriptor");
   }
 };
 
@@ -3895,9 +3894,9 @@ class DumpAccessibilityTreeWithLanguageDetectionTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
 
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+    command_line->AppendSwitch(
         ::switches::kEnableExperimentalAccessibilityLanguageDetection);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+    command_line->AppendSwitch(
         ::switches::kEnableExperimentalAccessibilityLanguageDetectionDynamic);
   }
 

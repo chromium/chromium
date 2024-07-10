@@ -247,11 +247,10 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO(crbug.com/40554401): Remove this when the new Java Bridge code
     // is integrated into WebView.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        blink::switches::kJavaScriptFlags, "--expose_gc");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose_gc");
 
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "WebOTP");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "WebOTP");
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }

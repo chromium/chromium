@@ -207,8 +207,7 @@ class PerformanceTimelineNavigationIdBrowserTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PerformanceTimelineBrowserTest::SetUpCommandLine(command_line);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        "--enable-blink-test-features");
+    command_line->AppendSwitch("--enable-blink-test-features");
   }
 };
 
@@ -304,8 +303,8 @@ class PerformanceTimelineBackForwardCacheRestorationBrowserTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkTestFeatures, "NavigationId");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkTestFeatures,
+                                    "NavigationId");
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 
@@ -454,10 +453,8 @@ class PerformanceEventTimingBrowserTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PerformanceTimelineBrowserTest::SetUpCommandLine(command_line);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        "--enable-blink-test-features");
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kExposeInternalsForTesting);
+    command_line->AppendSwitch("--enable-blink-test-features");
+    command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 
   content::EvalJsResult setEventTimingBufferSize(int size) const {

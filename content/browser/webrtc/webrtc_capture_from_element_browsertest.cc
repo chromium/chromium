@@ -70,15 +70,14 @@ class WebRtcCaptureFromElementBrowserTest
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
 
     // Allow <video>/<audio>.play() when not initiated by user gesture.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+    command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
     // Allow experimental canvas features.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+    command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     // Allow window.internals for simulating context loss.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kExposeInternalsForTesting);
+    command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 };
 

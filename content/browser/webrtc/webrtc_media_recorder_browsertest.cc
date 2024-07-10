@@ -46,8 +46,7 @@ class WebRtcMediaRecorderTest
 
     AppendUseFakeUIForMediaStreamFlag();
 
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kUseFakeDeviceForMediaStream);
+    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
 
     if (GetParam().disable_accelerator) {
       command_line->AppendSwitch(switches::kDisableAcceleratedVideoEncode);

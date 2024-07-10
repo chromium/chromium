@@ -204,10 +204,8 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   mock_cert_verifier_.SetUpCommandLine(command_line);
 
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kUseFakeUIForMediaStream);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableExperimentalWebPlatformFeatures);
+  command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
+  command_line->AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
   // TODO(sreejakshetty): Initialize ScopedFeatureLists from test constructor.
   EnableFeatureAndSetParams(features::kBackForwardCacheTimeToLiveControl,
                             "time_to_live_seconds", "3600");

@@ -53,8 +53,7 @@ class AccessibilityTreeLinkageWinBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam().is_legacy_window_disabled)
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          ::switches::kDisableLegacyIntermediateWindow);
+      command_line->AppendSwitch(::switches::kDisableLegacyIntermediateWindow);
   }
 
   RenderWidgetHostViewAura* GetView() {
