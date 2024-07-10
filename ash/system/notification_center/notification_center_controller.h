@@ -24,10 +24,12 @@ namespace ash {
 class MessageViewContainer;
 class NotificationCenterView;
 
-// Manages and updates `NotificationCenterView`. Currently only works for pinned
-// notifications when the feature `OngoingProcesses` is enabled.
-// TODO(b/322835713): Also create and manage unpinned notification views from
-// this controller instead of from `NotificationListView`.
+// Manages and updates `NotificationCenterView`. Currently only manages pinned
+// system notifications when the feature `OngoingProcesses` is enabled. All
+// other types of notifications will be forwarded to `NotificationListView` so
+// they're processed there.
+// TODO(b/322835713): Also create and manage other notification views from this
+// controller instead of from `NotificationListView`.
 class ASH_EXPORT NotificationCenterController
     : public message_center::MessageCenterObserver {
  public:
@@ -45,16 +47,16 @@ class ASH_EXPORT NotificationCenterController
   // the existing notifications.
   // When `OngoingProcesses` are disabled, notification views are created inside
   // of the `NotificationListView` class. When `OngoingProcesses` are enabled,
-  // pinned notification views are created in this controller.
-  // TODO(b/322835713): Also create and manage unpinned notification views from
+  // pinned system notification views are created in this controller.
+  // TODO(b/322835713): Also create and manage other notification views from
   // this controller instead of from `NotificationListView`.
   void InitNotificationCenterView();
 
   // Returns the `MessageViewContainer` object with the provided `id` that
-  // exists inside of `pinned_notification_list_view_`.
-  // TODO(b/322835713): Also search for unpinned notification views from
-  // this controller instead of from `NotificationListView`.
-  MessageViewContainer* GetPinnedMessageViewContainerById(
+  // exists inside of `ongoing_process_list_view_`.
+  // TODO(b/322835713): Also search for other notification views from this
+  // controller instead of from `NotificationListView`.
+  MessageViewContainer* GetOngoingProcessMessageViewContainerById(
       const std::string& id);
 
   // message_center::MessageCenterObserver:
@@ -67,11 +69,11 @@ class ASH_EXPORT NotificationCenterController
   }
 
  private:
-  // Updates `MessageViewContainer` borders of the specified pinned or unpinned
-  // list view, based on the `pinned` parameter. If `force_update` is true, all
+  // Updates `MessageViewContainer` borders of the specified list view, based on
+  // the `is_ongoing_process` parameter. If `force_update` is true, all
   // borders will update even if their `is_top` and `is_bottom` values remain
   // unchanged from their stored values.
-  void UpdateListViewBorders(const bool pinned,
+  void UpdateListViewBorders(const bool is_ongoing_process,
                              const bool force_update = false);
 
   // Creates a `MessageView` that will be owned by a `MessageViewContainer`.
@@ -79,7 +81,7 @@ class ASH_EXPORT NotificationCenterController
       const message_center::Notification& notification);
 
   // Creates the view for the given `notification` and adds it as a child view
-  // of the appropriate pinned or unpinned notification list view.
+  // of the appropriate list view.
   void AddNotificationChildView(message_center::Notification* notification);
 
   // Syntactic sugar to downcast.
@@ -88,11 +90,11 @@ class ASH_EXPORT NotificationCenterController
 
   // Owned by the views hierarchy.
   raw_ptr<NotificationCenterView> notification_center_view_ = nullptr;
-  raw_ptr<views::View> pinned_notification_list_view_ = nullptr;
+  raw_ptr<views::View> ongoing_process_list_view_ = nullptr;
 
   // View trackers to clear view pointers immediately when they're deleted.
   views::ViewTracker notification_center_view_tracker_;
-  views::ViewTracker pinned_notification_list_view_tracker_;
+  views::ViewTracker ongoing_process_list_view_tracker_;
 };
 
 }  // namespace ash

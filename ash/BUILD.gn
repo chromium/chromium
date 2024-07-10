@@ -4107,6 +4107,7 @@ test("ash_unittests") {
     "system/notification_center/message_popup_animation_waiter_unittest.cc",
     "system/notification_center/metrics_utils_unittest.cc",
     "system/notification_center/notification_center_bubble_unittest.cc",
+    "system/notification_center/notification_center_controller_unittest.cc",
     "system/notification_center/notification_center_tray_unittest.cc",
     "system/notification_center/notification_grouping_controller_unittest.cc",
     "system/notification_center/session_state_notification_blocker_unittest.cc",

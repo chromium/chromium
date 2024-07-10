@@ -90,15 +90,15 @@ NotificationCenterView* NotificationCenterBubble::GetNotificationCenterView() {
 }
 
 const MessageViewContainer*
-NotificationCenterBubble::GetPinnedMessageViewContainerById(
+NotificationCenterBubble::GetOngoingProcessMessageViewContainerById(
     const std::string& id) {
-  // The controller currently handles only pinned notifications. To access
-  // unpinned notifications use `NotificationListView`.
-  // TODO(b/322835713): Have the controller create unpinned notification views
+  // The controller currently handles only ongoing process notifications. To
+  // access other notifications use `NotificationListView`.
+  // TODO(b/322835713): Have the controller create other notification views
   // and deprecate `NotificationListView`.
   return features::AreOngoingProcessesEnabled()
              ? notification_center_controller_
-                   ->GetPinnedMessageViewContainerById(id)
+                   ->GetOngoingProcessMessageViewContainerById(id)
              : nullptr;
 }
 

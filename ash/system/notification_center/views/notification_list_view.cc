@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/system/notification_center/message_center_constants.h"
@@ -93,6 +94,7 @@ NotificationListView::NotificationListView(
       message_center_view_(message_center_view),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
       message_view_width_(GetNotificationInMessageCenterWidth()) {
+  SetID(VIEW_ID_NOTIFICATION_BUBBLE_NOTIFICATION_LIST);
   if (!features::IsNotificationCenterControllerEnabled()) {
     message_center_observation_.Observe(MessageCenter::Get());
   }

@@ -52,9 +52,9 @@ class ASH_EXPORT NotificationCenterBubble : public ScreenLayoutObserver {
   NotificationCenterView* GetNotificationCenterView();
 
   // Forwards call to `NotificationCenterController`. This currently only
-  // searches for notification views that are pinned.
-  // TODO(b/322835713): Have the controller create unpinned notification views.
-  const MessageViewContainer* GetPinnedMessageViewContainerById(
+  // searches for ongoing process notifications.
+  // TODO(b/322835713): Have the controller manage other notification views.
+  const MessageViewContainer* GetOngoingProcessMessageViewContainerById(
       const std::string& id);
 
  private:

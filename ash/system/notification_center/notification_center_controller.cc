@@ -5,6 +5,7 @@
 #include "ash/system/notification_center/notification_center_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/message_view_factory.h"
@@ -64,47 +65,62 @@ void NotificationCenterController::InitNotificationCenterView() {
     return;
   }
 
-  std::vector<message_center::Notification*> unpinned_notifications,
-      pinned_notifications;
+  // Ongoing processes include pinned system notifications exclusively.
+  // Any other type of notifications, including non-pinned or non-system
+  // (sourced from Web, ARC, etc.) will exist in the regular notification list.
+  std::vector<message_center::Notification*> regular_notifications,
+      ongoing_processes;
 
   for (auto* notification : notifications) {
-    (notification->pinned() ? pinned_notifications : unpinned_notifications)
-        .push_back(notification);
+    if (notification->notifier_id().type !=
+        message_center::NotifierType::SYSTEM_COMPONENT) {
+      regular_notifications.push_back(notification);
+      continue;
+    }
+
+    if (notification->pinned()) {
+      ongoing_processes.push_back(notification);
+    } else {
+      regular_notifications.push_back(notification);
+    }
   }
 
-  auto pinned_notification_list_view =
+  auto ongoing_process_list_view =
       views::Builder<views::FlexLayoutView>()
+          .SetID(VIEW_ID_NOTIFICATION_BUBBLE_ONGOING_PROCESS_LIST)
           .SetOrientation(views::LayoutOrientation::kVertical)
+          .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
+            layout->SetDefault(views::kMarginsKey,
+                               NotificationListDefaultMargins);
+          }))
           .Build();
-  pinned_notification_list_view->SetDefault(views::kMarginsKey,
-                                            NotificationListDefaultMargins);
-  pinned_notification_list_view_ = pinned_notification_list_view.get();
+  ongoing_process_list_view_ = ongoing_process_list_view.get();
 
-  pinned_notification_list_view_tracker_.SetView(
-      pinned_notification_list_view_);
-  pinned_notification_list_view_tracker_.SetIsDeletingCallback(base::BindOnce(
-      [](raw_ptr<views::View>& pinned_notification_list_view) {
-        pinned_notification_list_view = nullptr;
+  ongoing_process_list_view_tracker_.SetView(ongoing_process_list_view_);
+  ongoing_process_list_view_tracker_.SetIsDeletingCallback(base::BindOnce(
+      [](raw_ptr<views::View>& ongoing_process_list_view) {
+        ongoing_process_list_view = nullptr;
       },
-      std::ref(pinned_notification_list_view_)));
+      std::ref(ongoing_process_list_view_)));
 
-  // TODO(b/322835713): Also create the unpinned notification list view from the
+  // TODO(b/322835713): Also create the regular notification list view from the
   // controller instead of from `NotificationCenterView`.
-  for (auto* notification : pinned_notifications) {
+  for (auto* notification : ongoing_processes) {
     AddNotificationChildView(notification);
   }
-  UpdateListViewBorders(/*pinned=*/true, /*force_update=*/true);
+  UpdateListViewBorders(/*is_ongoing_process=*/true, /*force_update=*/true);
 
-  notification_center_view_->Init(unpinned_notifications,
-                                  std::move(pinned_notification_list_view));
+  notification_center_view_->Init(regular_notifications,
+                                  std::move(ongoing_process_list_view));
 }
 
 MessageViewContainer*
-NotificationCenterController::GetPinnedMessageViewContainerById(
+NotificationCenterController::GetOngoingProcessMessageViewContainerById(
     const std::string& id) {
-  // TODO(b/322835713): This function should search both pinned and unpinned
-  // list views when they're all created by this controller.
-  auto* list_view = pinned_notification_list_view_.get();
+  // TODO(b/322835713): This function should search both regular notification
+  // and ongoing process lists when they're all created by this controller.
+  auto* list_view = ongoing_process_list_view_.get();
+
   const auto i = base::ranges::find(
       list_view->children(), id,
       [](const views::View* v) { return AsMVC(v)->GetNotificationId(); });
@@ -112,7 +128,7 @@ NotificationCenterController::GetPinnedMessageViewContainerById(
 }
 
 void NotificationCenterController::OnNotificationAdded(const std::string& id) {
-  if (!notification_center_view_) {
+  if (!features::AreOngoingProcessesEnabled() || !notification_center_view_) {
     return;
   }
 
@@ -122,24 +138,27 @@ void NotificationCenterController::OnNotificationAdded(const std::string& id) {
     return;
   }
 
-  if (!features::AreOngoingProcessesEnabled() || !notification->pinned()) {
+  bool is_ongoing_process = notification->pinned() &&
+                            notification->notifier_id().type ==
+                                message_center::NotifierType::SYSTEM_COMPONENT;
+  if (!is_ongoing_process) {
+    // TODO(b/322835713): Also create and manage other notification views from
+    // this controller instead of from `NotificationListView`.
     notification_center_view_->OnNotificationAdded(id);
     return;
   }
 
-  // TODO(b/322835713): Also create and manage unpinned notification views from
-  // this controller instead of from `NotificationListView`.
-  if (!pinned_notification_list_view_) {
+  if (!ongoing_process_list_view_) {
     return;
   }
 
-  if (GetPinnedMessageViewContainerById(id)) {
+  if (GetOngoingProcessMessageViewContainerById(id)) {
     OnNotificationUpdated(id);
     return;
   }
 
   AddNotificationChildView(notification);
-  UpdateListViewBorders(notification->pinned());
+  UpdateListViewBorders(is_ongoing_process);
   notification_center_view_->ListPreferredSizeChanged();
 }
 
@@ -155,25 +174,25 @@ void NotificationCenterController::OnNotificationRemoved(const std::string& id,
     return;
   }
 
-  // TODO(b/322835713): Also create and manage unpinned notification views from
+  // TODO(b/322835713): Also create and manage other notification views from
   // this controller instead of from `NotificationListView`.
-  if (!pinned_notification_list_view_) {
+  if (!ongoing_process_list_view_) {
     return;
   }
 
-  auto* message_view_container = GetPinnedMessageViewContainerById(id);
+  auto* message_view_container = GetOngoingProcessMessageViewContainerById(id);
   if (!message_view_container) {
     return;
   }
 
-  pinned_notification_list_view_->RemoveChildView(message_view_container);
-  UpdateListViewBorders(/*pinned=*/true);
+  ongoing_process_list_view_->RemoveChildView(message_view_container);
+  UpdateListViewBorders(/*is_ongoing_process=*/true);
   notification_center_view_->ListPreferredSizeChanged();
 }
 
 void NotificationCenterController::OnNotificationUpdated(
     const std::string& id) {
-  if (!notification_center_view_) {
+  if (!features::AreOngoingProcessesEnabled() || !notification_center_view_) {
     return;
   }
 
@@ -183,18 +202,21 @@ void NotificationCenterController::OnNotificationUpdated(
     return;
   }
 
-  if (!features::AreOngoingProcessesEnabled() || !notification->pinned()) {
+  bool is_ongoing_process = notification->pinned() &&
+                            notification->notifier_id().type ==
+                                message_center::NotifierType::SYSTEM_COMPONENT;
+  if (!is_ongoing_process) {
+    // TODO(b/322835713): Also manage other notification views from this
+    // controller instead of from `NotificationListView`.
     notification_center_view_->OnNotificationUpdated(id);
     return;
   }
 
-  // TODO(b/322835713): Also create and manage unpinned notification views from
-  // this controller instead of from `NotificationListView`.
-  if (!pinned_notification_list_view_) {
+  if (!ongoing_process_list_view_) {
     return;
   }
 
-  auto* message_view_container = GetPinnedMessageViewContainerById(id);
+  auto* message_view_container = GetOngoingProcessMessageViewContainerById(id);
   if (!message_view_container) {
     return;
   }
@@ -208,9 +230,9 @@ void NotificationCenterController::OnNotificationUpdated(
 }
 
 void NotificationCenterController::UpdateListViewBorders(
-    const bool pinned,
+    const bool is_ongoing_process,
     const bool force_update) {
-  auto list_view = pinned ? pinned_notification_list_view_ : nullptr;
+  auto list_view = is_ongoing_process ? ongoing_process_list_view_ : nullptr;
   if (!list_view) {
     return;
   }
@@ -226,23 +248,22 @@ void NotificationCenterController::UpdateListViewBorders(
 std::unique_ptr<message_center::MessageView>
 NotificationCenterController::CreateMessageView(
     const message_center::Notification& notification) {
-  // TODO(b/322835713): Also create unpinned notifications from this controller.
   CHECK(features::AreOngoingProcessesEnabled());
 
   auto message_view =
       MessageViewFactory::Create(notification, /*shown_in_popup=*/false);
-  message_view->SetIsNested();
+  if (!notification.group_child()) {
+    message_view->SetIsNested();
+  }
   notification_center_view_->ConfigureMessageView(message_view.get());
   return message_view;
 }
 
 void NotificationCenterController::AddNotificationChildView(
     message_center::Notification* notification) {
-  auto list_view =
-      notification->pinned() ? pinned_notification_list_view_ : nullptr;
-  if (!list_view) {
-    return;
-  }
+  // TODO(b/322835713): Currently only handles ongoing processes. Also create
+  // other notifications from this controller.
+  auto list_view = ongoing_process_list_view_;
 
   auto message_view_container = std::make_unique<MessageViewContainer>(
       /*message_view=*/CreateMessageView(*notification));

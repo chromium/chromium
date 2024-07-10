@@ -122,7 +122,7 @@ class PrivacyIndicatorsControllerTest
 
     if (features::AreOngoingProcessesEnabled()) {
       return notification_center_tray->bubble()
-          ->GetPinnedMessageViewContainerById(id)
+          ->GetOngoingProcessMessageViewContainerById(id)
           ->message_view();
     }
 

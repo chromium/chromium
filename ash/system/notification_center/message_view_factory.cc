@@ -65,7 +65,10 @@ std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
       break;
   }
 
-  if (features::AreOngoingProcessesEnabled() && notification.pinned()) {
+  // Only pinned system notifications use `OngoingProcessView`.
+  if (features::AreOngoingProcessesEnabled() && notification.pinned() &&
+      notification.notifier_id().type ==
+          message_center::NotifierType::SYSTEM_COMPONENT) {
     return std::make_unique<OngoingProcessView>(notification);
   }
 
