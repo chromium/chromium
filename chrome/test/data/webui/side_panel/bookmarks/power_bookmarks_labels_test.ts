@@ -24,6 +24,7 @@ function createMockTrackedProduct(): BookmarkProductInfo {
       currentPrice: '',
       previousPrice: '',
       clusterId: BigInt(0),
+      categoryLabels: [],
     },
   };
 }

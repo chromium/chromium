@@ -40,6 +40,7 @@ suite('SidePanelShoppingListTest', () => {
         currentPrice: '$12',
         previousPrice: '$34',
         clusterId: BigInt(12345),
+        categoryLabels: [],
       },
     },
     {
@@ -53,6 +54,7 @@ suite('SidePanelShoppingListTest', () => {
         currentPrice: '$15',
         previousPrice: '',
         clusterId: BigInt(12345),
+        categoryLabels: [],
       },
     },
   ];
@@ -299,6 +301,7 @@ suite('SidePanelShoppingListTest', () => {
         currentPrice: '$56',
         previousPrice: '$78',
         clusterId: BigInt(12345),
+        categoryLabels: [],
       },
     };
 
@@ -371,6 +374,7 @@ suite('SidePanelShoppingListTest', () => {
         currentPrice: '$56',
         previousPrice: '$78',
         clusterId: BigInt(12345),
+        categoryLabels: [],
       },
     };
     shoppingServiceApi.getCallbackRouterRemote().priceTrackedForBookmark(

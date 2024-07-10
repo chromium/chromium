@@ -32,6 +32,7 @@ suite('PriceTrackingSectionTest', () => {
     currentPrice: '$12',
     previousPrice: '$34',
     clusterId: BigInt(12345),
+    categoryLabels: [],
   };
 
   const priceInsights: PriceInsightsInfo = {
@@ -164,6 +165,7 @@ suite('PriceTrackingSectionTest', () => {
         currentPrice: '$12',
         previousPrice: '$34',
         clusterId: BigInt(54321),
+        categoryLabels: [],
       };
 
       const otherBookmarkProductInfo: BookmarkProductInfo = {

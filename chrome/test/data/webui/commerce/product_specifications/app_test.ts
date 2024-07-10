@@ -30,6 +30,7 @@ function createInfo(overrides?: Partial<ProductInfo>): ProductInfo {
         productUrl: {url: ''},
         currentPrice: '',
         previousPrice: '',
+        categoryLabels: [],
       },
       overrides);
 }

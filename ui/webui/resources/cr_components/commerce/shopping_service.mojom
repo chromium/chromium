@@ -39,6 +39,9 @@ struct ProductInfo {
 
   // The product cluster id.
   uint64 cluster_id;
+
+  // The category labels of the product.
+  array<string> category_labels;
 };
 
 struct BookmarkProductInfo {
