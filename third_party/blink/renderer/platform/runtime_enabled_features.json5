@@ -2430,15 +2430,7 @@
     },
     {
       name: "MachineLearningNeuralNetwork",
-      public: true,
-      status: {
-        "ChromeOS_Ash": "experimental",
-        "ChromeOS_Lacros": "experimental",
-        "Win": "experimental",
-        "Mac": "experimental",
-        "Linux": "experimental",
-        "default": "test"
-      },
+      // Enabled by webnn::mojom::features::kWebMachineLearningNeuralNetwork.
       base_feature: "none",
     },
     {

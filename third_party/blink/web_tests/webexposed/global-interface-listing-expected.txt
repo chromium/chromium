@@ -5876,121 +5876,6 @@ interface MIDIPort : EventTarget
     method constructor
     method open
     setter onstatechange
-interface ML
-    attribute @@toStringTag
-    method constructor
-    method createContext
-interface MLActivation
-    attribute @@toStringTag
-    method constructor
-interface MLBuffer
-    attribute @@toStringTag
-    getter dataType
-    getter shape
-    method constructor
-    method destroy
-interface MLContext
-    attribute @@toStringTag
-    getter lost
-    method compute
-    method constructor
-    method createBuffer
-    method dispatch
-    method opSupportLimits
-    method readBuffer
-    method writeBuffer
-interface MLGraph
-    attribute @@toStringTag
-    method constructor
-interface MLGraphBuilder
-    attribute @@toStringTag
-    method abs
-    method add
-    method argMax
-    method argMin
-    method averagePool2d
-    method batchNormalization
-    method build
-    method cast
-    method ceil
-    method clamp
-    method concat
-    method constant
-    method constructor
-    method conv2d
-    method convTranspose2d
-    method cos
-    method div
-    method elu
-    method equal
-    method erf
-    method exp
-    method expand
-    method floor
-    method gather
-    method gelu
-    method gemm
-    method greater
-    method greaterOrEqual
-    method gru
-    method gruCell
-    method hardSigmoid
-    method hardSwish
-    method identity
-    method input
-    method instanceNormalization
-    method l2Pool2d
-    method layerNormalization
-    method leakyRelu
-    method lesser
-    method lesserOrEqual
-    method linear
-    method log
-    method logicalNot
-    method lstm
-    method lstmCell
-    method matmul
-    method max
-    method maxPool2d
-    method min
-    method mul
-    method neg
-    method pad
-    method pow
-    method prelu
-    method reciprocal
-    method reduceL1
-    method reduceL2
-    method reduceLogSum
-    method reduceLogSumExp
-    method reduceMax
-    method reduceMean
-    method reduceMin
-    method reduceProduct
-    method reduceSum
-    method reduceSumSquare
-    method relu
-    method resample2d
-    method reshape
-    method sigmoid
-    method sin
-    method slice
-    method softmax
-    method softplus
-    method softsign
-    method split
-    method sqrt
-    method sub
-    method tan
-    method tanh
-    method transpose
-    method triangular
-    method where
-interface MLOperand
-    attribute @@toStringTag
-    method constructor
-    method dataType
-    method shape
 interface Magnetometer : Sensor
     attribute @@toStringTag
     getter x
@@ -6810,7 +6695,6 @@ interface Navigator
     getter mediaDevices
     getter mediaSession
     getter mimeTypes
-    getter ml
     getter onLine
     getter pdfViewerEnabled
     getter permissions
