@@ -817,6 +817,7 @@ chromium-metrics-reviews@google.com.
       label="(DEPRECATED in M122) Confirmation dialog: 'Learn more' clicked"/>
   <int value="13" label="Confirmation dialog: 'Change password' clicked"/>
   <int value="14" label="Dialog header: 'Help icon button' clicked"/>
+  <int value="15" label="Family picker: opened"/>
 </enum>
 
 <enum name="PasswordManager.PasswordSharingIOSUserAction">

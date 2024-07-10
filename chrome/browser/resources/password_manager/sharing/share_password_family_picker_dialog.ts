@@ -76,6 +76,9 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
     override ready() {
       super.ready();
 
+      recordPasswordSharingInteraction(
+          PasswordSharingActions.FAMILY_PICKER_OPENED);
+
       // Pre-select the member if they are eligible for sharing and there are no
       // other members in the group.
       if (this.members.length === 1 && this.computeEligible_().length === 1) {

@@ -29,8 +29,9 @@ export enum PasswordSharingActions {
   */
   CONFIRMATION_DIALOG_CHANGE_PASSWORD_CLICKED = 13,
   DIALOG_HEADER_HELP_ICON_BUTTON_CLICKED = 14,
+  FAMILY_PICKER_OPENED = 15,
   // Must be last.
-  COUNT = 15,
+  COUNT = 16,
   // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml)
 }
 
