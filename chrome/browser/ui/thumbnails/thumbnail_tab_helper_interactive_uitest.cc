@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -194,7 +195,8 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
 
 // Updated test fixture for testing interaction of thumbnail tab helper and
 // browser, specifically testing interaction of tab load and thumbnail capture.
-class ThumbnailTabHelperUpdatedInteractiveTest : public InteractiveBrowserTest {
+class ThumbnailTabHelperUpdatedInteractiveTest
+    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest> {
  protected:
   void SetUp() override {
     // This flag causes the thumbnail tab helper system to engage. Otherwise
@@ -261,31 +263,14 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
 #else
 #define MAYBE_TabDiscardPreservesScreenshot TabDiscardPreservesScreenshot
 #endif  // BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
+IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
                        MAYBE_TabDiscardPreservesScreenshot) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
-
-  DCHECK_EQ(2, browser()->tab_strip_model()->count());
-  WaitForAndVerifyThumbnail(browser(), 1);
-
-  content::WebContents* web_contents_to_discard =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
-      web_contents_to_discard)
-      ->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
-
-  content::WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_NE(web_contents_to_discard, new_web_contents);
-  EXPECT_TRUE(new_web_contents->WasDiscarded());
-
-  auto* const thumbnail_tab_helper =
-      ThumbnailTabHelper::FromWebContents(new_web_contents);
-  EXPECT_TRUE(thumbnail_tab_helper);
-  auto thumbnail = thumbnail_tab_helper->thumbnail();
-  EXPECT_TRUE(thumbnail->has_data());
+  RunTestSequence(
+      AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 0),
+      WaitForWebContentsReady(kFirstTab), CheckTabHasThumbnailData(0, false),
+      SelectTab(kTabStripElementId, 1), WaitForAndVerifyThumbnail(0),
+      CheckTabHasThumbnailData(0, true), TryDiscardTab(0),
+      CheckTabIsDiscarded(0, true), CheckTabHasThumbnailData(0, true));
 }
 
 // TabLoader (used here) is available only when browser is built
