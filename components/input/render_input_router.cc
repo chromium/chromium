@@ -268,7 +268,7 @@ blink::mojom::InputEventResultState RenderInputRouter::FilterInputEvent(
     return blink::mojom::InputEventResultState::kUnknown;
   }
 
-  delegate_->NotifyDelegateOfInputEventPreDispatch(event);
+  delegate_->OnInputEventPreDispatch(event);
 
   return view_input_ ? view_input_->FilterInputEvent(event)
                      : blink::mojom::InputEventResultState::kNotConsumed;

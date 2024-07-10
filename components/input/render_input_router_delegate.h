@@ -80,8 +80,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
   // Invoked before an input event is sent to the renderer. This provides the
   // delegate an opportunity to be informed that the input event is being
   // dispatched to the widget.
-  virtual void NotifyDelegateOfInputEventPreDispatch(
-      const blink::WebInputEvent& event) = 0;
+  virtual void OnInputEventPreDispatch(const blink::WebInputEvent& event) = 0;
 
   // Called when an invalid input event source is sent from the renderer.
   virtual void OnInvalidInputEventSource() = 0;

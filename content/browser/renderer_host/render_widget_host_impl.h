@@ -389,8 +389,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   bool IsInitializedAndNotDead() override;
-  void NotifyDelegateOfInputEventPreDispatch(
-      const blink::WebInputEvent& event) override;
+  void OnInputEventPreDispatch(const blink::WebInputEvent& event) override;
   void OnInvalidInputEventSource() override;
   void NotifyUISchedulerOfGestureEventUpdate(
       blink::WebInputEvent::Type gesture_event) override;

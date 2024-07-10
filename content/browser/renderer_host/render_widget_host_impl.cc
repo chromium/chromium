@@ -2524,7 +2524,7 @@ bool RenderWidgetHostImpl::IsInitializedAndNotDead() {
   return GetProcess()->IsInitializedAndNotDead();
 }
 
-void RenderWidgetHostImpl::NotifyDelegateOfInputEventPreDispatch(
+void RenderWidgetHostImpl::OnInputEventPreDispatch(
     const blink::WebInputEvent& event) {
   if (!delegate_) {
     return;
