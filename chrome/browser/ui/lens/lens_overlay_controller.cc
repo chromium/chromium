@@ -56,6 +56,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/compositor.h"
@@ -600,6 +601,10 @@ void LensOverlayController::NotifyResultsPanelOpened() {
   page_->NotifyResultsPanelOpened();
 }
 
+void LensOverlayController::TriggerCopyText() {
+  page_->TriggerCopyText();
+}
+
 bool LensOverlayController::IsOverlayShowing() {
   return state_ == State::kStartingWebUI || state_ == State::kOverlay ||
          state_ == State::kOverlayAndResults ||
@@ -841,6 +846,11 @@ void LensOverlayController::IssueTranslateSelectionRequestForTesting(
     int selection_end_index) {
   IssueTranslateSelectionRequest(text_query, content_language,
                                  selection_start_index, selection_end_index);
+}
+
+void LensOverlayController::CopyText(const std::string& text) {
+  ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+  clipboard_writer.WriteText(base::UTF8ToUTF16(text));
 }
 
 std::string LensOverlayController::GetInvocationSourceString() {

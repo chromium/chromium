@@ -14,6 +14,14 @@ bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
   return event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
          event.windows_key_code == ui::VKEY_ESCAPE;
 }
+
+bool IsCopyEvent(const input::NativeWebKeyboardEvent& event) {
+  const int key_modifiers =
+      event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
+  return event.windows_key_code == ui::VKEY_C &&
+         (key_modifiers == blink::WebInputEvent::kControlKey ||
+          key_modifiers == blink::WebInputEvent::kMetaKey);
+}
 }  // namespace
 
 LensOverlayEventHandler::LensOverlayEventHandler(
@@ -24,13 +32,20 @@ bool LensOverlayEventHandler::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event,
     views::FocusManager* focus_manager) {
-  if (!focus_manager) {
+  if (!focus_manager || !lens_overlay_controller_->IsOverlayShowing()) {
     return false;
   }
 
-  if (IsEscapeEvent(event) && lens_overlay_controller_->IsOverlayShowing()) {
+  if (IsEscapeEvent(event)) {
     lens_overlay_controller_->CloseUIAsync(
         lens::LensOverlayDismissalSource::kEscapeKeyPress);
+    return true;
+  }
+  // We only want to copy if the user is not currently making a native text
+  // selection. If the user is currently making a native text selection, we
+  // assume the CMD/CTRL + C event is to select that text.
+  if (IsCopyEvent(event) && !source->GetFocusedFrame()->HasSelection()) {
+    lens_overlay_controller_->TriggerCopyText();
     return true;
   }
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(event,
