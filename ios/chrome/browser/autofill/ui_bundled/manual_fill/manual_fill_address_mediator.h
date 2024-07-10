@@ -6,13 +6,9 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_ADDRESS_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
-#include <memory>
-#include <vector>
-
-#import "base/memory/raw_ptr.h"
 
 namespace autofill {
-class AutofillProfile;
+class PersonalDataManager;
 }  // namespace autofill
 
 @protocol ManualFillContentInjector;
@@ -36,17 +32,16 @@ extern NSString* const ManageAddressAccessibilityIdentifier;
 // The delegate in charge of navigation.
 @property(nonatomic, weak) id<AddressListDelegate> navigationDelegate;
 
-// The designated initializer.
-- (instancetype)initWithProfiles:
-    (std::vector<const autofill::AutofillProfile*>)profiles
+// The designated initializer. `personalDataManager` must not be nil.
+- (instancetype)initWithPersonalDataManager:
+    (autofill::PersonalDataManager*)personalDataManager
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use `initWithProfiles:`.
 - (instancetype)init NS_UNAVAILABLE;
 
-// Updates the `profiles` being presented.
-- (void)reloadWithProfiles:
-    (std::vector<const autofill::AutofillProfile*>)profiles;
+// Disconnects the mediator.
+- (void)disconnect;
 
 @end
 

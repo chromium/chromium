@@ -8,10 +8,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_list_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
@@ -19,6 +17,10 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -31,19 +33,32 @@ NSString* const ManageAddressAccessibilityIdentifier =
     @"kManualFillManageAddressAccessibilityIdentifier";
 }  // namespace manual_fill
 
-@interface ManualFillAddressMediator ()
+@interface ManualFillAddressMediator () <PersonalDataManagerObserver>
 
 // All available addresses.
 @property(nonatomic, assign) std::vector<const AutofillProfile*> addresses;
 
 @end
 
-@implementation ManualFillAddressMediator
+@implementation ManualFillAddressMediator {
+  // Personal data manager to be observed.
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
-- (instancetype)initWithProfiles:(std::vector<const AutofillProfile*>)profiles {
+  // C++ to ObjC bridge for PersonalDataManagerObserver.
+  std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
+      _personalDataManagerObserver;
+}
+
+- (instancetype)initWithPersonalDataManager:
+    (autofill::PersonalDataManager*)personalDataManager {
   self = [super init];
   if (self) {
-    _addresses = std::move(profiles);
+    _personalDataManager = personalDataManager;
+    _personalDataManagerObserver =
+        std::make_unique<autofill::PersonalDataManagerObserverBridge>(self);
+    _personalDataManager->AddObserver(_personalDataManagerObserver.get());
+    _addresses =
+        _personalDataManager->address_data_manager().GetProfilesToSuggest();
   }
   return self;
 }
@@ -57,8 +72,19 @@ NSString* const ManageAddressAccessibilityIdentifier =
   [self postActionsToConsumer];
 }
 
-- (void)reloadWithProfiles:(std::vector<const AutofillProfile*>)profiles {
-  self.addresses = profiles;
+- (void)disconnect {
+  if (_personalDataManager && _personalDataManagerObserver.get()) {
+    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
+    _personalDataManagerObserver.reset();
+  }
+  _personalDataManager = nullptr;
+}
+
+#pragma mark - PersonalDataManagerObserver
+
+- (void)onPersonalDataChanged {
+  self.addresses =
+      _personalDataManager->address_data_manager().GetProfilesToSuggest();
   if (self.consumer) {
     [self postAddressesToConsumer];
     [self postActionsToConsumer];

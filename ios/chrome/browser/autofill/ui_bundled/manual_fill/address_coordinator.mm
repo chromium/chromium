@@ -7,11 +7,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
-#import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -23,15 +21,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ui/base/device_form_factor.h"
 
-@interface AddressCoordinator () <AddressListDelegate,
-                                  PersonalDataManagerObserver> {
-  // Personal data manager to be observed.
-  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
-
-  // C++ to ObjC bridge for PersonalDataManagerObserver.
-  std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
-      _personalDataManagerObserver;
-}
+@interface AddressCoordinator () <AddressListDelegate>
 
 // The view controller presented above the keyboard where the user can select
 // a field from one of their addresses.
@@ -61,20 +51,13 @@
 
     // Service must use regular browser state, even if the Browser has an
     // OTR browser state.
-    _personalDataManager =
+    autofill::PersonalDataManager* personalDataManager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             super.browser->GetBrowserState()->GetOriginalChromeBrowserState());
-    DCHECK(_personalDataManager);
+    CHECK(personalDataManager);
 
-    _personalDataManagerObserver.reset(
-        new autofill::PersonalDataManagerObserverBridge(self));
-    _personalDataManager->AddObserver(_personalDataManagerObserver.get());
-
-    std::vector<const autofill::AutofillProfile*> profiles =
-        _personalDataManager->address_data_manager().GetProfilesToSuggest();
-
-    _addressMediator =
-        [[ManualFillAddressMediator alloc] initWithProfiles:profiles];
+    _addressMediator = [[ManualFillAddressMediator alloc]
+        initWithPersonalDataManager:personalDataManager];
     _addressMediator.navigationDelegate = self;
     _addressMediator.contentInjector = super.injectionHandler;
     _addressMediator.consumer = _addressViewController;
@@ -82,10 +65,12 @@
   return self;
 }
 
-- (void)dealloc {
-  if (_personalDataManager) {
-    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
-  }
+- (void)stop {
+  [super stop];
+  [_addressMediator disconnect];
+  _addressMediator = nil;
+
+  _addressViewController = nil;
 }
 
 #pragma mark - FallbackCoordinator
@@ -101,15 +86,6 @@
   [self dismissIfNecessaryThenDoCompletion:^{
     [weakSelf.delegate openAddressSettings];
   }];
-}
-
-#pragma mark - PersonalDataManagerObserver
-
-- (void)onPersonalDataChanged {
-  std::vector<const autofill::AutofillProfile*> profiles =
-      _personalDataManager->address_data_manager().GetProfilesToSuggest();
-
-  [self.addressMediator reloadWithProfiles:profiles];
 }
 
 @end

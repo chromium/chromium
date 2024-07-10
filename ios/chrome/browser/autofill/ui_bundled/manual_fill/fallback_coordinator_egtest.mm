@@ -150,8 +150,8 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
       performAction:grey_tap()];
 
   // Verify the profiles controller table view is not visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      ManualFallbackProfilesTableViewMatcher()];
 
   // Verify icons are not present now that the selected field is a picker.
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
@@ -191,8 +191,8 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
       performAction:grey_tap()];
 
   // Verify the profiles controller table view is not visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      ManualFallbackProfilesTableViewMatcher()];
 
   // On iPad the picker is a table view in a popover, we need to
   // dismiss that first.
