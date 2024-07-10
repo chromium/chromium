@@ -142,7 +142,7 @@ class PrivacyIndicatorsControllerTest
       auto* notification_view = GetMessageViewFromMessageCenter(id);
       ASSERT_TRUE(notification_view);
       auto* button_view = notification_view->GetViewByID(
-          VIEW_ID_PINNED_NOTIFICATION_PRIMARY_ICON_BUTTON);
+          VIEW_ID_ONGOING_PROCESS_PRIMARY_ICON_BUTTON);
       ASSERT_TRUE(button_view);
       LeftClickOn(button_view);
       return;

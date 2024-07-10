@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/notification_center/views/pinned_notification_view.h"
+#include "ash/system/notification_center/views/ongoing_process_view.h"
 
 #include <string>
 
@@ -65,17 +65,17 @@ NotificationCatalogName GetCatalogName(
 
 }  // namespace
 
-PinnedNotificationView::PinnedNotificationView(
+OngoingProcessView::OngoingProcessView(
     const message_center::Notification& notification)
     : MessageView(notification) {
   // `notification` must have a title and an icon. Will record the metrics
   // `ShownWithoutTitle` and `ShownWithoutIcon` to track outliers.
   auto catalog_name = GetCatalogName(notification);
   if (notification.title().empty()) {
-    metrics_utils::LogPinnedNotificationShownWithoutTitle(catalog_name);
+    metrics_utils::LogOngoingProcessShownWithoutTitle(catalog_name);
   }
   if (notification.vector_small_image().is_empty()) {
-    metrics_utils::LogPinnedNotificationShownWithoutIcon(catalog_name);
+    metrics_utils::LogOngoingProcessShownWithoutIcon(catalog_name);
   }
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -105,7 +105,7 @@ PinnedNotificationView::PinnedNotificationView(
 
   icon_and_label_container->AddChildView(
       views::Builder<views::ImageView>()
-          .SetID(VIEW_ID_PINNED_NOTIFICATION_ICON)
+          .SetID(VIEW_ID_ONGOING_PROCESS_ICON)
           .SetImage(ui::ImageModel::FromVectorIcon(
               notification.vector_small_image().is_empty()
                   ? message_center::kProductIcon
@@ -130,7 +130,7 @@ PinnedNotificationView::PinnedNotificationView(
   label_container->AddChildView(
       views::Builder<views::Label>()
           .CopyAddressTo(&title_label_)
-          .SetID(VIEW_ID_PINNED_NOTIFICATION_TITLE_LABEL)
+          .SetID(VIEW_ID_ONGOING_PROCESS_TITLE_LABEL)
           .SetMultiLine(notification.message().empty())
           .SetMaxLines(kTitleMaxLines)
           .SetText(notification.title())
@@ -146,7 +146,7 @@ PinnedNotificationView::PinnedNotificationView(
   label_container->AddChildView(
       views::Builder<views::Label>()
           .CopyAddressTo(&subtitle_label_)
-          .SetID(VIEW_ID_PINNED_NOTIFICATION_SUBTITLE_LABEL)
+          .SetID(VIEW_ID_ONGOING_PROCESS_SUBTITLE_LABEL)
           .SetVisible(!notification.message().empty())
           .SetMultiLine(true)
           .SetMaxLines(kSubtitleMaxLines)
@@ -182,7 +182,7 @@ PinnedNotificationView::PinnedNotificationView(
     buttons_container->AddChildView(
         views::Builder<PillButton>()
             .CopyAddressTo(&primary_pill_button_)
-            .SetID(VIEW_ID_PINNED_NOTIFICATION_PILL_BUTTON)
+            .SetID(VIEW_ID_ONGOING_PROCESS_PILL_BUTTON)
             .SetText(pill_button_title)
             .SetTooltipText(pill_button_title)
             .SetPillButtonType(PillButton::Type::kPrimaryWithoutIcon)
@@ -207,7 +207,7 @@ PinnedNotificationView::PinnedNotificationView(
 
       secondary_button_ = buttons_container->AddChildView(
           IconButton::Builder()
-              .SetViewId(VIEW_ID_PINNED_NOTIFICATION_SECONDARY_ICON_BUTTON)
+              .SetViewId(VIEW_ID_ONGOING_PROCESS_SECONDARY_ICON_BUTTON)
               .SetType(IconButton::Type::kMedium)
               .SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase1)
               .SetVectorIcon(notification.buttons()[0].vector_icon)
@@ -227,7 +227,7 @@ PinnedNotificationView::PinnedNotificationView(
 
     primary_icon_button_ = buttons_container->AddChildView(
         IconButton::Builder()
-            .SetViewId(VIEW_ID_PINNED_NOTIFICATION_PRIMARY_ICON_BUTTON)
+            .SetViewId(VIEW_ID_ONGOING_PROCESS_PRIMARY_ICON_BUTTON)
             .SetType(IconButton::Type::kMedium)
             .SetBackgroundColor(cros_tokens::kCrosSysHighlightShape)
             .SetVectorIcon(primary_button.vector_icon)
@@ -243,21 +243,21 @@ PinnedNotificationView::PinnedNotificationView(
   }
 }
 
-PinnedNotificationView::~PinnedNotificationView() = default;
+OngoingProcessView::~OngoingProcessView() = default;
 
-void PinnedNotificationView::OnFocus() {
+void OngoingProcessView::OnFocus() {
   MessageView::OnFocus();
   ScrollRectToVisible(GetLocalBounds());
 }
 
-void PinnedNotificationView::OnThemeChanged() {
+void OngoingProcessView::OnThemeChanged() {
   // TODO(b/325129366): Land a config in `MessageView` that states if a
   // background should be painted, so there's no need to override
   // `OnThemeChanged` to prevent it from painting a background.
   views::View::OnThemeChanged();
 }
 
-void PinnedNotificationView::UpdateWithNotification(
+void OngoingProcessView::UpdateWithNotification(
     const message_center::Notification& notification) {
   MessageView::UpdateWithNotification(notification);
 
@@ -266,7 +266,7 @@ void PinnedNotificationView::UpdateWithNotification(
   if (title_label_ && title_label_->GetText() != notification.title()) {
     auto catalog_name = GetCatalogName(notification);
     if (notification.title().empty()) {
-      metrics_utils::LogPinnedNotificationShownWithoutTitle(catalog_name);
+      metrics_utils::LogOngoingProcessShownWithoutTitle(catalog_name);
     }
     title_label_->SetText(notification.title());
   }
@@ -316,15 +316,15 @@ void PinnedNotificationView::UpdateWithNotification(
 }
 
 message_center::NotificationControlButtonsView*
-PinnedNotificationView::GetControlButtonsView() const {
+OngoingProcessView::GetControlButtonsView() const {
   return nullptr;
 }
 
-void PinnedNotificationView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+void OngoingProcessView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   views::FocusRing::Get(this)->InvalidateLayout();
 }
 
-BEGIN_METADATA(PinnedNotificationView)
+BEGIN_METADATA(OngoingProcessView)
 END_METADATA
 
 }  // namespace ash

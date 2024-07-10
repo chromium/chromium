@@ -10,7 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/conversation_notification_view.h"
-#include "ash/system/notification_center/views/pinned_notification_view.h"
+#include "ash/system/notification_center/views/ongoing_process_view.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
@@ -66,7 +66,7 @@ std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
   }
 
   if (features::AreOngoingProcessesEnabled() && notification.pinned()) {
-    return std::make_unique<PinnedNotificationView>(notification);
+    return std::make_unique<OngoingProcessView>(notification);
   }
 
   return std::make_unique<AshNotificationView>(notification, shown_in_popup);

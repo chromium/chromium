@@ -649,15 +649,13 @@ void LogGroupNotificationAddedType(GroupNotificationType type) {
                                 type);
 }
 
-void LogPinnedNotificationShownWithoutIcon(
-    NotificationCatalogName catalog_name) {
+void LogOngoingProcessShownWithoutIcon(NotificationCatalogName catalog_name) {
   base::UmaHistogramEnumeration(
       "Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutIcon",
       catalog_name);
 }
 
-void LogPinnedNotificationShownWithoutTitle(
-    NotificationCatalogName catalog_name) {
+void LogOngoingProcessShownWithoutTitle(NotificationCatalogName catalog_name) {
   base::UmaHistogramEnumeration(
       "Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutTitle",
       catalog_name);

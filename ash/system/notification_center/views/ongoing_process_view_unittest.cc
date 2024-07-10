@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/notification_center/views/pinned_notification_view.h"
-
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/notification_center/views/ongoing_process_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -24,32 +23,32 @@ namespace {
 
 views::ImageView* GetIcon(views::View* notification_view) {
   return views::AsViewClass<views::ImageView>(
-      notification_view->GetViewByID(VIEW_ID_PINNED_NOTIFICATION_ICON));
+      notification_view->GetViewByID(VIEW_ID_ONGOING_PROCESS_ICON));
 }
 
 views::Label* GetTitleLabel(views::View* notification_view) {
   return views::AsViewClass<views::Label>(
-      notification_view->GetViewByID(VIEW_ID_PINNED_NOTIFICATION_TITLE_LABEL));
+      notification_view->GetViewByID(VIEW_ID_ONGOING_PROCESS_TITLE_LABEL));
 }
 
 views::Label* GetSubtitleLabel(views::View* notification_view) {
   return views::AsViewClass<views::Label>(notification_view->GetViewByID(
-      VIEW_ID_PINNED_NOTIFICATION_SUBTITLE_LABEL));
+      VIEW_ID_ONGOING_PROCESS_SUBTITLE_LABEL));
 }
 
 PillButton* GetPillButton(views::View* notification_view) {
   return views::AsViewClass<PillButton>(
-      notification_view->GetViewByID(VIEW_ID_PINNED_NOTIFICATION_PILL_BUTTON));
+      notification_view->GetViewByID(VIEW_ID_ONGOING_PROCESS_PILL_BUTTON));
 }
 
 IconButton* GetPrimaryIconButton(views::View* notification_view) {
   return views::AsViewClass<IconButton>(notification_view->GetViewByID(
-      VIEW_ID_PINNED_NOTIFICATION_PRIMARY_ICON_BUTTON));
+      VIEW_ID_ONGOING_PROCESS_PRIMARY_ICON_BUTTON));
 }
 
 IconButton* GetSecondaryIconButton(views::View* notification_view) {
   return views::AsViewClass<IconButton>(notification_view->GetViewByID(
-      VIEW_ID_PINNED_NOTIFICATION_SECONDARY_ICON_BUTTON));
+      VIEW_ID_ONGOING_PROCESS_SECONDARY_ICON_BUTTON));
 }
 
 // Sample constants to use in the created test views.
@@ -57,20 +56,20 @@ const std::u16string sample_text = u"sample";
 raw_ptr<const gfx::VectorIcon> sample_icon = &kPinnedIcon;
 
 // Histogram names.
-constexpr char kPinnedNotificationShownWithoutIconCount[] =
+constexpr char kOngoingProcessShownWithoutIconCount[] =
     "Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutIcon";
-constexpr char kPinnedNotificationShownWithoutTitleCount[] =
+constexpr char kOngoingProcessShownWithoutTitleCount[] =
     "Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutTitle";
 
 }  // namespace
 
-// Unit test to verify that `PinnedNotificationView` elements are created by
+// Unit test to verify that `OngoingProcessView` elements are created by
 // providing different parameters. Visit go/ongoing-processes-variations to
 // access screenshots of the different view configurations.
-using PinnedNotificationViewTest = AshTestBase;
+using OngoingProcessViewTest = AshTestBase;
 
 // Tests that the mandatory fields, which are title and icon, are created.
-TEST_F(PinnedNotificationViewTest, Default) {
+TEST_F(OngoingProcessViewTest, Default) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   auto notification =
@@ -82,22 +81,22 @@ TEST_F(PinnedNotificationViewTest, Default) {
           .Build(
               /*keep_timestamp=*/false);
 
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that appropriate notification elements were created.
-  EXPECT_TRUE(GetIcon(pinned_notification_view));
-  ASSERT_TRUE(GetTitleLabel(pinned_notification_view));
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  ASSERT_TRUE(GetSubtitleLabel(pinned_notification_view));
-  EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetPillButton(pinned_notification_view));
-  EXPECT_FALSE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
+  EXPECT_TRUE(GetIcon(ongoing_process_view));
+  ASSERT_TRUE(GetTitleLabel(ongoing_process_view));
+  EXPECT_TRUE(GetTitleLabel(ongoing_process_view)->GetVisible());
+  ASSERT_TRUE(GetSubtitleLabel(ongoing_process_view));
+  EXPECT_FALSE(GetSubtitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_FALSE(GetPillButton(ongoing_process_view));
+  EXPECT_FALSE(GetPrimaryIconButton(ongoing_process_view));
+  EXPECT_FALSE(GetSecondaryIconButton(ongoing_process_view));
 }
 
 // Tests that the mandatory fields and a subtitle are created.
-TEST_F(PinnedNotificationViewTest, Subtitle) {
+TEST_F(OngoingProcessViewTest, Subtitle) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   auto notification =
@@ -110,22 +109,22 @@ TEST_F(PinnedNotificationViewTest, Subtitle) {
           .Build(
               /*keep_timestamp=*/false);
 
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that appropriate notification elements were created.
-  EXPECT_TRUE(GetIcon(pinned_notification_view));
-  ASSERT_TRUE(GetTitleLabel(pinned_notification_view));
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  ASSERT_TRUE(GetSubtitleLabel(pinned_notification_view));
-  EXPECT_TRUE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetPillButton(pinned_notification_view));
-  EXPECT_FALSE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
+  EXPECT_TRUE(GetIcon(ongoing_process_view));
+  ASSERT_TRUE(GetTitleLabel(ongoing_process_view));
+  EXPECT_TRUE(GetTitleLabel(ongoing_process_view)->GetVisible());
+  ASSERT_TRUE(GetSubtitleLabel(ongoing_process_view));
+  EXPECT_TRUE(GetSubtitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_FALSE(GetPillButton(ongoing_process_view));
+  EXPECT_FALSE(GetPrimaryIconButton(ongoing_process_view));
+  EXPECT_FALSE(GetSecondaryIconButton(ongoing_process_view));
 }
 
 // Tests that the mandatory fields and a pill button are created.
-TEST_F(PinnedNotificationViewTest, PillButton) {
+TEST_F(OngoingProcessViewTest, PillButton) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   message_center::RichNotificationData data;
@@ -141,20 +140,20 @@ TEST_F(PinnedNotificationViewTest, PillButton) {
           .Build(
               /*keep_timestamp=*/false);
 
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that appropriate notification elements were created.
-  EXPECT_TRUE(GetIcon(pinned_notification_view));
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_TRUE(GetPillButton(pinned_notification_view));
-  EXPECT_FALSE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
+  EXPECT_TRUE(GetIcon(ongoing_process_view));
+  EXPECT_TRUE(GetTitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_FALSE(GetSubtitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_TRUE(GetPillButton(ongoing_process_view));
+  EXPECT_FALSE(GetPrimaryIconButton(ongoing_process_view));
+  EXPECT_FALSE(GetSecondaryIconButton(ongoing_process_view));
 }
 
 // Tests that the mandatory fields and an icon button are created.
-TEST_F(PinnedNotificationViewTest, OneIconButton) {
+TEST_F(OngoingProcessViewTest, OneIconButton) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   message_center::RichNotificationData data;
@@ -171,20 +170,20 @@ TEST_F(PinnedNotificationViewTest, OneIconButton) {
           .Build(
               /*keep_timestamp=*/false);
 
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that appropriate notification elements were created.
-  EXPECT_TRUE(GetIcon(pinned_notification_view));
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetPillButton(pinned_notification_view));
-  EXPECT_TRUE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
+  EXPECT_TRUE(GetIcon(ongoing_process_view));
+  EXPECT_TRUE(GetTitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_FALSE(GetSubtitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_FALSE(GetPillButton(ongoing_process_view));
+  EXPECT_TRUE(GetPrimaryIconButton(ongoing_process_view));
+  EXPECT_FALSE(GetSecondaryIconButton(ongoing_process_view));
 }
 
 // Tests that the mandatory fields and two icon buttons are created.
-TEST_F(PinnedNotificationViewTest, TwoIconButtons) {
+TEST_F(OngoingProcessViewTest, TwoIconButtons) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   message_center::RichNotificationData data;
@@ -203,23 +202,23 @@ TEST_F(PinnedNotificationViewTest, TwoIconButtons) {
           .Build(
               /*keep_timestamp=*/false);
 
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that appropriate notification elements were created.
-  EXPECT_TRUE(GetIcon(pinned_notification_view));
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetPillButton(pinned_notification_view));
-  EXPECT_TRUE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_TRUE(GetSecondaryIconButton(pinned_notification_view));
+  EXPECT_TRUE(GetIcon(ongoing_process_view));
+  EXPECT_TRUE(GetTitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_FALSE(GetSubtitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_FALSE(GetPillButton(ongoing_process_view));
+  EXPECT_TRUE(GetPrimaryIconButton(ongoing_process_view));
+  EXPECT_TRUE(GetSecondaryIconButton(ongoing_process_view));
 }
 
 // Tests the invalid case where two `ButtonInfo` objects are sent but one has a
 // `title` to create a `PillButton` and the other only has a `vector_icon` and
 // `accessible_name` to create an `IconButton`. In these cases, only the first
 // button will be created and the second `ButtonInfo` object will be ignored.
-TEST_F(PinnedNotificationViewTest, InvalidButtonInfo) {
+TEST_F(OngoingProcessViewTest, InvalidButtonInfo) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   ash::SystemNotificationBuilder notification_builder;
@@ -239,13 +238,13 @@ TEST_F(PinnedNotificationViewTest, InvalidButtonInfo) {
           .Build(
               /*keep_timestamp=*/false);
 
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that only a single `IconButton` was created.
-  EXPECT_FALSE(GetPillButton(pinned_notification_view));
-  EXPECT_TRUE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
+  EXPECT_FALSE(GetPillButton(ongoing_process_view));
+  EXPECT_TRUE(GetPrimaryIconButton(ongoing_process_view));
+  EXPECT_FALSE(GetSecondaryIconButton(ongoing_process_view));
 
   // Provide the data to create a `PillButton` and then an `IconButton`.
   data.buttons.clear();
@@ -261,19 +260,19 @@ TEST_F(PinnedNotificationViewTest, InvalidButtonInfo) {
                      .Build(
                          /*keep_timestamp=*/false);
 
-  pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that only a single `PillButton` was created.
-  EXPECT_TRUE(GetPillButton(pinned_notification_view));
-  EXPECT_FALSE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
+  EXPECT_TRUE(GetPillButton(ongoing_process_view));
+  EXPECT_FALSE(GetPrimaryIconButton(ongoing_process_view));
+  EXPECT_FALSE(GetSecondaryIconButton(ongoing_process_view));
 }
 
 // Tests that the `Ash.NotifierFramework.PinnedSystemNotification`
 // `ShownWithoutIcon` and `ShownWithoutTitle` metrics properly record when a
 // pinned notification view is created without an icon or title.
-TEST_F(PinnedNotificationViewTest, ShownWithoutIconOrTitleMetrics) {
+TEST_F(OngoingProcessViewTest, ShownWithoutIconOrTitleMetrics) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
@@ -286,17 +285,17 @@ TEST_F(PinnedNotificationViewTest, ShownWithoutIconOrTitleMetrics) {
                               /*keep_timestamp=*/false);
 
   widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that the appropriate metrics were recorded.
-  histogram_tester.ExpectBucketCount(kPinnedNotificationShownWithoutIconCount,
+  histogram_tester.ExpectBucketCount(kOngoingProcessShownWithoutIconCount,
                                      catalog_name, 1);
-  histogram_tester.ExpectBucketCount(kPinnedNotificationShownWithoutTitleCount,
+  histogram_tester.ExpectBucketCount(kOngoingProcessShownWithoutTitleCount,
                                      catalog_name, 1);
 }
 
 // Tests that the notification `title` and `subtitle` fields can be updated.
-TEST_F(PinnedNotificationViewTest, UpdateWithNotification) {
+TEST_F(OngoingProcessViewTest, UpdateWithNotification) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
@@ -311,30 +310,30 @@ TEST_F(PinnedNotificationViewTest, UpdateWithNotification) {
                           .Build(
                               /*keep_timestamp=*/false);
 
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that appropriate notification elements were created.
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_TRUE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
+  EXPECT_TRUE(GetTitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_TRUE(GetSubtitleLabel(ongoing_process_view)->GetVisible());
 
   // Set an empty `title` and `subtitle` and update the notification view.
   notification.set_title(std::u16string());
   notification.set_message(std::u16string());
-  pinned_notification_view->UpdateWithNotification(notification);
+  ongoing_process_view->UpdateWithNotification(notification);
 
   // Ensure that the notification elements's visibility was properly updated.
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
+  EXPECT_TRUE(GetTitleLabel(ongoing_process_view)->GetVisible());
+  EXPECT_FALSE(GetSubtitleLabel(ongoing_process_view)->GetVisible());
 
   // Ensure the `ShownWithoutTitle` metric was recorded after updating the
   // notification with an empty `title`.
-  histogram_tester.ExpectBucketCount(kPinnedNotificationShownWithoutTitleCount,
+  histogram_tester.ExpectBucketCount(kOngoingProcessShownWithoutTitleCount,
                                      catalog_name, 1);
 }
 
 // Tests that the notification pill button can be updated with a new text.
-TEST_F(PinnedNotificationViewTest, UpdateWithNotification_PillButton) {
+TEST_F(OngoingProcessViewTest, UpdateWithNotification_PillButton) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Create a notification with a pill button.
@@ -352,11 +351,11 @@ TEST_F(PinnedNotificationViewTest, UpdateWithNotification_PillButton) {
           .Build(
               /*keep_timestamp=*/false);
 
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
   // Test that the pill buttons was created with the proper text.
-  auto* pill_button = GetPillButton(pinned_notification_view);
+  auto* pill_button = GetPillButton(ongoing_process_view);
   EXPECT_TRUE(pill_button->GetVisible());
   EXPECT_EQ(pill_button->GetText(), sample_text);
 
@@ -365,7 +364,7 @@ TEST_F(PinnedNotificationViewTest, UpdateWithNotification_PillButton) {
   data.buttons.clear();
   data.buttons.emplace_back(message_center::ButtonInfo(/*title=*/updated_text));
   notification.set_buttons(data.buttons);
-  pinned_notification_view->UpdateWithNotification(notification);
+  ongoing_process_view->UpdateWithNotification(notification);
 
   // Ensure that the icon buttons is still visible and with the updated text.
   EXPECT_TRUE(pill_button->GetVisible());
@@ -374,7 +373,7 @@ TEST_F(PinnedNotificationViewTest, UpdateWithNotification_PillButton) {
   // Remove the text for the pill buttons.
   data.buttons.clear();
   notification.set_buttons(data.buttons);
-  pinned_notification_view->UpdateWithNotification(notification);
+  ongoing_process_view->UpdateWithNotification(notification);
 
   // The pill button should still be visible, as the buttons cannot be removed.
   EXPECT_TRUE(pill_button->GetVisible());
@@ -382,7 +381,7 @@ TEST_F(PinnedNotificationViewTest, UpdateWithNotification_PillButton) {
 }
 
 // Tests that the notification buttons can be updated with new icons.
-TEST_F(PinnedNotificationViewTest, UpdateWithNotification_IconButtons) {
+TEST_F(OngoingProcessViewTest, UpdateWithNotification_IconButtons) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Create a notification with two icons.
@@ -403,11 +402,11 @@ TEST_F(PinnedNotificationViewTest, UpdateWithNotification_IconButtons) {
           .Build(
               /*keep_timestamp=*/false);
 
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
 
-  auto* primary_button = GetPrimaryIconButton(pinned_notification_view);
-  auto* secondary_button = GetSecondaryIconButton(pinned_notification_view);
+  auto* primary_button = GetPrimaryIconButton(ongoing_process_view);
+  auto* secondary_button = GetSecondaryIconButton(ongoing_process_view);
 
   // Test that the icon buttons were created.
   EXPECT_TRUE(primary_button);
@@ -421,7 +420,7 @@ TEST_F(PinnedNotificationViewTest, UpdateWithNotification_IconButtons) {
   data.buttons.emplace_back(message_center::ButtonInfo(
       /*vector_icon=*/updated_icon, /*accessible_name=*/sample_text));
   notification.set_buttons(data.buttons);
-  pinned_notification_view->UpdateWithNotification(notification);
+  ongoing_process_view->UpdateWithNotification(notification);
 
   // Ensure that the icon buttons are still visible.
   EXPECT_TRUE(primary_button);
@@ -430,7 +429,7 @@ TEST_F(PinnedNotificationViewTest, UpdateWithNotification_IconButtons) {
   // Remove the icons for the icon buttons.
   data.buttons.clear();
   notification.set_buttons(data.buttons);
-  pinned_notification_view->UpdateWithNotification(notification);
+  ongoing_process_view->UpdateWithNotification(notification);
 
   // The icon buttons should still be visible, as the buttons cannot be removed.
   EXPECT_TRUE(primary_button);

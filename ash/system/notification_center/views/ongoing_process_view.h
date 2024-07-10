@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_NOTIFICATION_CENTER_VIEWS_PINNED_NOTIFICATION_VIEW_H_
-#define ASH_SYSTEM_NOTIFICATION_CENTER_VIEWS_PINNED_NOTIFICATION_VIEW_H_
+#ifndef ASH_SYSTEM_NOTIFICATION_CENTER_VIEWS_ONGOING_PROCESS_VIEW_H_
+#define ASH_SYSTEM_NOTIFICATION_CENTER_VIEWS_ONGOING_PROCESS_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -23,18 +23,18 @@ namespace ash {
 class IconButton;
 class PillButton;
 
-// Ash Pinned Notification View to be used when the `Ongoing Processes` flag is
-// enabled (go/ongoing-processes-spec). This view must have a title and an icon,
-// and optionally supports a subtitle, and a pill button or up to two icon
-// buttons.
-class ASH_EXPORT PinnedNotificationView : public message_center::MessageView {
-  METADATA_HEADER(PinnedNotificationView, message_center::MessageView)
+// Ash Ongoing Process View to be used for system pinned notifications when the
+// `Ongoing Processes` flag is enabled (go/ongoing-processes-spec).
+// This view must have a title and an icon, and optionally supports a subtitle,
+// and a pill button or up to two icon buttons.
+class ASH_EXPORT OngoingProcessView : public message_center::MessageView {
+  METADATA_HEADER(OngoingProcessView, message_center::MessageView)
 
  public:
-  PinnedNotificationView(const message_center::Notification& notification);
-  PinnedNotificationView(const PinnedNotificationView&) = delete;
-  PinnedNotificationView& operator=(const PinnedNotificationView&) = delete;
-  ~PinnedNotificationView() override;
+  OngoingProcessView(const message_center::Notification& notification);
+  OngoingProcessView(const OngoingProcessView&) = delete;
+  OngoingProcessView& operator=(const OngoingProcessView&) = delete;
+  ~OngoingProcessView() override;
 
   // message_center::MessageView:
   void OnFocus() override;
@@ -57,4 +57,4 @@ class ASH_EXPORT PinnedNotificationView : public message_center::MessageView {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_NOTIFICATION_CENTER_VIEWS_PINNED_NOTIFICATION_VIEW_H_
+#endif  // ASH_SYSTEM_NOTIFICATION_CENTER_VIEWS_ONGOING_PROCESS_VIEW_H_
