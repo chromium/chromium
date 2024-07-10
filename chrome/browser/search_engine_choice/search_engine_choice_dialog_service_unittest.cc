@@ -431,6 +431,44 @@ TEST_F(SearchEngineChoiceDialogServiceTest, IsUrlSuitableForDialog) {
       GURL(url::kAboutBlankURL)));
 }
 
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       CanSuppressPrivacySandboxPromo_Dialog) {
+  SearchEngineChoiceDialogService* search_engine_choice_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  int prepopulated_id =
+      search_engine_choice_service->GetSearchEngines().at(0)->prepopulate_id();
+
+  search_engine_choice_service->NotifyChoiceMade(
+      prepopulated_id, SearchEngineChoiceDialogService::EntryPoint::kDialog);
+  EXPECT_TRUE(search_engine_choice_service->CanSuppressPrivacySandboxPromo());
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       CanSuppressPrivacySandboxPromo_FRE) {
+  SearchEngineChoiceDialogService* search_engine_choice_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  int prepopulated_id =
+      search_engine_choice_service->GetSearchEngines().at(0)->prepopulate_id();
+
+  search_engine_choice_service->NotifyChoiceMade(
+      prepopulated_id,
+      SearchEngineChoiceDialogService::EntryPoint::kFirstRunExperience);
+  EXPECT_FALSE(search_engine_choice_service->CanSuppressPrivacySandboxPromo());
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       CanSuppressPrivacySandboxPromo_ProfileCreation) {
+  SearchEngineChoiceDialogService* search_engine_choice_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  int prepopulated_id =
+      search_engine_choice_service->GetSearchEngines().at(0)->prepopulate_id();
+
+  search_engine_choice_service->NotifyChoiceMade(
+      prepopulated_id,
+      SearchEngineChoiceDialogService::EntryPoint::kProfileCreation);
+  EXPECT_FALSE(search_engine_choice_service->CanSuppressPrivacySandboxPromo());
+}
+
 TEST_P(SearchEngineListCountryOverrideParametrizedTest,
        CheckNumberOfSearchEngines) {
   SearchEngineChoiceDialogService* search_engine_choice_service =

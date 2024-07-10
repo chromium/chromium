@@ -157,7 +157,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
   if (search_engine_choice_dialog_service &&
-      !search_engine_choice_dialog_service->CanSuppressPrivacySandboxPromo()) {
+      search_engine_choice_dialog_service->CanSuppressPrivacySandboxPromo()) {
     base::UmaHistogramEnumeration(kPrivacySandboxPromptHelperEventHistogram,
                                   SettingsPrivacySandboxPromptHelperEvent::
                                       kSearchEngineChoiceDialogShown);

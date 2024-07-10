@@ -391,7 +391,7 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
 }
 
 bool SearchEngineChoiceDialogService::CanSuppressPrivacySandboxPromo() const {
-  return choice_made_in_profile_picker_;
+  return !choice_made_in_profile_picker_;
 }
 
 bool SearchEngineChoiceDialogService::IsShowingDialog(Browser& browser) const {
