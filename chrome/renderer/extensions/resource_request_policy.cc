@@ -79,8 +79,8 @@ bool ResourceRequestPolicy::CanRequestResource(
     const url::Origin* initiator_origin) {
   // Any URLs, if present, should be have the chrome-extension scheme.
   CHECK(target_url.SchemeIs(kExtensionScheme));
-  if (!upstream_url.is_empty()) {
-    CHECK(upstream_url.SchemeIs(kExtensionScheme));
+  if (!upstream_url.is_empty() && !upstream_url.SchemeIs(kExtensionScheme)) {
+    return false;
   }
 
   GURL frame_url = frame->GetDocument().Url();
