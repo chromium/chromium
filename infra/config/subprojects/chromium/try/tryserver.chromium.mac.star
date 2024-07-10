@@ -173,6 +173,8 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         # crbug/940930
         "chromium.enable_cleandead": 100,
+        # b/346598710
+        "chromium.luci_analysis_v2": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -599,6 +601,8 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
+        # b/346598710
+        "chromium.luci_analysis_v2": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
