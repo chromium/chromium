@@ -347,6 +347,7 @@ public class ManualFillingControllerTest {
                 mMockKeyboardAccessory,
                 mMockAccessorySheet,
                 mMockBottomSheetController,
+                /* isContextualSearchOpened= */ () -> false,
                 mMockBackPressManager,
                 mMockEdgeToEdgeControllerSupplier,
                 mMockSoftKeyboardDelegate,

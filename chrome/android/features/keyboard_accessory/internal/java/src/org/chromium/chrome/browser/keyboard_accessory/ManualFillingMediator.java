@@ -35,7 +35,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState;
@@ -81,6 +80,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
  * This part of the manual filling component manages the state of the manual filling flow depending
@@ -112,6 +112,7 @@ class ManualFillingMediator
     private ConfirmationDialogHelper mConfirmationHelper;
     private BackPressManager mBackPressManager;
     private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier = () -> null;
+    private BooleanSupplier mIsContextualSearchOpened;
     private final Callback<ViewportInsets> mViewportInsetsObserver = this::onViewportInsetChanged;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
@@ -181,6 +182,7 @@ class ManualFillingMediator
             AccessorySheetCoordinator accessorySheet,
             WindowAndroid windowAndroid,
             BottomSheetController sheetController,
+            BooleanSupplier isContextualSearchOpened,
             BackPressManager backPressManager,
             Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ManualFillingComponent.SoftKeyboardDelegate keyboardDelegate,
@@ -190,6 +192,7 @@ class ManualFillingMediator
         mWindowAndroid = windowAndroid;
         mKeyboardAccessory = keyboardAccessory;
         mBottomSheetController = sheetController;
+        mIsContextualSearchOpened = isContextualSearchOpened;
         mSoftKeyboardDelegate = keyboardDelegate;
         mConfirmationHelper = confirmationHelper;
         mModel.set(PORTRAIT_ORIENTATION, hasPortraitOrientation());
@@ -618,11 +621,7 @@ class ManualFillingMediator
         if (!mModel.get(SHOW_WHEN_VISIBLE)) return false;
 
         // Don't open the accessory inside the contextual search panel.
-        ObservableSupplier<ContextualSearchManager> contextualSearchSupplier =
-                mActivity.getContextualSearchManagerSupplier();
-        if (contextualSearchSupplier != null
-                && contextualSearchSupplier.hasValue()
-                && contextualSearchSupplier.get().isSearchPanelOpened()) {
+        if (mIsContextualSearchOpened.getAsBoolean()) {
             return false;
         }
 

@@ -27,6 +27,7 @@ import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /** This component handles the new, non-popup filling UI. */
 public interface ManualFillingComponent extends BackPressHandler {
@@ -96,6 +97,7 @@ public interface ManualFillingComponent extends BackPressHandler {
      * @param windowAndroid The window needed to listen to the keyboard and to connect to activity.
      * @param profile The {@link Profile} associated with the data.
      * @param sheetController A {@link BottomSheetController} to show the UI in.
+     * @param isContextualSearchOpened Whether contextual search panel is opened.
      * @param keyboardDelegate A {@link SoftKeyboardDelegate} to control only the system keyboard.
      * @param backPressManager A {@link BackPressManager} to register {@link BackPressHandler}.
      * @param edgeToEdgeControllerSupplier A {@link Supplier<EdgeToEdgeController>}.
@@ -105,6 +107,7 @@ public interface ManualFillingComponent extends BackPressHandler {
             WindowAndroid windowAndroid,
             Profile profile,
             BottomSheetController sheetController,
+            BooleanSupplier isContextualSearchOpened,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
             Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
