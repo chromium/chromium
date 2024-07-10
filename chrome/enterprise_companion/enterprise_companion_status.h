@@ -18,14 +18,17 @@
 
 namespace enterprise_companion {
 
-// Errors defined by the enterprise companion app.
+// Errors defined by the enterprise companion app. Ordinals are transmitted
+// across IPC and network boundaries. Entries must not be removed or reordered.
 enum class ApplicationError {
   // An action failed due to the client not being registered.
   kRegistrationPreconditionFailed,
-  // DMStorage reports that it is not capiable of persisting policies.
+  // DMStorage reports that it is not capable of persisting policies.
   kPolicyPersistenceImpossible,
   // DMStorage failed to persist the policies.
   kPolicyPersistenceFailed,
+  // The global singleton lock could not be acquired.
+  kCannotAcquireLock,
 };
 
 // Canonical view of statuses used across the application.

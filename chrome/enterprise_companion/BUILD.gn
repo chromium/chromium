@@ -43,6 +43,9 @@ process_version("branding_header") {
 
 source_set("base") {
   sources = [
+    "app/app.cc",
+    "app/app.h",
+    "app/app_server.cc",
     "crash_client.cc",
     "crash_client.h",
     "dm_client.cc",

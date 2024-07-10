@@ -80,6 +80,8 @@ const char* ApplicationErrorToString(ApplicationError error) {
       return "Policies can not be persisted to storage.";
     case ApplicationError::kPolicyPersistenceFailed:
       return "Failed to persist policies to storage.";
+    case ApplicationError::kCannotAcquireLock:
+      return "Failed to acquire global singleton lock.";
   }
 }
 
