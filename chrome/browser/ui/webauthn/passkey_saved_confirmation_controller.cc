@@ -31,7 +31,7 @@ std::u16string PasskeySavedConfirmationController::GetUsername() const {
   return delegate_->GetRecentlySavedPasskeyUsername();
 }
 
-void PasskeySavedConfirmationController::OnManagePasswordsAndPasskeysClicked() {
+void PasskeySavedConfirmationController::OnGooglePasswordManagerLinkClicked() {
   dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
   if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(

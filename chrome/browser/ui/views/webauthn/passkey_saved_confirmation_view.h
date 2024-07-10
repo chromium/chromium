@@ -22,7 +22,7 @@ class PasskeySavedConfirmationView : public PasswordBubbleViewBase {
   ui::ImageModel GetWindowIcon() override;
 
   // Notifies the `controller_` to open password manager and closes the bubble.
-  void OnManagePasswordsAndPasskeysClicked();
+  void OnGooglePasswordManagerLinkClicked();
 
   PasskeySavedConfirmationController controller_;
 };

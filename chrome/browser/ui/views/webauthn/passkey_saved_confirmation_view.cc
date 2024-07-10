@@ -28,17 +28,13 @@ PasskeySavedConfirmationView::PasskeySavedConfirmationView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());
-  set_title_margins(
-      ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  // TODO(rgod): Add correct strings once they're finalised.
   size_t offset;
-  const std::u16string link = l10n_util::GetStringUTF16(
-      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT);
+  const std::u16string link =
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PASSKEY_SAVED_LINK);
   std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_PASSWORD_GENERATION_CONFIRMATION_GOOGLE_PASSWORD_MANAGER, link,
-      &offset);
+      IDS_WEBAUTHN_GPM_PASSKEY_SAVED_LABEL, link, &offset);
 
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(text);
@@ -48,7 +44,7 @@ PasskeySavedConfirmationView::PasskeySavedConfirmationView(
   label->AddStyleRange(
       gfx::Range(offset, offset + link.length()),
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &PasskeySavedConfirmationView::OnManagePasswordsAndPasskeysClicked,
+          &PasskeySavedConfirmationView::OnGooglePasswordManagerLinkClicked,
           base::Unretained(this))));
   AddChildView(std::move(label));
 }
@@ -70,7 +66,7 @@ ui::ImageModel PasskeySavedConfirmationView::GetWindowIcon() {
                                         ui::kColorIcon);
 }
 
-void PasskeySavedConfirmationView::OnManagePasswordsAndPasskeysClicked() {
-  controller_.OnManagePasswordsAndPasskeysClicked();
+void PasskeySavedConfirmationView::OnGooglePasswordManagerLinkClicked() {
+  controller_.OnGooglePasswordManagerLinkClicked();
   CloseBubble();
 }

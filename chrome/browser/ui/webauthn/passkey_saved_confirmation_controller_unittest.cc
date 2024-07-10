@@ -98,13 +98,13 @@ TEST_F(PasskeySavedConfirmationControllerTest, ContentWithPinCreation) {
 }
 
 TEST_F(PasskeySavedConfirmationControllerTest,
-       OnManagePasswordsAndPasskeysClicked) {
+       OnGooglePasswordManagerLinkClicked) {
   base::HistogramTester histogram_tester;
   CreateController();
   EXPECT_CALL(*delegate(), NavigateToPasswordManagerSettingsPage(
                                password_manager::ManagePasswordsReferrer::
                                    kPasskeySavedConfirmationBubble));
-  controller()->OnManagePasswordsAndPasskeysClicked();
+  controller()->OnGooglePasswordManagerLinkClicked();
   DestroyController();
   histogram_tester.ExpectUniqueSample(
       kUIDismissalReasonMetric, password_manager::metrics_util::CLICKED_MANAGE,
