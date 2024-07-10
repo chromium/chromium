@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FeatureList;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -66,6 +67,7 @@ import java.util.concurrent.TimeoutException;
 @DisableIf.Build(
         sdk_is_greater_than = Build.VERSION_CODES.Q,
         message = "crbug.com/1276402 crbug.com/345352689")
+@Batch(Batch.PER_CLASS)
 public class NavigationHandlerTest {
     private static final String RENDERED_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final boolean LEFT_EDGE = true;
