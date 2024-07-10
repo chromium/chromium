@@ -2593,9 +2593,7 @@ TEST_P(PdfOcrHelperTest, PageBatching) {
   const uint32_t batch_count = CalculateBatchCount(page_count, pages_per_batch);
 
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
-  // The first node of the root node's children is a status node. There
-  // should be no postamble page informing the user of OCR progress
-  // when OCR has either not yet started, or has been completed.
+  // The first node of the root node's children is a status node.
   ASSERT_EQ(page_count + 1u, root_node->GetChildCount());
   for (uint32_t i = 0; i < page_count; ++i) {
     if (!is_ocr_helper_started_before_pdf_loads) {
@@ -2619,31 +2617,6 @@ TEST_P(PdfOcrHelperTest, PageBatching) {
       // Each page has two images.
       WaitForThreadTasks();
       WaitForThreadTasks();
-
-      if (page_count >= pages_per_batch && i >= pages_per_batch &&
-          i != page_count - 1u) {
-        // A postamble page informing the user that the OCR process is in
-        // progress should be present after processing the first batch of
-        // OCR requests (i.e. when `i >= pages_per_batch`).
-        const ui::AXTreeUpdate* postamble_update =
-            pdf_accessibility_tree_->postamble_page_tree_update_for_testing();
-        ASSERT_NE(nullptr, postamble_update);
-        ASSERT_GT(postamble_update->nodes.size(), 1u);
-        const ui::AXNodeData& root = postamble_update->nodes[0];
-        EXPECT_EQ(ax::mojom::Role::kPdfRoot, root.role);
-        const ui::AXNodeData& postamble_page = postamble_update->nodes[1];
-        EXPECT_EQ(ax::mojom::Role::kRegion, postamble_page.role);
-        ASSERT_NE(ui::kInvalidAXNodeID, postamble_page.id);
-
-        const auto iter =
-            base::ranges::find(root_node->data().child_ids, postamble_page.id);
-        ASSERT_NE(std::end(root_node->data().child_ids), iter);
-        ui::AXNode* postamble_page_node = root_node->GetChildAtIndex(
-            std::distance(std::begin(root_node->data().child_ids), iter));
-        ASSERT_NE(nullptr, postamble_page_node);
-        EXPECT_EQ(postamble_page.id, postamble_page_node->id());
-        EXPECT_EQ(ax::mojom::Role::kRegion, postamble_page_node->GetRole());
-      }
     } else {
       // Each page has two images.
       WaitForThreadTasks();

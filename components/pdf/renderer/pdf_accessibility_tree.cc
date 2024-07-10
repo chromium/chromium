@@ -539,9 +539,6 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
       banner_node_.reset();
       status_node_.reset();
       status_node_text_.reset();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      postamble_page_tree_update_.reset();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     }
     return;
   }
@@ -677,114 +674,6 @@ void PdfAccessibilityTree::UnserializeNodes() {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void PdfAccessibilityTree::AddPostamblePageIfNeeded(
-    const ui::AXNodeID& last_page_node_id) {
-  CHECK_NE(last_page_node_id, ui::kInvalidAXNodeID);
-  CHECK(doc_node_);
-  if (!ocr_helper_) {
-    return;  // OCR helper not enabled.
-  }
-
-  if (postamble_page_tree_update_) {
-    // The first node in `postamble_page_tree_update_` is `doc_node_`.
-    CHECK_GT(postamble_page_tree_update_->nodes.size(), 1u);
-    const ui::AXNodeData& page = postamble_page_tree_update_->nodes[1];
-    const ui::AXNodeID& page_id = page.id;
-    CHECK_NE(ui::kInvalidAXNodeID, page_id);
-    int num_erased = std::erase_if(doc_node_->child_ids,
-                                   [&page_id](const ui::AXNodeID child_id) {
-                                     return child_id == page_id;
-                                   });
-    if (num_erased == 1) {
-      ui::AXTreeUpdate update;
-      update.root_id = doc_node_->id;
-      update.node_id_to_clear = page_id;
-      update.nodes = {*doc_node_};
-      if (!tree_.Unserialize(update)) {
-        LOG(FATAL) << tree_.error();
-      }
-    } else {
-      // TODO(b/329087996): Remove this debug and check why `num_erased != 1`
-      // here after collecting more data about this unexpected behavior.
-      std::vector<int32_t> child_ids = doc_node_->child_ids;
-      ui::AXNodeID page_id_to_remove = page.id;
-      base::debug::Alias(&child_ids);
-      base::debug::Alias(&page_id_to_remove);
-      base::debug::Alias(&num_erased);
-      base::debug::DumpWithoutCrashing();
-    }
-
-    if (ocr_helper_->AreAllPagesOcred()) {
-      postamble_page_tree_update_.reset();
-      SetOcrCompleteStatus();
-      return;
-    }
-
-    auto iter = ranges::find(doc_node_->child_ids, last_page_node_id);
-    CHECK(iter != std::ranges::end(doc_node_->child_ids));
-    doc_node_->child_ids.insert(++iter, page_id);
-    postamble_page_tree_update_->nodes[0] = *doc_node_;
-  } else {
-    if (ocr_helper_->AreAllPagesOcred()) {
-      SetOcrCompleteStatus();
-      return;
-    }
-
-    auto obj = GetPluginContainerAXObject();
-    if (!obj) {
-      return;
-    }
-
-    auto postamble_page = std::make_unique<ui::AXTreeUpdate>();
-
-    ui::AXNodeData page;
-    page.id = obj->GenerateAXID();
-    page.role = ax::mojom::Role::kRegion;
-    page.SetRestriction(ax::mojom::Restriction::kReadOnly);
-    page.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
-                          true);
-    CHECK(doc_node_);
-    page.relative_bounds.offset_container_id = doc_node_->id;
-
-    ui::AXNodeData paragraph;
-    paragraph.id = obj->GenerateAXID();
-    paragraph.role = ax::mojom::Role::kParagraph;
-    paragraph.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
-                               true);
-    page.child_ids = {paragraph.id};
-
-    const std::string postamble_message =
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_POSTAMBLE_PAGE);
-
-    ui::AXNodeData static_text;
-    static_text.id = obj->GenerateAXID();
-    static_text.role = ax::mojom::Role::kInlineTextBox;
-    static_text.SetRestriction(ax::mojom::Restriction::kReadOnly);
-    static_text.SetNameChecked(postamble_message);
-    paragraph.child_ids = {static_text.id};
-
-    ui::AXNodeData inline_text_box;
-    inline_text_box.id = obj->GenerateAXID();
-    inline_text_box.role = ax::mojom::Role::kInlineTextBox;
-    inline_text_box.SetRestriction(ax::mojom::Restriction::kReadOnly);
-    inline_text_box.SetNameChecked(postamble_message);
-    static_text.child_ids = {inline_text_box.id};
-
-    postamble_page->root_id = doc_node_->id;
-    auto iter = ranges::find(doc_node_->child_ids, last_page_node_id);
-    CHECK(iter != std::ranges::end(doc_node_->child_ids));
-    doc_node_->child_ids.insert(iter, page.id);
-    postamble_page->nodes = {*doc_node_, std::move(page), std::move(paragraph),
-                             std::move(static_text),
-                             std::move(inline_text_box)};
-    postamble_page_tree_update_.swap(postamble_page);
-  }
-
-  if (!tree_.Unserialize(*postamble_page_tree_update_)) {
-    LOG(FATAL) << tree_.error();
-  }
-}
-
 void PdfAccessibilityTree::SetOcrCompleteStatus() {
   VLOG(2) << "Performing OCR on PDF is complete.";
 
@@ -940,9 +829,6 @@ void PdfAccessibilityTree::ClearAccessibilityNodes() {
   nodes_.clear();
   node_id_to_page_char_index_.clear();
   node_id_to_annotation_info_.clear();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  postamble_page_tree_update_.reset();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 std::optional<blink::WebAXObject>
@@ -1306,20 +1192,11 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   }
 
   if (!unserialized_node_exist) {
-    // PDF accessibility tree is available now, so it may be necessary to add a
-    // postamble page after the last OCRed page.
-    AddPostamblePageIfNeeded(ocr_requests.back().page_node_id);
     MarkPluginContainerDirty();
-  } else {
-    // PDF accessibility tree is not yet available. If all pages are OCRed
-    // before PDF content is being loaded into the accessibility tree, update
-    // the status node's message here.
-    if (ocr_helper_->AreAllPagesOcred()) {
-      // This message will be loaded to the status node in the tree along with
-      // the PDF content when `UnserializeNodes()` gets called.
-      SetStatusMessage(was_text_converted_from_image_ ? IDS_PDF_OCR_COMPLETED
-                                                      : IDS_PDF_OCR_NO_RESULT);
-    }
+  }
+
+  if (ocr_helper_->AreAllPagesOcred()) {
+    SetOcrCompleteStatus();
   }
 }
 
