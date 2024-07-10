@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<body>
+<script>
+var iframe = document.createElement('iframe');
+iframe.onload = (_ => {
+    document.title = "LOADED";
+  });
+iframe.src = location.search.substring(1);
+document.body.appendChild(iframe);
+</script>
+</body>

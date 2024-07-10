@@ -7393,10 +7393,9 @@ data/service_worker/create_service_worker_from_isolated.html
 data/service_worker/create_service_worker_from_isolated.html.mock-http-headers
 data/service_worker/cross_site_xfer.js
 data/service_worker/cross_site_xfer.js.mock-http-headers
+data/service_worker/disable_web_security_cross_origin.html
 data/service_worker/disable_web_security_get_registration.html
 data/service_worker/disable_web_security_register.html
-data/service_worker/disable_web_security_unregister.html
-data/service_worker/disable_web_security_update.html
 data/service_worker/echo_request_headers.js
 data/service_worker/echo_request_headers.js.mock-http-headers
 data/service_worker/empty.html

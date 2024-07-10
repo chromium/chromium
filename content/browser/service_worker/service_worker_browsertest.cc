@@ -2900,6 +2900,49 @@ class ServiceWorkerDisableWebSecurityTest : public ServiceWorkerBrowserTest {
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
   }
 
+  // Similar to `RunTestWithCrossOriginURL`, but it does not assume that the
+  // child and parent frame are same-process. It is assumed that any
+  // communication between child/parent will be done via postMessage.
+  // `test_script` carries the service worker operations to test. This function
+  // assumes that `test_script` postMessages "PASS" to the parent if the
+  // test succeeds.
+  void RunTestWithCrossOriginURL_MaybeCrossProcess(
+      const std::string& test_page,
+      const std::string& cross_origin_url,
+      const std::string& test_script) {
+    //  Run test with cross-origin URL.
+    {
+      const std::u16string title = u"LOADED";
+      TitleWatcher title_watcher(shell()->web_contents(), title);
+      EXPECT_TRUE(NavigateToURL(
+          shell(), embedded_test_server()->GetURL(
+                       test_page + "?" +
+                       cross_origin_server_.GetURL(cross_origin_url).spec())));
+      EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
+    }
+
+    // Verify the parent and child frames are cross-origin.
+    auto* parent_frame = static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetPrimaryMainFrame());
+    ASSERT_EQ(1u, parent_frame->child_count());
+    RenderFrameHostImpl* child_frame =
+        parent_frame->child_at(0)->current_frame_host();
+    // This comparison needs to be done here, as the parent doesn't have access
+    // to the cross-origin child's location` object.
+    EXPECT_NE(EvalJs(parent_frame, "location.origin").ExtractString(),
+              EvalJs(child_frame, "location.origin").ExtractString());
+
+    // Verify `test_script` on service worker.
+    {
+      const std::u16string title = u"PASS";
+      TitleWatcher title_watcher(shell()->web_contents(), title);
+      EXPECT_TRUE(ExecJs(parent_frame,
+                         "onmessage = msg => { document.title = msg.data; };"));
+      EXPECT_TRUE(ExecJs(child_frame, test_script));
+      EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
+    }
+  }
+
  private:
   net::EmbeddedTestServer cross_origin_server_;
 };
@@ -2930,20 +2973,31 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDisableWebSecurityTest,
 IN_PROC_BROWSER_TEST_F(ServiceWorkerDisableWebSecurityTest, UnregisterNoCrash) {
   StartServerAndNavigateToSetup();
   const char kPageUrl[] =
-      "/service_worker/disable_web_security_unregister.html";
+      "/service_worker/disable_web_security_cross_origin.html";
   const char kScopeUrl[] = "/service_worker/scope/";
   const char kWorkerUrl[] = "/service_worker/fetch_event_blob.js";
   RegisterServiceWorkerOnCrossOriginServer(kScopeUrl, kWorkerUrl);
-  RunTestWithCrossOriginURL(kPageUrl, kScopeUrl);
+
+  std::string test_script =
+      R"( navigator.serviceWorker.ready
+            .then(reg => reg.unregister())
+            .then(_ => { parent.postMessage("PASS", "*"); }); )";
+  RunTestWithCrossOriginURL_MaybeCrossProcess(kPageUrl, kScopeUrl, test_script);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerDisableWebSecurityTest, UpdateNoCrash) {
   StartServerAndNavigateToSetup();
-  const char kPageUrl[] = "/service_worker/disable_web_security_update.html";
+  const char kPageUrl[] =
+      "/service_worker/disable_web_security_cross_origin.html";
   const char kScopeUrl[] = "/service_worker/scope/";
   const char kWorkerUrl[] = "/service_worker/fetch_event_blob.js";
   RegisterServiceWorkerOnCrossOriginServer(kScopeUrl, kWorkerUrl);
-  RunTestWithCrossOriginURL(kPageUrl, kScopeUrl);
+
+  std::string test_script =
+      R"( navigator.serviceWorker.ready
+            .then(reg => reg.update())
+            .then(_ => { parent.postMessage("PASS", "*"); }); )";
+  RunTestWithCrossOriginURL_MaybeCrossProcess(kPageUrl, kScopeUrl, test_script);
 }
 
 class HeaderInjectingThrottle : public blink::URLLoaderThrottle {
