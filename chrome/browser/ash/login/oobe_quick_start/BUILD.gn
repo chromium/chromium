@@ -21,9 +21,6 @@ static_library("oobe_quick_start") {
     "target_device_bootstrap_controller.h",
   ]
 
-  public_deps =
-      [ "//chromeos/ash/components/nearby/common/connections_manager" ]
-
   deps = [
     ":oobe_quick_start_pref_names",
     "connectivity",
