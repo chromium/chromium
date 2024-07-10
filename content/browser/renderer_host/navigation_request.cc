@@ -3914,6 +3914,7 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
     case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
     case network::mojom::CrossOriginOpenerPolicyValue::
         kRestrictPropertiesPlusCoep:
+    case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
       should_header_value_trigger_isolation = true;
       break;
     case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
@@ -10212,31 +10213,28 @@ std::optional<url::Origin> NavigationRequest::ComputeCommonCoopOrigin() {
         ->GetCommonCoopOrigin();
   }
 
-  // Check if COOP: same-origin or COOP: restrict-properties were set in
-  // coop_status, and if so, record the origin.
-  if ((coop_status().current_coop().value ==
-       network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin) ||
-      (coop_status().current_coop().value ==
-       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) ||
-      (coop_status().current_coop().value ==
-       network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties) ||
-      (coop_status().current_coop().value ==
-       network::mojom::CrossOriginOpenerPolicyValue::
-           kRestrictPropertiesPlusCoep)) {
-    // If we're early in the navigation process and the PolicyContainer was not
-    // yet computed, use a best effort origin.
-    // TODO(crbug.com/40879437): This is probably not very helpful. If
-    // we have a { Value+Origin } COOP bundle, we should be able to return a
-    // nullopt value that is distinct from { unsafe-none, nullopt }, similar to
-    // what exists for WebExposedIsolationInfo.
-    if (!policy_container_builder_->HasComputedPolicies()) {
-      return GetTentativeOriginAtRequestTime();
-    }
+  using CoopValue = network::mojom::CrossOriginOpenerPolicyValue;
 
-    return coop_status().current_coop().origin;
-  }
+  switch (coop_status().current_coop().value) {
+    case CoopValue::kSameOrigin:
+    case CoopValue::kSameOriginPlusCoep:
+    case CoopValue::kRestrictProperties:
+    case CoopValue::kNoopenerAllowPopups:
+    case CoopValue::kRestrictPropertiesPlusCoep:
+      // If we're early in the navigation process and the PolicyContainer was
+      // not yet computed, use a best effort origin.
+      // TODO(crbug.com/40879437): This is probably not very helpful. If
+      // we have a { Value+Origin } COOP bundle, we should be able to return a
+      // nullopt value that is distinct from { unsafe-none, nullopt }, similar
+      // to what exists for WebExposedIsolationInfo.
+      return policy_container_builder_->HasComputedPolicies()
+                 ? coop_status().current_coop().origin
+                 : GetTentativeOriginAtRequestTime();
 
-  return std::nullopt;
+    case CoopValue::kUnsafeNone:
+    case CoopValue::kSameOriginAllowPopups:
+      return std::nullopt;
+  };
 }
 
 void NavigationRequest::MaybeAssignInvalidPrerenderFrameTreeNodeId() {

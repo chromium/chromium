@@ -219,10 +219,14 @@ void AddUntrustedDataSource(
         case network::mojom::CrossOriginOpenerPolicyValue::
             kSameOriginAllowPopups:
         case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
+          NOTREACHED() << "COOP:restrict-properties is not supported in WebUI";
         case network::mojom::CrossOriginOpenerPolicyValue::
             kRestrictPropertiesPlusCoep:
-          NOTIMPLEMENTED();
-          break;
+          NOTREACHED()
+              << "COOP:restrict-properties-plus-coep is not supported in WebUI";
+        case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
+          NOTREACHED()
+              << "COOP:noopener-allow-popups is not supported in WebUI";
       }
     }
   }

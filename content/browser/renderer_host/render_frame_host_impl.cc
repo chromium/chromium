@@ -1156,6 +1156,7 @@ bool CoopSuppressOpener(const RenderFrameHostImpl* opener) {
     case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
     case network::mojom::CrossOriginOpenerPolicyValue::
         kRestrictPropertiesPlusCoep:
+    case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
       return false;
 
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:

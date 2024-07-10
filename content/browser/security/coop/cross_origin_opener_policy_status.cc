@@ -94,6 +94,7 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+        case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
           return CoopSwapResult::kSwap;
       }
 
@@ -111,6 +112,7 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+        case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
           return CoopSwapResult::kSwap;
       }
 
@@ -133,6 +135,23 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
                      : CoopSwapResult::kSwap;
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+        case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
+          return CoopSwapResult::kSwap;
+      }
+
+    case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
+      switch (destination_coop) {
+        case CrossOriginOpenerPolicyValue::kUnsafeNone:
+          return CoopSwapResult::kNoSwap;
+        case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
+          return initiator_origin.IsSameOriginWith(destination_origin)
+                     ? CoopSwapResult::kNoSwap
+                     : CoopSwapResult::kSwap;
+        case CrossOriginOpenerPolicyValue::kRestrictProperties:
+        case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
+        case CrossOriginOpenerPolicyValue::kSameOrigin:
+        case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+        case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
           return CoopSwapResult::kSwap;
       }
 

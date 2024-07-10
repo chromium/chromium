@@ -3247,6 +3247,9 @@ makeCrossOriginOpenerPolicyValue(
         kRestrictPropertiesPlusCoep:
       return protocol::Network::CrossOriginOpenerPolicyValueEnum::
           RestrictPropertiesPlusCoep;
+    case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
+      return protocol::Network::CrossOriginOpenerPolicyValueEnum::
+          NoopenerAllowPopups;
   }
 }
 protocol::Network::CrossOriginEmbedderPolicyValue

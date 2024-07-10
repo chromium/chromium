@@ -82,6 +82,8 @@ std::optional<WebFeature> FeatureCoop(CrossOriginOpenerPolicyValue value) {
       return WebFeature::kCrossOriginOpenerPolicySameOriginAllowPopups;
     case CrossOriginOpenerPolicyValue::kRestrictProperties:
       return WebFeature::kCrossOriginOpenerPolicyRestrictProperties;
+    case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
+      return WebFeature::kCrossOriginOpenerPolicyNoopenerAllowPopups;
     case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
     case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
       return WebFeature::kCoopAndCoepIsolated;
@@ -101,6 +103,8 @@ std::optional<WebFeature> FeatureCoopRO(CrossOriginOpenerPolicyValue value) {
           kCrossOriginOpenerPolicySameOriginAllowPopupsReportOnly;
     case CrossOriginOpenerPolicyValue::kRestrictProperties:
       return WebFeature::kCrossOriginOpenerPolicyRestrictPropertiesReportOnly;
+    case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
+      return WebFeature::kCrossOriginOpenerPolicyNoopenerAllowPopupsReportOnly;
     case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
     case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
       return WebFeature::kCoopAndCoepIsolatedReportOnly;
@@ -236,7 +240,11 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
     DCHECK((page_coop == CoopValue::kSameOriginAllowPopups &&
             other_page_coop == CoopValue::kUnsafeNone) ||
            (page_coop == CoopValue::kUnsafeNone &&
-            other_page_coop == CoopValue::kSameOriginAllowPopups));
+            other_page_coop == CoopValue::kSameOriginAllowPopups) ||
+           (page_coop == CoopValue::kUnsafeNone &&
+            other_page_coop == CoopValue::kNoopenerAllowPopups) ||
+           (page_coop == CoopValue::kSameOriginAllowPopups &&
+            other_page_coop == CoopValue::kNoopenerAllowPopups));
     for (FrameTreeNode* frame_tree_node :
          other_tld->frame_tree_node()->frame_tree().Nodes()) {
       RenderFrameHostImpl* other_rfh = frame_tree_node->current_frame_host();

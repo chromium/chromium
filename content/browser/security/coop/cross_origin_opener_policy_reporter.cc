@@ -60,6 +60,8 @@ std::string ToString(network::mojom::CrossOriginOpenerPolicyValue coop_value) {
     case network::mojom::CrossOriginOpenerPolicyValue::
         kRestrictPropertiesPlusCoep:
       return "restrict-properties-plus-coep";
+    case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
+      return "noopener-allow-popups";
   }
 }
 

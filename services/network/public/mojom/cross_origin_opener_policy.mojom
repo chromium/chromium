@@ -73,6 +73,9 @@ enum CrossOriginOpenerPolicyValue {
   // COOP: restrict-properties with a COEP value compatible with
   // crossOriginIsolation.
   kRestrictPropertiesPlusCoep,
+
+  // COOP: noopener-allow-popups severs the opener relationship with any opener.
+  kNoopenerAllowPopups,
 };
 
 // Cross-Origin-Opener-Policy enum representing parsed values.

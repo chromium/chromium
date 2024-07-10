@@ -40,6 +40,8 @@ TEST(CrossOriginOpenerPolicyTest, Parse) {
   constexpr auto kCoepNone = mojom::CrossOriginEmbedderPolicyValue::kNone;
   constexpr auto kCoepCorp =
       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  constexpr auto kNoopenerAllowPopups =
+      CrossOriginOpenerPolicyValue::kNoopenerAllowPopups;
 
   const auto kNoHeader = std::optional<std::string>();
   const auto kNoEndpoint = kNoHeader;
@@ -209,9 +211,8 @@ TEST(CrossOriginOpenerPolicyTest, Parse) {
       {kNoHeader, kCoepNone, "restrict-properties", kCoepCorp, kNoEndpoint,
        kUnsafeNone, kSameOriginAllowPopups, kNoEndpoint,
        kRestrictPropertiesPlusCoep},
-      // TODO(https://crbug.com/344963946): Update the test values.
       {"noopener-allow-popups", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint,
-       kUnsafeNone, kSameOriginAllowPopups, kNoEndpoint, kUnsafeNone},
+       kNoopenerAllowPopups, kNoopenerAllowPopups, kNoEndpoint, kUnsafeNone},
   };
 
   for (const auto& test_case : kTestCases) {

@@ -8720,7 +8720,6 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesReportingBrowserTest,
 // is properly updated.
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        NavigationVirtualBrowsingContextGroupNoopener) {
-  // TODO(https://crbug.com/344963946): Update the test values.
   const struct {
     GURL url_a;
     GURL url_b;
@@ -8736,7 +8735,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
               "a.test",
               "/set-header?"
               "Cross-Origin-Opener-Policy: noopener-allow-popups"),
-          false,
+          true,
           false,
       },
       {
@@ -8762,7 +8761,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
               "/set-header?"
               "Cross-Origin-Opener-Policy: noopener-allow-popups"),
           true,
-          true,
+          false,
       },
       {
           // unsafe-none, noopener => no change
@@ -8773,7 +8772,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
               "a.test",
               "/set-header?"
               "Cross-Origin-Opener-Policy-Report-Only: noopener-allow-popups"),
-          false,
+          true,
           false,
       },
       {
