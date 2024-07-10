@@ -136,6 +136,10 @@ class CONTENT_EXPORT GeneratedCodeCache {
   // Clears the in-memory cache.
   void ClearInMemoryCache();
 
+  void CollectStatisticsForTest(const GURL& resource_url,
+                                const GURL& origin_lock,
+                                GeneratedCodeCache::CacheEntryStatus status);
+
   const base::FilePath& path() const { return path_; }
 
  private:
@@ -206,7 +210,9 @@ class CONTENT_EXPORT GeneratedCodeCache {
                                          base::OnceClosure callback,
                                          disk_cache::EntryResult result);
 
-  void CollectStatistics(GeneratedCodeCache::CacheEntryStatus status);
+  void CollectStatistics(const GURL& resource_url,
+                         const GURL& origin_lock,
+                         GeneratedCodeCache::CacheEntryStatus status);
 
   // Whether very large cache entries are deduplicated in this cache.
   // Deduplication is disabled in the WebUI code cache, as an additional defense

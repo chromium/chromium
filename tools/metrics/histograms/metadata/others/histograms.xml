@@ -199,6 +199,24 @@ chromium-metrics-reviews@google.com.
   <variant name="TitleWasSet"/>
 </variants>
 
+<variants name="WebUIHostname">
+  <variant name="Bookmarks"/>
+  <variant name="BookmarksSidePanel"/>
+  <variant name="CustomizeChromeSidePanel"/>
+  <variant name="Downloads"/>
+  <variant name="History"/>
+  <variant name="HistoryClustersSidePanel"/>
+  <variant name="NewTabPage"/>
+  <variant name="NewTabPageThirdParty"/>
+  <variant name="ReadAnythingSidePanel"/>
+  <variant name="ReadLater"/>
+  <variant name="Resources"/>
+  <variant name="Settings"/>
+  <variant name="TabSearch"/>
+  <variant name="Theme"/>
+  <variant name="TopChrome"/>
+</variants>
+
 <histogram name="AccessCodeCast.Discovery.AddSinkResult.New"
     enum="AccessCodeCastAddSinkResult" expires_after="2024-09-04">
   <owner>bzielinski@google.com</owner>
@@ -9759,6 +9777,33 @@ should be kept until we remove incident reporting. -->
     transaction. It records if the request was serviced and if serviced how it
     was serviced for ex: hit, miss, update.
   </summary>
+</histogram>
+
+<histogram
+    name="SiteIsolatedCodeCache.JS.WebUI.{WebUIHostname}.Origin.Behaviour"
+    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2025-07-01">
+  <owner>tluk@chromium.org</owner>
+  <owner>chrome-webui-for-features@google.com</owner>
+  <summary>
+    The behaviour of site isolated WebUI JS code cache recorded for each cache
+    transaction for the WebUI origin {WebUIHostname}. It records if the request
+    was serviced and if serviced how it was serviced (eg hit, miss, update).
+  </summary>
+  <token key="WebUIHostname" variants="WebUIHostname"/>
+</histogram>
+
+<histogram
+    name="SiteIsolatedCodeCache.JS.WebUI.{WebUIHostname}.Resource.Behaviour"
+    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2025-07-01">
+  <owner>tluk@chromium.org</owner>
+  <owner>chrome-webui-for-features@google.com</owner>
+  <summary>
+    The behaviour of site isolated WebUI JS code cache recorded for each cache
+    transaction for a resource under the WebUI host {WebUIHostname}. It records
+    if the request was serviced and if serviced how it was serviced (eg hit,
+    miss, update).
+  </summary>
+  <token key="WebUIHostname" variants="WebUIHostname"/>
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.WASM.Behaviour"

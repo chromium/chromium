@@ -220,8 +220,6 @@ class WebUIManagedInterfaceBrowserTest : public ContentBrowserTest {
     test_content_browser_client_ = std::make_unique<TestContentBrowserClient>();
   }
 
-  void TearDownOnMainThread() override { test_content_browser_client_.reset(); }
-
   // Evaluate `statement` in frame (defaults to main frame), and returns its
   // result. For convenience, `script` should evaluate to a string, or a promise
   // that resolves to a string.
