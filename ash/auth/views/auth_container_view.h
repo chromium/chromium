@@ -82,6 +82,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
       const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::string GetObjectName() const override;
+  void RequestFocus() override;
 
   // Observer Management.
   void AddObserver(Observer* observer);

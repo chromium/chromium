@@ -59,6 +59,7 @@ class ASH_EXPORT PinContainerView : public views::View {
       const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::string GetObjectName() const override;
+  void RequestFocus() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

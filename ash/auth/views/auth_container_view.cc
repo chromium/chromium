@@ -231,6 +231,14 @@ std::string AuthContainerView::GetObjectName() const {
   return "AuthContainerView";
 }
 
+void AuthContainerView::RequestFocus() {
+  if (current_input_type_ == AuthInputType::kPassword) {
+    password_view_->RequestFocus();
+  } else if (current_input_type_ == AuthInputType::kPin) {
+    pin_container_->RequestFocus();
+  }
+}
+
 void AuthContainerView::SetHasPassword(bool has_password) {
   if (has_password == HasPassword()) {
     return;
@@ -274,10 +282,12 @@ void AuthContainerView::UpdateAuthInput() {
       !password_view_->GetVisible()) {
     pin_container_->SetVisible(false);
     password_view_->SetVisible(true);
+    password_view_->RequestFocus();
   } else if (current_input_type_ == AuthInputType::kPin &&
              !pin_container_->GetVisible()) {
     password_view_->SetVisible(false);
     pin_container_->SetVisible(true);
+    pin_container_->RequestFocus();
   }
   PreferredSizeChanged();
 }

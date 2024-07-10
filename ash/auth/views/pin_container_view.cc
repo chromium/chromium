@@ -103,6 +103,10 @@ std::string PinContainerView::GetObjectName() const {
   return "PinContainer";
 }
 
+void PinContainerView::RequestFocus() {
+  auth_input_->RequestFocus();
+}
+
 void PinContainerView::AddObserver(Observer* observer) {
   auth_input_->AddObserver(observer);
 }

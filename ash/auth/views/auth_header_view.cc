@@ -41,6 +41,17 @@ constexpr TypographyToken kDescriptionFont = TypographyToken::kCrosAnnotation1;
 
 }  // namespace
 
+AuthHeaderView::TestApi::TestApi(AuthHeaderView* view) : view_(view) {}
+AuthHeaderView::TestApi::~TestApi() = default;
+
+const std::u16string& AuthHeaderView::TestApi::GetCurrentTitle() const {
+  return view_->title_label_->GetText();
+}
+
+raw_ptr<AuthHeaderView> AuthHeaderView::TestApi::GetView() {
+  return view_;
+}
+
 AuthHeaderView::AuthHeaderView(const AccountId& account_id,
                                const std::u16string& title,
                                const std::u16string& description)

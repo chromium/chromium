@@ -26,6 +26,21 @@ class ASH_EXPORT AuthHeaderView : public views::View {
   METADATA_HEADER(AuthHeaderView, views::View)
 
  public:
+  class TestApi {
+   public:
+    explicit TestApi(AuthHeaderView* view);
+    ~TestApi();
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
+    const std::u16string& GetCurrentTitle() const;
+
+    raw_ptr<AuthHeaderView> GetView();
+
+   private:
+    const raw_ptr<AuthHeaderView> view_;
+  };
+
   AuthHeaderView(const AccountId& account_id,
                  const std::u16string& title,
                  const std::u16string& description);
