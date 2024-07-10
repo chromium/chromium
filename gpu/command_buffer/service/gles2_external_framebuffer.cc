@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/gles2_external_framebuffer.h"
 
+#include "base/not_fatal_until.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -572,7 +573,7 @@ gfx::Size GLES2ExternalFramebuffer::GetSize() const {
 GLenum GLES2ExternalFramebuffer::GetColorFormat() const {
   DCHECK(IsSharedImageAttached());
   auto it = attachments_.find(GL_COLOR_ATTACHMENT0);
-  DCHECK(it != attachments_.end());
+  CHECK(it != attachments_.end(), base::NotFatalUntil::M130);
   return it->second->format();
 }
 
@@ -610,14 +611,14 @@ GLenum GLES2ExternalFramebuffer::GetStencilFormat() const {
 int GLES2ExternalFramebuffer::GetSamplesCount() const {
   DCHECK(IsSharedImageAttached());
   auto it = attachments_.find(GL_COLOR_ATTACHMENT0);
-  DCHECK(it != attachments_.end());
+  CHECK(it != attachments_.end(), base::NotFatalUntil::M130);
   return it->second->samples_count();
 }
 
 bool GLES2ExternalFramebuffer::HasAlpha() const {
   DCHECK(IsSharedImageAttached());
   auto it = attachments_.find(GL_COLOR_ATTACHMENT0);
-  DCHECK(it != attachments_.end());
+  CHECK(it != attachments_.end(), base::NotFatalUntil::M130);
   return it->second->format() == GL_RGBA8;
 }
 
