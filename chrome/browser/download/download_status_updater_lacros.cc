@@ -18,7 +18,6 @@
 #include "base/supports_user_data.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_commands.h"
@@ -46,6 +45,7 @@
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -229,7 +229,7 @@ void ShowDeepScanPromptNotification(Profile* profile) {
       /*ignore_closing_browsers=*/true);
   message_center::RichNotificationData optional_fields;
   optional_fields.small_image = gfx::Image(gfx::CreateVectorIcon(
-      kNotificationDownloadIcon, 20, gfx::kGoogleBlue800));
+      vector_icons::kNotificationDownloadIcon, 20, gfx::kGoogleBlue800));
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, "download_deep_scan_notice",
       /*title=*/u"",

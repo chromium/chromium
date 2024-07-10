@@ -242,6 +242,10 @@ aggregate_vector_icons("components_vector_icons") {
     "warning_outline.icon",
   ]
 
+  if (is_chromeos) {
+    sources += [ "notification_download.icon" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [ "videogame_asset_outline.icon" ]
   }

@@ -20,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -30,6 +29,7 @@
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "components/vector_icons/vector_icons.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -319,7 +319,8 @@ void NotificationDisplayClient::AddOrUpdate(
   rich_notification_data.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
   rich_notification_data.should_make_spoken_feedback_for_popup_updates = false;
-  rich_notification_data.vector_small_image = &kNotificationDownloadIcon;
+  rich_notification_data.vector_small_image =
+      &vector_icons::kNotificationDownloadIcon;
 
   const Progress& progress = display_metadata.progress;
   if (const std::optional<int> progress_value =
