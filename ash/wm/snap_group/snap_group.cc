@@ -169,6 +169,14 @@ aura::Window* SnapGroup::GetPhysicallyRightOrBottomWindow() {
 }
 
 void SnapGroup::ShowDivider() {
+  // No-op if the divider is visible already. This may happen if the window is
+  // selected from partial overview to form a snap group, upon which
+  // `SnapGroupController::OnOverviewModeEndingAnimationComplete()` will attempt
+  // to show the divider again.
+  if (snap_group_divider_.IsDividerWidgetVisible()) {
+    return;
+  }
+
   // TODO(b/338130287): Determine whether `window1_` should always be
   // `primary_window`.
   const bool is_left_or_top = IsPhysicallyLeftOrTop(window1_);

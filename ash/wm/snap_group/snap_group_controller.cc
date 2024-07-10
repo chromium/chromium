@@ -402,6 +402,17 @@ void SnapGroupController::RemoveObserver(SnapGroupObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void SnapGroupController::OnFloatUnfloatCompleted(aura::Window* window) {
+  // Needed because float -> snap will trigger a workspace event, during which
+  // we want to ignore bounds events since the window is unfloating. Only when
+  // all the nested unfloat events triggered by the original snap event is
+  // finished and `WindowState::is_handling_float_event_` is reset can we
+  // refresh the group and send bounds events.
+  if (auto* snap_group = GetSnapGroupForGivenWindow(window)) {
+    snap_group->RefreshSnapGroup();
+  }
+}
+
 void SnapGroupController::OnOverviewModeStarting() {
   if (display::Screen::GetScreen()->InTabletMode()) {
     return;

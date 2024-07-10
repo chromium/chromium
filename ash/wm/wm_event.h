@@ -114,6 +114,8 @@ enum WMEventType {
   WM_EVENT_FLOAT,
 };
 
+ASH_EXPORT std::ostream& operator<<(std::ostream& out, WMEventType type);
+
 class SetBoundsWMEvent;
 class DisplayMetricsChangedWMEvent;
 class WindowFloatWMEvent;

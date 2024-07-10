@@ -3883,6 +3883,9 @@ TEST_F(SnapGroupFloatTest, SnapGroupCreationWithFloatedWindow) {
   event_generator->MoveMouseTo(gfx::ToRoundedPoint(
       floated_window_overview_item->target_bounds().CenterPoint()));
   event_generator->ClickLeftButton();
+  EXPECT_TRUE(floated_window->layer()->GetAnimator()->is_animating());
+  EXPECT_NE(floated_window->layer()->transform(),
+            floated_window->layer()->GetTargetTransform());
   WaitForOverviewExitAnimation();
 
   // Verify that Snap Group will be formed after activating `floated_window` in
@@ -3924,6 +3927,8 @@ TEST_F(SnapGroupFloatTest, ReSnapFloatedWindow) {
   // Drag to snap `w2` to secondary. Test it snaps at 1/3 from the right.
   event_generator->MoveMouseTo(GetDragPoint(w2.get()));
   event_generator->DragMouseTo(GetWorkAreaBounds().right_center());
+  EXPECT_TRUE(w2->layer()->GetAnimator()->is_animating());
+  EXPECT_NE(w2->layer()->transform(), w2->layer()->GetTargetTransform());
   ASSERT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w2.get())->GetStateType());
   EXPECT_EQ(

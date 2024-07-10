@@ -9,6 +9,55 @@
 
 namespace ash {
 
+std::ostream& operator<<(std::ostream& out, WMEventType type) {
+  switch (type) {
+    case WM_EVENT_NORMAL:
+      return out << "WM_EVENT_NORMAL";
+    case WM_EVENT_MAXIMIZE:
+      return out << "WM_EVENT_MAXIMIZE";
+    case WM_EVENT_MINIMIZE:
+      return out << "WM_EVENT_MINIMIZE";
+    case WM_EVENT_FULLSCREEN:
+      return out << "WM_EVENT_FULLSCREEN";
+    case WM_EVENT_SNAP_PRIMARY:
+      return out << "WM_EVENT_SNAP_PRIMARY";
+    case WM_EVENT_SNAP_SECONDARY:
+      return out << "WM_EVENT_SNAP_SECONDARY";
+    case WM_EVENT_RESTORE:
+      return out << "WM_EVENT_RESTORE";
+    case WM_EVENT_SET_BOUNDS:
+      return out << "WM_EVENT_SET_BOUNDS";
+    case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
+      return out << "WM_EVENT_TOGGLE_MAXIMIZE_CAPTION";
+    case WM_EVENT_TOGGLE_MAXIMIZE:
+      return out << "WM_EVENT_TOGGLE_MAXIMIZE";
+    case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE:
+      return out << "WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE";
+    case WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE:
+      return out << "WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE";
+    case WM_EVENT_TOGGLE_FULLSCREEN:
+      return out << "WM_EVENT_TOGGLE_FULLSCREEN";
+    case WM_EVENT_CYCLE_SNAP_PRIMARY:
+      return out << "WM_EVENT_CYCLE_SNAP_PRIMARY";
+    case WM_EVENT_CYCLE_SNAP_SECONDARY:
+      return out << "WM_EVENT_CYCLE_SNAP_SECONDARY";
+    case WM_EVENT_SHOW_INACTIVE:
+      return out << "WM_EVENT_SHOW_INACTIVE";
+    case WM_EVENT_ADDED_TO_WORKSPACE:
+      return out << "WM_EVENT_ADDED_TO_WORKSPACE";
+    case WM_EVENT_DISPLAY_METRICS_CHANGED:
+      return out << "WM_EVENT_DISPLAY_METRICS_CHANGED";
+    case WM_EVENT_PIN:
+      return out << "WM_EVENT_PIN";
+    case WM_EVENT_PIP:
+      return out << "WM_EVENT_PIP";
+    case WM_EVENT_TRUSTED_PIN:
+      return out << "WM_EVENT_TRUSTED_PIN";
+    case WM_EVENT_FLOAT:
+      return out << "WM_EVENT_FLOAT";
+  }
+}
+
 WMEvent::WMEvent(WMEventType type) : type_(type) {
   CHECK(IsWorkspaceEvent() || IsCompoundEvent() || IsBoundsEvent() ||
         IsTransitionEvent());

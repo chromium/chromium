@@ -104,6 +104,10 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   void AddObserver(SnapGroupObserver* observer);
   void RemoveObserver(SnapGroupObserver* observer);
 
+  // Called by `WindowState` when a float or unfloat event for `window` has
+  // completed.
+  void OnFloatUnfloatCompleted(aura::Window* window);
+
   // OverviewObserver:
   void OnOverviewModeStarting() override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;

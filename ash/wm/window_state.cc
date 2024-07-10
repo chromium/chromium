@@ -552,7 +552,6 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   }
 
   std::unique_ptr<base::AutoReset<bool>> snap_event_lock;
-  std::unique_ptr<base::AutoReset<bool>> float_event_lock;
   if (const WindowSnapWMEvent* snap_event = event->AsSnapEvent()) {
     snap_event_lock =
         std::make_unique<base::AutoReset<bool>>(&is_handling_snap_event_, true);
@@ -566,18 +565,25 @@ void WindowState::OnWMEvent(const WMEvent* event) {
       // If a different snap ratio was requested, partial may have just ended.
       MaybeRecordPartialDuration();
     }
-  } else if (event->type() == WM_EVENT_FLOAT ||
-             (current_state_->GetType() ==
-                  chromeos::WindowStateType::kFloated &&
-              event->IsTransitionEvent() && !event->IsSnapEvent())) {
-    // Ignore received events during the float animation, except for float ->
-    // snap events in order to process the received snapped bounds events.
-    // TODO(b/347723336): See if we can re-enable this for snap events.
-    float_event_lock = std::make_unique<base::AutoReset<bool>>(
-        &is_handling_float_event_, true);
   }
 
-  current_state_->OnWMEvent(this, event);
+  if (event->type() == WM_EVENT_FLOAT ||
+      (current_state_->GetType() == chromeos::WindowStateType::kFloated &&
+       event->IsTransitionEvent())) {
+    {
+      // Block nested events caused by float/unfloat events to ensure the float
+      // animation is completed.
+      base::AutoReset<bool> float_lock(&is_handling_float_event_, true);
+      current_state_->OnWMEvent(this, event);
+    }
+    // Certain events need to be processed only after `is_handling_float_event_`
+    // is reset. See `SnapGroupController::OnFloatUnfloatCompleted()`.
+    if (auto* snap_group_controller = SnapGroupController::Get()) {
+      snap_group_controller->OnFloatUnfloatCompleted(window_);
+    }
+  } else {
+    current_state_->OnWMEvent(this, event);
+  }
 
   // The current snap ratio may be different from the requested snap ratio, if
   // the window has a minimum size requirement.
