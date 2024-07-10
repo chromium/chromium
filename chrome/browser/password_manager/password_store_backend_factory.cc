@@ -85,10 +85,19 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
     // UPM M2: The password store proxy backend is created. No migrations are
     // needed.
     case UseUpmLocalAndSeparateStoresState::kOn:
-      return std::make_unique<AndroidBackendWithDoubleDeletion>(
-          std::move(built_in_backend),
-          std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
-              prefs, password_affiliation_adapter));
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kClearLoginDatabaseForAllMigratedUPMUsers)) {
+        return std::make_unique<
+            password_manager::PasswordStoreAndroidLocalBackend>(
+            prefs, password_affiliation_adapter);
+      } else {
+        return std::make_unique<AndroidBackendWithDoubleDeletion>(
+            std::move(built_in_backend),
+            std::make_unique<
+                password_manager::PasswordStoreAndroidLocalBackend>(
+                prefs, password_affiliation_adapter));
+      }
     // Old UPM: support for local passwords in GMSCore is unavailable for some
     // reason.
     case UseUpmLocalAndSeparateStoresState::kOff: {
@@ -202,18 +211,28 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
         std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
         prefs, os_crypt_async);
   } else {
-    // Note: The built-in backend is backed by the login database and Chrome
-    // syncs it. As such, it expects local data to be cleared every time when
-    // sync is permanently disabled and thus uses
-    // WipeModelUponSyncDisabledBehavior::kAlways.
-    backend = std::make_unique<AndroidBackendWithDoubleDeletion>(
-        std::make_unique<PasswordStoreBuiltInBackend>(
-            std::move(login_db),
-            syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs,
-            os_crypt_async),
-        std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-            prefs, /*password_affiliation_adapter=*/nullptr,
-            password_manager::kAccountStore));
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::
+                kClearLoginDatabaseForAllMigratedUPMUsers)) {
+      backend = std::make_unique<
+          password_manager::PasswordStoreAndroidAccountBackend>(
+          prefs, /*password_affiliation_adapter=*/nullptr,
+          password_manager::kAccountStore);
+    } else {
+      // Note: The built-in backend is backed by the login database and Chrome
+      // syncs it. As such, it expects local data to be cleared every time when
+      // sync is permanently disabled and thus uses
+      // WipeModelUponSyncDisabledBehavior::kAlways.
+      backend = std::make_unique<AndroidBackendWithDoubleDeletion>(
+          std::make_unique<PasswordStoreBuiltInBackend>(
+              std::move(login_db),
+              syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs,
+              os_crypt_async),
+          std::make_unique<
+              password_manager::PasswordStoreAndroidAccountBackend>(
+              prefs, /*password_affiliation_adapter=*/nullptr,
+              password_manager::kAccountStore));
+    }
   }
 #endif
 
