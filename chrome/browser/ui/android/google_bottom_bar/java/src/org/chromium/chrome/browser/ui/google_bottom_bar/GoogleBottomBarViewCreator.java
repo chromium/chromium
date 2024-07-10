@@ -86,6 +86,10 @@ public class GoogleBottomBarViewCreator {
             return mContext.getResources()
                     .getDimensionPixelSize(R.dimen.google_bottom_bar_double_decker_height);
         }
+        if (mConfig.getVariantLayoutType() == SINGLE_DECKER) {
+            return mContext.getResources()
+                    .getDimensionPixelSize(R.dimen.google_bottom_bar_single_decker_height);
+        }
         return mContext.getResources().getDimensionPixelSize(R.dimen.google_bottom_bar_height);
     }
 

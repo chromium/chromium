@@ -89,6 +89,8 @@ found in the LICENSE file.
     <color name="gm3_baseline_surface_container_dark">#1E1F20</color>
     <color name="gm3_baseline_surface_light">#FFFFFF</color>
     <color name="gm3_baseline_surface_dark">#131314</color>
+    <color name="gm3_baseline_surface_container_low_light">#F8FAFD</color>
+    <color name="gm3_baseline_surface_container_highest_dark">#333537</color>
 
     <!-- System colors that point to the baseline palette for below Android S.-->
     <color name="system_neutral1_10">@color/baseline_neutral_99</color>

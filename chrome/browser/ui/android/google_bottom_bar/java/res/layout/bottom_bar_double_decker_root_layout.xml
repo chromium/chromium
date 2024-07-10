@@ -16,12 +16,14 @@ found in the LICENSE file.
       android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      android:layout_weight="1"/>
+      android:layout_weight="1"
+      android:paddingStart="@dimen/google_bottom_bar_padding"
+      android:paddingEnd="@dimen/google_bottom_bar_padding"
+      android:paddingTop="@dimen/google_bottom_bar_searchbox_top_margin"/>
 
   <LinearLayout
       android:id="@+id/bottom_bar_buttons_container"
       android:orientation="horizontal"
       android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="1"/>
+      android:layout_height="@dimen/google_bottom_bar_buttons_container_height"/>
 </LinearLayout>

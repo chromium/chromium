@@ -577,7 +577,9 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(bottomBarConfig);
 
         assertEquals(
-                mActivity.getResources().getDimensionPixelSize(R.dimen.google_bottom_bar_height),
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.google_bottom_bar_single_decker_height),
                 mGoogleBottomBarViewCreator.getBottomBarHeightInPx());
     }
 
