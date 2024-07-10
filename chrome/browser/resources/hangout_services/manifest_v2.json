@@ -22,7 +22,6 @@
     "enterprise.hardwarePlatform",
     "processes",
     "system.cpu",
-    "webrtcAudioPrivate",
     "webrtcDesktopCapturePrivate",
     "webrtcLoggingPrivate"
   ]
