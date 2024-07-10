@@ -147,8 +147,8 @@ MATCHER_P(IsExpectedImeKeyEvent, expected_text, "") {
          event.native_key_code == expected_text[0] &&
          event.dom_code == static_cast<int>(ui::DomCode::NONE) &&
          event.dom_key == ui::DomKey::NONE && !event.is_system_key &&
-         !event.is_browser_shortcut && event.text.data() == expected_text &&
-         event.unmodified_text.data() == expected_text;
+         !event.is_browser_shortcut && event.text == expected_text &&
+         event.unmodified_text == expected_text;
 }
 
 base::Value::Dict ParseMessage(std::string_view json) {

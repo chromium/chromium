@@ -193,7 +193,7 @@ bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
   if ((evt.GetModifiers() & (WebKeyboardEvent::kKeyModifiers &
                              ~WebInputEvent::kShiftKey)) != kAccessKeyModifiers)
     return false;
-  String key = String(evt.unmodified_text.data());
+  String key = String(evt.unmodified_text);
   Element* elem =
       frame_->GetDocument()->GetElementByAccessKey(key.DeprecatedLower());
   if (!elem)
@@ -388,7 +388,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
       WebKeyboardEvent char_event = initial_key_event;
       char_event.SetType(WebInputEvent::Type::kChar);
 
-      KeyboardEvent* event = KeyboardEvent::Create(
+      KeyboardEvent *event = KeyboardEvent::Create(
           char_event, frame_->GetDocument()->domWindow(), event_cancellable);
       event->SetTarget(node);
       event->SetStopPropagation(!send_key_event);
