@@ -166,6 +166,7 @@ class CORE_EXPORT InspectorCSSAgent final
       protocol::Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*,
+      protocol::Maybe<int>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
       protocol::Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
@@ -348,7 +349,8 @@ class CORE_EXPORT InspectorCSSAgent final
       HeapVector<Member<StyleSheetAction>>* actions);
 
   std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionTryRule>>
-  PositionTryRulesForElement(Element* element);
+  PositionTryRulesForElement(Element* element,
+                             std::optional<size_t> active_position_try_index);
 
   std::pair<
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>,

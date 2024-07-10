@@ -1093,12 +1093,13 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         css_position_fallback_rules,
     Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*
         css_position_try_rules,
+    Maybe<int>* active_position_fallback_index,
     Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>* css_property_rules,
     Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*
         css_property_registrations,
     Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
         css_font_palette_values_rule,
-    Maybe<int>* parentLayoutNodeId) {
+    Maybe<int>* parent_layout_node_id) {
   protocol::Response response = AssertEnabled();
   if (!response.IsSuccess())
     return response;
@@ -1229,16 +1230,28 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         std::move(inherited_pseudo_element_matches));
   }
 
-  *css_position_try_rules = PositionTryRulesForElement(element);
+  // Get the index of the active position try fallback index.
+  std::optional<size_t> successful_position_fallback_index;
+  if (OutOfFlowData* out_of_flow_data = element->GetOutOfFlowData()) {
+    successful_position_fallback_index =
+        out_of_flow_data->GetNewSuccessfulPositionFallbackIndex();
+    if (successful_position_fallback_index.has_value()) {
+      *active_position_fallback_index =
+          static_cast<int>(successful_position_fallback_index.value());
+    }
+  }
+  *css_position_try_rules =
+      PositionTryRulesForElement(element, successful_position_fallback_index);
 
   if (auto rule = FontPalettesForNode(*element)) {
     *css_font_palette_values_rule = std::move(rule);
   }
 
-  auto* parentLayoutNode = LayoutTreeBuilderTraversal::LayoutParent(*element);
-  if (parentLayoutNode) {
-    if (int boundNodeId = dom_agent_->BoundNodeId(parentLayoutNode))
-      *parentLayoutNodeId = boundNodeId;
+  auto* parent_layout_node = LayoutTreeBuilderTraversal::LayoutParent(*element);
+  if (parent_layout_node) {
+    if (int bound_node_id = dom_agent_->BoundNodeId(parent_layout_node)) {
+      *parent_layout_node_id = bound_node_id;
+    }
   }
 
   return protocol::Response::Success();
@@ -1292,7 +1305,9 @@ static CSSPositionTryRule* FindPositionTryRule(
 }
 
 std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionTryRule>>
-InspectorCSSAgent::PositionTryRulesForElement(Element* element) {
+InspectorCSSAgent::PositionTryRulesForElement(
+    Element* element,
+    std::optional<size_t> active_position_try_index) {
   Document& document = element->GetDocument();
   CHECK(!document.NeedsLayoutTreeUpdateForNode(*element));
 
@@ -1305,13 +1320,6 @@ InspectorCSSAgent::PositionTryRulesForElement(Element* element) {
       style->GetPositionTryFallbacks();
   if (!position_try_fallbacks_) {
     return nullptr;
-  }
-
-  // Get the active position try rule index.
-  std::optional<size_t> active_position_try_index;
-  if (OutOfFlowData* out_of_flow_data = element->GetOutOfFlowData()) {
-    active_position_try_index =
-        out_of_flow_data->GetNewSuccessfulPositionFallbackIndex();
   }
 
   auto css_position_try_rules =

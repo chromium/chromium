@@ -1,5 +1,5 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {page, session, dp} = await testRunner.startHTML(`
+  const {session, dp} = await testRunner.startHTML(`
 <style>
 #containing-block {
   position: relative;
@@ -8,6 +8,7 @@
 }
 
 #anchor {
+  position: relative;
   anchor-name: --anchor;
 }
 
@@ -15,7 +16,8 @@
   width: 300px;
   height: 300px;
   position: absolute;
-  position-try-fallbacks: --top, --bottom;
+  position-anchor: --anchor;
+  position-try-fallbacks: flip-block, --top, --bottom;
 }
 
 @position-try --top {
@@ -42,6 +44,19 @@
     const el = document.getElementById('anchored-element');
     return 'w: ' + el.offsetWidth + ', h: ' + el.offsetHeight;
   }
+
+  function fallbackToFlipBlock() {
+    updateContainingBlockSize('400px', '400px');
+    const anchor = document.getElementById('anchor');
+    anchor.style.top = '100px';
+    anchor.style.left = '100px';
+    anchor.style.width = '100px';
+    anchor.style.height = '100px';
+    const anchoredElement = document.getElementById('anchored-element');
+    anchoredElement.style.width = '100px';
+    anchoredElement.style.height = '200px';
+    anchoredElement.style.insetArea = 'top center';
+  }
 </script>
 <div id='containing-block'>
   <div id="anchor"></div>
@@ -57,14 +72,24 @@
 
   const documentNodeId = await cssHelper.requestDocumentNodeId();
   const nodeId = await cssHelper.requestNodeId(documentNodeId, '#anchored-element');
-  await cssHelper.loadAndDumpCSSPositionTryForNode(nodeId);
   testRunner.log(await session.evaluate(`getAnchoredElementSize()`));
+  await cssHelper.loadAndDumpCSSPositionTryForNode(nodeId);
 
   // Now we reduce the containing block's size to make the first option invalid,
   // thus falling back to the second option.
   await session.evaluate(`updateContainingBlockSize('80px', '80px')`);
-  await cssHelper.loadAndDumpCSSPositionTryForNode(nodeId);
   testRunner.log(await session.evaluate(`getAnchoredElementSize()`));
+  await cssHelper.loadAndDumpCSSPositionTryForNode(nodeId);
+
+  // Now we increase the containing block's size to make the default styles work.
+  await session.evaluate(`updateContainingBlockSize('500px', '500px')`);
+  testRunner.log(await session.evaluate(`getAnchoredElementSize()`));
+  await cssHelper.loadAndDumpCSSPositionTryForNode(nodeId);
+
+  // Now we update styles to make the first keyword fallback work.
+  await session.evaluate(`fallbackToFlipBlock()`);
+  testRunner.log(await session.evaluate(`getAnchoredElementSize()`));
+  await cssHelper.loadAndDumpCSSPositionTryForNode(nodeId);
 
   testRunner.completeTest();
 });

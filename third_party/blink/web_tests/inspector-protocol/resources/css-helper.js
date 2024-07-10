@@ -212,6 +212,7 @@
       this.dumpStyle(cssPositionTryRule.style, 0);
       this._testRunner.log('}');
     }
+    this._testRunner.log('index of active position-try-fallback: ' + result.activePositionFallbackIndex);
   }
 
   async loadAndDumpCSSAnimationsForNode(nodeId) {
