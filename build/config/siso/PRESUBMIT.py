@@ -14,6 +14,8 @@ def CheckSisoConfigFormat(input_api, output_api):
     filepath = f.AbsoluteLocalPath()
     if not filepath.endswith('.star'):
       continue
+    if not input_api.os_path.isfile(filepath):
+      continue
     name = 'Validate ' + filepath
     cmd = ['lucicfg', 'fmt', '-dry-run', '-log-level', log_level, filepath]
     commands.append(input_api.Command(name, cmd, {}, output_api.PresubmitError))

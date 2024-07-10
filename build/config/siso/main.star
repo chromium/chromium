@@ -8,7 +8,6 @@ load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
-load("./b289968566.star", "b289968566")
 load("./blink_all.star", "blink_all")
 load("./gn_logs.star", "gn_logs")
 load("./linux.star", chromium_linux = "chromium")
@@ -92,7 +91,6 @@ def init(ctx):
             arg0 = arg0.removesuffix(".exe")
         rule["remote_command"] = arg0
 
-    step_config = b289968566.step_config(ctx, step_config)
     step_config = __disable_remote(ctx, step_config)
 
     filegroups = {}
