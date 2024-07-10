@@ -40,6 +40,14 @@ source_set("browser_state_service_factory") {
   ]
 }
 
+source_set("push_notification_service_header") {
+  #TODO(crbug.com/351005768): Add dependencies after downstream change lands.
+  sources = [ "push_notification_service.h" ]
+  deps = [
+    ":push_notification_service",
+  ]
+}
+
 source_set("push_notification_service") {
   sources = [
     "provisional_push_notification_util.h",
