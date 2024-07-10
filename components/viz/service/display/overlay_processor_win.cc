@@ -197,6 +197,7 @@ void OverlayProcessorWin::ProcessForOverlays(
 
   DebugLogAfterDelegation(status, *candidates, *root_damage_rect);
 
+  frame_has_delegated_ink_ = false;
   delegation_succeeded_last_frame_ =
       status == DelegationStatus::kFullDelegation;
 }
@@ -347,7 +348,6 @@ void OverlayProcessorWin::ProcessOverlaysFromOutputSurfacePlane(
       root_render_pass_overlay_data, root_render_pass,
       frames_since_using_dc_layers_map_, frame_has_delegated_ink_);
   *candidates = std::move(root_render_pass_overlay_data.promoted_overlays);
-  frame_has_delegated_ink_ = false;
   if (!root_render_pass->copy_requests.empty()) {
     // A DComp surface is not readable by viz.
     // |DCLayerOverlayProcessor::Process| should avoid overlay candidates if

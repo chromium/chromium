@@ -2321,10 +2321,199 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
   std::vector<gfx::Rect> content_bounds_;
 };
 
+enum class SurfaceTestMode {
+  RootSurface,
+  SimulatePartiallyDelegated,
+};
+
+// Tests that check the behavior of surface planes returned from
+// OverlayProcessorWin. These planes are render passes that OverlayProcessorWin
+// treats as a surface to "hole punch" overlays out of. This is normally the
+// root render pass. In partially delegated compositing, any web contents pass.
+class OverlayProcessorWinSurfacePlaneTest
+    : public OverlayProcessorWinTest,
+      public testing::WithParamInterface<SurfaceTestMode> {
+ public:
+  static std::string GetParamName(
+      const testing::TestParamInfo<ParamType>& info) {
+    switch (info.param) {
+      case SurfaceTestMode::RootSurface:
+        return "RootSurface";
+      case SurfaceTestMode::SimulatePartiallyDelegated:
+        return "SimulatePartiallyDelegated";
+    }
+  }
+
+ protected:
+  OverlayProcessorWinSurfacePlaneTest() {
+    const std::vector<base::test::FeatureRef> partially_delegated_compositing =
+        {
+            features::kDelegatedCompositing,
+            features::kDelegatedCompositingLimitToUi,
+        };
+    switch (GetParam()) {
+      case SurfaceTestMode::RootSurface:
+        feature_list_.InitWithFeatures({}, partially_delegated_compositing);
+        break;
+      case SurfaceTestMode::SimulatePartiallyDelegated:
+        feature_list_.InitWithFeatures(partially_delegated_compositing, {});
+        break;
+    }
+  }
+
+  void ProcessForOverlays(
+      AggregatedRenderPassList* render_passes,
+      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+      const OverlayProcessorInterface::FilterOperationsMap&
+          render_pass_backdrop_filters,
+      SurfaceDamageRectList surface_damage_rect_list_in_root_space,
+      OverlayCandidateList* candidates) {
+    // Wraps the root pass of |pass_list| in a RPDQ to simulate the
+    // SurfaceAggregator not merging the web contents root pass, which is what
+    // happens during partial delegation.
+    //
+    // On cleanup, we remove the root pass that we added and the RPDQ overlay
+    // added as the explicit output surface plane. We also adjust candidate's
+    // z-orders to be relative to 0 instead of the RPDQ overlay we removed.
+    //
+    // Note this does not touch the |OutputSurfaceOverlayPlane| that the overlay
+    // processor modifies.
+    class ScopedSimulateUnmergedWebContentsSurface {
+     public:
+      ScopedSimulateUnmergedWebContentsSurface(
+          AggregatedRenderPassList* pass_list,
+          OverlayCandidateList* candidates,
+          gfx::Rect* damage_rect)
+          : pass_list_(pass_list),
+            candidates_(candidates),
+            damage_rect_(damage_rect) {
+        // Some tests provide a smaller |damage_rect_| than root pass damage
+        // rect. This is normally not possible.
+        pass_list_->back()->damage_rect.Intersect(*damage_rect_);
+
+        const AggregatedRenderPassId max_pass_id =
+            base::ranges::max_element(*pass_list_, base::ranges::less(),
+                                      &AggregatedRenderPass::id)
+                ->get()
+                ->id;
+        const AggregatedRenderPassId unused_pass_id(max_pass_id.value() + 1);
+
+        auto pass = std::make_unique<AggregatedRenderPass>();
+        pass->SetNew(unused_pass_id, pass_list_->back()->output_rect,
+                     pass_list_->back()->damage_rect, gfx::Transform());
+
+        auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
+        shared_quad_state->SetAll(
+            /*transform=*/gfx::Transform(),
+            /*layer_rect=*/pass_list_->back()->output_rect,
+            /*visible_layer_rect=*/pass_list_->back()->output_rect,
+            gfx::MaskFilterInfo(),
+            /*clip=*/std::nullopt, /*contents_opaque=*/false,
+            /*opacity_f=*/1.f, SkBlendMode::kSrc, /*sorting_context=*/0,
+            /*layer_id=*/0u,
+            /*fast_rounded_corner=*/false);
+
+        auto* quad =
+            pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+        quad->SetNew(
+            shared_quad_state, /*rect=*/pass_list_->back()->output_rect,
+            /*visible_rect=*/pass_list_->back()->output_rect,
+            pass_list_->back()->id,
+            /*mask_resource_id=*/kInvalidResourceId,
+            /*mask_uv_rect=*/gfx::RectF(),
+            /*mask_texture_size=*/gfx::Size(),
+            /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
+            /*filters_origin=*/gfx::PointF(),
+            /*tex_coord_rect=*/gfx::RectF(pass_list_->back()->output_rect),
+            /*force_anti_aliasing_off=*/false,
+            /*backdrop_filter_quality=*/1.0f);
+
+        // Pretend that our old root pass is actually the root pass of a
+        // surface.
+        pass_list_->back()->is_from_surface_root_pass = true;
+
+        pass_list_->push_back(std::move(pass));
+      }
+
+      ~ScopedSimulateUnmergedWebContentsSurface() {
+        auto it =
+            base::ranges::find_if(*candidates_, [](const auto& candidate) {
+              return candidate.rpdq &&
+                     candidate.rpdq->render_pass_id == kDefaultRootPassId;
+            });
+        CHECK(it != candidates_->end());
+        const int surface_z_order = it->plane_z_order;
+        candidates_->erase(it);
+        for (auto& candidate : *candidates_) {
+          candidate.plane_z_order = candidate.plane_z_order - surface_z_order;
+        }
+
+        pass_list_->pop_back();
+        // The last render pass should now be the surface pass.
+        *damage_rect_ = pass_list_->back()->damage_rect;
+      }
+
+     private:
+      raw_ptr<AggregatedRenderPassList> pass_list_;
+      raw_ptr<OverlayCandidateList> candidates_;
+      raw_ptr<gfx::Rect> damage_rect_;
+    };
+
+    std::optional<ScopedSimulateUnmergedWebContentsSurface>
+        simulate_unmerged_web_contents_surface;
+    if (GetParam() == SurfaceTestMode::SimulatePartiallyDelegated) {
+      simulate_unmerged_web_contents_surface.emplace(render_passes, candidates,
+                                                     &damage_rect_);
+    }
+
+    output_surface_plane_ =
+        OverlayProcessorInterface::OutputSurfaceOverlayPlane();
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), render_passes, SkM44(), render_pass_filters,
+        render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list_in_root_space),
+        &output_surface_plane_.value(), candidates, &damage_rect_,
+        &content_bounds_);
+    overlay_processor_->AdjustOutputSurfaceOverlay(&output_surface_plane_);
+
+    // Sort candidates front-to-back so tests can assume they appear in the same
+    // order as the input draw quads.
+    base::ranges::sort(*candidates, base::ranges::greater(),
+                       &OverlayCandidate::plane_z_order);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that we can promote an overlay in the simple case from a surface.
+TEST_P(OverlayProcessorWinSurfacePlaneTest, PromoteOverlayFromSurface) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  CreateTextureQuadAt(resource_provider_.get(), child_resource_provider_.get(),
+                      child_provider_.get(),
+                      pass->CreateAndAppendSharedQuadState(), pass.get(),
+                      gfx::Rect(0, 0, 50, 50),
+                      /*is_overlay_candidate=*/true);
+  pass_list.push_back(std::move(pass));
+
+  damage_rect_ = pass_list.back()->output_rect;
+
+  OverlayCandidateList dc_layer_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  ProcessForOverlays(&pass_list, render_pass_filters,
+                     render_pass_backdrop_filters, SurfaceDamageRectList(),
+                     &dc_layer_list);
+
+  EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
+  EXPECT_EQ(1U, dc_layer_list.size());
+}
+
 // Check that we don't accidentally end up in a case where we try to read back a
 // DComp surface, which can happen if one issues a copy request while we're in
 // the hysteresis when switching from a DComp surface back to a swap chain.
-TEST_F(OverlayProcessorWinTest, ForceSwapChainForCapture) {
+TEST_P(OverlayProcessorWinSurfacePlaneTest, ForceSwapChainForCapture) {
   // Frame with no overlays, but we expect to still be in DComp surface mode,
   // due to one-sided hysteresis intended to prevent allocation churn.
   {
@@ -2336,11 +2525,9 @@ TEST_F(OverlayProcessorWinTest, ForceSwapChainForCapture) {
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-    overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-        render_pass_filters, render_pass_backdrop_filters,
-        SurfaceDamageRectList(), GetOutputSurfacePlane(), &dc_layer_list,
-        &damage_rect_, &content_bounds_);
+    ProcessForOverlays(&pass_list, render_pass_filters,
+                       render_pass_backdrop_filters, SurfaceDamageRectList(),
+                       &dc_layer_list);
 
     EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
   }
@@ -2360,17 +2547,15 @@ TEST_F(OverlayProcessorWinTest, ForceSwapChainForCapture) {
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-    overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-        render_pass_filters, render_pass_backdrop_filters,
-        SurfaceDamageRectList(), GetOutputSurfacePlane(), &dc_layer_list,
-        &damage_rect_, &content_bounds_);
+    ProcessForOverlays(&pass_list, render_pass_filters,
+                       render_pass_backdrop_filters, SurfaceDamageRectList(),
+                       &dc_layer_list);
 
     EXPECT_FALSE(pass_list.back()->needs_synchronous_dcomp_commit);
   }
 }
 
-TEST_F(OverlayProcessorWinTest, SetEnableDCLayers) {
+TEST_P(OverlayProcessorWinSurfacePlaneTest, SetEnableDCLayers) {
   overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
   // Draw 60 frames with overlay video quads.
   for (int i = 0; i < 60; i++) {
@@ -2400,16 +2585,19 @@ TEST_F(OverlayProcessorWinTest, SetEnableDCLayers) {
 
     EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
 
-    overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-        render_pass_filters, render_pass_backdrop_filters,
-        SurfaceDamageRectList(), GetOutputSurfacePlane(), &dc_layer_list,
-        &damage_rect_, &content_bounds_);
+    ProcessForOverlays(&pass_list, render_pass_filters,
+                       render_pass_backdrop_filters, SurfaceDamageRectList(),
+                       &dc_layer_list);
 
     EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
     EXPECT_TRUE(pass_list.back()->has_transparent_background);
-    ASSERT_TRUE(output_surface_plane_.has_value());
-    EXPECT_TRUE(output_surface_plane_->enable_blending);
+    if (GetParam() == SurfaceTestMode::RootSurface) {
+      EXPECT_TRUE(output_surface_plane_);
+      EXPECT_EQ(output_surface_plane_->enable_blending,
+                pass_list.back()->has_transparent_background);
+    } else {
+      // Delegated compositing removes the output surface plane.
+    }
 
     EXPECT_EQ(1U, dc_layer_list.size());
     EXPECT_EQ(1, dc_layer_list.back().plane_z_order);
@@ -2450,18 +2638,21 @@ TEST_F(OverlayProcessorWinTest, SetEnableDCLayers) {
 
     EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
 
-    overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-        render_pass_filters, render_pass_backdrop_filters,
-        SurfaceDamageRectList(), GetOutputSurfacePlane(), &dc_layer_list,
-        &damage_rect_, &content_bounds_);
+    ProcessForOverlays(&pass_list, render_pass_filters,
+                       render_pass_backdrop_filters, SurfaceDamageRectList(),
+                       &dc_layer_list);
 
     EXPECT_EQ(pass_list.back()->needs_synchronous_dcomp_commit,
               in_dc_layer_hysteresis);
     EXPECT_EQ(pass_list.back()->has_transparent_background,
               in_dc_layer_hysteresis);
-    ASSERT_TRUE(output_surface_plane_.has_value());
-    EXPECT_EQ(output_surface_plane_->enable_blending, in_dc_layer_hysteresis);
+    if (GetParam() == SurfaceTestMode::RootSurface) {
+      EXPECT_TRUE(output_surface_plane_);
+      EXPECT_EQ(output_surface_plane_->enable_blending,
+                pass_list.back()->has_transparent_background);
+    } else {
+      // Delegated compositing removes the output surface plane.
+    }
 
     EXPECT_EQ(0u, dc_layer_list.size());
     EXPECT_EQ(damage_rect_, expected_damage);
@@ -2472,7 +2663,7 @@ TEST_F(OverlayProcessorWinTest, SetEnableDCLayers) {
 
 // Tests that Delegated Ink in the frame correctly sets
 // needs_synchronous_dcomp_commit on the render pass.
-TEST_F(OverlayProcessorWinTest, FrameHasDelegatedInk) {
+TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kUseDCompSurfacesForDelegatedInk);
@@ -2490,11 +2681,9 @@ TEST_F(OverlayProcessorWinTest, FrameHasDelegatedInk) {
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
-    overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-        render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
-        &dc_layer_list, &damage_rect_, &content_bounds_);
+    ProcessForOverlays(&pass_list, render_pass_filters,
+                       render_pass_backdrop_filters, SurfaceDamageRectList(),
+                       &dc_layer_list);
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
   }
 
@@ -2511,11 +2700,9 @@ TEST_F(OverlayProcessorWinTest, FrameHasDelegatedInk) {
   SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
   EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
-  overlay_processor_->ProcessForOverlays(
-      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-      render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
-      &dc_layer_list, &damage_rect_, &content_bounds_);
+  ProcessForOverlays(&pass_list, render_pass_filters,
+                     render_pass_backdrop_filters, SurfaceDamageRectList(),
+                     &dc_layer_list);
   // Make sure |frame_has_delegated_ink_| has been set to false.
   EXPECT_FALSE(overlay_processor_->frame_has_delegated_ink_for_testing());
   EXPECT_TRUE(pass_list[0]->needs_synchronous_dcomp_commit);
@@ -2525,7 +2712,7 @@ TEST_F(OverlayProcessorWinTest, FrameHasDelegatedInk) {
 // |SetFrameHasDelegatedInk| has been called (once). Based on
 // kNumberOfFramesBeforeDisablingDCLayers in
 // components/viz/service/display/overlay_processor_win.cc.
-TEST_F(OverlayProcessorWinTest, DelegatedInkSurfaceHysteresis) {
+TEST_P(OverlayProcessorWinSurfacePlaneTest, DelegatedInkSurfaceHysteresis) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kUseDCompSurfacesForDelegatedInk);
@@ -2543,11 +2730,9 @@ TEST_F(OverlayProcessorWinTest, DelegatedInkSurfaceHysteresis) {
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
-    overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-        render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
-        &dc_layer_list, &damage_rect_, &content_bounds_);
+    ProcessForOverlays(&pass_list, render_pass_filters,
+                       render_pass_backdrop_filters, SurfaceDamageRectList(),
+                       &dc_layer_list);
     // Make sure |frame_has_delegated_ink_| has been set to false.
     EXPECT_FALSE(overlay_processor_->frame_has_delegated_ink_for_testing());
     if (frame <= 60) {
@@ -2557,6 +2742,13 @@ TEST_F(OverlayProcessorWinTest, DelegatedInkSurfaceHysteresis) {
     }
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    OverlayProcessorWinSurfacePlaneTest,
+    testing::Values(SurfaceTestMode::RootSurface,
+                    SurfaceTestMode::SimulatePartiallyDelegated),
+    &OverlayProcessorWinSurfacePlaneTest::GetParamName);
 
 class OverlayProcessorWinDelegatedCompositingTest
     : public OverlayProcessorWinTest {
