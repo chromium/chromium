@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/timer/timer.h"
 #include "components/domain_reliability/util.h"
 
@@ -129,7 +130,7 @@ void DomainReliabilityDispatcher::RunAndDeleteTask(Task* task) {
     eligible_tasks_.erase(task);
 
   auto it = tasks_.find(task);
-  DCHECK(it != tasks_.end());
+  CHECK(it != tasks_.end(), base::NotFatalUntil::M130);
   tasks_.erase(it);
 }
 

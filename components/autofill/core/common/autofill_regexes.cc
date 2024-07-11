@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 
 namespace {
 
@@ -78,7 +79,7 @@ const icu::RegexPattern* AutofillRegexCache::GetRegexPattern(
           cache_.emplace(std::u16string(regex), CompileRegex(regex));
       DCHECK(success);
     }
-    DCHECK(it != cache_.end());
+    CHECK(it != cache_.end(), base::NotFatalUntil::M130);
     DCHECK(it->second.get());
     return it->second.get();
   };

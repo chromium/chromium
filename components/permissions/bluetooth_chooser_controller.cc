@@ -5,6 +5,7 @@
 #include "components/permissions/bluetooth_chooser_controller.h"
 
 #include "base/check_op.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -74,7 +75,7 @@ std::u16string BluetoothChooserController::GetOption(size_t index) const {
   const auto& device_name_it = device_id_to_name_map_.find(device_id);
   DCHECK(device_name_it != device_id_to_name_map_.end());
   const auto& it = device_name_counts_.find(device_name_it->second);
-  DCHECK(it != device_name_counts_.end());
+  CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
   return it->second == 1
              ? device_name_it->second
              : l10n_util::GetStringFUTF16(
@@ -175,7 +176,7 @@ void BluetoothChooserController::AddOrUpdateDevice(
       name_it->second = device_name;
 
       const auto& it = device_name_counts_.find(previous_device_name);
-      DCHECK(it != device_name_counts_.end());
+      CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
       DCHECK_GT(it->second, 0);
 
       if (--(it->second) == 0)
@@ -221,7 +222,7 @@ void BluetoothChooserController::RemoveDevice(const std::string& device_id) {
     devices_.erase(device_it);
 
     const auto& it = device_name_counts_.find(name_it->second);
-    DCHECK(it != device_name_counts_.end());
+    CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
     DCHECK_GT(it->second, 0);
 
     if (--(it->second) == 0)

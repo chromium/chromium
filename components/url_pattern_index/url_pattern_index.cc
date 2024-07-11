@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -83,13 +84,13 @@ const ElementTypeMap& GetElementTypeMap() {
 
 flat::ActivationType ProtoToFlatActivationType(proto::ActivationType type) {
   const auto it = GetActivationTypeMap().find(type);
-  DCHECK(it != GetActivationTypeMap().end());
+  CHECK(it != GetActivationTypeMap().end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
 flat::ElementType ProtoToFlatElementType(proto::ElementType type) {
   const auto it = GetElementTypeMap().find(type);
-  DCHECK(it != GetElementTypeMap().end());
+  CHECK(it != GetElementTypeMap().end(), base::NotFatalUntil::M130);
   return it->second;
 }
 

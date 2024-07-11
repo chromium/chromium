@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -151,7 +152,7 @@ TestDedicatedWorkerService::CreateDedicatedWorker(
 void TestDedicatedWorkerService::DestroyDedicatedWorker(
     const blink::DedicatedWorkerToken& token) {
   auto it = dedicated_worker_creators_.find(token);
-  DCHECK(it != dedicated_worker_creators_.end());
+  CHECK(it != dedicated_worker_creators_.end(), base::NotFatalUntil::M130);
 
   // Notify observers that the worker is being destroyed.
   for (auto& observer : observer_list_)
@@ -265,7 +266,7 @@ blink::SharedWorkerToken TestSharedWorkerService::CreateSharedWorker(
 void TestSharedWorkerService::DestroySharedWorker(
     const blink::SharedWorkerToken& shared_worker_token) {
   auto it = shared_worker_client_frames_.find(shared_worker_token);
-  DCHECK(it != shared_worker_client_frames_.end());
+  CHECK(it != shared_worker_client_frames_.end(), base::NotFatalUntil::M130);
 
   // The worker should no longer have any clients.
   DCHECK(it->second.empty());
@@ -283,7 +284,7 @@ void TestSharedWorkerService::AddClient(
     content::GlobalRenderFrameHostId client_render_frame_host_id) {
   // Add the frame to the set of clients for this worker.
   auto it = shared_worker_client_frames_.find(shared_worker_token);
-  DCHECK(it != shared_worker_client_frames_.end());
+  CHECK(it != shared_worker_client_frames_.end(), base::NotFatalUntil::M130);
 
   base::flat_set<content::GlobalRenderFrameHostId>& client_frames = it->second;
   bool inserted = client_frames.insert(client_render_frame_host_id).second;
@@ -303,7 +304,7 @@ void TestSharedWorkerService::RemoveClient(
 
   // Then remove the frame from the set of clients of this worker.
   auto it = shared_worker_client_frames_.find(shared_worker_token);
-  DCHECK(it != shared_worker_client_frames_.end());
+  CHECK(it != shared_worker_client_frames_.end(), base::NotFatalUntil::M130);
 
   base::flat_set<content::GlobalRenderFrameHostId>& client_frames = it->second;
   size_t removed = client_frames.erase(client_render_frame_host_id);
@@ -410,7 +411,7 @@ int64_t TestServiceWorkerContext::CreateServiceWorker() {
 
 void TestServiceWorkerContext::DestroyServiceWorker(int64_t version_id) {
   auto it = service_worker_infos_.find(version_id);
-  DCHECK(it != service_worker_infos_.end());
+  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
   const ServiceWorkerInfo& info = it->second;
 
   // Can only delete a service worker that isn't running and has no clients.
@@ -426,7 +427,7 @@ void TestServiceWorkerContext::StartServiceWorker(int64_t version_id,
                                                   const GURL& worker_url,
                                                   const GURL& scope_url) {
   auto it = service_worker_infos_.find(version_id);
-  DCHECK(it != service_worker_infos_.end());
+  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
   ServiceWorkerInfo& info = it->second;
 
   DCHECK(!info.is_running);
@@ -447,7 +448,7 @@ void TestServiceWorkerContext::StartServiceWorker(int64_t version_id,
 
 void TestServiceWorkerContext::StopServiceWorker(int64_t version_id) {
   auto it = service_worker_infos_.find(version_id);
-  DCHECK(it != service_worker_infos_.end());
+  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
   ServiceWorkerInfo& info = it->second;
 
   DCHECK(info.is_running);
@@ -471,7 +472,7 @@ std::string TestServiceWorkerContext::AddClientWithClientID(
     std::string client_uuid,
     const content::ServiceWorkerClientInfo& client_info) {
   auto it = service_worker_infos_.find(version_id);
-  DCHECK(it != service_worker_infos_.end());
+  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
   ServiceWorkerInfo& info = it->second;
 
   bool inserted = info.clients.insert(client_uuid).second;
@@ -486,7 +487,7 @@ std::string TestServiceWorkerContext::AddClientWithClientID(
 void TestServiceWorkerContext::RemoveClient(int64_t version_id,
                                             const std::string& client_uuid) {
   auto it = service_worker_infos_.find(version_id);
-  DCHECK(it != service_worker_infos_.end());
+  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
   ServiceWorkerInfo& info = it->second;
 
   size_t removed = info.clients.erase(client_uuid);
@@ -501,7 +502,7 @@ void TestServiceWorkerContext::OnControlleeNavigationCommitted(
     const std::string& client_uuid,
     content::GlobalRenderFrameHostId render_frame_host_id) {
   auto it = service_worker_infos_.find(version_id);
-  DCHECK(it != service_worker_infos_.end());
+  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
   ServiceWorkerInfo& info = it->second;
 
   DCHECK(base::Contains(info.clients, client_uuid));
@@ -551,7 +552,7 @@ TestProcessNodeSource::~TestProcessNodeSource() {
 
 ProcessNodeImpl* TestProcessNodeSource::GetProcessNode(int render_process_id) {
   auto it = process_node_map_.find(render_process_id);
-  DCHECK(it != process_node_map_.end());
+  CHECK(it != process_node_map_.end(), base::NotFatalUntil::M130);
   return it->second.get();
 }
 
@@ -689,7 +690,7 @@ content::GlobalRenderFrameHostId TestFrameNodeSource::CreateFrameNode(
 void TestFrameNodeSource::DeleteFrameNode(
     content::GlobalRenderFrameHostId render_frame_host_id) {
   auto it = frame_node_map_.find(render_frame_host_id);
-  DCHECK(it != frame_node_map_.end());
+  CHECK(it != frame_node_map_.end(), base::NotFatalUntil::M130);
 
   FrameNodeImpl* frame_node = it->second.get();
 
@@ -702,7 +703,7 @@ void TestFrameNodeSource::DeleteFrameNode(
 
 void TestFrameNodeSource::InvokeAndRemoveCallback(FrameNodeImpl* frame_node) {
   auto it = frame_node_callbacks_.find(frame_node);
-  DCHECK(it != frame_node_callbacks_.end());
+  CHECK(it != frame_node_callbacks_.end(), base::NotFatalUntil::M130);
 
   std::move(it->second).Run(frame_node);
 

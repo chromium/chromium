@@ -22,6 +22,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
@@ -753,7 +754,7 @@ void V4LocalDatabaseManager::GetSeverestThreatTypeAndMetadata(
     SBThreatType threat_type = GetSBThreatTypeForList(fhi.list_id);
 
     const auto& it = base::ranges::find(full_hashes, fhi.full_hash);
-    DCHECK(it != full_hashes.end());
+    CHECK(it != full_hashes.end(), base::NotFatalUntil::M130);
     (*full_hash_threat_types)[it - full_hashes.begin()] = threat_type;
 
     if (severity < most_severe_yet) {
@@ -781,7 +782,7 @@ std::unique_ptr<StoreStateMap> V4LocalDatabaseManager::GetStoreStateMap() {
 SBThreatType V4LocalDatabaseManager::GetSBThreatTypeForList(
     const ListIdentifier& list_id) {
   auto it = base::ranges::find(list_infos_, list_id, &ListInfo::list_id);
-  DCHECK(list_infos_.end() != it);
+  CHECK(list_infos_.end() != it, base::NotFatalUntil::M130);
   DCHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, it->sb_threat_type());
   DCHECK_NE(SBThreatType::SB_THREAT_TYPE_UNUSED, it->sb_threat_type());
   return it->sb_threat_type();

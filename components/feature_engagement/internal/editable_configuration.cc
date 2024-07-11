@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
@@ -41,14 +42,14 @@ void EditableConfiguration::AddAllowedEventPrefix(const std::string& prefix) {
 const FeatureConfig& EditableConfiguration::GetFeatureConfig(
     const base::Feature& feature) const {
   auto it = configs_.find(feature.name);
-  DCHECK(it != configs_.end());
+  CHECK(it != configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
 const FeatureConfig& EditableConfiguration::GetFeatureConfigByName(
     const std::string& feature_name) const {
   auto it = configs_.find(feature_name);
-  DCHECK(it != configs_.end());
+  CHECK(it != configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
@@ -68,14 +69,14 @@ const std::vector<std::string> EditableConfiguration::GetRegisteredFeatures()
 const GroupConfig& EditableConfiguration::GetGroupConfig(
     const base::Feature& group) const {
   auto it = group_configs_.find(group.name);
-  DCHECK(it != group_configs_.end());
+  CHECK(it != group_configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
 const GroupConfig& EditableConfiguration::GetGroupConfigByName(
     const std::string& group_name) const {
   auto it = group_configs_.find(group_name);
-  DCHECK(it != group_configs_.end());
+  CHECK(it != group_configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 

@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -400,7 +401,7 @@ void PrefProvider::ShutdownOnUIThread() {
 
 ContentSettingsPref* PrefProvider::GetPref(ContentSettingsType type) const {
   auto it = content_settings_prefs_.find(type);
-  DCHECK(it != content_settings_prefs_.end());
+  CHECK(it != content_settings_prefs_.end(), base::NotFatalUntil::M130);
   return it->second.get();
 }
 

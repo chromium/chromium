@@ -4,6 +4,7 @@
 
 #include "components/permissions/bluetooth_scanning_prompt_controller.h"
 
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
@@ -65,7 +66,7 @@ std::u16string BluetoothScanningPromptController::GetOption(
   const auto& device_name_it = device_id_to_name_map_.find(device_id);
   DCHECK(device_name_it != device_id_to_name_map_.end());
   const auto& it = device_name_counts_.find(device_name_it->second);
-  DCHECK(it != device_name_counts_.end());
+  CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
   return it->second == 1
              ? device_name_it->second
              : l10n_util::GetStringFUTF16(
@@ -116,7 +117,7 @@ void BluetoothScanningPromptController::AddOrUpdateDevice(
       name_it->second = device_name_for_display;
 
       const auto& it = device_name_counts_.find(previous_device_name);
-      DCHECK(it != device_name_counts_.end());
+      CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
       DCHECK_GT(it->second, 0);
 
       if (--(it->second) == 0)

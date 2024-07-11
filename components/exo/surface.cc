@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -563,7 +564,7 @@ void Surface::SetSubSurfacePosition(Surface* sub_surface,
   if (sub_surface->is_augmented()) {
     auto* render_layer = sub_surface;
     auto it = FindListEntry(render_layers_, render_layer);
-    DCHECK(it != render_layers_.end());
+    CHECK(it != render_layers_.end(), base::NotFatalUntil::M130);
     if (it->second == position) {
       return;
     }
@@ -575,7 +576,7 @@ void Surface::SetSubSurfacePosition(Surface* sub_surface,
                sub_surface->AsTracedValue(), "position", position.ToString());
 
   auto it = FindListEntry(pending_sub_surfaces_, sub_surface);
-  DCHECK(it != pending_sub_surfaces_.end());
+  CHECK(it != pending_sub_surfaces_.end(), base::NotFatalUntil::M130);
   if (it->second == position) {
     return;
   }

@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -658,7 +659,7 @@ void CastMessageHandler::PendingRequests::StopSessionTimedOut(int request_id) {
 void CastMessageHandler::PendingRequests::SetVolumeTimedOut(int request_id) {
   DVLOG(1) << __func__ << ", request_id: " << request_id;
   auto it = pending_volume_requests_by_id_.find(request_id);
-  DCHECK(it != pending_volume_requests_by_id_.end());
+  CHECK(it != pending_volume_requests_by_id_.end(), base::NotFatalUntil::M130);
   std::move(it->second->callback).Run(Result::kFailed);
   pending_volume_requests_by_id_.erase(it);
 }

@@ -16,6 +16,7 @@
 #include "base/containers/stack.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/form_forest_util_inl.h"
@@ -35,7 +36,7 @@ FormForest::FrameData* FormForest::GetOrCreateFrameData(LocalFrameToken frame) {
   if (it == frame_datas_.end()) {
     it = frame_datas_.insert(it, std::make_unique<FrameData>(frame));
   }
-  DCHECK(it != frame_datas_.end());
+  CHECK(it != frame_datas_.end(), base::NotFatalUntil::M130);
   DCHECK(it->get());
   return it->get();
 }

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/payments/content/icon/icon_size.h"
@@ -494,7 +495,7 @@ void InstallablePaymentAppCrawler::OnPaymentWebAppIconDownloadAndDecoded(
 
   if (crawling_mode_ == CrawlingMode::kJustInTimeInstallation) {
     auto it = installable_apps_.find(method_manifest_url);
-    DCHECK(it != installable_apps_.end());
+    CHECK(it != installable_apps_.end(), base::NotFatalUntil::M130);
     DCHECK(IsSameOriginWith(GURL(it->second->sw_scope), web_app_manifest_url));
     if (icon.drawsNothing() &&
         !base::FeatureList::IsEnabled(
@@ -513,7 +514,8 @@ void InstallablePaymentAppCrawler::OnPaymentWebAppIconDownloadAndDecoded(
   } else {
     DCHECK_EQ(CrawlingMode::kMissingIconRefetch, crawling_mode_);
     auto it = method_manifest_urls_for_icon_refetch_.find(method_manifest_url);
-    DCHECK(it != method_manifest_urls_for_icon_refetch_.end());
+    CHECK(it != method_manifest_urls_for_icon_refetch_.end(),
+          base::NotFatalUntil::M130);
     if (icon.drawsNothing()) {
       log_.Warn("Failed to refetch a valid icon from web app manifest \"" +
                 web_app_manifest_url.spec() +

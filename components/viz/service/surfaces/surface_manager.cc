@@ -15,6 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -550,7 +551,7 @@ void SurfaceManager::SurfaceDamageExpected(const SurfaceId& surface_id,
 void SurfaceManager::DestroySurfaceInternal(const SurfaceId& surface_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = surface_map_.find(surface_id);
-  DCHECK(it != surface_map_.end());
+  CHECK(it != surface_map_.end(), base::NotFatalUntil::M130);
   // Make sure that the surface is removed from the map before being actually
   // destroyed. An ack could be sent during the destruction of a surface which
   // could trigger a synchronous frame submission to a half-destroyed surface

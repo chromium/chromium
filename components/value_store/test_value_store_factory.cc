@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "components/value_store/leveldb_value_store.h"
 #include "components/value_store/testing_value_store.h"
 
@@ -50,7 +51,7 @@ bool TestValueStoreFactory::HasValueStore(const base::FilePath& directory) {
 ValueStore* TestValueStoreFactory::GetExisting(
     const base::FilePath& directory) const {
   auto it = value_store_map_.find(directory);
-  DCHECK(it != value_store_map_.end());
+  CHECK(it != value_store_map_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 

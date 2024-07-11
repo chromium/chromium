@@ -5,6 +5,7 @@
 #include "components/permissions/android/permissions_reprompt_controller_android.h"
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/web_contents.h"
@@ -34,7 +35,7 @@ void PermissionsRepromptControllerAndroid::OnRepromptPermissionRequestDone(
     const RequestKey& request_key,
     bool success) {
   auto it = pending_callbacks_.find(request_key);
-  DCHECK(it != pending_callbacks_.end());
+  CHECK(it != pending_callbacks_.end(), base::NotFatalUntil::M130);
 
   for (auto& callback : it->second.second) {
     std::move(callback).Run(success);

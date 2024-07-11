@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/not_fatal_until.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 
 // This voter allows expressing "priority boosts" which are used to resolve
@@ -502,7 +503,7 @@ BoostingVoteAggregator::FindOrCreateNodeData(const ExecutionContext* node) {
 BoostingVoteAggregator::NodeDataMap::iterator
 BoostingVoteAggregator::FindNodeData(const ExecutionContext* node) {
   auto it = nodes_.find(node);
-  DCHECK(it != nodes_.end());
+  CHECK(it != nodes_.end(), base::NotFatalUntil::M130);
   return it;
 }
 

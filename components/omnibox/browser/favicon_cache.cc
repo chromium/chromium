@@ -8,6 +8,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 
@@ -152,7 +153,7 @@ void FaviconCache::InvokeRequestCallbackWithFavicon(const Request& request,
   lru_cache_.Put(request, image);
 
   auto it = pending_requests_.find(request);
-  DCHECK(it != pending_requests_.end());
+  CHECK(it != pending_requests_.end(), base::NotFatalUntil::M130);
   for (auto& callback : it->second) {
     std::move(callback).Run(image);
   }

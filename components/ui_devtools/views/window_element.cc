@@ -4,6 +4,7 @@
 
 #include "components/ui_devtools/views/window_element.h"
 
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/ui_devtools/protocol.h"
@@ -24,7 +25,7 @@ namespace {
 int GetIndexOfChildInParent(aura::Window* window) {
   const aura::Window::Windows& siblings = window->parent()->children();
   auto it = base::ranges::find(siblings, window);
-  DCHECK(it != siblings.end());
+  CHECK(it != siblings.end(), base::NotFatalUntil::M130);
   return std::distance(siblings.begin(), it);
 }
 

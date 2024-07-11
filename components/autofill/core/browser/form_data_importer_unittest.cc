@@ -22,6 +22,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -247,7 +248,7 @@ void SetValueForType(TypeValuePairs& pairs,
                      const std::string& value) {
   auto it = base::ranges::find(pairs, type,
                                [](const auto& pair) { return pair.first; });
-  DCHECK(it != pairs.end());
+  CHECK(it != pairs.end(), base::NotFatalUntil::M130);
   if (value.empty())
     pairs.erase(it);
   else

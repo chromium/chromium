@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -276,7 +277,7 @@ void ClientResourceProvider::PrepareSendToParentInternal(
   imports.reserve(export_ids.size());
   for (const ResourceId id : export_ids) {
     auto it = imported_resources_.find(id);
-    DCHECK(it != imported_resources_.end());
+    CHECK(it != imported_resources_.end(), base::NotFatalUntil::M130);
     imports.push_back(&it->second);
   }
 
@@ -459,7 +460,7 @@ ResourceId ClientResourceProvider::ImportResource(
 void ClientResourceProvider::RemoveImportedResource(ResourceId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = imported_resources_.find(id);
-  DCHECK(it != imported_resources_.end());
+  CHECK(it != imported_resources_.end(), base::NotFatalUntil::M130);
   ImportedResource& imported = it->second;
   imported.marked_for_deletion = true;
   // We clear the callback here, as we will hold onto `imported` until it has
@@ -540,7 +541,7 @@ void ClientResourceProvider::ValidateResource(ResourceId id) const {
 
 bool ClientResourceProvider::InUseByConsumer(ResourceId id) {
   auto it = imported_resources_.find(id);
-  DCHECK(it != imported_resources_.end());
+  CHECK(it != imported_resources_.end(), base::NotFatalUntil::M130);
   ImportedResource& imported = it->second;
   return imported.exported_count > 0 || imported.returned_lost;
 }

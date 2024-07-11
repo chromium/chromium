@@ -7,6 +7,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/embedder/binders.h"
@@ -225,7 +226,7 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextRemoved(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = worker_watchers_.find(browser_context);
-  DCHECK(it != worker_watchers_.end());
+  CHECK(it != worker_watchers_.end(), base::NotFatalUntil::M130);
   it->second->TearDown();
   worker_watchers_.erase(it);
 

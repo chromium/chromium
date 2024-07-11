@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_number_conversions.h"
@@ -205,7 +206,7 @@ void FeedbackDiscarded(void* data,
   auto it = base::ranges::find(
       presentation->scheduled_frames, presentation_feedback,
       [](std::unique_ptr<Frame>& frame) { return frame->feedback.get(); });
-  DCHECK(it != presentation->scheduled_frames.end());
+  CHECK(it != presentation->scheduled_frames.end(), base::NotFatalUntil::M130);
   presentation->scheduled_frames.erase(it);
   LOG(WARNING) << "Frame discarded";
 }

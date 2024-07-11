@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/clients/client_helper.h"
@@ -77,7 +78,7 @@ void FeedbackDiscarded(void* data, struct wp_presentation_feedback* feedback) {
   auto it =
       base::ranges::find(presentation->submitted_frames, feedback,
                          [](Frame& frame) { return frame.feedback.get(); });
-  DCHECK(it != presentation->submitted_frames.end());
+  CHECK(it != presentation->submitted_frames.end(), base::NotFatalUntil::M130);
   presentation->submitted_frames.erase(it);
 }
 

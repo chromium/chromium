@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -101,7 +102,8 @@ void FakeDeviceInfoTracker::Remove(const DeviceInfo* device) {
 void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
                                     const DeviceInfo* new_device) {
   auto it = base::ranges::find(devices_, old_device);
-  DCHECK(devices_.end() != it) << "Tracker doesn't contain device";
+  CHECK(devices_.end() != it, base::NotFatalUntil::M130)
+      << "Tracker doesn't contain device";
   *it = new_device;
   for (auto& observer : observers_) {
     observer.OnDeviceInfoChange();

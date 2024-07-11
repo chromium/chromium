@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
@@ -234,7 +235,7 @@ void PartitionedLockManager::LockReleased(base::Location request_location,
                                           PartitionedLockId lock_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = locks_.find(lock_id);
-  DCHECK(it != locks_.end());
+  CHECK(it != locks_.end(), base::NotFatalUntil::M130);
   Lock& lock = it->second;
 
   DCHECK_GT(lock.acquired_count, 0);
