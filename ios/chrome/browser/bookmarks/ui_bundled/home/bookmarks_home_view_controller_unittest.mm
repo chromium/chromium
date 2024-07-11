@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_view_controller.h"
 
 #import "base/test/metrics/user_action_tester.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_mediator.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -50,8 +50,7 @@ TEST_F(BookmarksHomeViewControllerTest,
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    const bookmarks::BookmarkNode* mobileNode =
-        local_or_syncable_bookmark_model_->subtle_mobile_node();
+    const bookmarks::BookmarkNode* mobileNode = bookmark_model_->mobile_node();
     AddBookmark(mobileNode, u"foo");
     controller.displayedFolderNode = mobileNode;
     // sections: Bookmarks, root profile, root account, message, batch upload.
@@ -113,11 +112,8 @@ TEST_F(BookmarksHomeViewControllerTest,
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    const bookmarks::BookmarkNode* rootNode =
-        local_or_syncable_bookmark_model_
-            ->subtle_root_node_with_unspecified_children();
-    const bookmarks::BookmarkNode* mobileNode =
-        local_or_syncable_bookmark_model_->subtle_mobile_node();
+    const bookmarks::BookmarkNode* rootNode = bookmark_model_->root_node();
+    const bookmarks::BookmarkNode* mobileNode = bookmark_model_->mobile_node();
     AddBookmark(mobileNode, u"foo");  // Ensure there are bookmarks
     controller.displayedFolderNode = rootNode;
     // sections: Promo, Bookmarks, root profile, root account, message, batch
@@ -185,8 +181,7 @@ TEST_F(BookmarksHomeViewControllerTest, Metrics) {
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    controller.displayedFolderNode =
-        local_or_syncable_bookmark_model_->subtle_mobile_node();
+    controller.displayedFolderNode = bookmark_model_->mobile_node();
     base::UserActionTester user_action_tester;
     std::string user_action = "MobileKeyCommandClose";
     ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);
@@ -219,8 +214,7 @@ TEST_F(BookmarksHomeViewControllerTest, CachedViewControllerStack) {
     [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
                              forProtocol:@protocol(SettingsCommands)];
 
-    const bookmarks::BookmarkNode* mobileNode =
-        local_or_syncable_bookmark_model_->subtle_mobile_node();
+    const bookmarks::BookmarkNode* mobileNode = bookmark_model_->mobile_node();
     const bookmarks::BookmarkNode* folder = AddFolder(mobileNode, u"foo");
     AddBookmark(folder, u"bar");
 
@@ -233,18 +227,14 @@ TEST_F(BookmarksHomeViewControllerTest, CachedViewControllerStack) {
     // Closing should populate the cache.
     [controller keyCommand_close];
 
-    controller.displayedFolderNode =
-        local_or_syncable_bookmark_model_
-            ->subtle_root_node_with_unspecified_children();
+    controller.displayedFolderNode = bookmark_model_->root_node();
 
     NSArray<BookmarksHomeViewController*>* stack =
         [controller cachedViewControllerStack];
     ASSERT_EQ(3u, stack.count);
     EXPECT_EQ(folder, stack[2].displayedFolderNode);
     EXPECT_EQ(mobileNode, stack[1].displayedFolderNode);
-    EXPECT_EQ(local_or_syncable_bookmark_model_
-                  ->subtle_root_node_with_unspecified_children(),
-              stack[0].displayedFolderNode);
+    EXPECT_EQ(bookmark_model_->root_node(), stack[0].displayedFolderNode);
 
     [stack[0] shutdown];
     [stack[1] shutdown];

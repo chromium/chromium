@@ -139,7 +139,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 - (void)setUp {
   [super setUp];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
 }
 

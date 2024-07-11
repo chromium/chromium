@@ -53,7 +53,7 @@ const GURL GetFrenchUrl();
 
 // Waits for both LocalOrSyncable and Account (if available) bookmark models to
 // be loaded.
-- (void)waitForBookmarkModelsLoaded;
+- (void)waitForBookmarkModelLoaded;
 
 // Flush any pending bookmarks writes to disk now. This is useful before
 // terminating and restarting the app.

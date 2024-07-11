@@ -1019,7 +1019,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [ChromeEarlGreyUI openTabGrid];
 
   [self longPressTabWithTitle:kTitle1];
@@ -1753,7 +1753,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey loadURL:_URL4];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse4];
 
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [ChromeEarlGreyUI openTabGrid];
 
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]

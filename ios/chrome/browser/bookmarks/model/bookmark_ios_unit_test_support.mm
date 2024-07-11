@@ -10,6 +10,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
+#import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
@@ -60,23 +61,16 @@ void BookmarkIOSUnitTestSupport::SetUp() {
   local_or_syncable_bookmark_model_ =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  if (wait_for_initialization_) {
-    WaitForLegacyBookmarkModelToLoad(local_or_syncable_bookmark_model_);
-  }
 
   account_bookmark_model_ =
       ios::AccountBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  if (wait_for_initialization_ && account_bookmark_model_) {
-    WaitForLegacyBookmarkModelToLoad(account_bookmark_model_);
-  }
-
   bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
       chrome_browser_state_.get());
   if (wait_for_initialization_) {
-    // Waiting for the two underlying models, done earlier, should guarantee
-    // that the merged view is also loaded.
-    EXPECT_TRUE(bookmark_model_->loaded());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+    EXPECT_TRUE(local_or_syncable_bookmark_model_->loaded());
+    EXPECT_TRUE(account_bookmark_model_->loaded());
   }
 
   pref_service_ = chrome_browser_state_->GetPrefs();
@@ -105,30 +99,17 @@ const BookmarkNode* BookmarkIOSUnitTestSupport::AddBookmark(
     const BookmarkNode* parent,
     const std::u16string& title,
     const GURL& url) {
-  LegacyBookmarkModel* model = GetBookmarkModelForNode(parent);
-  return model->AddURL(parent, parent->children().size(), title, url);
+  return bookmark_model_->AddURL(parent, parent->children().size(), title, url);
 }
 
 const BookmarkNode* BookmarkIOSUnitTestSupport::AddFolder(
     const BookmarkNode* parent,
     const std::u16string& title) {
-  LegacyBookmarkModel* model = GetBookmarkModelForNode(parent);
-  return model->AddFolder(parent, parent->children().size(), title);
+  return bookmark_model_->AddFolder(parent, parent->children().size(), title);
 }
 
 void BookmarkIOSUnitTestSupport::ChangeTitle(const std::u16string& title,
                                              const BookmarkNode* node) {
-  LegacyBookmarkModel* model = GetBookmarkModelForNode(node);
-  model->SetTitle(node, title, bookmarks::metrics::BookmarkEditSource::kUser);
-}
-
-LegacyBookmarkModel* BookmarkIOSUnitTestSupport::GetBookmarkModelForNode(
-    const BookmarkNode* node) {
-  DCHECK(node);
-  if (local_or_syncable_bookmark_model_->IsNodePartOfModel(node)) {
-    return local_or_syncable_bookmark_model_;
-  }
-  DCHECK(account_bookmark_model_);
-  DCHECK(account_bookmark_model_->IsNodePartOfModel(node));
-  return account_bookmark_model_;
+  bookmark_model_->SetTitle(node, title,
+                            bookmarks::metrics::BookmarkEditSource::kUser);
 }

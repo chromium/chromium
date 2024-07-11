@@ -61,9 +61,9 @@ const GURL GetFrenchUrl() {
                                            inStorage:storageType]);
 }
 
-- (void)waitForBookmarkModelsLoaded {
+- (void)waitForBookmarkModelLoaded {
   EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [BookmarkEarlGreyAppInterface waitForBookmarkModelsLoaded]);
+      [BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded]);
 }
 
 - (void)commitPendingWrite {

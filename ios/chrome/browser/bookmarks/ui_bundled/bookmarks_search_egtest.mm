@@ -41,7 +41,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)setUp {
   [super setUp];
 
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
 }
 

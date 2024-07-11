@@ -54,8 +54,7 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport {
     const BookmarkNode* f2b = AddBookmark(f2, u"f2b");
 
     std::vector<const BookmarkNode*> to_move{a, f2b, f2};
-    EXPECT_TRUE(MoveBookmarks(to_move, local_or_syncable_bookmark_model_,
-                              account_bookmark_model_, f1));
+    EXPECT_TRUE(MoveBookmarks(to_move, bookmark_model_, f1));
 
     // Moving within one model shouldn't change pointers in `to_move`.
     EXPECT_THAT(to_move, ::testing::ElementsAre(a, f2b, f2));
@@ -71,30 +70,26 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport {
 };
 
 TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateNoop) {
-  const BookmarkNode* mobile_node =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
+  const BookmarkNode* mobile_node = bookmark_model_->mobile_node();
   std::u16string title = u"title";
   const BookmarkNode* node = AddBookmark(mobile_node, title);
 
   GURL url_copy = node->GetTitledUrlNodeUrl();
   // This call is a no-op, , so `UpdateBookmark` should return `false`.
   EXPECT_FALSE(UpdateBookmark(node, base::SysUTF16ToNSString(title), url_copy,
-                              mobile_node, local_or_syncable_bookmark_model_,
-                              account_bookmark_model_));
+                              mobile_node, bookmark_model_));
   EXPECT_EQ(node->GetTitle(), title);
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinModel) {
-  const BookmarkNode* mobile_node =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
+  const BookmarkNode* mobile_node = bookmark_model_->mobile_node();
   const BookmarkNode* node = AddBookmark(mobile_node, u"a");
   const BookmarkNode* folder = AddFolder(mobile_node, u"f1");
 
   NSString* new_title = @"b";
   GURL new_url("http://example.com");
-  EXPECT_TRUE(UpdateBookmark(node, new_title, new_url, folder,
-                             local_or_syncable_bookmark_model_,
-                             account_bookmark_model_));
+  EXPECT_TRUE(
+      UpdateBookmark(node, new_title, new_url, folder, bookmark_model_));
 
   ASSERT_THAT(mobile_node->children(),
               testing::ElementsAre(testing::Pointer(folder)));
@@ -107,19 +102,17 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinModel) {
 // account storage.
 
 TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
-  const BookmarkNode* local_or_syncable_mobile_node =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
-  const BookmarkNode* node = AddBookmark(local_or_syncable_mobile_node, u"a");
+  const BookmarkNode* local_mobile_node = bookmark_model_->mobile_node();
+  const BookmarkNode* node = AddBookmark(local_mobile_node, u"a");
   const BookmarkNode* account_mobile_node =
-      account_bookmark_model_->subtle_mobile_node();
+      bookmark_model_->account_mobile_node();
 
   NSString* new_title = @"b";
   GURL new_url("http://example.com");
   EXPECT_TRUE(UpdateBookmark(node, new_title, new_url, account_mobile_node,
-                             local_or_syncable_bookmark_model_,
-                             account_bookmark_model_));
+                             bookmark_model_));
 
-  EXPECT_THAT(local_or_syncable_mobile_node->children(), testing::IsEmpty());
+  EXPECT_THAT(local_mobile_node->children(), testing::IsEmpty());
   ASSERT_THAT(account_mobile_node->children(), testing::SizeIs(1));
   const BookmarkNode* moved_node = account_mobile_node->children()[0].get();
   EXPECT_EQ(moved_node->GetTitle(), base::SysNSStringToUTF16(new_title));
@@ -127,8 +120,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
-  const BookmarkNode* mobileNode =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, u"f1");
   const BookmarkNode* a = AddBookmark(mobileNode, u"a");
   const BookmarkNode* b = AddBookmark(mobileNode, u"b");
@@ -145,7 +137,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   toDelete.insert(f2b);
   toDelete.insert(f2);
 
-  DeleteBookmarks(toDelete, local_or_syncable_bookmark_model_, FROM_HERE);
+  DeleteBookmarks(toDelete, bookmark_model_, FROM_HERE);
 
   EXPECT_EQ(2u, mobileNode->children().size());
   const BookmarkNode* child0 = mobileNode->children()[0].get();
@@ -157,28 +149,26 @@ TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesInLocalOrSyncableModel) {
-  const BookmarkNode* local_or_syncable_mobile_node =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
-  ASSERT_NO_FATAL_FAILURE(TestMovingBookmarks(local_or_syncable_mobile_node));
+  const BookmarkNode* local_mobile_node = bookmark_model_->mobile_node();
+  ASSERT_NO_FATAL_FAILURE(TestMovingBookmarks(local_mobile_node));
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesInAccountModel) {
   const BookmarkNode* account_mobile_node =
-      account_bookmark_model_->subtle_mobile_node();
+      bookmark_model_->account_mobile_node();
   ASSERT_NO_FATAL_FAILURE(TestMovingBookmarks(account_mobile_node));
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
-  const BookmarkNode* local_or_syncable_mobile_node =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
-  const BookmarkNode* f1 = AddFolder(local_or_syncable_mobile_node, u"f1");
-  AddBookmark(local_or_syncable_mobile_node, u"a");
-  const BookmarkNode* b = AddBookmark(local_or_syncable_mobile_node, u"b");
+  const BookmarkNode* local_mobile_node = bookmark_model_->mobile_node();
+  const BookmarkNode* f1 = AddFolder(local_mobile_node, u"f1");
+  AddBookmark(local_mobile_node, u"a");
+  const BookmarkNode* b = AddBookmark(local_mobile_node, u"b");
   const BookmarkNode* f1a = AddBookmark(f1, u"f1a");
   AddBookmark(f1, u"f1b");
 
   const BookmarkNode* account_mobile_node =
-      account_bookmark_model_->subtle_mobile_node();
+      bookmark_model_->account_mobile_node();
   const BookmarkNode* c = AddBookmark(account_mobile_node, u"c");
   const BookmarkNode* f2 = AddFolder(account_mobile_node, u"f2");
   const BookmarkNode* f2a = AddBookmark(f2, u"f2a");
@@ -189,10 +179,9 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
   to_move.push_back(b);    // Cross-storage move, the parent is not moved.
   to_move.push_back(c);    // Same-storage move.
 
-  MoveBookmarks(to_move, local_or_syncable_bookmark_model_,
-                account_bookmark_model_, f2);
+  MoveBookmarks(to_move, bookmark_model_, f2);
 
-  EXPECT_THAT(GetBookmarkTitles(local_or_syncable_mobile_node->children()),
+  EXPECT_THAT(GetBookmarkTitles(local_mobile_node->children()),
               ::testing::ElementsAre(u"a"));
   EXPECT_THAT(GetBookmarkTitles(account_mobile_node->children()),
               ::testing::ElementsAre(u"f2"));
@@ -232,8 +221,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestCreateNilBookmarkPath) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
-  const BookmarkNode* mobileNode =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* music = AddFolder(mobileNode, u"music");
 
   const BookmarkNode* pop = AddFolder(music, u"pop");
@@ -253,8 +241,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   const BookmarkNode* camel = AddFolder(animals, u"camel");
   AddFolder(camel, u"al paca");
 
-  AddFolder(local_or_syncable_bookmark_model_->subtle_other_node(),
-            u"buildings");
+  AddFolder(bookmark_model_->other_node(), u"buildings");
 
   std::set<const BookmarkNode*> obstructions;
   // Editing a folder and a bookmark.
@@ -288,8 +275,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestIsSubvectorOfNodes) {
   EXPECT_TRUE(IsSubvectorOfNodes(vector2, vector1));
 
   // Empty vs vector with one element: [] - [1].
-  const BookmarkNode* mobileNode =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* bookmark1 = AddBookmark(mobileNode, u"1");
   vector2.push_back(bookmark1);
   EXPECT_TRUE(IsSubvectorOfNodes(vector1, vector2));
@@ -356,8 +342,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
   EXPECT_EQ(0u, MissingNodesIndices(vector1, vector2).size());
 
   // [] - [1].
-  const BookmarkNode* mobileNode =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* bookmark1 = AddBookmark(mobileNode, u"1");
   vector2.push_back(bookmark1);
   std::vector<NodeVector::size_type> missingNodesIndices =

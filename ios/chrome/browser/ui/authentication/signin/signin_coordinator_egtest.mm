@@ -130,7 +130,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Remove closed tab history to make sure the sign-in promo is always visible
   // in recent tabs.
   [ChromeEarlGrey clearBrowsingHistory];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Failed to set up histogram tester.");
@@ -185,7 +185,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 
@@ -221,7 +221,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 
@@ -244,7 +244,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
   [ChromeEarlGreyUI waitForAppToIdle];

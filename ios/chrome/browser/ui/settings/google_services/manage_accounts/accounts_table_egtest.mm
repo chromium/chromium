@@ -51,7 +51,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 @implementation AccountsTableTestCase
 
 - (void)tearDown {
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 
@@ -62,7 +62,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)setUp {
   [super setUp];
 
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
@@ -301,7 +301,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 
@@ -326,7 +326,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
 
@@ -351,7 +351,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 
@@ -376,7 +376,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
 
@@ -416,7 +416,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 

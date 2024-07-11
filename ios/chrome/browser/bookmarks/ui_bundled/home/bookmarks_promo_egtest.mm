@@ -68,7 +68,7 @@ using chrome_test_util::SettingsDoneButton;
 - (void)setUp {
   [super setUp];
 
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
 }
 

@@ -119,7 +119,7 @@ void SearchBookmarksForText(NSString* search_text) {
 
 - (void)setUp {
   [super setUp];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
 }
 
 // Tear down called once per test.

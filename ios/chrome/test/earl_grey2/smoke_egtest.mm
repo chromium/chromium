@@ -153,7 +153,7 @@
 
 // Tests bookmark converted helpers in chrome_earl_grey.h.
 - (void)testBookmarkHelpers {
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
 }
 

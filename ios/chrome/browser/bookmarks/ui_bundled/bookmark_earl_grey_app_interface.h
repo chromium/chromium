@@ -36,7 +36,7 @@ enum class BookmarkModelType;
 
 // Waits for both LocalOrSyncable and Account (if available) bookmark models to
 // be loaded.
-+ (NSError*)waitForBookmarkModelsLoaded;
++ (NSError*)waitForBookmarkModelLoaded;
 
 // Flush any pending bookmarks writes to disk now. This is useful before
 // terminating and restarting the app.

@@ -60,7 +60,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 - (void)setUp {
   [super setUp];
 
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
 }
 

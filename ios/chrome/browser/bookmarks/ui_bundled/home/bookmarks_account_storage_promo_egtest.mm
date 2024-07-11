@@ -43,7 +43,7 @@ using chrome_test_util::SecondarySignInButton;
 
 - (void)setUp {
   [super setUp];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
 }
 

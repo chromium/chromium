@@ -98,7 +98,7 @@ void ClearRelevantData() {
 + (void)setUpForTestCase {
   [super setUpForTestCase];
 
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
 
   // Normally there shouldn't be any data (locally or on the fake server) at
   // this point, but just in case some other test case didn't clean up after

@@ -114,7 +114,7 @@ using chrome_test_util::SettingsDoneButton;
 // Tests that keyboard commands are not registered when the bookmark UI is
 // shown.
 - (void)testKeyboardCommandsNotRegistered_AddBookmarkPresented {
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
 
   // Load a webpage because the NTP is not always bookmarkable.

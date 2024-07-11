@@ -62,7 +62,7 @@ id<GREYMatcher> AddBookmarkButton() {
 - (void)setUp {
   [super setUp];
 
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }

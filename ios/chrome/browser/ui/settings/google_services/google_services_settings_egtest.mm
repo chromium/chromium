@@ -99,7 +99,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Some tests change the value of this pref, so reset.
   [ChromeEarlGrey clearUserPrefWithName:prefs::kSigninAllowed];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
 }
 
@@ -167,7 +167,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kWaitForActionTimeout];
-  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 
