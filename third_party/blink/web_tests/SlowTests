@@ -1473,6 +1473,8 @@ crbug.com/352097024 virtual/plz-dedicated-worker-disabled/external/wpt/service-w
 
 crbug.com/341380030 [ Mac ] external/wpt/css/css-pseudo/text-selection.html [ Slow ]
 
+crbug.com/352489143 virtual/third-party-storage-partitioning/external/wpt/IndexedDB/interleaved-cursors-large.html [ Slow ]
+
 crbug.com/349647498 [ Mac10.15 ] virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-005.htm [ Slow ]
 
 crbug.com/349639998 virtual/attribution-reporting-aggregatable-debug/external/wpt/attribution-reporting/aggregatable-debug/simple-source-aggregatable-debug-report.sub.https.html [ Slow ]
