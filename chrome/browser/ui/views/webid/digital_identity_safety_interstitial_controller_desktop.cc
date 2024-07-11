@@ -58,6 +58,7 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
   int positive_button_label_resource_id = 0;
   ui::ButtonStyle positive_button_style = ui::ButtonStyle::kDefault;
   ui::ButtonStyle negative_button_style = ui::ButtonStyle::kDefault;
+  ui::DialogButton default_button = ui::DialogButton::DIALOG_BUTTON_OK;
   switch (interstitial_type_) {
     case InterstitialType::kHighRisk:
       body_resource_id =
@@ -66,6 +67,7 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
           IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_HIGH_RISK_POSITIVE_BUTTON_TEXT;
       positive_button_style = ui::ButtonStyle::kText;
       negative_button_style = ui::ButtonStyle::kProminent;
+      default_button = ui::DialogButton::DIALOG_BUTTON_CANCEL;
       break;
     case InterstitialType::kLowRisk:
       body_resource_id =
@@ -74,6 +76,7 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
           IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_LOW_RISK_POSITIVE_BUTTON_TEXT;
       positive_button_style = ui::ButtonStyle::kProminent;
       negative_button_style = ui::ButtonStyle::kText;
+      default_button = ui::DialogButton::DIALOG_BUTTON_OK;
       break;
   }
 
@@ -107,6 +110,7 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
           DialogButton::Params()
               .SetLabel(negative_button_label)
               .SetStyle(negative_button_style))
+      .OverrideDefaultButton(default_button)
       .SetDialogDestroyingCallback(
           base::BindOnce(&DigitalIdentitySafetyInterstitialControllerDesktop::
                              OnUserDeniedPermission,
