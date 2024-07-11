@@ -4,9 +4,12 @@
 
 #include "pdf/pdfium/pdfium_searchify.h"
 
+#include <math.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
-#include <numbers>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -14,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
@@ -57,7 +61,7 @@ BoundingBoxOrigin ConvertToPdfOrigin(int x,
                                      int height,
                                      double angle,
                                      double coordinate_system_height) {
-  double theta = angle * std::numbers::pi / 180;
+  const double theta = base::DegToRad(angle);
   return {.x = x - (sin(theta) * height),
           .y = coordinate_system_height - (y + cos(theta) * height),
           .theta = -theta};
@@ -84,10 +88,11 @@ void AddTextOnImage(FPDF_DOCUMENT document,
     DLOG(ERROR) << "Failed to get image rendered dimensions";
     return;
   }
-  double image_rendered_width = sqrt(pow(quadpoints.x1 - quadpoints.x2, 2) +
-                                     pow(quadpoints.y1 - quadpoints.y2, 2));
-  double image_rendered_height = sqrt(pow(quadpoints.x2 - quadpoints.x3, 2) +
-                                      pow(quadpoints.y2 - quadpoints.y3, 2));
+
+  double image_rendered_width =
+      hypot(quadpoints.x1 - quadpoints.x2, quadpoints.y1 - quadpoints.y2);
+  double image_rendered_height =
+      hypot(quadpoints.x2 - quadpoints.x3, quadpoints.y2 - quadpoints.y3);
   unsigned int image_pixel_width;
   unsigned int image_pixel_height;
   if (!FPDFImageObj_GetImagePixelSize(image, &image_pixel_width,
