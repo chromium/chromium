@@ -6,7 +6,7 @@ import 'chrome://password-manager/password_manager.js';
 
 import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -83,5 +83,39 @@ suite('FullDataResetTest', function() {
 
         assertTrue(dataReset.$.successToast.open);
         assertFalse(dataReset.$.dialog.open);
+      });
+
+  test(
+      'confirmation dialog has correct state for local users',
+      async function() {
+        const dataReset = document.createElement('full-data-reset');
+        dataReset.isSyncingPasswords = false;
+        document.body.appendChild(dataReset);
+        flush();
+
+        // Open the dialog.
+        dataReset.$.deleteAllButton.click();
+        flush();
+
+        assertEquals(
+            dataReset.$.confirmationDialogTitle.textContent?.trim(),
+            dataReset.i18n('fullResetConfirmationTitleLocal'));
+      });
+
+  test(
+      'confirmation dialog has correct state for syncing users',
+      async function() {
+        const dataReset = document.createElement('full-data-reset');
+        dataReset.isSyncingPasswords = true;
+        document.body.appendChild(dataReset);
+        flush();
+
+        // Open the dialog.
+        dataReset.$.deleteAllButton.click();
+        flush();
+
+        assertEquals(
+            dataReset.$.confirmationDialogTitle.textContent?.trim(),
+            dataReset.i18n('fullResetConfirmationTitle'));
       });
 });

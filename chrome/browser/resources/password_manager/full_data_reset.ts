@@ -21,6 +21,7 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 export interface FullDataResetElement {
   $: {
+    confirmationDialogTitle: HTMLElement,
     deleteAllButton: CrButtonElement,
     cancelButton: CrButtonElement,
     confirmButton: CrButtonElement,
@@ -42,6 +43,11 @@ export class FullDataResetElement extends FullDataResetElementBase {
 
   static get properties() {
     return {
+      isSyncingPasswords: {
+        type: Boolean,
+        value: false,
+      },
+
       passwordsCount_: {
         type: String,
         value: '',
@@ -64,6 +70,7 @@ export class FullDataResetElement extends FullDataResetElementBase {
     };
   }
 
+  isSyncingPasswords: boolean;
   private passwordsCount_: string = '';
   private passkeysCount_: string = '';
   private passwordsCountDetails_: string = '';
@@ -154,6 +161,13 @@ export class FullDataResetElement extends FullDataResetElementBase {
     } else {
       // TODO(crbug.com/342366264): Show error toast.
     }
+  }
+
+  private getConfirmationDialogTitle_(): string {
+    if (this.isSyncingPasswords) {
+      return this.i18n('fullResetConfirmationTitle');
+    }
+    return this.i18n('fullResetConfirmationTitleLocal');
   }
 }
 

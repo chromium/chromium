@@ -165,7 +165,8 @@
   </if>
   <template is="dom-if"
       if="[[isDeleteAllPasswordManagerDataRowAvailable_]]" restamp>
-    <full-data-reset></full-data-reset>
+    <full-data-reset is-syncing-passwords="[[isSyncingPasswords]]">
+    </full-data-reset>
   </template>
 </div>
 <div hidden="[[!blockedSites_.length]]">
