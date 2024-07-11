@@ -3524,4 +3524,23 @@ TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
       "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 60, 2);
 }
 
+class PrivacySandboxActivityTypeStorageMetricsTypeReceivedTests
+    : public PrivacySandboxActivityTypeStorageMetricsTests,
+      public testing::WithParamInterface<int> {};
+
+TEST_P(PrivacySandboxActivityTypeStorageMetricsTypeReceivedTests,
+       VerifyTypeReceivedMetric) {
+  privacy_sandbox_service()->RecordActivityType(
+      static_cast<ActivityType>(GetParam()));
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.TypeReceived",
+      static_cast<ActivityType>(GetParam()), 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PrivacySandboxActivityTypeStorageMetricsTypeReceivedTests,
+    testing::Range(static_cast<int>(ActivityType::kOther),
+                   static_cast<int>(ActivityType::kMaxValue) + 1));
+
 #endif  // BUILDFLAG(IS_ANDROID)

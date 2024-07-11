@@ -1641,6 +1641,8 @@ void RecordActivityTypeMetrics(const base::Value::List& activity_type_record,
 
 void PrivacySandboxServiceImpl::RecordActivityType(
     PrivacySandboxStorageActivityType type) const {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.ActivityTypeStorage.TypeReceived", type);
   // Activity type launches can only be recorded if they fall within a specific
   // timeframe. This timeframe is determined by the within-x-days parameter,
   // where oldest_timestamp_allowed marks the end of the timeframe and

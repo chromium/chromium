@@ -693,6 +693,16 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.ActivityTypeStorage.TypeReceived"
+    enum="PrivacySandboxStorageActivityType" expires_after="2025-06-01">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the PrivacySandboxStorageActivityType that privacy sandbox service
+    receives from the Clank side.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-13">
