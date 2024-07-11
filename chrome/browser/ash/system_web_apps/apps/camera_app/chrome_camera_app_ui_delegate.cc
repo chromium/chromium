@@ -816,6 +816,7 @@ void ChromeCameraAppUIDelegate::PerformOcr(
               line->bounding_box = std::move(line_box->bounding_box);
               line->bounding_box_angle = line_box->bounding_box_angle;
               line->language = line_box->language;
+              line->confidence = line_box->confidence;
               for (const auto& word_box : line_box->words) {
                 auto word = ash::camera_app::mojom::Word::New();
                 word->bounding_box = std::move(word_box->bounding_box);

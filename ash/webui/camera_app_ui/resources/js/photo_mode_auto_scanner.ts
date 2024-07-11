@@ -245,14 +245,15 @@ function processBarcodeResult(scanBarcodeResult: ScanBarcodeResult|
 
 function processOcrResult(performOcrResult: PerformOcrResult): DetectedResult|
     null {
-  if (performOcrResult.result.lines.length === 0) {
+  const {result, imageWidth, imageHeight} = performOcrResult;
+  const lines = result.lines.filter((line) => line.confidence >= 0.9);
+  if (lines.length === 0) {
     return null;
   }
-  const {result, imageWidth, imageHeight} = performOcrResult;
-  const {lines} = result;
 
-  function getMinNormalizedDistanceToCenter(
-      lines: OcrResultLine[], imageWidth: number, imageHeight: number): number {
+  // Calculates the minimum normalized distance to the center of the image from
+  // all detected lines.
+  function getNormalizedDistanceToCenter(): number {
     let minDistance = Infinity;
     for (const line of lines) {
       const {x, y} = getCenterOfLine(line);
@@ -279,17 +280,17 @@ function processOcrResult(performOcrResult: PerformOcrResult): DetectedResult|
       y: y + diagonalLength * Math.sin(diagonalTheta),
     };
   }
+
+  const filteredResult = {...result, lines};
   function show() {
     sendOcrEvent({
       eventType: OcrEventType.TEXT_DETECTED,
-      result,
+      result: filteredResult,
     });
-    scannerChip.showOcrContent(result);
+    scannerChip.showOcrContent(filteredResult);
   }
   return {
-    getNormalizedDistanceToCenter() {
-      return getMinNormalizedDistanceToCenter(lines, imageWidth, imageHeight);
-    },
+    getNormalizedDistanceToCenter,
     show,
   };
 }

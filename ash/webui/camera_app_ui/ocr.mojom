@@ -37,6 +37,9 @@ struct Line {
   // language code if that is defined (e.g. "en"), or else the ISO 639-2
   // three-letter code if that is defined, or else a Google-specific code.
   string language;
+
+  // Confidence as computed by the OCR engine. The value is in range [0, 1].
+  float confidence;
 };
 
 // Word with associated bounding box.
