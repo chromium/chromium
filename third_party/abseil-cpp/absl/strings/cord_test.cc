@@ -60,6 +60,7 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/compare.h"
 #include "absl/types/optional.h"
 
 // convenience local constants
@@ -3281,6 +3282,31 @@ TEST(CrcCordTest, ChecksummedEmptyCordEstimateMemoryUsage) {
   absl::Cord cord;
   cord.SetExpectedChecksum(0);
   EXPECT_NE(cord.EstimatedMemoryUsage(), 0);
+}
+
+TEST(CordThreeWayComparisonTest, CompareCords) {
+#ifndef __cpp_impl_three_way_comparison
+  GTEST_SKIP() << "C++20 three-way <=> comparison not supported";
+#else
+  EXPECT_EQ(absl::Cord("a") <=> absl::Cord("a"), std::strong_ordering::equal);
+  EXPECT_EQ(absl::Cord("aaaa") <=> absl::Cord("aaab"),
+            std::strong_ordering::less);
+  EXPECT_EQ(absl::Cord("baaa") <=> absl::Cord("a"),
+            std::strong_ordering::greater);
+#endif
+}
+
+TEST(CordThreeWayComparisonTest, CompareCordsAndStringViews) {
+#ifndef __cpp_impl_three_way_comparison
+  GTEST_SKIP() << "C++20 three-way <=> comparison not supported";
+#else
+  EXPECT_EQ(absl::string_view("a") <=> absl::Cord("a"),
+            std::strong_ordering::equal);
+  EXPECT_EQ(absl::Cord("a") <=> absl::string_view("b"),
+            std::strong_ordering::less);
+  EXPECT_EQ(absl::string_view("b") <=> absl::Cord("a"),
+            std::strong_ordering::greater);
+#endif
 }
 
 #if defined(GTEST_HAS_DEATH_TEST) && defined(ABSL_INTERNAL_CORD_HAVE_SANITIZER)

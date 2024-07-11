@@ -384,6 +384,7 @@ absl_source_set("cord") {
     "//third_party/abseil-cpp/absl/functional:function_ref",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:bits",
+    "//third_party/abseil-cpp/absl/types:compare",
     "//third_party/abseil-cpp/absl/types:optional",
     "//third_party/abseil-cpp/absl/types:span",
   ]
@@ -619,6 +620,7 @@ absl_source_set("cordz_test_helpers") {
 #     "//third_party/abseil-cpp/absl/log",
 #     "//third_party/abseil-cpp/absl/log:check",
 #     "//third_party/abseil-cpp/absl/random",
+#     "//third_party/abseil-cpp/absl/types:compare",
 #     "//third_party/abseil-cpp/absl/types:optional",
 #   ]
 # }

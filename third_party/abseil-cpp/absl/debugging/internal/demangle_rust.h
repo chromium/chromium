@@ -32,9 +32,6 @@ namespace debugging_internal {
 // DemangleRustSymbolEncoding is async-signal-safe and runs in bounded C++
 // call-stack space.  It is suitable for symbolizing stack traces in a signal
 // handler.
-//
-// The demangling logic is under development; search for "not yet implemented"
-// in the .cc file to see where the gaps are.
 bool DemangleRustSymbolEncoding(const char* mangled, char* out,
                                 size_t out_size);
 

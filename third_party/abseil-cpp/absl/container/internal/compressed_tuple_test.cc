@@ -31,13 +31,21 @@
 
 // These are declared at global scope purely so that error messages
 // are smaller and easier to understand.
-enum class CallType { kConstRef, kConstMove };
+enum class CallType { kMutableRef, kConstRef, kMutableMove, kConstMove };
 
 template <int>
 struct Empty {
+  constexpr CallType value() & { return CallType::kMutableRef; }
   constexpr CallType value() const& { return CallType::kConstRef; }
+  constexpr CallType value() && { return CallType::kMutableMove; }
   constexpr CallType value() const&& { return CallType::kConstMove; }
 };
+
+// Unconditionally return an lvalue reference to `t`.
+template <typename T>
+constexpr T& AsLValue(T&& t) {
+  return t;
+}
 
 template <typename T>
 struct NotEmpty {
@@ -375,8 +383,24 @@ TEST(CompressedTupleTest, Constexpr) {
     constexpr int value() const { return v; }
     int v;
   };
-  constexpr CompressedTuple<int, double, CompressedTuple<int>, Empty<0>> x(
-      7, 1.25, CompressedTuple<int>(5), {});
+
+  using Tuple = CompressedTuple<int, double, CompressedTuple<int>, Empty<0>>;
+
+  constexpr int r0 =
+      AsLValue(Tuple(1, 0.75, CompressedTuple<int>(9), {})).get<0>();
+  constexpr double r1 =
+      AsLValue(Tuple(1, 0.75, CompressedTuple<int>(9), {})).get<1>();
+  constexpr int r2 =
+      AsLValue(Tuple(1, 0.75, CompressedTuple<int>(9), {})).get<2>().get<0>();
+  constexpr CallType r3 =
+      AsLValue(Tuple(1, 0.75, CompressedTuple<int>(9), {})).get<3>().value();
+
+  EXPECT_EQ(r0, 1);
+  EXPECT_EQ(r1, 0.75);
+  EXPECT_EQ(r2, 9);
+  EXPECT_EQ(r3, CallType::kMutableRef);
+
+  constexpr Tuple x(7, 1.25, CompressedTuple<int>(5), {});
   constexpr int x0 = x.get<0>();
   constexpr double x1 = x.get<1>();
   constexpr int x2 = x.get<2>().get<0>();
@@ -386,6 +410,18 @@ TEST(CompressedTupleTest, Constexpr) {
   EXPECT_EQ(x1, 1.25);
   EXPECT_EQ(x2, 5);
   EXPECT_EQ(x3, CallType::kConstRef);
+
+  constexpr int m0 = Tuple(5, 0.25, CompressedTuple<int>(3), {}).get<0>();
+  constexpr double m1 = Tuple(5, 0.25, CompressedTuple<int>(3), {}).get<1>();
+  constexpr int m2 =
+      Tuple(5, 0.25, CompressedTuple<int>(3), {}).get<2>().get<0>();
+  constexpr CallType m3 =
+      Tuple(5, 0.25, CompressedTuple<int>(3), {}).get<3>().value();
+
+  EXPECT_EQ(m0, 5);
+  EXPECT_EQ(m1, 0.25);
+  EXPECT_EQ(m2, 3);
+  EXPECT_EQ(m3, CallType::kMutableMove);
 
   constexpr CompressedTuple<Empty<0>, TrivialStruct, int> trivial = {};
   constexpr CallType trivial0 = trivial.get<0>().value();

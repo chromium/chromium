@@ -737,32 +737,3 @@ absl_cc_test(
     absl::optional
     GTest::gtest_main
 )
-
-absl_cc_library(
-  NAME
-    poison
-  SRCS
-    "internal/poison.cc"
-  HDRS
-    "internal/poison.h"
-  COPTS
-    ${ABSL_DEFAULT_COPTS}
-  LINKOPTS
-    ${ABSL_DEFAULT_LINKOPTS}
-  DEPS
-    absl::config
-    absl::core_headers
-)
-
-absl_cc_test(
-  NAME
-    poison_test
-  SRCS
-    "internal/poison_test.cc"
-  COPTS
-    ${ABSL_TEST_COPTS}
-  DEPS
-    absl::config
-    absl::poison
-    GTest::gtest_main
-)

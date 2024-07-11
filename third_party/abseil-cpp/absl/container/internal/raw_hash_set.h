@@ -878,7 +878,7 @@ struct GroupPortableImpl {
   // Note: this includes: kEmpty, kDeleted, kSentinel.
   // It is useful in contexts when kSentinel is not present.
   auto MaskNonFull() const {
-    return BitMask<uint64_t, kWidth, 3>(ctrl  & kMsbs8Bytes);
+    return BitMask<uint64_t, kWidth, 3>(ctrl & kMsbs8Bytes);
   }
 
   NonIterableBitMask<uint64_t, kWidth, 3> MaskEmptyOrDeleted() const {
@@ -1134,9 +1134,7 @@ class GrowthInfo {
   // Returns true if the table satisfies two properties:
   // 1. Guaranteed to have no kDeleted slots.
   // 2. There is no growth left.
-  bool HasNoGrowthLeftAndNoDeleted() const {
-    return growth_left_info_ == 0;
-  }
+  bool HasNoGrowthLeftAndNoDeleted() const { return growth_left_info_ == 0; }
 
   // Returns true if table guaranteed to have no k
   bool HasNoDeleted() const {
@@ -1144,9 +1142,7 @@ class GrowthInfo {
   }
 
   // Returns the number of elements left to grow.
-  size_t GetGrowthLeft() const {
-    return growth_left_info_ & kGrowthLeftMask;
-  }
+  size_t GetGrowthLeft() const { return growth_left_info_ & kGrowthLeftMask; }
 
  private:
   static constexpr size_t kGrowthLeftMask = ((~size_t{}) >> 1);
@@ -1421,8 +1417,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
         should_rehash_for_bug_detection_on_insert(control(), capacity());
   }
   bool should_rehash_for_bug_detection_on_move() const {
-    return CommonFieldsGenerationInfo::
-        should_rehash_for_bug_detection_on_move(control(), capacity());
+    return CommonFieldsGenerationInfo::should_rehash_for_bug_detection_on_move(
+        control(), capacity());
   }
   void reset_reserved_growth(size_t reservation) {
     CommonFieldsGenerationInfo::reset_reserved_growth(reservation, size());
@@ -1855,13 +1851,13 @@ constexpr size_t BackingArrayAlignment(size_t align_of_slot) {
 // Returns the address of the ith slot in slots where each slot occupies
 // slot_size.
 inline void* SlotAddress(void* slot_array, size_t slot, size_t slot_size) {
-  return reinterpret_cast<void*>(reinterpret_cast<char*>(slot_array) +
-                                 (slot * slot_size));
+  return static_cast<void*>(static_cast<char*>(slot_array) +
+                            (slot * slot_size));
 }
 
 // Iterates over all full slots and calls `cb(const ctrl_t*, SlotType*)`.
-// If kAllowRemoveReentrance is false, no erasure from this table allowed during
-// Callback call. This mode is slightly faster.
+// No insertion to the table allowed during Callback call.
+// Erasure is allowed only for the element passed to the callback.
 template <class SlotType, class Callback>
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline void IterateOverFullSlots(
     const CommonFields& c, SlotType* slot, Callback cb) {
@@ -1890,16 +1886,22 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline void IterateOverFullSlots(
     return;
   }
   size_t remaining = c.size();
+  ABSL_ATTRIBUTE_UNUSED const size_t original_size_for_assert = remaining;
   while (remaining != 0) {
     for (uint32_t i : GroupFullEmptyOrDeleted(ctrl).MaskFull()) {
+      assert(IsFull(ctrl[i]) && "hash table was modified unexpectedly");
       cb(ctrl + i, slot + i);
       --remaining;
     }
     ctrl += Group::kWidth;
     slot += Group::kWidth;
     assert((remaining == 0 || *(ctrl - 1) != ctrl_t::kSentinel) &&
-            "element was erased from hash table unexpectedly");
+           "hash table was modified unexpectedly");
   }
+  // NOTE: erasure of the current element is allowed in callback for
+  // absl::erase_if specialization. So we use `>=`.
+  assert(original_size_for_assert >= c.size() &&
+         "hash table was modified unexpectedly");
 }
 
 template <typename CharAlloc>
@@ -2094,8 +2096,8 @@ class HashSetResizeHelper {
     using slot_type = typename PolicyTraits::slot_type;
     assert(is_single_group(c.capacity()));
 
-    auto* new_slots = reinterpret_cast<slot_type*>(c.slot_array());
-    auto* old_slots_ptr = reinterpret_cast<slot_type*>(old_slots());
+    auto* new_slots = static_cast<slot_type*>(c.slot_array());
+    auto* old_slots_ptr = static_cast<slot_type*>(old_slots());
 
     size_t shuffle_bit = old_capacity_ / 2 + 1;
     for (size_t i = 0; i < old_capacity_; ++i) {
@@ -3669,8 +3671,7 @@ class raw_hash_set {
         insert_slot(to_slot(resize_helper.old_soo_data()));
         return;
       } else {
-        auto* old_slots =
-            reinterpret_cast<slot_type*>(resize_helper.old_slots());
+        auto* old_slots = static_cast<slot_type*>(resize_helper.old_slots());
         size_t total_probe_length = 0;
         for (size_t i = 0; i != resize_helper.old_capacity(); ++i) {
           if (IsFull(resize_helper.old_ctrl()[i])) {
@@ -3686,9 +3687,7 @@ class raw_hash_set {
 
   // Casting directly from e.g. char* to slot_type* can cause compilation errors
   // on objective-C. This function converts to void* first, avoiding the issue.
-  static slot_type* to_slot(void* buf) {
-    return reinterpret_cast<slot_type*>(buf);
-  }
+  static slot_type* to_slot(void* buf) { return static_cast<slot_type*>(buf); }
 
   // Requires that lhs does not have a full SOO slot.
   static void move_common(bool that_is_full_soo, allocator_type& rhs_alloc,
@@ -3729,7 +3728,7 @@ class raw_hash_set {
     }
   }
 
-  template<bool propagate_alloc>
+  template <bool propagate_alloc>
   raw_hash_set& assign_impl(raw_hash_set&& that) {
     // We don't bother checking for this/that aliasing. We just need to avoid
     // breaking the invariants in that case.
@@ -3874,8 +3873,7 @@ class raw_hash_set {
     }
     // We only do validation for small tables so that it's constant time.
     if (capacity() > 16) return;
-    IterateOverFullSlots(
-        common(), slot_array(), assert_consistent);
+    IterateOverFullSlots(common(), slot_array(), assert_consistent);
 #endif
   }
 
@@ -4049,12 +4047,14 @@ struct HashtableFreeFunctionsAccess {
     if (c->is_soo()) {
       auto it = c->soo_iterator();
       if (!pred(*it)) {
+        assert(c->size() == 1 && "hash table was modified unexpectedly");
         return 0;
       }
       c->destroy(it.slot());
       c->common().set_empty_soo();
       return 1;
     }
+    ABSL_ATTRIBUTE_UNUSED const size_t original_size_for_assert = c->size();
     size_t num_deleted = 0;
     IterateOverFullSlots(
         c->common(), c->slot_array(), [&](const ctrl_t* ctrl, auto* slot) {
@@ -4065,6 +4065,10 @@ struct HashtableFreeFunctionsAccess {
             ++num_deleted;
           }
         });
+    // NOTE: IterateOverFullSlots allow removal of the current element, so we
+    // verify the size additionally here.
+    assert(original_size_for_assert - num_deleted == c->size() &&
+           "hash table was modified unexpectedly");
     return num_deleted;
   }
 

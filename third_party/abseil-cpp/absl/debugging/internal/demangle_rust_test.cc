@@ -117,7 +117,7 @@ TEST(DemangleRust, UnicodeIdentifiers) {
   EXPECT_DEMANGLING("_RNvC7ice_cap17Eyjafjallajökull",
                     "ice_cap::Eyjafjallajökull");
   EXPECT_DEMANGLING("_RNvC7ice_caps_u19Eyjafjallajkull_jtb",
-                    "ice_cap::{Punycode Eyjafjallajkull_jtb}");
+                    "ice_cap::Eyjafjallajökull");
 }
 
 TEST(DemangleRust, FunctionInModule) {

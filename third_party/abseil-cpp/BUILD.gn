@@ -269,7 +269,6 @@ if (absl_build_tests) {
         "absl/base:config_test",
         "absl/base:no_destructor_test",
         "absl/base:nullability_test",
-        "absl/base:poison_test",
         "absl/base:prefetch_test",
         "absl/cleanup:cleanup_test",
 
@@ -292,6 +291,7 @@ if (absl_build_tests) {
         "absl/crc:crc_memcpy_test",
         "absl/crc:non_temporal_memcpy_test",
         "absl/debugging:bounded_utf8_length_sequence_test",
+        "absl/debugging:decode_rust_punycode_test",
         "absl/debugging:demangle_rust_test",
         "absl/debugging:stacktrace_test",
         "absl/debugging:utf8_for_code_point_test",

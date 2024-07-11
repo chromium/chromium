@@ -705,6 +705,7 @@ absl_cc_library(
     absl::compressed_tuple
     absl::config
     absl::container_memory
+    absl::compare
     absl::core_headers
     absl::crc_cord_state
     absl::endian

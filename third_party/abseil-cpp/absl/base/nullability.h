@@ -208,9 +208,9 @@ using Nullable = nullability_internal::NullableImpl<T>;
 // migrated into one of the above two nullability states: `Nonnull<T>` or
 //  `Nullable<T>`.
 //
-// NOTE: Because this annotation is the global default state, pointers without
-// any annotation are assumed to have "unknown" semantics. This assumption is
-// designed to minimize churn and reduce clutter within the codebase.
+// NOTE: Because this annotation is the global default state, unannotated
+// pointers are assumed to have "unknown" semantics. This assumption is designed
+// to minimize churn and reduce clutter within the codebase.
 //
 // Example:
 //

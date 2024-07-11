@@ -187,11 +187,11 @@ class LogMessage {
  protected:
   // Call `abort()` or similar to perform `LOG(FATAL)` crash.  It is assumed
   // that the caller has already generated and written the trace as appropriate.
-  ABSL_ATTRIBUTE_NORETURN static void FailWithoutStackTrace();
+  [[noreturn]] static void FailWithoutStackTrace();
 
   // Similar to `FailWithoutStackTrace()`, but without `abort()`.  Terminates
   // the process with an error exit code.
-  ABSL_ATTRIBUTE_NORETURN static void FailQuietly();
+  [[noreturn]] static void FailQuietly();
 
   // Dispatches the completed `absl::LogEntry` to applicable `absl::LogSink`s.
   // This might as well be inlined into `~LogMessage` except that
@@ -354,7 +354,7 @@ class LogMessageFatal final : public LogMessage {
   LogMessageFatal(const char* file, int line) ABSL_ATTRIBUTE_COLD;
   LogMessageFatal(const char* file, int line,
                   absl::string_view failure_msg) ABSL_ATTRIBUTE_COLD;
-  ABSL_ATTRIBUTE_NORETURN ~LogMessageFatal();
+  [[noreturn]] ~LogMessageFatal();
 };
 
 // `LogMessageDebugFatal` ensures the process will exit in failure after logging
@@ -381,7 +381,7 @@ class LogMessageQuietlyFatal final : public LogMessage {
   LogMessageQuietlyFatal(const char* file, int line) ABSL_ATTRIBUTE_COLD;
   LogMessageQuietlyFatal(const char* file, int line,
                          absl::string_view failure_msg) ABSL_ATTRIBUTE_COLD;
-  ABSL_ATTRIBUTE_NORETURN ~LogMessageQuietlyFatal();
+  [[noreturn]] ~LogMessageQuietlyFatal();
 };
 
 }  // namespace log_internal
