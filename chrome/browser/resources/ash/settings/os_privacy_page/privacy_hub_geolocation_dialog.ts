@@ -19,7 +19,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../assert_extras.js';
 
 import {getTemplate} from './privacy_hub_geolocation_dialog.html.js';
-import {GEOLOCATION_ACCESS_LEVEL_ENUM_SIZE, GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';
+import {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';
 import {LOCATION_PERMISSION_CHANGE_FROM_DIALOG_HISTOGRAM_NAME} from './privacy_hub_metrics_util.js';
 
 const PrivacyHubGeolocationDialogBase = PrefsMixin(PolymerElement);
@@ -46,7 +46,7 @@ class PrivacyHubGeolocationDialog extends
     chrome.metricsPrivate.recordEnumerationValue(
         LOCATION_PERMISSION_CHANGE_FROM_DIALOG_HISTOGRAM_NAME,
         GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM,
-        GEOLOCATION_ACCESS_LEVEL_ENUM_SIZE);
+        GeolocationAccessLevel.MAX_VALUE + 1);
 
     this.getDialog_().close();
   }

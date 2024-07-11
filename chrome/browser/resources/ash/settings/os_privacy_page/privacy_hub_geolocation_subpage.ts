@@ -42,6 +42,8 @@ export enum GeolocationAccessLevel {
   DISALLOWED = 0,
   ALLOWED = 1,
   ONLY_ALLOWED_FOR_SYSTEM = 2,
+
+  MAX_VALUE = ONLY_ALLOWED_FOR_SYSTEM,
 }
 
 export enum ScheduleType {
@@ -49,10 +51,6 @@ export enum ScheduleType {
   SUNSET_TO_SUNRISE = 1,
   CUSTOM = 2,
 }
-
-export const GEOLOCATION_ACCESS_LEVEL_ENUM_SIZE =
-    Object.keys(GeolocationAccessLevel).length;
-
 /**
  * Whether the app has location permission defined.
  */
@@ -359,7 +357,7 @@ export class SettingsPrivacyHubGeolocationSubpage extends
 
     chrome.metricsPrivate.recordEnumerationValue(
         LOCATION_PERMISSION_CHANGE_FROM_SETTINGS_HISTOGRAM_NAME, accessLevel,
-        GEOLOCATION_ACCESS_LEVEL_ENUM_SIZE);
+        GeolocationAccessLevel.MAX_VALUE + 1);
   }
 
   private geolocationAllowedForSystem_(): boolean {
