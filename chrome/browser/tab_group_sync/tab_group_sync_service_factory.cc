@@ -17,7 +17,7 @@
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
-#include "components/saved_tab_groups/tab_group_sync_coordinator.h"
+#include "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
 #include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
@@ -117,9 +117,8 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
-  std::unique_ptr<TabGroupSyncCoordinator> coordinator =
-      std::make_unique<TabGroupSyncCoordinator>(std::move(delegate),
-                                                service.get());
+  auto coordinator = std::make_unique<TabGroupSyncCoordinatorImpl>(
+      std::move(delegate), service.get());
   service->SetCoordinator(std::move(coordinator));
 
   return std::move(service);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/saved_tab_groups/tab_group_sync_coordinator.h"
+#include "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
 
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -11,7 +11,7 @@
 
 namespace tab_groups {
 
-TabGroupSyncCoordinator::TabGroupSyncCoordinator(
+TabGroupSyncCoordinatorImpl::TabGroupSyncCoordinatorImpl(
     std::unique_ptr<TabGroupSyncDelegate> delegate,
     TabGroupSyncService* service)
     : platform_delegate_(std::move(delegate)),
@@ -21,21 +21,21 @@ TabGroupSyncCoordinator::TabGroupSyncCoordinator(
   CHECK(service_);
 }
 
-TabGroupSyncCoordinator::~TabGroupSyncCoordinator() {
+TabGroupSyncCoordinatorImpl::~TabGroupSyncCoordinatorImpl() {
 }
 
-void TabGroupSyncCoordinator::OnInitialized() {
+void TabGroupSyncCoordinatorImpl::OnInitialized() {
   startup_helper_.InitializeTabGroupSync();
 }
 
-void TabGroupSyncCoordinator::HandleOpenTabGroupRequest(
+void TabGroupSyncCoordinatorImpl::HandleOpenTabGroupRequest(
     const base::Uuid& sync_tab_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
   platform_delegate_->HandleOpenTabGroupRequest(sync_tab_group_id,
                                                 std::move(context));
 }
 
-void TabGroupSyncCoordinator::OnTabGroupAdded(const SavedTabGroup& group,
+void TabGroupSyncCoordinatorImpl::OnTabGroupAdded(const SavedTabGroup& group,
                                               TriggerSource source) {
   if (source != TriggerSource::REMOTE) {
     return;
@@ -43,7 +43,7 @@ void TabGroupSyncCoordinator::OnTabGroupAdded(const SavedTabGroup& group,
   platform_delegate_->CreateLocalTabGroup(group);
 }
 
-void TabGroupSyncCoordinator::OnTabGroupUpdated(const SavedTabGroup& group,
+void TabGroupSyncCoordinatorImpl::OnTabGroupUpdated(const SavedTabGroup& group,
                                                 TriggerSource source) {
   if (source != TriggerSource::REMOTE) {
     return;
@@ -51,7 +51,7 @@ void TabGroupSyncCoordinator::OnTabGroupUpdated(const SavedTabGroup& group,
   platform_delegate_->UpdateLocalTabGroup(group);
 }
 
-void TabGroupSyncCoordinator::OnTabGroupRemoved(const LocalTabGroupID& local_id,
+void TabGroupSyncCoordinatorImpl::OnTabGroupRemoved(const LocalTabGroupID& local_id,
                                                 TriggerSource source) {
   if (source != TriggerSource::REMOTE) {
     return;
@@ -60,7 +60,7 @@ void TabGroupSyncCoordinator::OnTabGroupRemoved(const LocalTabGroupID& local_id,
   platform_delegate_->CloseLocalTabGroup(local_id);
 }
 
-void TabGroupSyncCoordinator::OnTabGroupRemoved(const base::Uuid& sync_id,
+void TabGroupSyncCoordinatorImpl::OnTabGroupRemoved(const base::Uuid& sync_id,
                                                 TriggerSource source) {}
 
 }  // namespace tab_groups

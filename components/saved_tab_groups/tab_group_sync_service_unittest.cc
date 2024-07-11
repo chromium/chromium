@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
+#include "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #include "components/sync/base/model_type.h"
@@ -44,6 +45,21 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
   MockTabGroupSyncServiceObserver() = default;
   ~MockTabGroupSyncServiceObserver() override = default;
 
+  MOCK_METHOD(void, OnInitialized, ());
+  MOCK_METHOD(void, OnTabGroupAdded, (const SavedTabGroup&, TriggerSource));
+  MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
+  MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&, TriggerSource));
+  MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
+};
+
+class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
+ public:
+  MockTabGroupSyncCoordinator() = default;
+  ~MockTabGroupSyncCoordinator() override = default;
+
+  MOCK_METHOD(void,
+              HandleOpenTabGroupRequest,
+              (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
   MOCK_METHOD(void, OnInitialized, ());
   MOCK_METHOD(void, OnTabGroupAdded, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
@@ -94,6 +110,11 @@ class TabGroupSyncServiceTest : public testing::Test {
         .WillByDefault(testing::Return(kTestCacheGuid));
     ON_CALL(processor_, GetControllerDelegate())
         .WillByDefault(testing::Return(fake_controller_delegate_.GetWeakPtr()));
+
+    auto coordinator = std::make_unique<MockTabGroupSyncCoordinator>();
+    coordinator_ = coordinator.get();
+    tab_group_sync_service_->SetCoordinator(std::move(coordinator));
+
     observer_ = std::make_unique<MockTabGroupSyncServiceObserver>();
     tab_group_sync_service_->AddObserver(observer_.get());
     task_environment_.RunUntilIdle();
@@ -108,6 +129,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   void TearDown() override {
     tab_group_sync_service_->RemoveObserver(observer_.get());
     model_ = nullptr;
+    coordinator_ = nullptr;
   }
 
   void InitializeTestGroups() {
@@ -183,6 +205,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   std::unique_ptr<syncer::ModelTypeStore> store_;
   std::unique_ptr<MockTabGroupSyncServiceObserver> observer_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;
+  raw_ptr<MockTabGroupSyncCoordinator> coordinator_;
   std::unique_ptr<TabGroupSyncServiceImpl> tab_group_sync_service_;
   syncer::FakeModelTypeControllerDelegate fake_controller_delegate_;
 
@@ -345,6 +368,14 @@ TEST_F(TabGroupSyncServiceTest, UpdateVisualData) {
                    std::nullopt, std::nullopt);
   histogram_tester.ExpectTotalCount(
       "TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin", 1u);
+}
+
+TEST_F(TabGroupSyncServiceTest, OpenTabGroup) {
+  EXPECT_CALL(*coordinator_,
+              HandleOpenTabGroupRequest(group_2_.saved_guid(), testing::_))
+      .Times(1);
+  tab_group_sync_service_->OpenTabGroup(
+      group_2_.saved_guid(), std::make_unique<TabGroupActionContext>());
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping) {

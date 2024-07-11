@@ -114,6 +114,10 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
       const LocalTabGroupID& local_id) = 0;
   virtual std::vector<LocalTabGroupID> GetDeletedGroupIds() = 0;
 
+  // Method invoked from UI to open a remote tab group in the local tab model.
+  virtual void OpenTabGroup(const base::Uuid& sync_group_id,
+                            std::unique_ptr<TabGroupActionContext> context) = 0;
+
   // Book-keeping methods to maintain in-memory mapping of sync and local IDs.
   virtual void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
                                           const LocalTabGroupID& local_id) = 0;

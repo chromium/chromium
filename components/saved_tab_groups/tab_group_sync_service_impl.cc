@@ -299,6 +299,13 @@ std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds() {
   return GetDeletedGroupIdsFromPref();
 }
 
+void TabGroupSyncServiceImpl::OpenTabGroup(
+    const base::Uuid& sync_group_id,
+    std::unique_ptr<TabGroupActionContext> context) {
+  VLOG(2) << __func__;
+  coordinator_->HandleOpenTabGroupRequest(sync_group_id, std::move(context));
+}
+
 void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id) {

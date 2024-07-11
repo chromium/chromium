@@ -10,7 +10,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/saved_tab_groups/sync_data_type_configuration.h"
-#import "components/saved_tab_groups/tab_group_sync_coordinator.h"
+#import "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #import "components/sync/base/report_unrecoverable_error.h"
@@ -98,7 +98,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
       std::make_unique<IOSTabGroupSyncDelegate>(
           browser_list, sync_service.get(), std::move(local_update_observer));
 
-  sync_service->SetCoordinator(std::make_unique<TabGroupSyncCoordinator>(
+  sync_service->SetCoordinator(std::make_unique<TabGroupSyncCoordinatorImpl>(
       std::move(delegate), sync_service.get()));
 
   return sync_service;

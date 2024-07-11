@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/saved_tab_groups/tab_group_sync_coordinator.h"
-
 #include "base/uuid.h"
 #include "components/saved_tab_groups/mock_tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
 #include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,7 +30,7 @@ class TabGroupSyncCoordinatorTest : public testing::Test {
     service_ = std::make_unique<MockTabGroupSyncService>();
     auto delegate = std::make_unique<MockTabGroupSyncDelegate>();
     delegate_ = delegate.get();
-    coordinator_ = std::make_unique<TabGroupSyncCoordinator>(
+    coordinator_ = std::make_unique<TabGroupSyncCoordinatorImpl>(
         std::move(delegate), service_.get());
   }
 
@@ -40,7 +39,7 @@ class TabGroupSyncCoordinatorTest : public testing::Test {
  protected:
   std::unique_ptr<MockTabGroupSyncService> service_;
   raw_ptr<MockTabGroupSyncDelegate> delegate_;
-  std::unique_ptr<TabGroupSyncCoordinator> coordinator_;
+  std::unique_ptr<TabGroupSyncCoordinatorImpl> coordinator_;
 };
 
 TEST_F(TabGroupSyncCoordinatorTest, HandleOpenTabGroupRequest) {
