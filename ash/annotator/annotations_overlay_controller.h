@@ -58,6 +58,7 @@ class ASH_EXPORT AnnotationsOverlayController
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -78,6 +79,9 @@ class ASH_EXPORT AnnotationsOverlayController
   // Returns the bounds that should be used for the annotations overlay widget
   // relative to its parent `window_`.
   gfx::Rect GetOverlayWidgetBounds() const;
+
+  // Resets the observations and raw pointers.
+  void Reset();
 
   // The overlay widget and its contents view.
   views::UniqueWidgetPtr overlay_widget_ = std::make_unique<views::Widget>();

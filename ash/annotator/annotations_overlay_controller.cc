@@ -201,9 +201,7 @@ AnnotationsOverlayController::AnnotationsOverlayController(
 }
 
 AnnotationsOverlayController::~AnnotationsOverlayController() {
-  window_observation_.Reset();
-  display_observation_.Reset();
-  window_ = nullptr;
+  Reset();
 }
 
 void AnnotationsOverlayController::Toggle() {
@@ -224,6 +222,10 @@ void AnnotationsOverlayController::OnWindowBoundsChanged(
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
   SetBounds(GetOverlayWidgetBounds());
+}
+
+void AnnotationsOverlayController::OnWindowDestroying(aura::Window* window) {
+  Reset();
 }
 
 void AnnotationsOverlayController::OnDisplayMetricsChanged(
@@ -281,6 +283,14 @@ gfx::Rect AnnotationsOverlayController::GetOverlayWidgetBounds() const {
           ->docked_magnifier_controller()
           ->GetTotalMagnifierBoundsForRoot(window_->GetRootWindow()));
   return bounds;
+}
+
+void AnnotationsOverlayController::Reset() {
+  window_observation_.Reset();
+  display_observation_.Reset();
+  overlay_widget_.reset();
+  annotations_overlay_view_ = nullptr;
+  window_ = nullptr;
 }
 
 }  // namespace ash
