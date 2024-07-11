@@ -136,6 +136,8 @@ class FacilitatedPaymentsManager {
                            PixPaymentPromptAccepted_ProgressSceenShown);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PixPaymentPromptRejected_ProgressSceenNotShown);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           OnGetClientToken_ClientTokenEmpty_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       TriggerPixDetectionOnDomContentLoadedExpDisabled_Ukm);
@@ -180,14 +182,18 @@ class FacilitatedPaymentsManager {
                            PaymentNotOfferedReason_ApiNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            SendInitiatePaymentRequest);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-                           OnInitiatePaymentResponseReceived_FailureResponse);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-                           OnInitiatePaymentResponseReceived_NoActionToken);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-                           OnInitiatePaymentResponseReceived_NoCoreAccountInfo);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-                           OnInitiatePaymentResponseReceived_LoggedOutProfile);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      OnInitiatePaymentResponseReceived_FailureResponse_ErrorScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      OnInitiatePaymentResponseReceived_LoggedOutProfile_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered);

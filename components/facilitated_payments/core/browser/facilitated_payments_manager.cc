@@ -39,7 +39,6 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
 
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() = default;
 
-// TODO: b/351064045 - Dismiss the bottom sheet from within `Reset`.
 void FacilitatedPaymentsManager::Reset() {
   // In tests, when the payment flow is abandoned, do not reset so the final
   // states can be verified.
@@ -248,6 +247,8 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
 void FacilitatedPaymentsManager::OnRiskDataLoaded(
     const std::string& risk_data) {
   if (risk_data.empty()) {
+    // TODO: b/348143700 - Show error screen if the loading screen is being
+    // shown.
     LogPaymentNotOfferedReason(PaymentNotOfferedReason::kRiskDataEmpty);
     Reset();
     return;
@@ -285,7 +286,7 @@ void FacilitatedPaymentsManager::OnGetClientToken(
       !client_token.empty(),
       (base::TimeTicks::Now() - get_client_token_loading_start_time_));
   if (client_token.empty()) {
-    client_->DismissPrompt();
+    client_->ShowErrorScreen();
     Reset();
     return;
   }
@@ -317,16 +318,15 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
       base::TimeTicks::Now() - initiate_payment_network_start_time_;
   if (result !=
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
-    // TODO(b/300335703): Show the error message.
     LogInitiatePaymentResult(/*result=*/false, latency);
-    client_->DismissPrompt();
+    client_->ShowErrorScreen();
     Reset();
     return;
   }
   LogInitiatePaymentResult(/*result=*/true, latency);
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
-    client_->DismissPrompt();
+    client_->ShowErrorScreen();
     Reset();
     return;
   }
@@ -335,7 +335,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   // `account_info` would be empty, and the `FacilitatedPaymentsManager` should
   // abandon the payment flow.
   if (!account_info.has_value() || account_info.value().IsEmpty()) {
-    client_->DismissPrompt();
+    client_->ShowErrorScreen();
     Reset();
     return;
   }

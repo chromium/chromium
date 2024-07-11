@@ -155,6 +155,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
                base::OnceCallback<void(bool, int64_t)>),
               (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
+  MOCK_METHOD(void, ShowErrorScreen, (), (override));
 };
 
 class MockFacilitatedPaymentsNetworkInterface
@@ -1017,6 +1018,13 @@ TEST_F(FacilitatedPaymentsManagerTest,
 }
 
 TEST_F(FacilitatedPaymentsManagerTest,
+       OnGetClientToken_ClientTokenEmpty_ErrorScreenShown) {
+  EXPECT_CALL(*client_, ShowErrorScreen());
+
+  manager_->OnGetClientToken(std::vector<uint8_t>{});
+}
+
+TEST_F(FacilitatedPaymentsManagerTest,
        TriggerPixDetectionOnDomContentLoadedExpDisabled_Ukm) {
   features_.InitAndDisableFeature(kEnablePixDetectionOnDomContentLoaded);
 
@@ -1303,12 +1311,13 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 
 // Test that if the response from
 // `FacilitatedPaymentsNetworkInterface::InitiatePayment` call has failure
-// result, purchase action is not invoked.
+// result, purchase action is not invoked. Instead, an error message is shown.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-       OnInitiatePaymentResponseReceived_FailureResponse) {
+       OnInitiatePaymentResponseReceived_FailureResponse_ErrorScreenShown) {
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
 
+  EXPECT_CALL(*client_, ShowErrorScreen());
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
   auto response_details =
@@ -1323,12 +1332,13 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 
 // Test that if the response from
 // `FacilitatedPaymentsNetworkInterface::InitiatePayment` has empty action
-// token, purchase action is not invoked.
+// token, purchase action is not invoked. Instead, an error message is shown.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-       OnInitiatePaymentResponseReceived_NoActionToken) {
+       OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown) {
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
 
+  EXPECT_CALL(*client_, ShowErrorScreen());
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
   auto response_details =
@@ -1339,12 +1349,13 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 }
 
 // Test that if the core account is std::nullopt, purchase action is not
-// invoked.
+// invoked. Instead, an error message is shown.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-       OnInitiatePaymentResponseReceived_NoCoreAccountInfo) {
+       OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown) {
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(std::nullopt));
 
+  EXPECT_CALL(*client_, ShowErrorScreen());
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
   auto response_details =
@@ -1356,12 +1367,14 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       std::move(response_details));
 }
 
-// Test that if the user is logged out, purchase action is not invoked.
+// Test that if the user is logged out, purchase action is not invoked. Instead,
+// an error message is shown.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-       OnInitiatePaymentResponseReceived_LoggedOutProfile) {
+       OnInitiatePaymentResponseReceived_LoggedOutProfile_ErrorScreenShown) {
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CoreAccountInfo()));
 
+  EXPECT_CALL(*client_, ShowErrorScreen());
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
   auto response_details =
@@ -1374,8 +1387,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 }
 
 // Test that the puchase action is invoked after receiving a success response
-// from the `FacilitatedPaymentsNetworkInterface::InitiatePayment` call. The
-// bottom sheet is also closed before invoking purchase action.
+// from the `FacilitatedPaymentsNetworkInterface::InitiatePayment` call.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered) {
   ON_CALL(*client_, GetCoreAccountInfo)
