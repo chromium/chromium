@@ -252,11 +252,12 @@ export class ObjectLayerElement extends PolymerElement {
       return false;
     }
 
-    const selectionRegion =
-        this.renderedObjects[objectIndex].geometry!.boundingBox;
+    const object = this.renderedObjects[objectIndex];
+    const selectionRegion = object.geometry!.boundingBox;
 
-    // Issue the query
-    this.browserProxy.handler.issueLensRequest(selectionRegion);
+    // Issue the query.
+    this.browserProxy.handler.issueLensObjectRequest(
+        selectionRegion, hasSegmentationMask(object));
 
     // Send the region to be rendered on the page.
     this.dispatchEvent(new CustomEvent('render-post-selection', {

@@ -26,7 +26,8 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'feedbackRequestedByOverlay',
       'getOverlayInvocationSource',
       'infoRequestedByOverlay',
-      'issueLensRequest',
+      'issueLensRegionRequest',
+      'issueLensObjectRequest',
       'issueTextSelectionRequest',
       'issueTranslateSelectionRequest',
       'copyText',
@@ -71,8 +72,12 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     this.methodCalled('infoRequestedByOverlay', clickModifiers);
   }
 
-  issueLensRequest(rect: CenterRotatedBox) {
-    this.methodCalled('issueLensRequest', rect);
+  issueLensRegionRequest(rect: CenterRotatedBox, isClick: boolean) {
+    this.methodCalled('issueLensRegionRequest', rect, isClick);
+  }
+
+  issueLensObjectRequest(rect: CenterRotatedBox, isMaskClick: boolean) {
+    this.methodCalled('issueLensObjectRequest', rect, isMaskClick);
   }
 
   issueTextSelectionRequest(query: string) {

@@ -6,6 +6,8 @@ import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
+import type {Polygon} from 'chrome-untrusted://lens/polygon.mojom-webui.js';
+import {Polygon_CoordinateType, Polygon_VertexOrdering} from 'chrome-untrusted://lens/polygon.mojom-webui.js';
 import {assertEquals, assertLT, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 export function assertWithinThreshold(value1: number, value2: number): void {
@@ -40,7 +42,34 @@ export function assertBoxesWithinThreshold(
   assertEquals(box1.coordinateType, box2.coordinateType);
 }
 
-export function createObject(id: string, boundingBox: RectF): OverlayObject {
+export function createObject(
+    id: string, boundingBox: RectF,
+    includeSegmentationMask: boolean): OverlayObject {
+  const segmentationPolygon: Polygon[] = [];
+  if (includeSegmentationMask) {
+    segmentationPolygon.push({
+      vertex: [
+        {
+          x: boundingBox.x,
+          y: boundingBox.y,
+        },
+        {
+          x: boundingBox.x + boundingBox.width,
+          y: boundingBox.y,
+        },
+        {
+          x: boundingBox.x + boundingBox.width,
+          y: boundingBox.y + boundingBox.height,
+        },
+        {
+          x: boundingBox.x,
+          y: boundingBox.y + boundingBox.height,
+        },
+      ],
+      vertexOrdering: Polygon_VertexOrdering.kClockwise,
+      coordinateType: Polygon_CoordinateType.kNormalized,
+    });
+  }
   return {
     id,
     geometry: {
@@ -49,7 +78,7 @@ export function createObject(id: string, boundingBox: RectF): OverlayObject {
         rotation: 0,
         coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
       },
-      segmentationPolygon: [],
+      segmentationPolygon: segmentationPolygon,
     },
   };
 }

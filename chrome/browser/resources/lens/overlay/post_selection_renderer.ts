@@ -240,8 +240,8 @@ export class PostSelectionRendererElement extends PolymerElement {
   handleUpGesture() {
     if (this.areBoundsChanging()) {
       // Issue Lens request for new bounds
-      BrowserProxyImpl.getInstance().handler.issueLensRequest(
-          this.getNormalizedCenterRotatedBox());
+      BrowserProxyImpl.getInstance().handler.issueLensRegionRequest(
+          this.getNormalizedCenterRotatedBox(), /*is_click=*/ false);
 
       // Check for selectable text
       this.dispatchEvent(new CustomEvent('detect-text-in-region', {

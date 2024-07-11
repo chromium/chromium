@@ -82,12 +82,27 @@ suite('SelectionOverlay', function() {
   }
 
   function addObjects() {
-    objects = [
-      {x: 80, y: 20, width: 25, height: 10},
-      {x: 70, y: 35, width: 20, height: 10},
-    ].map((rect, i) => createObject(i.toString(), normalizedBox(rect)));
+    objects =
+        [
+          {x: 80, y: 20, width: 25, height: 10},
+          {x: 70, y: 35, width: 20, height: 10},
+        ]
+            .map(
+                (rect, i) => createObject(
+                    i.toString(), normalizedBox(rect), /*isMaskClick=*/ false));
     callbackRouterRemote.objectsReceived(objects);
     return flushTasks();
+  }
+
+  async function verifyRegionRequest(
+      expectedRegion: CenterRotatedBox, expectedIsClick: boolean) {
+    await testBrowserProxy.handler.whenCalled('issueLensRegionRequest');
+    const requestRegion =
+        testBrowserProxy.handler.getArgs('issueLensRegionRequest')[0][0];
+    const isClick =
+        testBrowserProxy.handler.getArgs('issueLensRegionRequest')[0][1];
+    assertBoxesWithinThreshold(expectedRegion, requestRegion);
+    assertEquals(expectedIsClick, isClick);
   }
 
   test(
@@ -109,7 +124,7 @@ suite('SelectionOverlay', function() {
             'issueTextSelectionRequest');
         assertDeepEquals('hello', textQuery);
         assertEquals(
-            0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
 
   test(
@@ -136,9 +151,7 @@ suite('SelectionOverlay', function() {
           rotation: 0,
           coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
         };
-        const rect =
-            await testBrowserProxy.handler.whenCalled('issueLensRequest');
-        assertDeepEquals(expectedRect, rect);
+        verifyRegionRequest(expectedRect, /*expectedIsClick=*/ false);
         assertEquals(
             0,
             testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
@@ -216,7 +229,8 @@ suite('SelectionOverlay', function() {
         const textQuery =
             await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
         assertDeepEquals('test', textQuery);
-        assertEquals(0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
 
   test(
@@ -248,9 +262,7 @@ suite('SelectionOverlay', function() {
           rotation: 0,
           coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
         };
-        const rect =
-            await testBrowserProxy.handler.whenCalled('issueLensRequest');
-        assertDeepEquals(expectedRect, rect);
+        verifyRegionRequest(expectedRect, /*expectedIsClick=*/ false);
       });
 
   // <if expr="not chromeos_lacros">
@@ -263,7 +275,7 @@ suite('SelectionOverlay', function() {
             selectionOverlayElement, {x: 51, y: 10}, {x: 80, y: 40});
 
         assertEquals(
-            1, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+            1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
         assertEquals(
             0,
             testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
@@ -277,7 +289,7 @@ suite('SelectionOverlay', function() {
             'issueTextSelectionRequest');
         assertDeepEquals('there test', textQuery);
         assertEquals(
-            0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
 
   test('verify that detected text context menu works', async () => {
@@ -289,7 +301,8 @@ suite('SelectionOverlay', function() {
     const textQuery =
         await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
     assertDeepEquals('there test', textQuery);
-    assertEquals(1, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
     assertFalse(
         selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
   });
@@ -404,7 +417,8 @@ suite('SelectionOverlay', function() {
     const textQuery =
         await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
     assertDeepEquals('there test', textQuery);
-    assertEquals(0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+    assertEquals(
+        0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
   });
 
   test('verify that selected text context menu works', async () => {
@@ -483,7 +497,7 @@ suite('SelectionOverlay', function() {
         // Should only be called once from post selection adjustment and not
         // object tap.
         assertEquals(
-            1, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+            1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
 
         // Get most recent styles
         postSelectionStyles =
@@ -517,7 +531,7 @@ suite('SelectionOverlay', function() {
         // Should only be called once from post selection adjustment and not
         // object tap.
         assertEquals(
-            1, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+            1, testBrowserProxy.handler.getCallCount('issueLensObjectRequest'));
 
         // Verify tap triggered new post selection
         const postSelectionStyles =
@@ -575,9 +589,7 @@ suite('SelectionOverlay', function() {
           rotation: 0,
           coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
         };
-        const rect =
-            await testBrowserProxy.handler.whenCalled('issueLensRequest');
-        assertBoxesWithinThreshold(expectedRect, rect);
+        verifyRegionRequest(expectedRect, /*expectedIsClick=*/ false);
       });
   test('verify that completing a drag calls closeSearchBubble', async () => {
     const imageBounds = getImageBoundingRect(selectionOverlayElement);

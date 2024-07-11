@@ -88,6 +88,7 @@ class LensOverlayQueryController {
   // definition image than image cropping would provide.
   virtual void SendRegionSearch(
       lens::mojom::CenterRotatedBoxPtr region,
+      lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
 
@@ -101,7 +102,7 @@ class LensOverlayQueryController {
   virtual void SendMultimodalRequest(
       lens::mojom::CenterRotatedBoxPtr region,
       const std::string& query_text,
-      lens::LensOverlaySelectionType multimodal_selection_type,
+      lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params);
 
  protected:

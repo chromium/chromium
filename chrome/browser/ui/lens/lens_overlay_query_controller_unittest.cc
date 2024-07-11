@@ -316,8 +316,9 @@ TEST_F(LensOverlayQueryControllerTest,
   region->box = gfx::RectF(30, 40, 50, 60);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
-  query_controller.SendRegionSearch(
-      std::move(region), additional_search_query_params, std::nullopt);
+  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
+                                    additional_search_query_params,
+                                    std::nullopt);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
@@ -423,7 +424,7 @@ TEST_F(LensOverlayQueryControllerTest,
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendRegionSearch(
-      std::move(region), additional_search_query_params,
+      std::move(region), lens::REGION_SEARCH, additional_search_query_params,
       std::make_optional<SkBitmap>(region_bitmap));
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -709,8 +710,9 @@ TEST_F(LensOverlayQueryControllerTest,
   full_image_response_future.Clear();
 
   task_environment_.FastForwardBy(base::TimeDelta(base::Minutes(60)));
-  query_controller.SendRegionSearch(
-      std::move(region), additional_search_query_params, std::nullopt);
+  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
+                                    additional_search_query_params,
+                                    std::nullopt);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 

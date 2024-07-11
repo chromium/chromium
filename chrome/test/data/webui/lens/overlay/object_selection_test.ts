@@ -6,6 +6,7 @@ import 'chrome-untrusted://lens/selection_overlay.js';
 
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
+import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
@@ -68,14 +69,20 @@ suite('ObjectSelection', function() {
   }
 
   function addObjects() {
-    objects = [
-      {x: 20, y: 15, width: 20, height: 10},
-      {x: 120, y: 15, width: 30, height: 10},
-      {x: 70, y: 35, width: 50, height: 20},
-      {x: 320, y: 50, width: 80, height: 30},
-      {x: 320, y: 50, width: 40, height: 20},
-      {x: 320, y: 50, width: 60, height: 25},
-    ].map((rect, i) => createObject(i.toString(), normalizedBox(rect)));
+    // The object at index 0 will have a segmentation mask.
+    objects =
+        [
+          {x: 20, y: 15, width: 20, height: 10},
+          {x: 120, y: 15, width: 30, height: 10},
+          {x: 70, y: 35, width: 50, height: 20},
+          {x: 320, y: 50, width: 80, height: 30},
+          {x: 320, y: 50, width: 40, height: 20},
+          {x: 320, y: 50, width: 60, height: 25},
+        ]
+            .map(
+                (rect, i) => createObject(
+                    i.toString(), normalizedBox(rect),
+                    /*includeSegmentationMask=*/ i === 0));
     callbackRouterRemote.objectsReceived(objects);
     return flushTasks();
   }
@@ -85,10 +92,21 @@ suite('ObjectSelection', function() {
         .getObjectNodesForTesting();
   }
 
-  test('verify that objects render on the page', () => {
-    const wordsOnPage = getRenderedObjects();
+  async function verifyLastReceievedObjectRequest(
+      expectedRegion: CenterRotatedBox, expectedIsMaskClick: boolean) {
+    await testBrowserProxy.handler.whenCalled('issueLensObjectRequest');
+    const requestRegion =
+        testBrowserProxy.handler.getArgs('issueLensObjectRequest')[0][0];
+    const isMaskClick =
+        testBrowserProxy.handler.getArgs('issueLensObjectRequest')[0][1];
+    assertBoxesWithinThreshold(expectedRegion, requestRegion);
+    assertEquals(expectedIsMaskClick, isMaskClick);
+  }
 
-    assertEquals(6, wordsOnPage.length);
+  test('verify that objects render on the page', () => {
+    const objectsOnPage = getRenderedObjects();
+
+    assertEquals(6, objectsOnPage.length);
   });
 
   test(
@@ -96,9 +114,8 @@ suite('ObjectSelection', function() {
       async () => {
         await simulateClick(selectionOverlayElement, {x: 120, y: 15});
 
-        const rect =
-            await testBrowserProxy.handler.whenCalled('issueLensRequest');
-        assertBoxesWithinThreshold(objects[1]!.geometry.boundingBox, rect);
+        await verifyLastReceievedObjectRequest(
+            objects[1]!.geometry.boundingBox, /*expectedIsMaskClick=*/ false);
         assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
         const action = await testBrowserProxy.handler.whenCalled(
             'recordUkmLensOverlayInteraction');
@@ -119,9 +136,18 @@ suite('ObjectSelection', function() {
       async () => {
         await simulateClick(selectionOverlayElement, {x: 320, y: 50});
 
-        const rect =
-            await testBrowserProxy.handler.whenCalled('issueLensRequest');
-        assertBoxesWithinThreshold(objects[4]!.geometry.boundingBox, rect);
+        await verifyLastReceievedObjectRequest(
+            objects[4]!.geometry.boundingBox, /*expectedIsMaskClick=*/ false);
+      });
+
+  test(
+      `verify that tapping on objects with masks sets the mask click flag`,
+      async () => {
+        // Tap on the object at index 0, which has a mask.
+        await simulateClick(selectionOverlayElement, {x: 21, y: 16});
+
+        await verifyLastReceievedObjectRequest(
+            objects[0]!.geometry.boundingBox, /*expectedIsMaskClick=*/ true);
       });
 
   test(
