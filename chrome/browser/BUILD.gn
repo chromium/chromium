@@ -14,6 +14,7 @@ import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
+import("//chrome/browser/request_header_integrity/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
@@ -2123,6 +2124,7 @@ static_library("browser") {
     "//chrome/browser/profiling_host",
     "//chrome/browser/promos:utils",
     "//chrome/browser/push_messaging:budget_proto",
+    "//chrome/browser/request_header_integrity:buildflags",
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/resource_coordinator:tab_manager_features",
     "//chrome/browser/resources/accessibility:resources",
@@ -8177,6 +8179,10 @@ static_library("browser") {
       "plugins/plugin_observer_common.cc",
       "plugins/plugin_observer_common.h",
     ]
+  }
+
+  if (enable_request_header_integrity) {
+    deps += [ "//chrome/browser/request_header_integrity" ]
   }
 
   if (enable_rlz) {

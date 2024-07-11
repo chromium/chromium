@@ -140,6 +140,7 @@
 #include "chrome/browser/profiling_host/chrome_browser_main_extra_parts_profiling.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/renderer_preferences_util.h"
+#include "chrome/browser/request_header_integrity/buildflags.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
@@ -696,6 +697,10 @@
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 #include "chrome/browser/media/cast_remoting_connector.h"
+#endif
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+#include "chrome/browser/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/1125897
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -6011,6 +6016,12 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
   result.push_back(
       std::make_unique<captive_portal::CaptivePortalURLLoaderThrottle>(
           wc_getter.Run()));
+#endif
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  result.push_back(
+      std::make_unique<
+          request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle>());
 #endif
 
   if (chrome_navigation_ui_data &&
