@@ -729,7 +729,7 @@ bool IsTabResumptionEnabledForMostRecentTabOnly() {
   CHECK(IsTabResumptionEnabled());
   std::string feature_param = base::GetFieldTrialParamValueByFeature(
       kTabResumption, kTabResumptionParameterName);
-  return feature_param != kTabResumptionAllTabsParam;
+  return feature_param == kTabResumptionMostRecentTabOnlyParam;
 }
 
 bool IsTabResumption2_0Enabled() {

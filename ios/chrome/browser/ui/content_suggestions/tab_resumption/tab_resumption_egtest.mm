@@ -103,10 +103,7 @@ NSString* HostnameFromGURL(GURL URL) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabResumption.name) + ":" +
-      kTabResumptionParameterName + "/" + kTabResumptionAllTabsParam + "," +
-      syncer::kSyncSessionOnVisibilityChanged.name);
+  config.features_enabled.push_back(syncer::kSyncSessionOnVisibilityChanged);
   if ([self isUsingTabResumption15]) {
     config.features_enabled.push_back(kTabResumption1_5);
   } else {
