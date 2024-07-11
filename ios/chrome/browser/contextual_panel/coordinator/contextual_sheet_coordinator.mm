@@ -37,6 +37,8 @@
 }
 
 - (void)stop {
+  [_panelContentCoordinator stop];
+
   [_viewController willMoveToParentViewController:nil];
   [_viewController.view removeFromSuperview];
   [_viewController removeFromParentViewController];

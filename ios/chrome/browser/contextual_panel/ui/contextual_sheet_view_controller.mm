@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_view_controller.h"
 
+#import "ios/chrome/browser/contextual_panel/ui/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

@@ -13,6 +13,17 @@
 @protocol ContextualSheetDisplayController;
 @class PanelBlockData;
 
+@protocol PanelContentViewControllerMetricsDelegate
+
+// Returns the name of the current entrypoint info block.
+- (NSString*)entrypointInfoBlockName;
+
+// Returns whether the entrypoint was a loud entrypoint. This includes both
+// the large entrypoint chip and the IPH.
+- (BOOL)wasLoudEntrypoint;
+
+@end
+
 // A view controller to display the contents of the Contextual Panel.
 @interface PanelContentViewController : UIViewController <PanelContentConsumer>
 
@@ -22,6 +33,9 @@
 
 @property(nonatomic, weak) id<ContextualSheetDisplayController>
     sheetDisplayController;
+
+@property(nonatomic, weak) id<PanelContentViewControllerMetricsDelegate>
+    metricsDelegate;
 
 // Updates the current block data.
 - (void)setPanelBlocks:(NSArray<PanelBlockData*>*)panelBlocks;

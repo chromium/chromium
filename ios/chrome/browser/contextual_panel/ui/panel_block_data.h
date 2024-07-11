@@ -16,7 +16,8 @@
 @property(nonatomic, readonly) NSString* blockType;
 
 // A cell registration that can be used to dequeue a reeusable
-// UICollectionViewCell for this info block.
+// PanelItemCollectionViewCell for this info block.
+// NOTE: The returned cell must be a `PanelItemCollectionViewCell` subclass.
 @property(nonatomic, strong, readonly)
     UICollectionViewCellRegistration* cellRegistration;
 

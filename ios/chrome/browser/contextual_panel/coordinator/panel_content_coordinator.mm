@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_block_modulator.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_mediator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
@@ -20,6 +21,11 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
+@interface PanelContentCoordinator () <
+    PanelContentViewControllerMetricsDelegate>
+
+@end
+
 @implementation PanelContentCoordinator {
   // The view controller managed by this coordinator.
   PanelContentViewController* _viewController;
@@ -33,6 +39,7 @@
 
 - (void)start {
   _viewController = [[PanelContentViewController alloc] init];
+  _viewController.metricsDelegate = self;
 
   ChromeBroadcaster* broadcaster =
       FullscreenController::FromBrowser(self.browser)->broadcaster();
@@ -104,6 +111,40 @@
                              browser:self.browser
                    itemConfiguration:configuration];
   }
+}
+
+- (void)stop {
+  [_viewController willMoveToParentViewController:nil];
+  [_viewController.view removeFromSuperview];
+  [_viewController removeFromParentViewController];
+  _viewController = nil;
+}
+
+// Convenience method for getting the tab helper for the current active web
+// state.
+- (ContextualPanelTabHelper*)contextualPanelTabHelper {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+
+  return ContextualPanelTabHelper::FromWebState(activeWebState);
+}
+
+#pragma mark - PanelContentViewControllerMetricsDelegate
+
+- (NSString*)entrypointInfoBlockName {
+  auto entrypointConfig =
+      [self contextualPanelTabHelper]->GetFirstCachedConfig();
+
+  if (!entrypointConfig) {
+    return nil;
+  }
+
+  return base::SysUTF8ToNSString(
+      StringForItemType(entrypointConfig->item_type));
+}
+
+- (BOOL)wasLoudEntrypoint {
+  return [self contextualPanelTabHelper]->WasLoudMomentEntrypointShown();
 }
 
 @end

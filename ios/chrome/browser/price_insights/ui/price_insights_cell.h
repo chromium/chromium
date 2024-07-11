@@ -7,12 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/contextual_panel/ui/panel_item_collection_view_cell.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_item.h"
 
 @protocol PriceInsightsMutator;
 
 // UICollectionViewCell that contains data for Price Insights.
-@interface PriceInsightsCell : UICollectionViewCell
+@interface PriceInsightsCell : PanelItemCollectionViewCell
 
 // Contextual panel view controller.
 @property(nonatomic, weak) UIViewController* viewController;

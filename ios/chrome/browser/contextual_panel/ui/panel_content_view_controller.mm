@@ -4,9 +4,16 @@
 
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_view_controller.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/contextual_panel/ui/contextual_panel_metrics.h"
 #import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_display_controller.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_data.h"
+#import "ios/chrome/browser/contextual_panel/ui/panel_block_metrics_data.h"
+#import "ios/chrome/browser/contextual_panel/ui/panel_item_collection_view_cell.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -43,7 +50,11 @@ constexpr CGFloat kLogoSize = 22;
 // The top logo has a specific font size for branding reasons.
 const CGFloat kLogoLabelFontSize = 18;
 
+// The margin between the bottom of the content and the collection view.
 const CGFloat kContentBottomMargin = 16;
+
+// Threshold for how long a view is onscreen to count as visible.
+const base::TimeDelta kVisibleTimeThreshold = base::Milliseconds(10);
 
 // Identifier for the one section in this collection view.
 NSString* const kSectionIdentifier = @"section1";
@@ -53,6 +64,10 @@ NSString* const kViewAccessibilityIdentifier = @"PanelContentViewAXID";
 NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
 }  // namespace
+
+@interface PanelContentViewController () <UICollectionViewDelegate>
+
+@end
 
 @implementation PanelContentViewController {
   // The background visual effect view behind all the content.
@@ -76,11 +91,25 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   // The blocks currently being displayed.
   NSArray<PanelBlockData*>* _panelBlocks;
 
+  NSMutableDictionary<NSString*, PanelBlockMetricsData*>*
+      _panelBlocksMetricsDataDict;
+
   // The stored height of the expanded bottom toolbar.
   CGFloat _bottomToolbarHeight;
+
+  // Stored time the panel appeared.
+  base::Time _appearanceTime;
 }
 
 #pragma mark - UIViewController
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _panelBlocksMetricsDataDict = [[NSMutableDictionary alloc] init];
+  }
+  return self;
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -178,6 +207,71 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
       setContentHeight:[self preferredHeightForContent]];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  _appearanceTime = base::Time::Now();
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+
+  base::UmaHistogramTimes("IOS.ContextualPanel.VisibleTime",
+                          base::Time::Now() - _appearanceTime);
+
+  // First alert all visible cells that the will disappear.
+  for (NSIndexPath* indexPath in _collectionView.indexPathsForVisibleItems) {
+    UICollectionViewCell* cell =
+        [_collectionView cellForItemAtIndexPath:indexPath];
+    PanelItemCollectionViewCell* panelCell =
+        base::apple::ObjCCast<PanelItemCollectionViewCell>(cell);
+    [self updateTimeDisplayedForCell:panelCell atIndexPath:indexPath];
+
+    [panelCell cellDidDisappear];
+  }
+
+  std::string entrypointBlockName =
+      base::SysNSStringToUTF8([self.metricsDelegate entrypointInfoBlockName]);
+  BOOL wasLoudEntrypoint = [self.metricsDelegate wasLoudEntrypoint];
+
+  for (NSString* key in _panelBlocksMetricsDataDict) {
+    PanelBlockMetricsData* data = _panelBlocksMetricsDataDict[key];
+    BOOL wasVisible = data.timeVisible >= kVisibleTimeThreshold;
+    std::string blockName = base::SysNSStringToUTF8(key);
+
+    std::string uptimeHistogramName =
+        std::string("IOS.ContextualPanel.InfoBlockUptime.").append(blockName);
+    base::UmaHistogramTimes(uptimeHistogramName, data.timeVisible);
+
+    std::string impressionTypeHistogramName =
+        std::string("IOS.ContextualPanel.InfoBlockImpression.")
+            .append(blockName);
+    PanelBlockImpressionType blockImpressionType;
+    if (!wasVisible) {
+      blockImpressionType = PanelBlockImpressionType::NeverVisible;
+    } else {
+      if (blockName == entrypointBlockName) {
+        if (wasLoudEntrypoint) {
+          blockImpressionType =
+              PanelBlockImpressionType::VisibleAndLoudEntrypoint;
+        } else {
+          blockImpressionType =
+              PanelBlockImpressionType::VisibleAndSmallEntrypoint;
+        }
+      } else {
+        if (wasLoudEntrypoint) {
+          blockImpressionType =
+              PanelBlockImpressionType::VisibleAndOtherWasLoudEntrypoint;
+        } else {
+          blockImpressionType =
+              PanelBlockImpressionType::VisibleAndOtherWasSmallEntrypoint;
+        }
+      }
+    }
+    base::UmaHistogramEnumeration(impressionTypeHistogramName,
+                                  blockImpressionType);
+  }
+}
+
 #pragma mark - Public methods
 
 - (void)setPanelBlocks:(NSArray<PanelBlockData*>*)panelBlocks {
@@ -218,10 +312,11 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                                      itemIdentifier:(id)itemIdentifier {
   UICollectionViewCellRegistration* registration =
       [_panelBlocks[indexPath.row] cellRegistration];
-  return [collectionView
+  UICollectionViewCell* cell = [collectionView
       dequeueConfiguredReusableCellWithRegistration:registration
                                        forIndexPath:indexPath
                                                item:itemIdentifier];
+  return cell;
 }
 
 - (CGFloat)preferredHeightForContent {
@@ -232,6 +327,19 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                    _collectionView.contentInset.bottom;
 
   return height;
+}
+
+- (void)updateTimeDisplayedForCell:(PanelItemCollectionViewCell*)cell
+                       atIndexPath:(NSIndexPath*)indexPath {
+  PanelBlockData* panelData = _panelBlocks[indexPath.row];
+
+  if (!_panelBlocksMetricsDataDict[panelData.blockType]) {
+    _panelBlocksMetricsDataDict[panelData.blockType] =
+        [[PanelBlockMetricsData alloc] init];
+  }
+  PanelBlockMetricsData* metricsData =
+      _panelBlocksMetricsDataDict[panelData.blockType];
+  metricsData.timeVisible += cell.timeSinceAppearance;
 }
 
 #pragma mark - View Initialization
@@ -271,6 +379,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
       kHeaderHeight, 0, _bottomToolbarHeight + kContentBottomMargin, 0);
   _collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
+  _collectionView.delegate = self;
 
   __weak __typeof(self) weakSelf = self;
   auto cellProvider =
@@ -355,6 +464,26 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     [self.sheetDisplayController
         setContentHeight:[self preferredHeightForContent]];
   }
+}
+
+#pragma mark - UICollectionViewDelegate
+
+- (void)collectionView:(UICollectionView*)collectionView
+       willDisplayCell:(UICollectionViewCell*)cell
+    forItemAtIndexPath:(NSIndexPath*)indexPath {
+  PanelItemCollectionViewCell* panelCell =
+      base::apple::ObjCCast<PanelItemCollectionViewCell>(cell);
+  [panelCell cellWillAppear];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    didEndDisplayingCell:(UICollectionViewCell*)cell
+      forItemAtIndexPath:(NSIndexPath*)indexPath {
+  PanelItemCollectionViewCell* panelCell =
+      base::apple::ObjCCast<PanelItemCollectionViewCell>(cell);
+  [self updateTimeDisplayedForCell:panelCell atIndexPath:indexPath];
+
+  [panelCell cellDidDisappear];
 }
 
 @end

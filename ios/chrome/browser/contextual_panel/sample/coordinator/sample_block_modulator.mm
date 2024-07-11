@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/sample/coordinator/sample_block_modulator.h"
 
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_data.h"
+#import "ios/chrome/browser/contextual_panel/ui/panel_item_collection_view_cell.h"
 
 @implementation SampleBlockModulator {
   // The cell registration object this modulator uses for its ui.
@@ -13,8 +14,8 @@
 
 - (void)start {
   _cellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[UICollectionViewCell class]
-           configurationHandler:^(UICollectionViewCell* cell,
+      registrationWithCellClass:[PanelItemCollectionViewCell class]
+           configurationHandler:^(PanelItemCollectionViewCell* cell,
                                   NSIndexPath* indexPath, id item) {
              // Do any custom cell configuration here in the configuration
              // handler.

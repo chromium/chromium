@@ -7,11 +7,14 @@ source_set("ui") {
     "contextual_sheet_display_controller.h",
     "contextual_sheet_view_controller.h",
     "contextual_sheet_view_controller.mm",
+    "panel_block_metrics_data.h",
+    "panel_block_metrics_data.mm",
     "panel_content_consumer.h",
     "panel_content_view_controller.h",
     "panel_content_view_controller.mm",
   ]
   deps = [
+    ":metrics",
     ":public",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_branded_strings_grit",
@@ -28,9 +31,16 @@ source_set("public") {
   sources = [
     "panel_block_data.h",
     "panel_block_data.mm",
+    "panel_item_collection_view_cell.h",
+    "panel_item_collection_view_cell.mm",
   ]
   deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("metrics") {
+  sources = [ "contextual_panel_metrics.h" ]
+  deps = [ "//base" ]
 }
 
 source_set("eg2_tests") {

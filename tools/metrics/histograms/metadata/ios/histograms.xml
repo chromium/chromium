@@ -379,6 +379,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.ContextualPanel.InfoBlockImpression.{ContextualPanelItemType}"
+    enum="IOSContextualPanelInfoBlockImpression" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the type of impression for the given infoblock. This includes when
+    the panel UI closes due to tab switching, even if the panel will re-open
+    when returning to that tab. Fired every time the panel closes for each block
+    in that panel.
+  </summary>
+  <token key="ContextualPanelItemType" variants="ContextualPanelItemType"/>
+</histogram>
+
+<histogram name="IOS.ContextualPanel.InfoBlockUptime.{ContextualPanelItemType}"
+    units="ms" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    How long each individual info block was visible for. when returning to that
+    tab. Fired every time the panel closes for each block in that panel.
+  </summary>
+  <token key="ContextualPanelItemType" variants="ContextualPanelItemType"/>
+</histogram>
+
 <histogram name="IOS.ContextualPanel.Model.InfoBlocksWithContentCount"
     units="count" expires_after="2025-06-30">
   <owner>rkgibson@google.com</owner>
@@ -397,6 +422,17 @@ chromium-metrics-reviews@google.com.
     every navigation.
   </summary>
   <token key="ContextualPanelItemType" variants="ContextualPanelItemType"/>
+</histogram>
+
+<histogram name="IOS.ContextualPanel.VisibleTime" units="ms"
+    expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    How long the Contextual Panel was visible for. Fired each time the panel UI
+    closes. This includes when the panel UI closes due to tab switching, even if
+    the panel will re-open when returning to that tab.
+  </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyPasswordCount" units="count"

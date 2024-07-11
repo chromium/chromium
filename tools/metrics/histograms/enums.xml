@@ -13646,6 +13646,20 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="AccessibilityExtraExtraExtraLarge"/>
 </enum>
 
+<!-- LINT.IfChange(IOSContextualPanelInfoBlockImpression) -->
+
+<enum name="IOSContextualPanelInfoBlockImpression">
+  <int value="0" label="Never Visible"/>
+  <int value="1" label="Visible and was small entrypoint"/>
+  <int value="2" label="Visible and was loud entrypoint (large or showed IPH)"/>
+  <int value="3" label="Visible and other block was small entrypoint"/>
+  <int value="4"
+      label="Visible and other block was loud entrypoint (large or showed
+             IPH)"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/ui/contextual_panel_metrics.h:PanelBlockImpressionType) -->
+
 <!-- LINT.IfChange(IOSContextualPanelModelRelevance) -->
 
 <enum name="IOSContextualPanelModelRelevance">
@@ -13654,7 +13668,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="High"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/model/contextual_panel_model.h:ModelRelevanceType) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/ui/contextual_panel_metrics.h:ModelRelevanceType) -->
 
 <enum name="IOSDefaultBookmarkFolderOutcome">
   <int value="0" label="kUnset"/>
