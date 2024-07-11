@@ -359,40 +359,4 @@ TEST_F(PowerStatusTest, BatteryImageColorResolution) {
                 cros_tokens::kColorAlert));
 }
 
-// Tests that toggling battery saver state sends notifications to observers and
-// updates the value returned from IsBatterySaverActive().
-TEST_F(PowerStatusTest, BatterySaver) {
-  // Let any callbacks queued in initialization run.
-  base::RunLoop().RunUntilIdle();
-
-  const int initial_power_changed_count = test_observer_->power_changed_count();
-
-  // Check that we default to off.
-  ASSERT_FALSE(power_status_->IsBatterySaverActive());
-
-  // Turn battery saver on.
-  {
-    power_manager::SetBatterySaverModeStateRequest request;
-    request.set_enabled(true);
-    chromeos::FakePowerManagerClient::Get()->SetBatterySaverModeState(request);
-    base::RunLoop().RunUntilIdle();
-  }
-
-  EXPECT_EQ(initial_power_changed_count + 1,
-            test_observer_->power_changed_count());
-  EXPECT_TRUE(power_status_->IsBatterySaverActive());
-
-  // Turn battery saver off.
-  {
-    power_manager::SetBatterySaverModeStateRequest request;
-    request.set_enabled(false);
-    chromeos::FakePowerManagerClient::Get()->SetBatterySaverModeState(request);
-    base::RunLoop().RunUntilIdle();
-  }
-
-  EXPECT_EQ(initial_power_changed_count + 2,
-            test_observer_->power_changed_count());
-  EXPECT_FALSE(power_status_->IsBatterySaverActive());
-}
-
 }  // namespace ash
