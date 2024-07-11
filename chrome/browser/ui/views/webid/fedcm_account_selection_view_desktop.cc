@@ -907,6 +907,11 @@ void FedCmAccountSelectionView::CloseModalDialog() {
   }
 }
 
+content::WebContents* FedCmAccountSelectionView::GetRpWebContents() {
+  // This function is only used on Android.
+  NOTREACHED();
+}
+
 void FedCmAccountSelectionView::OnChooseAnAccount() {
   state_ = State::MULTI_ACCOUNT_PICKER;
   account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_,

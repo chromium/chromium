@@ -49,6 +49,13 @@ public interface AccountSelectionComponent {
 
         /** Called when the accounts UI is displayed. */
         void onAccountsDisplayed();
+
+        /**
+         * Gets the WebContents used by this delegate.
+         *
+         * <p>For use by code running in the CCT popup.
+         */
+        WebContents getWebContents();
     }
 
     /**
@@ -130,7 +137,8 @@ public interface AccountSelectionComponent {
     void showUrl(@IdentityRequestDialogLinkType int linkType, GURL url);
 
     /**
-     * Shows a modal dialog with the given url. Returns the WebContents of the new dialog.
+     * Shows a custom tab with the given url. Returns the WebContents of the new dialog.
+     *
      * @param url The URL to be loaded in the dialog.
      */
     WebContents showModalDialog(GURL url);
@@ -140,4 +148,15 @@ public interface AccountSelectionComponent {
 
     /** Gets notified about the modal dialog that it opened being closed. */
     void onModalDialogClosed();
+
+    /** Gets the WebContents for this object. */
+    WebContents getWebContents();
+
+    /**
+     * Gets the WebContents for the RP associated with this object.
+     *
+     * <p>This is intended to be called on the custom tab object to return the WebContents for the
+     * RP, i.e. the WebContents for the object that showModalDialog was called on.
+     */
+    WebContents getRpWebContents();
 }

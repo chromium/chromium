@@ -783,7 +783,8 @@ void FederatedAuthRequestImpl::RequestToken(
 
   if (HasPendingRequest()) {
     FederatedAuthRequestImpl* pending_request =
-        webid::GetPageData(&render_frame_host())->PendingWebIdentityRequest();
+        webid::GetPageData(render_frame_host().GetPage())
+            ->PendingWebIdentityRequest();
 
     RpMode pending_request_rp_mode = pending_request->GetRpMode();
     RpMode new_request_rp_mode = idp_get_params_ptrs[0]->mode;
@@ -843,7 +844,8 @@ void FederatedAuthRequestImpl::RequestToken(
   should_complete_request_immediately_ = should_complete_request_immediately;
   mediation_requirement_ = requirement;
   auth_request_token_callback_ = std::move(callback);
-  webid::GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(this);
+  webid::GetPageData(render_frame_host().GetPage())
+      ->SetPendingWebIdentityRequest(this);
   network_manager_ = CreateNetworkManager();
   request_dialog_controller_ = CreateDialogController();
   start_time_ = base::TimeTicks::Now();
@@ -852,7 +854,7 @@ void FederatedAuthRequestImpl::RequestToken(
       idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton) {
     rp_mode_ = RpMode::kButton;
     std::optional<base::TimeTicks> user_info_accounts_response_time =
-        webid::GetPageData(&render_frame_host())
+        webid::GetPageData(render_frame_host().GetPage())
             ->ConsumeUserInfoAccountsResponseTime(
                 idp_get_params_ptrs[0]->providers[0]->config->config_url);
     if (user_info_accounts_response_time) {
@@ -1120,15 +1122,22 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
     return;
   }
 
-  // TODO(crbug.com/40273061): notify Android UI about token request being
-  // resolved.
-  if (!identity_registry_) {
+  if (!identity_registry_ && !SetupIdentityRegistryFromPopup()) {
     std::move(callback).Run(false);
     return;
   }
 
   bool accepted =
       identity_registry_->NotifyResolve(origin(), account_id, token);
+#if BUILDFLAG(IS_ANDROID)
+  if (accepted) {
+    if (!request_dialog_controller_) {
+      request_dialog_controller_ = CreateDialogController();
+      CHECK(request_dialog_controller_);
+    }
+    request_dialog_controller_->CloseModalDialog();
+  }
+#endif
   std::move(callback).Run(accepted);
 }
 
@@ -1223,9 +1232,8 @@ void FederatedAuthRequestImpl::OnIdpSigninStatusReceived(
 }
 
 bool FederatedAuthRequestImpl::HasPendingRequest() const {
-  bool has_pending_request =
-      webid::GetPageData(&render_frame_host())->PendingWebIdentityRequest() !=
-      nullptr;
+  bool has_pending_request = webid::GetPageData(render_frame_host().GetPage())
+                                 ->PendingWebIdentityRequest() != nullptr;
   DCHECK(has_pending_request || !auth_request_token_callback_);
   return has_pending_request;
 }
@@ -2440,6 +2448,7 @@ void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,
   // TODO(crbug.com/336815315): Should we notify browser automation of this
   // dialog?
   dialog_type_ = dialog_type;
+  config_url_ = idp_config_url;
 
   WebContents* web_contents = request_dialog_controller_->ShowModalDialog(
       url_to_show, base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
@@ -2780,7 +2789,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   if (!should_delay_callback || should_complete_request_immediately_) {
     CleanUp();
-    webid::GetPageData(&render_frame_host())
+    webid::GetPageData(render_frame_host().GetPage())
         ->SetPendingWebIdentityRequest(nullptr);
     errors_logged_to_console_ = false;
 
@@ -3003,7 +3012,6 @@ bool FederatedAuthRequestImpl::OnResolve(
     const std::optional<std::string>& account_id,
     const std::string& token) {
   // Close the pop-up window post user permission.
-  // TODO(crbug.com/339481286): Make this work on Android.
   if (!request_dialog_controller_) {
     return false;
   }
@@ -3026,6 +3034,45 @@ bool FederatedAuthRequestImpl::OnResolve(
   // TODO(crbug.com/40262526): handle the corner cases where CompleteRequest
   // can't actually fulfill the request.
   return true;
+}
+
+bool FederatedAuthRequestImpl::SetupIdentityRegistryFromPopup() {
+#if BUILDFLAG(IS_ANDROID)
+  if (identity_registry_) {
+    return true;
+  }
+
+  if (!request_dialog_controller_) {
+    request_dialog_controller_ = CreateDialogController();
+    CHECK(request_dialog_controller_);
+  }
+
+  // Because ShowModalDialog does not return the web contents on Android, we
+  // need to set up the IdentityRegistry now.
+  WebContents* rp_web_contents = request_dialog_controller_->GetRpWebContents();
+  // This can be null if resolve was called in a regular tab (as opposed to
+  // a CCT opened from ShowModalDialog).
+  if (!rp_web_contents) {
+    return false;
+  }
+  FederatedAuthRequestImpl* rp_auth_request =
+      webid::GetPageData(rp_web_contents->GetPrimaryPage())
+          ->PendingWebIdentityRequest();
+  if (!rp_auth_request) {
+    return false;
+  }
+
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  IdentityRegistry::CreateForWebContents(
+      web_contents, rp_auth_request->weak_ptr_factory_.GetWeakPtr(),
+      rp_auth_request->config_url_);
+  identity_registry_ = IdentityRegistry::FromWebContents(web_contents);
+
+  return true;
+#else
+  return false;
+#endif
 }
 
 void FederatedAuthRequestImpl::OnRejectRequest() {

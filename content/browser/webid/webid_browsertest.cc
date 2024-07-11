@@ -1596,9 +1596,27 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
 
   std::string token = "--fake-token-from-pop-up-window--";
 
+  base::RunLoop run_loop2;
+#if BUILDFLAG(IS_ANDROID)
+  mock = std::make_unique<
+      testing::NiceMock<MockIdentityRequestDialogController>>();
+  // On Android, IdentityProvider.resolve() should invoke CloseModalDialog() on
+  // the popup's dialog controller.
+  EXPECT_CALL(*mock, CloseModalDialog).WillOnce([&run_loop2]() {
+    run_loop2.Quit();
+  });
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+#else
+  // On desktop, CloseModalDialog gets called on the RP's dialog controller.
+  EXPECT_CALL(*controller, CloseModalDialog).WillOnce([&run_loop2]() {
+    run_loop2.Quit();
+  });
+#endif
+
   // Resolve the hanging token request by notifying the registry.
   EXPECT_TRUE(content::ExecJs(
       modal, R"(IdentityProvider.resolve(')" + token + R"('))"));
+  run_loop2.Run();
 
   // Finally, wait for the promise to resolve and compare its result
   // to the expected token that was provided in the modal dialog.

@@ -201,6 +201,18 @@ void IdentityDialogController::CloseModalDialog() {
   account_view_->CloseModalDialog();
 }
 
+content::WebContents* IdentityDialogController::GetRpWebContents() {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, this method is invoked on the modal dialog controller,
+  // which means we may need to initialize the |account_view|.
+  if (!account_view_) {
+    account_view_ = AccountSelectionView::Create(this);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  CHECK(account_view_);
+  return account_view_->GetRpWebContents();
+}
+
 void IdentityDialogController::RequestIdPRegistrationPermision(
     const url::Origin& origin,
     base::OnceCallback<void(bool accepted)> callback) {

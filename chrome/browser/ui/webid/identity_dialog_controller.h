@@ -82,6 +82,7 @@ class IdentityDialogController
       const GURL& url,
       DismissCallback dismiss_callback) override;
   void CloseModalDialog() override;
+  content::WebContents* GetRpWebContents() override;
 
   // AccountSelectionView::Delegate:
   void OnAccountSelected(const GURL& idp_config_url,

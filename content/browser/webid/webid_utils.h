@@ -107,7 +107,7 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
 
 bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin);
 
-FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host);
+FederatedAuthRequestPageData* GetPageData(Page& page);
 
 // Returns a new session ID. Used to record UKM metrics corresponding to a new
 // API invocation, like get() or disconnect().

@@ -55,6 +55,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   void ShowUrl(LinkType link_type, const GURL& url) override;
   content::WebContents* ShowModalDialog(const GURL& url) override;
   void CloseModalDialog() override;
+  content::WebContents* GetRpWebContents() override;
 
   void OnAccountSelected(JNIEnv* env,
                          const GURL& idp_config_url,

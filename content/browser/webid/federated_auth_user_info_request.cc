@@ -227,7 +227,7 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
     return;
   }
 
-  webid::GetPageData(render_frame_host_)
+  webid::GetPageData(render_frame_host_->GetPage())
       ->SetUserInfoAccountsResponseTime(idp_config_url_,
                                         base::TimeTicks::Now());
 

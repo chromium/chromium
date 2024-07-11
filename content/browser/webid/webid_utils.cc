@@ -463,9 +463,8 @@ bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin) {
   return runtime_enabled || flag_enabled;
 }
 
-FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
-  return FederatedAuthRequestPageData::GetOrCreateForPage(
-      render_frame_host->GetPage());
+FederatedAuthRequestPageData* GetPageData(Page& page) {
+  return FederatedAuthRequestPageData::GetOrCreateForPage(page);
 }
 
 int GetNewSessionID() {

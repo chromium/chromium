@@ -112,6 +112,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                  const std::optional<std::string>& account_id,
                  const std::string& token) override;
 
+  // To be called on the FederatedAuthRequest object corresponding to a
+  // popup opened by ShowModalDialog, specifically for the case when
+  // ShowModalDialog returned null (particularly Android). In that case,
+  // we can only set up the IdentityRegistry object when we get a call
+  // from the popup context.
+  // Returns false when no identity registry could be created (e.g. this
+  // is not in a context created by ShowModalDialog).
+  bool SetupIdentityRegistryFromPopup();
+
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
 
@@ -532,7 +541,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // LoginToIdp() is called, this is the login URL for the IDP.
   GURL login_url_;
 
-  // If dialog_type_ is kError, this is the config URL for the IDP.
+  // If dialog_type_ is kError or a popup is open, this is the config URL for
+  // the IDP.
   GURL config_url_;
 
   // If dialog_type_ is kError, this is the fetch status of the token request.

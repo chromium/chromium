@@ -146,6 +146,8 @@ class MockAccountSelectionView : public AccountSelectionView {
               (override));
 
   MOCK_METHOD(void, CloseModalDialog, (), (override));
+
+  MOCK_METHOD(content::WebContents*, GetRpWebContents, (), (override));
 };
 
 TEST_F(IdentityDialogControllerTest, Accept) {

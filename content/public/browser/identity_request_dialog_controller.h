@@ -217,6 +217,10 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Closes the modal dialog.
   virtual void CloseModalDialog();
 
+  // When called on an object corresponding to the popup opened by
+  // ShowModalDialog, returns the web contents for the original RP page.
+  virtual WebContents* GetRpWebContents();
+
   // Request the user's permission to register an origin as an identity
   // provider. Calls the callback with a response of whether the request was
   // accepted or not.

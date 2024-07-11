@@ -292,6 +292,17 @@ void AccountSelectionViewAndroid::CloseModalDialog() {
   Java_AccountSelectionBridge_closeModalDialog(env, java_object_internal_);
 }
 
+content::WebContents* AccountSelectionViewAndroid::GetRpWebContents() {
+  // The Java object needs to be recreated, as this is invoked for the
+  // CCT.
+  if (!MaybeCreateJavaObject()) {
+    return nullptr;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  return content::WebContents::FromJavaWebContents(
+      Java_AccountSelectionBridge_getRpWebContents(env, java_object_internal_));
+}
+
 void AccountSelectionViewAndroid::OnAccountSelected(
     JNIEnv* env,
     const GURL& idp_config_url,

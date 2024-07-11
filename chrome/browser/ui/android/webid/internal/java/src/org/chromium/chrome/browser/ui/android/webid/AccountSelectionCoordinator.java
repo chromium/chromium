@@ -74,6 +74,7 @@ public class AccountSelectionCoordinator
     // call occurs.
     private static int sCurrentFedcmId;
 
+    private Tab mTab;
     private WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
     private AccountSelectionBottomSheetContent mBottomSheetContent;
@@ -87,6 +88,7 @@ public class AccountSelectionCoordinator
             BottomSheetController sheetController,
             @RpMode.EnumType int rpMode,
             AccountSelectionComponent.Delegate delegate) {
+        mTab = tab;
         mBottomSheetController = sheetController;
         mWindowAndroid = windowAndroid;
         mDelegate = delegate;
@@ -286,17 +288,11 @@ public class AccountSelectionCoordinator
     public void closeModalDialog() {
         // Note that this method is invoked on the object corresponding to the CCT. It
         // will notify the opener that it is being closed and close itself.
-        Activity activity = mWindowAndroid.getActivity().get();
-        if (!(activity instanceof ChromeActivity)) {
-            return;
-        }
-        ChromeActivity chromeActivity = (ChromeActivity) activity;
-        int fedcmId =
-                IntentUtils.safeGetIntExtra(
-                        chromeActivity.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1);
+        int fedcmId = getFedCmId();
         // Close the current tab by finishing the activity, if we know it was initiated
         // by the FedCM API.
         if (fedcmId == -1) return;
+        Activity activity = mWindowAndroid.getActivity().get();
         activity.finish();
         WeakReference<AccountSelectionComponent.Delegate> delegate =
                 sFedCMDelegateMap.remove(fedcmId);
@@ -312,6 +308,22 @@ public class AccountSelectionCoordinator
         // activity is resumed.
         mWindowAndroid.removeActivityStateObserver(this);
         mMediator.onModalDialogClosed();
+    }
+
+    @Override
+    public WebContents getWebContents() {
+        return mTab.getWebContents();
+    }
+
+    @Override
+    public WebContents getRpWebContents() {
+        int fedcmId = getFedCmId();
+        if (fedcmId == -1) return null;
+        WeakReference<AccountSelectionComponent.Delegate> delegate = sFedCMDelegateMap.get(fedcmId);
+        if (delegate == null || delegate.get() == null) {
+            return null;
+        }
+        return delegate.get().getWebContents();
     }
 
     // ActivityStateObserver
@@ -334,5 +346,16 @@ public class AccountSelectionCoordinator
     @VisibleForTesting
     AccountSelectionMediator getMediator() {
         return mMediator;
+    }
+
+    private int getFedCmId() {
+        // This should be called on the object corresponding to the CCT.
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (!(activity instanceof ChromeActivity)) {
+            return -1;
+        }
+        ChromeActivity chromeActivity = (ChromeActivity) activity;
+        return IntentUtils.safeGetIntExtra(
+                chromeActivity.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1);
     }
 }

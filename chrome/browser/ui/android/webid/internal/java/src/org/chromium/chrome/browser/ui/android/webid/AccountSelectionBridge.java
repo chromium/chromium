@@ -206,6 +206,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         mAccountSelectionComponent.closeModalDialog();
     }
 
+    @CalledByNative
+    private WebContents getRpWebContents() {
+        return mAccountSelectionComponent.getRpWebContents();
+    }
+
     @Override
     public void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
         if (mNativeView != 0) {
@@ -253,6 +258,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @Override
     public void onModalDialogClosed() {
         mAccountSelectionComponent.onModalDialogClosed();
+    }
+
+    @Override
+    public WebContents getWebContents() {
+        return mAccountSelectionComponent.getWebContents();
     }
 
     @NativeMethods

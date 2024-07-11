@@ -114,6 +114,7 @@ class AccountSelectionView {
   virtual void ShowUrl(LinkType type, const GURL& url) = 0;
   virtual content::WebContents* ShowModalDialog(const GURL& url) = 0;
   virtual void CloseModalDialog() = 0;
+  virtual content::WebContents* GetRpWebContents() = 0;
 
  protected:
   raw_ptr<Delegate> delegate_ = nullptr;

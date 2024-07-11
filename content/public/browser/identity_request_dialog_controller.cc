@@ -145,6 +145,10 @@ WebContents* IdentityRequestDialogController::ShowModalDialog(
 
 void IdentityRequestDialogController::CloseModalDialog() {}
 
+WebContents* IdentityRequestDialogController::GetRpWebContents() {
+  return nullptr;
+}
+
 void IdentityRequestDialogController::RequestIdPRegistrationPermision(
     const url::Origin& origin,
     base::OnceCallback<void(bool accepted)> callback) {

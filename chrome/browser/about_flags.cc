@@ -9385,7 +9385,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
     {"fedcm-authz", flag_descriptions::kFedCmAuthzName,
-     flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
+     flag_descriptions::kFedCmAuthzDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
 
     {"fedcm-button-mode", flag_descriptions::kFedCmButtonModeName,

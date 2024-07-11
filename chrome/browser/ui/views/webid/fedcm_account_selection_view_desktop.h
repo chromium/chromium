@@ -98,6 +98,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void ShowUrl(LinkType link_type, const GURL& url) override;
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
+  content::WebContents* GetRpWebContents() override;
 
   // FedCmModalDialogView::Observer
   void OnPopupWindowDestroyed() override;

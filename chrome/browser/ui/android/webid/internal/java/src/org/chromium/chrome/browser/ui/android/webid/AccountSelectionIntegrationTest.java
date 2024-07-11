@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
@@ -35,6 +36,7 @@ import androidx.test.runner.lifecycle.Stage;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -77,6 +79,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
             Arrays.asList(
                     new ParameterSet().value(RpMode.WIDGET).name("widget"),
                     new ParameterSet().value(RpMode.BUTTON).name("button"));
+
+    @Mock AccountSelectionComponent.Delegate mCustomTabMockBridge;
 
     public AccountSelectionIntegrationTest(@RpMode.EnumType int rpMode) {
         mRpMode = rpMode;
@@ -280,6 +284,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
     @Test
     @MediumTest
     public void testShowAndCloseModalDialog() {
+        when(mMockBridge.getWebContents()).thenReturn(mAccountSelection.getWebContents());
         CustomTabActivity activity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         CustomTabActivity.class,
@@ -307,9 +312,16 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                                     activity.getWindowAndroid(),
                                     customTabController,
                                     mRpMode,
-                                    mMockBridge);
+                                    mCustomTabMockBridge);
+                    Criteria.checkThat(mAccountSelection.getWebContents(), Matchers.notNullValue());
+                    Criteria.checkThat(mAccountSelection.getRpWebContents(), Matchers.nullValue());
+                    Criteria.checkThat(
+                            customTabComponent.getWebContents(), Matchers.notNullValue());
+                    Criteria.checkThat(
+                            customTabComponent.getRpWebContents(), Matchers.notNullValue());
                     customTabComponent.closeModalDialog();
                 });
+        verify(mCustomTabMockBridge, never()).getWebContents();
     }
 
     @Test
