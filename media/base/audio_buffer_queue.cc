@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_timestamp_helper.h"
 
 namespace media {
 
@@ -51,6 +52,16 @@ void AudioBufferQueue::SeekFrames(int frames) {
   CHECK_LE(frames, frames_);
   int taken = InternalRead(frames, true, 0, 0, NULL);
   DCHECK_EQ(taken, frames);
+}
+
+std::optional<base::TimeDelta> AudioBufferQueue::FrontTimestamp() const {
+  if (buffers_.empty()) {
+    return std::nullopt;
+  }
+
+  return buffers_.front()->timestamp() +
+         AudioTimestampHelper::FramesToTime(front_buffer_offset_,
+                                            buffers_.front()->sample_rate());
 }
 
 int AudioBufferQueue::InternalRead(int frames,

@@ -270,6 +270,10 @@ int AudioRendererAlgorithm::RunWsolaAndFill(AudioBus* dest,
   // these cases.
   cc::ScopedSubnormalFloatDisabler disable_subnormals;
 
+  // WSOLA doesn't actually consume input frames until the WSOLA iteration
+  // completes; see RemoveOldInputFrames() in RunOneWsolaIteration().
+  const auto initial_input_frames = audio_buffer_.frames();
+
   int rendered_frames = 0;
   do {
     rendered_frames +=
@@ -277,6 +281,19 @@ int AudioRendererAlgorithm::RunWsolaAndFill(AudioBus* dest,
                                dest_offset + rendered_frames, dest);
   } while (rendered_frames < requested_frames &&
            RunOneWsolaIteration(playback_rate));
+
+  // The effective rate is just how many input frames were used to produce the
+  // requested number of output frames. We don't want the cumulative value since
+  // that is just ~`playback_rate`, but instead the "impulse" of this call.
+  //
+  // Note: The effective rate may briefly be zero for playback rates below 1.0.
+  // Note 2: During end-of-stream, `rendered_frames` may be zero.
+  if (rendered_frames > 0) {
+    effective_playback_rate_ = (initial_input_frames - audio_buffer_.frames()) /
+                               static_cast<double>(rendered_frames);
+  } else {
+    effective_playback_rate_ = playback_rate;
+  }
   return rendered_frames;
 }
 
@@ -308,9 +325,11 @@ int AudioRendererAlgorithm::FillBuffer(AudioBus* dest,
       const int frames_read =
           audio_buffer_.ReadFrames(frames_to_copy, dest_offset, dest);
       DCHECK_EQ(frames_read, frames_to_copy);
+      effective_playback_rate_ = 1.0;
       return frames_read;
     }
     case FillBufferMode::kResampler:
+      effective_playback_rate_ = playback_rate;
       return ResampleAndFill(dest, dest_offset, requested_frames,
                              playback_rate);
 
@@ -359,6 +378,7 @@ void AudioRendererAlgorithm::SetFillBufferMode(FillBufferMode mode) {
     if (wsola_output_)
       wsola_output_->Zero();
     num_complete_frames_ = 0;
+    effective_playback_rate_ = 0;
   }
   resampler_.reset();
 
@@ -479,6 +499,10 @@ double AudioRendererAlgorithm::DelayInFrames(double playback_rate) const {
   const float buffered_output_frames = BufferedFrames() / playback_rate;
   const float unconverted_output_frames = buffered_output_frames - output_time_;
   return unconverted_output_frames + num_complete_frames_;
+}
+
+std::optional<base::TimeDelta> AudioRendererAlgorithm::FrontTimestamp() const {
+  return audio_buffer_.FrontTimestamp();
 }
 
 bool AudioRendererAlgorithm::CanPerformWsola() const {

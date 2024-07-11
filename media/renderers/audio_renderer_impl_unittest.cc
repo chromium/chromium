@@ -603,6 +603,10 @@ class AudioRendererImplTest : public ::testing::Test,
     base::RunLoop().RunUntilIdle();
   }
 
+  base::TimeDelta CalculateClockAndAlgorithmDrift() {
+    return renderer_->CalculateClockAndAlgorithmDrift();
+  }
+
   // Fixture members.
   AudioParameters hardware_params_;
   base::test::TaskEnvironment task_environment_;
@@ -1411,6 +1415,64 @@ TEST_F(AudioRendererImplTest, TimeSourceBehavior) {
       current_time + timestamp_helper.GetFrameDuration(frames_to_consume.value),
       CurrentMediaWallClockTime(&is_time_moving));
   EXPECT_TRUE(is_time_moving);
+}
+
+TEST_F(AudioRendererImplTest, MultipleRateChangesKeepSync) {
+  Initialize();
+  Preroll();
+
+  AudioTimestampHelper timestamp_helper(kOutputSamplesPerSecond);
+  timestamp_helper.SetBaseTimestamp(base::TimeDelta());
+
+  // Start ticking, but use a zero playback rate, time should still be stopped
+  // until a positive playback rate is set and the first Render() is called.
+  renderer_->SetPlaybackRate(1.0);
+  StartTicking();
+
+  // Issue the first render call to start time moving.
+  OutputFrames frames_to_consume(frames_buffered().value / 10);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+
+  // Time shouldn't change just yet because we've only sent the initial audio
+  // data to the hardware.
+  bool is_time_moving;
+  EXPECT_EQ(tick_clock_.NowTicks(),
+            ConvertMediaTime(base::TimeDelta(), &is_time_moving));
+  EXPECT_TRUE(is_time_moving);
+
+  // Issue reads w/ multiple playback rate changes from above to below and back.
+  // The drift should remain zero throughout.
+  renderer_->SetPlaybackRate(2.0);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  renderer_->SetPlaybackRate(3.0);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  WaitForPendingRead();
+  DeliverRemainingAudio();
+
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  renderer_->SetPlaybackRate(0.5);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  renderer_->SetPlaybackRate(1.0);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  renderer_->SetPlaybackRate(1.5);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
 }
 
 TEST_F(AudioRendererImplTest, BitstreamEndOfStream) {

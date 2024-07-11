@@ -140,12 +140,21 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   // correspond to the audio input (some samples may be duplicated or skipped).
   double DelayInFrames(double playback_rate) const;
 
+  // Returns the timestamp of the first AudioBuffer in `audio_buffer_` if any
+  // buffers exist.
+  std::optional<base::TimeDelta> FrontTimestamp() const;
+
   // Returns the samples per second for this audio stream.
   int samples_per_second() const { return samples_per_second_; }
 
   std::vector<bool> channel_mask_for_testing() { return channel_mask_; }
 
   FillBufferMode last_mode_for_testing() { return last_mode_; }
+
+  // WSOLA is a non-linear operation, so in order for AudioClock to be correct
+  // we need to expose the actual rate of input frames consumed. This is updated
+  // after every call to FillBuffer().
+  double effective_playback_rate() const { return effective_playback_rate_; }
 
  private:
   FillBufferMode ChooseBufferMode(double playback_rate);
@@ -335,6 +344,8 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   // The initial and maximum capacity calculated by Initialize().
   int64_t initial_capacity_;
   int64_t max_capacity_;
+
+  double effective_playback_rate_ = 0;
 
   FillBufferMode last_mode_ = FillBufferMode::kPassthrough;
 };

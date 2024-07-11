@@ -240,6 +240,10 @@ class MEDIA_EXPORT AudioRendererImpl
   void EnableSpeechRecognition();
   void TranscribeAudio(scoped_refptr<media::AudioBuffer> buffer);
 
+  // Returns the delta between AudioClock::back_timestamp() and
+  // AudioRendererAlgorithm::FrontTimestamp().
+  base::TimeDelta CalculateClockAndAlgorithmDrift() const;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::unique_ptr<AudioBufferConverter> buffer_converter_;
