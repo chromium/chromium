@@ -147,8 +147,6 @@ class CORE_EXPORT ResponsivenessMetrics
   explicit ResponsivenessMetrics(WindowPerformance*);
   ~ResponsivenessMetrics();
 
-  void FlushAllEventsAtPageHidden();
-
   // Flush UKM timestamps of composition events for testing.
   void FlushAllEventsForTesting();
 

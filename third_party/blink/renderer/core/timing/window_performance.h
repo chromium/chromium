@@ -189,8 +189,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
-  void PageVisibilityChangedWithTimestamp(
-      base::TimeTicks visibility_change_timestamp);
 
   void OnLargestContentfulPaintUpdated(
       base::TimeTicks start_time,
@@ -227,10 +225,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
-  void ReportAllPendingEventTimingsOnPageHidden();
-
-  void FlushEventTimingsOnPageHidden();
-
   void OnPresentationPromiseResolved(
       uint64_t presentation_index,
       const viz::FrameTimingDetails& presentation_details);
@@ -265,7 +259,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
       base::TimeTicks presentation_timestamp);
 
   // The last time the page visibility was changed.
-  base::TimeTicks last_hidden_timestamp_;
+  base::TimeTicks last_visibility_change_timestamp_;
 
   // A list of timestamps that javascript modal dialogs was showing. These are
   // timestamps right before start showing each dialog.
