@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_modulator.h"
 
 #import "base/i18n/number_formatting.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
@@ -19,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
@@ -294,8 +295,6 @@ NSDate* getNSDateFromString(std::string date) {
       HandlerForProtocol(dispatcher, SnackbarCommands);
   __weak id<PriceNotificationsCommands> weakPriceNotificationsHandler =
       HandlerForProtocol(dispatcher, PriceNotificationsCommands);
-  __weak id<ApplicationCommands> weakApplicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
   __weak id<ContextualSheetCommands> weakContextualSheetHandler =
       HandlerForProtocol(dispatcher, ContextualSheetCommands);
   // TODO(b/346601270): Set the snackbar message conditionally, depending on
@@ -307,10 +306,10 @@ NSDate* getNSDateFromString(std::string date) {
                    buttonText:l10n_util::GetNSString(
                                   IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE)
                 messageAction:^{
-                  [weakApplicationHandler prepareToPresentModal:^{
-                    [weakContextualSheetHandler closeContextualSheet];
-                    [weakPriceNotificationsHandler showPriceNotifications];
-                  }];
+                  base::RecordAction(
+                      base::UserMetricsAction("MobileMenuPriceNotifications"));
+                  [weakContextualSheetHandler closeContextualSheet];
+                  [weakPriceNotificationsHandler showPriceNotifications];
                 }
              completionAction:nil];
 }
