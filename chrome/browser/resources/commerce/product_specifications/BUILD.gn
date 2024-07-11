@@ -10,6 +10,7 @@ build_webui("build") {
   static_files = [
     "product_specifications.html",
     "images/empty_state.svg",
+    "images/empty_state_dark.svg",
   ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.

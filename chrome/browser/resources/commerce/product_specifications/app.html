@@ -76,7 +76,11 @@
 </product-specifications-header>
 <div id="summaryContainer">
   <div id="empty" class="summary" hidden$="[[!showEmptyState_]]">
+    <picture>
+      <source srcset="images/empty_state_dark.svg"
+          media="(prefers-color-scheme: dark)">
       <img id="emptyImg" src="images/empty_state.svg">
+    </picture>
       <div id="emptyTitle">$i18n{emptyStateTitle}</div>
       <div id="emptyDescription">$i18n{emptyStateDescription}</div>
       <product-selector id="productSelector"
