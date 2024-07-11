@@ -185,6 +185,12 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
+  // Overview may be ending, during which we don't need to update the
+  // window or grid bounds. `this` will be destroyed soon.
+  if (!IsInOverviewSession()) {
+    return;
+  }
+
   if (WindowState* window_state = WindowState::Get(window);
       window_state->is_dragged()) {
     CHECK_NE(WindowResizer::kBoundsChange_None,
@@ -203,7 +209,6 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
     presentation_time_recorder_->RequestNext();
   }
 
-  CHECK(IsInOverviewSession());
   // When in clamshell `SplitViewOverviewSession`, we need to manually refresh
   // the grid bounds, because `OverviewGrid` will calculate the bounds based
   // on `SplitViewController::divider_position_` which wouldn't work for

@@ -2691,6 +2691,51 @@ TEST_F(SnapGroupTest, ToplevelWindowEventHandlerDragCrashFix) {
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
+// This class simulates a crash scenario that can occur in
+// `SplitViewOverviewSession::OnWindowBoundsChanged()`.
+class OverviewCrashSimulator : public OverviewObserver {
+ public:
+  OverviewCrashSimulator() { OverviewController::Get()->AddObserver(this); }
+  OverviewCrashSimulator(const OverviewCrashSimulator&) = delete;
+  OverviewCrashSimulator& operator=(const OverviewCrashSimulator&) = delete;
+  ~OverviewCrashSimulator() override {
+    OverviewController::Get()->RemoveObserver(this);
+  }
+
+  // OverviewObserver:
+  void OnOverviewModeEnding(OverviewSession* overview_session) override {
+    auto* split_view_overview_session =
+        RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
+            ->split_view_overview_session();
+    if (!split_view_overview_session) {
+      return;
+    }
+    // The crash can occur in any scenario where ending overview would cause a
+    // window bounds animation and notify
+    // `SplitViewOverviewSession::OnWindowBoundsChanged()`. Send a bounds events
+    // to `window` with animation.
+    aura::Window* window = split_view_overview_session->window();
+    const SetBoundsWMEvent event(gfx::Rect(100, 100), /*animate=*/true);
+    WindowState::Get(window)->OnWMEvent(&event);
+  }
+};
+
+// Tests no crash when ending overview causes a window animation. Regression
+// test for http://b/352383998.
+TEST_F(SnapGroupTest, NoCrashOnOverviewModeEnding) {
+  OverviewCrashSimulator overview_crash_simulator;
+
+  // Start partial overview.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifySplitViewOverviewSession(w1.get());
+
+  // End overview.
+  OverviewController::Get()->EndOverview(OverviewEndAction::kTests);
+}
+
 // Test that maximizing a snapped window breaks the snap group.
 TEST_F(SnapGroupTest, MaximizeSnappedWindowExitPointTest) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
