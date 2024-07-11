@@ -31,31 +31,31 @@ class CredentialProviderSigninDialogTestDataStorage {
 
   void SetSigninPassword(const std::string& password);
 
-  std::string GetSuccessId() const {
+  const std::string& GetSuccessId() const {
     return expected_success_signin_result_.Find("id")->GetString();
   }
-  std::string GetSuccessPassword() const {
+  const std::string& GetSuccessPassword() const {
     return expected_success_signin_result_.Find("password")->GetString();
   }
-  std::string GetSuccessEmail() const {
+  const std::string& GetSuccessEmail() const {
     return expected_success_signin_result_.Find("email")->GetString();
   }
-  std::string GetSuccessAccessToken() const {
+  const std::string& GetSuccessAccessToken() const {
     return expected_success_signin_result_.Find("access_token")->GetString();
   }
-  std::string GetSuccessRefreshToken() const {
+  const std::string& GetSuccessRefreshToken() const {
     return expected_success_signin_result_.Find("refresh_token")->GetString();
   }
-  std::string GetSuccessTokenHandle() const {
+  const std::string& GetSuccessTokenHandle() const {
     return expected_success_fetch_result_.Find("token_handle")->GetString();
   }
-  std::string GetSuccessMdmIdToken() const {
+  const std::string& GetSuccessMdmIdToken() const {
     return expected_success_fetch_result_.Find("mdm_id_token")->GetString();
   }
-  std::string GetSuccessMdmAccessToken() const {
+  const std::string& GetSuccessMdmAccessToken() const {
     return expected_success_fetch_result_.Find("mdm_access_token")->GetString();
   }
-  std::string GetSuccessFullName() const {
+  const std::string& GetSuccessFullName() const {
     return expected_success_fetch_result_.Find("full_name")->GetString();
   }
 
