@@ -158,6 +158,7 @@ BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
   ResumeBlockedRequests(
       ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination);
   RecordNumberOfSuccessiveTimeoutIfAny(successive_timeout_);
+  RecordCookieRotationOutageMetricsIfNeeded(/*periodic=*/false);
 }
 
 void BoundSessionCookieControllerImpl::Initialize() {
@@ -371,17 +372,54 @@ void BoundSessionCookieControllerImpl::UpdateCookieFetcherBackoff(
     return;
   }
 
+  if (!was_throttling_requests_paused) {
+    // Notify only once.
+    CHECK(!cookie_rotation_outage_start_.has_value());
+    cookie_rotation_outage_start_ = base::TimeTicks::Now();
+    delegate_->OnBoundSessionThrottlerParamsChanged();
+  }
+  RecordCookieRotationOutageMetricsIfNeeded(/*periodic=*/true);
+
   // Request throttling is paused due to an outage, schedule cookie rotation in
   // the background with backoff.
   MaybeScheduleCookieRotation();
+}
 
-  if (!was_throttling_requests_paused) {
-    // Notify only once.
-    delegate_->OnBoundSessionThrottlerParamsChanged();
+void BoundSessionCookieControllerImpl::
+    RecordCookieRotationOutageMetricsIfNeeded(bool periodic) {
+  if (!ShouldPauseThrottlingRequests()) {
+    // No ongoing outage.
+    return;
   }
+
+  // Recorded periodically every `kNumberOfErrorsToIgnoreForBackoff + 1`
+  // failures during an outage.
+  static const size_t kPeriodicInterval = kNumberOfErrorsToIgnoreForBackoff + 1;
+  if (periodic) {
+    if (refresh_cookie_fetcher_backoff_.failure_count() % kPeriodicInterval ==
+        0) {
+      base::UmaHistogramCounts100(
+          "Signin.BoundSessionCredentials.CookieRotationOutageAttemptsPeriodic",
+          refresh_cookie_fetcher_backoff_.failure_count());
+    }
+    return;
+  }
+
+  // Note: If an outage is terminated as a result of a successful cookie
+  // rotation, it won't be counted as we only count failures.
+  base::UmaHistogramCounts100(
+      "Signin.BoundSessionCredentials.CookieRotationOutageAttempts",
+      refresh_cookie_fetcher_backoff_.failure_count());
+  CHECK(cookie_rotation_outage_start_.has_value());
+  base::TimeDelta duration =
+      base::TimeTicks::Now() - *cookie_rotation_outage_start_;
+  cookie_rotation_outage_start_.reset();
+  base::UmaHistogramMediumTimes(
+      "Signin.BoundSessionCredentials.CookieRotationOutageDuration", duration);
 }
 
 void BoundSessionCookieControllerImpl::ResetCookieFetcherBackoff() {
+  RecordCookieRotationOutageMetricsIfNeeded(/*periodic=*/false);
   refresh_cookie_fetcher_backoff_.Reset();
   // Note: It is expected that required cookies must become fresh with
   // successful cookie rotation. Cookie rotation request that does not set

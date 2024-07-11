@@ -84,6 +84,7 @@ class BoundSessionCookieControllerImpl
   void OnCookieRefreshFetched(BoundSessionRefreshCookieFetcher::Result result);
   void UpdateCookieFetcherBackoff(
       BoundSessionRefreshCookieFetcher::Result result);
+  void RecordCookieRotationOutageMetricsIfNeeded(bool periodic);
   void ResetCookieFetcherBackoff();
   void MaybeScheduleCookieRotation();
   void ResumeBlockedRequests(
@@ -126,6 +127,7 @@ class BoundSessionCookieControllerImpl
   size_t cookie_rotation_retries_on_transient_error_ = 0;
   // Used to handle server outages.
   net::BackoffEntry refresh_cookie_fetcher_backoff_;
+  std::optional<base::TimeTicks> cookie_rotation_outage_start_;
 
   // Used to schedule cookie refresh preemptively or based on backoff in case of
   // server experiencing outages.

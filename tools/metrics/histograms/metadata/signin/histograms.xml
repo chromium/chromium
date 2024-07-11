@@ -579,6 +579,45 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.BoundSessionCredentials.CookieRotationOutageAttempts{Interval}"
+    units="requests" expires_after="2024-11-17">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records how many failed cookie rotation attempts were made during a cookie
+    rotation endpoint outage for a bound session within the same user session
+    (reset on startup). Server 5xx errors are considered to be an outage after a
+    number of successive failures. {Interval}.
+  </summary>
+  <token key="Interval">
+    <variant name=""
+        summary="Recorded when an outage is fixed (cookie rotation success,
+                 bound cookie becoming fresh) or session shutdown,
+                 overriden/terminated while an outage is ongoing"/>
+    <variant name="Periodic"
+        summary="Recorded periodically every
+                 (kNumberOfErrorsToIgnoreForBackoff + 1) cookie rotation
+                 failures during an outage"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.BoundSessionCredentials.CookieRotationOutageDuration"
+    units="ms" expires_after="2024-11-17">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records how long a cookie rotation endpoint outage has taken for a bound
+    session within the same user session (reset on startup). Server 5xx errors
+    are considered to be an outage after a number of successive failures.
+    Recorded when an outage is fixed (cookie rotation success, bound cookie
+    becoming fresh) or session shutdown, overriden/terminated while an outage is
+    ongoing.
+  </summary>
+</histogram>
+
 <histogram name="Signin.BoundSessionCredentials.CookieRotationResult"
     enum="BoundSessionCredentialsCookieRotationResult"
     expires_after="2024-11-17">

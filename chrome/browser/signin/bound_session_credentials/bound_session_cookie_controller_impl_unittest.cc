@@ -356,6 +356,21 @@ class BoundSessionCookieControllerImplTest
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
+  void VerifyCookieRotationOutageMetrics(bool periodic, size_t attempts) {
+    if (periodic) {
+      histogram_tester()->ExpectBucketCount(
+          "Signin.BoundSessionCredentials."
+          "CookieRotationOutageAttemptsPeriodic",
+          attempts, 1);
+      return;
+    }
+    histogram_tester()->ExpectTotalCount(
+        "Signin.BoundSessionCredentials.CookieRotationOutageDuration", 1u);
+    histogram_tester()->ExpectUniqueSample(
+        "Signin.BoundSessionCredentials.CookieRotationOutageAttempts", attempts,
+        1);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -1220,10 +1235,22 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest,
        ThrottlingPausedRequestsImmediatelyResumed) {
   TriggerThrottlingPausedAndVerify();
+  VerifyCookieRotationOutageMetrics(/*periodic=*/true,
+                                    kNumberOfErrorsToIgnoreForBackoff + 1);
+  histogram_tester()->ExpectTotalCount(
+      "Signin.BoundSessionCredentials.CookieRotationOutageDuration", 0);
+  histogram_tester()->ExpectTotalCount(
+      "Signin.BoundSessionCredentials.CookieRotationOutageAttempts", 0);
+
+  ResetBoundSessionCookieController();
+  VerifyCookieRotationOutageMetrics(/*periodic=*/false,
+                                    kNumberOfErrorsToIgnoreForBackoff + 1);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest, ThrottlingPausedUpdateRenderers) {
   TriggerThrottlingPausedAndVerify();
+  VerifyCookieRotationOutageMetrics(/*periodic=*/true,
+                                    kNumberOfErrorsToIgnoreForBackoff + 1);
 
   // Notify throtteling paused and bound throttler params should return null.
   EXPECT_EQ(on_bound_session_throttler_params_changed_call_count(), 1u);
@@ -1235,6 +1262,11 @@ TEST_F(BoundSessionCookieControllerImplTest, ThrottlingPausedUpdateRenderers) {
   SimulateCompleteRefreshRequest(Result::kServerTransientError, std::nullopt);
   // Throttler params did not change and should not be notified.
   EXPECT_EQ(on_bound_session_throttler_params_changed_call_count(), 1u);
+  VerifyCookieRotationOutageMetrics(/*periodic=*/true,
+                                    kNumberOfErrorsToIgnoreForBackoff + 1);
+  ResetBoundSessionCookieController();
+  VerifyCookieRotationOutageMetrics(/*periodic=*/false,
+                                    kNumberOfErrorsToIgnoreForBackoff + 2);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -1250,6 +1282,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_EQ(on_bound_session_throttler_params_changed_call_count(), 2u);
   EXPECT_TRUE(
       bound_session_cookie_controller()->bound_session_throttler_params());
+  VerifyCookieRotationOutageMetrics(/*periodic=*/false,
+                                    kNumberOfErrorsToIgnoreForBackoff + 1);
 
   // Back off should be reset.
   ASSERT_TRUE(
@@ -1269,14 +1303,22 @@ TEST_F(BoundSessionCookieControllerImplTest,
   SimulateCompleteRefreshRequest(Result::kSuccess, GetTimeInTenMinutes());
   EXPECT_EQ(future.Get(),
             ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess);
+  // Outage metrics should not have changed.
+  VerifyCookieRotationOutageMetrics(/*periodic=*/false,
+                                    kNumberOfErrorsToIgnoreForBackoff + 1);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
        ThrottlingPausedResetOnOnCookieFresh) {
   TriggerThrottlingPausedAndVerify();
+  VerifyCookieRotationOutageMetrics(/*periodic=*/true,
+                                    kNumberOfErrorsToIgnoreForBackoff + 1);
 
   SimulateCookieChange(k1PSIDTSCookieName, GetTimeInTenMinutes());
   SimulateCookieChange(k3PSIDTSCookieName, GetTimeInTenMinutes());
+
+  VerifyCookieRotationOutageMetrics(/*periodic=*/false,
+                                    kNumberOfErrorsToIgnoreForBackoff + 1);
 
   // One notification for throttling paused and another throttling resumed.
   EXPECT_EQ(on_bound_session_throttler_params_changed_call_count(), 2u);
@@ -1304,13 +1346,15 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest,
        ThrottlingPausedDifferentCookieRotationErrors) {
   TriggerThrottlingPausedAndVerify();
-  Result cookie_rotation_result[] = {Result::kConnectionError,
-                                     Result::kServerTransientError,
-                                     Result::kServerPersistentError,
-                                     Result::kServerUnexepectedResponse,
-                                     Result::kChallengeRequiredUnexpectedFormat,
-                                     Result::kChallengeRequiredLimitExceeded,
-                                     Result::kSignChallengeFailed};
+  const size_t kCookieRotationResultSize = 7;
+  Result cookie_rotation_result[kCookieRotationResultSize] = {
+      Result::kConnectionError,
+      Result::kServerTransientError,
+      Result::kServerPersistentError,
+      Result::kServerUnexepectedResponse,
+      Result::kChallengeRequiredUnexpectedFormat,
+      Result::kChallengeRequiredLimitExceeded,
+      Result::kSignChallengeFailed};
 
   ASSERT_TRUE(
       bound_session_cookie_controller()->ShouldPauseThrottlingRequests());
@@ -1323,6 +1367,12 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_TRUE(
       bound_session_cookie_controller()->ShouldPauseThrottlingRequests());
   EXPECT_EQ(on_bound_session_throttler_params_changed_call_count(), 1u);
+  VerifyCookieRotationOutageMetrics(/*periodic=*/true,
+                                    kNumberOfErrorsToIgnoreForBackoff + 1);
+  ResetBoundSessionCookieController();
+  VerifyCookieRotationOutageMetrics(
+      /*periodic=*/false,
+      kNumberOfErrorsToIgnoreForBackoff + 1 + kCookieRotationResultSize);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -1341,4 +1391,31 @@ TEST_F(BoundSessionCookieControllerImplTest,
   // Only `Result::kServerTransientError` triggers backoff.
   ASSERT_TRUE(
       bound_session_cookie_controller()->ShouldPauseThrottlingRequests());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest, ThrottlingPausedMultipleAttempts) {
+  TriggerThrottlingPausedAndVerify();
+
+  size_t kPeriodicInterval = kNumberOfErrorsToIgnoreForBackoff + 1;
+  size_t kFailedAttempts = kPeriodicInterval * 5;
+  for (size_t attempt = 0; attempt < kFailedAttempts; attempt++) {
+    ASSERT_TRUE(cookie_refresh_timer()->IsRunning());
+    task_environment()->FastForwardBy(
+        cookie_refresh_timer()->GetCurrentDelay());
+    SimulateCompleteRefreshRequest(Result::kServerTransientError, std::nullopt);
+  }
+
+  for (size_t attempts = kPeriodicInterval; attempts < kFailedAttempts;
+       attempts += kPeriodicInterval) {
+    VerifyCookieRotationOutageMetrics(/*periodic=*/true, attempts);
+  }
+  histogram_tester()->ExpectTotalCount(
+      "Signin.BoundSessionCredentials.CookieRotationOutageDuration", 0);
+  histogram_tester()->ExpectTotalCount(
+      "Signin.BoundSessionCredentials.CookieRotationOutageAttempts", 0);
+
+  ResetBoundSessionCookieController();
+  VerifyCookieRotationOutageMetrics(
+      /*periodic=*/false,
+      kNumberOfErrorsToIgnoreForBackoff + 1 + kFailedAttempts);
 }
