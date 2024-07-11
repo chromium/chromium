@@ -153,7 +153,11 @@ void KioskControllerImpl::StartSession(const KioskAppId& app,
   CHECK_EQ(launch_controller_, nullptr);
   CHECK(!system_session_.has_value());
   launch_controller_ = std::make_unique<KioskLaunchController>(
-      host, host->GetOobeUI(), /*done_callback=*/
+      host, host->GetOobeUI(),
+      /*app_launched_callback=*/
+      base::BindOnce(&KioskControllerImpl::OnAppLaunched,
+                     base::Unretained(this)),
+      /*done_callback=*/
       base::BindOnce(&KioskControllerImpl::OnLaunchComplete,
                      base::Unretained(this)));
   launch_controller_->Start(app, is_auto_launch);
@@ -273,6 +277,13 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
       !kiosk_app_id.empty()) {
     chrome_app_manager_.SetAppWasAutoLaunchedWithZeroDelay(kiosk_app_id);
   }
+}
+
+void KioskControllerImpl::OnAppLaunched(
+    const KioskAppId& kiosk_app_id,
+    Profile* profile,
+    const std::optional<std::string>& app_name) {
+  InitializeKioskSystemSession(profile, kiosk_app_id, app_name);
 }
 
 void KioskControllerImpl::OnLaunchComplete(

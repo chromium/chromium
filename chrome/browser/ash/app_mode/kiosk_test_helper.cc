@@ -25,13 +25,6 @@ base::AutoReset<bool> KioskTestHelper::BlockAppLaunch() {
 }
 
 // static
-base::AutoReset<bool> KioskTestHelper::BlockSystemSessionCreation() {
-  return base::AutoReset<bool>(
-      &KioskLaunchController::TestOverrides::block_system_session_creation,
-      true);
-}
-
-// static
 base::AutoReset<bool> KioskTestHelper::BlockExitOnFailure() {
   return base::AutoReset<bool>(
       &KioskLaunchController::TestOverrides::block_exit_on_failure, true);

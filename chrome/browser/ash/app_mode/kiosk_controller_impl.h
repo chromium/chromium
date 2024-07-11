@@ -73,6 +73,9 @@ class KioskControllerImpl : public KioskController,
   // `user_manager::UserManager::Observer` implementation:
   void OnUserLoggedIn(const user_manager::User& user) override;
 
+  void OnAppLaunched(const KioskAppId& kiosk_app_id,
+                     Profile* profile,
+                     const std::optional<std::string>& app_name);
   void OnLaunchComplete(std::optional<KioskAppLaunchError::Error> error);
   void OnLaunchCompleteAfterCrash(const KioskAppId& app,
                                   Profile* profile,

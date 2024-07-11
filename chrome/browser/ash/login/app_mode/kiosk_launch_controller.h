@@ -99,16 +99,33 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
           const KioskAppId&,
           KioskAppLauncher::NetworkDelegate*)>;
 
+  // Callback invoked when the app window is created behind the splash screen,
+  // signifying the application has launched and is ready.
+  //
+  // The overall launch is not complete yet at this stage, the splash screen is
+  // still visible potentially for several seconds longer.
+  //
+  // May not be called in case of errors. If it is called, it is guaranteed to
+  // be called before `LaunchCompleteCallback`.
+  using AppLaunchedCallback =
+      base::OnceCallback<void(const KioskAppId& app,
+                              Profile* profile,
+                              const std::optional<std::string>& app_name)>;
+
+  // Callback invoked when the launch finished, either successfully or aborted
+  // due to an error.
   using LaunchCompleteCallback =
       base::OnceCallback<void(std::optional<KioskAppLaunchError::Error> error)>;
 
   KioskLaunchController(LoginDisplayHost* host,
                         OobeUI* oobe_ui,
+                        AppLaunchedCallback app_launched_callback,
                         LaunchCompleteCallback done_callback);
   KioskLaunchController(
       LoginDisplayHost* host,
       AppLaunchSplashScreenView* splash_screen,
       LoadProfileCallback profile_loader,
+      AppLaunchedCallback app_launched_callback,
       LaunchCompleteCallback done_callback,
       base::OnceClosure attempt_relaunch,
       base::OnceClosure attempt_logout,
@@ -151,7 +168,6 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
     // Whether we should skip the wait for minimum screen show time.
     static bool skip_splash_wait;
     static bool block_app_launch;
-    static bool block_system_session_creation;
     // Whether we should prevent Kiosk launcher from exiting when launch fails.
     static bool block_exit_on_failure;
   };
@@ -231,6 +247,10 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
 
   // Whether the controller has already been cleaned-up.
   bool cleaned_up_ = false;
+
+  // Callback invoked when the app launched. See also `AppLaunchedCallback`
+  // docs.
+  AppLaunchedCallback app_launched_callback_;
 
   // Callback invoked when the launch is complete. The `error` field indicates
   // if the launch was successful or not.

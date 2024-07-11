@@ -261,8 +261,6 @@ std::string ToString(KioskAppLaunchError::Error error) {
 // static
 bool KioskLaunchController::TestOverrides::skip_splash_wait = false;
 bool KioskLaunchController::TestOverrides::block_app_launch = false;
-bool KioskLaunchController::TestOverrides::block_system_session_creation =
-    false;
 bool KioskLaunchController::TestOverrides::block_exit_on_failure = false;
 
 using NetworkUIState = NetworkUiController::NetworkUIState;
@@ -288,11 +286,13 @@ class KioskLaunchController::ScopedAcceleratorDisabler {
 KioskLaunchController::KioskLaunchController(
     LoginDisplayHost* host,
     OobeUI* oobe_ui,
+    AppLaunchedCallback app_launched_callback,
     LaunchCompleteCallback done_callback)
     : KioskLaunchController(
           host,
           oobe_ui->GetView<AppLaunchSplashScreenHandler>(),
           /*profile_loader=*/base::BindOnce(&LoadProfile),
+          /*app_launched_callback=*/std::move(app_launched_callback),
           /*done_callback=*/std::move(done_callback),
           /*attempt_relaunch=*/base::BindOnce(chrome::AttemptRelaunch),
           /*attempt_logout=*/base::BindOnce(chrome::AttemptUserExit),
@@ -304,6 +304,7 @@ KioskLaunchController::KioskLaunchController(
     LoginDisplayHost* host,
     AppLaunchSplashScreenView* splash_screen,
     LoadProfileCallback profile_loader,
+    AppLaunchedCallback app_launched_callback,
     LaunchCompleteCallback done_callback,
     base::OnceClosure attempt_relaunch,
     base::OnceClosure attempt_logout,
@@ -318,6 +319,7 @@ KioskLaunchController::KioskLaunchController(
           host_,
           CHECK_DEREF(splash_screen_view_.get()),
           std::move(network_monitor))),
+      app_launched_callback_(std::move(app_launched_callback)),
       done_callback_(std::move(done_callback)),
       attempt_logout_(std::move(attempt_logout)),
       attempt_relaunch_(std::move(attempt_relaunch)),
@@ -689,10 +691,8 @@ void KioskLaunchController::OnAppWindowCreated(
   DUMP_WILL_BE_CHECK_EQ(app_state_, AppState::kLaunched);
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
-  if (!TestOverrides::block_system_session_creation) {
-    KioskController::Get().InitializeKioskSystemSession(profile_, kiosk_app_id_,
-                                                        app_name);
-  }
+  std::move(app_launched_callback_).Run(kiosk_app_id_, profile_, app_name);
+
   // If timer is running, do not remove splash screen for a few
   // more seconds to give the user ability to exit kiosk session.
   if (splash_wait_timer_.IsRunning()) {
@@ -773,7 +773,7 @@ void KioskLaunchController::LaunchApp() {
 
 void KioskLaunchController::FinishLaunchWithSuccess() {
   CloseSplashScreen();
-  std::move(done_callback_).Run(std::nullopt);
+  std::move(done_callback_).Run(KioskAppLaunchError::Error::kNone);
 }
 
 void KioskLaunchController::FinishLaunchWithError(
