@@ -78,6 +78,7 @@
 +components/compose/
 +components/discardable_memory/
 +components/guest_view/
++components/password_manager/
 +components/performance_manager/
 +components/plus_addresses/
 +components/prefs/

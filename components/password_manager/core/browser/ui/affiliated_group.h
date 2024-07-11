@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_AFFILIATED_GROUP_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_AFFILIATED_GROUP_H_
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
