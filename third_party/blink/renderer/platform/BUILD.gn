@@ -2307,6 +2307,7 @@ source_set("blink_platform_unittests_sources") {
     "text/text_encoding_detector_test.cc",
     "text/text_run_test.cc",
     "text/unicode_utilities_test.cc",
+    "text/writing_direction_mode_test.cc",
     "text/writing_mode_utils_test.cc",
     "theme/web_theme_engine_test.cc",
     "timer_test.cc",

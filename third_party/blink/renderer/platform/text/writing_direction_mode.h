@@ -66,6 +66,8 @@ class PLATFORM_EXPORT WritingDirectionMode {
   PhysicalDirection InlineEnd() const;
   PhysicalDirection BlockStart() const;
   PhysicalDirection BlockEnd() const;
+  PhysicalDirection LineOver() const;
+  PhysicalDirection LineUnder() const;
 
   bool operator==(const WritingDirectionMode& other) const {
     return writing_mode_ == other.writing_mode_ &&

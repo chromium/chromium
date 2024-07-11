@@ -32,6 +32,14 @@ constexpr PhysicalDirection kBlockEndMap[kWritingModeSize] = {
     PhysicalDirection::kDown, PhysicalDirection::kLeft,
     PhysicalDirection::kRight, PhysicalDirection::kLeft,
     PhysicalDirection::kRight};
+constexpr PhysicalDirection kLineOverMap[kWritingModeSize] = {
+    PhysicalDirection::kUp, PhysicalDirection::kRight,
+    PhysicalDirection::kRight, PhysicalDirection::kRight,
+    PhysicalDirection::kLeft};
+constexpr PhysicalDirection kLineUnderMap[kWritingModeSize] = {
+    PhysicalDirection::kDown, PhysicalDirection::kLeft,
+    PhysicalDirection::kLeft, PhysicalDirection::kLeft,
+    PhysicalDirection::kRight};
 
 }  // namespace
 
@@ -55,6 +63,14 @@ PhysicalDirection WritingDirectionMode::BlockStart() const {
 
 PhysicalDirection WritingDirectionMode::BlockEnd() const {
   return kBlockEndMap[static_cast<int>(writing_mode_)];
+}
+
+PhysicalDirection WritingDirectionMode::LineOver() const {
+  return kLineOverMap[static_cast<int>(writing_mode_)];
+}
+
+PhysicalDirection WritingDirectionMode::LineUnder() const {
+  return kLineUnderMap[static_cast<int>(writing_mode_)];
 }
 
 std::ostream& operator<<(std::ostream& ostream,
