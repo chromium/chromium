@@ -60,6 +60,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -340,9 +341,17 @@ std::unique_ptr<HttpResponse> HandleOAuth2TokenExchangeURL(
                                    .Set("expires_in", 9999);
 
   // If the request contains binding registration token, include successful
-  // binding result in the response.
+  // binding result in the response and verify that the client passed the
+  // version information in the headers.
   if (request.content.find(kBoundTokenRegistrationJwt) != std::string::npos) {
     response.Set("refresh_token_type", "bound_to_key");
+    std::optional<std::string> version_header_value;
+    if (auto it = request.headers.find("Sec-CH-UA-Full-Version-List");
+        it != request.headers.end()) {
+      version_header_value = it->second;
+    }
+    EXPECT_EQ(version_header_value, embedder_support::GetUserAgentMetadata()
+                                        .SerializeBrandFullVersionList());
   }
 
   http_response->set_content(*base::WriteJson(response));

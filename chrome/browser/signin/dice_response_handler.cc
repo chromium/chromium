@@ -40,12 +40,15 @@
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include <optional>
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"  // nogncheck
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"  // nogncheck
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/unexportable_key_id.h"       // nogncheck
 #include "components/unexportable_keys/unexportable_key_service.h"  // nogncheck
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 const int kDiceTokenFetchTimeoutSeconds = 10;
@@ -272,7 +275,10 @@ void DiceResponseHandler::DiceTokenFetcher::StartTokenFetch() {
   // `binding_registration_token_` is empty if the binding key was not
   // generated.
   gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchange(
-      authorization_code_, binding_registration_token_);
+      authorization_code_,
+      embedder_support::GetUserAgentMetadata(g_browser_process->local_state())
+          .SerializeBrandFullVersionList(),
+      binding_registration_token_);
 #else
   gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchange(authorization_code_);
 #endif
