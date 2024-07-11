@@ -123,6 +123,8 @@ TEST_P(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
   // If forest feature is enabled, then release notes should not show.
   EXPECT_EQ(forest_feature_enabled(), !HasReleaseNotesNotification());
   EXPECT_EQ(forest_feature_enabled() ? 0 : 1, notification_count_);
+  EXPECT_EQ(forest_feature_enabled(),
+            !release_notes_storage->ShouldShowSuggestionChip());
   if (HasReleaseNotesNotification()) {
     EXPECT_TRUE(HasReleaseNotesNotification());
     EXPECT_EQ(ui::SubstituteChromeOSDeviceType(
@@ -130,11 +132,9 @@ TEST_P(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
               GetReleaseNotesNotification().title());
     EXPECT_EQ("Get highlights from the latest update",
               base::UTF16ToASCII(GetReleaseNotesNotification().message()));
-    EXPECT_EQ(1, notification_count_);
     // And it show the release notes suggestion chip.
     EXPECT_EQ(3, profile()->GetPrefs()->GetInteger(
                      prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-    EXPECT_TRUE(release_notes_storage->ShouldShowSuggestionChip());
   }
 }
 
