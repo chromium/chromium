@@ -152,7 +152,6 @@ try_.builder(
 try_.builder(
     name = "fuchsia-x64-cast-receiver-dbg",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
-    description_html = "try replica of " + linkify_builder("ci", "fuchsia-x64-cast-receiver-dbg", "chromium"),
     mirrors = ["ci/fuchsia-x64-cast-receiver-dbg"],
     gn_args = gn_args.config(
         configs = [

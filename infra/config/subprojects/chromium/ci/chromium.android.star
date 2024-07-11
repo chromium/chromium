@@ -1391,6 +1391,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-riscv64-dbg",
+    description_html = "Verifies building Cronet against RISC-V64",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1429,6 +1430,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-riscv64-rel",
+    description_html = "Verifies building Cronet against RISC-V64",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2222,6 +2224,7 @@ ci.builder(
 ci.builder(
     name = "android-12-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Chromium tests on Android 12 emulator.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

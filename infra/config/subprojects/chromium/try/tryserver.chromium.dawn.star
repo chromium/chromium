@@ -250,7 +250,6 @@ try_.builder(
 
 try_.builder(
     name = "dawn-win11-arm64-deps-rel",
-    description_html = "Compiles and tests DEPSed binaries for Windows/ARM64",
     mirrors = [
         "ci/Dawn Win11 arm64 DEPS Builder",
     ],
@@ -399,7 +398,6 @@ try_.builder(
 
 try_.builder(
     name = "dawn-try-chromeos-volteer-rel",
-    description_html = "Runs ToT Dawn tests on Skylab-hosted volteer devices",
     mirrors = [
         "ci/Dawn ChromeOS Skylab Release (volteer)",
     ],
@@ -612,7 +610,6 @@ try_.builder(
 
 try_.builder(
     name = "win11-arm64-dawn-rel",
-    description_html = "Compiles and tests ToT binaries for Windows/ARM64",
     mirrors = [
         "ci/Dawn Win11 arm64 Builder",
     ],

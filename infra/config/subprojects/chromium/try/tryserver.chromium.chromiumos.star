@@ -202,7 +202,6 @@ try_.builder(
 # crbug.com/40207910
 try_.builder(
     name = "linux-chromeos-dbg-oslogin",
-    description_html = "Try job to test changes that may fix OSLogin issues with tests on ChromeOS.",
     mirrors = [
         "ci/linux-chromeos-dbg-oslogin",
     ],
@@ -242,7 +241,6 @@ try_.builder(
     name = "chromeos-libfuzzer-asan-rel",
     # TODO(crbug.com/41492669): Can delete this description when it's
     # automatically generated.
-    description_html = "Trybot of {}.".format(linkify_builder("ci", "Libfuzzer Upload Chrome OS ASan")),
     executable = "recipe:chromium/fuzz",
     mirrors = ["ci/Libfuzzer Upload Chrome OS ASan"],
     gn_args = gn_args.config(
@@ -468,9 +466,6 @@ try_.builder(
 try_.builder(
     name = "chromeos-jacuzzi-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    description_html = """
-This builder builds chromium and tests it on the public CrOS image on skylab DUTs.
-""",
     mirrors = [
         "ci/chromeos-jacuzzi-rel",
     ],
@@ -483,9 +478,6 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
 try_.builder(
     name = "chromeos-octopus-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    description_html = """
-This builder builds chromium and tests it on the public CrOS image on skylab DUTs.
-""",
     mirrors = [
         "ci/chromeos-octopus-rel",
     ],
@@ -646,7 +638,6 @@ try_.builder(
 
 try_.builder(
     name = "linux-lacros-rel-dangling-ptr-fyi",
-    description_html = "Dangling ptr check for lacros.",
     mirrors = [
         "ci/linux-lacros-rel-dangling-ptr-fyi",
     ],

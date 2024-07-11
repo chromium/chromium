@@ -250,10 +250,6 @@ try_.builder(
 
 try_.builder(
     name = "linux-multiscreen-fyi-rel",
-    description_html = (
-        "This builder is intended to run tests related to multiscreen " +
-        "functionality on Linux. For more info, see crbug.com/346565331."
-    ),
     mirrors = [
         "ci/linux-multiscreen-fyi-rel",
     ],

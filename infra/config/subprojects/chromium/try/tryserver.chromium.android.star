@@ -76,7 +76,6 @@ try_.builder(
 try_.builder(
     name = "android-12-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Run Chromium tests on Android 12 emulator.",
     mirrors = [
         "ci/android-12-x64-rel",
     ],
@@ -107,7 +106,6 @@ try_.builder(
 try_.builder(
     name = "android-13-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Run Chromium tests on Android 13 emulator.",
     mirrors = [
         "ci/android-13-x64-rel",
     ],
@@ -123,7 +121,6 @@ try_.builder(
 
 try_.builder(
     name = "android-tablet-14-arm64-fyi-rel",
-    description_html = "Run chromium tests on Android 14 Tablet.",
     mirrors = [
         "ci/android-tablet-14-arm64-fyi-rel",
     ],
@@ -139,7 +136,6 @@ try_.builder(
 
 try_.builder(
     name = "android-14-x64-rel",
-    description_html = "Run chromium tests on Android 14 emulators.",
     mirrors = [
         "ci/android-14-x64-rel",
     ],
@@ -155,7 +151,6 @@ try_.builder(
 
 try_.builder(
     name = "android-15-x64-rel",
-    description_html = "Run chromium tests on Android 15 emulators.",
     mirrors = [
         "ci/android-15-x64-rel",
     ],
@@ -171,7 +166,6 @@ try_.builder(
 
 try_.builder(
     name = "android-15-x64-fyi-rel",
-    description_html = "Run chromium tests on Android 15 emulators.",
     mirrors = [
         "ci/android-15-x64-fyi-rel",
     ],
@@ -239,7 +233,6 @@ try_.compilator_builder(
 
 try_.builder(
     name = "android-mte-arm64-rel",
-    description_html = "Run chromium tests on Android with MTE enabled in SYNC mode.",
     mirrors = [
         "ci/android-mte-arm64-rel",
     ],
@@ -451,7 +444,6 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-riscv64-dbg",
-    description_html = "Verifies building Cronet against RISC-V64",
     mirrors = ["ci/android-cronet-riscv64-dbg"],
     gn_args = "ci/android-cronet-riscv64-dbg",
     contact_team_email = "cronet-team@google.com",
@@ -460,7 +452,6 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-riscv64-rel",
-    description_html = "Verifies building Cronet against RISC-V64",
     mirrors = ["ci/android-cronet-riscv64-rel"],
     gn_args = "ci/android-cronet-riscv64-rel",
     contact_team_email = "cronet-team@google.com",
@@ -860,7 +851,6 @@ try_.builder(
 
 try_.builder(
     name = "android-chrome-13-x64-wpt-android-specific",
-    description_html = "Run wpt tests on Chrome Android in Android 13 emulators.",
     mirrors = ["ci/android-chrome-13-x64-wpt-android-specific"],
     gn_args = gn_args.config(
         configs = [
@@ -873,7 +863,6 @@ try_.builder(
 
 try_.builder(
     name = "android-webview-13-x64-wpt-android-specific",
-    description_html = "Run wpt tests on Android Webview in Android 13 emulators.",
     mirrors = ["ci/android-webview-13-x64-wpt-android-specific"],
     gn_args = gn_args.config(
         configs = [
@@ -916,9 +905,6 @@ try_.builder(
 
 try_.builder(
     name = "android-webview-13-x64-hostside-rel",
-    description_html = (
-        "Runs WebView host-driven CTS on Android 13 emulator."
-    ),
     mirrors = [
         "ci/android-webview-13-x64-hostside-rel",
     ],

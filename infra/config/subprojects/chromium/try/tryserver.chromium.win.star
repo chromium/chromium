@@ -36,7 +36,6 @@ consoles.list_view(
 
 try_.builder(
     name = "linux-win-cross-rel",
-    description_html = "Linux to Windows cross compile.",
     mirrors = ["ci/linux-win-cross-rel"],
     gn_args = gn_args.config(
         configs = [
@@ -63,7 +62,6 @@ try_.builder(
 
 try_.builder(
     name = "win-arm64-clobber-rel",
-    description_html = "Chromium snapshot archive builder for win-arm64",
     mirrors = [
         "ci/win-arm64-archive-rel",
     ],

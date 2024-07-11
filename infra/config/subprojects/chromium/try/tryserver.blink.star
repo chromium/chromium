@@ -92,10 +92,6 @@ Chrome.\
 
 try_.builder(
     name = "win10-wpt-chromium-rel",
-    description_html = """\
-Runs <a href="https://web-platform-tests.org">web platform tests</a> against
-Chrome.\
-""",
     mirrors = ["ci/win10-wpt-chromium-rel"],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
@@ -409,10 +405,6 @@ blink_mac_builder(
 
 try_.builder(
     name = "mac13-wpt-chromium-rel",
-    description_html = """\
-Runs <a href="https://web-platform-tests.org">web platform tests</a> against
-Chrome.\
-""",
     mirrors = ["ci/mac13-wpt-chromium-rel"],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
