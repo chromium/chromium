@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static java.util.Arrays.asList;
@@ -27,7 +28,6 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.H
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -35,7 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * reflected in the sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AccountSelectionButtonModeViewTest extends AccountSelectionViewTestBase {
+public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTestBase {
     private final RpContextEntry[] mRpContexts =
             new RpContextEntry[] {
                 new RpContextEntry(
@@ -57,25 +57,9 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionViewTest
 
     @Before
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
+        mRpMode = RpMode.BUTTON;
         super.setUp();
-
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            mModel =
-                                    new PropertyModel.Builder(
-                                                    AccountSelectionProperties.ItemProperties
-                                                            .ALL_KEYS)
-                                            .build();
-                            mSheetAccountItems = new ModelList();
-                            mContentView =
-                                    AccountSelectionCoordinator.setupContentView(
-                                            activity, mModel, mSheetAccountItems, RpMode.BUTTON);
-                            activity.setContentView(mContentView);
-                            mResources = activity.getResources();
-                        });
     }
 
     @Test
@@ -138,14 +122,20 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionViewTest
         TextView addAccountButton =
                 mContentView.findViewById(R.id.account_selection_add_account_btn);
 
-        final int expectedTextColor = mTestIdpMetadata.getBrandBackgroundColor();
+        final int expectedTextColor = mIdpMetadata.getBrandBackgroundColor();
         assertEquals(expectedTextColor, addAccountButton.getTextColors().getDefaultColor());
+    }
+
+    @Test
+    public void testScrimShown() {
+        // Default scrim is displayed if this returns false.
+        assertFalse(mBottomSheetContent.hasCustomScrimLifecycle());
     }
 
     private PropertyModel buildAddAccountButton() {
         AddAccountButtonProperties.Properties properties =
                 new AddAccountButtonProperties.Properties();
-        properties.mIdpMetadata = mTestIdpMetadata;
+        properties.mIdpMetadata = mIdpMetadata;
         return new PropertyModel.Builder(AddAccountButtonProperties.ALL_KEYS)
                 .with(AddAccountButtonProperties.PROPERTIES, properties)
                 .build();

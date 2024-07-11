@@ -22,12 +22,10 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -48,7 +46,6 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.ui.modelutil.MVCListAdapter;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
@@ -63,10 +60,7 @@ import java.util.Map;
  * sheet. This class is parameterized to run all tests for each RP mode.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-public class AccountSelectionViewTest extends AccountSelectionViewTestBase {
-    @Parameter(0)
-    public @RpMode.EnumType int mRpMode;
-
+public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     @Parameters
     public static Collection<Object> data() {
         return Arrays.asList(new Object[] {RpMode.WIDGET, RpMode.BUTTON});
@@ -83,10 +77,6 @@ public class AccountSelectionViewTest extends AccountSelectionViewTestBase {
     // Android chrome strings may have link tags which needs to be removed before comparing with the
     // actual text on the dialog.
     private static final String LINK_TAG_REGEX = "<[^>]*>";
-
-    // Constants but can only be initialized after parameterized test runner setup.
-    private GURL mTestErrorUrl;
-    private GURL mTestEmptyErrorUrl;
 
     private final RpContextEntry[] mRpContexts =
             new RpContextEntry[] {
@@ -199,32 +189,6 @@ public class AccountSelectionViewTest extends AccountSelectionViewTestBase {
         }
     }
 
-    @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        mTestErrorUrl = new GURL("https://idp.com/error");
-        mTestEmptyErrorUrl = new GURL("");
-
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            mModel =
-                                    new PropertyModel.Builder(
-                                                    AccountSelectionProperties.ItemProperties
-                                                            .ALL_KEYS)
-                                            .build();
-                            mSheetAccountItems = new ModelList();
-                            mContentView =
-                                    AccountSelectionCoordinator.setupContentView(
-                                            activity, mModel, mSheetAccountItems, mRpMode);
-                            activity.setContentView(mContentView);
-                            mResources = activity.getResources();
-                        });
-    }
-
     @Test
     public void testAccountsChangedByModel() {
         mSheetAccountItems.addAll(
@@ -273,7 +237,7 @@ public class AccountSelectionViewTest extends AccountSelectionViewTestBase {
 
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,
-                buildContinueButton(mAnaAccount, mTestIdpMetadata, HeaderType.SIGN_IN));
+                buildContinueButton(mAnaAccount, mIdpMetadata, HeaderType.SIGN_IN));
         assertEquals(View.VISIBLE, mContentView.getVisibility());
 
         assertNotNull(getAccounts().getChildAt(0));
@@ -351,7 +315,7 @@ public class AccountSelectionViewTest extends AccountSelectionViewTestBase {
 
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,
-                buildContinueButton(null, mTestIdpMetadata, HeaderType.SIGN_IN_TO_IDP_STATIC));
+                buildContinueButton(null, mIdpMetadata, HeaderType.SIGN_IN_TO_IDP_STATIC));
         ButtonCompat continueButton =
                 mContentView.findViewById(R.id.account_selection_continue_btn);
         assertTrue(continueButton.isShown());

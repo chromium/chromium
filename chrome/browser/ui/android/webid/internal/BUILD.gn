@@ -87,8 +87,8 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionButtonModeViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionControllerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionJUnitTestBase.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewTest.java",
-    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewTestBase.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionWidgetModeViewTest.java",
   ]
 

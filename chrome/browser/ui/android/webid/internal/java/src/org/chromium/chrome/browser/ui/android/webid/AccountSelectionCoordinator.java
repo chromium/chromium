@@ -105,7 +105,7 @@ public class AccountSelectionCoordinator
         // Setup the bottom sheet content view.
         mBottomSheetContent =
                 new AccountSelectionBottomSheetContent(
-                        contentView, mSheetItemListView::computeVerticalScrollOffset);
+                        contentView, mSheetItemListView::computeVerticalScrollOffset, rpMode);
 
         ImageFetcher imageFetcher =
                 ImageFetcherFactory.createImageFetcher(

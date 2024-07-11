@@ -29,19 +29,13 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import androidx.annotation.Px;
-
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.ParameterizedRobolectricTestRunner;
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -51,7 +45,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
@@ -59,11 +52,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.E
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
-import org.chromium.chrome.browser.ui.android.webid.data.Account;
-import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
-import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
@@ -73,23 +62,19 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Controller tests verify that the Account Selection delegate modifies the model if the API is used
- * properly. This class is parameterized to run all tests for each RP mode.
+ * Controller tests verify that the Account Selection delegate modifies the model. This class is
+ * parameterized to run all tests for each RP mode.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
-public class AccountSelectionControllerTest {
-    @Parameter(0)
-    public @RpMode.EnumType int mRpMode;
-
+public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBase {
     @Parameters
     public static Collection<Object> data() {
         return Arrays.asList(new Object[] {RpMode.WIDGET, RpMode.BUTTON});
@@ -97,130 +82,6 @@ public class AccountSelectionControllerTest {
 
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
-
-    private static final String TEST_ERROR_CODE = "invalid_request";
-    private static final int[] RP_CONTEXTS =
-            new int[] {RpContext.SIGN_IN, RpContext.SIGN_UP, RpContext.USE, RpContext.CONTINUE};
-    private static final @Px int DESIRED_AVATAR_SIZE = 100;
-
-    // Constants but can only be initialized after parameterized test runner setup.
-    private String mTestEtldPlusOne;
-    private String mTestEtldPlusOne1;
-    private String mTestEtldPlusOne2;
-    private GURL mTestProfilePic;
-    private GURL mTestUrlTermsOfService;
-    private GURL mTestUrlPrivacyPolicy;
-    private GURL mTestIdpBrandIconUrl;
-    private GURL mTestConfigUrl;
-    private GURL mTestLoginUrl;
-    private GURL mTestErrorUrl;
-    private GURL mTestEmptyErrorUrl;
-
-    private Account mAnaAccount;
-    private Account mBobAccount;
-    private Account mCarlAccount;
-    private Account mNewUserAccount;
-    private ClientIdMetadata mClientIdMetadata;
-    private IdentityCredentialTokenError mTokenError;
-    private IdentityCredentialTokenError mTokenErrorEmptyUrl;
-
-    // Needs Bitmap.class Mockito mock for initialization.
-    public IdentityProviderMetadata mIdpMetadata;
-
-    @Mock private AccountSelectionComponent.Delegate mMockDelegate;
-    @Mock private ImageFetcher mMockImageFetcher;
-    @Mock private BottomSheetController mMockBottomSheetController;
-    @Mock private Tab mTab;
-
-    private AccountSelectionBottomSheetContent mBottomSheetContent;
-    private AccountSelectionMediator mMediator;
-    private final PropertyModel mModel =
-            new PropertyModel.Builder(AccountSelectionProperties.ItemProperties.ALL_KEYS).build();
-    private final ModelList mSheetAccountItems = new ModelList();
-
-    public AccountSelectionControllerTest() {
-        MockitoAnnotations.initMocks(this);
-    }
-
-    @Before
-    public void setUp() {
-        // Note that these are not actual ETLD+1 values, but this is irrelevant for the purposes of
-        // this test.
-        mTestEtldPlusOne = JUnitTestGURLs.EXAMPLE_URL.getSpec();
-        mTestEtldPlusOne1 = JUnitTestGURLs.URL_1.getSpec();
-        mTestEtldPlusOne2 = JUnitTestGURLs.URL_2.getSpec();
-        mTestProfilePic = JUnitTestGURLs.URL_1_WITH_PATH;
-        mTestUrlTermsOfService = JUnitTestGURLs.RED_1;
-        mTestUrlPrivacyPolicy = JUnitTestGURLs.RED_2;
-        mTestIdpBrandIconUrl = JUnitTestGURLs.RED_3;
-        mTestConfigUrl = JUnitTestGURLs.URL_2;
-        mTestLoginUrl = JUnitTestGURLs.URL_3;
-        mTestErrorUrl = JUnitTestGURLs.URL_2;
-        mTestEmptyErrorUrl = new GURL("");
-
-        mAnaAccount =
-                new Account(
-                        "Ana",
-                        "ana@one.test",
-                        "Ana Doe",
-                        "Ana",
-                        mTestProfilePic,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
-        mBobAccount =
-                new Account(
-                        "Bob",
-                        "",
-                        "Bob",
-                        "",
-                        mTestProfilePic,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
-        mCarlAccount =
-                new Account(
-                        "Carl",
-                        "carl@three.test",
-                        "Carl Test",
-                        ":)",
-                        mTestProfilePic,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
-        mNewUserAccount =
-                new Account(
-                        "602214076",
-                        "goto@email.example",
-                        "Sam E. Goto",
-                        "Sam",
-                        mTestProfilePic,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ false);
-
-        mClientIdMetadata = new ClientIdMetadata(mTestUrlTermsOfService, mTestUrlPrivacyPolicy);
-        mTokenError = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestErrorUrl);
-        mTokenErrorEmptyUrl = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestEmptyErrorUrl);
-
-        mIdpMetadata =
-                new IdentityProviderMetadata(
-                        Color.BLACK,
-                        Color.BLACK,
-                        mTestIdpBrandIconUrl.getSpec(),
-                        mTestConfigUrl,
-                        mTestLoginUrl,
-                        /* supportsAddAccount= */ false);
-
-        mBottomSheetContent = new AccountSelectionBottomSheetContent(null, null);
-        mMediator =
-                new AccountSelectionMediator(
-                        mTab,
-                        mMockDelegate,
-                        mModel,
-                        mSheetAccountItems,
-                        mMockBottomSheetController,
-                        mBottomSheetContent,
-                        mMockImageFetcher,
-                        DESIRED_AVATAR_SIZE,
-                        mRpMode);
-    }
 
     public ArgumentMatcher<ImageFetcher.Params> imageFetcherParamsHaveUrl(GURL url) {
         return params -> params != null && params.url.equals(url.getSpec());

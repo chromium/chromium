@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.view.View;
 import android.widget.TextView;
@@ -19,7 +20,6 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -27,7 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * reflected in the sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AccountSelectionWidgetModeViewTest extends AccountSelectionViewTestBase {
+public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTestBase {
     private final RpContextEntry[] mRpContexts =
             new RpContextEntry[] {
                 new RpContextEntry(
@@ -45,25 +45,9 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionViewTest
 
     @Before
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
+        mRpMode = RpMode.WIDGET;
         super.setUp();
-
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            mModel =
-                                    new PropertyModel.Builder(
-                                                    AccountSelectionProperties.ItemProperties
-                                                            .ALL_KEYS)
-                                            .build();
-                            mSheetAccountItems = new ModelList();
-                            mContentView =
-                                    AccountSelectionCoordinator.setupContentView(
-                                            activity, mModel, mSheetAccountItems, RpMode.WIDGET);
-                            activity.setContentView(mContentView);
-                            mResources = activity.getResources();
-                        });
     }
 
     @Test
@@ -131,5 +115,11 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionViewTest
                 mResources.getString(R.string.verify_sheet_title_auto_reauthn),
                 title.getText().toString());
         assertEquals("Incorrect subtitle", "", subtitle.getText());
+    }
+
+    @Test
+    public void testScrimHidden() {
+        // Default scrim is NOT displayed if this returns true.
+        assertTrue(mBottomSheetContent.hasCustomScrimLifecycle());
     }
 }

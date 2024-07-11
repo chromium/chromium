@@ -24,7 +24,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/** Common test fixtures for AccountSelectionIntegration JUnit tests. */
+/** Common test fixtures for AccountSelectionIntegration Android Javatests. */
 public class AccountSelectionIntegrationTestBase {
     protected static final String EXAMPLE_ETLD_PLUS_ONE = "example.com";
     protected static final String TEST_ETLD_PLUS_ONE_1 = "one.com";

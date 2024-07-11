@@ -12,37 +12,41 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.blink.mojom.RpMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /**
- * This view renders content that gets displayed inside the bottom sheet. This
- * is a simple container for the view which is the current best practice for
- * bottom sheet content.
+ * This view renders content that gets displayed inside the bottom sheet. This is a simple container
+ * for the view which is the current best practice for bottom sheet content.
  */
 public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     /**
-     * The maximum number of accounts that should be fully visible when the
-     * the account picker is displayed.
+     * The maximum number of accounts that should be fully visible when the the account picker is
+     * displayed.
      */
     private static final float MAX_VISIBLE_ACCOUNTS = 2.5f;
 
     private final View mContentView;
     private final Supplier<Integer> mScrollOffsetSupplier;
+    private final @RpMode.EnumType int mRpMode;
     private @Nullable Runnable mBackPressHandler;
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
 
     /** Constructs the AccountSelection bottom sheet view. */
-    AccountSelectionBottomSheetContent(View contentView, Supplier<Integer> scrollOffsetSupplier) {
+    AccountSelectionBottomSheetContent(
+            View contentView, Supplier<Integer> scrollOffsetSupplier, @RpMode.EnumType int rpMode) {
         mContentView = contentView;
         mScrollOffsetSupplier = scrollOffsetSupplier;
+        mRpMode = rpMode;
     }
 
     /**
      * Updates the sheet content back press handling behavior. This should be invoked during an
      * event that updates the back press handling behavior of the sheet content.
+     *
      * @param backPressHandler A runnable that will be invoked by the sheet content to handle a back
-     *         press. A null value indicates that back press will not be handled by the content.
+     *     press. A null value indicates that back press will not be handled by the content.
      */
     public void setCustomBackPressBehavior(@Nullable Runnable backPressHandler) {
         mBackPressHandler = backPressHandler;
@@ -99,9 +103,9 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean hasCustomScrimLifecycle() {
-        // Return true to ensure no SCRIM is created behind the view
-        // automatically.
-        return true;
+        // For widget mode, return true to ensure no scrim is created behind the view.
+        if (mRpMode == RpMode.WIDGET) return true;
+        return false;
     }
 
     @Override
