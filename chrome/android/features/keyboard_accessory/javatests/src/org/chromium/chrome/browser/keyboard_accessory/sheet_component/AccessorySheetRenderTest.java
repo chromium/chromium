@@ -361,6 +361,35 @@ public class AccessorySheetRenderTest {
         mRenderTestRule.render(mContentView, "Addresses");
     }
 
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testAddingPlusAddressToModelRendersTabsView() throws Exception {
+        final KeyboardAccessoryData.AccessorySheetData sheet =
+                new KeyboardAccessoryData.AccessorySheetData(
+                        AccessoryTabType.ADDRESSES, "Addresses", "");
+        sheet.getPlusAddressSection()
+                .add(
+                        new KeyboardAccessoryData.PlusAddressSection(
+                                new UserInfoField(
+                                        "example@gmail.com",
+                                        "example@gmail.com",
+                                        "",
+                                        false,
+                                        unused -> {})));
+        sheet.getFooterCommands()
+                .add(new KeyboardAccessoryData.FooterCommand("Manage addresses", cb -> {}));
+
+        AddressAccessorySheetCoordinator coordinator =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new AddressAccessorySheetCoordinator(
+                                        mActivityTestRule.getActivity(), null));
+        showSheetTab(coordinator, sheet);
+
+        mRenderTestRule.render(mContentView, "Addresses with plus address");
+    }
+
     private AsyncViewStub initializeContentViewWithSheetStub() {
         mContentView =
                 (FrameLayout)

@@ -107,6 +107,7 @@ AddressAccessoryControllerImpl::GetSheetData() const {
     title_or_empty_message =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE);
   }
+  // TODO: crbug.com/327838324 - Populate the plus address section.
   return autofill::CreateAccessorySheetData(
       autofill::AccessoryTabType::ADDRESSES, title_or_empty_message,
       UserInfosForProfiles(profiles), CreateManageAddressesFooter());

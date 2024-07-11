@@ -123,6 +123,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetMediator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PlusAddressInfoView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PromoCodeAccessoryInfoView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/utils/InsecureFillingDialogUtils.java",
   ]
@@ -147,6 +148,7 @@ android_resources("java_resources") {
     "java/res/layout/keyboard_accessory_sheet_tab_legacy_title.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_option_toggle.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_password_info.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_plus_address_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_promo_code_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_title.xml",
     "java/res/layout/keyboard_accessory_suggestion.xml",

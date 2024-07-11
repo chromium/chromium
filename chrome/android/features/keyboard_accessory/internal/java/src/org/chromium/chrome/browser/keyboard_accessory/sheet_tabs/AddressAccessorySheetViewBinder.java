@@ -18,8 +18,8 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.ListModel;
 
 /**
- * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>}
- * to the {@link RecyclerView} used as view of a tab for the address accessory sheet component.
+ * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>} to the
+ * {@link RecyclerView} used as view of a tab for the address accessory sheet component.
  */
 class AddressAccessorySheetViewBinder {
     static ElementViewHolder create(ViewGroup parent, @AccessorySheetDataPiece.Type int viewType) {
@@ -27,6 +27,8 @@ class AddressAccessorySheetViewBinder {
             case AccessorySheetDataPiece.Type.TITLE:
                 return new AccessorySheetTabViewBinder.TitleViewHolder(
                         parent, R.layout.keyboard_accessory_sheet_tab_title);
+            case AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION:
+                return new PlusAddressInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.ADDRESS_INFO:
                 return new AddressInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
@@ -34,6 +36,26 @@ class AddressAccessorySheetViewBinder {
         }
         assert false : "Unhandled type of data piece: " + viewType;
         return null;
+    }
+
+    static class PlusAddressInfoViewHolder
+            extends ElementViewHolder<
+                    KeyboardAccessoryData.PlusAddressSection, PlusAddressInfoView> {
+
+        PlusAddressInfoViewHolder(ViewGroup parent) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_plus_address_info);
+        }
+
+        @Override
+        protected void bind(
+                KeyboardAccessoryData.PlusAddressSection section, PlusAddressInfoView view) {
+            UserInfoField plusAddressField = section.getPlusAddress();
+            ChipView chip = view.getPlusAddress();
+            chip.getPrimaryTextView().setText(plusAddressField.getDisplayText());
+            chip.getPrimaryTextView().setContentDescription(plusAddressField.getA11yDescription());
+            chip.setIcon(R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
+            chip.setOnClickListener(src -> plusAddressField.triggerSelection());
+        }
     }
 
     /** Holds a View representing a set of address data. */

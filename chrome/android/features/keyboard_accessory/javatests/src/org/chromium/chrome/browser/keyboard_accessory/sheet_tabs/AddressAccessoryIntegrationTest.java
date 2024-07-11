@@ -101,7 +101,7 @@ public class AddressAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    public void testDisplaysEmptyStateMessageWithoutSavedPasswords() throws TimeoutException {
+    public void testDisplaysEmptyStateMessageWithoutSavedAddresses() throws TimeoutException {
         mHelper.loadTestPage(false);
 
         // Focus the field to bring up the accessory.

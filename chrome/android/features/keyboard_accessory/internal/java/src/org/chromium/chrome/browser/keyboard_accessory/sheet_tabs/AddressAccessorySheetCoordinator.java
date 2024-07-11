@@ -21,14 +21,15 @@ import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 
 /**
- * This component is a tab that can be added to the ManualFillingCoordinator which shows it
- * as bottom sheet below the keyboard accessory.
+ * This component is a tab that can be added to the ManualFillingCoordinator which shows it as
+ * bottom sheet below the keyboard accessory.
  */
 public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinator {
     private final AccessorySheetTabMediator mMediator;
 
     /**
      * Creates the address tab.
+     *
      * @param context The {@link Context} containing resources like icons and layouts for this tab.
      * @param scrollListener An optional listener that will be bound to the inflated recycler view.
      */
@@ -62,8 +63,9 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
     }
 
     /**
-     * Creates an adapter to an {@link AddressAccessorySheetViewBinder} that is wired
-     * up to a model change processor listening to the {@link AccessorySheetTabItemsModel}.
+     * Creates an adapter to an {@link AddressAccessorySheetViewBinder} that is wired up to a model
+     * change processor listening to the {@link AccessorySheetTabItemsModel}.
+     *
      * @param model the {@link AccessorySheetTabItemsModel} the adapter gets its data from.
      * @return Returns a fully initialized and wired adapter to a AddressAccessorySheetViewBinder.
      */

@@ -224,6 +224,18 @@ public class KeyboardAccessoryData {
         }
     }
 
+    public static final class PlusAddressSection {
+        private UserInfoField mPlusAddressInfo;
+
+        public PlusAddressSection(UserInfoField plusAddressInfo) {
+            mPlusAddressInfo = plusAddressInfo;
+        }
+
+        public UserInfoField getPlusAddress() {
+            return mPlusAddressInfo;
+        }
+    }
+
     /** Represents a Passkey (name and ID), to be shown on the manual fallback UI. */
     public static final class PasskeySection {
         private final String mDisplayName;
@@ -394,6 +406,7 @@ public class KeyboardAccessoryData {
         private final String mWarning;
         private final @AccessoryTabType int mSheetType;
         private OptionToggle mToggle;
+        private final List<PlusAddressSection> mPlusAddressSection = new ArrayList<>();
         private final List<UserInfo> mUserInfoList = new ArrayList<>();
         private final List<PasskeySection> mPasskeySectionList = new ArrayList<>();
         private final List<PromoCodeInfo> mPromoCodeInfoList = new ArrayList<>();
@@ -440,6 +453,10 @@ public class KeyboardAccessoryData {
         /** Returns the list of {@link UserInfo} to be shown on the accessory sheet. */
         public List<UserInfo> getUserInfoList() {
             return mUserInfoList;
+        }
+
+        public List<PlusAddressSection> getPlusAddressSection() {
+            return mPlusAddressSection;
         }
 
         /** Returns the list of {@link PasskeySection} to be shown on the accessory sheet. */

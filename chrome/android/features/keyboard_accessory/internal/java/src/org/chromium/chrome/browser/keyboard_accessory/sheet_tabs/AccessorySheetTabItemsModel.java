@@ -36,7 +36,8 @@ class AccessorySheetTabItemsModel
             Type.OPTION_TOGGLE,
             Type.PROMO_CODE_INFO,
             Type.IBAN_INFO,
-            Type.PASSKEY_SECTION
+            Type.PASSKEY_SECTION,
+            Type.PLUS_ADDRESS_SECTION
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
@@ -76,6 +77,9 @@ class AccessorySheetTabItemsModel
 
             /** A section containing a passkey. */
             int PASSKEY_SECTION = 11;
+
+            /** A section containing a plus address info. */
+            int PLUS_ADDRESS_SECTION = 12;
         }
 
         private Object mDataPiece;

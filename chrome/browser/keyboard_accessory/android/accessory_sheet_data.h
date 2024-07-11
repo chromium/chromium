@@ -104,6 +104,25 @@ class UserInfo {
 std::ostream& operator<<(std::ostream& out, const AccessorySheetField& field);
 std::ostream& operator<<(std::ostream& out, const UserInfo& user_info);
 
+class PlusAddressSection {
+ public:
+  explicit PlusAddressSection(const std::u16string& plus_address);
+  PlusAddressSection(const PlusAddressSection& plus_address_section);
+  PlusAddressSection(PlusAddressSection&& plus_address_section);
+
+  PlusAddressSection& operator=(const PlusAddressSection& plus_address_section);
+  PlusAddressSection& operator=(PlusAddressSection&& plus_address_section);
+
+  ~PlusAddressSection();
+
+  const AccessorySheetField plus_address() const { return plus_address_; }
+
+ private:
+  AccessorySheetField plus_address_;
+};
+
+std::ostream& operator<<(std::ostream& out, const PlusAddressSection& field);
+
 // Represents a passkey entry shown in the password accessory.
 class PasskeySection {
  public:
@@ -271,12 +290,20 @@ class AccessorySheetData {
     user_info_list_.emplace_back(std::move(user_info));
   }
 
+  void add_plus_address_section(PlusAddressSection plus_address_section) {
+    plus_address_section_list_.emplace_back(std::move(plus_address_section));
+  }
+
   void add_passkey_section(PasskeySection passkey_section) {
     passkey_section_list_.emplace_back(std::move(passkey_section));
   }
 
   const std::vector<UserInfo>& user_info_list() const {
     return user_info_list_;
+  }
+
+  const std::vector<PlusAddressSection>& plus_address_section_list() const {
+    return plus_address_section_list_;
   }
 
   const std::vector<PasskeySection>& passkey_section_list() const {
@@ -316,6 +343,7 @@ class AccessorySheetData {
   std::u16string title_;
   std::u16string warning_;
   std::optional<OptionToggle> option_toggle_;
+  std::vector<PlusAddressSection> plus_address_section_list_;
   std::vector<PasskeySection> passkey_section_list_;
   std::vector<UserInfo> user_info_list_;
   std::vector<PromoCodeInfo> promo_code_info_list_;
@@ -392,6 +420,10 @@ class AccessorySheetData::Builder {
                        std::string id,
                        bool is_obfuscated,
                        bool selectable) &;
+
+  // Adds a new PlusAddressSection `accessory_sheet_data_`.
+  Builder&& AddPlusAddressSection(std::u16string plus_address) &&;
+  Builder& AddPlusAddressSection(std::u16string plus_address) &;
 
   // Adds a new PasskeySection `accessory_sheet_data_`.
   Builder&& AddPasskeySection(std::string username,

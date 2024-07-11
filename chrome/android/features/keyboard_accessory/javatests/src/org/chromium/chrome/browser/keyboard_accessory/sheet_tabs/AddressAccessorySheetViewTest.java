@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
@@ -183,6 +184,36 @@ public class AddressAccessorySheetViewTest {
         assertThat(clicked.get(), is(true));
         clicked.set(false);
         TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.email_address)::performClick);
+        assertThat(clicked.get(), is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddingPlusAddressSectionToTheModelRendersClickableActions()
+            throws ExecutionException {
+        final AtomicBoolean clicked = new AtomicBoolean();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    new PlusAddressSection(
+                                            new UserInfoField.Builder()
+                                                    .setDisplayText("example@gmail.com")
+                                                    .setTextToFill("example@gmail.com")
+                                                    .setIsObfuscated(false)
+                                                    .setCallback(unused -> clicked.set(true))
+                                                    .build()),
+                                    AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION));
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mView.get().getChildCount(), greaterThan(0)));
+
+        assertThat(getChipText(R.id.plus_address), is("example@gmail.com"));
+
+        // Plus address chip is clickable:
+        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.plus_address)::performClick);
         assertThat(clicked.get(), is(true));
     }
 

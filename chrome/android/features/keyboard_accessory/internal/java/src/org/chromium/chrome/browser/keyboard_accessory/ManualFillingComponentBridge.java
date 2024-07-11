@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
@@ -209,6 +210,32 @@ class ManualFillingComponentBridge {
                                 .setIsObfuscated(isObfuscated)
                                 .setCallback(callback)
                                 .build());
+    }
+
+    @CalledByNative
+    private void addPlusAddressSectionToAccessorySheetData(
+            Object objAccessorySheetData,
+            @AccessoryTabType int sheetType,
+            @JniType("std::u16string") String plusAddress) {
+        Callback<UserInfoField> callback =
+                (field) -> {
+                    assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                    // TODO: crbug.com/327838324 - Record that the suggestion was accepted.
+                    ManualFillingComponentBridgeJni.get()
+                            .onFillingTriggered(mNativeView, this, sheetType, field);
+                };
+        UserInfoField field =
+                new UserInfoField.Builder()
+                        .setDisplayText(plusAddress)
+                        .setTextToFill(plusAddress)
+                        .setA11yDescription(plusAddress)
+                        .setIsObfuscated(false)
+                        .setCallback(callback)
+                        .build();
+
+        ((AccessorySheetData) objAccessorySheetData)
+                .getPlusAddressSection()
+                .add(new PlusAddressSection(field));
     }
 
     @CalledByNative

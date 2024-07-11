@@ -101,6 +101,34 @@ std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
   return os << "]";
 }
 
+PlusAddressSection::PlusAddressSection(const std::u16string& plus_address)
+    : plus_address_(AccessorySheetField(/*display_text=*/plus_address,
+                                        /*text_to_fill=*/plus_address,
+                                        /*a11y_description=*/plus_address,
+                                        /*id=*/std::string(),
+                                        /*is_obfuscated=*/false,
+                                        /*selectable=*/true)) {}
+
+PlusAddressSection::PlusAddressSection(const PlusAddressSection& user_info) =
+    default;
+
+PlusAddressSection::PlusAddressSection(PlusAddressSection&& field) = default;
+
+PlusAddressSection& PlusAddressSection::operator=(
+    const PlusAddressSection& user_info) = default;
+
+PlusAddressSection& PlusAddressSection::operator=(
+    PlusAddressSection&& user_info) = default;
+
+PlusAddressSection::~PlusAddressSection() = default;
+
+std::ostream& operator<<(std::ostream& os,
+                         const PlusAddressSection& plus_address) {
+  os << "plus_address: \"" << plus_address.plus_address().display_text()
+     << "\"";
+  return os;
+}
+
 PasskeySection::PasskeySection(std::string display_name,
                                std::vector<uint8_t> passkey_id)
     : display_name_(std::move(display_name)),
@@ -443,6 +471,20 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
       AccessorySheetField(std::move(display_text), std::move(text_to_fill),
                           std::move(a11y_description), std::move(id),
                           is_obfuscated, selectable));
+  return *this;
+}
+
+AccessorySheetData::Builder&&
+AccessorySheetData::Builder::AddPlusAddressSection(
+    std::u16string plus_address) && {
+  // Calls PlusAddressSection(...)& since |this| is an lvalue.
+  return std::move(AddPlusAddressSection(std::move(plus_address)));
+}
+
+AccessorySheetData::Builder& AccessorySheetData::Builder::AddPlusAddressSection(
+    std::u16string plus_address) & {
+  accessory_sheet_data_.add_plus_address_section(
+      (PlusAddressSection(std::move(plus_address))));
   return *this;
 }
 
