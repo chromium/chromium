@@ -69,7 +69,6 @@ class MediaViewControllerBaseTestParameterized
     media_view_ = std::make_unique<MediaView>();
     combobox_model_ = std::make_unique<ui::SimpleComboboxModel>(
         std::vector<ui::SimpleComboboxModel::Item>());
-    UpdateComboboxModel(0);
     controller_ = std::make_unique<MediaViewControllerBase>(
         *media_view_, /*needs_borders=*/true, combobox_model_.get(),
         source_change_callback_.Get(),
@@ -105,7 +104,7 @@ class MediaViewControllerBaseTestParameterized
   // ui::ComboboxModelObserver override
   void OnComboboxModelDestroying(ui::ComboboxModel* model) override {}
   void OnComboboxModelChanged(ui::ComboboxModel* model) override {
-    controller_->OnDeviceListChanged(actual_device_count_);
+    controller_->OnDeviceListChanged(model->GetItemCount());
   }
 
   bool IsComboboxVisible() const {
@@ -133,14 +132,9 @@ class MediaViewControllerBaseTestParameterized
   }
 
   void UpdateComboboxModel(size_t device_count) {
-    actual_device_count_ = device_count;
     std::vector<ui::SimpleComboboxModel::Item> items;
-    if (device_count == 0) {
-      items.emplace_back(std::u16string());
-    } else {
-      for (size_t i = 1; i <= device_count; ++i) {
-        items.emplace_back(GetDeviceName(i));
-      }
+    for (size_t i = 1; i <= device_count; ++i) {
+      items.emplace_back(GetDeviceName(i));
     }
     combobox_model_->UpdateItemList(std::move(items));
   }
@@ -164,7 +158,6 @@ class MediaViewControllerBaseTestParameterized
 
   base::HistogramTester histogram_tester_;
   bool allow_device_selection_ = false;
-  size_t actual_device_count_ = 0;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<MediaView> media_view_;
   std::unique_ptr<ui::SimpleComboboxModel> combobox_model_;

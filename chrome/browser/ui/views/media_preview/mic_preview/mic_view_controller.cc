@@ -28,12 +28,6 @@ const ui::ImageModel GetMicImageModel() {
 
 std::vector<ui::SimpleComboboxModel::Item> GetComboboxItems(
     const std::vector<media::AudioDeviceDescription>& audio_source_infos) {
-  if (audio_source_infos.empty()) {
-    // TODO(b/328262459): At least one item is needed because combobox doesn't
-    // handle empty models correctly.
-    return {ui::SimpleComboboxModel::Item(std::u16string())};
-  }
-
   std::vector<ui::SimpleComboboxModel::Item> items;
   items.reserve(audio_source_infos.size());
   for (const auto& info : audio_source_infos) {
@@ -65,9 +59,6 @@ MicViewController::MicViewController(
     MediaViewControllerBase::SourceChangeCallback callback,
     media_preview_metrics::Context metrics_context)
     : combobox_model_(combobox_model) {
-  // Initialize the combobox model.
-  combobox_model_->UpdateItemList(GetComboboxItems({}));
-
   const auto& combobox_accessible_name =
       l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_MIC_ACCESSIBLE_NAME);
   const auto& no_devices_found_combobox_text =
