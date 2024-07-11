@@ -295,7 +295,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   }
 
   GLenum GetBackingTextureTarget() const override {
-    return resource()->TextureTarget();
+    return resource()->client_shared_image()->GetTextureTarget();
   }
 
   uint32_t GetSharedImageUsageFlags() const override {
@@ -873,7 +873,8 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
 
     GrGLTextureInfo texture_info = {};
     texture_info.fID = resource_->GetBackBufferTextureId();
-    texture_info.fTarget = resource_->TextureTarget();
+    texture_info.fTarget =
+        resource_->GetBackBufferClientSharedImage()->GetTextureTarget();
     texture_info.fFormat =
         ContextProviderWrapper()->ContextProvider()->GetGrGLTextureFormat(
             viz::SkColorTypeToSinglePlaneSharedImageFormat(

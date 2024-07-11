@@ -234,8 +234,8 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
   }
 
   *out_resource = viz::TransferableResource::MakeGpu(
-      client_shared_image->mailbox(), TextureTarget(), GetSyncToken(), Size(),
-      GetSharedImageFormat(), IsOverlayCandidate(),
+      client_shared_image->mailbox(), client_shared_image->GetTextureTarget(),
+      GetSyncToken(), Size(), GetSharedImageFormat(), IsOverlayCandidate(),
       viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
@@ -734,10 +734,6 @@ CanvasResourceSharedImage::GetClientSharedImage(MailboxSyncMode sync_mode) {
   }
 
   return client_shared_image();
-}
-
-GLenum CanvasResourceSharedImage::TextureTarget() const {
-  return client_shared_image()->GetTextureTarget();
 }
 
 const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {

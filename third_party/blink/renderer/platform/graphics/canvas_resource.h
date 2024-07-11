@@ -208,11 +208,6 @@ class PLATFORM_EXPORT CanvasResource
   bool is_cross_thread() const {
     return base::PlatformThread::CurrentRef() != owning_thread_ref_;
   }
-  // Returns the texture target for the resource.
-  virtual GLenum TextureTarget() const {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
 
   virtual bool HasDetailedMemoryDumpProvider() const { return false; }
 
@@ -361,7 +356,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   GLuint GetTextureIdForWriteAccess() const {
     return owning_thread_data().texture_id_for_write_access;
   }
-  GLenum TextureTarget() const override;
 
   void WillDraw();
   bool HasReadAccess() const {
@@ -379,6 +373,17 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // true, then the CanvasResourceProvider will not report data, to avoid
   // double-countintg.
   bool HasDetailedMemoryDumpProvider() const override { return true; }
+
+  // NOTE: This is guaranteed to be non-null for the lifetime of this instance:
+  // * CanvasResourceSharedImage::Create() (which is the only public way
+  // to create an instance of this class) returns null if the ClientSI couldn't
+  // be created.
+  // * The pointer is not cleared until TearDown(), which is only called from
+  // OnDestroy(), which itself is only called from the destructor of this
+  // class.
+  gpu::ClientSharedImage* client_shared_image() const {
+    return owning_thread_data_.client_shared_image.get();
+  }
 
  private:
   // These members are either only accessed on the owning thread, or are only
@@ -433,16 +438,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   // Can be read on any thread.
 
-  // NOTE: This is guaranteed to be non-null for the lifetime of this instance:
-  // * CanvasResourceSharedImage::Create() (which is the only public way
-  // to create an instance of this class) returns null if the ClientSI couldn't
-  // be created.
-  // * The pointer is not cleared until TearDown(), which is only called from
-  // OnDestroy(), which itself is only called from the destructor of this
-  // class.
-  gpu::ClientSharedImage* client_shared_image() const {
-    return owning_thread_data_.client_shared_image.get();
-  }
   bool mailbox_needs_new_sync_token() const {
     return owning_thread_data_.mailbox_needs_new_sync_token;
   }
@@ -503,9 +498,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
 
  private:
   void TearDown() override;
-  GLenum TextureTarget() const final {
-    return transferable_resource_.texture_target();
-  }
   bool IsOverlayCandidate() const final {
     return transferable_resource_.is_overlay_candidate;
   }
@@ -556,11 +548,11 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
 
-  GLenum TextureTarget() const final {
-    return back_buffer_shared_image_->GetTextureTarget();
-  }
-
   GLuint GetBackBufferTextureId() const { return back_buffer_texture_id_; }
+  scoped_refptr<gpu::ClientSharedImage> GetBackBufferClientSharedImage() {
+    CHECK(back_buffer_shared_image_);
+    return back_buffer_shared_image_;
+  }
   const gpu::Mailbox& GetBackBufferMailbox() {
     CHECK(back_buffer_shared_image_);
     return back_buffer_shared_image_->mailbox();
