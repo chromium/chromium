@@ -4,8 +4,12 @@
 
 #include "camera_general_survey_handler.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/hats/hats_config.h"
@@ -15,8 +19,13 @@
 
 namespace ash {
 
+namespace {
+
 constexpr base::TimeDelta kMinCameraOpenDurationForSurvey = base::Seconds(15);
 constexpr base::TimeDelta kCameraSurveyTriggerDelay = base::Seconds(5);
+constexpr char kEnabledModelsParam[] = "enabled_models";
+
+}  // namespace
 
 class CameraGeneralSurveyHandlerDelegate
     : public CameraGeneralSurveyHandler::Delegate {
@@ -40,27 +49,56 @@ class CameraGeneralSurveyHandlerDelegate
         observer);
   }
 
-  bool ShouldShowSurvey() const override {
-    return HatsNotificationController::ShouldShowSurveyToProfile(
-        ProfileManager::GetActiveUserProfile(), kHatsGeneralCameraSurvey);
-  }
-
-  void ShowSurvey() override {
+  void LoadConfig() override {
     base::SysInfo::GetHardwareInfo(base::BindOnce(
         &CameraGeneralSurveyHandlerDelegate::OnHardwareInfoFetched,
         weak_ptr_factory_.GetWeakPtr()));
   }
 
- private:
-  void OnHardwareInfoFetched(base::SysInfo::HardwareInfo info) {
-    Profile* profile = ProfileManager::GetActiveUserProfile();
-    base::flat_map<std::string, std::string> survey_data = {
-        {"board", base::SysInfo::GetLsbReleaseBoard()}, {"model", info.model}};
-    hats_notification_controller_ =
-        base::MakeRefCounted<HatsNotificationController>(
-            profile, kHatsGeneralCameraSurvey, survey_data);
+  bool ShouldShowSurvey() const override {
+    if (!hw_info_.has_value()) {
+      LOG(ERROR) << "Unable to show camera HaTS because HW info is empty!";
+      return false;
+    }
+    return HatsNotificationController::ShouldShowSurveyToProfile(
+        ProfileManager::GetActiveUserProfile(), *GetHatsConfig());
   }
 
+  void ShowSurvey() override {
+    base::flat_map<std::string, std::string> survey_data = {
+        {"board", hw_info_->board}, {"model", hw_info_->model}};
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    hats_notification_controller_ =
+        base::MakeRefCounted<HatsNotificationController>(
+            profile, *GetHatsConfig(), survey_data);
+  }
+
+ private:
+  void OnHardwareInfoFetched(base::SysInfo::HardwareInfo info) {
+    hw_info_ = {
+        .board = base::SysInfo::GetLsbReleaseBoard(),
+        .model = info.model,
+    };
+  }
+
+  const raw_ref<const HatsConfig> GetHatsConfig() const {
+    if (base::FeatureList::IsEnabled(
+            kHatsGeneralCameraPrioritizedSurvey.feature) &&
+        hw_info_.has_value()) {
+      std::vector<std::string> prioritized_models = base::SplitString(
+          base::GetFieldTrialParamValueByFeature(
+              kHatsGeneralCameraPrioritizedSurvey.feature, kEnabledModelsParam),
+          ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      if (std::find(prioritized_models.begin(), prioritized_models.end(),
+                    hw_info_->model) != prioritized_models.end()) {
+        return raw_ref<const HatsConfig>(kHatsGeneralCameraPrioritizedSurvey);
+      }
+    }
+    return raw_ref<const HatsConfig>(kHatsGeneralCameraSurvey);
+  }
+
+  std::optional<CameraGeneralSurveyHandler::HardwareInfo> hw_info_ =
+      std::nullopt;
   scoped_refptr<HatsNotificationController> hats_notification_controller_;
   base::WeakPtrFactory<CameraGeneralSurveyHandlerDelegate> weak_ptr_factory_{
       this};
@@ -83,10 +121,10 @@ CameraGeneralSurveyHandler::CameraGeneralSurveyHandler(
       is_enabled_(is_enabled),
       delegate_(std::move(delegate)) {
   if (!is_enabled_) {
-    VLOG(1) << "General camera survey feature is not enabled";
     return;
   }
   camera_observer_.Observe(delegate_.get());
+  delegate_->LoadConfig();
 }
 
 CameraGeneralSurveyHandler::~CameraGeneralSurveyHandler() = default;

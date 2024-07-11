@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/hats/hats_config.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace ash {
@@ -22,6 +23,11 @@ namespace ash {
 // closed for |trigger_delay_|.
 class CameraGeneralSurveyHandler : public media::CameraActiveClientObserver {
  public:
+  struct HardwareInfo {
+    std::string board;
+    std::string model;
+  };
+
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -33,6 +39,9 @@ class CameraGeneralSurveyHandler : public media::CameraActiveClientObserver {
     // Removes the survey handler as an observer of CameraActiveClientObserver.
     virtual void RemoveActiveCameraClientObserver(
         media::CameraActiveClientObserver* observer) = 0;
+
+    // Loads the config then keeps it internally.
+    virtual void LoadConfig() = 0;
 
     // Checks whether the device met all conditions to participate the survey.
     virtual bool ShouldShowSurvey() const = 0;
