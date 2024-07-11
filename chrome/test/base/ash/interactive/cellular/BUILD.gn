@@ -10,8 +10,11 @@ source_set("interactive_ui_tests") {
   testonly = true
 
   sources = [
+    "apn_revamp_interactive_uitest.cc",
     "esim_installation_interactive_uitest.cc",
     "esim_interactive_uitest.cc",
+    "esim_interactive_uitest_base.cc",
+    "esim_interactive_uitest_base.h",
     "esim_ui_elements_interactive_uitest.cc",
     "rename_esim_profile_interactive_uitest.cc",
     "toggle_cellular_interactive_uitest.cc",

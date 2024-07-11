@@ -84,6 +84,16 @@ class InteractiveAshTest
                                 const ash::NetworkTypePattern network_pattern,
                                 const std::string& network_name);
 
+  // This function expects the Settings to already be open and on the detailed
+  // page of a cellular network.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateToApnRevampDetailsPage(const ui::ElementIdentifier& element_id);
+
+  // This function expects the Settings to already be open and on the APN
+  // subpage.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  OpenAddCustomApnDetailsDialog(const ui::ElementIdentifier& element_id);
+
   // Opens the Quick Settings bubble.
   ui::test::internal::InteractiveTestPrivate::MultiStep OpenQuickSettings();
 
@@ -142,6 +152,12 @@ class InteractiveAshTest
   // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and be disabled.
   InteractiveTestApi::MultiStep WaitForElementDisabled(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery query);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be checked.
+  InteractiveTestApi::MultiStep WaitForElementChecked(
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery query);
 

@@ -8,13 +8,11 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/ash/interactive/cellular/esim_util.h"
+#include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/network/shill_device_power_state_observer.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
-#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "dbus/object_path.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,33 +27,7 @@
 namespace ash {
 namespace {
 
-class EsimInteractiveUiTest : public InteractiveAshTest {
- protected:
-  // InteractiveAshTest:
-  void SetUpOnMainThread() override {
-    InteractiveAshTest::SetUpOnMainThread();
-
-    // Set up context for element tracking for InteractiveBrowserTest.
-    SetupContextWidget();
-
-    // Ensure the OS Settings app is installed.
-    InstallSystemApps();
-
-    auto* hermes_manager_client =
-        HermesManagerClient::Get()->GetTestInterface();
-    ASSERT_TRUE(hermes_manager_client);
-
-    hermes_manager_client->ClearEuiccs();
-
-    hermes_manager_client->AddEuicc(dbus::ObjectPath(euicc_info_.path()),
-                                    euicc_info_.eid(),
-                                    /*is_active=*/true,
-                                    /*physical_slot=*/0);
-  }
-
- private:
-  const EuiccInfo euicc_info_{/*id=*/0};
-};
+using EsimInteractiveUiTest = EsimInteractiveUiTestBase;
 
 IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest,
                        OpenAddEsimDialogFromQuickSettings) {

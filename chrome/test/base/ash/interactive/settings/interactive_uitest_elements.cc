@@ -30,6 +30,52 @@ WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle() {
 
 namespace cellular {
 
+WebContentsInteractionTestUtil::DeepQuery ApnDialog() {
+  return InternetPage() + "apn-subpage" + "apn-list" + "apn-detail-dialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsButton() {
+  return ApnDialog() + "cr-expand-button";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAttachCheckbox() {
+  return ApnDialog() + "cr-checkbox#apnAttachTypeCheckbox";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnDialogDefaultCheckbox() {
+  return ApnDialog() + "cr-checkbox#apnDefaultTypeCheckbox";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAddActionButton() {
+  return ApnDialog() + "cr-button#apnDetailActionBtn";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnDialogApnInput() {
+  return ApnDialog() + "cr-input#apnInput";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnDialogDefaultApnRequiredInfo() {
+  return ApnDialog() + "div#defaultApnRequiredInfo";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListFirstItem() {
+  return InternetPage() + "apn-subpage" + "apn-list" +
+         "apn-list-item:first-of-type";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemName() {
+  return InternetPage() + "apn-subpage" + "apn-list" +
+         "apn-list-item:first-of-type" + "div#apnName";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton() {
+  return InternetPage() + "cr-icon-button#apnActionMenuButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton() {
+  return InternetPage() + "button#createCustomApnButton";
+}
+
 WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem() {
   return InternetPage() + "network-summary" + "network-summary-item#Cellular" +
          "div#networkSummaryItemRow";
@@ -81,6 +127,11 @@ WebContentsInteractionTestUtil::DeepQuery EsimDialogTitle() {
 WebContentsInteractionTestUtil::DeepQuery EsimNetworkList() {
   return InternetPage() + "settings-internet-subpage" +
          "cellular-networks-list" + "network-list#esimNetworkList";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PsimNetworkList() {
+  return InternetPage() + "settings-internet-subpage" +
+         "cellular-networks-list" + "network-list#psimNetworkList";
 }
 
 WebContentsInteractionTestUtil::DeepQuery MobileDataToggle() {
@@ -136,6 +187,11 @@ CellularSubpageMenuRenameDialogDoneButton() {
 WebContentsInteractionTestUtil::DeepQuery
 CellularSubpageMenuRenameDialogInputField() {
   return CellularSubpageMenuRenameDialog() + "cr-input#eSimprofileName";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSubpageApnRow() {
+  return InternetPage() + "settings-internet-detail-subpage" +
+         "cr-link-row#apnSubpageButton";
 }
 
 }  // namespace cellular

@@ -20,11 +20,50 @@ WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle();
 
 namespace cellular {
 
-// The cellular "row" on the top-level internet page.
-WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem();
-
 // The "add eSIM" button on the cellular page.
 WebContentsInteractionTestUtil::DeepQuery AddEsimButton();
+
+// The APN details dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialog();
+
+// The "Advanced Settings" button in APN details dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsButton();
+
+// The "Attach" checkbox of APN types in APN details dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAttachCheckbox();
+
+// The "Default" checkbox of APN types in APN details dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogDefaultCheckbox();
+
+// The default APN required info message in APN details dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogDefaultApnRequiredInfo();
+
+// The "Add" action button in APN details dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAddActionButton();
+
+// The APN name input in APN details dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogApnInput();
+
+// The username input in APN details dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogUsernameInput();
+
+// The password input in APN details dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogPasswordInput();
+
+// The first apn item in APN list.
+WebContentsInteractionTestUtil::DeepQuery ApnListFirstItem();
+
+// The first apn item name in APN list.
+WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemName();
+
+// The action menu button in APN subpage.
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton();
+
+// The "Create new APN" button in the action menu in APN subpage.
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton();
+
+// The cellular "row" on the top-level internet page.
+WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem();
 
 // The "add eSIM" dialog.
 WebContentsInteractionTestUtil::DeepQuery EsimDialog();
@@ -58,6 +97,9 @@ WebContentsInteractionTestUtil::DeepQuery EsimDialogTitle();
 
 // The list of eSIM networks.
 WebContentsInteractionTestUtil::DeepQuery EsimNetworkList();
+
+// The list of pSIM networks.
+WebContentsInteractionTestUtil::DeepQuery PsimNetworkList();
 
 // The Mobile data toggle on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery MobileDataToggle();
@@ -101,6 +143,9 @@ CellularSubpageMenuRenameDialogInputField();
 
 // The cellular "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem();
+
+// The apn "row" on the cellular network subpage, only available in apn revamp.
+WebContentsInteractionTestUtil::DeepQuery CellularSubpageApnRow();
 
 }  // namespace cellular
 

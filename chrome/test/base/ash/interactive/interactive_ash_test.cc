@@ -212,6 +212,35 @@ InteractiveAshTest::NavigateQuickSettingsToBluetoothPage() {
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateToApnRevampDetailsPage(
+    const ui::ElementIdentifier& element_id) {
+  return Steps(
+      WaitForElementExists(element_id,
+                           ash::settings::cellular::CellularSubpageApnRow()),
+      ScrollIntoView(element_id,
+                     ash::settings::cellular::CellularSubpageApnRow()),
+      MoveMouseTo(element_id, ash::settings::cellular::CellularSubpageApnRow()),
+      ClickMouse(),
+      WaitForElementExists(
+          element_id, ash::settings::cellular::ApnSubpageActionMenuButton()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::OpenAddCustomApnDetailsDialog(
+    const ui::ElementIdentifier& element_id) {
+  return Steps(
+      WaitForElementEnabled(
+          element_id, ash::settings::cellular::ApnSubpageActionMenuButton()),
+      ClickElement(element_id,
+                   ash::settings::cellular::ApnSubpageActionMenuButton()),
+      WaitForElementEnabled(
+          element_id, ash::settings::cellular::ApnSubpageCreateApnButton()),
+      ClickElement(element_id,
+                   ash::settings::cellular::ApnSubpageCreateApnButton()),
+      WaitForElementExists(element_id, ash::settings::cellular::ApnDialog()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::NavigateQuickSettingsToHotspotPage() {
   return NavigateQuickSettingsToPage(
       ash::kHotspotFeatureTileDrillInArrowElementId);
@@ -339,6 +368,20 @@ InteractiveAshTest::WaitForElementDisabled(
   state_change.where = element;
   state_change.type = StateChange::Type::kExistsAndConditionTrue;
   state_change.test_function = "(el) => { return el.disabled; }";
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementChecked(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementChecked);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementChecked;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = "(el) => { return el.checked; }";
   return WaitForStateChange(element_id, state_change);
 }
 
