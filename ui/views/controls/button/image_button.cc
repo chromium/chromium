@@ -250,6 +250,16 @@ gfx::ImageSkia ImageButton::GetImageToPaint() {
   return !img.isNull() ? img : images_[STATE_NORMAL].Rasterize(color_provider);
 }
 
+void ToggleImageButton::UpdateAccessibleRoleIfNeeded() {
+  if ((toggled_ && !images_[ButtonState::STATE_NORMAL].IsEmpty()) ||
+      (!toggled_ && !alternate_images_[ButtonState::STATE_NORMAL].IsEmpty())) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+    return;
+  }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ImageButton, private:
 
@@ -303,6 +313,7 @@ void ToggleImageButton::SetToggled(bool toggled) {
   toggled_ = toggled;
 
   OnPropertyChanged(&toggled_, kPropertyEffectsPaint);
+  UpdateAccessibleRoleIfNeeded();
   NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
 }
 
@@ -322,6 +333,8 @@ void ToggleImageButton::SetToggledImageModel(
   } else {
     alternate_images_[image_state] = image_model;
   }
+
+  UpdateAccessibleRoleIfNeeded();
 }
 
 void ToggleImageButton::SetToggledBackground(std::unique_ptr<Background> b) {
@@ -370,6 +383,8 @@ void ToggleImageButton::SetImageModel(ButtonState image_state,
       SchedulePaint();
   }
   PreferredSizeChanged();
+
+  UpdateAccessibleRoleIfNeeded();
 }
 
 void ToggleImageButton::OnPaintBackground(gfx::Canvas* canvas) {
@@ -405,7 +420,6 @@ void ToggleImageButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // accessible toggle button.
   if ((toggled_ && !images_[ButtonState::STATE_NORMAL].IsEmpty()) ||
       (!toggled_ && !alternate_images_[ButtonState::STATE_NORMAL].IsEmpty())) {
-    node_data->role = ax::mojom::Role::kToggleButton;
     node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
                                         : ax::mojom::CheckedState::kFalse);
   }

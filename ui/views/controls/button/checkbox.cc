@@ -68,7 +68,6 @@ Checkbox::Checkbox(const std::u16string& label,
     : LabelButton(std::move(callback), label, button_context) {
   SetImageCentered(false);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
 
   SetRequestFocusOnPress(false);
   InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -144,6 +143,8 @@ Checkbox::Checkbox(const std::u16string& label,
   // color of the unchecked, enabled icon.
   InkDrop::Get(image_container_view())
       ->SetBaseColorId(ui::kColorCheckboxForegroundUnchecked);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
 }
 
 Checkbox::~Checkbox() = default;
@@ -186,7 +187,6 @@ void Checkbox::SetCheckedIconImageColor(SkColor color) {
 
 void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   LabelButton::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kCheckBox;
   const ax::mojom::CheckedState checked_state =
       GetChecked() ? ax::mojom::CheckedState::kTrue
                    : ax::mojom::CheckedState::kFalse;

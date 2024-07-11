@@ -36,13 +36,14 @@ RadioButton::RadioButton(const std::u16string& label, int group_id)
     : Checkbox(label) {
   SetGroup(group_id);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
 }
 
 RadioButton::~RadioButton() = default;
 
 void RadioButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Checkbox::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kRadioButton;
 }
 
 View* RadioButton::GetSelectedViewForGroup(int group) {
