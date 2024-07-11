@@ -397,7 +397,7 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
 
 base::FilePath ChromeCaptureModeDelegate::RedirectFilePath(
     const base::FilePath& path) {
-  if (!odfs_temp_dir_.GetPath().empty()) {
+  if (odfs_temp_dir_.GetPath().empty()) {
     return path;
   }
   base::FilePath odfs_path = GetOneDriveMountPointPath();
