@@ -76,14 +76,6 @@ const GURL GetFrenchUrl() {
       setLastUsedBookmarkFolderToMobileBookmarksInStorageType:storageType];
 }
 
-- (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder {
-  return [BookmarkEarlGreyAppInterface lastUsedBookmarkFolder];
-}
-
-- (BookmarkModelType)lastUsedBookmarkFolderStorageType {
-  return [BookmarkEarlGreyAppInterface lastUsedBookmarkFolderStorageType];
-}
-
 #pragma mark - Common Helpers
 
 - (void)verifyBookmarksWithTitle:(NSString*)title

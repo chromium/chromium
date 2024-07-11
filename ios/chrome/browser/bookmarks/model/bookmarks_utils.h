@@ -93,9 +93,7 @@ void SetLastUsedBookmarkFolder(PrefService* prefs,
 //- Local mobile folder
 const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     PrefService* prefs,
-    bool is_account_bookmark_model_available,
-    LegacyBookmarkModel* profile_bookmark_model,
-    LegacyBookmarkModel* account_bookmark_model);
+    const bookmarks::BookmarkModel* bookmark_model);
 
 // Used when on-disk bookmark IDs have been reassigned and therefore the prefs
 // need to be migrated accordingly.

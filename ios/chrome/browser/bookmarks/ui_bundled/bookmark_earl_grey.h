@@ -63,12 +63,6 @@ const GURL GetFrenchUrl();
 - (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
     (BookmarkModelType)storageType;
 
-// Get the last used bookmark folder.
-- (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder;
-
-// Get the model of the last used bookmark folder.
-- (BookmarkModelType)lastUsedBookmarkFolderStorageType;
-
 #pragma mark - Common Helpers
 
 // Verifies that `expectedCount` bookmarks exist with the corresponding `title`

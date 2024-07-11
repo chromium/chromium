@@ -26,20 +26,6 @@ void LogDefaultBookmarkFolderOutcome(
                                 value);
 }
 
-// Returns the bookmark model designed by `type`.
-LegacyBookmarkModel* GetBookmarkModelForType(
-    BookmarkModelType type,
-    LegacyBookmarkModel* local_or_syncable_bookmark_model,
-    LegacyBookmarkModel* account_bookmark_model) {
-  switch (type) {
-    case BookmarkModelType::kAccount:
-      return account_bookmark_model;
-    case BookmarkModelType::kLocalOrSyncable:
-      return local_or_syncable_bookmark_model;
-  }
-  NOTREACHED_NORETURN();
-}
-
 }  // namespace
 
 const int64_t kLastUsedBookmarkFolderNone = -1;
@@ -144,9 +130,7 @@ void SetLastUsedBookmarkFolder(PrefService* prefs,
 
 const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     PrefService* prefs,
-    bool is_account_bookmark_model_available,
-    LegacyBookmarkModel* local_or_syncable_bookmark_model,
-    LegacyBookmarkModel* account_bookmark_model) {
+    const bookmarks::BookmarkModel* bookmark_model) {
   int64_t node_id =
       prefs->GetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks);
 
@@ -156,20 +140,20 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
   } else {
     BookmarkModelType type = static_cast<BookmarkModelType>(prefs->GetInteger(
         prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
-    LegacyBookmarkModel* bookmark_model = GetBookmarkModelForType(
-        type, local_or_syncable_bookmark_model, account_bookmark_model);
-    const BookmarkNode* result = bookmark_model->GetNodeById(node_id);
+
+    const BookmarkNode* result =
+        bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
     if (result && result->is_folder()) {
       // Make sure the bookmark node is a folder. See crbug.com/1450146.
       LogDefaultBookmarkFolderOutcome(
-          (bookmark_model == local_or_syncable_bookmark_model)
+          bookmark_model->IsLocalOnlyNode(*result)
               ? DefaultBookmarkFolderOutcomeForMetrics::kExistingLocalFolderSet
               : DefaultBookmarkFolderOutcomeForMetrics::
                     kExistingAccountFolderSet);
       return result;
     } else {
       LogDefaultBookmarkFolderOutcome(
-          (bookmark_model == local_or_syncable_bookmark_model)
+          (type == BookmarkModelType::kLocalOrSyncable)
               ? DefaultBookmarkFolderOutcomeForMetrics::kMissingLocalFolderSet
               : DefaultBookmarkFolderOutcomeForMetrics::
                     kMissingAccountFolderSet);
@@ -177,14 +161,9 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
   }
 
   // Either preferences is not set, or refers to a non-existing folder.
-  BookmarkModelType type =
-      (is_account_bookmark_model_available &&
-       account_bookmark_model->subtle_mobile_node() != nullptr)
-          ? BookmarkModelType::kAccount
-          : BookmarkModelType::kLocalOrSyncable;
-  LegacyBookmarkModel* bookmark_model = GetBookmarkModelForType(
-      type, local_or_syncable_bookmark_model, account_bookmark_model);
-  return bookmark_model->subtle_mobile_node();
+  return (bookmark_model->account_mobile_node() != nullptr)
+             ? bookmark_model->account_mobile_node()
+             : bookmark_model->mobile_node();
 }
 
 void MigrateLastUsedBookmarkFolderUponLocalIdsReassigned(

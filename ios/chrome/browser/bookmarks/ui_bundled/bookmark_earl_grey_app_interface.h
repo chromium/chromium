@@ -7,10 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-namespace bookmarks {
-class BookmarkNode;
-}  // namespace bookmarks
-
 enum class BookmarkModelType;
 
 // BookmarkEarlGreyAppInterface contains the app-side implementation for
@@ -49,12 +45,6 @@ enum class BookmarkModelType;
 // Set the last used bookmark folder.
 + (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
     (BookmarkModelType)storageType;
-
-// Get the last used bookmark folder.
-+ (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder;
-
-// Get the model of the last used bookmark folder.
-+ (BookmarkModelType)lastUsedBookmarkFolderStorageType;
 
 // Asserts that `expectedCount` bookmarks exist with the corresponding `title`
 // using the BookmarkModel.

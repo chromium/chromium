@@ -16,16 +16,17 @@
 #import "components/prefs/pref_service.h"
 #import "components/query_parser/query_parser.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_path_cache.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_path_cache.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/nserror_util.h"
 #import "ui/base/models/tree_node_iterator.h"
@@ -233,23 +234,6 @@ const bookmarks::BookmarkNode* GetFirstBookmarkWithTitle(
   SetLastUsedBookmarkFolder(
       chrome_test_util::GetOriginalBrowserState()->GetPrefs(), folder,
       storageType);
-}
-
-+ (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  return GetDefaultBookmarkFolder(
-      browserState->GetPrefs(),
-      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
-          SyncServiceFactory::GetForBrowserState(browserState)),
-      [BookmarkEarlGreyAppInterface localOrSyncableBookmarkModel],
-      [BookmarkEarlGreyAppInterface accountBookmarkModel]);
-}
-
-+ (BookmarkModelType)lastUsedBookmarkFolderStorageType {
-  return static_cast<BookmarkModelType>(
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs()->GetInteger(
-          prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
 }
 
 + (NSError*)verifyBookmarksWithTitle:(NSString*)title

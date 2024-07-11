@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -41,6 +42,10 @@ BookmarkClientImpl::BookmarkClientImpl(
       bookmark_undo_service_(bookmark_undo_service) {}
 
 BookmarkClientImpl::~BookmarkClientImpl() {}
+
+void BookmarkClientImpl::SetIsSyncFeatureEnabledIncludingBookmarksForTest() {
+  is_sync_feature_enabled_including_bookmarks_for_test_ = true;
+}
 
 void BookmarkClientImpl::Init(bookmarks::BookmarkModel* model) {
   if (managed_bookmark_service_) {
@@ -105,6 +110,11 @@ BookmarkClientImpl::GetLoadManagedNodeCallback() {
 }
 
 bool BookmarkClientImpl::IsSyncFeatureEnabledIncludingBookmarks() {
+  if (is_sync_feature_enabled_including_bookmarks_for_test_) {
+    CHECK_IS_TEST();
+    return true;
+  }
+
   // `kMigrateSyncingUserToSignedIn` is only used as an extra safeguard to avoid
   // behavioral changes. If this feature is enabled, sync-the-feature can be
   // safely considered disabled, as the remaining cases where

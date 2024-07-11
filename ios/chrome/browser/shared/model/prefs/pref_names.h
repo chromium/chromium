@@ -136,6 +136,9 @@ inline constexpr char kIosBookmarkCachedFolderId[] =
 
 // Caches the folder’s model of user's position in the bookmark hierarchy
 // navigator.
+// TODO(crbug.com/346918509): Deprecate this pref, as it is no longer needed
+// after a single BookmarkModel instance was adopted on iOS and the node ID
+// alone is able to uniquely identify the folder.
 inline constexpr char kIosBookmarkCachedFolderModel[] =
     "ios.bookmark.cached_folder_model";
 
@@ -151,6 +154,9 @@ inline constexpr char kIosBookmarkCachedTopMostRow[] =
 // instead consider the "default folder" to be the one selected when this
 // preference is set to `kLastUsedBookmarkFolderNone`. Related to
 // kIosBookmarkLastUsedStorageReceivingBookmarks.
+// TODO(crbug.com/346918509): Deprecate this pref, as it is no longer needed
+// after a single BookmarkModel instance was adopted on iOS and the node ID
+// alone is able to uniquely identify the folder.
 inline constexpr char kIosBookmarkLastUsedFolderReceivingBookmarks[] =
     "ios.bookmark.default_folder";
 

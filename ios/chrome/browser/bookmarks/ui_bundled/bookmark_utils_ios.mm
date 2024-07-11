@@ -304,73 +304,69 @@ bool bookmarkSavedIntoAccount(
 }
 
 NSString* messageForAddingBookmarksInFolder(
-    NSString* folderTitle,
+    const BookmarkNode* folder,
+    const bookmarks::BookmarkModel* model,
     bool chosenByUser,
-    BookmarkModelType bookmarkModelType,
     bool showCount,
     int count,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService) {
-  CHECK(folderTitle);
+  CHECK(folder);
+  CHECK(model);
+
+  NSString* folderTitle = TitleForBookmarkNode(folder);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  BOOL savedIntoAccount = bookmarkSavedIntoAccount(
-      bookmarkModelType, authenticationService, syncService);
-  if (savedIntoAccount) {
-    // Tell the user the bookmark is synced in their account.
-    CHECK(identity);
-    std::u16string email = base::SysNSStringToUTF16(identity.userEmail);
+
+  if (!identity || !syncService->GetUserSettings()->GetSelectedTypes().Has(
+                       syncer::UserSelectableType::kBookmarks)) {
+    // The user is signed-out or bookmark sync is disabled.
     if (chosenByUser) {
-      // Also mentions the folder in which the bookmark is saved.
       std::u16string title = base::SysNSStringToUTF16(folderTitle);
       std::u16string pattern = l10n_util::GetStringUTF16(
-          (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT_FOLDER
-                      : IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER);
+          (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER
+                      : IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
       return base::SysUTF16ToNSString(
           base::i18n::MessageFormatter::FormatWithNamedArgs(
-              pattern, "count", count, "title", title, "email", email));
+              pattern, "count", count, "title", title));
     } else {
-      std::u16string pattern = l10n_util::GetStringUTF16(
-          (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT
-                      : IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT);
-      return base::SysUTF16ToNSString(
-          base::i18n::MessageFormatter::FormatWithNamedArgs(
-              pattern, "count", count, "email", email));
+      return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          (showCount) ? IDS_IOS_BOOKMARKS_BULK_SAVED : IDS_IOS_BOOKMARKS_SAVED,
+          count));
     }
   }
 
-  if (identity) {
-    BOOL syncingBookmark =
-        syncService->GetUserSettings()->GetSelectedTypes().Has(
-            syncer::UserSelectableType::kBookmarks);
-    if (syncingBookmark) {
-      // The user is signed-in, and syncing bookmark, but default bookmark
-      // account is on a local folder.
-      std::u16string title = base::SysNSStringToUTF16(folderTitle);
-      std::u16string pattern = l10n_util::GetStringUTF16(
-          (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER_TO_DEVICE
-                      : IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE);
-      std::u16string message =
-          base::i18n::MessageFormatter::FormatWithNamedArgs(
-              pattern, "count", count, "title", title);
-      return base::SysUTF16ToNSString(message);
-    }
-    // Bookmark syncing is disabled. This case is similar to the signed-out case
-    // below.
-  }
-  // The user is signed-out.
-  if (chosenByUser) {
+  // The user is signed in and bookmark sync is on (either account bookmarks or
+  // the legacy sync-the-feature). It is still possible that the folder saving
+  // into is a local-only folder.
+  if (model->IsLocalOnlyNode(*folder)) {
     std::u16string title = base::SysNSStringToUTF16(folderTitle);
     std::u16string pattern = l10n_util::GetStringUTF16(
-        (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER
-                    : IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
+        (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER_TO_DEVICE
+                    : IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE);
+    std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        pattern, "count", count, "title", title);
+    return base::SysUTF16ToNSString(message);
+  }
+
+  // Tell the user the bookmark is synced in their account.
+  std::u16string email = base::SysNSStringToUTF16(identity.userEmail);
+  if (chosenByUser) {
+    // Also mentions the folder in which the bookmark is saved.
+    std::u16string title = base::SysNSStringToUTF16(folderTitle);
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT_FOLDER
+                    : IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER);
     return base::SysUTF16ToNSString(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
-            pattern, "count", count, "title", title));
+            pattern, "count", count, "title", title, "email", email));
   } else {
-    return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-        (showCount) ? IDS_IOS_BOOKMARKS_BULK_SAVED : IDS_IOS_BOOKMARKS_SAVED,
-        count));
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT
+                    : IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT);
+    return base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            pattern, "count", count, "email", email));
   }
 }
 
@@ -423,8 +419,8 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_UPDATED);
   } else {
     text = messageForAddingBookmarksInFolder(
-        base::SysUTF16ToNSString(folder->GetTitledUrlNodeTitle()),
-        /*chosenByUser =*/true, GetBookmarkModelType(folder, model),
+        folder, model,
+        /*chosenByUser =*/true,
         /*showCount=*/false, /*count=*/1, authenticationService, syncService);
   }
   return CreateUndoToastWithWrapper(
@@ -657,12 +653,10 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
   // "bookmarks" in plural form.
   int count = (multiple_bookmarks_to_move) ? 2 : 1;
 
-  BookmarkModelType bookmarkModelType =
-      bookmark_utils_ios::GetBookmarkModelType(destination_folder, model);
   NSString* text = messageForAddingBookmarksInFolder(
-      TitleForBookmarkNode(destination_folder),
-      /*chosenByUser=*/true, bookmarkModelType, /*showCount=*/false, count,
-      authenticationService, syncService);
+      destination_folder, model,
+      /*chosenByUser=*/true, /*showCount=*/false, count, authenticationService,
+      syncService);
   return CreateUndoToastWithWrapper(wrapper, text,
                                     "MobileBookmarkManagerMoveToFolderUndone");
 }

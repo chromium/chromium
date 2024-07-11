@@ -9,12 +9,12 @@
 
 class AuthenticationService;
 class GURL;
-class LegacyBookmarkModel;
 @class MDCSnackbarMessage;
 class PrefService;
 @class URLWithTitle;
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -30,15 +30,11 @@ class PrefRegistrySyncable;
 @interface BookmarkMediator : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)
-    initWithWithLocalOrSyncableBookmarkModel:
-        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
-                        accountBookmarkModel:
-                            (LegacyBookmarkModel*)accountBookmarkModel
-                                       prefs:(PrefService*)prefs
-                       authenticationService:
-                           (AuthenticationService*)authenticationService
-                                 syncService:(syncer::SyncService*)syncService
+- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                                prefs:(PrefService*)prefs
+                authenticationService:
+                    (AuthenticationService*)authenticationService
+                          syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 // Registers the feature preferences.

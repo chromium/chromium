@@ -15,14 +15,25 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_navigation_controller.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_path_cache.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_coordinator.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_coordinator_delegate.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/folder_editor/bookmarks_folder_editor_coordinator.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/folder_editor/bookmarks_folder_editor_coordinator_delegate.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator_delegate.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_view_controller.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
@@ -41,18 +52,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_navigation_controller.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_path_cache.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_coordinator.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_coordinator_delegate.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_editor/bookmarks_folder_editor_coordinator.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_editor/bookmarks_folder_editor_coordinator_delegate.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator_delegate.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_view_controller.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
@@ -131,10 +130,7 @@ enum class PresentedState {
   // it is incognito.
   base::WeakPtr<ChromeBrowserState> _browserState;
 
-  // Profile bookmark model.
-  base::WeakPtr<LegacyBookmarkModel> _localOrSyncableBookmarkModel;
-  // Account bookmark model.
-  base::WeakPtr<LegacyBookmarkModel> _accountBookmarkModel;
+  base::WeakPtr<bookmarks::BookmarkModel> _bookmarkModel;
 }
 
 @synthesize applicationCommandsHandler = _applicationCommandsHandler;
@@ -149,29 +145,18 @@ enum class PresentedState {
     _currentBrowserState = browser->GetBrowserState()->AsWeakPtr();
     _browserState =
         _currentBrowserState->GetOriginalChromeBrowserState()->AsWeakPtr();
-    _localOrSyncableBookmarkModel =
-        ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-            _browserState.get())
+    _bookmarkModel =
+        ios::BookmarkModelFactory::GetForBrowserState(_browserState.get())
             ->AsWeakPtr();
-    LegacyBookmarkModel* accountBookmarkModel =
-        ios::AccountBookmarkModelFactory::GetForBrowserState(
-            _browserState.get());
-    if (accountBookmarkModel) {
-      _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
-    }
     _mediator = [[BookmarkMediator alloc]
-        initWithWithLocalOrSyncableBookmarkModel:_localOrSyncableBookmarkModel
-                                                     .get()
-                            accountBookmarkModel:_accountBookmarkModel.get()
-                                           prefs:_browserState->GetPrefs()
-                           authenticationService:AuthenticationServiceFactory::
-                                                     GetForBrowserState(
-                                                         _browserState.get())
-                                     syncService:SyncServiceFactory::
-                                                     GetForBrowserState(
-                                                         _browserState.get())];
+        initWithBookmarkModel:_bookmarkModel.get()
+                        prefs:_browserState->GetPrefs()
+        authenticationService:AuthenticationServiceFactory::GetForBrowserState(
+                                  _browserState.get())
+                  syncService:SyncServiceFactory::GetForBrowserState(
+                                  _browserState.get())];
     _currentPresentedState = PresentedState::NONE;
-    DCHECK(_localOrSyncableBookmarkModel) << [self description];
+    DCHECK(_bookmarkModel) << [self description];
   }
   return self;
 }
@@ -201,8 +186,7 @@ enum class PresentedState {
   }
   _browserState = nullptr;
   _currentBrowserState = nullptr;
-  _localOrSyncableBookmarkModel = nullptr;
-  _accountBookmarkModel = nullptr;
+  _bookmarkModel = nullptr;
   _mediator = nil;
   DCHECK_EQ(PresentedState::NONE, self.currentPresentedState);
   DCHECK(!self.bookmarkEditorCoordinator) << [self description];
@@ -261,9 +245,7 @@ enum class PresentedState {
   }
 
   const BookmarkNode* bookmark =
-      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          URL, _localOrSyncableBookmarkModel.get(),
-          _accountBookmarkModel.get());
+      _bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
   if (!bookmark) {
     return;
   }
@@ -275,9 +257,7 @@ enum class PresentedState {
 }
 
 - (void)presentBookmarks {
-  [self presentBookmarksAtDisplayedFolderNode:
-            _localOrSyncableBookmarkModel
-                ->subtle_root_node_with_unspecified_children()
+  [self presentBookmarksAtDisplayedFolderNode:_bookmarkModel->root_node()
                             selectingBookmark:nil];
 
   default_browser::NotifyBookmarkManagerOpened(
@@ -510,8 +490,8 @@ enum class PresentedState {
 
   [self stopBookmarksFolderChooserCoordinator];
 
-  BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
-      folder, _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
+  BookmarkModelType type =
+      bookmark_utils_ios::GetBookmarkModelType(folder, _bookmarkModel.get());
   SetLastUsedBookmarkFolder(_browserState->GetPrefs(), folder, type);
   [self.snackbarCommandsHandler
       showSnackbarMessage:[self.mediator addBookmarks:_URLs toFolder:folder]];
@@ -629,9 +609,7 @@ enum class PresentedState {
   }
 
   const BookmarkNode* existingBookmark =
-      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          URL, _localOrSyncableBookmarkModel.get(),
-          _accountBookmarkModel.get());
+      _bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
   if (existingBookmark) {
     [self presentBookmarkEditorForURL:URL];
   } else {
@@ -656,17 +634,14 @@ enum class PresentedState {
   }
 
   const BookmarkNode* existingBookmark =
-      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          URL, _localOrSyncableBookmarkModel.get(),
-          _accountBookmarkModel.get());
+      _bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
   if (existingBookmark) {
     [self presentBookmarksAtDisplayedFolderNode:existingBookmark->parent()
                               selectingBookmark:existingBookmark];
   } else {
     // Couldn't find the bookmark for the requested URL, just open mobile
     // bookmarks.
-    [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
-                                                    ->subtle_mobile_node()
+    [self presentBookmarksAtDisplayedFolderNode:_bookmarkModel->mobile_node()
                               selectingBookmark:nil];
   }
 }
@@ -794,9 +769,7 @@ enum class PresentedState {
     // after the model is finished loading.
     self.bookmarkBrowser.displayedFolderNode = displayedFolderNode;
     [self.bookmarkBrowser setExternalBookmark:bookmarkNode];
-    if (displayedFolderNode ==
-        _localOrSyncableBookmarkModel
-            ->subtle_root_node_with_unspecified_children()) {
+    if (displayedFolderNode == _bookmarkModel->root_node()) {
       replacementViewControllers =
           [self.bookmarkBrowser cachedViewControllerStack];
     }
@@ -862,13 +835,13 @@ enum class PresentedState {
           @"<%@: %p, state=%d bookmarkEditorCoordinator=%p, "
           @"bookmarkNavigationController=%p (presented: %@), "
           @"folderEditorCoordinator=%p, folderChooserCoordinator=%p "
-          @"localOrSyncableBookmarkModel=%p, accountBookmarkModel=%p>",
+          @"bookmarkModel=%p",
           NSStringFromClass([self class]), self,
           static_cast<int>(self.currentPresentedState),
           self.bookmarkEditorCoordinator, self.bookmarkNavigationController,
           self.bookmarkNavigationController ? @"YES" : @"NO",
           self.folderEditorCoordinator, self.folderChooserCoordinator,
-          _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get()];
+          _bookmarkModel.get()];
 }
 
 @end

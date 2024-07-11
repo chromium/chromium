@@ -14,12 +14,13 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/url_and_title.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -65,13 +66,10 @@ class BookmarkMediatorUnitTest
         chrome_browser_state_.get());
 
     mediator_ = [[BookmarkMediator alloc]
-        initWithWithLocalOrSyncableBookmarkModel:
-            local_or_syncable_bookmark_model_
-                            accountBookmarkModel:nullptr
-                                           prefs:chrome_browser_state_
-                                                     ->GetPrefs()
-                           authenticationService:authentication_service_
-                                     syncService:&sync_service_];
+        initWithBookmarkModel:bookmark_model_.get()
+                        prefs:chrome_browser_state_->GetPrefs()
+        authenticationService:authentication_service_
+                  syncService:&sync_service_];
   }
 
   // Number of bookmark saved.
@@ -93,6 +91,7 @@ class BookmarkMediatorUnitTest
     authentication_service_->SignIn(
         fake_identity,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
     return fake_identity;
   }
 
@@ -110,6 +109,7 @@ class BookmarkMediatorUnitTest
     authentication_service_->GrantSyncConsent(
         fake_identity,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   }
 
   // Returns `IDS_IOS_BOOKMARKS_BULK_SAVED` string with `count` value.
@@ -207,7 +207,8 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
   const SignInStatus signed_in_status = GetSignInStatusParam();
   const bool folder_was_selected_by_user = GetFolderWasSelectedByUserParam();
   NSString* expected_snackbar_message = nil;
-  BookmarkModelType bookmark_storage_type = BookmarkModelType::kLocalOrSyncable;
+  const bookmarks::BookmarkNode* ancestor_permanent_folder =
+      bookmark_model_->mobile_node();
   bool show_count = GetDisplayTheNumberOfBookmarksParam();
   switch (signed_in_status) {
     case SignInStatus::kSignedInNoBookmarkSyncing:
@@ -237,7 +238,7 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
                                               kEmail, show_count)
               : GetSavedToAccountText(bookmark_count, kEmail, show_count);
       SignInOnly();
-      bookmark_storage_type = BookmarkModelType::kAccount;
+      ancestor_permanent_folder = bookmark_model_->account_mobile_node();
       break;
     case SignInStatus::KSignedInAndSync:
       expected_snackbar_message =
@@ -246,11 +247,18 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
                                               kEmail, show_count)
               : GetSavedToAccountText(bookmark_count, kEmail, show_count);
       SignInAndSync();
+      // This test requires that the initial download of bookmarks completed.
+      static_cast<BookmarkClientImpl*>(bookmark_model_->client())
+          ->SetIsSyncFeatureEnabledIncludingBookmarksForTest();
       break;
   }
+
+  const bookmarks::BookmarkNode* parent_folder = AddFolder(
+      ancestor_permanent_folder, base::SysNSStringToUTF16(kFolderName));
+
   NSString* const snackbar_message =
       bookmark_utils_ios::messageForAddingBookmarksInFolder(
-          kFolderName, folder_was_selected_by_user, bookmark_storage_type,
+          parent_folder, bookmark_model_.get(), folder_was_selected_by_user,
           show_count, bookmark_count,
           AuthenticationServiceFactory::GetForBrowserState(
               chrome_browser_state_.get())

@@ -326,16 +326,16 @@ const bookmarks::BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
     LegacyBookmarkModel* account_model);
 
 // The localized strings for adding bookmarks.
-// `folderTitle`:  The name of the folder. Assumed to be non-nil.
+// `folder`:  The folder into which bookmarks were added. Must not be nil.
+// `model` must not be null.
 // `chosenByUser`: whether this is the last folder in which the user moved a
 // bookmark since last time the set of model changed.
-// `bookmarkModelType`: whether it  is is on account storage, or local or
-// syncable. `showCount`: Display the number of moved bookmarks in the snackbar.
+// `showCount`: Display the number of moved bookmarks in the snackbar.
 // `count`: the number of bookmarks.
 NSString* messageForAddingBookmarksInFolder(
-    NSString* folderTitle,
+    const bookmarks::BookmarkNode* folder,
+    const bookmarks::BookmarkModel* model,
     bool chosenByUser,
-    BookmarkModelType bookmarkModelType,
     bool showCount,
     int count,
     base::WeakPtr<AuthenticationService> authenticationService,
