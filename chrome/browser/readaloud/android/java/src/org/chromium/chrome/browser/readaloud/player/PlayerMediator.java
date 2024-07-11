@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud.player;
 
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.BUFFERING;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
@@ -327,15 +329,18 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onShouldHideMiniPlayer() {
+        // TODO(b/352563278): All player UI should be made to work without a playback.
         if (mPlayback != null) {
-        mCoordinator.hideMiniPlayer();
+            mCoordinator.hideMiniPlayer();
         }
     }
 
     @Override
     public void onShouldRestoreMiniPlayer() {
-        if (mPlayback != null) {
-        mCoordinator.restoreMiniPlayer();
+        @PlaybackListener.State int state = mModel.get(PlayerProperties.PLAYBACK_STATE);
+        // TODO(b/352563278): All player UI should be made to work without a playback.
+        if (mPlayback != null || state == ERROR || state == BUFFERING) {
+            mCoordinator.restoreMiniPlayer();
         }
     }
 

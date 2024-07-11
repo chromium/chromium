@@ -644,6 +644,25 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testShouldRestoreMiniPlayer_error() {
+        // Set playback state through playback update, as if the error happened during playback.
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        mPlaybackData.mState = ERROR;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        assertEquals(ERROR, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+
+        // Clear playback.
+        mMediator.setPlayback(null);
+
+        // The mini player should restore.
+        mMediator.onShouldRestoreMiniPlayer();
+        verify(mPlayerCoordinator).restoreMiniPlayer();
+    }
+
+    @Test
     public void testShouldRestoreMiniPlayer() {
         mMediator.setPlayback(mPlayback);
         mMediator.onShouldRestoreMiniPlayer();
