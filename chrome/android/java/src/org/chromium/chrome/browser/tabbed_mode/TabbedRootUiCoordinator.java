@@ -610,7 +610,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             @Override
                             public void onBackGesture() {
                                 // Back navigation gesture performs what the back button would do.
-                                mActivity.onBackPressed();
+                                mActivity.getOnBackPressedDispatcher().onBackPressed();
                             }
                         },
                         () -> mCompositorViewHolderSupplier.get());
