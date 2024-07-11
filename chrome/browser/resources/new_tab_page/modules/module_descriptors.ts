@@ -9,7 +9,6 @@
 import {loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
-import {chromeCartDescriptor} from './cart/module.js';
 import {driveDescriptor} from './drive/module.js';
 import {feedDescriptor} from './feed/module.js';
 import type {ModuleDescriptor} from './module_descriptor.js';
@@ -27,7 +26,6 @@ import {tabResumptionDescriptor} from './v2/tab_resumption/module.js';
 const modulesRedesignedEnabled: boolean =
     loadTimeData.getBoolean('modulesRedesignedEnabled');
 export const descriptors: ModuleDescriptor[] = [];
-descriptors.push(chromeCartDescriptor);
 descriptors.push(
     modulesRedesignedEnabled ? fileSuggestionDescriptor : driveDescriptor);
 descriptors.push(photosDescriptor);

@@ -138,28 +138,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FileSuggestionModule) {
           "mocha.run()");
 }
 
-// TODO(crbug.com/40933067): Fails on Linux Debug bots.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_ChromeCartModule DISABLED_ChromeCartModule
-#else
-#define MAYBE_ChromeCartModule ChromeCartModule
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MAYBE_ChromeCartModule) {
-  RunTest("new_tab_page/modules/cart/module_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FeedModule) {
   RunTest("new_tab_page/modules/feed/module_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DiscountConsentCard) {
-  RunTest("new_tab_page/modules/cart/discount_consent_card_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DiscountConsentDialog) {
-  RunTest("new_tab_page/modules/cart/discount_consent_dialog_test.js",
-          "mocha.run()");
 }
 
 using NewTabPageAppTest = NewTabPageBrowserTest;

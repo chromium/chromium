@@ -30,31 +30,6 @@ export function getHtml(this: CardsElement) {
             title="${item.name}" @change="${this.onCardCheckboxChange_}">
         </cr-checkbox>
       </div>
-      ${this.showCartOptionCheckbox_(item.id, item.enabled) ? html`
-        <div class="card" id="cartCard" @click="${this.onCartCardClick_}">
-          <div class="card-option-name"
-              id="cartOption" >$i18n{modulesCartSentence}</div>
-          <cr-checkbox class="card-checkbox"
-              ?checked="${this.cartOptionCheckbox_}"
-              ?disabled="${this.managedByPolicy_}"
-              title="$i18n{modulesCartSentence}"
-              @change="${this.onCartCheckboxChange_}">
-          </cr-checkbox>
-        </div>
-      ` : ''}
-      ${this.showDiscountOptionCheckbox_(item.id, item.enabled) ? html`
-        <div class="card" id="discountCard"
-            @click="${this.onDiscountCardClick_}">
-          <div class="card-option-name"
-              id="discountOption">$i18n{modulesCartDiscountConsentAccept}</div>
-          <cr-checkbox class="card-checkbox"
-              ?checked="${this.discountCheckbox_}"
-              ?disabled="${this.managedByPolicy_}"
-              title="$i18n{modulesCartDiscountConsentAccept}"
-              @change="${this.onDiscountCheckboxChange_}">
-          </cr-checkbox>
-        </div>
-      ` : ''}
     `)}
   </cr-collapse>
 </div>

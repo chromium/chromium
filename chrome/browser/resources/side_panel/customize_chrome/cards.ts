@@ -8,13 +8,10 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import './strings.m.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cards.css.js';
 import {getHtml} from './cards.html.js';
-import {ChromeCartProxy} from './chrome_cart_proxy.js';
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {CustomizeChromePageHandlerInterface, ModuleSettings} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
@@ -53,16 +50,6 @@ export class CardsElement extends CrLitElement {
       /** Whether the modules are managed by admin policies or not. */
       managedByPolicy_: {type: Boolean},
 
-      // Checkbox status for when the ChromeCart control is an option instead of
-      // a top-level card item. Only set for ChromeCart+History Cluster module.
-      cartOptionCheckbox_: {type: Boolean},
-
-      // Discount checkbox is a workaround for crbug.com/1199465 and will be
-      // removed after module customization is better defined. Please avoid
-      // using similar pattern for other features.
-      discountCheckbox_: {type: Boolean},
-
-      discountCheckboxEligible_: {type: Boolean},
       initialized_: {type: Boolean},
     };
   }
@@ -72,9 +59,6 @@ export class CardsElement extends CrLitElement {
   protected managedByPolicy_: boolean = false;
   private pageHandler_: CustomizeChromePageHandlerInterface;
   private setModulesSettingsListenerId_: number|null = null;
-  protected discountCheckbox_: boolean = false;
-  private discountCheckboxEligible_: boolean = false;
-  protected cartOptionCheckbox_: boolean = false;
   protected initialized_: boolean = false;
 
   constructor() {
@@ -101,45 +85,6 @@ export class CardsElement extends CrLitElement {
     super.disconnectedCallback();
     CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
         this.setModulesSettingsListenerId_!);
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('modules_')) {
-      this.modulesChanged_();
-    }
-  }
-
-  private modulesChanged_() {
-    if (this.modules_.some(module => module.id === 'chrome_cart')) {
-      ChromeCartProxy.getHandler().getDiscountToggleVisible().then(
-          ({toggleVisible}) => {
-            this.discountCheckboxEligible_ = toggleVisible;
-          });
-
-      ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
-        this.discountCheckbox_ = enabled;
-      });
-    } else if (
-        this.modules_.some(module => module.id === 'history_clusters') &&
-        loadTimeData.getBoolean('showCartInQuestModuleSetting')) {
-      ChromeCartProxy.getHandler().getDiscountToggleVisible().then(
-          ({toggleVisible}) => {
-            this.discountCheckboxEligible_ = toggleVisible;
-          });
-
-      ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
-        this.discountCheckbox_ = enabled;
-      });
-
-      ChromeCartProxy.getHandler().getCartFeatureEnabled().then(({enabled}) => {
-        this.cartOptionCheckbox_ = enabled;
-      });
-    }
   }
 
   private setShow_(show: boolean) {
@@ -178,50 +123,6 @@ export class CardsElement extends CrLitElement {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const module = this.modules_[index]!;
     this.setModuleStatus(index, !module.enabled);
-  }
-
-  protected showDiscountOptionCheckbox_(id: string, checked: boolean): boolean {
-    if (id === 'chrome_cart') {
-      return checked && this.discountCheckboxEligible_;
-    } else if (id === 'history_clusters') {
-      return checked && this.discountCheckboxEligible_ &&
-          this.cartOptionCheckbox_;
-    }
-    return false;
-  }
-
-  protected showCartOptionCheckbox_(id: string, checked: boolean): boolean {
-    return id === 'history_clusters' && checked &&
-        loadTimeData.getBoolean('showCartInQuestModuleSetting');
-  }
-
-  private setCartCardStatus(enabled: boolean) {
-    this.cartOptionCheckbox_ = enabled;
-    this.pageHandler_.setModuleDisabled(
-        'chrome_cart', !this.cartOptionCheckbox_);
-  }
-
-  protected onCartCheckboxChange_(e: CustomEvent<boolean>) {
-    this.setCartCardStatus(/*checked= */ e.detail);
-  }
-
-  protected onCartCardClick_() {
-    this.setCartCardStatus(!this.cartOptionCheckbox_);
-  }
-
-  private setDiscountCardStatus(enabled: boolean) {
-    this.discountCheckbox_ = enabled;
-    if (this.discountCheckboxEligible_) {
-      ChromeCartProxy.getHandler().setDiscountEnabled(this.discountCheckbox_);
-    }
-  }
-
-  protected onDiscountCheckboxChange_(e: CustomEvent<boolean>) {
-    this.setDiscountCardStatus(/*checked= */ e.detail);
-  }
-
-  protected onDiscountCardClick_() {
-    this.setDiscountCardStatus(!this.discountCheckbox_);
   }
 }
 

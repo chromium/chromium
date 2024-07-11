@@ -30,7 +30,6 @@ build_webui("build") {
 
   extra_grdp_files = [
     "$target_gen_dir/icons/resources.grdp",
-    "$target_gen_dir/modules/cart/icons/resources.grdp",
     "$target_gen_dir/modules/feed/icons/resources.grdp",
     "$target_gen_dir/modules/photos/icons/resources.grdp",
     "$target_gen_dir/modules/photos/images/resources.grdp",
@@ -39,7 +38,6 @@ build_webui("build") {
 
   extra_grdp_deps = [
     "icons:build_grdp",
-    "modules/cart/icons:build_grdp",
     "modules/feed/icons:build_grdp",
     "modules/photos/icons:build_grdp",
     "modules/photos/images:build_grdp",
@@ -58,7 +56,6 @@ build_webui("build") {
   html_to_wrapper_template = "detect"
 
   mojo_files_deps = [
-    "//chrome/browser/cart:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_ts__generator",
@@ -70,7 +67,6 @@ build_webui("build") {
     "//components/history/core/browser/mojom:mojo_bindings_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/chrome/browser/cart/chrome_cart.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.ts",

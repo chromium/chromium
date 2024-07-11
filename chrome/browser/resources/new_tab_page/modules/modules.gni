@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("./cart/cart.gni")
 import("./drive/drive.gni")
 import("./feed/feed.gni")
 import("./photos/photos.gni")
@@ -21,9 +20,9 @@ modules_non_web_component_files =
       "modules/module_descriptor.ts",
       "modules/module_descriptors.ts",
       "modules/module_registry.ts",
-    ] + calendar_v2_non_web_component_files + cart_non_web_component_files +
-    drive_non_web_component_files + feed_non_web_component_files +
-    photos_non_web_component_files + tab_resumption_v2_non_web_component_files +
+    ] + calendar_v2_non_web_component_files + drive_non_web_component_files +
+    feed_non_web_component_files + photos_non_web_component_files +
+    tab_resumption_v2_non_web_component_files +
     most_relevant_tab_resumption_v2_non_web_component_files
 
 if (!is_official_build) {
@@ -39,10 +38,9 @@ modules_web_component_files =
       "modules/module_wrapper.ts",
       "modules/v2/module_header.ts",
       "modules/v2/modules.ts",
-    ] + calendar_v2_web_component_files + cart_web_component_files +
-    drive_web_component_files + feed_web_component_files +
-    file_suggestion_v2_web_component_files + photos_web_component_files +
-    tab_resumption_v2_web_component_files +
+    ] + calendar_v2_web_component_files + drive_web_component_files +
+    feed_web_component_files + file_suggestion_v2_web_component_files +
+    photos_web_component_files + tab_resumption_v2_web_component_files +
     most_relevant_tab_resumption_v2_web_component_files
 
 modules_css_files = [ "modules/info_dialog.css" ]

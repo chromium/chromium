@@ -64,10 +64,6 @@
   width: 16px;
 }
 
-.card-option-name {
-  margin-inline-start: 40px;
-}
-
 cr-collapse {
   --iron-collapse-transition-duration: 300ms;
   width: 100%;

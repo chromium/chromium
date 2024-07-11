@@ -19,10 +19,6 @@ export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';
-export {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
-export {DiscountConsentCard, DiscountConsentVariation} from './modules/cart/discount_consent_card.js';
-export {DiscountConsentDialog} from './modules/cart/discount_consent_dialog.js';
-export {chromeCartDescriptor, ChromeCartModuleElement} from './modules/cart/module.js';
 export {FileProxy} from './modules/drive/file_module_proxy.js';
 export {driveDescriptor, DriveModuleElement} from './modules/drive/module.js';
 export {FeedProxy} from './modules/feed/feed_module_proxy.js';
