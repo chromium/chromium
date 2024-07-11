@@ -114,10 +114,10 @@ BASE_FEATURE(kChromeOsPasskeys,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Not yet enabled by default.
+// Enabled in M128. Remove in or after M131.
 BASE_FEATURE(kWebAuthnRelatedOrigin,
              "WebAuthenticationRelatedOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M122. Remove in or after M125.
 BASE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds,
