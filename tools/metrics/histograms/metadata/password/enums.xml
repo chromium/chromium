@@ -1099,6 +1099,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Access on any device promo"/>
   <int value="4" label="Relaunch Chrome"/>
   <int value="5" label="Move passwords"/>
+  <int value="6" label="Enable screenlock reauth before filling"/>
 </enum>
 
 <enum name="PasswordManagerShortcutMetric">
