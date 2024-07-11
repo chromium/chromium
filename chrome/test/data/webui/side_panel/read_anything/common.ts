@@ -94,3 +94,20 @@ export function createSpeechSynthesisVoice(
       },
       overrides || {});
 }
+
+
+export function setSimpleAxTreeWithText(text: string) {
+  const axTree = {
+    rootId: 1,
+    nodes: [
+      {
+        id: 1,
+        role: 'rootWebArea',
+        htmlTag: '#document',
+        childIds: [2],
+      },
+      {id: 2, role: 'staticText', name: text},
+    ],
+  };
+  chrome.readingMode.setContentForTesting(axTree, [2]);
+}

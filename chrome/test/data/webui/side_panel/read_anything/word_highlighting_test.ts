@@ -7,7 +7,7 @@ import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {setSimpleAxTreeWithText, suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('WordHighlighting', () => {
@@ -54,22 +54,6 @@ suite('WordHighlighting', () => {
       },
     ],
   };
-
-  function setAxTreeWithText(text: string) {
-    const axTree = {
-      rootId: 1,
-      nodes: [
-        {
-          id: 1,
-          role: 'rootWebArea',
-          htmlTag: '#document',
-          childIds: [2],
-        },
-        {id: 2, role: 'staticText', name: text},
-      ],
-    };
-    chrome.readingMode.setContentForTesting(axTree, [2]);
-  }
 
   setup(() => {
     suppressInnocuousErrors();
@@ -130,7 +114,7 @@ suite('WordHighlighting', () => {
   test(
       'word highlighting with multiple punctuation marks skips highlight',
       () => {
-        setAxTreeWithText('.?!\'\",(){}[]');
+        setSimpleAxTreeWithText('.?!\'\",(){}[]');
         app.updateBoundary(10);
         app.playSpeech();
         const currentHighlight =
@@ -141,7 +125,7 @@ suite('WordHighlighting', () => {
   test(
       'word highlighting with single alphabet character does not skip highlight',
       () => {
-        setAxTreeWithText('a');
+        setSimpleAxTreeWithText('a');
         app.updateBoundary(0);
         app.playSpeech();
         const currentHighlight =
@@ -155,7 +139,7 @@ suite('WordHighlighting', () => {
         ['[', ']', '(', ')', '.', ',', '?', '!', '{', '}', '\'', '\"'];
 
     for (const char of toTest) {
-      setAxTreeWithText(char);
+      setSimpleAxTreeWithText(char);
       app.updateBoundary(0);
       app.playSpeech();
       const currentHighlight =
