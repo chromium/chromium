@@ -79,6 +79,10 @@ bool FFmpegH264ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
     return false;
   }
 
+  // It is possible for the actual size to be smaller than the computed
+  // allocation size.
+  dest_packet.size = io_size;
+
   if (avc_config)
     configuration_processed_ = true;
 
