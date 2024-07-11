@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/base64url.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -49,13 +50,17 @@
 
 namespace {
 using net::CanonicalCookie;
+using testing::AllOf;
 using testing::AssertionFailure;
 using testing::AssertionResult;
 using testing::AssertionSuccess;
+using testing::ElementsAre;
 using testing::Eq;
+using testing::Field;
 using testing::IsEmpty;
 using testing::Not;
 using testing::Pointee;
+using testing::UnorderedElementsAre;
 using HeaderVector = net::HttpRequestHeaders::HeaderVector;
 
 constexpr std::string_view kDomain = "google.com";
@@ -69,10 +74,21 @@ constexpr base::cstring_view kSessionRegistrationHeaderFormat =
 constexpr base::cstring_view kCookieRotationChallengeFormat =
     "session_id=%s; challenge=%s";
 
+MATCHER_P2(HasDomainAndPath, domain, path, "") {
+  return testing::ExplainMatchResult(
+      AllOf(Field("domain", &chrome::mojom::BoundSessionThrottlerParams::domain,
+                  domain),
+            Field("path", &chrome::mojom::BoundSessionThrottlerParams::path,
+                  path)),
+      *arg, result_listener);
+}
+
 std::string CreateBoundSessionParamsValidJson(const std::string& session_id,
                                               const std::string& refresh_url,
                                               const std::string& domain,
-                                              const std::string& path) {
+                                              const std::string& path,
+                                              const std::string& cookie_name1,
+                                              const std::string& cookie_name2) {
   static constexpr base::cstring_view kBoundSessionParamsValidJsonFormat = R"(
     {
         "session_identifier": "%s",
@@ -80,7 +96,7 @@ std::string CreateBoundSessionParamsValidJson(const std::string& session_id,
         "credentials": [
             {
                 "type": "cookie",
-                "name": "1P_test_cookie",
+                "name": "%s",
                 "scope": {
                     "domain": "%s",
                     "path": "%s"
@@ -88,7 +104,7 @@ std::string CreateBoundSessionParamsValidJson(const std::string& session_id,
             },
             {
                 "type": "cookie",
-                "name": "3P_test_cookie",
+                "name": "%s",
                 "scope": {
                     "domain": "%s",
                     "path": "%s"
@@ -100,8 +116,8 @@ std::string CreateBoundSessionParamsValidJson(const std::string& session_id,
 
   return base::StringPrintf(kBoundSessionParamsValidJsonFormat.c_str(),
                             session_id.c_str(), refresh_url.c_str(),
-                            domain.c_str(), path.c_str(), domain.c_str(),
-                            path.c_str());
+                            cookie_name1.c_str(), domain.c_str(), path.c_str(),
+                            cookie_name2.c_str(), domain.c_str(), path.c_str());
 }
 
 std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
@@ -115,11 +131,12 @@ SignatureAlgorithmFromString(std::string_view algorithm) {
   return std::nullopt;
 }
 
-std::vector<std::string> GetDefaultCookiesAttributesLines(const GURL& url) {
+std::vector<std::string> GetTwoCookiesAttributesLines(
+    const GURL& url,
+    const std::string& cookie_name1,
+    const std::string& cookie_name2) {
   std::vector<std::string> cookies;
-  static const std::string kFirstCookieName = "1P_test_cookie";
-  static const std::string kSecondCookieName = "3P_test_cookie";
-  for (const std::string& cookie_name : {kFirstCookieName, kSecondCookieName}) {
+  for (const std::string& cookie_name : {cookie_name1, cookie_name2}) {
     CanonicalCookie cookie =
         BoundSessionTestCookieManager::CreateCookie(url, cookie_name);
     cookies.push_back(CanonicalCookie::BuildCookieAttributesLine(cookie));
@@ -145,11 +162,13 @@ HandleTriggerRegistrationRequest(
 struct CookieRotationResponseParams {
   static CookieRotationResponseParams CreateSuccessWithCookies(
       const GURL& url,
+      const std::string& cookie_name1,
+      const std::string& cookie_name2,
       bool block_server_response = false) {
     static const std::string kSetCookieHeaderKey = "Set-Cookie";
     HeaderVector headers;
     for (const std::string& cookie_attribute_line :
-         GetDefaultCookiesAttributesLines(url)) {
+         GetTwoCookiesAttributesLines(url, cookie_name1, cookie_name2)) {
       headers.emplace_back(kSetCookieHeaderKey, cookie_attribute_line);
     }
     return {.headers = std::move(headers),
@@ -227,9 +246,13 @@ class FakeServer {
  public:
   struct Params {
     std::string domain;
+    // `registration_domain` might be different from `domain`.
+    std::string registration_domain;
     std::string registration_path;
     std::string rotation_path;
     std::string session_id;
+    std::string cookie_name1 = "1P_test_cookie";
+    std::string cookie_name2 = "3P_test_cookie";
   };
 
   explicit FakeServer(Params params) : server_params_(std::move(params)) {}
@@ -245,7 +268,8 @@ class FakeServer {
                   base::queue<CookieRotationResponseParams>
                       cookie_rotation_responses_params) {
     CHECK(embedded_test_server.Started());
-    base_url_ = embedded_test_server.GetURL(server_params_.domain, "/");
+    expected_registration_url_ = embedded_test_server.GetURL(
+        server_params_.registration_domain, server_params_.registration_path);
 
     on_cookie_rotation_response_blocked_ =
         std::move(on_cookie_rotation_response_blocked);
@@ -272,7 +296,8 @@ class FakeServer {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_content(CreateBoundSessionParamsValidJson(
         server_params_.session_id, server_params_.rotation_path,
-        server_params_.domain, "/"));
+        server_params_.domain, "/", server_params_.cookie_name1,
+        server_params_.cookie_name2));
     response->set_content_type("application/json");
     response->set_code(net::HTTP_OK);
     return response;
@@ -320,10 +345,8 @@ class FakeServer {
       return AssertionFailure() << "JWT payload not found";
     }
 
-    // Verify that JWT fields have correct values.
-    EXPECT_THAT(
-        payload->FindString("aud"),
-        Pointee(Eq(base_url_.Resolve(server_params_.registration_path))));
+    EXPECT_THAT(payload->FindString("aud"),
+                Pointee(Eq(expected_registration_url_)));
     EXPECT_THAT(payload->FindString("jti"), Pointee(Eq(kChallenge)));
 
     // Verify the JWT signature.
@@ -358,7 +381,7 @@ class FakeServer {
   }
 
   const Params server_params_;
-  GURL base_url_;
+  GURL expected_registration_url_;
   base::RepeatingCallback<void(base::OnceClosure)>
       on_cookie_rotation_response_blocked_;
   base::queue<CookieRotationResponseParams> cookie_rotation_responses_params_;
@@ -429,6 +452,27 @@ class FakeServerHost {
       wait_on_server_cookie_rotation_response_blocked_;
 };
 
+std::unique_ptr<FakeServerHost> CreateAndInitializeHealthyFakeServerHost(
+    FakeServer::Params params,
+    net::test_server::EmbeddedTestServer& embedded_test_server) {
+  auto fake_server_host = std::make_unique<FakeServerHost>(std::move(params));
+
+  base::queue<CookieRotationResponseParams> rotation_responses_params;
+  rotation_responses_params.push(
+      CookieRotationResponseParams::CreateChallengeRequired(
+          fake_server_host->params().session_id));
+  rotation_responses_params.push(
+      CookieRotationResponseParams::CreateSuccessWithCookies(
+          embedded_test_server.GetURL(fake_server_host->params().domain, "/"),
+          fake_server_host->params().cookie_name1,
+          fake_server_host->params().cookie_name2,
+          /*block_server_response=*/true));
+
+  fake_server_host->Initialize(embedded_test_server,
+                               std::move(rotation_responses_params));
+  return fake_server_host;
+}
+
 }  // namespace
 
 class BoundSessionCookieRefreshServiceImplBrowserTest
@@ -498,8 +542,7 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
         browser()->profile());
   }
 
-  void ExpectSessionParamsUpdate(base::OnceClosure callback) {
-    CHECK(!params_updated_callback_);
+  void ExpectSessionParamsUpdate(base::RepeatingClosure callback) {
     params_updated_callback_ = std::move(callback);
   }
 
@@ -513,11 +556,9 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
                                             KTriggerRegistrationPath)));
     registration_params_update.Run();
 
-    std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
-        throttler_params = service()->GetBoundSessionThrottlerParams();
-    ASSERT_EQ(throttler_params.size(), 1U);
-    EXPECT_EQ(throttler_params[0]->domain, server_host().params().domain);
-    EXPECT_EQ(throttler_params[0]->path, "/");
+    EXPECT_THAT(
+        service()->GetBoundSessionThrottlerParams(),
+        ElementsAre(HasDomainAndPath(server_host().params().domain, "/")));
 
     // Cookie rotation request comes immediately after session registration.
     server_host().WaitOnServerCookieRotationResponseBlocked();
@@ -527,64 +568,60 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
     rotation_params_update.Run();
   }
 
-  FakeServerHost& server_host() { return *server_host_; }
+  FakeServerHost& server_host(size_t index = 0) {
+    CHECK_LT(index, server_hosts_.size());
+    return *server_hosts_[index];
+  }
 
  protected:
-  virtual std::unique_ptr<FakeServerHost> CreateAndInitializeFakeServerHost(
+  virtual std::vector<std::unique_ptr<FakeServerHost>>
+  CreateAndInitializeFakeServerHosts(
       net::test_server::EmbeddedTestServer& embedded_test_server) {
-    auto fake_server_host = std::make_unique<FakeServerHost>(
+    std::vector<std::unique_ptr<FakeServerHost>> result;
+
+    auto fake_server_host = CreateAndInitializeHealthyFakeServerHost(
         FakeServer::Params{.domain = std::string(kDomain),
+                           .registration_domain = std::string(kDomain),
                            .registration_path = "/RegisterSession",
                            .rotation_path = "/RotateBoundCookies",
-                           .session_id = "007"});
+                           .session_id = "007"},
+        embedded_test_server);
 
-    base::queue<CookieRotationResponseParams> rotation_responses_params;
-    rotation_responses_params.push(
-        CookieRotationResponseParams::CreateChallengeRequired(
-            fake_server_host->params().session_id));
-    rotation_responses_params.push(
-        CookieRotationResponseParams::CreateSuccessWithCookies(
-            embedded_test_server.GetURL(kDomain, "/"),
-            /*block_server_response=*/true));
-
-    fake_server_host->Initialize(embedded_test_server,
-                                 std::move(rotation_responses_params));
-
-    return fake_server_host;
+    result.push_back(std::move(fake_server_host));
+    return result;
   }
 
  private:
   void InitializeServer() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-    server_host_ =
-        CreateAndInitializeFakeServerHost(embedded_https_test_server());
-    CHECK(server_host_);
+    server_hosts_ =
+        CreateAndInitializeFakeServerHosts(embedded_https_test_server());
+
+    std::vector<std::string> registration_paths;
+    for (const auto& server_host : server_hosts_) {
+      registration_paths.push_back(server_host->params().registration_path);
+    }
 
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest,
         std::string(KTriggerRegistrationPath),
         base::BindRepeating(&HandleTriggerRegistrationRequest,
-                            std::vector<std::string>{
-                                server_host_->params().registration_path})));
+                            registration_paths)));
 
     embedded_test_server_handle_ =
         embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
   }
 
-  void SessionParamsUpdated() {
-    if (params_updated_callback_) {
-      std::move(params_updated_callback_).Run();
-    }
-  }
+  void SessionParamsUpdated() { params_updated_callback_.Run(); }
 
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableBoundSessionCredentials};
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
   // `server_host_` must outlive `embedded_test_server_handle_`.
-  std::unique_ptr<FakeServerHost> server_host_;
+  std::vector<std::unique_ptr<FakeServerHost>> server_hosts_;
   net::test_server::EmbeddedTestServerHandle embedded_test_server_handle_;
-  base::OnceClosure params_updated_callback_;
+  base::RepeatingClosure params_updated_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
@@ -621,10 +658,14 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
 class BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest
     : public BoundSessionCookieRefreshServiceImplBrowserTest {
  protected:
-  std::unique_ptr<FakeServerHost> CreateAndInitializeFakeServerHost(
+  std::vector<std::unique_ptr<FakeServerHost>>
+  CreateAndInitializeFakeServerHosts(
       net::test_server::EmbeddedTestServer& embedded_test_server) override {
+    std::vector<std::unique_ptr<FakeServerHost>> result;
+
     auto fake_server_host = std::make_unique<FakeServerHost>(
         FakeServer::Params{.domain = std::string(kDomain),
+                           .registration_domain = std::string(kDomain),
                            .registration_path = "/RegisterSession",
                            .rotation_path = "/RotateBoundCookies",
                            .session_id = "007"});
@@ -635,7 +676,8 @@ class BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest
     fake_server_host->Initialize(embedded_test_server,
                                  std::move(rotation_responses_params));
 
-    return fake_server_host;
+    result.push_back(std::move(fake_server_host));
+    return result;
   }
 };
 
@@ -668,26 +710,21 @@ class BoundSessionCookieRefreshServiceImplSubdomainSessionBrowserTest
   }
 
  protected:
-  std::unique_ptr<FakeServerHost> CreateAndInitializeFakeServerHost(
+  std::vector<std::unique_ptr<FakeServerHost>>
+  CreateAndInitializeFakeServerHosts(
       net::test_server::EmbeddedTestServer& embedded_test_server) override {
-    auto fake_server_host = std::make_unique<FakeServerHost>(
+    std::vector<std::unique_ptr<FakeServerHost>> result;
+
+    auto fake_server_host = CreateAndInitializeHealthyFakeServerHost(
         FakeServer::Params{.domain = std::string(kSubdomain),
+                           .registration_domain = std::string(kSubdomain),
                            .registration_path = "/RegisterSession",
                            .rotation_path = "/RotateBoundCookies",
-                           .session_id = "007"});
-    base::queue<CookieRotationResponseParams> rotation_responses_params;
-    rotation_responses_params.push(
-        CookieRotationResponseParams::CreateChallengeRequired(
-            fake_server_host->params().session_id));
-    rotation_responses_params.push(
-        CookieRotationResponseParams::CreateSuccessWithCookies(
-            embedded_test_server.GetURL(kSubdomain, "/"),
-            /*block_server_response=*/true));
+                           .session_id = "007"},
+        embedded_test_server);
 
-    fake_server_host->Initialize(embedded_test_server,
-                                 std::move(rotation_responses_params));
-
-    return fake_server_host;
+    result.push_back(std::move(fake_server_host));
+    return result;
   }
 };
 
@@ -697,4 +734,89 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(service()->GetBoundSessionThrottlerParams().empty());
   RegisterNewSession();
   EXPECT_FALSE(service()->GetBoundSessionThrottlerParams().empty());
+}
+
+class BoundSessionCookieRefreshServiceImplMultipleSessionsBrowserTest
+    : public BoundSessionCookieRefreshServiceImplBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BoundSessionCookieRefreshServiceImplBrowserTest::SetUpCommandLine(
+        command_line);
+    // Overwrite `kGaiaUrl` to `kSubdomain`.
+    command_line->AppendSwitchASCII(
+        switches::kGaiaUrl,
+        embedded_https_test_server().GetURL(kSubdomain, "/").spec());
+  }
+
+  BoundSessionCookieRefreshServiceImplMultipleSessionsBrowserTest() {
+    // Remove the registration path restriction.
+    feature_list_overwrite_.InitAndEnableFeatureWithParameters(
+        switches::kEnableBoundSessionCredentials,
+        {{"exclusive-registration-path", ""}});
+  }
+
+ protected:
+  std::vector<std::unique_ptr<FakeServerHost>>
+  CreateAndInitializeFakeServerHosts(
+      net::test_server::EmbeddedTestServer& embedded_test_server) override {
+    std::vector<std::unique_ptr<FakeServerHost>> result;
+
+    auto first_server_host = CreateAndInitializeHealthyFakeServerHost(
+        FakeServer::Params{.domain = std::string(kDomain),
+                           .registration_domain = std::string(kSubdomain),
+                           .registration_path = "/RegisterFirstSession",
+                           .rotation_path = "/RotateFirstBoundCookies",
+                           .session_id = "session_one"},
+        embedded_test_server);
+
+    auto second_server_host = CreateAndInitializeHealthyFakeServerHost(
+        FakeServer::Params{.domain = std::string(kSubdomain),
+                           .registration_domain = std::string(kSubdomain),
+                           .registration_path = "/RegisterSecondSession",
+                           .rotation_path = "/RotateSecondBoundCookies",
+                           .session_id = "session_two",
+                           .cookie_name1 = "1P_other_test_cookie",
+                           .cookie_name2 = "3P_other_test_cookie"},
+        embedded_test_server);
+
+    result.push_back(std::move(first_server_host));
+    result.push_back(std::move(second_server_host));
+    return result;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_overwrite_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BoundSessionCookieRefreshServiceImplMultipleSessionsBrowserTest,
+    RegisterAndRotateMultipleSessions) {
+  base::RunLoop all_registrations_done;
+  ExpectSessionParamsUpdate(
+      base::BarrierClosure(2, all_registrations_done.QuitClosure()));
+
+  // Trigger rotation on a subdomain.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     kSubdomain, KTriggerRegistrationPath)));
+
+  // Wait for both registrations to complete in no particular order.
+  all_registrations_done.Run();
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(),
+              UnorderedElementsAre(HasDomainAndPath(kDomain, "/"),
+                                   HasDomainAndPath(kSubdomain, "/")));
+
+  // Check that both sessions can successfully rotate.
+  for (int i = 0; i < 2; ++i) {
+    // Cookie rotation request comes immediately after session registration.
+    server_host(i).WaitOnServerCookieRotationResponseBlocked();
+    base::RunLoop rotation_params_update;
+    ExpectSessionParamsUpdate(rotation_params_update.QuitClosure());
+    ASSERT_TRUE(server_host(i).UnblockServerCookieRotationResponse());
+    rotation_params_update.Run();
+  }
+
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(),
+              UnorderedElementsAre(HasDomainAndPath(kDomain, "/"),
+                                   HasDomainAndPath(kSubdomain, "/")));
 }
