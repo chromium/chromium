@@ -289,7 +289,7 @@ void OsIntegrationManager::GetAppExistingShortCutLocation(
               base::DoNothingWithBoundArgs(std::move(shortcut_info))))));
 }
 
-void OsIntegrationManager::GetShortcutInfoForApp(
+void OsIntegrationManager::GetShortcutInfoForAppFromRegistrar(
     const webapps::AppId& app_id,
     GetShortcutInfoCallback callback) {
   const WebApp* app = provider_->registrar_unsafe().GetAppById(app_id);

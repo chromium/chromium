@@ -1826,7 +1826,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
               BucketsAre(base::Bucket(true, 1)));
 
   base::test::TestFuture<std::unique_ptr<ShortcutInfo>> shortcut_future;
-  provider->os_integration_manager().GetShortcutInfoForApp(
+  provider->os_integration_manager().GetShortcutInfoForAppFromRegistrar(
       app_id, shortcut_future.GetCallback());
   auto shortcut_info = shortcut_future.Take();
   EXPECT_NE(shortcut_info, nullptr);

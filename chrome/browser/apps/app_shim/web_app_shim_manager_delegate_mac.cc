@@ -377,7 +377,7 @@ void WebAppShimManagerDelegate::LaunchShim(
   }
   WebAppProvider::GetForWebApps(profile)
       ->os_integration_manager()
-      .GetShortcutInfoForApp(
+      .GetShortcutInfoForAppFromRegistrar(
           app_id, base::BindOnce(&web_app::LaunchShim, update_behavior,
                                  launch_mode, std::move(launched_callback),
                                  std::move(terminated_callback)));

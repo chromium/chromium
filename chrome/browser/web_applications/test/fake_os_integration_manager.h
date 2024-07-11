@@ -34,8 +34,9 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
   void SetShortcutInfoForApp(const webapps::AppId& app_id,
                              std::unique_ptr<ShortcutInfo> shortcut_info);
 
-  void GetShortcutInfoForApp(const webapps::AppId& app_id,
-                             GetShortcutInfoCallback callback) override;
+  void GetShortcutInfoForAppFromRegistrar(
+      const webapps::AppId& app_id,
+      GetShortcutInfoCallback callback) override;
   void GetAppExistingShortCutLocation(
       ShortcutLocationCallback callback,
       std::unique_ptr<ShortcutInfo> shortcut_info) override;

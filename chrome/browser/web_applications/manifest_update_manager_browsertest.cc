@@ -402,7 +402,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppBrowserTestBase {
       const webapps::AppId& app_id,
       const std::vector<std::pair<std::pair<int, int>, SkColor>>&
           expectations) {
-    GetProvider().os_integration_manager().GetShortcutInfoForApp(
+    GetProvider().os_integration_manager().GetShortcutInfoForAppFromRegistrar(
         app_id, base::BindOnce(
                     &ManifestUpdateManagerBrowserTest::OnShortcutInfoRetrieved,
                     base::Unretained(this)));

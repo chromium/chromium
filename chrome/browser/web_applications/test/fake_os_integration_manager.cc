@@ -50,7 +50,7 @@ void FakeOsIntegrationManager::SetShortcutInfoForApp(
   shortcut_info_map_[app_id] = std::move(shortcut_info);
 }
 
-void FakeOsIntegrationManager::GetShortcutInfoForApp(
+void FakeOsIntegrationManager::GetShortcutInfoForAppFromRegistrar(
     const webapps::AppId& app_id,
     GetShortcutInfoCallback callback) {
   if (shortcut_info_map_.find(app_id) != shortcut_info_map_.end()) {

@@ -166,7 +166,7 @@ void WebAppUninstallAndReplaceJob::OnMigrateLauncherState(
         std::move(shortcut_info));
   } else {
     // The from_app could be a web app.
-    to_app_lock_->os_integration_manager().GetShortcutInfoForApp(
+    to_app_lock_->os_integration_manager().GetShortcutInfoForAppFromRegistrar(
         from_app,
         base::BindOnce(&WebAppUninstallAndReplaceJob::
                            OnShortcutInfoReceivedSearchShortcutLocations,

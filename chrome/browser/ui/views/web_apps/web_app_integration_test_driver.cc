@@ -3127,7 +3127,7 @@ void WebAppIntegrationTestDriver::CheckAppIcon(Site site, Color color) {
   std::map<int, SkColor> shortcut_colors;
 
   base::RunLoop shortcut_run_loop;
-  provider()->os_integration_manager().GetShortcutInfoForApp(
+  provider()->os_integration_manager().GetShortcutInfoForAppFromRegistrar(
       active_app_id_, base::BindLambdaForTesting(
                           [&](std::unique_ptr<ShortcutInfo> shortcut_info) {
                             if (shortcut_info) {
