@@ -53,6 +53,9 @@ const CGFloat kContainerStackSpacing = 14.0;
 const CGFloat kNewLabelStackSpacing = 6.0;
 const CGFloat kLabelStackSpacing = 5.0;
 
+// Title constants.
+const CGFloat kTitleLineSpacing = 18.0;
+
 // Adds the fallback image that should be used if there is no salient nor
 // favicon image.
 void SetFallbackImageToImageView(UIImageView* image_view,
@@ -353,16 +356,48 @@ void SetFallbackImageToImageView(UIImageView* image_view,
 // Configures and returns the UILabel that contains the session name.
 - (UILabel*)configuredTabTitleLabel {
   UILabel* label = [[UILabel alloc] init];
-  label.text = [_item.tabTitle length]
-                   ? _item.tabTitle
-                   : l10n_util::GetNSString(
-                         IDS_IOS_TAB_RESUMPTION_TAB_TITLE_PLACEHOLDER);
-  label.font = CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
-  label.numberOfLines = IsTabResumption1_5Enabled() ? 2 : 1;
-  label.lineBreakMode = NSLineBreakByTruncatingTail;
-  label.adjustsFontForContentSizeCategory = YES;
-  label.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  NSString* text = [_item.tabTitle length]
+                       ? _item.tabTitle
+                       : l10n_util::GetNSString(
+                             IDS_IOS_TAB_RESUMPTION_TAB_TITLE_PLACEHOLDER);
+  if (!IsTabResumption1_5Enabled()) {
+    label.text = text;
+    label.font =
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
+    label.numberOfLines = 1;
+    label.lineBreakMode = NSLineBreakByTruncatingTail;
+    label.adjustsFontForContentSizeCategory = YES;
+    label.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  } else {
+    // This is the default "Dynamic type" trait collection.
+    // It is necessary to get the font in this size as it will be scaled later
+    // using UIFontMetrics.
+    UITraitCollection* traitCollection =
+        [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
+                               UIContentSizeCategoryLarge];
+    UIFontDescriptor* descriptor = [UIFontDescriptor
+        preferredFontDescriptorWithTextStyle:UIFontTextStyleFootnote
+               compatibleWithTraitCollection:traitCollection];
+    UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
+                                     weight:UIFontWeightSemibold];
 
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    style.lineHeightMultiple = kTitleLineSpacing / font.lineHeight;
+    style.lineBreakMode = NSLineBreakByTruncatingTail;
+    UIFontMetrics* footnoteMetrics =
+        [UIFontMetrics metricsForTextStyle:UIFontTextStyleFootnote];
+    NSAttributedString* attrString = [[NSAttributedString alloc]
+        initWithString:text
+            attributes:@{
+              NSFontAttributeName : [footnoteMetrics scaledFontForFont:font],
+              NSForegroundColorAttributeName :
+                  [UIColor colorNamed:kTextPrimaryColor],
+              NSParagraphStyleAttributeName : style
+            }];
+    label.attributedText = attrString;
+    label.numberOfLines = IsTabResumption1_5Enabled() ? 2 : 1;
+    label.adjustsFontForContentSizeCategory = YES;
+  }
   return label;
 }
 
