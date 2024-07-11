@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
+import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.StripVisibilityState;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
@@ -197,6 +198,7 @@ public class StripLayoutHelperManagerTest {
                         mDesktopWindowStateProvider,
                         mActionConfirmationManager);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
+        mStripLayoutHelperManager.disableAnimationsForTesting();
     }
 
     @Test
@@ -979,6 +981,8 @@ public class StripLayoutHelperManagerTest {
         // Update the size and paddings.
         int leftPadding = 10;
         int rightPadding = 20;
+        int topPadding = 5;
+        int newHeight = TAB_STRIP_HEIGHT_PX + topPadding;
         var appHeaderState =
                 new AppHeaderState(
                         new Rect(0, 0, (int) SCREEN_WIDTH, (int) SCREEN_HEIGHT),
@@ -989,31 +993,32 @@ public class StripLayoutHelperManagerTest {
                                 TAB_STRIP_HEIGHT_PX),
                         true);
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
+        mStripLayoutHelperManager.onHeightChanged(newHeight);
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
-        float yCenterOfStrip = TAB_STRIP_HEIGHT_PX / 2;
-        assertFalse("Event on paddings should be ignored.", motionEvenHandled(0, yCenterOfStrip));
-        assertFalse("Event on paddings should be ignored.", motionEvenHandled(1, yCenterOfStrip));
+        float yCenterOfStrip = newHeight / 2;
+        assertFalse("Event on paddings should be ignored.", motionEventHandled(0, yCenterOfStrip));
+        assertFalse("Event on paddings should be ignored.", motionEventHandled(1, yCenterOfStrip));
         assertFalse(
                 "Event on margins should be ignored.",
-                motionEvenHandled(leftPadding - 1, yCenterOfStrip));
+                motionEventHandled(leftPadding - 1, yCenterOfStrip));
         assertTrue(
-                "Event on not on margin should be handled.",
-                motionEvenHandled(leftPadding, yCenterOfStrip));
+                "Event not on margins should be handled.",
+                motionEventHandled(leftPadding, yCenterOfStrip));
 
         assertFalse(
                 "Event on margins should be ignored.",
-                motionEvenHandled(SCREEN_WIDTH, yCenterOfStrip));
+                motionEventHandled(SCREEN_WIDTH, yCenterOfStrip));
         assertFalse(
                 "Event on margins should be ignored.",
-                motionEvenHandled(SCREEN_WIDTH - 1, yCenterOfStrip));
+                motionEventHandled(SCREEN_WIDTH - 1, yCenterOfStrip));
         assertFalse(
                 "Event on margins should be ignored.",
-                motionEvenHandled(SCREEN_WIDTH - rightPadding, yCenterOfStrip));
+                motionEventHandled(SCREEN_WIDTH - rightPadding, yCenterOfStrip));
         assertTrue(
-                "Event on not on margin should be handled.",
-                motionEvenHandled(SCREEN_WIDTH - rightPadding - 1, yCenterOfStrip));
+                "Event not on margins should be handled.",
+                motionEventHandled(SCREEN_WIDTH - rightPadding - 1, yCenterOfStrip));
     }
 
     @Test
@@ -1027,16 +1032,16 @@ public class StripLayoutHelperManagerTest {
 
         assertFalse(
                 "Event on top padding should not be handled.",
-                motionEvenHandled(SCREEN_WIDTH / 2, 0));
+                motionEventHandled(SCREEN_WIDTH / 2, 0));
         assertFalse(
                 "Event on top padding should not be handled.",
-                motionEvenHandled(SCREEN_WIDTH / 2, topPadding - 1));
+                motionEventHandled(SCREEN_WIDTH / 2, topPadding - 1));
         assertTrue(
                 "Event should be handled below top padding.",
-                motionEvenHandled(SCREEN_WIDTH / 2, topPadding));
+                motionEventHandled(SCREEN_WIDTH / 2, topPadding));
         assertTrue(
                 "Ensure top padding increase the entire height",
-                motionEvenHandled(SCREEN_WIDTH / 2, topPadding + TAB_STRIP_HEIGHT_PX - 1));
+                motionEventHandled(SCREEN_WIDTH / 2, topPadding + TAB_STRIP_HEIGHT_PX - 1));
     }
 
     @Test
@@ -1167,22 +1172,89 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q)
-    public void testTabStripFadeTransitionUpdatesVisibilityState() {
-        mStripLayoutHelperManager.onFadeTransitionRequested(0f, 1f, FADE_TRANSITION_DURATION_MS);
-        assertEquals(
-                "Strip should be invisible after the fade transition.",
-                StripVisibilityState.INVISIBLE,
-                mStripLayoutHelperManager.getStripVisibilityStateForTesting());
+    public void testResizeDesktopWindow() {
+        // Initially resize the window to hide the strip by triggering the fade transition.
+        resizeDesktopWindowAndTriggerFadeTransition(/* showStrip= */ false);
+        // Simulate a size change that keeps the strip invisible without re-triggering the fade
+        // transition.
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH - 1, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+        // Verify that a motion event on the strip is still not handled.
+        assertFalse(
+                "Strip motion event should not be handled.",
+                motionEventHandled(SCREEN_WIDTH / 2, TAB_STRIP_HEIGHT_PX / 2f));
 
-        mStripLayoutHelperManager.onFadeTransitionRequested(1f, 0f, FADE_TRANSITION_DURATION_MS);
-        assertEquals(
-                "Strip should be visible after the fade transition.",
-                StripVisibilityState.VISIBLE,
-                mStripLayoutHelperManager.getStripVisibilityStateForTesting());
+        // Resize the window to show the strip by triggering the fade transition.
+        resizeDesktopWindowAndTriggerFadeTransition(/* showStrip= */ true);
+        // Simulate a size change that keeps the strip visible without re-triggering the fade
+        // transition.
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH + 1, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+        // Verify that a motion event on the strip is still handled.
+        assertTrue(
+                "Strip motion event should be handled.",
+                motionEventHandled(SCREEN_WIDTH / 2, TAB_STRIP_HEIGHT_PX / 2f));
     }
 
-    private boolean motionEvenHandled(float x, float y) {
+    private void resizeDesktopWindowAndTriggerFadeTransition(boolean showStrip) {
+        // Rerun initialization after setting the FF.
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        initializeTest();
+
+        int leftPadding = 10;
+        int rightPadding = 20;
+        int topPadding = 5;
+        // Simulate the |mTopPadding| update when switching to a desktop window.
+        mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
+        // Simulate a window size change in a desktop window.
+        var appHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, (int) SCREEN_WIDTH, (int) SCREEN_HEIGHT),
+                        new Rect(
+                                leftPadding,
+                                0,
+                                (int) (SCREEN_WIDTH - rightPadding),
+                                TAB_STRIP_HEIGHT_PX + topPadding),
+                        true);
+        float startOpacity = showStrip ? 1f : 0f;
+        float endOpacity = showStrip ? 0f : 1f;
+        mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+        mStripLayoutHelperManager.onFadeTransitionRequested(startOpacity, endOpacity, 0);
+
+        var expectedVisibilityState =
+                showStrip ? StripVisibilityState.VISIBLE : StripVisibilityState.INVISIBLE;
+        assertEquals(
+                "Strip visibility after fade transition is incorrect.",
+                expectedVisibilityState,
+                mStripLayoutHelperManager.getStripVisibilityState());
+        // Verify that the correct rect is set in the motion event filter.
+        RectF motionEventFilterArea =
+                ((AreaMotionEventFilter) mStripLayoutHelperManager.getEventFilter())
+                        .getEventAreaForTesting();
+        // Motion event area should be an empty rect on an invisible strip.
+        var expectedMotionEventArea =
+                showStrip
+                        ? new RectF(
+                                leftPadding,
+                                topPadding,
+                                SCREEN_WIDTH - rightPadding,
+                                TAB_STRIP_HEIGHT_PX + topPadding)
+                        : new RectF();
+        assertEquals(
+                "Motion event filter area is incorrect.",
+                expectedMotionEventArea,
+                motionEventFilterArea);
+        var yCenterOfStrip = TAB_STRIP_HEIGHT_PX / 2;
+        // Verify that a motion event is handled or not, based on the strip visibility state.
+        assertEquals(
+                "Strip motion event handling based on strip visibility state is incorrect.",
+                showStrip,
+                motionEventHandled(leftPadding, yCenterOfStrip));
+    }
+
+    private boolean motionEventHandled(float x, float y) {
         MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x, y, 0);
         return mStripLayoutHelperManager.getEventFilter().onInterceptTouchEvent(event, false);
     }

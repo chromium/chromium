@@ -46,6 +46,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
+import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -160,14 +161,21 @@ public class AppHeaderCoordinatorBrowserTest {
                 () ->
                         tabStripCallback.onConfigurationChanged(
                                 activity.getResources().getConfiguration()));
+
+        var stripLayoutHelperManager = activity.getLayoutManager().getStripLayoutHelperManager();
+        var stripAreaMotionEventFilter =
+                (AreaMotionEventFilter) stripLayoutHelperManager.getEventFilter();
         CriteriaHelper.pollUiThread(
-                () ->
-                        Criteria.checkThat(
-                                "Tab strip scrim should be visible.",
-                                activity.getLayoutManager()
-                                        .getStripLayoutHelperManager()
-                                        .isStripScrimVisibleForTesting(),
-                                Matchers.equalTo(true)));
+                () -> {
+                    Criteria.checkThat(
+                            "Tab strip scrim should be visible.",
+                            stripLayoutHelperManager.isStripScrimVisibleForTesting(),
+                            Matchers.equalTo(true));
+                    Criteria.checkThat(
+                            "Motion event filter area should be empty on an invisible strip.",
+                            stripAreaMotionEventFilter.getEventAreaForTesting().isEmpty(),
+                            Matchers.equalTo(true));
+                });
 
         // A very small strip width threshold value should show the strip by removing the scrim.
         TabStripTransitionCoordinator.setFadeTransitionThresholdForTesting(1);
@@ -176,13 +184,16 @@ public class AppHeaderCoordinatorBrowserTest {
                         tabStripCallback.onConfigurationChanged(
                                 activity.getResources().getConfiguration()));
         CriteriaHelper.pollUiThread(
-                () ->
-                        Criteria.checkThat(
-                                "Tab strip scrim should not be visible.",
-                                activity.getLayoutManager()
-                                        .getStripLayoutHelperManager()
-                                        .isStripScrimVisibleForTesting(),
-                                Matchers.equalTo(false)));
+                () -> {
+                    Criteria.checkThat(
+                            "Tab strip scrim should not be visible.",
+                            stripLayoutHelperManager.isStripScrimVisibleForTesting(),
+                            Matchers.equalTo(false));
+                    Criteria.checkThat(
+                            "Motion event filter area should be non-empty on a visible strip.",
+                            stripAreaMotionEventFilter.getEventAreaForTesting().isEmpty(),
+                            Matchers.equalTo(false));
+                });
     }
 
     @Test

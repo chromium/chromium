@@ -30,8 +30,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -143,11 +145,13 @@ public class StripLayoutHelperManager
     /** Defines if the strip is visible or hidden. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
+        StripVisibilityState.UNKNOWN,
         StripVisibilityState.VISIBLE,
         StripVisibilityState.GONE,
-        StripVisibilityState.INVISIBLE
+        StripVisibilityState.INVISIBLE,
     })
     @interface StripVisibilityState {
+        int UNKNOWN = 0; // Strip visibility is unknown.
         int VISIBLE = 1; // Strip is visible.
         int GONE = 2; // Strip is hidden by a height transition.
         int INVISIBLE = 3; // Strip is hidden by an in-place fade transition.
@@ -215,7 +219,6 @@ public class StripLayoutHelperManager
     private TintedCompositorButton mModelSelectorButton;
     private Context mContext;
     private boolean mTabStripObscured;
-    private @StripVisibilityState int mStripVisibilityState;
     private float mStripTransitionScrimOpacity;
     private Animator mFadeTransitionAnimator;
     private boolean mIsHeightTransitioning;
@@ -229,7 +232,6 @@ public class StripLayoutHelperManager
     private float mModelSelectorWidth;
     private float mLastVisibleViewportOffsetY;
 
-    // Desktop windowing mode constants.
     /**
      * Whether the current activity is the top resumed activity. This is only relevant for use in
      * the desktop windowing mode, to determine the tab strip background color.
@@ -255,6 +257,9 @@ public class StripLayoutHelperManager
     private final String mDefaultTitle;
     private final ObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final Callback<Integer> mStripVisibilityStateObserver;
+    private ObservableSupplierImpl<Integer> mStripVisibilityStateSupplier;
+    private boolean mAnimationsDisabledForTesting;
 
     // Drag-Drop
     @Nullable private TabDragSource mTabDragSource;
@@ -448,6 +453,16 @@ public class StripLayoutHelperManager
                         : mScrollableStripHeight;
         mTopPadding = mHeight - mScrollableStripHeight;
         mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mStripVisibilityStateSupplier = new ObservableSupplierImpl<>(StripVisibilityState.UNKNOWN);
+        mStripVisibilityStateObserver =
+                state -> {
+                    assert state != StripVisibilityState.UNKNOWN
+                            : "Strip visibility state should be valid.";
+                    // Consume motion events only on a visible strip.
+                    mEventFilter.setEventArea(
+                            state == StripVisibilityState.VISIBLE ? mStripFilterArea : null);
+                };
+        mStripVisibilityStateSupplier.addObserver(mStripVisibilityStateObserver);
 
         CompositorOnClickHandler selectorClickHandler = time -> handleModelSelectorButtonClick();
         createModelSelectorButton(context, selectorClickHandler);
@@ -554,7 +569,8 @@ public class StripLayoutHelperManager
                         toolbarManager.getTabStripHeightSupplier().get(),
                         () ->
                                 !mTabStripObscured
-                                        && mStripVisibilityState == StripVisibilityState.VISIBLE);
+                                        && getStripVisibilityState()
+                                                == StripVisibilityState.VISIBLE);
         mIncognitoHelper =
                 new StripLayoutHelper(
                         context,
@@ -570,7 +586,8 @@ public class StripLayoutHelperManager
                         toolbarManager.getTabStripHeightSupplier().get(),
                         () ->
                                 !mTabStripObscured
-                                        && mStripVisibilityState == StripVisibilityState.VISIBLE);
+                                        && getStripVisibilityState()
+                                                == StripVisibilityState.VISIBLE);
 
         tabHoverCardViewStub.setOnInflateListener(
                 (viewStub, view) -> {
@@ -654,11 +671,14 @@ public class StripLayoutHelperManager
         if (mDesktopWindowStateProvider != null) {
             mDesktopWindowStateProvider.removeObserver(this);
         }
+        mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
+        mStripVisibilityStateSupplier = null;
     }
 
     /** Mark whether tab strip is hidden by a height transition. */
     public void setIsTabStripHidden(boolean isHidden) {
-        mStripVisibilityState = isHidden ? StripVisibilityState.GONE : StripVisibilityState.VISIBLE;
+        mStripVisibilityStateSupplier.set(
+                isHidden ? StripVisibilityState.GONE : StripVisibilityState.VISIBLE);
         mStatusBarColorController.setTabStripHiddenOnTablet(isHidden);
     }
 
@@ -725,7 +745,7 @@ public class StripLayoutHelperManager
                     getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
 
             yOffset = 0;
-        } else if (mStripVisibilityState == StripVisibilityState.GONE) {
+        } else if (getStripVisibilityState() == StripVisibilityState.GONE) {
             // When the tab strip is hidden by a height transition, the stable offset of this scene
             // layer should be a negative value.
             yOffset -= getHeight();
@@ -804,7 +824,10 @@ public class StripLayoutHelperManager
                 mTopPadding,
                 mWidth - mRightPadding,
                 Math.min(getHeight(), visibleViewportOffsetY));
-        mEventFilter.setEventArea(mStripFilterArea);
+        // Avoid handling motion events when invisible strip state persists after a size change.
+        if (getStripVisibilityState() == StripVisibilityState.VISIBLE) {
+            mEventFilter.setEventArea(mStripFilterArea);
+        }
     }
 
     // Implements TabStripTransitionDelegate.
@@ -813,8 +836,8 @@ public class StripLayoutHelperManager
     public void onHeightChanged(int newHeightPx) {
         mIsHeightTransitioning = true;
         boolean hideStrip = newHeightPx == 0;
-        mStripVisibilityState =
-                hideStrip ? StripVisibilityState.GONE : StripVisibilityState.VISIBLE;
+        mStripVisibilityStateSupplier.set(
+                hideStrip ? StripVisibilityState.GONE : StripVisibilityState.VISIBLE);
         mStripTransitionScrimOpacity = hideStrip ? 0f : 1f;
         // Update the strip visibility state in StatusBarController just after the margins are
         // updated during a hide->show transition so that the status bar assumes the base tab strip
@@ -838,8 +861,11 @@ public class StripLayoutHelperManager
 
     @Override
     public void onFadeTransitionRequested(float startOpacity, float endOpacity, int durationMs) {
-        mStripVisibilityState =
-                endOpacity == 1f ? StripVisibilityState.INVISIBLE : StripVisibilityState.VISIBLE;
+        boolean showStrip = endOpacity == 0f;
+        if (mAnimationsDisabledForTesting) {
+            onFadeTransitionEnd(showStrip);
+            return;
+        }
         if (mFadeTransitionAnimator != null && mFadeTransitionAnimator.isRunning()) {
             mFadeTransitionAnimator.cancel();
         }
@@ -855,13 +881,16 @@ public class StripLayoutHelperManager
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(@NonNull Animator animation) {
-                        mFadeTransitionAnimator = null;
+                        onFadeTransitionEnd(showStrip);
                     }
                 });
-
         mFadeTransitionAnimator.start();
-        // TODO (crbug.com/348514158): Fix re-attachment of compositor buttons that affects
-        //  visibility on a strip scrim layer update.
+    }
+
+    private void onFadeTransitionEnd(boolean showStrip) {
+        mFadeTransitionAnimator = null;
+        mStripVisibilityStateSupplier.set(
+                showStrip ? StripVisibilityState.VISIBLE : StripVisibilityState.INVISIBLE);
     }
 
     @Override
@@ -870,7 +899,7 @@ public class StripLayoutHelperManager
         mStripTransitionScrimOpacity = 0f;
         //  Update the strip visibility state in StatusBarColorController only after a show->hide
         // transition, so that the status bar assumes the toolbar color when the strip is hidden.
-        if (mStripVisibilityState == StripVisibilityState.GONE) {
+        if (getStripVisibilityState() == StripVisibilityState.GONE) {
             mStatusBarColorController.setTabStripHiddenOnTablet(true);
         }
         mStatusBarColorController.setTabStripColorOverlay(
@@ -887,14 +916,16 @@ public class StripLayoutHelperManager
             return 0.0f;
         }
 
-        assert mFadeTransitionAnimator == null || !mFadeTransitionAnimator.isRunning()
-                : "Fade transition to update the scrim should not be in progress.";
+        // Stop any running fade transition animation that is updating the scrim opacity.
+        if (mFadeTransitionAnimator != null && mFadeTransitionAnimator.isRunning()) {
+            mFadeTransitionAnimator.cancel();
+        }
 
         // Otherwise, the alpha fraction is based on the percent of the tab strip visibility.
         float ratio = 1 - visibleHeight / mHeight;
         float newOpacity = TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(ratio);
 
-        boolean isHidden = mStripVisibilityState == StripVisibilityState.GONE;
+        boolean isHidden = getStripVisibilityState() == StripVisibilityState.GONE;
 
         // There is a known issue where the scrim opacity for a hide->show transition incorrectly
         // gets updated to 1f (when yOffset = 0) in concluding frame updates during the transition,
@@ -966,7 +997,7 @@ public class StripLayoutHelperManager
     public void getVirtualViews(List<VirtualView> views) {
         if (mTabStripObscured) return;
         if (duringTabStripHeightTransition()
-                || mStripVisibilityState == StripVisibilityState.GONE) {
+                || getStripVisibilityState() == StripVisibilityState.GONE) {
             return;
         }
         // Remove the a11y views when top controls is partially invisible.
@@ -986,7 +1017,7 @@ public class StripLayoutHelperManager
         // #setSystemGestureExclusionRects requires API Q.
         if (VERSION.SDK_INT < VERSION_CODES.Q || !mIsLayoutOptimizationsEnabled) return;
 
-        if (mStripVisibilityState == StripVisibilityState.INVISIBLE) {
+        if (getStripVisibilityState() == StripVisibilityState.INVISIBLE) {
             // Reset the system gesture exclusion rects to allow system gestures on the tab strip
             // area.
             mToolbarControlContainer.setSystemGestureExclusionRects(List.of(new Rect(0, 0, 0, 0)));
@@ -1436,6 +1467,12 @@ public class StripLayoutHelperManager
         return mIsIncognito ? mNormalHelper : mIncognitoHelper;
     }
 
+    @VisibleForTesting
+    @StripVisibilityState
+    int getStripVisibilityState() {
+        return mStripVisibilityStateSupplier.get();
+    }
+
     void simulateHoverEventForTesting(int event, float x, float y) {
         if (event == MotionEvent.ACTION_HOVER_ENTER) {
             mTabStripEventHandler.onHoverEnter(x, y);
@@ -1458,6 +1495,10 @@ public class StripLayoutHelperManager
         return mTabHoverCardViewStub;
     }
 
+    void disableAnimationsForTesting() {
+        mAnimationsDisabledForTesting = true;
+    }
+
     public TabDragSource getTabDragSourceForTesting() {
         return mTabDragSource;
     }
@@ -1468,10 +1509,5 @@ public class StripLayoutHelperManager
 
     public boolean isStripScrimVisibleForTesting() {
         return mStripTransitionScrimOpacity == 1f;
-    }
-
-    @StripVisibilityState
-    int getStripVisibilityStateForTesting() {
-        return mStripVisibilityState;
     }
 }

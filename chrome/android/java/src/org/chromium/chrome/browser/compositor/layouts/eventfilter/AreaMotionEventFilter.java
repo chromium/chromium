@@ -150,6 +150,11 @@ public class AreaMotionEventFilter extends MotionEventFilter {
         return false;
     }
 
+    /** Gets the motion event area rect for testing purposes. */
+    public RectF getEventAreaForTesting() {
+        return mTriggerRect;
+    }
+
     @VisibleForTesting
     boolean isMotionEventInArea(MotionEvent e) {
         return mTriggerRect.contains(e.getX() * mPxToDp, e.getY() * mPxToDp);
