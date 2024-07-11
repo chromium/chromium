@@ -73,9 +73,10 @@ CertProvisioningInvalidationHandler::BuildAndRegister(
                  invalidation::InvalidationListener*>
         invalidation_service_or_listener,
     const invalidation::Topic& topic,
+    const std::string& listener_type,
     OnInvalidationEventCallback on_invalidation_event_callback) {
   auto invalidator = std::make_unique<CertProvisioningInvalidationHandler>(
-      scope, std::move(invalidation_service_or_listener), topic,
+      scope, std::move(invalidation_service_or_listener), topic, listener_type,
       std::move(on_invalidation_event_callback));
 
   if (!invalidator->Register()) {
@@ -91,11 +92,13 @@ CertProvisioningInvalidationHandler::CertProvisioningInvalidationHandler(
                  invalidation::InvalidationListener*>
         invalidation_service_or_listener,
     const invalidation::Topic& topic,
+    const std::string& listener_type,
     OnInvalidationEventCallback on_invalidation_event_callback)
     : scope_(scope),
       invalidation_service_or_listener_(
           PointerVariantToRawPointer(invalidation_service_or_listener)),
       topic_(topic),
+      listener_type_(listener_type),
       on_invalidation_event_callback_(
           std::move(on_invalidation_event_callback)) {
   CHECK(!std::holds_alternative<raw_ptr<invalidation::InvalidationService>>(
@@ -211,7 +214,6 @@ bool CertProvisioningInvalidationHandler::IsPublicTopic(
 void CertProvisioningInvalidationHandler::OnExpectationChanged(
     invalidation::InvalidationsExpected expected) {
   are_invalidations_expected_ = expected;
-  // TODO(b/336989561) Maybe we need different polling frequencies?
 }
 
 void CertProvisioningInvalidationHandler::OnInvalidationReceived(
@@ -220,11 +222,7 @@ void CertProvisioningInvalidationHandler::OnInvalidationReceived(
 }
 
 std::string CertProvisioningInvalidationHandler::GetType() const {
-  // TODO(b/336989561) Not sure what to use here.
-  // Note that context can be pretty much any string. It /would/ be an option to
-  // use `topic_`.
-  std::string certificate_profile_id = "replace me";
-  return "certificate-" + certificate_profile_id;
+  return listener_type_;
 }
 
 bool CertProvisioningInvalidationHandler::IsRegistered() const {
@@ -294,6 +292,7 @@ CertProvisioningUserInvalidator::CertProvisioningUserInvalidator(
 
 void CertProvisioningUserInvalidator::Register(
     const invalidation::Topic& topic,
+    const std::string& listener_type,
     OnInvalidationEventCallback on_invalidation_event_callback) {
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);
@@ -305,7 +304,7 @@ void CertProvisioningUserInvalidator::Register(
 
   invalidation_handler_ =
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
-          CertScope::kUser, invalidation_service, topic,
+          CertScope::kUser, invalidation_service, topic, listener_type,
           std::move(on_invalidation_event_callback));
   if (!invalidation_handler_) {
     LOG(ERROR) << "Failed to register for invalidation topic";
@@ -386,8 +385,10 @@ CertProvisioningDeviceInvalidator::~CertProvisioningDeviceInvalidator() {
 
 void CertProvisioningDeviceInvalidator::Register(
     const invalidation::Topic& topic,
+    const std::string& listener_type,
     OnInvalidationEventCallback on_invalidation_event_callback) {
   topic_ = topic;
+  listener_type_ = listener_type;
   CHECK(!topic_.empty());
   on_invalidation_event_callback_ = std::move(on_invalidation_event_callback);
   std::visit(
@@ -399,7 +400,7 @@ void CertProvisioningDeviceInvalidator::Register(
           [this](invalidation::InvalidationListener* listener) {
             invalidation_handler_ =
                 internal::CertProvisioningInvalidationHandler::BuildAndRegister(
-                    CertScope::kDevice, listener, topic_,
+                    CertScope::kDevice, listener, topic_, listener_type_,
                     on_invalidation_event_callback_);
           }},
       invalidation_service_provider_or_listener_);
@@ -436,7 +437,7 @@ void CertProvisioningDeviceInvalidator::OnInvalidationServiceSet(
 
   invalidation_handler_ =
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
-          CertScope::kDevice, invalidation_service, topic_,
+          CertScope::kDevice, invalidation_service, topic_, listener_type_,
           on_invalidation_event_callback_);
   if (!invalidation_handler_) {
     LOG(ERROR) << "Failed to register for invalidation topic";

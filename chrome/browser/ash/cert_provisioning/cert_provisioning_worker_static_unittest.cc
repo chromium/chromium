@@ -581,6 +581,8 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
+  const std::string listener_type = MakeInvalidationListenerType(process_id);
+  EXPECT_LE(listener_type.size(), 128u);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -618,7 +620,9 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -789,6 +793,7 @@ TEST_F(CertProvisioningWorkerStaticTest, NoHashInStartCsr) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
+  const std::string listener_type = MakeInvalidationListenerType(process_id);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -818,7 +823,9 @@ TEST_F(CertProvisioningWorkerStaticTest, NoHashInStartCsr) {
         em::HashingAlgorithm::NO_HASH);
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1411,6 +1418,7 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
+  const std::string listener_type = MakeInvalidationListenerType(process_id);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -1457,8 +1465,9 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
     EXPECT_START_CSR_OK(
         StartCsr(Eq(std::ref(provisioning_process)), /*callback=*/_),
         em::HashingAlgorithm::SHA256);
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
-        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1850,6 +1859,7 @@ TEST_F(CertProvisioningWorkerStaticTest, RemoveRegisteredKey) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
+  const std::string listener_type = MakeInvalidationListenerType(process_id);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -1879,7 +1889,9 @@ TEST_F(CertProvisioningWorkerStaticTest, RemoveRegisteredKey) {
         StartCsr(Eq(std::ref(provisioning_process)), /*callback=*/_),
         em::HashingAlgorithm::SHA256);
 
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1970,6 +1982,7 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
       /*is_va_enabled=*/true, kRenewalPeriod, ProtocolVersion::kStatic);
   const CertScope kCertScope = CertScope::kUser;
   const std::string process_id = GenerateCertProvisioningId();
+  const std::string listener_type = MakeInvalidationListenerType(process_id);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, kCertScope, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -2060,7 +2073,9 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
     pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -2114,7 +2129,9 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     mock_tpm_challenge_key = PrepareTpmChallengeKey();
     EXPECT_CALL(*mock_tpm_challenge_key,

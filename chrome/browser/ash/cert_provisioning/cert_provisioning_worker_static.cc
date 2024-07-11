@@ -1078,7 +1078,7 @@ void CertProvisioningWorkerStatic::RegisterForInvalidationTopic() {
   // owns |invalidator_|, and the callback will never be called after
   // |invalidator_| is destroyed.
   invalidator_->Register(
-      invalidation_topic_,
+      invalidation_topic_, MakeInvalidationListenerType(process_id_),
       base::BindRepeating(&CertProvisioningWorkerStatic::OnInvalidationEvent,
                           base::Unretained(this)));
 

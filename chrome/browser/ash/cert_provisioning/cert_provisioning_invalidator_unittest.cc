@@ -25,11 +25,14 @@ class CertProvisioningInvalidationHandlerTest
   CertProvisioningInvalidationHandlerTest()
       : kInvalidatorTopic("abcdef"),
         kSomeOtherTopic("fedcba"),
+        kListenerType("ABC123"),
+        kSomeOtherType("321CBA"),
         invalidation_handler_(
             CertProvisioningInvalidationHandler::BuildAndRegister(
                 GetScope(),
                 &invalidation_service_,
                 kInvalidatorTopic,
+                kListenerType,
                 invalidation_events_.GetRepeatingCallback())) {
     EXPECT_NE(nullptr, invalidation_handler_);
 
@@ -95,6 +98,8 @@ class CertProvisioningInvalidationHandlerTest
 
   const invalidation::Topic kInvalidatorTopic;
   const invalidation::Topic kSomeOtherTopic;
+  const std::string kListenerType;
+  const std::string kSomeOtherType;
 
   invalidation::FakeInvalidationService invalidation_service_;
 
@@ -109,7 +114,7 @@ TEST_P(CertProvisioningInvalidationHandlerTest,
 
   std::unique_ptr<CertProvisioningInvalidationHandler> second_invalidator =
       CertProvisioningInvalidationHandler::BuildAndRegister(
-          GetScope(), &invalidation_service_, kInvalidatorTopic,
+          GetScope(), &invalidation_service_, kInvalidatorTopic, kListenerType,
           base::DoNothing());
 
   EXPECT_EQ(nullptr, second_invalidator);
@@ -120,7 +125,8 @@ TEST_P(CertProvisioningInvalidationHandlerTest,
   EXPECT_NE(nullptr, invalidation_handler_);
 
   CertProvisioningInvalidationHandler second_invalidator(
-      GetScope(), &invalidation_service_, kSomeOtherTopic, base::DoNothing());
+      GetScope(), &invalidation_service_, kSomeOtherTopic, kSomeOtherType,
+      base::DoNothing());
 
   EXPECT_FALSE(IsInvalidatorRegistered(&second_invalidator));
 }

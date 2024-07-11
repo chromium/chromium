@@ -266,6 +266,13 @@ platform_keys::KeyPermissionsManager* GetKeyPermissionsManager(
 // consistent logging with the server-side code (see "cppId" in the logs).
 std::string GenerateCertProvisioningId();
 
+// Creates an invalidation listener type based the cert provisioning process id
+// (see `GenerateCertProvisioningId()`). The type is a string that is
+// constructed both server- and client-side and is used to deliver FCM
+// invalidations from the server-side.
+std::string MakeInvalidationListenerType(
+    const std::string& cert_prov_process_id);
+
 }  // namespace cert_provisioning
 }  // namespace ash
 

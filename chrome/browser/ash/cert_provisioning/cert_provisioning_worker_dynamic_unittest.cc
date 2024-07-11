@@ -479,6 +479,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kDynamic);
   const std::string process_id = GenerateCertProvisioningId();
+  const std::string listener_type = MakeInvalidationListenerType(process_id);
+  EXPECT_LE(listener_type.size(), 128u);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -515,8 +517,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
-        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -714,6 +717,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kDynamic);
   const std::string process_id = GenerateCertProvisioningId();
+  const std::string listener_type = MakeInvalidationListenerType(process_id);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -749,8 +753,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
                  StartResultOk());
 
     OnInvalidationEventCallback on_invalidation_event_callback;
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
-        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -2071,6 +2076,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, RemoveRegisteredKey) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kDynamic);
   const std::string process_id = GenerateCertProvisioningId();
+  const std::string listener_type = MakeInvalidationListenerType(process_id);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -2099,7 +2105,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, RemoveRegisteredKey) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     EXPECT_GET_NEXT_INSTRUCTION(
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -2197,6 +2205,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
       /*is_va_enabled=*/true, kRenewalPeriod, ProtocolVersion::kDynamic);
   const CertScope kCertScope = CertScope::kUser;
   const std::string process_id = GenerateCertProvisioningId();
+  const std::string listener_type = MakeInvalidationListenerType(process_id);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, kCertScope, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -2260,7 +2269,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     // Serialized in kReadyForNextOperation = 12 state
     pref_val = ParseJsonDict(base::StringPrintf(
@@ -2299,7 +2310,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     mock_tpm_challenge_key = PrepareTpmChallengeKey();
 
@@ -2385,7 +2398,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
@@ -2448,7 +2463,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
@@ -2503,7 +2520,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_CALL(*mock_invalidator,
+                Register(kInvalidationTopic, listener_type, _))
+        .Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,

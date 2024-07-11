@@ -63,6 +63,7 @@ class CertProvisioningInvalidationHandler
                    invalidation::InvalidationListener*>
           invalidation_service_or_listener,
       const invalidation::Topic& topic,
+      const std::string& listener_type,
       OnInvalidationEventCallback on_invalidation_event_callback);
   CertProvisioningInvalidationHandler(
       CertScope scope,
@@ -70,6 +71,7 @@ class CertProvisioningInvalidationHandler
                    invalidation::InvalidationListener*>
           invalidation_service_or_listener,
       const invalidation::Topic& topic,
+      const std::string& listener_type,
       OnInvalidationEventCallback on_invalidation_event_callback);
   CertProvisioningInvalidationHandler(
       const CertProvisioningInvalidationHandler&) = delete;
@@ -130,6 +132,8 @@ class CertProvisioningInvalidationHandler
 
   // A topic representing certificate invalidations.
   const invalidation::Topic topic_;
+  // A listener type for routing FCM invalidations.
+  const std::string listener_type_;
 
   invalidation::InvalidationsExpected are_invalidations_expected_ =
       invalidation::InvalidationsExpected::kMaybe;
@@ -182,6 +186,7 @@ class CertProvisioningInvalidator {
 
   virtual void Register(
       const invalidation::Topic& topic,
+      const std::string& listener_type,
       OnInvalidationEventCallback on_invalidation_event_callback) = 0;
   virtual void Unregister();
 
@@ -212,6 +217,7 @@ class CertProvisioningUserInvalidator : public CertProvisioningInvalidator {
 
   void Register(
       const invalidation::Topic& topic,
+      const std::string& listener_type,
       OnInvalidationEventCallback on_invalidation_event_callback) override;
 
  private:
@@ -255,6 +261,7 @@ class CertProvisioningDeviceInvalidator
 
   void Register(
       const invalidation::Topic& topic,
+      const std::string& listener_type,
       OnInvalidationEventCallback on_invalidation_event_callback) override;
   void Unregister() override;
 
@@ -264,6 +271,7 @@ class CertProvisioningDeviceInvalidator
       invalidation::InvalidationService* invalidation_service) override;
 
   invalidation::Topic topic_;
+  std::string listener_type_;
   OnInvalidationEventCallback on_invalidation_event_callback_;
   std::variant<raw_ptr<policy::AffiliatedInvalidationServiceProvider>,
                raw_ptr<invalidation::InvalidationListener>>

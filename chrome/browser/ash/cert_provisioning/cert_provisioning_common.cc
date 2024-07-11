@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -344,6 +345,14 @@ platform_keys::KeyPermissionsManager* GetKeyPermissionsManager(
 
 std::string GenerateCertProvisioningId() {
   return base::UnguessableToken::Create().ToString();
+}
+
+std::string MakeInvalidationListenerType(const std::string& cert_prov_id) {
+  constexpr char kCertProvPrefix[] = "cert-";
+  std::string result = base::StrCat({kCertProvPrefix, cert_prov_id});
+  // Server-side stores the type and expects it to be <=128 characters long.
+  CHECK_LE(result.size(), 128u);
+  return result;
 }
 
 }  // namespace cert_provisioning
