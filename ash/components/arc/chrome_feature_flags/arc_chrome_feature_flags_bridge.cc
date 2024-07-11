@@ -98,6 +98,8 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
       base::FeatureList::IsEnabled(arc::kIgnoreHoverEventAnr);
   flags->extend_input_anr_timeout =
       base::FeatureList::IsEnabled(arc::kExtendInputAnrTimeout);
+  flags->extend_service_anr_timeout =
+      base::FeatureList::IsEnabled(arc::kExtendServiceAnrTimeout);
   flags->notification_width_increase =
       chromeos::features::IsNotificationWidthIncreaseEnabled();
   flags->enable_friendlier_error_dialog =

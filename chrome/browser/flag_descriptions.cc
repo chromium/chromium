@@ -5849,6 +5849,13 @@ const char kArcExtendInputAnrTimeoutDescription[] =
     "When enabled, the default input event ANR timeout time will be extended"
     " from 5 seconds to 8 seconds.";
 
+const char kArcExtendServiceAnrTimeoutName[] =
+    "Extend executing service ANR timeout time";
+const char kArcExtendServiceAnrTimeoutDescription[] =
+    "When enabled, the default executing service ANR timeout time will be"
+    " extended from 20 seconds to 30 seconds for foreground services, 200"
+    " seconds to 300 seconds for background services.";
+
 const char kArcFilePickerExperimentName[] =
     "Enable file picker experiment for ARC";
 const char kArcFilePickerExperimentDescription[] =

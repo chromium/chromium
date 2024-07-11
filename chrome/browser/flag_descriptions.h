@@ -3389,6 +3389,9 @@ extern const char kArcEnableAttestationDescription[];
 extern const char kArcExtendInputAnrTimeoutName[];
 extern const char kArcExtendInputAnrTimeoutDescription[];
 
+extern const char kArcExtendServiceAnrTimeoutName[];
+extern const char kArcExtendServiceAnrTimeoutDescription[];
+
 extern const char kArcFilePickerExperimentName[];
 extern const char kArcFilePickerExperimentDescription[];
 
