@@ -73,6 +73,8 @@ source_set("lens") {
     "//content/public/common",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/base",
     "//ui/compositor",
