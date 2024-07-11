@@ -3832,6 +3832,7 @@
       // See https://github.com/w3c/csswg-drafts/issues/9398
       name: "StandardizedBrowserZoom",
       status: "test",
+      public: true,
     },
     {
       name: "StandardizedBrowserZoomOptOut",

@@ -137,6 +137,10 @@ const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
 const char kKeyboardFocusableScrollersEnabled[] =
     "policy.keyboard_focusable_scrollers_enabled";
 
+// Enables the newly-specified behavior of the CSS "zoom" property.
+const char kStandardizedBrowserZoomEnabled[] =
+    "policy.standardized_browser_zoom_enabled";
+
 // Boolean indicating whether Policy Test Page is Enabled.
 // The value is controlled by the PolicyTestPageEnabled policy.
 // If this is set to True, the page will be accessible.

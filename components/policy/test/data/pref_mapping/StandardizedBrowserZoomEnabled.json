@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "StandardizedBrowserZoomEnabled": true
+        },
+        "prefs": {
+          "policy.standardized_browser_zoom_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "StandardizedBrowserZoomEnabled": false
+        },
+        "prefs": {
+          "policy.standardized_browser_zoom_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "policy.standardized_browser_zoom_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

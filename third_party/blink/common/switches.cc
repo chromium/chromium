@@ -175,6 +175,10 @@ const char kTouchTextSelectionStrategy[] = "touch-selection-strategy";
 const char kTouchTextSelectionStrategy_Character[] = "character";
 const char kTouchTextSelectionStrategy_Direction[] = "direction";
 
+// Override mechanism for preserving the old non-standard behavior of CSS zoom.
+const char kDisableStandardizedBrowserZoom[] =
+    "disable-standardized-browser-zoom";
+
 // Comma-separated list of origins that can use SharedArrayBuffer without
 // enabling cross-origin isolation.
 const char kSharedArrayBufferAllowedOrigins[] =

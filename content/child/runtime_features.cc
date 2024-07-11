@@ -475,6 +475,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
        blink::switches::kKeyboardFocusableScrollersEnabled, true},
       {wrf::EnableKeyboardFocusableScrollers,
        blink::switches::kKeyboardFocusableScrollersOptOut, false},
+      {wrf::EnableStandardizedBrowserZoom,
+       blink::switches::kDisableStandardizedBrowserZoom, false},
       {wrf::EnableCSSCustomStateDeprecatedSyntax,
        blink::switches::kCSSCustomStateDeprecatedSyntaxEnabled, true},
       {wrf::EnableTextFragmentIdentifiers,
