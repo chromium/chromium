@@ -592,13 +592,13 @@ export class EmojiPickerApp extends PolymerElement {
               case Category.kEmojis:
                 break;
               case Category.kSymbols:
-                this.onCategoryButtonClick(CategoryEnum.SYMBOL);
+                await this.onCategoryButtonClick(CategoryEnum.SYMBOL);
                 break;
               case Category.kEmoticons:
-                this.onCategoryButtonClick(CategoryEnum.EMOTICON);
+                await this.onCategoryButtonClick(CategoryEnum.EMOTICON);
                 break;
               case Category.kGifs:
-                this.onCategoryButtonClick(CategoryEnum.GIF);
+                await this.onCategoryButtonClick(CategoryEnum.GIF);
                 break;
             }
 
