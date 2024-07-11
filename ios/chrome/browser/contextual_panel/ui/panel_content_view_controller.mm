@@ -298,7 +298,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
       DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonIconSize),
       @[
         [UIColor colorNamed:kGrey600Color],
-        [UIColor colorNamed:kGrey200Color],
+        [UIColor colorNamed:kBackgroundColor],
       ]);
   UIButtonConfiguration* closeButtonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
