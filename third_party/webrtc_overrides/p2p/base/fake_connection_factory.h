@@ -6,11 +6,10 @@
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_FAKE_CONNECTION_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
-
 #include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
@@ -35,7 +34,7 @@ class FakeConnectionFactory : public sigslot::has_slots<> {
   // Create a connection to a remote candidate represented as the type, IP
   // address, port, and an optional candidate priority.
   cricket::Connection* CreateConnection(webrtc::IceCandidateType type,
-                                        base::StringPiece remote_ip,
+                                        std::string_view remote_ip,
                                         int remote_port,
                                         int priority = 0);
 
@@ -47,10 +46,10 @@ class FakeConnectionFactory : public sigslot::has_slots<> {
                    cricket::PortInterface* port);
 
   cricket::Candidate CreateUdpCandidate(webrtc::IceCandidateType type,
-                                        base::StringPiece ip,
+                                        std::string_view ip,
                                         int port,
                                         int priority,
-                                        base::StringPiece ufrag = "");
+                                        std::string_view ufrag = "");
 
   base::WaitableEvent* readyEvent_;
 

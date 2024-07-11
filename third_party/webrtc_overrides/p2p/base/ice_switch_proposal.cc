@@ -119,7 +119,7 @@ IceSwitchProposal::IceSwitchProposal(
   if (switch_result.connection.value_or(nullptr)) {
     connection_ = IceConnection(switch_result.connection.value());
   } else {
-    connection_ = absl::nullopt;
+    connection_ = std::nullopt;
   }
   for (const cricket::Connection* conn :
        switch_result.connections_to_forget_state_on) {

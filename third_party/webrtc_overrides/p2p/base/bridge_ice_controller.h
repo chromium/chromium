@@ -6,13 +6,12 @@
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_BRIDGE_ICE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/p2p/base/active_ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/connection.h"
@@ -84,8 +83,8 @@ class RTC_EXPORT BridgeIceController
 
   void DoPerformPing(const cricket::IceControllerInterface::PingResult result);
   void DoPerformPing(const cricket::Connection* connection,
-                     absl::optional<int> recheck_delay_ms);
-  void DoSchedulePingRecheck(absl::optional<int> recheck_delay_ms);
+                     std::optional<int> recheck_delay_ms);
+  void DoSchedulePingRecheck(std::optional<int> recheck_delay_ms);
 
   void SortAndSwitchToBestConnection(cricket::IceSwitchReason reason);
 
@@ -95,11 +94,11 @@ class RTC_EXPORT BridgeIceController
       const cricket::IceControllerInterface::SwitchResult result);
   void DoPerformSwitch(cricket::IceSwitchReason reason_for_switch,
                        const cricket::Connection* connection,
-                       absl::optional<cricket::IceRecheckEvent> recheck_event,
+                       std::optional<cricket::IceRecheckEvent> recheck_event,
                        base::span<const cricket::Connection* const>
                            connections_to_forget_state_on);
   void DoScheduleSwitchRecheck(
-      absl::optional<cricket::IceRecheckEvent> recheck_event);
+      std::optional<cricket::IceRecheckEvent> recheck_event);
 
   void UpdateStateOnConnectionsResorted();
   void UpdateStateOnPrune();

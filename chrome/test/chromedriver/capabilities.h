@@ -6,7 +6,6 @@
 #define CHROME_TEST_CHROMEDRIVER_CAPABILITIES_H_
 
 #include <stddef.h>
-#include <third_party/abseil-cpp/absl/types/optional.h>
 
 #include <map>
 #include <memory>

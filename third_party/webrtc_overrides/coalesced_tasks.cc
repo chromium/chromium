@@ -61,7 +61,7 @@ void CoalescedTasks::RunScheduledTasks(
   }
   // Run ready tasks.
   for (auto& ready_task : ready_tasks) {
-    absl::optional<base::TimeTicks> task_start_timestamp;
+    std::optional<base::TimeTicks> task_start_timestamp;
     if (prepare_run_task_callback) {
       task_start_timestamp = prepare_run_task_callback.Run();
     }

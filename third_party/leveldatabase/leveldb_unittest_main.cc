@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -30,7 +31,7 @@ class LevelDbTestSuite : public base::TestSuite {
 
  private:
   // Chromium's leveldb::Env uses PostTask.
-  absl::optional<base::test::TaskEnvironment> task_environment_;
+  std::optional<base::test::TaskEnvironment> task_environment_;
 };
 
 }  // namespace

@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_PING_PROPOSAL_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_PING_PROPOSAL_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
@@ -29,10 +29,10 @@ class RTC_EXPORT IcePingProposal : public IceProposal {
   ~IcePingProposal() override = default;
 
   // The connection that will be pinged.
-  absl::optional<const IceConnection> connection() const { return connection_; }
+  std::optional<const IceConnection> connection() const { return connection_; }
   // An optional duration to wait until the next time that a connection is
   // selected and pinged. This could be a different connection.
-  absl::optional<int> recheck_delay_ms() const { return recheck_delay_ms_; }
+  std::optional<int> recheck_delay_ms() const { return recheck_delay_ms_; }
 
   std::string ToString() const;
   // Pretty printing for unit test matchers.
@@ -41,8 +41,8 @@ class RTC_EXPORT IcePingProposal : public IceProposal {
   }
 
  private:
-  absl::optional<IceConnection> connection_;
-  absl::optional<int> recheck_delay_ms_;
+  std::optional<IceConnection> connection_;
+  std::optional<int> recheck_delay_ms_;
 };
 
 }  // namespace blink

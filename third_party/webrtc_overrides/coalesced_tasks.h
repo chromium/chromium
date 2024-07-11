@@ -7,13 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/functional/any_invocable.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
 namespace blink {
@@ -23,9 +23,9 @@ namespace blink {
 // coalesced onto metronome ticks but the tasks still need to execute in order.
 class RTC_EXPORT CoalescedTasks {
  public:
-  typedef base::RepeatingCallback<absl::optional<base::TimeTicks>()>
+  typedef base::RepeatingCallback<std::optional<base::TimeTicks>()>
       PrepareRunTaskCallback;
-  typedef base::RepeatingCallback<void(absl::optional<base::TimeTicks>)>
+  typedef base::RepeatingCallback<void(std::optional<base::TimeTicks>)>
       FinalizeRunTaskCallback;
 
   ~CoalescedTasks();

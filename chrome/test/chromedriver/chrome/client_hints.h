@@ -5,7 +5,7 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_CHROME_CLIENT_HINTS_H_
 #define CHROME_TEST_CHROMEDRIVER_CHROME_CLIENT_HINTS_H_
 
-#include <third_party/abseil-cpp/absl/types/optional.h>
+#include <optional>
 #include <string>
 #include <vector>
 

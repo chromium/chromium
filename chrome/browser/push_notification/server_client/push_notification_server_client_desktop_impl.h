@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PUSH_NOTIFICATION_SERVER_CLIENT_PUSH_NOTIFICATION_SERVER_CLIENT_DESKTOP_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow.h"
 #include "chrome/browser/push_notification/server_client/push_notification_server_client.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace signin {
