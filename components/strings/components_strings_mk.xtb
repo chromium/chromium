@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">Бања</translation>
 <translation id="2657637947725373811">{0,plural, =1{Да се префрли доверлива датотека?}one{Да се префрлат доверливи датотеки?}other{Да се префрлат доверливи датотеки?}}</translation>
 <translation id="2658843814961855121">Закон за труд и вработување</translation>
-<translation id="2658944305627908367">Трансакциите што го надминуваат вашето салдо нема да се обработуваат</translation>
 <translation id="2660779039299703961">Настан</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ниедна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />)}=2{2 лозинки (за <ph name="DOMAIN_LIST" />)}one{# лозинка (за <ph name="DOMAIN_LIST" />)}other{# лозинки (за <ph name="DOMAIN_LIST" />-}}</translation>
 <translation id="2666092431469916601">Горе</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361">Погледнете ги условите за <ph name="CREDIT_CARD_NAME" /> тука</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Покажи ми како</translation>
+<translation id="3879748587602334249">Управник со преземања</translation>
 <translation id="3880456882942693779">Уметности и забава</translation>
 <translation id="3880589673277376494">Интернет и телекомуникации</translation>
 <translation id="3881478300875776315">Прикажи помалку редови</translation>
@@ -3691,7 +3691,6 @@
 <translation id="800218591365569300">Обидете се да ги затворите другите картички или програми за да ослободите меморија.</translation>
 <translation id="8002230960325005199">Прикажувај ги поврзаните сајтови во нова картичка</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
-<translation id="8003697335101170520">Платете со Pix без копирање и залепување</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
 <translation id="8009058079740742415">Безбедност и сигурност на домот</translation>
 <translation id="8009225694047762179">Управување со лозинки</translation>

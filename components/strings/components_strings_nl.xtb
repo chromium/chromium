@@ -890,7 +890,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2655752832536625875">Badkamer</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vertrouwelijk bestand overzetten?}other{Vertrouwelijke bestanden overzetten?}}</translation>
 <translation id="2658843814961855121">Arbeidsrecht</translation>
-<translation id="2658944305627908367">Transacties die je saldo overschrijden, worden niet verwerkt</translation>
 <translation id="2660779039299703961">Gebeurtenis</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Geen}=1{1 wachtwoord (voor <ph name="DOMAIN_LIST" />)}=2{2 wachtwoorden (voor <ph name="DOMAIN_LIST" />)}other{# wachtwoorden (voor <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Boven</translation>
@@ -1529,6 +1528,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3865339060090354361">Bekijk hier de voorwaarden voor <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Wetenschap</translation>
 <translation id="3875783148670536197">Laten zien</translation>
+<translation id="3879748587602334249">Downloadbeheer</translation>
 <translation id="3880456882942693779">Kunst en entertainment</translation>
 <translation id="3880589673277376494">Internet en telecom</translation>
 <translation id="3881478300875776315">Minder regels bekijken</translation>
@@ -3685,7 +3685,6 @@ Aanvullende informatie:
 <translation id="800218591365569300">Probeer andere tabbladen en programma's te sluiten om geheugen vrij te maken.</translation>
 <translation id="8002230960325005199">Bekijk gerelateerde sites op een nieuw tabblad</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
-<translation id="8003697335101170520">Betalen met Pix zonder kopiëren en plakken</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009058079740742415">Veiligheid in huis en huisbeveiliging</translation>
 <translation id="8009225694047762179">Wachtwoorden beheren</translation>

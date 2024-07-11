@@ -3098,7 +3098,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="322708765617468434">Du kan når som helst legge til flere personer på enheten etter konfigureringen. Hver person kan få en personlig opplevelse og holde dataene sine private.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Fjern eller erstatt den med lignende utvidelser fra <ph name="BEGIN_LINK" />Chrome Nettmarked<ph name="END_LINK" />.}other{Fjern eller erstatt dem med lignende utvidelser fra <ph name="BEGIN_LINK" />Chrome Nettmarked<ph name="END_LINK" />}}</translation>
-<translation id="3229412050601871341">Enhetspassord</translation>
 <translation id="3230539834943294477">Se hjelpeartikler, eller finn brukerstøtte for enheten</translation>
 <translation id="3232168089952388105">Vil du dele informasjon om enheten din?</translation>
 <translation id="3232368113895801406">Sikkerhetsinnstillingene dine tillater ikke installasjon av isolerte apper. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4894,6 +4893,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4554591392113183336">Den eksterne utvidelsen har samme eller lavere versjonsnummer som den eksisterende utvidelsen.</translation>
 <translation id="4555769855065597957">Skygge</translation>
 <translation id="4555863373929230635">For å lagre passord i Google-kontoen, logg på og slå på synkronisering.</translation>
+<translation id="4556069465387849460">Du bruker skjermlåsen til å fylle ut passord</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> har delt et passord med deg for <ph name="WEBSITE_NAME" />. Du kan bruke det i påloggingsskjemaet.</translation>
 <translation id="4558426062282641716">Tillatelse om autostart er forespurt</translation>
 <translation id="4558542033859106586">Åpner i <ph name="TARGET_APP" /></translation>
@@ -10271,7 +10271,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8557100046150195444">Touch ID for å fortsette</translation>
 <translation id="8557180006508471423">Slå på «Google Chrome» i Stedstjenester på Macen</translation>
 <translation id="8557856025359704738">Neste nedlasting utføres <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Google-kontopassord</translation>
 <translation id="8559858985063901027">Passnøkler</translation>
 <translation id="8559961053328923750">Chrome begrenser den totale mengden data nettsteder kan dele via nettleseren for å måle annonseresultater</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Åpne alle i &amp;nytt vindu}=1{Åpne i &amp;nytt vindu}other{Åpne alle ({COUNT}) i &amp;nytt vindu}}</translation>

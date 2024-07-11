@@ -3089,7 +3089,6 @@
 <translation id="322708765617468434">Увек можете да додате другу особу на уређај после подешавања. Свака особа може да персонализује доживљај и чува приватност података.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Уклоните га или замените сличним додацима из <ph name="BEGIN_LINK" />Chrome веб-продавнице<ph name="END_LINK" />.}one{Уклоните их или замените сличним додацима из <ph name="BEGIN_LINK" />Chrome веб-продавнице<ph name="END_LINK" />}few{Уклоните их или замените сличним додацима из <ph name="BEGIN_LINK" />Chrome веб-продавнице<ph name="END_LINK" />}other{Уклоните их или замените сличним додацима из <ph name="BEGIN_LINK" />Chrome веб-продавнице<ph name="END_LINK" />}}</translation>
-<translation id="3229412050601871341">Лозинка за уређај</translation>
 <translation id="3230539834943294477">Погледајте чланке помоћи или пронађите подршку за уређаје</translation>
 <translation id="3232168089952388105">Желите да делите информације о уређају?</translation>
 <translation id="3232368113895801406">Безбедносна подешавања не дозвољавају инсталације изолованих апликација. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4887,6 +4886,7 @@
 <translation id="4554591392113183336">Верзија спољног додатка је иста или старија од постојећег.</translation>
 <translation id="4555769855065597957">Нови профил</translation>
 <translation id="4555863373929230635">Да бисте сачували лозинке на Google налогу, пријавите се и укључите синхронизацију.</translation>
+<translation id="4556069465387849460">Користите откључавање екрана за попуњавање лозинки</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> дели са вама лозинку за: <ph name="WEBSITE_NAME" />. Можете да је користите у обрасцу за пријављивање.</translation>
 <translation id="4558426062282641716">Тражи се дозвола за аутоматско покретање</translation>
 <translation id="4558542033859106586">Отвара се у <ph name="TARGET_APP" /></translation>
@@ -9813,6 +9813,7 @@
 <translation id="8230134520748321204">Желите ли да сачувате лозинку за <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Избришите акредитив <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Не дозволите сајтовима приказивање слика</translation>
+<translation id="823226567613548870">избришите <ph name="BRAND" /> податке</translation>
 <translation id="8233028084277069927">Отворено сада</translation>
 <translation id="8234795456569844941">Помозите нашим инжењерима да реше проблем. Реците нам шта се догодило непосредно пре него што сте добили поруку о грешци на профилу:</translation>
 <translation id="8235418492073272647">Страница се дели са уређаја <ph name="DEVICE_NAME" /></translation>
@@ -10269,7 +10270,6 @@
 <translation id="8557100046150195444">Употребите Touch ID да бисте наставили</translation>
 <translation id="8557180006508471423">Укључите Google Chrome у услугама локације на Mac-у</translation>
 <translation id="8557856025359704738">Следеће преузимање је: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Лозинка за Google налог</translation>
 <translation id="8559858985063901027">Приступни кодови</translation>
 <translation id="8559961053328923750">Chrome ограничава укупну количину података коју сајтови могу да деле преко прегледача да би мерили учинак огласа</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Отвори све у &amp;новом прозору}=1{Отвори у &amp;новом прозору}one{Отвори све ({COUNT}) у &amp;новом прозору}few{Отвори све ({COUNT}) у &amp;новом прозору}other{Отвори све ({COUNT}) у &amp;новом прозору}}</translation>

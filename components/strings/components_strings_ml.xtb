@@ -368,6 +368,7 @@
 <translation id="1650602712345345441">നിങ്ങളുടെ Chrome ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS Keychain-ന് ഒപ്പം Password Manager ഉപയോഗിക്കുന്നതിന്, Chromium വീണ്ടും ആരംഭിച്ച് Keychain ആക്‌സസ് അനുവദിക്കുക. വീണ്ടും ആരംഭിച്ചുകഴിഞ്ഞാൽ നിങ്ങളുടെ ടാബുകൾ വീണ്ടും തുറക്കും.</translation>
+<translation id="1652887625750064647">AI നിർദ്ദേശിക്കുന്ന മികച്ച പൊരുത്തം</translation>
 <translation id="1656024727720460136">വായന എളുപ്പമാക്കുന്നതിന് Chrome ഈ പേജ് ലളിതമാക്കി. സുരക്ഷിത കണക്ഷനിലൂടെ Chrome ഒറിജിനൽ പേജ് വീണ്ടെടുത്തു.</translation>
 <translation id="1656489000284462475">പിക്കപ്പ്</translation>
 <translation id="1658111267661135323">ടിവിയും വീഡിയോയും</translation>
@@ -651,6 +652,7 @@
 <translation id="2168151236314517198">ഈ ഉള്ളടക്കം പ്രിന്റ് ചെയ്യുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="2170417331417184438">കാർഡ് ഉപകരണത്തിൽ മാത്രം സംരക്ഷിച്ചു</translation>
 <translation id="2172089022819052306">വാഹന റിപ്പയറും അറ്റകുറ്റപ്പണിയും</translation>
+<translation id="2174875517416416684">നിങ്ങളുടെ ഇടപാട് പൂർത്തിയാക്കാനായില്ല. നിങ്ങളുടെ അക്കൗണ്ടിൽ നിന്ന് ഫണ്ടുകളൊന്നും പിൻവലിച്ചില്ല.</translation>
 <translation id="2175630235841878061">100MB-യിൽ കൂടുതൽ വലുപ്പമുള്ള ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ ലഭ്യമല്ല</translation>
 <translation id="2176974405772725904">വിലാസം അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="2178665390943006934">'Chrome അപ്ഡേറ്റ് ചെയ്യുക' ബട്ടൺ, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ സജീവമാക്കുക</translation>
@@ -890,7 +892,6 @@
 <translation id="2655752832536625875">ബാത്ത്റൂം</translation>
 <translation id="2657637947725373811">{0,plural, =1{രഹസ്യാത്മക ഫയൽ കൈമാറണോ?}other{രഹസ്യാത്മക ഫയലുകൾ കൈമാറണോ?}}</translation>
 <translation id="2658843814961855121">തൊഴിൽ, തൊഴിൽ നിയമം</translation>
-<translation id="2658944305627908367">നിങ്ങളുടെ ബാലൻസിനേക്കാൾ കൂടിയ തുകയ്ക്കുള്ള ഇടപാടുകൾ പ്രോസസ് ചെയ്യില്ല</translation>
 <translation id="2660779039299703961">ഇവന്റ്</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള ഒരു പാസ്‌വേഡ്}=2{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള 2 പാസ്‌വേഡുകൾ}other{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള # പാസ്‌വേഡുകൾ}}</translation>
 <translation id="2666092431469916601">മുകളിലേക്ക്</translation>
@@ -1533,6 +1534,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> എന്നതിനുള്ള നിബന്ധനകൾ ഇവിടെ കാണുക</translation>
 <translation id="3872834068356954457">ശാസ്ത്രം</translation>
 <translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
+<translation id="3879748587602334249">ഡൗൺലോഡ് മാനേജർ</translation>
 <translation id="3880456882942693779">കലയും വിനോദവും</translation>
 <translation id="3880589673277376494">ഇന്റർനെറ്റും ടെലികോമും</translation>
 <translation id="3881478300875776315">കുറച്ച് വരികൾ മാത്രം കാണിക്കുക</translation>
@@ -3388,6 +3390,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> മി.മീ)</translation>
 <translation id="7450577240311017924">'സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങൾ സമന്വയിപ്പിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="7451311239929941790">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുന്നു<ph name="END_LINK" />.</translation>
+<translation id="745208957946308667">ദിനോസർ ഗെയിം, കളിക്കാൻ space അമർത്തുക</translation>
 <translation id="7454377933424667109">Cloud അക്കൗണ്ട്</translation>
 <translation id="7455133967321480974">ആഗോള ഡിഫോൾട്ട് ഉപയോഗിക്കുക (ബ്ലോക്ക് ചെയ്യുക)</translation>
 <translation id="7455452752247248289">എന്റർപ്രൈസ് സാങ്കേതികവിദ്യ</translation>
@@ -3688,7 +3691,6 @@
 <translation id="800218591365569300">ഇടം സൃഷ്‌ടിക്കാൻ മറ്റ് ടാബുകളോ പ്രോഗ്രാമുകളോ അടയ്‌ക്കുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="8002230960325005199">അനുബന്ധ സൈറ്റുകൾ പുതിയൊരു ടാബിൽ കാണുക</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">പകർത്തി ഒട്ടിക്കാതെ Pix ഉപയോഗിച്ച് പണമടയ്ക്കൂ</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>
 <translation id="8009058079740742415">വീടിന്റെ സുരക്ഷയും ഭദ്രതയും</translation>
 <translation id="8009225694047762179">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക</translation>
@@ -4041,6 +4043,7 @@
 <translation id="8676424191133491403">കാലതാമസമില്ല</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ഉത്തരം, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">ഇനിപ്പറയുന്ന കാരണങ്ങളാൽ <ph name="PAGE" /> എന്നതിലെ വെബ്‌പേജ് ലോഡ് ചെയ്യാനായില്ല:</translation>
+<translation id="8682297334444610648">ദിനോസർ ഗെയിം, കളിക്കാൻ ടാപ്പ് ചെയ്യൂ</translation>
 <translation id="8686424632716064939">കമ്പ്യൂട്ടർ സുരക്ഷ</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> എന്ന എൻട്രി ഇല്ലാതാക്കി</translation>
 <translation id="8687429322371626002">നിങ്ങളുടെ ഉപകരണവും അക്കൗണ്ടും മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്.</translation>

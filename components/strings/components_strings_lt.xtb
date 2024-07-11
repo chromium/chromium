@@ -651,6 +651,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2168151236314517198">Šio turinio spausdinimas yra blokuojamas remiantis administratoriaus politika</translation>
 <translation id="2170417331417184438">Kortelė išsaugota tik įrenginyje</translation>
 <translation id="2172089022819052306">Transporto priemonių taisymas ir techninė priežiūra</translation>
+<translation id="2174875517416416684">Operacija neatlikta. Iš jūsų sąskaitos lėšos neišskaitytos.</translation>
 <translation id="2175630235841878061">Negalima atsisiųsti didesnių nei 100 MB failų</translation>
 <translation id="2176974405772725904">Adreso išsaugojimas paskyroje</translation>
 <translation id="2178665390943006934">Mygtukas „Atnaujinti „Chrome“; suaktyvinkite, kad atnaujintumėte „Chrome“ skiltyje „Chrome“ nustatymai“</translation>
@@ -890,7 +891,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2655752832536625875">Vonios kambarys</translation>
 <translation id="2657637947725373811">{0,plural, =1{Perkelti konfidencialų failą?}one{Perkelti konfidencialius failus?}few{Perkelti konfidencialius failus?}many{Perkelti konfidencialius failus?}other{Perkelti konfidencialius failus?}}</translation>
 <translation id="2658843814961855121">Darbo ir įdarbinimo įstatymas</translation>
-<translation id="2658944305627908367">Likutį viršijančios operacijos nebus apdorojamos</translation>
 <translation id="2660779039299703961">Įvykis</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nėra}=1{1 slaptažodis (skirta <ph name="DOMAIN_LIST" />)}=2{2 slaptažodžiai (skirta <ph name="DOMAIN_LIST" />)}one{# slaptažodis (skirta <ph name="DOMAIN_LIST" />)}few{# slaptažodžiai (skirta <ph name="DOMAIN_LIST" />)}many{# slaptažodžio (skirta <ph name="DOMAIN_LIST" />)}other{# slaptažodžių (skirta <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Į viršų</translation>
@@ -1535,6 +1535,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3865339060090354361">Žr. čia pateiktas „<ph name="CREDIT_CARD_NAME" />“ sąlygas</translation>
 <translation id="3872834068356954457">Mokslas</translation>
 <translation id="3875783148670536197">Peržiūrėti, kaip tai padaryti</translation>
+<translation id="3879748587602334249">Atsisiuntimų tvarkytuvė</translation>
 <translation id="3880456882942693779">Menas ir pramogos</translation>
 <translation id="3880589673277376494">Internetas ir telekomunikacijos</translation>
 <translation id="3881478300875776315">Rodyti mažiau eilučių</translation>
@@ -3392,6 +3393,7 @@ Papildoma išsami informacija:
 <translation id="7447625772313191651">„<ph name="NAME" />“ (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Mygtukas „Tvarkyti sinchronizavimą“; suaktyvinkite, kad galėtumėte tvarkyti, kokią informaciją sinchronizuojate, „Chrome“ nustatymuose</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie šią problemą.</translation>
+<translation id="745208957946308667">Dinozauro žaidimas, paspauskite tarpo klavišą, jei norite žaisti</translation>
 <translation id="7454377933424667109">„Cloud“ paskyra</translation>
 <translation id="7455133967321480974">Naudoti visuotinį numatytąjį nustatymą (blokuoti)</translation>
 <translation id="7455452752247248289">Verslo technologija</translation>
@@ -3692,7 +3694,6 @@ Papildoma išsami informacija:
 <translation id="800218591365569300">Pabandykite uždaryti skirtukus arba kitas programas, kad atlaisvintumėte atminties.</translation>
 <translation id="8002230960325005199">Žr. susijusias svetaines naujame skirtuke</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
-<translation id="8003697335101170520">Mokėkite naudodami „Pix“ be kopijavimo ir įklijavimo</translation>
 <translation id="8004582292198964060">Naršyklė</translation>
 <translation id="8009058079740742415">Namų apsauga ir saugos sistemos</translation>
 <translation id="8009225694047762179">Tvarkyti slaptažodžius</translation>
@@ -4046,6 +4047,7 @@ Papildoma išsami informacija:
 <translation id="8676424191133491403">Be delsos</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, atsakymas, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Tinklalapio adresu <ph name="PAGE" /> nepavyko įkelti, nes:</translation>
+<translation id="8682297334444610648">Dinozauro žaidimas, palieskite, jei norite žaisti</translation>
 <translation id="8686424632716064939">Kompiuterio sauga</translation>
 <translation id="8687278439622293018">Įrašas <ph name="ENTRY_VOICEOVER" /> ištrintas</translation>
 <translation id="8687429322371626002">Jūsų įrenginį ir paskyrą valdo <ph name="MANAGER" />.</translation>

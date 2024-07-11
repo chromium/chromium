@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">Μπάνιο</translation>
 <translation id="2657637947725373811">{0,plural, =1{Μεταφορά εμπιστευτικού αρχείου;}other{Μεταφορά εμπιστευτικών αρχείων;}}</translation>
 <translation id="2658843814961855121">Νομοθεσία εργασίας και απασχόλησης</translation>
-<translation id="2658944305627908367">Οι συναλλαγές που υπερβαίνουν το υπόλοιπό σας δεν θα διεκπεραιωθούν</translation>
 <translation id="2660779039299703961">Συμβάν</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Κανένας}=1{1 κωδικός πρόσβασης (για <ph name="DOMAIN_LIST" />)}=2{2 κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />)}other{# κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Κορυφή</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361">Δείτε τους όρους για την πιστωτική κάρτα <ph name="CREDIT_CARD_NAME" /> εδώ</translation>
 <translation id="3872834068356954457">Επιστήμες</translation>
 <translation id="3875783148670536197">Οδηγίες</translation>
+<translation id="3879748587602334249">Διαχείριση λήψεων</translation>
 <translation id="3880456882942693779">Τέχνες και ψυχαγωγία</translation>
 <translation id="3880589673277376494">Διαδίκτυο και τηλεπικοινωνίες</translation>
 <translation id="3881478300875776315">Εμφάνιση λιγότερων γραμμών</translation>
@@ -3692,7 +3692,6 @@
 <translation id="800218591365569300">Δοκιμάστε να κλείσετε τις άλλες καρτέλες ή τα άλλα προγράμματα για να απελευθερώσετε μνήμη.</translation>
 <translation id="8002230960325005199">Δείτε σχετικούς ιστοτόπους σε νέα καρτέλα</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">Πληρωμή με Pix χωρίς αντιγραφή και επικόλληση</translation>
 <translation id="8004582292198964060">Πρόγραμμα περιήγησης</translation>
 <translation id="8009058079740742415">Ασφάλεια και προστασία σπιτιού</translation>
 <translation id="8009225694047762179">Διαχείριση Κωδικός πρόσβασης</translation>

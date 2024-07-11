@@ -368,6 +368,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1650602712345345441">Gerencie as configurações do Chrome</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chromium e permita o acesso. Suas guias serão reabertas após a reinicialização.</translation>
+<translation id="1652887625750064647">Melhor correspondência de IA</translation>
 <translation id="1656024727720460136">O Chrome simplificou esta página para facilitar a leitura. A página original foi recuperada por uma conexão segura.</translation>
 <translation id="1656489000284462475">Retirada</translation>
 <translation id="1658111267661135323">TV e vídeo</translation>
@@ -890,7 +891,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2655752832536625875">Banheiro</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transferir arquivo confidencial?}one{Transferir arquivo confidencial?}other{Transferir arquivos confidenciais?}}</translation>
 <translation id="2658843814961855121">Leis trabalhistas</translation>
-<translation id="2658944305627908367">As transações que ultrapassarem seu saldo não serão processadas</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nenhuma}=1{1 senha (para <ph name="DOMAIN_LIST" />)}=2{2 senhas (para <ph name="DOMAIN_LIST" />)}one{# senha (para <ph name="DOMAIN_LIST" />)}other{# senhas (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Parte superior</translation>
@@ -1534,6 +1534,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3865339060090354361">Confira aqui os termos do cartão <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Ciência</translation>
 <translation id="3875783148670536197">Me ajude a fazer isso</translation>
+<translation id="3879748587602334249">Gerenciador de downloads</translation>
 <translation id="3880456882942693779">Artes e entretenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicações</translation>
 <translation id="3881478300875776315">Mostrar menos linhas</translation>
@@ -3691,7 +3692,6 @@ Mais detalhes:
 <translation id="800218591365569300">Tente fechar outras guias ou programas para liberar memória.</translation>
 <translation id="8002230960325005199">Ver sites relacionados em uma nova guia</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">Pagar com o Pix sem copiar e colar</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009058079740742415">Segurança doméstica</translation>
 <translation id="8009225694047762179">Gerenciar senhas</translation>

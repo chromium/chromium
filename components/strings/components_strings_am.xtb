@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">ባኞ ቤት</translation>
 <translation id="2657637947725373811">{0,plural, =1{ምስጢራዊ ፋይል ይተላለፍ?}one{ምስጢራዊ ፋይል ይተላለፍ?}other{ምስጢራዊ ፋይሎች ይተላለፉ?}}</translation>
 <translation id="2658843814961855121">የአሰሪ እና ሰራተኛ ህግ</translation>
-<translation id="2658944305627908367">ከቀሪ ሒሳብዎ በላይ ያለፉ ግብይቶች አይሰናዱም</translation>
 <translation id="2660779039299703961">ክስተት</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ምንም}=1{1 የይለፍ ቃል (ለ<ph name="DOMAIN_LIST" />)}=2{2 የይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />)}one{# የይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />)}other{# የይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">ላይ</translation>
@@ -1533,6 +1532,7 @@
 <translation id="3865339060090354361">ለ<ph name="CREDIT_CARD_NAME" /> ደንቦች እዚህ ይመልከቱ</translation>
 <translation id="3872834068356954457">ሳይንስ</translation>
 <translation id="3875783148670536197">እንዴት እንደሆነ አሳየኝ</translation>
+<translation id="3879748587602334249">የማውረድ አቀናባሪ</translation>
 <translation id="3880456882942693779">ሥነ ጥበባት እና መዝናኛ</translation>
 <translation id="3880589673277376494">በይነመረብ እና ቴሌኮም</translation>
 <translation id="3881478300875776315">ያነሱ መስመሮችን አሳይ</translation>
@@ -3690,7 +3690,6 @@
 <translation id="800218591365569300">የማህደረ ትውስታ ቦታን ለማስለቀቅ ሌሎች ትሮችን ወይም ፕሮግራሞችን ዘግተው ይሞክሩ።</translation>
 <translation id="8002230960325005199">ተዛማጅ ጣቢያዎችን በአዲስ ትር ውስጥ ይመልከቱ</translation>
 <translation id="8003046808285812021">«<ph name="SEARCH_TERMS" />»</translation>
-<translation id="8003697335101170520">ያለ ቅዳ እና ለጥፍ በPix ይክፈሉ</translation>
 <translation id="8004582292198964060">አሳሽ</translation>
 <translation id="8009058079740742415">የቤት ደህንነት እና ጥበቃ</translation>
 <translation id="8009225694047762179">የይለፍ ቃላትን ያቀናብሩ</translation>

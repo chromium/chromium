@@ -507,7 +507,6 @@
 <translation id="3780740315729837296">Նշանակեք ստեղն</translation>
 <translation id="3784455785234192852">Կողպել</translation>
 <translation id="3785643128701396311">պիքսելային գրաֆիկա</translation>
-<translation id="3790109258688020991">պուանտիլիստական</translation>
 <translation id="380097101658023925">RGB-ի կարգավորումներ</translation>
 <translation id="38114475217616659">Մաքրել ամբողջ պատմությունը</translation>
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
@@ -769,6 +768,7 @@
 <translation id="5180712487038406644">Արտահայտիչ</translation>
 <translation id="5190187232518914472">Վերապրեք լավագույն պահերը։ Ալբոմ ավելացնելու կամ առկա ալբոմներում փոփոխություններ անելու համար անցեք <ph name="LINK_BEGIN" />Google Լուսանկարներ<ph name="LINK_END" />։</translation>
 <translation id="5212593641110061691">Tabloid</translation>
+<translation id="5220549459260334974">Ներբեռնվել է <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="522307662484862935">Չներառել էլ․ հասցե</translation>
 <translation id="5227902338748591677">Մուգ թեմայի ժամանակացույց</translation>
@@ -866,7 +866,6 @@
 <translation id="57838592816432529">Անջատել ձայնը</translation>
 <translation id="5784136236926853061">HTTP-ի բարձր հապաղում</translation>
 <translation id="5790391387506209808">կապույտ լաջվարդ</translation>
-<translation id="5810296156135698005">բարոկկո</translation>
 <translation id="5816802250591013230">Նշանակված դյուրանցում չկա</translation>
 <translation id="5826644637650799838">Պաստառի մասին</translation>
 <translation id="5832805196449965646">Ավելացնել անձ</translation>

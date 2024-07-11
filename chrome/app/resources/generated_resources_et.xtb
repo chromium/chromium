@@ -3095,7 +3095,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="322708765617468434">Teil on võimalik pärast seadistamist alati inimesi seadmesse juurde lisada. Iga inimene saab oma kasutuskogemuse isikupärastada ja andmed privaatsena hoida.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Eemaldage see või asendage sarnase laiendusega <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" />}other{Eemaldage need või asendage sarnaste laiendustega <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" />}}</translation>
-<translation id="3229412050601871341">Seadme parool</translation>
 <translation id="3230539834943294477">Abikeskuse artiklite kuvamine või seadmetoe otsimine</translation>
 <translation id="3232168089952388105">Kas jagada teavet oma seadme kohta?</translation>
 <translation id="3232368113895801406">Teie turvaeelistused ei luba isoleeritud rakenduste installimisi. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4893,6 +4892,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4554591392113183336">Välise laienduse versioon on sama või vanem mis olemasoleval.</translation>
 <translation id="4555769855065597957">Vari</translation>
 <translation id="4555863373929230635">Paroolide salvestamiseks oma Google'i kontole logige sisse ja lülitage sünkroonimine sisse.</translation>
+<translation id="4556069465387849460">Kasutate oma ekraanilukku paroolide sisestamiseks</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> jagas teiega veebisaidi <ph name="WEBSITE_NAME" /> parooli. Võite seda sisselogimisvormil kasutada.</translation>
 <translation id="4558426062282641716">Automaatse käivitamise loa taotlus</translation>
 <translation id="4558542033859106586">Avamine rakenduses <ph name="TARGET_APP" /></translation>
@@ -10272,7 +10272,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8557100046150195444">Touch ID, et jätkata</translation>
 <translation id="8557180006508471423">Lülitage oma Maci jaotises Location Services sisse valik „Google Chrome”</translation>
 <translation id="8557856025359704738">Järgmine allalaadimine: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Google'i konto parool</translation>
 <translation id="8559858985063901027">Pääsukoodid</translation>
 <translation id="8559961053328923750">Chrome piirab nende andmete hulka, mida saidid saavad reklaamide toimivuse mõõtmiseks brauseri kaudu jagada</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Ava kõik &amp;uues aknas}=1{Ava &amp;uues aknas}other{Ava kõik ({COUNT}) &amp;uues aknas}}</translation>

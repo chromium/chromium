@@ -363,6 +363,7 @@
 <translation id="1650602712345345441">మీ Chrome సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">MacOS కీచెయిన్‌తో Password Managerను ఉపయోగించడానికి, Chromiumని రీ-లాంచ్ చేసి, కీచెయిన్ యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
+<translation id="1652887625750064647">AI అత్యుత్తమ మ్యాచ్</translation>
 <translation id="1656024727720460136">మరింత తేలికగా చదవడానికి వీలుగా Chrome ఈ పేజీని సులభతరం చేసింది. సురక్షిత కనెక్షన్ ద్వారా Chrome అసలు పేజీని తిరిగి పొందింది.</translation>
 <translation id="1656489000284462475">పికప్</translation>
 <translation id="1658111267661135323">టీవీ &amp; వీడియో</translation>
@@ -885,7 +886,6 @@
 <translation id="2655752832536625875">బాత్రూమ్</translation>
 <translation id="2657637947725373811">{0,plural, =1{గోప్యమైన ఫైల్‌ను బదిలీ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను బదిలీ చేయాలా?}}</translation>
 <translation id="2658843814961855121">కార్మిక &amp; ఉద్యోగ చట్టం</translation>
-<translation id="2658944305627908367">మీ బ్యాలెన్స్‌ను మించిన లావాదేవీలు ప్రాసెస్ చేయబడవు</translation>
 <translation id="2660779039299703961">ఈవెంట్</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ఏవీ లేవు}=1{1 పాస్‌వర్డ్ (<ph name="DOMAIN_LIST" /> కోసం)}=2{2 పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" /> కోసం)}other{# పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" /> కోసం)}}</translation>
 <translation id="2666092431469916601">పైన</translation>
@@ -1529,6 +1529,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> కోసం ఇక్కడ నియమాలను చూడండి</translation>
 <translation id="3872834068356954457">సైన్స్</translation>
 <translation id="3875783148670536197">ఎలా చేయాలో నాకు చూపించు</translation>
+<translation id="3879748587602334249">డౌన్‌లోడ్ మేనేజ‌ర్‌</translation>
 <translation id="3880456882942693779">కళలు &amp; వినోదం</translation>
 <translation id="3880589673277376494">ఇంటర్నెట్ &amp; టెలికామ్</translation>
 <translation id="3881478300875776315">కొన్ని వరుసలను మాత్రమే చూపించు</translation>
@@ -3686,7 +3687,6 @@
 <translation id="800218591365569300">మెమరీని ఖాళీ చేయడానికి ఇతర ట్యాబ్‌లు లేదా ప్రోగ్రామ్‌లను మూసివేయడాన్ని ప్రయత్నించండి.</translation>
 <translation id="8002230960325005199">కొత్త ట్యాబ్‌లో సంబంధిత సైట్‌లను చూడండి</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">కాపీ చేసి, పేస్ట్ చేయకుండా Pixతో పేమెంట్ చేయండి</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>
 <translation id="8009058079740742415">ఇంటి భద్రత &amp; సెక్యూరిటీ</translation>
 <translation id="8009225694047762179">పాస్‌వర్డ్‌లను నిర్వహించండి</translation>

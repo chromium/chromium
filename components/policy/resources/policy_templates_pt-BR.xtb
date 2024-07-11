@@ -471,6 +471,31 @@ Se a política for definida como "Desativada" ou não for definida, as configura
 <translation id="1372511977715560169">Controlar a ativação do recurso <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1372618949173323717">Desativar JavaScript</translation>
 <translation id="1376119291123231789">Ativar o modo avançado de carregamento da bateria</translation>
+<translation id="1376299650477150211">Permite definir uma lista de padrões de URL que especifica os sites em que as otimizações avançadas
+do JavaScript são desativadas.
+
+Se você desativar as otimizações do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web mais lentamente.
+
+Para saber mais sobre padrões de URL válidos, consulte
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+As exceções da política de otimização do JavaScript serão aplicadas apenas na granularidade de um
+site (eTLD+1). Uma política definida apenas para subdomain.site.com não será
+corretamente aplicada a site.com ou subdomain.site.com, já que ambos são direcionados para
+o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política
+precisa ser definida em site.com para que seja corretamente aplicada a site.com e
+subdomain.site.com.
+
+Esta política é aplicada frame a frame e não tem base exclusiva no URL de
+origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, mas carregar um frame
+com site-two.com, site-one.com terá as otimizações do JavaScript
+desativadas, mas site-two.com vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se definida, ou terá como padrão as otimizações do
+JavaScript ativadas. As entradas da lista de bloqueio têm prioridade maior do que as entradas da
+lista de permissões, que têm prioridade maior do que o valor padrão configurado.
+
+Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário,
+a otimização do JavaScript será ativada.</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
 <translation id="1379689277107868399">Quando a política for definida como DoNotPrompt ou deixada sem definição, o <ph name="PRODUCT_NAME" /> não vai pedir automaticamente que o usuário faça a autenticação de novo no navegador.
 
@@ -1093,6 +1118,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
       Se <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> estiver ativada, contas de usuários do Family Link também poderão ser adicionadas ao dispositivo, além das contas já definidas nesta política.</translation>
 <translation id="18186215616223740">Ao navegar para documentos do Office gerenciados pelo <ph name="BASIC_EDITOR_NAME" />, o download deles é forçado</translation>
 <translation id="1819272352048746487">Ativar ou desativar vários recursos do teclado na tela</translation>
+<translation id="1820974289087266512">O recurso do gerador de QR code está desativado.</translation>
 <translation id="1822163547472114648">Configurações para criar temas com IA</translation>
 <translation id="1823974945066396306">Define a lista de usuários que têm permissão para fazer login no dispositivo. As entradas são feitas no formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, como <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Para permitir usuários arbitrários em um domínio, use entradas no formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -2907,6 +2933,13 @@ Se a política for desativada, a promoção de avaliação na App Store não vai
 <translation id="3177537290334203187">Usar o comportamento padrão ao determinar se os sites podem fazer solicitações para endpoints de rede.</translation>
 <translation id="3177802893484440532">Exigir verificações on-line de OCSP/CRL para âncoras de confiança locais</translation>
 <translation id="3179533009079100620">Mostrar seletor de perfil</translation>
+<translation id="3180633260411794645">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica sites que não podem executar JavaScript.
+
+      Se a política não tiver definição, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
+
+      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+      Esta política bloqueia o JavaScript com base na correspondência entre a origem do documento de nível superior (geralmente o URL da página que também é mostrado na barra de endereços) e um dos padrões. Ela não é adequada para mitigar ataques de cadeia de suprimentos da Web. Por exemplo, fornecer o padrão "https://[*.]foo.com/" não vai impedir que uma página hospedada em https://example.com execute um script carregado de https://www.foo.com/example.js. Além disso, fornecer o padrão "https://example.com/" não vai impedir que um documento de https://example.com execute scripts se ele não for o documento de nível superior, mas incorporado como um subframe em uma página hospedada em outra origem, como https://www.bar.com.</translation>
 <translation id="3180671894201217988">Se a política for ativada ou deixada sem definição, softwares de terceiros não poderão injetar código executável em processos do <ph name="PRODUCT_NAME" />.
 
       Se a política for desativada, esses softwares poderão injetar os códigos executáveis nos processos do <ph name="PRODUCT_NAME" />.</translation>
@@ -4808,19 +4841,6 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá efeito se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> for definida como falsa.</translation>
 <translation id="4638906910792947645">Ativar pesquisas no produto</translation>
 <translation id="4641557638919545432">A sintaxe antiga descontinuada será ativada.</translation>
-<translation id="464549601667073177">URL de uma imagem que será usada como selo corporativo do perfil. O URL precisa levar a uma imagem.
-
-O selo vai aparecer na barra de ferramentas.
-
-Se a política for definida no navegador, todos os perfis terão esse logotipo na barra de ferramentas.
-
-Se a política for definida no perfil, somente ele terá o logotipo.
-
-Se a política for deixada sem definição, um ícone padrão de edifício vai aparecer.
-
-Se ocorrer um erro ao tentar mostrar a imagem, esse ícone não vai aparecer.
-
-Ao contrário de outras políticas, a definida no nível do perfil tem precedência em relação a uma definida no nível do navegador.</translation>
 <translation id="4646626362889216307">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada origem. A chave da origem de maior prioridade tem precedência.
 
       Use o caractere curinga "*" para permitir a mescla de todas as políticas de dicionário com suporte.
@@ -5221,6 +5241,28 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
       Se a política for definida como verdadeira, o usuário poderá criar e usar perfis secundários e usar o modo visitante.
 
       Observação: se ela for definida como verdadeira, mas a <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> for definida como falsa, a criação de perfis secundários não será permitida. Isso também vale para o modo visitante com a política <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />.</translation>
+<translation id="4958911425563967203">Permite definir uma lista de padrões de URL que especifica os sites em que
+as otimizações avançadas do JavaScript são ativadas.
+
+Para conferir informações detalhadas sobre padrões de URL válidos, consulte
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+As exceções da política de otimização do JavaScript serão aplicadas apenas na granularidade de um
+site (eTLD+1). Uma política definida apenas para subdomain.site.com não será
+corretamente aplicada a site.com ou subdomain.site.com, já que ambos são direcionados para
+o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política
+precisa ser definida em site.com para que seja corretamente aplicada a site.com e
+subdomain.site.com.
+
+Esta política é aplicada frame a frame e não tem base exclusiva no
+URL de origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, mas carregar um frame com site-two.com, site-one.com terá otimizações do JavaScript
+ativadas, mas site-two.com vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se definida, ou terá como padrão as otimizações do
+JavaScript ativadas. As entradas da lista de bloqueio têm prioridade maior do que as entradas da
+lista de permissões, que têm prioridade maior do que o valor padrão configurado.
+
+Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário,
+a otimização do JavaScript será ativada.</translation>
 <translation id="4960597185231686653">Uma sinalização booleana indicando se o teclado na tela pode oferecer entrada de texto por voz.</translation>
 <translation id="4970046075219007744">Permitir que apps da Web solicitem acesso a tipos de arquivos usando a API File Handling</translation>
 <translation id="4970855112942626932">Desativar login no navegador</translation>
@@ -5417,6 +5459,11 @@ Quando a política não está definida ou é desativada, os cookies e os dados p
           Se você ativar esta configuração, o <ph name="PRODUCT_NAME" /> ignorará todas as opções relacionadas a proxy especificadas na linha de comando.
 
           Deixar esta política sem definição permitirá que os usuários escolham as configurações de proxy por conta própria.</translation>
+<translation id="5169461017653366056">Esta política ativa o recurso do gerador de QR code no <ph name="PRODUCT_NAME" />.
+
+Se você ativar ou não configurar esta política, esse recurso será ativado.
+
+Se você desativar esta política, o gerador de QR code também será desativado.</translation>
 <translation id="5170018694841697392">Não forçar o uso do SafeSearch na Pesquisa Google</translation>
 <translation id="5172841243186654432">A menos que a política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> seja definida para restaurar permanentemente URLs de sessões anteriores, a definição de <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> permitirá que você faça uma lista de padrões de URL que especificam sites que podem e sites que não podem configurar cookies para uma sessão.
 
@@ -8045,6 +8092,7 @@ Se definida como "somente leitura" ou deixada sem definição: os arquivos locai
 
        No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="6988791975283483023">Desativar o Wi-Fi</translation>
+<translation id="6990546578776912554">Especificar os domínios que não serão resolvidos usando DNS sobre HTTPS</translation>
 <translation id="6990736882800900101">Permitir que todos os pop-ups abertos direcionados a <ph name="BLANK_PAGE_NAME" /> interajam com a página que solicitou a abertura do pop-up, a menos que ela rejeite explicitamente essa interação </translation>
 <translation id="6991623831629598930">Usar o valor padrão para o contrato de chave Kyber pós-quântica para TLS</translation>
 <translation id="6992943675460798920">Permitir que os usuários façam capturas de tela e gravações de vídeo</translation>
@@ -8676,6 +8724,7 @@ a leitura em voz alta será ativada.</translation>
 
       Se não for definida, a tela inicial do <ph name="FEATURE_NAME" /> será ignorada para usuários gerenciados por empresas e mostrada para usuários não gerenciados.</translation>
 <translation id="7469554574977894907">Ativar sugestões de pesquisa</translation>
+<translation id="7472547030234093862">Especificar domínios a serem resolvidos usando DNS sobre HTTPS</translation>
 <translation id="747275827471712187">Reverter para comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado para os cookies nesses sites</translation>
 <translation id="747517124419659622">Permitir a pesquisa no histórico com tecnologia de IA sem melhorar os modelos de IA</translation>
 <translation id="7476030153540156377">Escolher se o recurso de proteção de IP do <ph name="PRIVACY_SANDBOX_NAME" /> deve ser ativado.</translation>
@@ -10818,6 +10867,7 @@ mas que podem ser usados como dicas para criar caminhos. Os certificados precisa
 <translation id="9113058104383612727">Ativar as ferramentas de solução de problemas em quiosques</translation>
 <translation id="9113065986946552397">Os resultados da Varredura do Chrome sempre são compartilhados com o Google</translation>
 <translation id="9113262510565261950">Tempo limite de inatividade do protetor da tela de login do dispositivo.</translation>
+<translation id="911448529868608648">Ativar o Gerador de QR code</translation>
 <translation id="911605919007170833">Informar status de segurança</translation>
 <translation id="9117826695152538214">Se esta política for definida como verdadeira, as teclas de aderência serão ativadas. Se esta política for definida como falsa, as teclas de aderência serão desativadas.
 
@@ -10914,6 +10964,7 @@ Para mais informações sobre contextos seguros, acesse https://www.w3.org/TR/se
 <translation id="9142561920976791097">O novo comportamento para envio de eventos em controles de formulário desativados vai ser usado.</translation>
 <translation id="91459503271584213">Iniciar hosts executáveis de mensagens nativas diretamente no Windows</translation>
 <translation id="9148720248753722892">Não permitir certificados assinados SHA-1</translation>
+<translation id="9149075762533142978">O recurso do gerador de QR code está ativado.</translation>
 <translation id="9149678135092892302">Desativar relatórios sobre informações de versão</translation>
 <translation id="9150416707757015439">Esta política é obsoleta. Utilize IncognitoModeAvailability em seu lugar, que ativa o modo de navegação anônima em <ph name="PRODUCT_NAME" />. Caso esta configuração seja ativada ou não configurada, os usuários podem abrir páginas da Web no modo de navegação anônima. Se essa configuração for desativada, os usuários não podem abrir páginas da Web usando o modo de navegação anônima. Se esta política for deixada sem definição, esta opção será ativada e o usuário será capaz de usar o modo de navegação anônima.</translation>
 <translation id="9152473318295429890">Ativa sugestões contextuais de páginas da Web relacionadas</translation>

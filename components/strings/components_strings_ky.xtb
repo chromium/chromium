@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">Ванна</translation>
 <translation id="2657637947725373811">{0,plural, =1{Купуя файл өткөрүлсүнбү?}other{Купуя файлдар өткөрүлсүнбү?}}</translation>
 <translation id="2658843814961855121">Эмгек жана иш менен камсыз кылуу мыйзамы</translation>
-<translation id="2658944305627908367">Балансыңыздан ашкан транзакциялар аткарылбайт</translation>
 <translation id="2660779039299703961">Иш-чара</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Жок}=1{1 сырсөз (<ph name="DOMAIN_LIST" /> доменде)}=2{2 сырсөз (<ph name="DOMAIN_LIST" /> доменде)}other{# сырсөз (<ph name="DOMAIN_LIST" /> доменде)}}</translation>
 <translation id="2666092431469916601">Өйдө</translation>
@@ -1533,6 +1532,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> үчүн шарттарды бул жерден көрүңүз</translation>
 <translation id="3872834068356954457">Илим</translation>
 <translation id="3875783148670536197">Кантип?</translation>
+<translation id="3879748587602334249">Жүктөп алгыч</translation>
 <translation id="3880456882942693779">Көркөм өнөр жана көңүл ачуу</translation>
 <translation id="3880589673277376494">Интернет жана телекоммуникация</translation>
 <translation id="3881478300875776315">Азыраак көрсөтүү</translation>
@@ -3690,7 +3690,6 @@
 <translation id="800218591365569300">Эстутумду бошотуу үчүн башка өтмөктөрдү же программаларды жаап көрүңүз.</translation>
 <translation id="8002230960325005199">Окшош сайттарды жаңы өтмөктө көрүү</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">Көчүрүп жана чаптабастан, Pix аркылуу төлөңүз</translation>
 <translation id="8004582292198964060">Серепчи</translation>
 <translation id="8009058079740742415">Үй коопсуздугу</translation>
 <translation id="8009225694047762179">Сырсөздөрдү башкаруу</translation>

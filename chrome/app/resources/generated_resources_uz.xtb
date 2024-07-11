@@ -1933,6 +1933,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="237828693408258535">Bu sahifa tarjima qilinsinmi?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Bu kengaytma tez orada ishlamay qoladi}other{Bu kengaytmalar tez orada ishlamay qoladi}}</translation>
 <translation id="2378982052244864789">Kengaytma katalogini tanlang.</translation>
+<translation id="2379111564446699251">Tugmalarni asboblar panelida tortib tartiblang</translation>
 <translation id="2379281330731083556">Tizim muloqot oynasi yordamida chop etish... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Bunda mobil internetingiz vaqtincha uzilib qolishi mumkin</translation>
 <translation id="2381499968174336913">Ulashilgan varaq koʻrinishi</translation>
@@ -3091,7 +3092,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="322708765617468434">Sozlashdan keyin boshqa odamni qurilmaga qoʻshishingiz mumkin. Har bir odamning tajribasi alohida moslashtiriladi va ularning maʼlumotlari xavfsiz saqlanadi.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Uni olib tashlang yoki <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> orqali unga oʻxshash kengaytmalar bilan almashtiring.}other{Ularni olib tashlang yoki <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> orqali unga oʻxshash kengaytmalar bilan almashtiring.}}</translation>
-<translation id="3229412050601871341">Qurilma paroli</translation>
 <translation id="3230539834943294477">Yordam maqolalarini ochish yoki qurilma yuzasidan yordam topish</translation>
 <translation id="3232168089952388105">Qurilma axboroti ulashilsinmi?</translation>
 <translation id="3232368113895801406">Xavfsizlik sozlamalaringizda izolyatsiyalangan ilovalarni oʻrnatish ruxsat etilmagan. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -3544,6 +3544,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3569614820047645079">My Drive jildidagi fayllar Chromebook qurilmangizga avtomatik sinxronlanadi va ularni internetsiz ham ochish mumkin.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> quyidagi fayl va jildlarni koʻra oladi</translation>
 <translation id="3571734092741541777">Sozlash</translation>
+<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> ta kengaytma faolsizlantirildi</translation>
 <translation id="3575121482199441727">Bu saytda chiqaversin</translation>
 <translation id="3575224072358507281">IP manzillar va tarmoqni oʻlchash natijalari Measurement Lab xizmatiga ularning maxfiylik siyosatiga muvofiq jamlanadi (measurementlab.net/privacy).</translation>
 <translation id="3577473026931028326">Xatolik yuz berdi. Qayta urining.</translation>
@@ -4889,6 +4890,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4554591392113183336">Tashqi kengaytma versiyasi joriysidan yangi emas.</translation>
 <translation id="4555769855065597957">Soya</translation>
 <translation id="4555863373929230635">Parollar Google hisobida saqlanishi uchun sinxronizatsiyani yoqing.</translation>
+<translation id="4556069465387849460">Parollarni kiritish uchun ekran qulfidan foydalanmoqdasiz</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> <ph name="WEBSITE_NAME" /> uchun parolni ulashdi. Siz undan kirish shaklida foydalanishingiz mumkin.</translation>
 <translation id="4558426062282641716">Avtomatik ishga tushirishga ruxsat zarur</translation>
 <translation id="4558542033859106586"><ph name="TARGET_APP" /> ilovasida ochish</translation>
@@ -9809,6 +9811,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8230134520748321204"><ph name="ORIGIN" /> uchun parol saqlansinmi?</translation>
 <translation id="8230326817897075865">Oʻchirish: <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Bu saytga rasmlarni chiqarishni taqiqlash</translation>
+<translation id="823226567613548870"><ph name="BRAND" /> maʼlumotlaringizni oʻchirmoqchi</translation>
 <translation id="8233028084277069927">Hozir ochish</translation>
 <translation id="8234795456569844941">Profil xatolik xabaridan oldin nima bo‘lganligi haqida ma’lumot bering:</translation>
 <translation id="8235418492073272647">Sahifa <ph name="DEVICE_NAME" /> qurilmasidan ulashilgan</translation>
@@ -10265,7 +10268,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8557100046150195444">Touch ID bilan davom ettiring</translation>
 <translation id="8557180006508471423">Mac qurilmangizda “﻿Location Services” orqali “Google Chrome” brauzerini yoqing</translation>
 <translation id="8557856025359704738">Keyingi yuklab olish sanasi: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Google hisobi paroli</translation>
 <translation id="8559858985063901027">Kodlar</translation>
 <translation id="8559961053328923750">Reklamalarning unumdorligini oʻlchash uchun Chrome brauzeri orqali saytlar yuboradigan maʼlumotlarning umumiy miqdorini cheklaydi.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Barchasini &amp;yangi oynada ochish}=1{&amp;Yangi oynada ochish}other{Barchasini ({COUNT}) &amp;yangi oynada ochish}}</translation>
@@ -10310,6 +10312,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8596540852772265699">Foydalanuvchi fayllari</translation>
 <translation id="8597845839771543242">Xususiyatlar formati:</translation>
 <translation id="8598249292448297523">chop etish</translation>
+<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Kengaytmani boshqarish}other{Kengaytmalarni boshqarish}}</translation>
 <translation id="8599681327221583254">Bir yoki undan ortiq qoida xato sozlangan. Administratorga murojaat qiling</translation>
 <translation id="8599864823732014237">Korporativ qayd qilish qoldirilsinmi?</translation>
 <translation id="8601206103050338563">TLS WWW mijoz haqiqiylik tekshiruvi</translation>
@@ -10708,6 +10711,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="887292602123626481">Standart qidiruv tizimlari haqida batafsil</translation>
 <translation id="8873075098103007382">Varaqlar guruhi bilan tartibni saqlang</translation>
 <translation id="8874341931345877644">Qurilmaga translatsiya qilish:</translation>
+<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" faolsizlantirildi</translation>
 <translation id="8874790741333031443">Tashqi cookie fayllarga vaqtincha ruxsat bering, bunda himoya pasayadi, lekin sayt funksiyalari kutilganidek ishlaydi.</translation>
 <translation id="8875520811099717934">Linux tizimini yangilash</translation>
 <translation id="8875736897340638404">Ochiqlik sozlamasini tanlang</translation>
@@ -10766,6 +10770,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8918900204934259333">Ilova oʻrnatilmoqda...</translation>
 <translation id="891931289445130855">Maʼlumot va ruxsatlarni oʻchirish</translation>
 <translation id="8920133120839850939">Yana imo-ishoralar varagʻini tanlang, keyin oldinga va orqaga oʻtish uchun sahifalar orasida surish funksiyasini yoqing</translation>
+<translation id="8922348435910470639">Ikkita bandlov</translation>
 <translation id="8922624386829239660">Ekranni sichqoncha chekkaga yaqinlashganda surish</translation>
 <translation id="8923880975836399332">Toʻq zangori</translation>
 <translation id="8925124370124776087">Hozir sarlavha paneli berkitilgan</translation>

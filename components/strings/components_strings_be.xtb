@@ -891,7 +891,6 @@
 <translation id="2655752832536625875">Ванны пакой</translation>
 <translation id="2657637947725373811">{0,plural, =1{Перанесці канфідэнцыяльны файл?}one{Перанесці канфідэнцыяльныя файлы?}few{Перанесці канфідэнцыяльныя файлы?}many{Перанесці канфідэнцыяльныя файлы?}other{Перанесці канфідэнцыяльныя файлы?}}</translation>
 <translation id="2658843814961855121">Працоўнае заканадаўства</translation>
-<translation id="2658944305627908367">Трансакцыі на суму, якая перавышае баланс, не будуць апрацоўвацца</translation>
 <translation id="2660779039299703961">Падзея</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Няма}=1{1 пароль (для даменаў <ph name="DOMAIN_LIST" />)}=2{2 паролі (для даменаў <ph name="DOMAIN_LIST" />)}one{# пароль (для даменаў <ph name="DOMAIN_LIST" />)}few{# паролі (для даменаў <ph name="DOMAIN_LIST" />)}many{# пароляў (для даменаў <ph name="DOMAIN_LIST" />)}other{# пароля (для даменаў <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Зверху</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361">Азнаёмцеся з умовамі выкарыстання карткі <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Навука</translation>
 <translation id="3875783148670536197">Паказаць</translation>
+<translation id="3879748587602334249">Менеджар спамповак</translation>
 <translation id="3880456882942693779">Мастацтва і забавы</translation>
 <translation id="3880589673277376494">Інтэрнэт і тэлекамунікацыі</translation>
 <translation id="3881478300875776315">Паказваць менш радкоў</translation>
@@ -3692,7 +3692,6 @@
 <translation id="800218591365569300">Каб вызваліць памяць, закрыйце іншыя ўкладкі або праграмы.</translation>
 <translation id="8002230960325005199">Паказаць спіс звязаных сайтаў у новай укладцы</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">Плаціце без капіравання і ўстаўкі з дапамогай Pix</translation>
 <translation id="8004582292198964060">Браўзер</translation>
 <translation id="8009058079740742415">Бяспека і абароненасць дома</translation>
 <translation id="8009225694047762179">Кіраваць паролямі</translation>

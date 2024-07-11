@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">बाथरुम</translation>
 <translation id="2657637947725373811">{0,plural, =1{गोप्य फाइल ट्रान्स्फर गर्ने हो?}other{गोप्य फाइलहरू ट्रान्स्फर गर्ने हो?}}</translation>
 <translation id="2658843814961855121">श्रम र रोजगार कानुन</translation>
-<translation id="2658944305627908367">तपाईंले आफ्नो खातामा भएको रकमभन्दा बढी रकम भुक्तानी गर्नुभयो भने उक्त भुक्तानी प्रोसेस गरिने छैन</translation>
 <translation id="2660779039299703961">घटना</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="DOMAIN_LIST" /> को १ पासवर्ड}=2{<ph name="DOMAIN_LIST" /> का २ पासवर्डहरू}other{<ph name="DOMAIN_LIST" /> का # पासवर्डहरू}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -1531,6 +1530,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> का सर्तहरू यहाँ हेर्नुहोस्</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">यसो गर्ने तरिका देखाउनुहोस्</translation>
+<translation id="3879748587602334249">डाउनलोड म्यानेजर</translation>
 <translation id="3880456882942693779">कला तथा मनोरञ्जन</translation>
 <translation id="3880589673277376494">इन्टरनेट तथा टेलिकम</translation>
 <translation id="3881478300875776315">कम हरफ देखाउनुहोस्</translation>
@@ -3689,7 +3689,6 @@
 <translation id="800218591365569300">मेमोरी खाली गर्न अन्य ट्याब वा प्रोग्रामहरू बन्द गरी हेर्नुहोस्।</translation>
 <translation id="8002230960325005199">सम्बन्धित साइटहरू नयाँ ट्याबमा हेर्नुहोस्</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">कपी र पेस्ट नगरिकन Pix मार्फत भुक्तानी गर्नुहोस्</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>
 <translation id="8009058079740742415">घरको सुरक्षा</translation>
 <translation id="8009225694047762179">पासवर्डहरूको व्यवस्थापन गर्नुहोस्</translation>

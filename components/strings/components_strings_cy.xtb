@@ -368,6 +368,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1650602712345345441">Rheoli eich gosodiadau Chrome</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">I ddefnyddio'r Rheolwr Cyfrineiriau gyda macOS Keychain, ail-lansiwch Chromium a chaniatewch fynediad Keychain. Bydd eich tabiau yn ailagor ar ôl ail-lansio.</translation>
+<translation id="1652887625750064647">AI Cyfateb Orau</translation>
 <translation id="1656024727720460136">Mae Chrome wedi symleiddio'r dudalen hon i'w gwneud yn haws ei darllen. Adferodd Chrome y dudalen wreiddiol dros gysylltiad diogel.</translation>
 <translation id="1656489000284462475">Casglu</translation>
 <translation id="1658111267661135323">Teledu a Fideo</translation>
@@ -890,7 +891,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2655752832536625875">Ystafell ymolchi</translation>
 <translation id="2657637947725373811">{0,plural, =1{Trosglwyddo ffeil gyfrinachol?}zero{Trosglwyddo ffeiliau cyfrinachol?}two{Trosglwyddo ffeiliau cyfrinachol?}few{Trosglwyddo ffeiliau cyfrinachol?}many{Trosglwyddo ffeiliau cyfrinachol?}other{Trosglwyddo ffeiliau cyfrinachol?}}</translation>
 <translation id="2658843814961855121">Cyfraith Llafur a Chyflogaeth</translation>
-<translation id="2658944305627908367">Ni fydd trafodion sy'n fwy na'ch balans yn cael eu prosesu</translation>
 <translation id="2660779039299703961">Digwyddiad</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Dim}=1{1 cyfrinair (ar gyfer <ph name="DOMAIN_LIST" />)}=2{2 gyfrinair (ar gyfer <ph name="DOMAIN_LIST" />)}few{# chyfrinair (ar gyfer <ph name="DOMAIN_LIST" />)}many{# chyfrinair (ar gyfer <ph name="DOMAIN_LIST" />)}other{# cyfrinair (ar gyfer <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Brig</translation>
@@ -1534,6 +1534,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3865339060090354361">Gweler y termau yma ar gyfer <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Gwyddoniaeth</translation>
 <translation id="3875783148670536197">Dangoswch i Fi Sut</translation>
+<translation id="3879748587602334249">Rheolwr lawrlwythiadau</translation>
 <translation id="3880456882942693779">Y Celfyddydau ac Adloniant</translation>
 <translation id="3880589673277376494">Rhyngrwyd a Thelegyfathrebu</translation>
 <translation id="3881478300875776315">Dangos llai o linellau</translation>
@@ -3691,7 +3692,6 @@ Manylion ychwanegol:
 <translation id="800218591365569300">Rhowch gynnig ar gau tabiau neu raglenni eraill i leihau'r defnydd cof.</translation>
 <translation id="8002230960325005199">Gweld gwefannau cysylltiedig mewn tab newydd</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Talu gyda Pix heb gopïo a gludo</translation>
 <translation id="8004582292198964060">Porwr</translation>
 <translation id="8009058079740742415">Diogelwch Cartref</translation>
 <translation id="8009225694047762179">Rheoli Cyfrineiriau</translation>

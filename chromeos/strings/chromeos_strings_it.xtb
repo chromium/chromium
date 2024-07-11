@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Operazione non riuscita - Errore del filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orchidee</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Ho una coppia di chiavi</translation>
 <translation id="1423591390236870726">Tasto <ph name="KEY_NAME" /> non premuto</translation>
 <translation id="1432110487435300883">Per un risultato approssimativo, dividi il valore <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
@@ -507,7 +508,6 @@
 <translation id="3780740315729837296">Assegna un tasto della tastiera</translation>
 <translation id="3784455785234192852">Blocca</translation>
 <translation id="3785643128701396311">pixel art</translation>
-<translation id="3790109258688020991">puntinato</translation>
 <translation id="380097101658023925">Controlli RGB</translation>
 <translation id="38114475217616659">Cancella tutta la cronologia</translation>
 <translation id="3820172043799983114">PIN non valido.</translation>
@@ -771,6 +771,7 @@
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="522307662484862935">Non includere l'indirizzo email</translation>
+<translation id="5226879510707344687">Esporta trascrizione</translation>
 <translation id="5227902338748591677">Programmazione tema scuro</translation>
 <translation id="5229344016299762883">Esci da schermo intero</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -866,7 +867,6 @@
 <translation id="57838592816432529">Disattiva audio</translation>
 <translation id="5784136236926853061">Latenza HTTP elevata</translation>
 <translation id="5790391387506209808">lapislazzuli</translation>
-<translation id="5810296156135698005">barocco</translation>
 <translation id="5816802250591013230">Nessuna scorciatoia assegnata</translation>
 <translation id="5826644637650799838">Informazioni sullo sfondo</translation>
 <translation id="5832805196449965646">Aggiungi persona</translation>
@@ -962,6 +962,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">blu e viola</translation>
 <translation id="6284632978374966585">Attiva il tema scuro</translation>
+<translation id="6285260286443238386">Esporta registrazione</translation>
 <translation id="628726841779494414">Gestisci le stampanti nelle impostazioni delle stampanti</translation>
 <translation id="6292095526077353682">Durante la ricarica, mostra il salvaschermo per</translation>
 <translation id="629550705077076970">Oscuramento della tastiera</translation>
@@ -996,6 +997,7 @@
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6419454453018688975">Attiva l'accesso alla posizione del sistema</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Debole (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Vai alle impostazioni dell'account</translation>
 <translation id="6462978824459367242">Il pulsante Aggiungi APN è ora attivo</translation>
@@ -1466,6 +1468,7 @@ Puoi disattivare questa funzionalità in qualsiasi momento nelle impostazioni.</
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> di <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">pietra di sale</translation>
 <translation id="8919837981463578619">Operazione non riuscita - Vassoio mancante</translation>
+<translation id="8924154518905976972">Esporta audio</translation>
 <translation id="8928727111548978589">Operazione non riuscita - Carta esaurita</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

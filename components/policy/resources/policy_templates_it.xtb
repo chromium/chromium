@@ -4671,19 +4671,6 @@ Se il criterio non è configurato, gli utenti possono modificare l'elenco di app
 L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>
 <translation id="4638906910792947645">Abilita sondaggi all'interno del prodotto</translation>
 <translation id="4641557638919545432">Verrà attivata la sintassi deprecata precedente.</translation>
-<translation id="464549601667073177">L'URL di un'immagine che verrà utilizzata come badge aziendale per il profilo. L'URL deve indirizzare a un'immagine.
-
-Questo badge verrà mostrato nella barra degli strumenti.
-
-Se il criterio viene configurato a livello di browser, tutti i profili avranno questo logo nella barra degli strumenti.
-
-Se il criterio viene impostato a livello di profilo, solo quel profilo avrà questo logo.
-
-Se il criterio non viene configurato, verrà mostrata un'icona predefinita a forma di edificio.
-
-Se si verifica un errore durante il tentativo di ottenere e mostrare l'immagine, verrà visualizzata un'icona predefinita a forma di edificio.
-
-A differenza di altri, quando impostato a livello di profilo, questo criterio ha la precedenza su un criterio impostato a livello di browser.</translation>
 <translation id="4646626362889216307">L'impostazione di questo criterio consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello. L'unione avviene tra le chiavi di primo livello del dizionario di ogni origine. Avrà la priorità la chiave proveniente dall'origine con la priorità massima.
 
       Usa il carattere jolly "*" per consentire l'unione di tutti i criteri dei dizionari supportati.

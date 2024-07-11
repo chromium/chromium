@@ -368,6 +368,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1650602712345345441">Urus tetapan Chrome anda</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Untuk menggunakan Password Manager dengan macOS Keychain, lancarkan semula Chromium dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
+<translation id="1652887625750064647">Padanan Terbaik AI</translation>
 <translation id="1656024727720460136">Chrome meringkaskan halaman ini untuk memudahkan pembacaan. Chrome mengambil halaman asal melalui sambungan selamat.</translation>
 <translation id="1656489000284462475">Pengambilan</translation>
 <translation id="1658111267661135323">TV &amp; Video</translation>
@@ -890,7 +891,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2655752832536625875">Bilik mandi</translation>
 <translation id="2657637947725373811">{0,plural, =1{Pindahkan fail sulit?}other{Pindahkan fail sulit?}}</translation>
 <translation id="2658843814961855121">Undang-undang Buruh &amp; Pekerjaan</translation>
-<translation id="2658944305627908367">Transaksi yang melebihi baki anda tidak akan diproses</translation>
 <translation id="2660779039299703961">Acara</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Tiada}=1{1 kata laluan (untuk <ph name="DOMAIN_LIST" />)}=2{2 kata laluan (untuk <ph name="DOMAIN_LIST" />)}other{# kata laluan (untuk <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Atas</translation>
@@ -1535,6 +1535,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3865339060090354361">Lihat syarat <ph name="CREDIT_CARD_NAME" /> di sini</translation>
 <translation id="3872834068356954457">Sains</translation>
 <translation id="3875783148670536197">Tunjukkan Caranya</translation>
+<translation id="3879748587602334249">Pengurus muat turun</translation>
 <translation id="3880456882942693779">Seni &amp; Hiburan</translation>
 <translation id="3880589673277376494">Internet &amp; Telekom</translation>
 <translation id="3881478300875776315">Tunjukkan kurang baris</translation>
@@ -3692,7 +3693,6 @@ Butiran tambahan:
 <translation id="800218591365569300">Cuba tutup tab atau atur cara lain untuk mengosongkan memori.</translation>
 <translation id="8002230960325005199">Lihat laman berkaitan dalam tab baharu</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Bayar dengan Pix tanpa salin dan tampal</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
 <translation id="8009058079740742415">Keselamatan &amp; Sekuriti Kediaman</translation>
 <translation id="8009225694047762179">Urus Kata Laluan</translation>

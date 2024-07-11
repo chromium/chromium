@@ -651,6 +651,7 @@
 <translation id="2168151236314517198">Смернице администратора блокирају штампање овог садржаја</translation>
 <translation id="2170417331417184438">Картица је сачувана само на уређају</translation>
 <translation id="2172089022819052306">Поправка и одржавање возила</translation>
+<translation id="2174875517416416684">Трансакција није прошла. Средства нису повучена са рачуна.</translation>
 <translation id="2175630235841878061">Фајлови већи од 100 MB нису доступни за преузимање</translation>
 <translation id="2176974405772725904">Сачувајте адресу на налогу</translation>
 <translation id="2178665390943006934">Дугме Ажурирај Chrome, активирајте га да бисте ажурирали Chrome из подешавања Chrome-а</translation>
@@ -890,7 +891,6 @@
 <translation id="2655752832536625875">Купатило</translation>
 <translation id="2657637947725373811">{0,plural, =1{Желите да пренесете поверљив фајл?}one{Желите да пренесете поверљиве фајлове?}few{Желите да пренесете поверљиве фајлове?}other{Желите да пренесете поверљиве фајлове?}}</translation>
 <translation id="2658843814961855121">Закон о раду и запошљавању</translation>
-<translation id="2658944305627908367">Трансакције које премашују стање неће бити обрађене</translation>
 <translation id="2660779039299703961">Догађај</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ниједна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />)}=2{2 лозинке (за <ph name="DOMAIN_LIST" />)}one{# лозинка (за <ph name="DOMAIN_LIST" />)}few{# лозинке (за <ph name="DOMAIN_LIST" />)}other{# лозинки (за <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Врх</translation>
@@ -1534,6 +1534,7 @@
 <translation id="3865339060090354361">Овде погледајте услове за <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Покажи ми како</translation>
+<translation id="3879748587602334249">Менаџер преузимања</translation>
 <translation id="3880456882942693779">Уметност и забава</translation>
 <translation id="3880589673277376494">Интернет и телекомуникације</translation>
 <translation id="3881478300875776315">Прикажи мање редова</translation>
@@ -3390,6 +3391,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Дугме Управљај синхронизацијом, активирајте га да бисте управљали тиме које информације синхронизујете у подешавањима Chrome-а</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />да сазнате више<ph name="END_LINK" /> о овом проблему.</translation>
+<translation id="745208957946308667">Игра са диносаурусом, притискајте тастер за размак да бисте играли</translation>
 <translation id="7454377933424667109">Налог у клауду</translation>
 <translation id="7455133967321480974">Користи глобалну подразумевану вредност (Блокирај)</translation>
 <translation id="7455452752247248289">Технологија пословања</translation>
@@ -3690,7 +3692,6 @@
 <translation id="800218591365569300">Пробајте да затворите друге картице или програме да бисте ослободили меморију.</translation>
 <translation id="8002230960325005199">Погледајте сродне сајтове на новој картици</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
-<translation id="8003697335101170520">Плаћајте помоћу Pix-а без копирања и налепљивања</translation>
 <translation id="8004582292198964060">Прегледач</translation>
 <translation id="8009058079740742415">Сигурност и безбедност дома</translation>
 <translation id="8009225694047762179">Управљај лозинкама</translation>
@@ -4044,6 +4045,7 @@
 <translation id="8676424191133491403">Без одлагања</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, одговор, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Веб-страница на адреси <ph name="PAGE" /> не може да се учита из следећих разлога:</translation>
+<translation id="8682297334444610648">Игра са диносаурусом, додирните да бисте играли</translation>
 <translation id="8686424632716064939">Безбедност рачунара</translation>
 <translation id="8687278439622293018">Унос <ph name="ENTRY_VOICEOVER" /> је избрисан</translation>
 <translation id="8687429322371626002">Уређајем и налогом управља <ph name="MANAGER" />.</translation>

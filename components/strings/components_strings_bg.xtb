@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">Баня</translation>
 <translation id="2657637947725373811">{0,plural, =1{Да се прехвърли ли поверителният файл?}other{Да се прехвърлят ли поверителните файлове?}}</translation>
 <translation id="2658843814961855121">Закони за труда и трудовата заетост</translation>
-<translation id="2658944305627908367">Транзакции, които надхвърлят салдото ви, няма да бъдат обработени</translation>
 <translation id="2660779039299703961">Събитие</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Няма}=1{1 парола (за <ph name="DOMAIN_LIST" />)}=2{2 пароли (за <ph name="DOMAIN_LIST" />)}other{# пароли (за <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Най-горе</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361">Вижте условията за <ph name="CREDIT_CARD_NAME" /> тук</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Покажете ми как</translation>
+<translation id="3879748587602334249">Мениджър на изтеглянията</translation>
 <translation id="3880456882942693779">Изкуство и развлечения</translation>
 <translation id="3880589673277376494">Интернет и телекомуникации</translation>
 <translation id="3881478300875776315">Показване на по-малко редове</translation>
@@ -3691,7 +3691,6 @@
 <translation id="800218591365569300">Затворете другите раздели или програми, за да освободите памет.</translation>
 <translation id="8002230960325005199">Преглед на сродните сайтове в нов раздел</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
-<translation id="8003697335101170520">Плащане с Pix без копиране и поставяне</translation>
 <translation id="8004582292198964060">Браузър</translation>
 <translation id="8009058079740742415">Сигурност и охрана на дома</translation>
 <translation id="8009225694047762179">Управление на паролите</translation>

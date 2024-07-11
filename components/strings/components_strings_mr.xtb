@@ -368,6 +368,7 @@
 <translation id="1650602712345345441">तुमची Chrome सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS Keychain सह Password Manager वापरण्यासाठी, Chromium पुन्हा लाँच करा आणि Keychain च्या अ‍ॅक्सेसची अनुमती द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
+<translation id="1652887625750064647">AI सर्वोत्तम जुळणी</translation>
 <translation id="1656024727720460136">हे पेज वाचणे सोपे करण्यासाठी Chrome ने ते सुलभ केले आहे. Chrome ने मूळ पेज सुरक्षित कनेक्शनवरून पुन्हा मिळवले आहे.</translation>
 <translation id="1656489000284462475">घेणे</translation>
 <translation id="1658111267661135323">टीव्ही आणि व्हिडिओ</translation>
@@ -890,7 +891,6 @@
 <translation id="2655752832536625875">बाथरूम</translation>
 <translation id="2657637947725373811">{0,plural, =1{गोपनीय फाइल ट्रान्सफर करायची आहे का?}other{गोपनीय फाइल ट्रान्सफर करायच्या आहेत का?}}</translation>
 <translation id="2658843814961855121">कामगार आणि रोजगार कायदा</translation>
-<translation id="2658944305627908367">तुमच्या शिलकीहून अधिक रकमेच्या व्यवहारावर प्रक्रिया केली जाणार नाही</translation>
 <translation id="2660779039299703961">इव्‍हेंट</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{काहीही नाही}=1{(<ph name="DOMAIN_LIST" /> साठी) एक पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> साठी) दोन पासवर्ड}other{(<ph name="DOMAIN_LIST" /> साठी) # पासवर्ड}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -1533,6 +1533,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> साठी अटी इथे पहा</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">मला कसे ते दाखवा</translation>
+<translation id="3879748587602334249">डाउनलोड व्यवस्थापक</translation>
 <translation id="3880456882942693779">कला आणि मनोरंजन</translation>
 <translation id="3880589673277376494">इंटरनेट आणि टेलिकॉम</translation>
 <translation id="3881478300875776315">कमी रेषा दाखवा</translation>
@@ -3691,7 +3692,6 @@
 <translation id="800218591365569300">मेमरी मोकळी करण्‍यासाठी अन्य टॅब किंवा प्रोग्राम बंद करून पहा.</translation>
 <translation id="8002230960325005199">नवीन टॅबमध्ये संबंधित साइट पहा</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">कॉपी करून पेस्ट न करता Pix वापरून पेमेंट करा</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8009058079740742415">घराशी संबंधित सुरक्षितता आणि सुरक्षा</translation>
 <translation id="8009225694047762179">पासवर्ड व्यवस्थापित करा</translation>

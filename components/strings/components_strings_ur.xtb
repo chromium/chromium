@@ -368,6 +368,7 @@
 <translation id="1650602712345345441">‏اپنے Chrome کی ترتیبات کا نظم کریں</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">‏macOS Keychain کے ساتھ پاس ورڈ مینیجر کا استعمال کرنے کے لیے، Chromium کو بند کر کے دوبارہ چلائیں اور Keychain تک رسائی کی اجازت دیں۔ بند کر کے دوبارہ چلانے کے بعد، آپ کے ٹیبز دوبارہ کھل جائیں گے۔</translation>
+<translation id="1652887625750064647">‏‫AI کا بہترین مماثل</translation>
 <translation id="1656024727720460136">‏پڑھنے کو زیادہ آسان بنانے کے ليے Chrome نے اس صفحے کو آسان بنایا۔ Chrome نے محفوظ کنکنشن پر اصل صفحہ کو بازیاب کیا۔</translation>
 <translation id="1656489000284462475">پک اپ</translation>
 <translation id="1658111267661135323">‏TV اور ویڈیو</translation>
@@ -890,7 +891,6 @@
 <translation id="2655752832536625875">غسل خانہ</translation>
 <translation id="2657637947725373811">{0,plural, =1{رازدارانہ فائل منتقل کریں؟}other{رازدارانہ فائلز منتقل کریں؟}}</translation>
 <translation id="2658843814961855121">مزدوری اور ملازمت کا قانون</translation>
-<translation id="2658944305627908367">آپ کے بیلنس سے زیادہ والی ٹرانزیکشنز پر کارروائی نہیں کی جائے گی</translation>
 <translation id="2660779039299703961">ایونٹ</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{کوئی نہیں}=1{(<ph name="DOMAIN_LIST" /> کے لیے) 1 پاس ورڈ}=2{(<ph name="DOMAIN_LIST" /> کے لیے) 2 پاس ورڈز}other{(<ph name="DOMAIN_LIST" /> کے لیے) # پاس ورڈز}}</translation>
 <translation id="2666092431469916601">سرفہرست</translation>
@@ -1535,6 +1535,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> کے لیے یہاں شرائط دیکھیں</translation>
 <translation id="3872834068356954457">سائنس</translation>
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
+<translation id="3879748587602334249">ڈاؤن لوڈ مینیجر</translation>
 <translation id="3880456882942693779">آرٹس اور تفریح</translation>
 <translation id="3880589673277376494">انٹرنیٹ اور ٹیلی کام</translation>
 <translation id="3881478300875776315">قدرے کم لائنز دکھائیں</translation>
@@ -3693,7 +3694,6 @@
 <translation id="800218591365569300">میموری خالی کرنے کیلئے دیگر ٹیبز یا پروگرامز کو بند کرنے کی کوشش کریں۔</translation>
 <translation id="8002230960325005199">ایک نئے ٹیب میں متعلقہ سائٹس دیکھیں</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">‏کاپی اور پیسٹ کے بغیر Pix کے ساتھ ادائیگی کریں</translation>
 <translation id="8004582292198964060">براؤزر</translation>
 <translation id="8009058079740742415">گھر کی حفاظت اور سیکیورٹی</translation>
 <translation id="8009225694047762179">پاسورڈز کا نظم کریں</translation>

@@ -4639,19 +4639,6 @@ Si no se establece la política, los usuarios podrán cambiar la lista de aplica
 Establecer <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efecto si se le asigna el valor False a <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />.</translation>
 <translation id="4638906910792947645">Habilitar encuestas en el producto</translation>
 <translation id="4641557638919545432">Se habilitará la sintaxis obsoleta anterior.</translation>
-<translation id="464549601667073177">La URL de una imagen que se usará como insignia de la empresa en el perfil. La URL debe dirigir a una imagen.
-
-Esta insignia se mostrará en la barra de herramientas.
-
-Si se establece esta política a nivel de navegador, todos los perfiles tendrán este logotipo en la barra de herramientas.
-
-Si se establece esta política a nivel de perfil, solo ese perfil tendrá este logotipo.
-
-Si no se define esta política, se mostrará el icono predeterminado de un edificio.
-
-Si se produce un error al intentar obtener y mostrar la imagen, se mostrará el icono predeterminado de un edificio.
-
-A diferencia de otras políticas, esta política definida a nivel de perfil tiene prioridad sobre una política definida a nivel de navegador.</translation>
 <translation id="4646626362889216307">Si se establece la política, se permitirá la combinación de las políticas seleccionadas cuando procedan de fuentes distintas, con los mismos permisos y el mismo nivel. Esta combinación está en las claves de primer nivel del diccionario de cada fuente. La clave procedente de la fuente con más prioridad prevalecerá.
 
       Usa el carácter comodín "*" para permitir la combinación de todas las políticas de diccionarios admitidas.

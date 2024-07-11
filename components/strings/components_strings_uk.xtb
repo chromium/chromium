@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">Ванна кімната</translation>
 <translation id="2657637947725373811">{0,plural, =1{Перенести конфіденційний файл?}one{Перенести конфіденційні файли?}few{Перенести конфіденційні файли?}many{Перенести конфіденційні файли?}other{Перенести конфіденційні файли?}}</translation>
 <translation id="2658843814961855121">Трудове законодавство</translation>
-<translation id="2658944305627908367">Трансакції, які перевищують суму вашого балансу, не буде оброблено</translation>
 <translation id="2660779039299703961">Подія</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Немає}=1{1 пароль (для <ph name="DOMAIN_LIST" />)}=2{2 паролі (для <ph name="DOMAIN_LIST" />)}one{# пароль (для <ph name="DOMAIN_LIST" />)}few{# паролі (для <ph name="DOMAIN_LIST" />)}many{# паролів (для <ph name="DOMAIN_LIST" />)}other{# пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Верх</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361">Переглянути умови використання для <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Докладніше</translation>
+<translation id="3879748587602334249">Менеджер завантажень</translation>
 <translation id="3880456882942693779">Мистецтво й розваги</translation>
 <translation id="3880589673277376494">Інтернет і телекомунікації</translation>
 <translation id="3881478300875776315">Показати менше рядків</translation>
@@ -3403,7 +3403,7 @@
 <translation id="7470854469646445678">Укажіть причину копіювання (обов’язково)</translation>
 <translation id="7471007961486718967">Укажіть причину перенесення (обов’язково)</translation>
 <translation id="7473891865547856676">Ні, дякую</translation>
-<translation id="7481312909269577407">Переслати</translation>
+<translation id="7481312909269577407">Уперед</translation>
 <translation id="7481603210197454575">Конверт Italian</translation>
 <translation id="7483482939016730822">Шкільне приладдя й обладнання для класу</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />. Щоб закрити пораду щодо Chrome, натисніть Tab, а потім – Enter.</translation>
@@ -3691,7 +3691,6 @@
 <translation id="800218591365569300">Щоб звільнити пам’ять, закрийте інші вкладки та програми.</translation>
 <translation id="8002230960325005199">Переглянути пов’язані сайти в новій вкладці</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">Оплачуйте через Pix, не вставляючи дані вручну</translation>
 <translation id="8004582292198964060">Переглядач</translation>
 <translation id="8009058079740742415">Домашня безпека й захист</translation>
 <translation id="8009225694047762179">Керувати паролями</translation>

@@ -890,7 +890,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2655752832536625875">Kúpeľňa</translation>
 <translation id="2657637947725373811">{0,plural, =1{Chcete preniesť dôverný súbor?}few{Chcete preniesť dôverné súbory?}many{Transfer confidential files?}other{Chcete preniesť dôverné súbory?}}</translation>
 <translation id="2658843814961855121">Právo upravujúce prácu a zamestnávanie</translation>
-<translation id="2658944305627908367">Transakcie, ktoré prekročia váš zostatok, nebudú spracované</translation>
 <translation id="2660779039299703961">Udalosť</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Žiadne}=1{Jedno heslo (pre zoznam domén <ph name="DOMAIN_LIST" />)}=2{Dve heslá (pre zoznam domén <ph name="DOMAIN_LIST" />)}few{# heslá (pre zoznam domén <ph name="DOMAIN_LIST" />)}many{# passwords (for <ph name="DOMAIN_LIST" />)}other{# hesiel (pre zoznam domén <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Vrch</translation>
@@ -1530,6 +1529,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3865339060090354361">Pozrite si zmluvné podmienky kreditnej karty <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Veda</translation>
 <translation id="3875783148670536197">Ukázať postup</translation>
+<translation id="3879748587602334249">Správca sťahovania</translation>
 <translation id="3880456882942693779">Umenie a zábava</translation>
 <translation id="3880589673277376494">Internet a telekomunikácie</translation>
 <translation id="3881478300875776315">Zobraziť menej riadkov</translation>
@@ -3686,7 +3686,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="800218591365569300">Skúste zavrieť ostatné karty alebo programy a uvoľniť tak miesto v pamäti.</translation>
 <translation id="8002230960325005199">Zobraziť súvisiace weby na novej karte</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
-<translation id="8003697335101170520">Zaplaťte pomocou systému Pix bez kopírovania a prilepenia</translation>
 <translation id="8004582292198964060">Prehliadač</translation>
 <translation id="8009058079740742415">Bezpečnosť a zabezpečenie domácnosti</translation>
 <translation id="8009225694047762179">Spravovať heslá</translation>

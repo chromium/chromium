@@ -3091,7 +3091,6 @@
 <translation id="322708765617468434">Կարգավորումից հետո դուք միշտ կարող եք այլ օգտատեր ավելացնել սարքում։ Յուրաքանչյուր օգտատեր կարող է անհատականացնել սարքը և գաղտնի պահել իր տվյալները։</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Հեռացրեք այն կամ փոխարինեք նմանատիպ ընդլայնումներով <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-ից։}one{Հեռացրեք այն կամ փոխարինեք նմանատիպ ընդլայնումներով <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-ից։}other{Հեռացրեք դրանք կամ փոխարինեք նմանատիպ ընդլայնումներով <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-ից։}}</translation>
-<translation id="3229412050601871341">Սարքի գաղտնաբառ</translation>
 <translation id="3230539834943294477">Դիտեք օգնության հոդվածները կամ դիմեք սարքի աջակցման ծառայություն</translation>
 <translation id="3232168089952388105">Տրամադրե՞լ տեղեկություններ սարքի մասին</translation>
 <translation id="3232368113895801406">Ձեր անվտանգության կարգավորումները թույլ չեն տալիս մեկուսացված հավելվածների տեղադրումը։ <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4887,6 +4886,7 @@
 <translation id="4554591392113183336">Արտաքին ընդլայնումը ընթացիկի համեմատ ունի նույն կամ ավելի հին տարբերակ:</translation>
 <translation id="4555769855065597957">Ստվեր</translation>
 <translation id="4555863373929230635">Գաղտնաբառերը ձեր Google հաշվում պահելու համար մտեք հաշիվ և միացրեք համաժամացումը։</translation>
+<translation id="4556069465387849460">Դուք օգտագործում եք էկրանի կողպումը գաղտնաբառերի լրացման համար</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" />-ն ուղարկել է ձեզ գաղտնաբառ <ph name="WEBSITE_NAME" /> կայքի համար։ Գաղտնաբառը կարելի է օգտագործել մուտքի ձևում։</translation>
 <translation id="4558426062282641716">Հարկավոր է ինքնագործարկման թույլտվություն</translation>
 <translation id="4558542033859106586">Բացվում է <ph name="TARGET_APP" />-ում</translation>
@@ -10262,7 +10262,6 @@
 <translation id="8557100046150195444">Շարունակելու համար օգտագործեք Touch ID</translation>
 <translation id="8557180006508471423">Միացրեք «Google Chrome»-ը ձեր Mac համակարգչի տեղորոշման ծառայություններում</translation>
 <translation id="8557856025359704738">Հաջորդ ներբեռնումը կլինի հետևյալ ամսաթվին՝ <ph name="NEXT_DATE_DOWNLOAD" />։</translation>
-<translation id="8558281414737757274">Google հաշվի գաղտնաբառ</translation>
 <translation id="8559858985063901027">Մուտքի բանալիներ</translation>
 <translation id="8559961053328923750">Գովազդի արդյունավետությունը գնահատելու համար Chrome-ը սահմանափակում է այն տվյալների ընդհանուր ծավալը, որոնք կայքերն ուղարկում են դիտարկիչի միջոցով</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}}</translation>

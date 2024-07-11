@@ -688,7 +688,7 @@
 <translation id="6267547857941397424">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, pile du téléphone : <ph name="BATTERY_STATUS" /> %, connexion</translation>
 <translation id="6269630227984243955">Malais</translation>
 <translation id="6271903698064569429">Impossible de téléverser les fichiers, car « <ph name="SHARED_DRIVE_NAME" /> » n'a pas assez d'espace de stockage.</translation>
-<translation id="6279140785485544797">Votre forfait de données cellulaires a peut-être expiré. Communiquez avec votre opérateur pour obtenir de l'aide.</translation>
+<translation id="6279140785485544797">Votre forfait de données cellulaires est peut-être expiré. Communiquez avec votre opérateur pour obtenir de l'aide.</translation>
 <translation id="6287852322318138013">Sélectionner une application pour ouvrir ce fichier</translation>
 <translation id="6295542640242147836">Verrouiller la carte SIM</translation>
 <translation id="6296410173147755564">Clé personnelle de déblocage incorrecte</translation>

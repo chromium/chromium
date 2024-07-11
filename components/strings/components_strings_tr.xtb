@@ -890,7 +890,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2655752832536625875">Banyo</translation>
 <translation id="2657637947725373811">{0,plural, =1{Gizli dosya aktarılsın mı?}other{Gizli dosyalar aktarılsın mı?}}</translation>
 <translation id="2658843814961855121">İş ve Çalışma Kanunu</translation>
-<translation id="2658944305627908367">Bakiyenizi aşan işlemler işleme alınmaz.</translation>
 <translation id="2660779039299703961">Etkinlik</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Yok}=1{1 şifre (<ph name="DOMAIN_LIST" /> için)}=2{2 şifre (<ph name="DOMAIN_LIST" /> için)}other{# şifre (<ph name="DOMAIN_LIST" /> için)}}</translation>
 <translation id="2666092431469916601">Üst</translation>
@@ -1534,6 +1533,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> için buradaki şartlara bakın</translation>
 <translation id="3872834068356954457">Bilim</translation>
 <translation id="3875783148670536197">Nasıl Yapıldığını Göster</translation>
+<translation id="3879748587602334249">İndirme yöneticisi</translation>
 <translation id="3880456882942693779">Sanat ve Eğlence</translation>
 <translation id="3880589673277376494">İnternet ve Telekom</translation>
 <translation id="3881478300875776315">Daha az satır göster</translation>
@@ -3691,7 +3691,6 @@ Ek ayrıntılar:
 <translation id="800218591365569300">Bellekte yer açmak için diğer sekmeleri veya programları kapatmayı deneyin.</translation>
 <translation id="8002230960325005199">İlgili siteler yeni bir sekmede gösterilir</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Kopyalayıp yapıştırmadan Pix ile ödeme yapın</translation>
 <translation id="8004582292198964060">Tarayıcı</translation>
 <translation id="8009058079740742415">Ev Güvenliği</translation>
 <translation id="8009225694047762179">Şifreleri Yönet</translation>

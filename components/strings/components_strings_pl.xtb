@@ -891,7 +891,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2655752832536625875">Łazienka</translation>
 <translation id="2657637947725373811">{0,plural, =1{Przenieść plik poufny?}few{Przenieść pliki poufne?}many{Przenieść pliki poufne?}other{Przenieść pliki poufne?}}</translation>
 <translation id="2658843814961855121">Prawo pracy</translation>
-<translation id="2658944305627908367">Transakcje przekraczające saldo nie będą przetwarzane</translation>
 <translation id="2660779039299703961">Wydarzenie</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />)}=2{2 hasła (do <ph name="DOMAIN_LIST" />)}few{# hasła (do <ph name="DOMAIN_LIST" />)}many{# haseł (do <ph name="DOMAIN_LIST" />)}other{# hasła (do <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Do góry</translation>
@@ -1535,6 +1534,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3865339060090354361">Tutaj znajdziesz warunki korzystania z usługi <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Nauka</translation>
 <translation id="3875783148670536197">Pokaż jak</translation>
+<translation id="3879748587602334249">Menedżer pobierania</translation>
 <translation id="3880456882942693779">Sztuka i rozrywka</translation>
 <translation id="3880589673277376494">Internet i telekomunikacja</translation>
 <translation id="3881478300875776315">Pokaż mniej wierszy</translation>
@@ -3692,7 +3692,6 @@ Dodatkowe informacje:
 <translation id="800218591365569300">Zamknij inne karty lub programy, by zwolnić pamięć.</translation>
 <translation id="8002230960325005199">Pokaż powiązane witryny w nowej karcie</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Płać przez Pix bez kopiowania i wklejania</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
 <translation id="8009058079740742415">Zabezpieczenia do domu</translation>
 <translation id="8009225694047762179">Zarządzaj hasłami</translation>

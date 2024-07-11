@@ -727,6 +727,17 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent ajouter des exce
       Si cette règle n'est pas configurée, un message d'avertissement (et non un message d'erreur) s'affiche quand le code choisi par l'utilisateur est peu sécurisé.</translation>
 <translation id="1597684038583138808">Activer la définition pour Réponses rapides</translation>
 <translation id="1598258379228800626">Activer la mise en surbrillance des éléments sélectionnés au clavier sur l'écran de connexion</translation>
+<translation id="1599334938346636409">Cette règle permet de définir un libellé personnalisé servant à identifier la personne qui gère un profil ou un navigateur.
+
+Ce libellé s'affichera dans la barre d'outils.
+
+Si cette règle est définie au niveau du navigateur, tous les profils afficheront ce libellé dans la barre d'outils.
+
+Si cette règle est définie au niveau du profil, seul ce profil aura ce libellé.
+
+Contrairement aux autres règles, celle-ci définie au niveau du profil est prioritaire sur une règle définie au niveau du navigateur.
+
+Le libellé personnalisé ne sera pas traduit.</translation>
 <translation id="1599424828227887013">Activer l'isolation des sites pour des origines définies sur les appareils Android</translation>
 <translation id="159946228300522107">Si cette règle est définie sur "True", Chrome agrandit la première fenêtre affichée à la première exécution.
 
@@ -4203,6 +4214,7 @@ La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /
       Si cette règle est désactivée ou qu'elle n'est pas configurée, le mode avancé de recharge de la batterie est désactivé.
 
       Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
+<translation id="4307479555111916927">Définir un libellé d'entreprise personnalisé</translation>
 <translation id="4309091698378414920">Activer la mise en surbrillance du curseur de saisie</translation>
 <translation id="4311141497190183490">Si cette règle est définie sur "1", les sites peuvent suivre la position géographique des utilisateurs (état par défaut). Si cette règle est définie sur "2", les sites ne sont pas autorisés à suivre la position par défaut. Vous pouvez définir cette règle de façon qu'un site demande systématiquement l'autorisation de suivre la position des utilisateurs.
 

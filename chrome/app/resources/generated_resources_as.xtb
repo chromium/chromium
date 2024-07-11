@@ -3103,7 +3103,6 @@
 <translation id="322708765617468434">ছেটআপ কৰাৰ পাছত, আপুনি যিকোনো সময়তে ডিভাইচটোত আন এগৰাকী ব্যক্তিক যোগ দিব পাৰে। প্ৰতিগৰাকী ব্যক্তিয়ে তেওঁৰ অভিজ্ঞতা ব্যক্তিগতকৰণ কৰিব পাৰে আৰু ডেটাখিনি ব্যক্তিগত কৰি ৰাখিব পাৰে।</translation>
 <translation id="3227137524299004712">মাইক্ৰ’ফ’ন</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{ইয়াক আঁতৰাওক অথবা <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />ত পৰা পোৱা একেধৰণৰ এক্সটেনশ্বনৰ সৈতে এইটোক সালসলনি কৰক।}one{সেইসমূহ আঁতৰাওক অথবা <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />ত পৰা পোৱা একেধৰণৰ এক্সটেনশ্বনৰ সৈতে সেইসমূহক সালসলনি কৰক}other{সেইসমূহ আঁতৰাওক অথবা <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />ত পৰা পোৱা একেধৰণৰ এক্সটেনশ্বনৰ সৈতে সেইসমূহক সালসলনি কৰক}}</translation>
-<translation id="3229412050601871341">ডিভাইচৰ পাছৱৰ্ড</translation>
 <translation id="3230539834943294477">সহায়ক প্ৰবন্ধসমূহ চাওক বা ডিভাইচৰ সমৰ্থন বিচাৰক</translation>
 <translation id="3232168089952388105">আপোনাৰ ডিভাইচৰ বিষয়ে তথ্য শ্বেয়াৰ কৰিবনে?</translation>
 <translation id="3232368113895801406">আপোনাৰ সুৰক্ষাৰ অগ্ৰাধিকাৰসমূহে পৃথকীকৃত এপ্‌সমূহৰ ইনষ্টলেশ্বনৰ অনুমতি নিদিয়ে। <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4901,6 +4900,7 @@
 <translation id="4554591392113183336">বাহ্যিক এক্সটেনশ্বনটো ইতিমধ্যে থকা এক্সটেনশ্বনৰ সৈতে একেই বা তাতকৈ তলৰ সংস্কৰণ।</translation>
 <translation id="4555769855065597957">ছাঁ</translation>
 <translation id="4555863373929230635">আপোনাৰ Google একাউণ্টটোত পাছৱৰ্ডসমূহ ছেভ কৰিবলৈ ছাইন ইন কৰি ছিংক কৰা সুবিধাটো অন কৰক।</translation>
+<translation id="4556069465387849460">পাছৱৰ্ড পূৰ কৰাৰ বাবে আপুনি আপোনাৰ স্ক্ৰীন লক ব্যৱহাৰ কৰি আছে</translation>
 <translation id="4556072422434361369"><ph name="WEBSITE_NAME" />ৰ বাবে <ph name="SENDER_NAME" />এ আপোনাৰ সৈতে এটা পাছৱৰ্ড শ্বেয়াৰ কৰিছে। আপুনি সেইটো ছাইন ইন ফৰ্মখনত ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="4558426062282641716">স্বয়ংক্ৰিয়ভাৱে লঞ্চ কৰাৰ অনুমতি বিচাৰি অনুৰোধ কৰা হৈছে</translation>
 <translation id="4558542033859106586"><ph name="TARGET_APP" />ত খুলি থকা হৈছে</translation>
@@ -10280,7 +10280,6 @@
 <translation id="8557100046150195444">অব্যাহত ৰাখিবলৈ স্পৰ্শ আইডি ব্যৱহাৰ কৰক</translation>
 <translation id="8557180006508471423">আপোনাৰ Macৰ অৱস্থান সেৱাসমূহত থকা "Google Chrome" অন কৰক</translation>
 <translation id="8557856025359704738">পৰৱৰ্তী ডাউনল’ড <ph name="NEXT_DATE_DOWNLOAD" />ত আছে।</translation>
-<translation id="8558281414737757274">Google একাউণ্টৰ পাছৱৰ্ড</translation>
 <translation id="8559858985063901027">পাছকী</translation>
 <translation id="8559961053328923750">Chromeএ ছাইটসমূহে বিজ্ঞাপন পাৰদৰ্শিতা জোখ-মাখ কৰিবলৈ ব্ৰাউজাৰটোৰ জৰিয়তে শ্বেয়াৰ কৰিব পৰা মুঠ ডেটা সীমিত কৰে</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{সকলো &amp;নতুন ৱিণ্ড’ত খোলক}=1{&amp;নতুন ৱিণ্ড’ত খোলক}one{সকলো ({COUNT} টা) &amp;নতুন ৱিণ্ড’ত খোলক}other{সকলো ({COUNT} টা) &amp;নতুন ৱিণ্ড’ত খোলক}}</translation>

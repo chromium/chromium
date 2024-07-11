@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">Угаалгын өрөө</translation>
 <translation id="2657637947725373811">{0,plural, =1{Нууцлалтай файл шилжүүлэх үү?}other{Нууцлалтай файлууд шилжүүлэх үү?}}</translation>
 <translation id="2658843814961855121">Хөдөлмөрийн болон хөдөлмөр эрхлэлтийн хууль</translation>
-<translation id="2658944305627908367">Таны үлдэгдлээс хэтэрсэн гүйлгээг боловсруулахгүй</translation>
 <translation id="2660779039299703961">Үйл явдал</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Байхгүй}=1{(<ph name="DOMAIN_LIST" />-н) 1 нууц үг}=2{(<ph name="DOMAIN_LIST" />-н) 2 нууц үг}other{(<ph name="DOMAIN_LIST" />-н) # нууц үг}}</translation>
 <translation id="2666092431469916601">Дээд</translation>
@@ -1535,6 +1534,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" />-н нөхцөлүүдийг эндээс харна уу</translation>
 <translation id="3872834068356954457">Шинжлэх ухаан</translation>
 <translation id="3875783148670536197">Надад хэрхэн хийхийг харуулна уу</translation>
+<translation id="3879748587602334249">Таталтын менежер</translation>
 <translation id="3880456882942693779">Урлаг, энтертэйнмент</translation>
 <translation id="3880589673277376494">Интернэт, телеком</translation>
 <translation id="3881478300875776315">Арай цөөн мөр харуулах</translation>
@@ -3691,7 +3691,6 @@
 <translation id="800218591365569300">Санах ойн багтаамжийг нэмэгдүүлэхийн тулд бусад таб, эсвэл программыг хаана уу.</translation>
 <translation id="8002230960325005199">Холбоотой сайтуудыг шинэ табд харна уу</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Хуулаад буулгахгүйгээр Pix-р төлөөрэй</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
 <translation id="8009058079740742415">Гэрийн аюулгүй байдал, хамгаалалт</translation>
 <translation id="8009225694047762179">Нууц үгийг удирдах</translation>

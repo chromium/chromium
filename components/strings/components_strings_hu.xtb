@@ -890,7 +890,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2655752832536625875">Fürdőszoba</translation>
 <translation id="2657637947725373811">{0,plural, =1{Átviszi a bizalmas fájlt?}other{Átviszi a bizalmas fájlokat?}}</translation>
 <translation id="2658843814961855121">Munkaügyi és foglalkoztatási jogszabályok</translation>
-<translation id="2658944305627908367">Az egyenlegét meghaladó tranzakciókat nem dolgozza fel a rendszer</translation>
 <translation id="2660779039299703961">Esemény</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nincs}=1{1 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />)}=2{2 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />)}other{# jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Felülre</translation>
@@ -1532,6 +1531,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3865339060090354361">Itt tekintheti meg a következő általános szerződési feltételeit: <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Természettudományok</translation>
 <translation id="3875783148670536197">Bemutató</translation>
+<translation id="3879748587602334249">Letöltéskezelő</translation>
 <translation id="3880456882942693779">Művészet és szórakoztatás</translation>
 <translation id="3880589673277376494">Internet és telekommunikáció</translation>
 <translation id="3881478300875776315">Kevesebb sor megjelenítése</translation>
@@ -3689,7 +3689,6 @@ További részletek:
 <translation id="800218591365569300">Próbáljon meg bezárni más lapokat vagy programokat memória felszabadítása céljából.</translation>
 <translation id="8002230960325005199">A kapcsolódó webhelyek megtekintése új lapon</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Fizethet a Pix szolgáltatással másolás és beillesztés nélkül</translation>
 <translation id="8004582292198964060">Böngésző</translation>
 <translation id="8009058079740742415">Otthoni biztonság</translation>
 <translation id="8009225694047762179">Jelszó kezelése</translation>

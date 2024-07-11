@@ -890,7 +890,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2655752832536625875">Baño</translation>
 <translation id="2657637947725373811">{0,plural, =1{Queres transferir o ficheiro confidencial?}other{Queres transferir os ficheiros confidenciais?}}</translation>
 <translation id="2658843814961855121">Lexislación laboral</translation>
-<translation id="2658944305627908367">Non se procesarán as transaccións cun importe superior ao teu saldo</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ningún}=1{1 contrasinal (para <ph name="DOMAIN_LIST" />)}=2{2 contrasinais (para <ph name="DOMAIN_LIST" />)}other{# contrasinais (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Parte superior</translation>
@@ -1534,6 +1533,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3865339060090354361">Consulta as condicións de <ph name="CREDIT_CARD_NAME" /> aquí</translation>
 <translation id="3872834068356954457">Ciencia</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
+<translation id="3879748587602334249">Xestor de descargas</translation>
 <translation id="3880456882942693779">Arte e entretemento</translation>
 <translation id="3880589673277376494">Internet e telecomunicacións</translation>
 <translation id="3881478300875776315">Mostrar menos liñas</translation>
@@ -3691,7 +3691,6 @@ Detalles adicionais:
 <translation id="800218591365569300">Proba a pechar outras pestanas ou programas para liberar memoria.</translation>
 <translation id="8002230960325005199">Ver os sitios relacionados nunha pestana nova</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Paga con Pix sen copiar nin pegar nada</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009058079740742415">Seguranza doméstica</translation>
 <translation id="8009225694047762179">Xestionar contrasinais</translation>

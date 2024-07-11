@@ -1830,14 +1830,6 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 
       Chính sách này chỉ ảnh hưởng đến quyền truy cập vào thiết bị USB thông qua API WebUSB. Để cấp quyền truy cập vào thiết bị USB thông qua API Web Serial, hãy xem chính sách <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Cho phép cha mẹ thêm tài khoản được giám sát</translation>
-<translation id="2321579668315362556">Danh sách các miền không được phân giải bằng giao thức DNS-over-HTTPS. Hệ thống sẽ bỏ qua chính sách này nếu bạn đặt chế độ DNS bảo mật thành tắt (luôn sử dụng DNS dạng văn bản thuần tuý).
-
-Nếu bạn cũng thiết lập chính sách <ph name="DOH_TEMPLATES_POLICY_NAME" /> thì một miền cụ thể hơn sẽ được ưu tiên. Mức độ cụ thể tương ứng với số lượng dấu chấm (".") trong miền. Khi một miền khớp với cả hai chính sách, miền đó sẽ không được phân giải bằng giao thức DNS-over-HTTPS.
-
-
-Các miền phải ở dạng tên miền đủ điều kiện (FQDN) hoặc dạng hậu tố tên miền được ghi chú bằng một tiền tố dùng ký tự đại diện đặc biệt "*".
-
-Hệ thống sẽ bỏ qua các miền không đúng định dạng.</translation>
 <translation id="2326031114717677574">Chu kỳ hệ thống lấy mẫu và thu thập dữ liệu âm thanh. Thời gian tối thiểu cho phép là 1 phút.
 
       Nếu bạn không đặt chính sách này, thì chu kỳ mặc định là 15 phút sẽ được áp dụng.</translation>
@@ -4744,19 +4736,6 @@ Nếu bạn không đặt chính sách này, thì người dùng có thể thay 
 Việc đặt <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> chỉ có hiệu lực nếu bạn đặt <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> thành False.</translation>
 <translation id="4638906910792947645">Bật khảo sát trong sản phẩm</translation>
 <translation id="4641557638919545432">Cú pháp cũ không dùng nữa sẽ bật.</translation>
-<translation id="464549601667073177">URL tới một hình ảnh sẽ được dùng làm huy hiệu doanh nghiệp cho hồ sơ. URL phải trỏ đến một hình ảnh.
-
-Huy hiệu này sẽ hiển thị trên thanh công cụ.
-
-Nếu bạn đặt chính sách này ở cấp trình duyệt thì tất cả hồ sơ sẽ có biểu trưng này trên thanh công cụ.
-
-Nếu bạn đặt chính sách này ở cấp hồ sơ thì chỉ hồ sơ đó mới có biểu trưng này.
-
-Nếu bạn không đặt chính sách này, thì biểu tượng toà nhà mặc định sẽ hiển thị.
-
-Nếu xảy ra lỗi trong khi cố gắng tải và hiển thị hình ảnh, thì biểu tượng toà nhà mặc định sẽ hiển thị.
-
-Không giống như các chính sách khác, chính sách này được thiết lập ở cấp hồ sơ sẽ được ưu tiên hơn chính sách thiết lập ở cấp trình duyệt.</translation>
 <translation id="4646626362889216307">Việc đặt chính sách này cho phép hợp nhất các chính sách đã chọn khi các chính sách đó thuộc nhiều nguồn nhưng có cùng phạm vi và cấp độ. Quá trình hợp nhất này bao gồm việc hợp nhất các khoá ở cấp độ đầu tiên của từ điển thuộc mỗi nguồn. Khoá thuộc nguồn có mức độ ưu tiên cao nhất sẽ được ưu tiên.
 
       Hãy sử dụng ký tự đại diện "*" để cho phép hợp nhất tất cả chính sách hỗ trợ từ điển.
@@ -10456,15 +10435,6 @@ Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được 
 <translation id="8955719471735800169">Quay lại đầu trang</translation>
 <translation id="8956312248048980644">Cho phép phân nhóm tác nhân theo khoá nguồn gốc theo mặc định.</translation>
 <translation id="8963464192296208229">Chế độ cài đặt phím F11 sử dụng phím tắt chứa phím bổ trợ alt</translation>
-<translation id="8967471637670665984">Danh sách các miền sẽ được phân giải bằng giao thức DNS-over-HTTPS. Những miền khác không có trong danh sách sẽ không được phân giải bằng giao thức DNS-over-HTTPS. Hệ thống sẽ bỏ qua chính sách này nếu bạn đặt chế độ DNS bảo mật thành tắt (luôn sử dụng DNS dạng văn bản thuần tuý).
-
-Nếu bạn để trống hoặc không thiết lập danh sách này, tất cả các miền sẽ được phân giải bằng giao thức DNS-over-HTTPS bất cứ khi nào có thể. Đây là hành vi tương tự với một danh sách miền đi kèm có giá trị ["*"].
-
-Nếu bạn cũng thiết lập chính sách <ph name="DOH_TEMPLATES_POLICY_NAME" /> thì một miền cụ thể hơn sẽ được ưu tiên. Mức độ cụ thể tương ứng với số lượng dấu chấm (".") trong miền. Khi một miền khớp với cả hai chính sách, miền đó sẽ không được phân giải bằng giao thức DNS-over-HTTPS.
-
-Các miền phải ở dạng tên miền đủ điều kiện (FQDN) hoặc dạng hậu tố tên miền được ghi chú bằng một tiền tố dùng ký tự đại diện đặc biệt "*".
-
-Hệ thống sẽ bỏ qua các miền không đúng định dạng.</translation>
 <translation id="8970205333161758602">Loại bỏ lời nhắc từ chối <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Chọn có cho người dùng thấy lời nhắc của <ph name="PRIVACY_SANDBOX_NAME" /> hay không</translation>
 <translation id="8974457039656761249">Kiểm soát tính năng gợi ý khi viết bằng bàn phím vật lý</translation>

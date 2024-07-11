@@ -3089,7 +3089,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="322708765617468434">Sempre pots afegir una altra persona al dispositiu després de la configuració. Cada persona pot personalitzar la seva experiència i mantenir la privadesa de les dades.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Suprimeix-la o substitueix-la per una extensió similar de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Suprimeix-les o substitueix-les per extensions similars de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
-<translation id="3229412050601871341">Contrasenya del dispositiu</translation>
 <translation id="3230539834943294477">Consulta els articles d'ajuda o cerca assistència per a dispositius</translation>
 <translation id="3232168089952388105">Vols compartir informació sobre el dispositiu?</translation>
 <translation id="3232368113895801406">Les teves preferències de seguretat no permeten la instal·lació d'aplicacions aïllades. <ph name="CHANGE_PREFERENCE" />.</translation>
@@ -4886,6 +4885,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4554591392113183336">L'extensió externa té la mateixa versió, o una d'anterior, en comparació amb l'existent.</translation>
 <translation id="4555769855065597957">Ombra</translation>
 <translation id="4555863373929230635">Per desar les contrasenyes al teu Compte de Google, inicia-hi la sessió i activa la sincronització.</translation>
+<translation id="4556069465387849460">Estàs utilitzant el bloqueig de pantalla per emplenar contrasenyes</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> ha compartit una contrasenya amb tu per a <ph name="WEBSITE_NAME" />. Pots utilitzar-la al formulari d'inici de sessió.</translation>
 <translation id="4558426062282641716">S'ha sol·licitat permís per iniciar-se automàticament</translation>
 <translation id="4558542033859106586">S'està obrint a <ph name="TARGET_APP" /></translation>
@@ -10264,7 +10264,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8557100046150195444">Utilitza Touch ID per continuar</translation>
 <translation id="8557180006508471423">Activa Google Chrome als serveis d'ubicació del Mac.</translation>
 <translation id="8557856025359704738">La baixada següent serà a les <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Contrasenya del Compte de Google</translation>
 <translation id="8559858985063901027">Claus d'accés</translation>
 <translation id="8559961053328923750">Chrome limita la quantitat total de dades que els llocs web poden compartir a través del navegador per mesurar el rendiment dels anuncis</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Obre-les totes en una finestra &amp;nova}=1{Obre en una finestra &amp;nova}other{Obre-les totes ({COUNT}) en una finestra &amp;nova}}</translation>

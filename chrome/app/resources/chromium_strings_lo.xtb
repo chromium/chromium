@@ -35,7 +35,6 @@
 
 ການອະນຸຍາດທີ່ທ່ານໄດ້ມອບໃຫ້ເວັບໄຊ ແລະ ແອັບຕ່າງໆໄປກ່ອນແລ້ວອາດມີຜົນກັບບັນຊີນີ້ນຳ. ທ່ານສາມາດຈັດການບັນຊີ Google ຂອງທ່ານໄດ້ໃນ <ph name="SETTINGS_LINK_BEGIN" />ການຕັ້ງຄ່າ<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">ກຳລັງດາວໂຫຼດ...</translation>
-<translation id="1708666629004767631">ມີ Chromium ລຸ້ນໃໝ່ປອດໄພກ່ວາຢູ່.</translation>
 <translation id="1715127912119967311">ເພື່ອຊ່ວຍປັບປຸງຄຸນສົມບັດເຫຼົ່ານີ້, Chromium ສົ່ງການໂຕ້ຕອບຂອງທ່ານກັບເຂົາເຈົ້າໄປຫາ Google. ຂໍ້ມູນນີ້ອາດຈະຖືກອ່ານ, ປະມວນຜົນ ແລະ ໃສ່ການອະທິບາຍຄວາມເຫັນໂດຍທີມງານກວດສອບ.</translation>
 <translation id="1722488837206509557">ວິທີນີ້ຈະຊ່ວຍໃຫ້ທ່ານສາມາດເລືອກຈາກອຸປະກອນທີ່ພ້ອມນຳໃຊ້ ແລະ ສະແດງເນື້ອຫາຢູ່ອຸປະກອນເຫຼົ່ານັ້ນ.</translation>
 <translation id="17264556997921157">ທ່ານສາມາດເບິ່ງ ແລະ ລຶບຫົວຂໍ້ຂອງຄວາມສົນໃຈທີ່ເວັບໄຊຕ່າງໆໃຊ້ເພື່ອສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນໄດ້. Chromium ປະເມີນຄວາມສົນໃຈຂອງທ່ານໂດຍອ້າງອີງໃສ່ປະຫວັດການທ່ອງເວັບຫຼ້າສຸດຂອງທ່ານ.</translation>
@@ -171,7 +170,6 @@
 <translation id="3713809861844741608">ເປີດລິ້ງໃນແຖບ Chromium ໃໝ່</translation>
 <translation id="3728124580182886854">ລິ້ງ Chromium ແລະ ບໍລິການອື່ນໆຂອງ Google ເພື່ອການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ຈຸດປະສົງອື່ນໆ</translation>
 <translation id="3788675262216168505">ຈັດການໂປຣໄຟລ໌ Chromium</translation>
-<translation id="378917192836375108">Chromium ເຮັດໃຫ້ທ່ານຄລິກເບີໂທລະສັບຢູ່ໃນເວັບ ແລະ ໂທມັນດ້ວຍ Skype ໄດ້!</translation>
 <translation id="3790262771324122253">ສຶກສາວ່າເປັນຫຍັງ Chromium ຈຶ່ງບລັອກການດາວໂຫຼດບາງລາຍການ</translation>
 <translation id="379589255253486813">Chromium ຈະແຈ້ງໃຫ້ທ່ານຮູ້ຫາກມີສິ່ງໃດທີ່ທ່ານຕ້ອງກວດສອບ</translation>
 <translation id="3802055581630249637">Chromium ໂຫຼດໜ້າເວັບທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງໄວ້ກ່ອນລ່ວງໜ້າ, ເພື່ອໃຫ້ພວກມັນໂຫຼດໄວຂຶ້ນເມື່ອທ່ານເຂົ້າເບິ່ງ</translation>
@@ -268,7 +266,6 @@
 <translation id="5383439451358640070">ສຶກສາວ່າເປັນຫຍັງ Chromium ຈຶ່ງບລັອກໄຟລ໌ບາງລາຍການ</translation>
 <translation id="5386450000063123300">ກຳລັງອັບເດດ Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chromium</translation>
-<translation id="5398878173008909840">ມີ Chromium ລຸ້ນໃໝ່ຢູ່.</translation>
 <translation id="5405650547142096840">ເອົາ​ອອກ​ຈາກ Chromium</translation>
 <translation id="5427571867875391349">ຕັ້ງ Chromium ເປັນບຣາວ​ເຊີມາດຕະຖານຂອງທ່ານ</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
@@ -302,7 +299,6 @@
 <translation id="6003112304606738118">ກຳລັງດາວໂຫຼດ... ຍັງເຫຼືອ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
 <translation id="6019451407441383358">ທ່ານສາມາດເປີດບຸກມາກ, ໂໝດການອ່ານ ແລະ ອື່ນໆໄດ້ຈາກເມນູ Chromium ທີ່ຢູ່ເບື້ອງຂວາເທິງສຸດ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
-<translation id="6055895534982063517">ມີ Chromium ລຸ້ນໃໝ່ຢູ່, ແລະມັນປອດໄພກ່ວາຜ່ານມາ.</translation>
 <translation id="6058380562449900225">ເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານ, ອະນຸຍາດໃຫ້ Chromium ລຶບການອະນຸຍາດອອກຈາກເວັບໄຊທີ່ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. ແຕ່ບໍ່ຢຸດການແຈ້ງເຕືອນ.</translation>
 <translation id="6063093106622310249">&amp;ເປີດໃນ Chromium</translation>
 <translation id="6072279588547424923">ເພີ່ມ <ph name="EXTENSION_NAME" /> ໃສ່ Chromium ແລ້ວ</translation>
@@ -381,7 +377,6 @@
 <translation id="684888714667046800">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. ຫາກທ່ານໃຊ້ firewall, ກະລຸນາກວດສອບໃຫ້ໝັ້ນໃຈວ່າ <ph name="PRODUCT_EXE_NAME" /> ຢູ່ໃນລາຍຊື່ອະນຸຍາດ.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium ພົບວ່າ "<ph name="EXTENSION_NAME" />" ມີເມົາແວ</translation>
-<translation id="6893813176749746474">ອັບເດດ Chromium ແລ້ວ, ແຕ່ທ່ານບໍ່ໄດ້ໃຊ້ມັນເປັນເວລາຢ່າງໜ້ອຍ 30 ວັນແລ້ວ​.</translation>
 <translation id="691026815377248078">Chromium ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສືບຕໍ່ 
  ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6929417474050522668">ເມື່ອເປີດໃຊ້ການທົດລອງໃຊ້, ການວັດແທກໂຄສະນາຈະເຮັດໃຫ້ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດຮ້ອງຂໍຂໍ້ມູນຈາກ Chromium ທີ່ຊ່ວຍໃຫ້ເວັບໄຊວັດແທກປະສິດທິພາບຂອງໂຄສະນາຂອງເຂົາເຈົ້າໄດ້. ການວັດແທກໂຄສະນາຈະຈຳກັດການຕິດຕາມຂ້າມເວັບໄຊໂດຍການໂອນຍ້າຍຂໍ້ມູນໜ້ອຍທີ່ສຸດເທົ່າທີ່ຈະເປັນໄປໄດ້ລະຫວ່າງເວັບໄຊ.</translation>

@@ -890,7 +890,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2655752832536625875">Banja</translation>
 <translation id="2657637947725373811">{0,plural, =1{Të transferohet skedari konfidencial?}other{Të transferohen skedarët konfidencialë?}}</translation>
 <translation id="2658843814961855121">Ligji i punës dhe punësimit</translation>
-<translation id="2658944305627908367">Transaksionet që tejkalojnë balancën tënde nuk do të përpunohen</translation>
 <translation id="2660779039299703961">Ngjarje</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Asnjë}=1{1 fjalëkalim (për <ph name="DOMAIN_LIST" />)}=2{2 fjalëkalime (për <ph name="DOMAIN_LIST" />)}other{# fjalëkalime (për <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">I sipërm</translation>
@@ -1534,6 +1533,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3865339060090354361">Shiko kushtet këtu për <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Shkenca</translation>
 <translation id="3875783148670536197">Më trego mënyrën</translation>
+<translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
 <translation id="3880456882942693779">Arte dhe zbavitje</translation>
 <translation id="3880589673277376494">Interneti dhe telekomunikacioni</translation>
 <translation id="3881478300875776315">Shfaq më pak rreshta</translation>
@@ -3690,7 +3690,6 @@ Detaje shtesë:
 <translation id="800218591365569300">Provo të mbyllësh skedat ose programet e tjera për të liruar memorien.</translation>
 <translation id="8002230960325005199">Shiko sajtet e lidhura në një skedë të re</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">Paguaj me Pix pa kopjim dhe ngjitje</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>
 <translation id="8009058079740742415">Mbrojtja dhe siguria e shtëpisë</translation>
 <translation id="8009225694047762179">Menaxho fjalëkalimet</translation>

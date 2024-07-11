@@ -3101,7 +3101,6 @@
 <translation id="322708765617468434">設定完成後，你可隨時在裝置中新增其他使用者。每位使用者都可將體驗個人化，以確保資料私隱。</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{請移除擴充程式，或前往「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」尋找可取代的類似擴充程式。}other{請移除擴充程式，或前往「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」尋找可取代的類似擴充程式}}</translation>
-<translation id="3229412050601871341">裝置密碼</translation>
 <translation id="3230539834943294477">查看說明文章或尋找裝置支援</translation>
 <translation id="3232168089952388105">要分享裝置相關資料嗎？</translation>
 <translation id="3232368113895801406">你的安全偏好設定不允許安裝隔離的應用程式。<ph name="CHANGE_PREFERENCE" /></translation>
@@ -4892,6 +4891,7 @@
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同或較低。</translation>
 <translation id="4555769855065597957">陰影</translation>
 <translation id="4555863373929230635">如要將密碼儲存至 Google 帳戶，請登入並開啟同步功能。</translation>
+<translation id="4556069465387849460">您正在使用螢幕鎖定功能填入密碼</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" />已與你分享 <ph name="WEBSITE_NAME" /> 的密碼。你可在登入表格中使用。</translation>
 <translation id="4558426062282641716">已要求自動啟動權限</translation>
 <translation id="4558542033859106586">正在 <ph name="TARGET_APP" /> 中開啟</translation>
@@ -10267,7 +10267,6 @@
 <translation id="8557100046150195444">使用 Touch ID 以繼續操作</translation>
 <translation id="8557180006508471423">請在 Mac 上的「定位服務」中開啟「Google Chrome」</translation>
 <translation id="8557856025359704738">下次下載日期為 <ph name="NEXT_DATE_DOWNLOAD" />。</translation>
-<translation id="8558281414737757274">Google 帳戶密碼</translation>
 <translation id="8559858985063901027">密鑰</translation>
 <translation id="8559961053328923750">Chrome 會限制網站為評估廣告成效而透過瀏覽器分享的總資料量</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新視窗中開啟所有書籤(&amp;N)}=1{在新視窗中開啟書籤(&amp;N)}other{在新視窗中開啟全部 {COUNT} 個書籤(&amp;N)}}</translation>

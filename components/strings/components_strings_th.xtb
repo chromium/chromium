@@ -651,6 +651,7 @@
 <translation id="2168151236314517198">นโยบายของผู้ดูแลระบบบล็อกการพิมพ์เนื้อหานี้ไว้</translation>
 <translation id="2170417331417184438">บันทึกบัตรลงในอุปกรณ์นี้เท่านั้นเรียบร้อยแล้ว</translation>
 <translation id="2172089022819052306">การซ่อมแซมและบำรุงรักษายานพาหนะ</translation>
+<translation id="2174875517416416684">ทำธุรกรรมไม่สำเร็จ ไม่มีการถอนเงินออกจากบัญชีของคุณ</translation>
 <translation id="2175630235841878061">ไฟล์ที่มีขนาดเกิน 100 MB ไม่พร้อมให้ดาวน์โหลด</translation>
 <translation id="2176974405772725904">บันทึกที่อยู่ในบัญชี</translation>
 <translation id="2178665390943006934">ปุ่มอัปเดต Chrome เปิดใช้งานเพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
@@ -890,7 +891,6 @@
 <translation id="2655752832536625875">ห้องน้ำ</translation>
 <translation id="2657637947725373811">{0,plural, =1{โอนไฟล์ลับใช่ไหม}other{โอนไฟล์ลับใช่ไหม}}</translation>
 <translation id="2658843814961855121">กฎหมายแรงงานและการจ้างงาน</translation>
-<translation id="2658944305627908367">ระบบจะไม่ประมวลผลธุรกรรมที่มียอดเกินยอดคงเหลือของคุณ</translation>
 <translation id="2660779039299703961">กิจกรรม</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ไม่มี}=1{มีรหัสผ่าน 1 รายการ (สำหรับ <ph name="DOMAIN_LIST" />)}=2{มีรหัสผ่าน 2 รายการ (สำหรับ <ph name="DOMAIN_LIST" />)}other{มีรหัสผ่าน # รายการ (สำหรับ <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">ด้านบน</translation>
@@ -1533,6 +1533,7 @@
 <translation id="3865339060090354361">ดูข้อกำหนดเกี่ยวกับ <ph name="CREDIT_CARD_NAME" /> ที่นี่</translation>
 <translation id="3872834068356954457">วิทยาศาสตร์</translation>
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
+<translation id="3879748587602334249">Download Manager</translation>
 <translation id="3880456882942693779">ศิลปะและความบันเทิง</translation>
 <translation id="3880589673277376494">อินเทอร์เน็ตและโทรคมนาคม</translation>
 <translation id="3881478300875776315">แสดงบรรทัดน้อยลง</translation>
@@ -3390,6 +3391,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> มม.)</translation>
 <translation id="7450577240311017924">ปุ่มจัดการการซิงค์ เปิดใช้งานเพื่อจัดการข้อมูลที่คุณซิงค์ในการตั้งค่า Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับปัญหานี้</translation>
+<translation id="745208957946308667">เกมไดโนเสาร์ กด Space เพื่อเล่น</translation>
 <translation id="7454377933424667109">บัญชีระบบคลาวด์</translation>
 <translation id="7455133967321480974">ใช้ค่าเริ่มต้นสากล (บล็อก)</translation>
 <translation id="7455452752247248289">เทคโนโลยีขององค์กร</translation>
@@ -3690,7 +3692,6 @@
 <translation id="800218591365569300">ลองปิดแท็บหรือโปรแกรมอื่นๆ เพื่อเพิ่มหน่วยความจำ</translation>
 <translation id="8002230960325005199">ดูเว็บไซต์ที่เกี่ยวข้องในแท็บใหม่</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">ชำระเงินด้วย Pix โดยไม่ต้องคัดลอกและวาง</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
 <translation id="8009058079740742415">ความปลอดภัยและการรักษาความปลอดภัยในบ้าน</translation>
 <translation id="8009225694047762179">จัดการรหัสผ่าน</translation>
@@ -4044,6 +4045,7 @@
 <translation id="8676424191133491403">ไม่หน่วงเวลา</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, คำตอบ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">ไม่สามารถโหลดหน้าเว็บที่ <ph name="PAGE" /> เนื่องจาก:</translation>
+<translation id="8682297334444610648">เกมไดโนเสาร์ แตะเพื่อเล่น</translation>
 <translation id="8686424632716064939">การรักษาความปลอดภัยของคอมพิวเตอร์</translation>
 <translation id="8687278439622293018">ลบรายการ <ph name="ENTRY_VOICEOVER" /> แล้ว</translation>
 <translation id="8687429322371626002">อุปกรณ์และบัญชีของคุณจัดการโดย <ph name="MANAGER" /></translation>

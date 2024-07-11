@@ -4819,19 +4819,6 @@ Jika kebijakan tidak disetel, pengguna akan diizinkan mengubah daftar aplikasi t
 Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpengaruh jika <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> disetel ke Salah (False).</translation>
 <translation id="4638906910792947645">Aktifkan survei dalam produk</translation>
 <translation id="4641557638919545432">Sintaksis lama yang sudah tidak digunakan lagi akan diaktifkan.</translation>
-<translation id="464549601667073177">URL ke gambar yang akan digunakan sebagai badge perusahaan untuk profil. URL harus mengarah ke gambar.
-
-Badge ini akan ditampilkan di toolbar.
-
-Jika kebijakan ini disetel di tingkat browser, semua profil akan memiliki logo ini di toolbar.
-
-Jika kebijakan ini disetel di tingkat profil, hanya profil tersebut yang akan memiliki logo ini.
-
-Jika kebijakan ini tidak disetel, ikon gedung default akan ditampilkan.
-
-Jika terjadi error saat mencoba mendapatkan dan menampilkan gambar, ikon gedung default akan ditampilkan.
-
-Tidak seperti kebijakan lain, kebijakan yang disetel di tingkat profil ini akan lebih diprioritaskan daripada kebijakan yang disetel di tingkat browser.</translation>
 <translation id="4646626362889216307">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama. Penggabungan ini ada di kunci level pertama kamus dari setiap sumber. Kunci yang berasal dari sumber prioritas tertinggi akan diutamakan.
 
       Gunakan karakter pengganti '*' untuk mengizinkan penggabungan semua kebijakan kamus yang didukung.

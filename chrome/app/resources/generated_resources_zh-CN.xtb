@@ -3081,7 +3081,6 @@
 <translation id="322708765617468434">设置完成后，您随时可以将其他用户添加到设备。每个人都可对自己的体验进行个性化设置并确保数据的私密性。</translation>
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{请移除该扩展程序，或将其替换为 <ph name="BEGIN_LINK" />Chrome 应用商店<ph name="END_LINK" />中的类似扩展程序}other{请移除这些扩展程序，或将其替换为 <ph name="BEGIN_LINK" />Chrome 应用商店<ph name="END_LINK" />中的类似扩展程序}}</translation>
-<translation id="3229412050601871341">设备密码</translation>
 <translation id="3230539834943294477">查看帮助文章或查找设备支持</translation>
 <translation id="3232168089952388105">要分享设备相关信息吗？</translation>
 <translation id="3232368113895801406">您的安全偏好设置不允许安装独立式应用。<ph name="CHANGE_PREFERENCE" /></translation>
@@ -4878,6 +4877,7 @@
 <translation id="4554591392113183336">外部扩展程序的版本与现有版本相同或更低。</translation>
 <translation id="4555769855065597957">阴影</translation>
 <translation id="4555863373929230635">若想将密码保存到您的 Google 账号中，请登录账号并开启同步功能。</translation>
+<translation id="4556069465387849460">您正在使用屏幕锁定功能填充密码</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" />与您分享了 <ph name="WEBSITE_NAME" /> 的密码。您可以在登录表单中使用该密码。</translation>
 <translation id="4558426062282641716">已请求获取自动启动权限</translation>
 <translation id="4558542033859106586">正在 <ph name="TARGET_APP" /> 中打开…</translation>
@@ -10253,7 +10253,6 @@
 <translation id="8557100046150195444">使用触控 ID 继续</translation>
 <translation id="8557180006508471423">在 Mac 上的“定位服务”中开启“Google Chrome”</translation>
 <translation id="8557856025359704738">下次下载将于 <ph name="NEXT_DATE_DOWNLOAD" />进行。</translation>
-<translation id="8558281414737757274">Google 账号密码</translation>
 <translation id="8559858985063901027">密钥</translation>
 <translation id="8559961053328923750">Chrome 会限制网站为衡量广告效果而通过浏览器分享的数据总量</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>

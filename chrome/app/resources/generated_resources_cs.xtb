@@ -1026,6 +1026,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1730989807608739928">Přejít na poslední kartu</translation>
 <translation id="1731520826054843792">Šablona certifikátu Microsoft</translation>
 <translation id="1731911755844941020">Zasílání požadavku</translation>
+<translation id="1732380773380808394">Získáte také hesla a další informace ze svého účtu Google.</translation>
 <translation id="1734212868489994726">Světle modrá</translation>
 <translation id="1734230530703461088">Rozšíření se v časovém limitu nepodařilo načíst. Obraťte se na administrátora.</translation>
 <translation id="1734824808160898225">Je možné, že se <ph name="PRODUCT_NAME" /> nebude moci aktualizovat</translation>
@@ -3090,7 +3091,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="322708765617468434">Po nastavení můžete do zařízení vždy přidat další osobu. Každý uživatel si může své prostředí přizpůsobit a chránit soukromí svých dat.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Odstraňte ho nebo ho nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />.}few{Odstraňte je nebo je nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />}many{Odstraňte je nebo je nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />}other{Odstraňte je nebo je nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />}}</translation>
-<translation id="3229412050601871341">Heslo zařízení</translation>
 <translation id="3230539834943294477">Přečtěte si články nápovědy nebo vyhledejte podporu k zařízení</translation>
 <translation id="3232168089952388105">Sdílet informace o zařízení?</translation>
 <translation id="3232368113895801406">Vaše předvolby zabezpečení nepovolují instalace izolovaných aplikací. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4887,6 +4887,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4554591392113183336">Externí rozšíření má stejnou nebo nižší verzi než stávající.</translation>
 <translation id="4555769855065597957">Stín</translation>
 <translation id="4555863373929230635">Chcete-li hesla ukládat do účtu Google, přihlaste se a zapněte synchronizaci.</translation>
+<translation id="4556069465387849460">K vyplňování hesel používáte zámek obrazovky</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> s vámi sdílí heslo pro web <ph name="WEBSITE_NAME" />. Můžete ho použít v přihlašovacím formuláři.</translation>
 <translation id="4558426062282641716">Jsou požadována oprávnění k automatickému spuštění</translation>
 <translation id="4558542033859106586">Otevírání v aplikaci <ph name="TARGET_APP" /></translation>
@@ -5809,6 +5810,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5247243947166567755">Vybrat záložku <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Prohlížeč před dokončením stahování selhal.</translation>
 <translation id="5250372599208556903">Vyhledávač <ph name="SEARCH_ENGINE_NAME" /> poskytuje místní obsah na základě vaší polohy. Toto nastavení můžete změnit na stránce <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Vytvořte nový obnovovací PIN pro Správce hesel Google</translation>
 <translation id="5252496130205799136">Používat váš účet Google k ukládání a vyplňování hesel?</translation>
 <translation id="5252653240322147470">Maximální počet číslic v kódu PIN: <ph name="MAXIMUM" /></translation>
 <translation id="5253554634804500860">Použít <ph name="DEVICE_NAME" /></translation>
@@ -10264,7 +10266,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8557100046150195444">Pokračujte pomocí Touch ID</translation>
 <translation id="8557180006508471423">Na počítači Mac zapněte ve službách určování polohy Google Chrome</translation>
 <translation id="8557856025359704738">Další stažení proběhne v <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Heslo účtu Google</translation>
 <translation id="8559858985063901027">Přístupové klíče</translation>
 <translation id="8559961053328923750">Chrome omezuje celkové množství dat, které mohou weby prostřednictvím prohlížeče sdílet za účelem měření výkonu reklam.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Otevřít vše v &amp;novém okně}=1{Otevřít v &amp;novém okně}few{Otevřít vše ({COUNT}) v &amp;novém okně}many{Otevřít vše ({COUNT}) v &amp;novém okně}other{Otevřít vše ({COUNT}) v &amp;novém okně}}</translation>

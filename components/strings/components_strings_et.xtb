@@ -890,7 +890,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2655752832536625875">Vannituba</translation>
 <translation id="2657637947725373811">{0,plural, =1{Kas kanda üle konfidentsiaalne fail?}other{Kas kanda üle konfidentsiaalsed failid?}}</translation>
 <translation id="2658843814961855121">Töövõtu- ja palgaseadused</translation>
-<translation id="2658944305627908367">Teie saldot ületavaid tehinguid ei töödelda</translation>
 <translation id="2660779039299703961">Sündmus</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Puudub}=1{1 parool (loendile <ph name="DOMAIN_LIST" />)}=2{2 parooli (loendile <ph name="DOMAIN_LIST" />)}other{# parooli (loendile <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Üles</translation>
@@ -1534,6 +1533,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3865339060090354361">Tingimused krediitkaardi <ph name="CREDIT_CARD_NAME" /> puhul leiate siit</translation>
 <translation id="3872834068356954457">Teadus</translation>
 <translation id="3875783148670536197">Kuva juhised</translation>
+<translation id="3879748587602334249">Allalaadimishaldur</translation>
 <translation id="3880456882942693779">Kunst ja meelelahutus</translation>
 <translation id="3880589673277376494">Internet ja telekommunikatsioon</translation>
 <translation id="3881478300875776315">Kuva vähem ridu</translation>
@@ -3691,7 +3691,6 @@ Lisateave:
 <translation id="800218591365569300">Sulgege muud vahelehed või programmid, et mälu vabastada.</translation>
 <translation id="8002230960325005199">Seotud saitide nägemine uuel vahelehel</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Maksmine Pixiga ilma kopeerimise ja kleepimiseta</translation>
 <translation id="8004582292198964060">Brauser</translation>
 <translation id="8009058079740742415">Koduohutus ja -turvalisus</translation>
 <translation id="8009225694047762179">Halda paroole</translation>

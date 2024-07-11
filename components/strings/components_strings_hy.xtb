@@ -894,7 +894,6 @@
 <translation id="2655752832536625875">Լոգասենյակ</translation>
 <translation id="2657637947725373811">{0,plural, =1{Տեղափոխե՞լ կոնֆիդենցիալ ֆայլը}one{Տեղափոխե՞լ կոնֆիդենցիալ ֆայլը}other{Տեղափոխե՞լ կոնֆիդենցիալ ֆայլերը}}</translation>
 <translation id="2658843814961855121">Աշխատանքի և զբաղվածության օրենք</translation>
-<translation id="2658944305627908367">Ձեր հաշվեկշիռը գերազանցող գործարքները չեն մշակվի</translation>
 <translation id="2660779039299703961">Իրադարձություն</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Չկա}=1{1 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}=2{2 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}one{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}other{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Վերին</translation>
@@ -1542,6 +1541,7 @@
 <translation id="3865339060090354361">Ծանոթացեք <ph name="CREDIT_CARD_NAME" />-ի օգտագործման պայմաններին</translation>
 <translation id="3872834068356954457">Գիտություն</translation>
 <translation id="3875783148670536197">Ցույց տալ, թե ինչպես</translation>
+<translation id="3879748587602334249">Ներբեռնման կառավարիչ</translation>
 <translation id="3880456882942693779">Արվեստ և զվարճանք</translation>
 <translation id="3880589673277376494">Ինտերնետ և հեռահաղորդակցություն</translation>
 <translation id="3881478300875776315">Ցույց տալ ավելի քիչ տողեր</translation>
@@ -3702,7 +3702,6 @@
 <translation id="800218591365569300">Փակեք մյուս ներդիրներն ու ծրագրերը՝ տարածք ազատելու համար:</translation>
 <translation id="8002230960325005199">Տեսնել առնչվող կայքերը նոր ներդիրում</translation>
 <translation id="8003046808285812021">«<ph name="SEARCH_TERMS" />»</translation>
-<translation id="8003697335101170520">Վճարեք Pix-ով՝ առանց պատճենելու և տեղադրելու</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
 <translation id="8009058079740742415">Տների անվտանգություն և պահպանություն</translation>
 <translation id="8009225694047762179">Կառավարել գաղտնաբառերը</translation>

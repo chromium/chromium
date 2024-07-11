@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">חדר אמבטיה</translation>
 <translation id="2657637947725373811">{0,plural, =1{להעביר את הקובץ הסודי?}one{להעביר את הקבצים הסודיים?}two{להעביר את הקבצים הסודיים?}other{להעביר את הקבצים הסודיים?}}</translation>
 <translation id="2658843814961855121">דיני עבודה והעסקה</translation>
-<translation id="2658944305627908367">לא יתבצע עיבוד לעסקאות שחורגות מהיתרה שלך</translation>
 <translation id="2660779039299703961">אירוע</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{אין}=1{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />)}=2{שתי סיסמאות (עבור <ph name="DOMAIN_LIST" />)}one{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />)}other{# סיסמאות (עבור <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">למעלה</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361">אפשר לעיין כאן בתנאים של <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">מדע</translation>
 <translation id="3875783148670536197">איך עושים זאת?</translation>
+<translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3880456882942693779">אומנויות ובידור</translation>
 <translation id="3880589673277376494">אינטרנט וטלקום</translation>
 <translation id="3881478300875776315">אני רוצה לראות פחות שורות</translation>
@@ -3696,7 +3696,6 @@ Del</translation>
 <translation id="800218591365569300">מומלץ לסגור כרטיסיות או תוכניות אחרות וכך לפנות מקום בזיכרון.</translation>
 <translation id="8002230960325005199">הצגת האתרים הקשורים בכרטיסייה חדשה</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
-<translation id="8003697335101170520">‏אפשר לשלם עם Pix בלי להעתיק ולהדביק</translation>
 <translation id="8004582292198964060">דפדפן</translation>
 <translation id="8009058079740742415">בטיחות ואבטחה בבית</translation>
 <translation id="8009225694047762179">ניהול סיסמאות</translation>

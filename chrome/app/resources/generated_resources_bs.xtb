@@ -3103,7 +3103,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="322708765617468434">Uvijek možete dodati drugu osobu na uređaj nakon postavljanja. Svaka osoba može personalizirati svoje iskustvo i čuvati privatnost podataka.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Uklonite je ili zamijenite sličnim ekstenzijama iz <ph name="BEGIN_LINK" />Chrome Web trgovine<ph name="END_LINK" />.}one{Uklonite ih ili zamijenite sličnim ekstenzijama iz <ph name="BEGIN_LINK" />Chrome Web trgovine<ph name="END_LINK" />}few{Uklonite ih ili zamijenite sličnim ekstenzijama iz <ph name="BEGIN_LINK" />Chrome Web trgovine<ph name="END_LINK" />}other{Uklonite ih ili zamijenite sličnim ekstenzijama iz <ph name="BEGIN_LINK" />Chrome Web trgovine<ph name="END_LINK" />}}</translation>
-<translation id="3229412050601871341">Lozinka uređaja</translation>
 <translation id="3230539834943294477">Pregledajte članke za pomoć ili pronađite podršku za uređaj</translation>
 <translation id="3232168089952388105">Dijeliti informacije o uređaju?</translation>
 <translation id="3232368113895801406">Sigurnosne postavke ne dozvoljavaju instalacije izoliranih aplikacija <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4901,6 +4900,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4554591392113183336">Vanjska ekstenzija je iste ili niže verzije u poređenju sa postojećom.</translation>
 <translation id="4555769855065597957">Sjena</translation>
 <translation id="4555863373929230635">Da sačuvate lozinke na svoj Google račun, prijavite se i uključite sinhroniziranje.</translation>
+<translation id="4556069465387849460">Koristite zaključavanje ekrana za popunjavanje lozinki</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> je s vama podijelio/la lozinku za web lokaciju <ph name="WEBSITE_NAME" />. Možete je koristiti u obrascu za prijavu.</translation>
 <translation id="4558426062282641716">Zatraženo je odobrenje za automatsko pokretanje</translation>
 <translation id="4558542033859106586">Otvaranje u aplikaciji <ph name="TARGET_APP" /></translation>
@@ -9828,6 +9828,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8230134520748321204">Sačuvati lozinku za <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Brisanje akreditiva <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Nemoj dozvoliti web lokacijama da prikazuju slike</translation>
+<translation id="823226567613548870">izbrisati vaše podatke za <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">Otvori sada</translation>
 <translation id="8234795456569844941">Pomozite našim inženjerima da riješe ovaj problem. Recite nam šta se dogodilo prije nego što ste dobili poruku o grešci na profilu:</translation>
 <translation id="8235418492073272647">Stranica je podijeljena s uređaja <ph name="DEVICE_NAME" /></translation>
@@ -10284,7 +10285,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8557100046150195444">Upotrijebite Touch ID da nastavite</translation>
 <translation id="8557180006508471423">Uključite "Google Chrome" u uslugama lokacije na Mac računaru</translation>
 <translation id="8557856025359704738">Sljedeće preuzimanje je dana <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Lozinka za Google račun</translation>
 <translation id="8559858985063901027">Pristupni ključevi</translation>
 <translation id="8559961053328923750">Chrome ograničava ukupnu količinu podataka koje web lokacije mogu dijeliti putem preglednika radi mjerenja performansi oglasa</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Otvori sve u &amp;novom prozoru}=1{Otvori u &amp;novom prozoru}one{Otvori sve ({COUNT}) u &amp;novom prozoru}few{Otvori sve ({COUNT}) u &amp;novom prozoru}other{Otvori sve ({COUNT}) u &amp;novom prozoru}}</translation>

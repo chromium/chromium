@@ -4605,19 +4605,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alleen effect als je <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> hebt ingesteld op False.</translation>
 <translation id="4638906910792947645">Enquêtes in het product aanzetten</translation>
 <translation id="4641557638919545432">De oude beëindigde syntaxis wordt aangezet.</translation>
-<translation id="464549601667073177">Een URL naar een afbeelding die wordt gebruikt als zakelijke badge voor het profiel. De URL moet naar een afbeelding verwijzen.
-
-Deze badge wordt getoond in de werkbalk.
-
-Als je dit beleid instelt op browserniveau, hebben alle profielen dit logo in de werkbalk.
-
-Als je dit beleid instelt op profielniveau, heeft alleen dat profiel dit logo.
-
-Als je dit beleid niet instelt, wordt een standaard gebouwicoon getoond.
-
-Als er een fout optreedt tijdens het ophalen en tonen van de afbeelding, wordt een standaard gebouwicoon getoond.
-
-Als dit beleid is ingesteld op profielniveau, heeft het (in tegenstelling tot andere beleidsregels) voorrang op beleid dat is ingesteld op browserniveau.</translation>
 <translation id="4646626362889216307">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben. Dit samenvoegen vindt plaats in de sleutels op het eerste niveau van het woordenboek uit elke bron. De waarde die afkomstig is van de bron met de hoogste prioriteit, krijgt voorrang.
 
       Gebruik het jokerteken '*' om samenvoeging van alle ondersteunde woordenboekbeleidsregels toe te staan.

@@ -890,7 +890,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2655752832536625875">Vannasistaba</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vai pārsūtīt konfidenciālu failu?}zero{Vai pārsūtīt konfidenciālus failus?}one{Vai pārsūtīt konfidenciālus failus?}other{Vai pārsūtīt konfidenciālus failus?}}</translation>
 <translation id="2658843814961855121">Darba un nodarbinātības likumdošana</translation>
-<translation id="2658944305627908367">Darījumi, kas pārsniedz atlikumu, netiks apstrādāti</translation>
 <translation id="2660779039299703961">Notikums</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nav}=1{1 parole (šādam domēnam: <ph name="DOMAIN_LIST" />)}=2{2 paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />)}zero{# paroļu (šādiem domēniem: <ph name="DOMAIN_LIST" />)}one{# parole (šādiem domēniem: <ph name="DOMAIN_LIST" />)}other{# paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Augša</translation>
@@ -1533,6 +1532,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> noteikumus skatiet šeit</translation>
 <translation id="3872834068356954457">Zinātne</translation>
 <translation id="3875783148670536197">Parādīt, kā</translation>
+<translation id="3879748587602334249">Lejupielāžu pārvaldnieks</translation>
 <translation id="3880456882942693779">Māksla un izklaide</translation>
 <translation id="3880589673277376494">Internets un telekomunikācijas</translation>
 <translation id="3881478300875776315">Rādīt mazāk rindu</translation>
@@ -3690,7 +3690,6 @@ Papildu informācija:
 <translation id="800218591365569300">Aizveriet citas cilnes vai programmas, lai atbrīvotu vietu atmiņā.</translation>
 <translation id="8002230960325005199">Jaunā cilnē skatīt saistītās vietnes</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Maksājiet ar Pix, neveicot kopēšanu un ielīmēšanu</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="8009058079740742415">Mājokļa drošība</translation>
 <translation id="8009225694047762179">Pārvaldīt paroles</translation>

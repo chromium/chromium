@@ -336,7 +336,7 @@
 <translation id="2645380101799517405">کنترل‌ها</translation>
 <translation id="2652403576514495859">فعال کردن یا تغییر وضعیت دیکته</translation>
 <translation id="2653659639078652383">ارسال</translation>
-<translation id="2654647726140493436">وقتی به‌روزرسانی درحال انجام است، <ph name="DEVICE_TYPE" /> را خاموش نکنید یا کابل برق <ph name="DEVICE_TYPE" /> را جدا نکنید</translation>
+<translation id="2654647726140493436">وقتی به‌روزرسانی درجریان است، <ph name="DEVICE_TYPE" /> را خاموش نکنید یا کابل برق <ph name="DEVICE_TYPE" /> را جدا نکنید</translation>
 <translation id="2656001153562991489">‏ویژه Chromebook Plus</translation>
 <translation id="2665671725390405060">گوش دادن به تلفظ</translation>
 <translation id="267442004702508783">بازآوری</translation>
@@ -507,7 +507,6 @@
 <translation id="3780740315729837296">تخصیص کلید صفحه‌کلید</translation>
 <translation id="3784455785234192852">قفل</translation>
 <translation id="3785643128701396311">هنر پیکسلی</translation>
-<translation id="3790109258688020991">نقطه‌چینی</translation>
 <translation id="380097101658023925">‏کنترل‌های RGB</translation>
 <translation id="38114475217616659">پاک کردن همه سابقه</translation>
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
@@ -769,6 +768,7 @@
 <translation id="5180712487038406644">زنده</translation>
 <translation id="5190187232518914472">‏خاطرات دلخواهتان را دوباره زنده کنید. برای افزودن یا ویرایش کردن آلبوم‌ها، به <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> بروید.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
+<translation id="5220549459260334974">‫<ph name="PROGRESS_PERCENTAGE" />٪ بارگیری شده است</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="522307662484862935">نشانی ایمیل لحاظ نشود</translation>
 <translation id="5227902338748591677">زمان‌بندی زمینه تاریک</translation>
@@ -866,7 +866,6 @@
 <translation id="57838592816432529">بی‌صدا کردن</translation>
 <translation id="5784136236926853061">‏تأخیر زیاد HTTP</translation>
 <translation id="5790391387506209808">لاجورد</translation>
-<translation id="5810296156135698005">باروک</translation>
 <translation id="5816802250591013230">میان‌بری اختصاص داده نشده است</translation>
 <translation id="5826644637650799838">درباره اثر هنری</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>

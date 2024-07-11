@@ -507,7 +507,6 @@
 <translation id="3780740315729837296">Призначте клавішу</translation>
 <translation id="3784455785234192852">Заблокувати</translation>
 <translation id="3785643128701396311">піксельна графіка</translation>
-<translation id="3790109258688020991">пуантилізм</translation>
 <translation id="380097101658023925">елементи керування RGB</translation>
 <translation id="38114475217616659">Очистити всю історію</translation>
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
@@ -866,7 +865,6 @@
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5784136236926853061">Велика затримка HTTP</translation>
 <translation id="5790391387506209808">лазуриту</translation>
-<translation id="5810296156135698005">бароко</translation>
 <translation id="5816802250591013230">Комбінацію клавіш не призначено</translation>
 <translation id="5826644637650799838">Опис зображення</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
@@ -1202,7 +1200,7 @@
 <translation id="7438298994385592770">Не вдалося вимкнути або вилучити цю точку доступу. Переконайтеся, що ввімкнені точки доступу <ph name="ATTACH" /> вимкнено або вилучено.</translation>
 <translation id="7458970041932198923">Щоб переглядати й налаштовувати аватари, підключіться до мережі й оновіть сторінку.</translation>
 <translation id="7469648432129124067">Виявлено портал</translation>
-<translation id="7481312909269577407">Переслати</translation>
+<translation id="7481312909269577407">Уперед</translation>
 <translation id="7487067081878637334">Технології</translation>
 <translation id="7490813197707563893">MAC-адреса</translation>
 <translation id="7497215489070763236">Сертифікат ЦС для сервера</translation>

@@ -3107,7 +3107,6 @@
 <translation id="322708765617468434">Після налаштування ви зможете будь-коли додати на пристрій іншого користувача. Кожен користувач матиме змогу персоналізувати взаємодію і забезпечити конфіденційність своїх даних.</translation>
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Видаліть або замініть його схожим розширенням із <ph name="BEGIN_LINK" />Вебмагазину Chrome<ph name="END_LINK" />.}one{Видаліть або замініть їх схожими розширеннями з <ph name="BEGIN_LINK" />Вебмагазину Chrome<ph name="END_LINK" />}few{Видаліть або замініть їх схожими розширеннями з <ph name="BEGIN_LINK" />Вебмагазину Chrome<ph name="END_LINK" />}many{Видаліть або замініть їх схожими розширеннями з <ph name="BEGIN_LINK" />Вебмагазину Chrome<ph name="END_LINK" />}other{Видаліть або замініть їх схожими розширеннями з <ph name="BEGIN_LINK" />Вебмагазину Chrome<ph name="END_LINK" />}}</translation>
-<translation id="3229412050601871341">Пароль пристрою</translation>
 <translation id="3230539834943294477">Переглянути довідкові статті або зв’язатися зі службою підтримки пристрою</translation>
 <translation id="3232168089952388105">Надіслати інформацію про пристрій?</translation>
 <translation id="3232368113895801406">Ваші налаштування безпеки не дозволяють встановлювати ізольовані додатки. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4905,6 +4904,7 @@
 <translation id="4554591392113183336">Зовнішнє розширення має таку саму або нижчу версію порівняно з наявним.</translation>
 <translation id="4555769855065597957">Shadow</translation>
 <translation id="4555863373929230635">Щоб зберігати паролі в обліковому записі Google, увійдіть у нього й увімкніть синхронізацію.</translation>
+<translation id="4556069465387849460">Ви використовуєте функцію блокування екрана для заповнення паролів</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> надає вам доступ до пароля для сайту <ph name="WEBSITE_NAME" />. Ви можете використовувати його у формі для входу.</translation>
 <translation id="4558426062282641716">Потрібен дозвіл на автозапуск</translation>
 <translation id="4558542033859106586">Відкривання в <ph name="TARGET_APP" /></translation>
@@ -8791,7 +8791,7 @@
 <translation id="7478658909253570368">Заборонити сайтам підключатися до пристроїв із послідовними портами</translation>
 <translation id="7479221278376295180">Огляд використання пам'яті</translation>
 <translation id="747981547666531654">Підключено до пристроїв із Bluetooth "<ph name="FIRST_DEVICE" />" і "<ph name="SECOND_DEVICE" />"</translation>
-<translation id="7481312909269577407">Переслати</translation>
+<translation id="7481312909269577407">Уперед</translation>
 <translation id="7481358317100446445">Готова</translation>
 <translation id="748138892655239008">Базові обмеження сертифіката</translation>
 <translation id="7484645889979462775">Ніколи для цього сайта</translation>
@@ -10285,7 +10285,6 @@
 <translation id="8557100046150195444">Щоб продовжити, скористайтеся датчиком Touch ID</translation>
 <translation id="8557180006508471423">Увімкніть параметр "Google Chrome" у Службах локації на пристрої Mac</translation>
 <translation id="8557856025359704738">Наступне завантаження: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Пароль облікового запису Google</translation>
 <translation id="8559858985063901027">Ключі доступу</translation>
 <translation id="8559961053328923750">Chrome обмежує загальний обсяг даних, якими сайти можуть обмінюватися через веб-переглядач, щоб оцінювати ефективність своїх оголошень.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Відкрити всі в &amp;новому вікні}=1{Відкрити в &amp;новому вікні}one{Відкрити всі ({COUNT}) у &amp;новому вікні}few{Відкрити всі ({COUNT}) у &amp;новому вікні}many{Відкрити всі ({COUNT}) у &amp;новому вікні}other{Відкрити всі ({COUNT}) у &amp;новому вікні}}</translation>

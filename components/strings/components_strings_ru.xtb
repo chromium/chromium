@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">Ванная комната</translation>
 <translation id="2657637947725373811">{0,plural, =1{Передать конфиденциальный файл?}one{Передать конфиденциальные файлы?}few{Передать конфиденциальные файлы?}many{Передать конфиденциальные файлы?}other{Передать конфиденциальные файлы?}}</translation>
 <translation id="2658843814961855121">Трудовое законодательство</translation>
-<translation id="2658944305627908367">Транзакции, превышающие баланс, не будут обработаны.</translation>
 <translation id="2660779039299703961">Событие</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />)}=2{2 пароля (для <ph name="DOMAIN_LIST" />)}one{# пароль (для <ph name="DOMAIN_LIST" />)}few{# пароля (для <ph name="DOMAIN_LIST" />)}many{# паролей (для <ph name="DOMAIN_LIST" />)}other{# пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Наверх</translation>
@@ -1533,6 +1532,7 @@
 <translation id="3865339060090354361">Посмотреть условия использования карты "<ph name="CREDIT_CARD_NAME" />"</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Показать</translation>
+<translation id="3879748587602334249">Менеджер скачивания</translation>
 <translation id="3880456882942693779">Искусство и развлечения</translation>
 <translation id="3880589673277376494">Интернет и телекоммуникации</translation>
 <translation id="3881478300875776315">Показать меньше строк</translation>
@@ -3690,7 +3690,6 @@
 <translation id="800218591365569300">Закройте другие вкладки и программы, чтобы освободить память.</translation>
 <translation id="8002230960325005199">Открыть список связанных сайтов в новой вкладке</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">Платите через Pix без копирования и вставки данных</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8009058079740742415">Безопасность в доме и его охрана</translation>
 <translation id="8009225694047762179">Управление паролями</translation>

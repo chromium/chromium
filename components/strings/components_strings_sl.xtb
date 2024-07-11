@@ -890,7 +890,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2655752832536625875">Kopalnica</translation>
 <translation id="2657637947725373811">{0,plural, =1{Želite prenesti zaupno datoteko?}one{Želite prenesti zaupne datoteke?}two{Želite prenesti zaupne datoteke?}few{Želite prenesti zaupne datoteke?}other{Želite prenesti zaupne datoteke?}}</translation>
 <translation id="2658843814961855121">Delovno pravo in zakon o zaposlovanju</translation>
-<translation id="2658944305627908367">Transakcije, ki presegajo vaše stanje, ne bodo obdelane</translation>
 <translation id="2660779039299703961">Dogodek</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nič}=1{Eno geslo (za <ph name="DOMAIN_LIST" />)}=2{Dve gesli (za <ph name="DOMAIN_LIST" />)}one{# geslo (za <ph name="DOMAIN_LIST" />)}two{# gesli (za <ph name="DOMAIN_LIST" />)}few{# gesla (za <ph name="DOMAIN_LIST" />)}other{# gesel (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Na vrh</translation>
@@ -1534,6 +1533,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3865339060090354361">Tukaj si oglejte pogoje za kartico <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Znanost</translation>
 <translation id="3875783148670536197">Postopek</translation>
+<translation id="3879748587602334249">Upravitelj prenosov</translation>
 <translation id="3880456882942693779">Umetnost in zabava</translation>
 <translation id="3880589673277376494">Internet in telekomunikacije</translation>
 <translation id="3881478300875776315">Pokaži manj vrstic</translation>
@@ -3691,7 +3691,6 @@ Dodatne podrobnosti:
 <translation id="800218591365569300">Poskusite zapreti druge zavihke ali programe, da boste tako sprostili pomnilnik.</translation>
 <translation id="8002230960325005199">Ogled sorodnih spletnih mest na novem zavihku</translation>
 <translation id="8003046808285812021">»<ph name="SEARCH_TERMS" />«</translation>
-<translation id="8003697335101170520">Plačujte s storitvijo Pix brez kopiranja in lepljenja</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
 <translation id="8009058079740742415">Varnost doma</translation>
 <translation id="8009225694047762179">Upravljanje gesel</translation>

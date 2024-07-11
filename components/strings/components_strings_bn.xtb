@@ -368,6 +368,7 @@
 <translation id="1650602712345345441">আপনার Chrome সেটিংস ম্যানেজ করুন</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">MacOS Keychain-এর মাধ্যমে Password Manager ব্যবহার করতে, Chromium আবার লঞ্চ করুন ও Keychain অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
+<translation id="1652887625750064647">AI-এর মাধ্যমে সেরা ম্যাচ</translation>
 <translation id="1656024727720460136">পৃষ্ঠাটি যাতে সহজপাঠ্য হয়, তার জন্য Chrome এটিকে সহজ করে তুলেছে। একটি সুরক্ষিত কানেকশন ব্যবহার করে Chrome আবার মূল পৃষ্ঠায় ফিরে এসেছে।</translation>
 <translation id="1656489000284462475">তুলে নিন</translation>
 <translation id="1658111267661135323">টিভি এবং ভিডিও</translation>
@@ -891,7 +892,6 @@
 <translation id="2655752832536625875">বাথরুম</translation>
 <translation id="2657637947725373811">{0,plural, =1{গোপনীয় ফাইল ট্রান্সফার করবেন?}one{গোপনীয় ফাইল ট্রান্সফার করবেন?}other{গোপনীয় ফাইল ট্রান্সফার করবেন?}}</translation>
 <translation id="2658843814961855121">লেবার ও এমপ্লয়মেন্ট আইন</translation>
-<translation id="2658944305627908367">আপনার ব্যালেন্সের চেয়ে বেশি পরিমাণের ট্রানজ্যাকশন প্রসেস করা হবে না</translation>
 <translation id="2660779039299703961">ইভেন্ট</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{একটিও নয়}=1{১টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য)}=2{২টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য)}one{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য)}other{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য)}}</translation>
 <translation id="2666092431469916601">শীর্ষ</translation>
@@ -1535,6 +1535,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" />-এর শর্তাবলী এখানে দেখুন</translation>
 <translation id="3872834068356954457">বিজ্ঞান</translation>
 <translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
+<translation id="3879748587602334249">ডাউনলোড ম্যানেজার</translation>
 <translation id="3880456882942693779">কলা এবং বিনোদন</translation>
 <translation id="3880589673277376494">ইন্টারনেট ও টেলিকম</translation>
 <translation id="3881478300875776315">কম লাইন দেখুন</translation>
@@ -3691,7 +3692,6 @@
 <translation id="800218591365569300">মেমরি ফাঁকা করতে অন্যান্য ট্যাব বা প্রোগ্রাম বন্ধ করার চেষ্টা করুন।</translation>
 <translation id="8002230960325005199">নতুন ট্যাবে সম্পর্কিত সাইট দেখুন</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">কপি এবং পেস্ট না করে Pix-এর সাহায্যে পেমেন্ট করুন</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
 <translation id="8009058079740742415">বাড়ির সুরক্ষা ও নিরাপত্তা</translation>
 <translation id="8009225694047762179">পাসওয়ার্ড পরিচালনা করুন</translation>

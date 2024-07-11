@@ -35,7 +35,6 @@
 
 Вебсайттарга жана колдонмолорго берилген уруксаттар ушул аккаунтка карата колдонулушу мүмкүн. Google аккаунттарыңызды <ph name="SETTINGS_LINK_BEGIN" />Параметрлерден<ph name="SETTINGS_LINK_END" /> башкара аласыз.</translation>
 <translation id="1640672724030957280">Жүктөлүп алынууда...</translation>
-<translation id="1708666629004767631">Chromium'дун бир кыйла жаңы, коопсуз версиясы бар.</translation>
 <translation id="1715127912119967311">Бул функцияларды жакшыртууга жардам берүү үчүн Chromium алар менен болгон аракеттешүүңүз тууралуу маалыматты Google'га жөнөтөт. Бул маалыматты түзөтүүчү адамдар окуп, иштетип жана аннотациялашы мүмкүн.</translation>
 <translation id="1722488837206509557">Бул сизге жеткиликтүү түзмөктөрдөн ичинен тандоого жана аларда контентти көрсөтүүгө мүмкүндүк берет.</translation>
 <translation id="17264556997921157">Сайттар жарнамаларды көрсөтүү үчүн колдонгон темаларды көрүп, өчүрө аласыз. Chromium сизди кызыктырган темаларды акыркы көргөн вебсайттарыңыздын негизинде божомолдойт.</translation>
@@ -171,7 +170,6 @@
 <translation id="3713809861844741608">Шилтемени жаңы Chromium &amp;өтмөгүндө ачуу</translation>
 <translation id="3728124580182886854">Жекелештирүү жана башка максаттар үчүн Chromium'ду жана башка Google кызматтарын байланыштырыңыз</translation>
 <translation id="3788675262216168505">Chromium профилдерин тескөө</translation>
-<translation id="378917192836375108">Chromium аркылуу желеден телефон номерин чыкылдатып, ага Skype менен чала аласыз!</translation>
 <translation id="3790262771324122253">Chromium эмне үчүн айрым жүктөп алууларды бөгөттөп жатканын билип алыңыз</translation>
 <translation id="379589255253486813">Бир нерсеге көңүл бурушуңуз керек болсо, Chromium сизге кабарлап коёт</translation>
 <translation id="3802055581630249637">Chromium'дун божомолунда сиз кире турган барактар алдын ала жүктөлүп, киргениңизде алар тез ачылат</translation>
@@ -268,7 +266,6 @@
 <translation id="5383439451358640070">Chromium эмне үчүн айрым файлдарды бөгөттөй турганын билип алыңыз</translation>
 <translation id="5386450000063123300">Chromium жаңыртылууда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium'га кирүүгө уруксат берүү</translation>
-<translation id="5398878173008909840">Chromium'дун жаңы версиясы бар.</translation>
 <translation id="5405650547142096840">Chromium'дан чыгарып салуу</translation>
 <translation id="5427571867875391349">Chromium'ду демейки серепчи катары коюп алыңыз</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium бета сынамык версиясы</translation>
@@ -302,7 +299,6 @@
 <translation id="6003112304606738118">Жүктөлүп алынууда... <ph name="HOURS" /> саат калды</translation>
 <translation id="6019451407441383358">Жогорку оң жактагы Chromium менюсунан кыстармаларды, окуу режимин жана башкаларды ачсаңыз болот</translation>
 <translation id="6040143037577758943">Жабуу</translation>
-<translation id="6055895534982063517">Chromium'дун чагылгандай тездик менен иштеген жаңы версиясы бар.</translation>
 <translation id="6058380562449900225">Маалыматыңызды коргоо үчүн Chromium'га сиз жакында кирбеген сайттардан уруксаттарды алып салууга макулдугуңузду бериңиз. Билдирмелер өчүрүлбөйт.</translation>
 <translation id="6063093106622310249">&amp;Chromiumда ачуу</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium'га кошулду</translation>
@@ -381,7 +377,6 @@
 <translation id="684888714667046800">Интернетке туташуу мүмкүн болбой жатат. Эгер тармактык коргоону колдонсоңуз, <ph name="PRODUCT_EXE_NAME" /> уруксат берилгендердин тизмесинде болушу керек.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium "<ph name="EXTENSION_NAME" />" кеңейтүүсүндө кесепеттүү программанын болгонун аныктады</translation>
-<translation id="6893813176749746474">Chromium жаңырды, бирок аны 30 күндөн бери колдоно элексиз.</translation>
 <translation id="691026815377248078">Жупташтырууну улантуу үчүн Chromium Bluetooth'ду 
  пайдаланууга уруксат алышы керек. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6929417474050522668">Сыноолор күйүк болгондо, Жарнамаларды талдоо аркылуу сиз баш баккан сайттар Chromium'дан маалымат алып, жарнамаларынын майнаптуулугун талдай алышат. Жарнамаларды талдоо сайттарга мүмкүн болушунча аз маалымат өткөрүү менен башка сайттарга көз салууну чектейт.</translation>

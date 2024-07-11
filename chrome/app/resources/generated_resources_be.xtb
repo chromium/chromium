@@ -3092,7 +3092,6 @@
 <translation id="322708765617468434">Дадаць яшчэ аднаго карыстальніка на прыладу можна будзе пасля наладжвання. Дададзеныя карыстальнікі могуць персаналізаваць патрэбныя функцыі. Пры гэтым іх даныя застаюцца прыватнымі.</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Выдаліце яго або замяніце аналагічнымі пашырэннямі з <ph name="BEGIN_LINK" />Вэб-крамы Chrome<ph name="END_LINK" />.}one{Выдаліце іх або замяніце аналагічнымі пашырэннямі з <ph name="BEGIN_LINK" />Вэб-крамы Chrome<ph name="END_LINK" />.}few{Выдаліце іх або замяніце аналагічнымі пашырэннямі з <ph name="BEGIN_LINK" />Вэб-крамы Chrome<ph name="END_LINK" />.}many{Выдаліце іх або замяніце аналагічнымі пашырэннямі з <ph name="BEGIN_LINK" />Вэб-крамы Chrome<ph name="END_LINK" />.}other{Выдаліце іх або замяніце аналагічнымі пашырэннямі з <ph name="BEGIN_LINK" />Вэб-крамы Chrome<ph name="END_LINK" />.}}</translation>
-<translation id="3229412050601871341">Пароль прылады</translation>
 <translation id="3230539834943294477">Праглядзець даведачныя артыкулы або звязацца са службай падтрымкі прылады</translation>
 <translation id="3232168089952388105">Абагуліць інфармацыю пра прыладу?</translation>
 <translation id="3232368113895801406">Вашы параметры бяспекі не дазваляюць ажыццяўляць усталяванне ізаляваных праграм. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4888,6 +4887,7 @@
 <translation id="4554591392113183336">Знешняе пашырэнне мае тую ж версію, што існуючае пашырэнне, або ніжэйшую.</translation>
 <translation id="4555769855065597957">Цень</translation>
 <translation id="4555863373929230635">Каб захоўваць паролі ва Уліковым запісе Google, увайдзіце ў яго і ўключыце сінхранізацыю.</translation>
+<translation id="4556069465387849460">Блакіроўка экрана выкарыстоўваецца для ўводу пароляў</translation>
 <translation id="4556072422434361369">Карыстальнік <ph name="SENDER_NAME" /> абагуліў з вамі пароль для <ph name="WEBSITE_NAME" />, які можна выкарыстаць у форме ўваходу.</translation>
 <translation id="4558426062282641716">Запытаны дазвол на аўтаматычны запуск</translation>
 <translation id="4558542033859106586">Ідзе адкрыццё ў праграме "<ph name="TARGET_APP" />"</translation>
@@ -10270,7 +10270,6 @@
 <translation id="8557100046150195444">Каб працягнуць, увайдзіце з дапамогай Touch ID</translation>
 <translation id="8557180006508471423">Уключыце параметр "Google Chrome" у раздзеле Location Services ("Службы геалакацыі") на камп'ютары Mac</translation>
 <translation id="8557856025359704738">Наступнае спампоўванне: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Пароль Уліковага запісу Google</translation>
 <translation id="8559858985063901027">Ключы доступу</translation>
 <translation id="8559961053328923750">Chrome абмяжоўвае агульны аб'ём даных, якія сайты могуць абагульваць праз браўзер для ацэнкі эфектыўнасці рэкламы.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе ({COUNT}) у &amp;новым акне}few{Адкрыць усе ({COUNT}) у &amp;новым акне}many{Адкрыць усе ({COUNT}) у &amp;новым акне}other{Адкрыць усе ({COUNT}) у &amp;новым акне}}</translation>

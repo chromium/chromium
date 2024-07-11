@@ -891,7 +891,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2655752832536625875">Kamar Mandi</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transfer file rahasia?}other{Transfer file rahasia?}}</translation>
 <translation id="2658843814961855121">Undang-Undang Buruh &amp; Ketenagakerjaan</translation>
-<translation id="2658944305627908367">Transaksi yang melebihi saldo Anda tidak akan diproses</translation>
 <translation id="2660779039299703961">Acara</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Tidak ada}=1{1 sandi (untuk <ph name="DOMAIN_LIST" />)}=2{2 sandi (untuk <ph name="DOMAIN_LIST" />)}other{# sandi (untuk <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Atas</translation>
@@ -1534,6 +1533,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3865339060090354361">Lihat persyaratan di sini untuk <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Sains</translation>
 <translation id="3875783148670536197">Lihat Caranya</translation>
+<translation id="3879748587602334249">Pengelola download</translation>
 <translation id="3880456882942693779">Seni &amp; Hiburan</translation>
 <translation id="3880589673277376494">Internet &amp; Telekomunikasi</translation>
 <translation id="3881478300875776315">Tampilkan lebih sedikit baris</translation>
@@ -3689,7 +3689,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="800218591365569300">Coba tutup tab atau program lain untuk mengosongkan memori.</translation>
 <translation id="8002230960325005199">Lihat situs terkait di tab baru</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Bayar dengan Pix tanpa salin dan tempel</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009058079740742415">Keamanan &amp; Keselamatan Rumah</translation>
 <translation id="8009225694047762179">Kelola Kata sandi</translation>

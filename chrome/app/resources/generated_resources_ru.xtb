@@ -1026,6 +1026,7 @@
 <translation id="1730989807608739928">Прокрутить в сторону последней вкладки</translation>
 <translation id="1731520826054843792">Шаблон сертификата Microsoft</translation>
 <translation id="1731911755844941020">Отправка запроса...</translation>
+<translation id="1732380773380808394">Пароли и другие данные также станут доступны из аккаунта Google.</translation>
 <translation id="1734212868489994726">Голубой</translation>
 <translation id="1734230530703461088">Не удалось загрузить расширения в отведенное время. Обратитесь к администратору.</translation>
 <translation id="1734824808160898225">Возможно, <ph name="PRODUCT_NAME" /> не сможет обновляться автоматически.</translation>
@@ -3092,7 +3093,6 @@
 <translation id="322708765617468434">После настройки вы в любое время сможете добавить на устройство другого человека. У каждого пользователя будет возможность персонализировать устройство и обеспечить конфиденциальность своих данных.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Удалите его или замените другим расширением из <ph name="BEGIN_LINK" />интернет-магазина Chrome<ph name="END_LINK" />.}one{Удалите их или замените другими расширениями из <ph name="BEGIN_LINK" />интернет-магазина Chrome<ph name="END_LINK" />.}few{Удалите их или замените другими расширениями из <ph name="BEGIN_LINK" />интернет-магазина Chrome<ph name="END_LINK" />.}many{Удалите их или замените другими расширениями из <ph name="BEGIN_LINK" />интернет-магазина Chrome<ph name="END_LINK" />.}other{Удалите их или замените другими расширениями из <ph name="BEGIN_LINK" />интернет-магазина Chrome<ph name="END_LINK" />.}}</translation>
-<translation id="3229412050601871341">Пароль устройства</translation>
 <translation id="3230539834943294477">Открыть справку или обратиться в службу поддержки устройства</translation>
 <translation id="3232168089952388105">Предоставить информацию об устройстве?</translation>
 <translation id="3232368113895801406">Ваши настройки безопасности запрещают установку изолированных приложений. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4890,6 +4890,7 @@
 <translation id="4554591392113183336">Внешнее расширение не новее существующего.</translation>
 <translation id="4555769855065597957">Тень</translation>
 <translation id="4555863373929230635">Чтобы сохранять пароли в аккаунте Google, войдите в него и включите синхронизацию.</translation>
+<translation id="4556069465387849460">Вы используете блокировку экрана для ввода паролей</translation>
 <translation id="4556072422434361369">От пользователя <ph name="SENDER_NAME" /> получен пароль для сайта <ph name="WEBSITE_NAME" />. Используйте его в форме входа.</translation>
 <translation id="4558426062282641716">Требуется разрешение на автозапуск</translation>
 <translation id="4558542033859106586">Открытие в сервисе "<ph name="TARGET_APP" />".</translation>
@@ -5812,6 +5813,7 @@
 <translation id="5247243947166567755">Выбрать: <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">В браузере произошел сбой до завершения скачивания.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> предлагает результаты поиска в зависимости от вашего местоположения. Изменить настройки этой функции можно здесь: <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Создайте PIN-код для восстановления в Google Менеджере паролей</translation>
 <translation id="5252496130205799136">Использовать ваш аккаунт Google, чтобы хранить и вставлять пароли?</translation>
 <translation id="5252653240322147470">PIN-код должен содержать не более <ph name="MAXIMUM" /> знаков</translation>
 <translation id="5253554634804500860">Использовать <ph name="DEVICE_NAME" /></translation>
@@ -10273,7 +10275,6 @@
 <translation id="8557100046150195444">Чтобы продолжить, используйте Touch ID</translation>
 <translation id="8557180006508471423">Включите Google Chrome в службах геолокации на устройстве Mac</translation>
 <translation id="8557856025359704738">Следующее скачивание запланировано <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Пароль аккаунта Google</translation>
 <translation id="8559858985063901027">Ключи доступа</translation>
 <translation id="8559961053328923750">Chrome ограничивает общий объем данных, который сайты могут отправлять через браузер, чтобы оценивать эффективность рекламы.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Открыть все URL в &amp;новом окне}=1{Открыть URL в &amp;новом окне}one{Открыть все URL ({COUNT}) в &amp;новом окне}few{Открыть все URL ({COUNT}) в &amp;новом окне}many{Открыть все URL ({COUNT}) в &amp;новом окне}other{Открыть все URL ({COUNT}) в &amp;новом окне}}</translation>

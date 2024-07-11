@@ -3106,7 +3106,6 @@
 <translation id="322708765617468434">설정 후 언제든지 다른 사용자를 기기에 추가할 수 있습니다. 모든 사용자는 자신의 환경을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
 <translation id="3227137524299004712">마이크</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{<ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />의 유사한 확장 프로그램으로 대체하거나 삭제하세요}other{<ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />의 유사한 확장 프로그램으로 대체하거나 삭제하세요}}</translation>
-<translation id="3229412050601871341">기기 비밀번호</translation>
 <translation id="3230539834943294477">도움말 보기 또는 기기 지원 찾기</translation>
 <translation id="3232168089952388105">기기 정보를 공유하시겠습니까?</translation>
 <translation id="3232368113895801406">보안 환경설정에서 분리형 앱의 설치를 허용하지 않습니다. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4903,6 +4902,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4554591392113183336">외부 확장 프로그램의 버전이 기존 프로그램과 동일하거나 낮습니다.</translation>
 <translation id="4555769855065597957">그림자</translation>
 <translation id="4555863373929230635">Google 계정에 비밀번호를 저장하려면 로그인한 다음 동기화를 사용 설정하세요.</translation>
+<translation id="4556069465387849460">비밀번호 입력 시 화면 잠금 사용 중</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" />님이 <ph name="WEBSITE_NAME" />의 비밀번호를 공유했습니다. 로그인 양식에서 사용할 수 있습니다.</translation>
 <translation id="4558426062282641716">자동 실행 권한 요청됨</translation>
 <translation id="4558542033859106586"><ph name="TARGET_APP" />에서 열림</translation>
@@ -10282,7 +10282,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8557100046150195444">Touch ID로 인증하여 계속</translation>
 <translation id="8557180006508471423">Mac의 Location Services(위치 서비스)에서 'Chrome'을 사용 설정하세요</translation>
 <translation id="8557856025359704738">다음 다운로드 날짜는 <ph name="NEXT_DATE_DOWNLOAD" />입니다.</translation>
-<translation id="8558281414737757274">Google 계정 비밀번호</translation>
 <translation id="8559858985063901027">패스키</translation>
 <translation id="8559961053328923750">Chrome은 사이트에서 광고 실적을 측정하기 위해 브라우저를 통해 공유할 수 있는 데이터의 총량을 제한합니다.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{새 창에서 모두 열기(N)}=1{새 창에서 열기(N)}other{새 창에서 {COUNT}개 모두 열기(N)}}</translation>

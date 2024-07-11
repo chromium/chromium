@@ -1024,6 +1024,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1730989807608739928">Son sekmeye doğru kaydırın</translation>
 <translation id="1731520826054843792">Microsoft Sertifika Şablonu</translation>
 <translation id="1731911755844941020">İstek gönderiliyor...</translation>
+<translation id="1732380773380808394">Ayrıca, Google Hesabınızdaki şifrelerinizi ve diğer öğeleri de kullanabilirsiniz.</translation>
 <translation id="1734212868489994726">Açık mavi</translation>
 <translation id="1734230530703461088">Uzantılar, gereken süre içinde yüklenemedi. Lütfen yöneticinizle iletişime geçin.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> kendisini güncel tutamayabilir</translation>
@@ -3086,7 +3087,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="322708765617468434">Kurulumdan sonra istediğiniz zaman cihaza başka bir kişi ekleyebilirsiniz. Her kullanıcı, hesabını kişiselleştirip verilerini gizli tutabilir.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Bu uzantıyı kaldırın veya <ph name="BEGIN_LINK" />Chrome Web Mağazası<ph name="END_LINK" />'ndaki benzer uzantılarla değiştirin.}other{Bu uzantıları kaldırın veya <ph name="BEGIN_LINK" />Chrome Web Mağazası<ph name="END_LINK" />'ndaki benzer uzantılarla değiştirin.}}</translation>
-<translation id="3229412050601871341">Cihaz şifresi</translation>
 <translation id="3230539834943294477">Yardım makalelerini görüntüleyin veya cihaz desteği alın</translation>
 <translation id="3232168089952388105">Cihazınızla ilgili bilgiler paylaşılsın mı?</translation>
 <translation id="3232368113895801406">Güvenlik tercihleriniz, yalıtılmış uygulamaların yüklenmesine izin vermiyor. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4884,6 +4884,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4554591392113183336">Harici uzantı, mevcut bir uzantıyla aynı veya daha eski sürümde.</translation>
 <translation id="4555769855065597957">Gölge</translation>
 <translation id="4555863373929230635">Şifreleri Google Hesabınıza kaydetmek için oturum açın ve senkronizasyonu etkinleştirin.</translation>
+<translation id="4556069465387849460">Şifreleri doldurmak için ekran kilidinizi kullanıyorsunuz</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> sizinle <ph name="WEBSITE_NAME" /> için bir şifre paylaştı. Bu şifreyi, oturum açma formunda kullanabilirsiniz.</translation>
 <translation id="4558426062282641716">Otomatik başlatma izni istendi</translation>
 <translation id="4558542033859106586"><ph name="TARGET_APP" /> içinde açılacak</translation>
@@ -5806,6 +5807,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5247243947166567755">Seçin: <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">İndirme tamamlanmadan önce tarayıcı kilitlendi.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" />, size yerel içerik sağlamak için konumunuzu kullanır. Bunu <ph name="SETTINGS_LINK" /> sayfasından değiştirebilirsiniz.</translation>
+<translation id="5251885976619018662">Google Şifre Yöneticisi için kurtarma PIN'i oluşturun</translation>
 <translation id="5252496130205799136">Şifreleri kaydetmek ve doldurmak için Google Hesabınız kullanılsın mı?</translation>
 <translation id="5252653240322147470">PIN en fazla <ph name="MAXIMUM" /> basamaklı olmalıdır</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> cihazını kullan</translation>
@@ -10261,7 +10263,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8557100046150195444">Devam etmek için Touch ID'yi kullanın</translation>
 <translation id="8557180006508471423">Mac'inizdeki Konum Hizmetlerinde "Google Chrome"u açın</translation>
 <translation id="8557856025359704738">Sonraki indirme işlemi <ph name="NEXT_DATE_DOWNLOAD" /> tarihinde gerçekleşecek.</translation>
-<translation id="8558281414737757274">Google Hesabı şifresi</translation>
 <translation id="8559858985063901027">Geçiş anahtarları</translation>
 <translation id="8559961053328923750">Chrome, reklam performansını ölçmek için sitelerin tarayıcı aracılığıyla paylaşabileceği toplam veri miktarını sınırlar</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Tümünü &amp;Yeni Pencerede Aç}=1{&amp;Yeni Pencerede Aç}other{Tümünü ({COUNT}) &amp;Yeni Pencerede Aç}}</translation>

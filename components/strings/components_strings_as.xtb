@@ -891,7 +891,6 @@
 <translation id="2655752832536625875">বাথৰুম</translation>
 <translation id="2657637947725373811">{0,plural, =1{গোপনীয় ফাইল স্থানান্তৰ কৰিবনে?}one{গোপনীয় ফাইল স্থানান্তৰ কৰিবনে?}other{গোপনীয় ফাইল স্থানান্তৰ কৰিবনে?}}</translation>
 <translation id="2658843814961855121">শ্ৰম আৰু নিয়োগ সম্পর্কীয় আইন</translation>
-<translation id="2658944305627908367">আপোনাৰ বেলেন্স অতিক্ৰম কৰা লেনদেনসমূহ প্ৰক্ৰিয়াকৰণ কৰা নহ’ব</translation>
 <translation id="2660779039299703961">অনুষ্ঠান</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{এটাও নাই}=1{১টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে)}=2{২টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে)}one{#টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে)}other{#টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে)}}</translation>
 <translation id="2666092431469916601">শীর্ষ</translation>
@@ -1532,6 +1531,7 @@
 <translation id="3865339060090354361">ইয়াত <ph name="CREDIT_CARD_NAME" />ৰ চৰ্তাৱলী  চাওক</translation>
 <translation id="3872834068356954457">বিজ্ঞান</translation>
 <translation id="3875783148670536197">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
+<translation id="3879748587602334249">ডাউনল’ড মেনেজাৰ</translation>
 <translation id="3880456882942693779">কলা আৰু মনোৰঞ্জন</translation>
 <translation id="3880589673277376494">ইণ্টাৰনেট আৰু টেলিকম</translation>
 <translation id="3881478300875776315">শাৰী কমকৈ দেখুৱাওক</translation>
@@ -3687,7 +3687,6 @@
 <translation id="800218591365569300">মেম’ৰী খালী কৰিবলৈ অন্য টেব বা প্র’গ্ৰেম বন্ধ কৰি চাওক।</translation>
 <translation id="8002230960325005199">জড়িত হৈ থকা ছাইটসমূহ এটা নতুন টেবত চাওক</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">প্ৰতিলিপি আৰু পে’ষ্ট নকৰাকৈ Pixৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="8004582292198964060">ব্ৰাউজাৰ</translation>
 <translation id="8009058079740742415">ঘৰৰ সুৰক্ষা আৰু নিৰাপত্তা</translation>
 <translation id="8009225694047762179">পাছৱৰ্ড পৰিচালনা কৰক</translation>

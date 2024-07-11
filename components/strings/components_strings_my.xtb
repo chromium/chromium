@@ -895,7 +895,6 @@
 <translation id="2655752832536625875">ရေချိုးခန်း</translation>
 <translation id="2657637947725373811">{0,plural, =1{လျှို့ဝှက်ဖိုင်ကို လွှဲပြောင်းမလား။}other{လျှို့ဝှက်ဖိုင်များကို လွှဲပြောင်းမလား။}}</translation>
 <translation id="2658843814961855121">အလုပ်သမားနှင့် အလုပ်ခန့်ထားခြင်း ဥပဒေ</translation>
-<translation id="2658944305627908367">သင့်လက်ကျန်ငွေထက် ကျော်လွန်သည့် ငွေလွှဲပြောင်းမှုများကို ဆောင်ရွက်မည်မဟုတ်ပါ</translation>
 <translation id="2660779039299703961">ဖြစ်ရပ်</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{မရှိ}=1{စကားဝှက် ၁ ခု (<ph name="DOMAIN_LIST" /> အတွက်)}=2{စကားဝှက် ၂ ခု (<ph name="DOMAIN_LIST" /> အတွက်)}other{စကားဝှက် # ခု (<ph name="DOMAIN_LIST" /> အတွက်)}}</translation>
 <translation id="2666092431469916601">ထိပ်</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> အတွက် စည်းမျဉ်းများကို ဤနေရာတွင် ကြည့်ပါ</translation>
 <translation id="3872834068356954457">သိပွံ</translation>
 <translation id="3875783148670536197">လုပ်နည်း ပြရန်</translation>
+<translation id="3879748587602334249">ဒေါင်းလုဒ်မန်နေဂျာ</translation>
 <translation id="3880456882942693779">အနုပညာ၊ ဖျော်ဖြေရေး</translation>
 <translation id="3880589673277376494">အင်တာနက်၊ တယ်လီကွန်</translation>
 <translation id="3881478300875776315">စာကြောင်းလျှော့၍ပြရန်</translation>
@@ -3693,7 +3693,6 @@
 <translation id="800218591365569300">မှတ်ဉာဏ်နေရာလွတ်ရရှိစေရန် တဘ် သို့မဟုတ် ပရိုဂရမ်များကို ပိတ်ကြည့်ပါ။</translation>
 <translation id="8002230960325005199">ဆက်စပ်ဝဘ်ဆိုက်များကို တဘ်အသစ်တွင် ကြည့်ရန်</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">မိတ္တူကူးပြီး ထည့်ရန်မလိုဘဲ Pix ဖြင့် ငွေပေးချေပါ</translation>
 <translation id="8004582292198964060">ဘရောင်ဇာ</translation>
 <translation id="8009058079740742415">အိမ်ဘေးကင်းလုံခြုံရေး</translation>
 <translation id="8009225694047762179">စကားဝှက်များကို စီမံခြင်း</translation>

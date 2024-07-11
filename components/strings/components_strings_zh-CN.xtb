@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">浴室</translation>
 <translation id="2657637947725373811">{0,plural, =1{转移机密文件？}other{转移机密文件？}}</translation>
 <translation id="2658843814961855121">劳动与就业法</translation>
-<translation id="2658944305627908367">超出余额的交易不会得到处理</translation>
 <translation id="2660779039299703961">事件</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{无}=1{1 个密码（用于 <ph name="DOMAIN_LIST" />）}=2{2 个密码（用于 <ph name="DOMAIN_LIST" />）}other{# 个密码（用于 <ph name="DOMAIN_LIST" />）}}</translation>
 <translation id="2666092431469916601">顶部</translation>
@@ -1530,6 +1529,7 @@
 <translation id="3865339060090354361">在此处查看<ph name="CREDIT_CARD_NAME" />的相关条款</translation>
 <translation id="3872834068356954457">科学</translation>
 <translation id="3875783148670536197">操作步骤</translation>
+<translation id="3879748587602334249">下载管理器</translation>
 <translation id="3880456882942693779">艺术与娱乐</translation>
 <translation id="3880589673277376494">互联网与电信</translation>
 <translation id="3881478300875776315">隐藏部分行</translation>
@@ -3686,7 +3686,6 @@
 <translation id="800218591365569300">请尝试关闭其他标签页或程序以释放内存。</translation>
 <translation id="8002230960325005199">在新标签页中查看相关网站</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">使用 Pix 付款，无需复制和粘贴信息</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8009058079740742415">家居安全与安保</translation>
 <translation id="8009225694047762179">管理密码</translation>

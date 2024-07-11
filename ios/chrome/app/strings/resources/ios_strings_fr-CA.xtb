@@ -125,7 +125,7 @@
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1622717322707146952">Sélectionnez « Ajouter à Google Agenda » ou « Ajouter à Calendrier Apple ».</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> mots de passe réutilisés</translation>
-<translation id="1636234353664774105">Obtenez un itinéraire vers votre destination avec un guide d'itinéraire détaillé à l'aide de la fonctionnalité de navigation</translation>
+<translation id="1636234353664774105">Obtenez des indications pour vous rendre à votre destination avec un itinéraire détaillé à l'aide de la fonctionnalité de navigation</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="1641316430523156212">Suivre</translation>
 <translation id="1644574205037202324">Historique</translation>
@@ -209,7 +209,7 @@
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2062410130322589403">Un guide de vos choix en matière de confidentialité</translation>
 <translation id="20638360198452347">Sélecteur de type d'unité</translation>
-<translation id="2067852168641682340">Enregistrer sur ce compte à chaque fois</translation>
+<translation id="2067852168641682340">Enregistrer sur ce compte chaque fois</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Vous pouvez faire défiler l'écran vers la droite pour naviguer en mode Navigation privée.</translation>
@@ -315,7 +315,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="261739049332372104">Pour recevoir des mises à jour sur le contenu qui vous intéresse, activez les notifications dans vos réglages iOS.</translation>
 <translation id="2625189173221582860">Mot de passe copié</translation>
 <translation id="2626236249646841566">Vérifiez votre connexion et réessayez de vous connecter.</translation>
-<translation id="2635918910848538771">Remplissage automatique du CVC</translation>
+<translation id="2635918910848538771">Remplissage automatique du code CVC</translation>
 <translation id="2637313651144986786">Rechercher des onglets…</translation>
 <translation id="2640733327287333451">Aucun nom d'utilisateur ••••••</translation>
 <translation id="2648721026697078500">Ne jamais déplacer</translation>

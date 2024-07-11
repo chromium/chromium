@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">குளியலறை</translation>
 <translation id="2657637947725373811">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் மாற்ற வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் மாற்ற வேண்டுமா?}}</translation>
 <translation id="2658843814961855121">தொழிலாளர் &amp; பணியாளர் சட்டம்</translation>
-<translation id="2658944305627908367">உங்கள் பேலன்ஸ் வரம்பை மீறும் பணப் பரிமாற்றங்கள் செயலாக்கப்படாது</translation>
 <translation id="2660779039299703961">நிகழ்வு</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{எதுவுமில்லை}=1{ஒரு கடவுச்சொல் (டொமைன்கள்: <ph name="DOMAIN_LIST" />)}=2{2 கடவுச்சொற்கள் (டொமைன்கள்: <ph name="DOMAIN_LIST" />)}other{# கடவுச்சொற்கள் (டொமைன்கள்: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">மேலே</translation>
@@ -1530,6 +1529,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" />க்கான விதிமுறைகளை இங்கே பார்க்கவும்</translation>
 <translation id="3872834068356954457">அறிவியல்</translation>
 <translation id="3875783148670536197">எப்படி எனக் காட்டு</translation>
+<translation id="3879748587602334249">பதிவிறக்க நிர்வாகி</translation>
 <translation id="3880456882942693779">கலை மற்றும் பொழுதுபோக்கு</translation>
 <translation id="3880589673277376494">இணையம் மற்றும் தொலைத்தொடர்பு</translation>
 <translation id="3881478300875776315">குறைவான வரிகளைக் காட்டும்</translation>
@@ -3686,7 +3686,6 @@
 <translation id="800218591365569300">பிற தாவல்கள் அல்லது நிரல்களை மூடி, நினைவகத்தைக் காலியாக்கவும்.</translation>
 <translation id="8002230960325005199">தொடர்புடைய தளங்களைப் புதிய பக்கத்தில் காட்டும்</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Pix மூலம் பணம் செலுத்துங்கள் - நகலெடுத்து ஒட்ட வேண்டியதில்லை</translation>
 <translation id="8004582292198964060">உலாவி</translation>
 <translation id="8009058079740742415">வீட்டுப் பாதுகாப்பு</translation>
 <translation id="8009225694047762179">கடவுச்சொற்களை நிர்வகி</translation>

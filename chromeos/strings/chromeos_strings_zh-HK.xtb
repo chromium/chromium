@@ -507,7 +507,6 @@
 <translation id="3780740315729837296">指定鍵盤按鍵</translation>
 <translation id="3784455785234192852">鎖定</translation>
 <translation id="3785643128701396311">像素藝術</translation>
-<translation id="3790109258688020991">點彩畫</translation>
 <translation id="380097101658023925">RGB 控制項</translation>
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
@@ -769,6 +768,7 @@
 <translation id="5180712487038406644">熱情奔放</translation>
 <translation id="5190187232518914472">重溫美好回憶。如要新增或編輯相簿，請前往「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
+<translation id="5220549459260334974">已下載 <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="522307662484862935">請勿輸入電郵地址</translation>
 <translation id="5227902338748591677">深色主題背景時間表</translation>
@@ -866,7 +866,6 @@
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
 <translation id="5790391387506209808">青金石</translation>
-<translation id="5810296156135698005">巴洛克</translation>
 <translation id="5816802250591013230">未指派任何快速鍵</translation>
 <translation id="5826644637650799838">關於此桌布</translation>
 <translation id="5832805196449965646">新增使用者</translation>

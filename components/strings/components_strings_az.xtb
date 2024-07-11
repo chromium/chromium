@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">Hamam</translation>
 <translation id="2657637947725373811">{0,plural, =1{Məxfi fayl ötürülsün?}other{Məxfi fayllar ötürülsün?}}</translation>
 <translation id="2658843814961855121">İş və əmək qanunu</translation>
-<translation id="2658944305627908367">Balansı keçən tranzaksiyalar emal edilməyəcək</translation>
 <translation id="2660779039299703961">Tədbir</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Heç biri}=1{1 parol (<ph name="DOMAIN_LIST" /> üçün)}=2{2 parol (<ph name="DOMAIN_LIST" /> üçün)}other{# parol (<ph name="DOMAIN_LIST" /> üçün)}}</translation>
 <translation id="2666092431469916601">Yuxarı</translation>
@@ -1530,6 +1529,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> üçün şərtlərə burada baxın</translation>
 <translation id="3872834068356954457">Elm</translation>
 <translation id="3875783148670536197">İstifadə Qaydasını Göstərin</translation>
+<translation id="3879748587602334249">Endirmə meneceri</translation>
 <translation id="3880456882942693779">İncəsənət və Əyləncə</translation>
 <translation id="3880589673277376494">İnternet və Telekom</translation>
 <translation id="3881478300875776315">Daha az sətir göstərin</translation>
@@ -3687,7 +3687,6 @@
 <translation id="800218591365569300">Yaddaşı boşaltmaq üçün digər tab və proqramları bağlayın.</translation>
 <translation id="8002230960325005199">Əlaqədar saytlara yeni tabda baxın</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">Pix ilə kopyalayıb yerləşdirmə olmadan ödəyin</translation>
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8009058079740742415">Ev Təhlükəsizliyi və Güvənliyi</translation>
 <translation id="8009225694047762179">Parolları İdarə edin</translation>

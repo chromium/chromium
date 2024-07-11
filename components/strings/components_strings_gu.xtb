@@ -652,6 +652,7 @@
 <translation id="2168151236314517198">વ્યવસ્થાપક પૉલિસીને કારણે આ કન્ટેન્ટ પ્રિન્ટ કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2170417331417184438">કાર્ડને ફક્ત ડિવાઇસ પર સાચવ્યું</translation>
 <translation id="2172089022819052306">વાહનનું સમારકામ અને તેની જાળવણી</translation>
+<translation id="2174875517416416684">તમારો વ્યવહાર પૂર્ણ થયો ન હતો. તમારા એકાઉન્ટમાંથી ફંડ લેવામાં આવ્યું નથી.</translation>
 <translation id="2175630235841878061">100MB કરતા વધારે કદની ફાઇલો ડાઉનલોડ કરવા માટે ઉપલબ્ધ નથી</translation>
 <translation id="2176974405772725904">એકાઉન્ટમાં ઍડ્રેસ સાચવો</translation>
 <translation id="2178665390943006934">'Chrome અપડેટ કરો' બટન, તમારા Chrome સેટિંગમાંથી Chrome અપડેટ કરવા માટે સક્રિય કરો</translation>
@@ -891,7 +892,6 @@
 <translation id="2655752832536625875">બાથરૂમ</translation>
 <translation id="2657637947725373811">{0,plural, =1{શું ગોપનીય ફાઇલ ટ્રાન્સફર કરીએ?}one{શું ગોપનીય ફાઇલ ટ્રાન્સફર કરીએ?}other{શું આ ગોપનીય ફાઇલો ટ્રાન્સફર કરીએ?}}</translation>
 <translation id="2658843814961855121">શ્રમ અને રોજગાર કાયદો</translation>
-<translation id="2658944305627908367">તમારા બૅલેન્સની રકમ કરતાં વધુ મૂલ્યના વ્યવહારો પર પ્રક્રિયા કરવામાં આવશે નહીં</translation>
 <translation id="2660779039299703961">ઇવેન્ટ</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{એકપણ નહીં}=1{1 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે)}=2{2 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે)}one{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે)}other{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે)}}</translation>
 <translation id="2666092431469916601">ઉપર</translation>
@@ -1535,6 +1535,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> માટેની શરતો અહીં જુઓ</translation>
 <translation id="3872834068356954457">વિજ્ઞાન</translation>
 <translation id="3875783148670536197">મને બતાવો કે કેવી રીતે</translation>
+<translation id="3879748587602334249">ડાઉનલોડ મેનેજર</translation>
 <translation id="3880456882942693779">આર્ટ અને મનોરંજન</translation>
 <translation id="3880589673277376494">ઇન્ટરનેટ અને ટેલિકોમ</translation>
 <translation id="3881478300875776315">ઓછી પંક્તિઓ બતાવો</translation>
@@ -3392,6 +3393,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> મિલીમીટર)</translation>
 <translation id="7450577240311017924">'સિંક મેનેજ કરો' બટન, Chrome સેટિંગમાં તમે જે માહિતી સિંક કરવા ઇચ્છતા હો, તે મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="7451311239929941790">આ સમસ્યા વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" />.</translation>
+<translation id="745208957946308667">Dino ગેમ, રમવા માટે સ્પેસ દબાવો</translation>
 <translation id="7454377933424667109">ક્લાઉડ એકાઉન્ટ</translation>
 <translation id="7455133967321480974">વૈશ્વિક ડિફોલ્ટનો ઉપયોગ કરો (અવરોધિત કરો)</translation>
 <translation id="7455452752247248289">એન્ટરપ્રાઇઝ ટેકનોલોજી</translation>
@@ -3692,7 +3694,6 @@
 <translation id="800218591365569300">મેમરી ખાલી કરવા માટે અન્ય ટૅબ અથવા પ્રોગ્રામને બંધ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="8002230960325005199">નવા ટૅબમાં સંબંધિત સાઇટ જુઓ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">કૉપિ અને પેસ્ટ કર્યાં વિના Pix વડે ચુકવણી કરો</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
 <translation id="8009058079740742415">ઘરની સલામતી અને સુરક્ષા</translation>
 <translation id="8009225694047762179">બધા પાસવર્ડ મેનેજ કરો</translation>
@@ -4045,6 +4046,7 @@
 <translation id="8676424191133491403">કોઈ વિલંબ વિના</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, જવાબ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> પરનું વેબપેજ લોડ કરી શકાયું નથી કારણ કે:</translation>
+<translation id="8682297334444610648">Dino ગેમ, રમવા માટે ટૅપ કરો</translation>
 <translation id="8686424632716064939">કમ્પ્યુટર સુરક્ષા</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> એન્ટ્રીને ડિલીટ કરવામાં આવી છે</translation>
 <translation id="8687429322371626002">તમારું ડિવાઇસ અને એકાઉન્ટ <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે.</translation>

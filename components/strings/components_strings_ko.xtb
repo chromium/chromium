@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">욕실</translation>
 <translation id="2657637947725373811">{0,plural, =1{기밀 파일을 전송하시겠습니까?}other{기밀 파일을 전송하시겠습니까?}}</translation>
 <translation id="2658843814961855121">근로 및 고용법</translation>
-<translation id="2658944305627908367">잔액을 초과하는 거래는 처리되지 않습니다.</translation>
 <translation id="2660779039299703961">이벤트</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{없음}=1{비밀번호 1개(도메인: <ph name="DOMAIN_LIST" />)}=2{비밀번호 2개(도메인: <ph name="DOMAIN_LIST" />)}other{비밀번호 #개(도메인: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">맨 위</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361">여기에서 <ph name="CREDIT_CARD_NAME" /> 약관 보기</translation>
 <translation id="3872834068356954457">과학</translation>
 <translation id="3875783148670536197">방법 보기</translation>
+<translation id="3879748587602334249">다운로드 관리자</translation>
 <translation id="3880456882942693779">예술 및 엔터테인먼트</translation>
 <translation id="3880589673277376494">인터넷 및 통신</translation>
 <translation id="3881478300875776315">자막 접기</translation>
@@ -3690,7 +3690,6 @@
 <translation id="800218591365569300">다른 탭이나 프로그램을 종료하여 메모리를 확보하세요.</translation>
 <translation id="8002230960325005199">새 탭에서 관련 사이트 보기</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">복사하여 붙여넣기 없이 Pix로 결제</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8009058079740742415">가정 안전 및 보안</translation>
 <translation id="8009225694047762179">비밀번호 관리</translation>

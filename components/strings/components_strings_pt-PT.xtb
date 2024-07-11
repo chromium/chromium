@@ -652,6 +652,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2168151236314517198">A impressão deste conteúdo está bloqueada pela política do administrador.</translation>
 <translation id="2170417331417184438">Cartão guardado apenas no dispositivo</translation>
 <translation id="2172089022819052306">Reparação e manutenção de veículos</translation>
+<translation id="2174875517416416684">A sua transação não foi processada. Não foram retirados fundos da sua conta.</translation>
 <translation id="2175630235841878061">Os ficheiros com mais de 100 MB não estão disponíveis para transferência</translation>
 <translation id="2176974405772725904">Guarde a morada na conta</translation>
 <translation id="2178665390943006934">Botão Atualizar Chrome; ative para atualizar o Chrome nas definições do Chrome</translation>
@@ -891,7 +892,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2655752832536625875">Casa de banho</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transferir o ficheiro confidencial?}other{Transferir os ficheiros confidenciais?}}</translation>
 <translation id="2658843814961855121">Direito do trabalho</translation>
-<translation id="2658944305627908367">As transações que excedam o seu saldo não são processadas</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe (de <ph name="DOMAIN_LIST" />)}=2{2 palavras-passe (de <ph name="DOMAIN_LIST" />)}other{# palavras-passe (de <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Parte superior</translation>
@@ -1535,6 +1535,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3865339060090354361">Veja aqui os termos de <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Ciência</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
+<translation id="3879748587602334249">Gestor de transferências</translation>
 <translation id="3880456882942693779">Artes e entretenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicações</translation>
 <translation id="3881478300875776315">Mostrar menos linhas</translation>
@@ -3391,6 +3392,7 @@ Detalhes adicionais:
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Botão Gerir sincronização; ative para gerir as informações que sincroniza nas definições do Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /> sobre este problema.</translation>
+<translation id="745208957946308667">Jogo Dino, prima a barra de espaço para jogar</translation>
 <translation id="7454377933424667109">Conta na nuvem</translation>
 <translation id="7455133967321480974">Usar predefinição global (Bloquear)</translation>
 <translation id="7455452752247248289">Tecnologia empresarial</translation>
@@ -3691,7 +3693,6 @@ Detalhes adicionais:
 <translation id="800218591365569300">Experimente fechar outros separadores ou programas para libertar memória.</translation>
 <translation id="8002230960325005199">Veja sites relacionados num novo separador</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">Pague com o Pix sem copiar e colar</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009058079740742415">Segurança e proteção do lar</translation>
 <translation id="8009225694047762179">Gerir palavras-passe</translation>
@@ -4045,6 +4046,7 @@ Detalhes adicionais:
 <translation id="8676424191133491403">Sem atraso</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página Web em <ph name="PAGE" /> porque:</translation>
+<translation id="8682297334444610648">Jogo Dino, toque para jogar</translation>
 <translation id="8686424632716064939">Segurança informática</translation>
 <translation id="8687278439622293018">A entrada <ph name="ENTRY_VOICEOVER" /> foi eliminada</translation>
 <translation id="8687429322371626002">O seu dispositivo e conta são geridos por <ph name="MANAGER" />.</translation>

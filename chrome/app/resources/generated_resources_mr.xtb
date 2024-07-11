@@ -1943,6 +1943,7 @@
 <translation id="237828693408258535">या पेजचे भाषांतर करायचे?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{या एक्स्टेंशनला आता लवकरच सपोर्ट केला जाणार नाही}other{या एक्स्टेंशनना आता लवकरच सपोर्ट केला जाणार नाही}}</translation>
 <translation id="2378982052244864789">एक्स्टेंशन डिरेक्टरी निवडा.</translation>
+<translation id="2379111564446699251">टूलबारवरील बटणे पुन्हा संगतवार लावण्यासाठी, ती ड्रॅग करा</translation>
 <translation id="2379281330731083556">सिस्टम संवाद वापरून प्रिंट करा… <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">यामुळे तुमचे मोबाइल नेटवर्क काही मिनिटांसाठी डिस्कनेक्ट होऊ शकते</translation>
 <translation id="2381499968174336913">शेअर केलेल्या टॅबचे पूर्वावलोकन</translation>
@@ -3103,7 +3104,6 @@
 <translation id="322708765617468434">सेटअप केल्यानंतर तुम्ही नेहमी दुसऱ्या व्यक्तीला डिव्हाइसमध्ये जोडू शकता. प्रत्येक व्यक्ती स्वतःचा अनुभव पर्सनलाइझ करू शकते आणि डेटा खाजगी ठेवू शकते.</translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{<ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> वरील सारख्या एक्स्टेंशनसह ते काढून टाका किंवा बदला.}other{<ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> वरील सारख्या एक्स्टेंशनसह ती काढून टाका किंवा बदला}}</translation>
-<translation id="3229412050601871341">डिव्हाइस पासवर्ड</translation>
 <translation id="3230539834943294477">मदतपर लेख पहा किंवा डिव्हाइस सपोर्ट शोधा</translation>
 <translation id="3232168089952388105">तुमच्या डिव्हाइसशी संबंधित माहिती शेअर करायची आहे का?</translation>
 <translation id="3232368113895801406">तुमची सुरक्षा प्राधान्ये आयसोलेटेड ॲप्सच्या इंस्टॉलेशनला अनुमती देत नाहीत. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -3556,6 +3556,7 @@
 <translation id="3569614820047645079">तुमच्या माझे ड्राइव्ह मधील फाइल या तुमच्या Chromebook मध्ये आपोआप सिंक होतील, जेणेकरून तुम्ही इंटरनेट कनेक्शनशिवाय त्या अ‍ॅक्सेस करू शकता.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ला पुढील फाइल आणि फोल्डर पाहता येतात</translation>
 <translation id="3571734092741541777">सेट अप</translation>
+<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> बंद केलेली होती</translation>
 <translation id="3575121482199441727">या साइटला अनुमती द्या</translation>
 <translation id="3575224072358507281">Measurement Lab साठी, त्यांचे गोपनीयता धोरण (measurementlab.net/privacy) यानुसार आयपी अ‍ॅड्रेस आणि नेटवर्क मापनासंबंधित परिणाम गोळा करा</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
@@ -4899,6 +4900,7 @@
 <translation id="4554591392113183336">बाह्य एक्स्टेंशन अस्‍तित्वात असलेल्‍याच्या तुलनेत समान किंवा कमी आवृत्तीवर आहे.</translation>
 <translation id="4555769855065597957">शॅडो</translation>
 <translation id="4555863373929230635">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करण्यासाठी साइन इन करा आणि सिंक सुरू करा.</translation>
+<translation id="4556069465387849460">पासवर्ड भरण्यासाठी तुम्ही तुमचे स्क्रीन लॉक वापरत आहात</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> यांनी तुमच्यासोबत <ph name="WEBSITE_NAME" /> चा पासवर्ड शेअर केला आहे. तुम्ही तो साइन-इन फॉर्ममध्ये वापरू शकता.</translation>
 <translation id="4558426062282641716">स्वयं-लाँच परवानगीची विनंती केली</translation>
 <translation id="4558542033859106586"><ph name="TARGET_APP" /> मध्ये उघडत आहे</translation>
@@ -10277,7 +10279,6 @@
 <translation id="8557100046150195444">पुढे सुरू ठेवण्यासाठी टच आयडी</translation>
 <translation id="8557180006508471423">तुमच्या Mac वर स्थान सेवा मध्ये "Google Chrome" सुरू करा</translation>
 <translation id="8557856025359704738">पुढील डाउनलोड <ph name="NEXT_DATE_DOWNLOAD" /> रोजी आहे.</translation>
-<translation id="8558281414737757274">Google खाते पासवर्ड</translation>
 <translation id="8559858985063901027">पासकी</translation>
 <translation id="8559961053328923750">जाहिरात परफॉर्मन्स मोजण्यासाठी साइट ब्राउझरद्वारे शेअर करू शकतील अशा एकूण डेटाचे प्रमाण Chrome मर्यादित करते</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Open All in New Window}=1{नवीन विंडोमध्ये उघडा}other{सर्व ({COUNT}) नवीन विंडोमध्ये उघडा}}</translation>
@@ -10322,6 +10323,7 @@
 <translation id="8596540852772265699">कस्टम फाइल</translation>
 <translation id="8597845839771543242">गुणधर्म स्‍वरूपन:</translation>
 <translation id="8598249292448297523">प्रिंट करा</translation>
+<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{एक्स्टेंशन व्यवस्थापित करा}other{एक्स्टेंशन व्यवस्थापित करा}}</translation>
 <translation id="8599681327221583254">एक किंवा त्यापेक्षा जास्त धोरणे योग्य प्रकारे काँफिगर केलेली नाहीत. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा</translation>
 <translation id="8599864823732014237">एंटरप्राइझ नोंदणी वगळायची आहे करा?</translation>
 <translation id="8601206103050338563">TLS WWW क्लायंट ऑथेंटिकेशन</translation>
@@ -10721,6 +10723,7 @@
 <translation id="887292602123626481">डीफॉल्ट शोध इंजीनबद्दल अधिक जाणून घ्या</translation>
 <translation id="8873075098103007382">टॅब गटांसह व्यवस्थापित केलेले रहा</translation>
 <translation id="8874341931345877644">डिव्हाइसवर कास्ट करा:</translation>
+<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" बंद केलेली होती</translation>
 <translation id="8874790741333031443">तृतीय पक्ष कुकीना तात्पुरती अनुमती देऊन पहा, ज्यामुळे ब्राउझ करण्यासंबंधित संरक्षण कमी मिळेल, पण साइटची वैशिष्ट्ये अपेक्षेनुसार काम करण्याची अधिक शक्यता आहे.</translation>
 <translation id="8875520811099717934">Linux अपग्रेड करा</translation>
 <translation id="8875736897340638404">तुमची दृश्यमानता निवडा</translation>
@@ -10779,6 +10782,7 @@
 <translation id="8918900204934259333">अ‍ॅप इंस्टॉल करत आहे...</translation>
 <translation id="891931289445130855">डेटा आणि परवानग्या हटवा</translation>
 <translation id="8920133120839850939">आणखी जेश्चर टॅब निवडा, त्यानंतर मागे आणि पुढे नेव्हिगेट करण्यासाठी पेजदरम्यान स्वाइप करा सुरू करा</translation>
+<translation id="8922348435910470639">दोन वेळा बुक केलेला</translation>
 <translation id="8922624386829239660">माउसने स्क्रीनच्या कडांना स्पर्श केल्यावर स्क्रीन हलवा</translation>
 <translation id="8923880975836399332">गडद टील</translation>
 <translation id="8925124370124776087">टायटल बार आता लपवला आहे</translation>

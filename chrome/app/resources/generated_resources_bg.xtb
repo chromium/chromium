@@ -1029,6 +1029,7 @@
 <translation id="1730989807608739928">Превъртане към последния раздел</translation>
 <translation id="1731520826054843792">Шаблон за сертификат от Microsoft</translation>
 <translation id="1731911755844941020">Заявката се изпраща...</translation>
+<translation id="1732380773380808394">Също така ще получите паролите си и др. от профила си в Google.</translation>
 <translation id="1734212868489994726">Светлосиньо</translation>
 <translation id="1734230530703461088">Времето изтече, преди разширенията да се заредят. Моля, обърнете се към администратора си.</translation>
 <translation id="1734824808160898225">Възможно е <ph name="PRODUCT_NAME" /> да не може да се поддържа актуален</translation>
@@ -3099,7 +3100,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="322708765617468434">След настройването можете да добавяте други хора към устройството по всяко време. Всеки човек има възможност да персонализира практическата си работа и да запази данните си частни.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Премахнете го или го заменете с подобни разширения от <ph name="BEGIN_LINK" />уеб магазина на Chrome<ph name="END_LINK" />}other{Премахнете ги или ги заменете с подобни разширения от <ph name="BEGIN_LINK" />уеб магазина на Chrome<ph name="END_LINK" />}}</translation>
-<translation id="3229412050601871341">Парола за устройството</translation>
 <translation id="3230539834943294477">Преглед на помощни статии или намиране на поддръжка за устройства</translation>
 <translation id="3232168089952388105">Искате ли да споделите информация за устройството си?</translation>
 <translation id="3232368113895801406">Предпочитанията ви за сигурност не позволяват инсталирането на изолирани приложения. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4898,6 +4898,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4554591392113183336">Версията на външното разширение е същата или по-стара в сравнение със съществуващата.</translation>
 <translation id="4555769855065597957">Сянка</translation>
 <translation id="4555863373929230635">За да запазвате пароли в профила си в Google, влезте в него и включете синхронизирането.</translation>
+<translation id="4556069465387849460">Използвате опцията си за заключване на екрана при попълване на пароли</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> сподели с вас парола за <ph name="WEBSITE_NAME" />. Можете да я използвате във формуляра за вход.</translation>
 <translation id="4558426062282641716">Изисква се разрешение за автоматично стартиране</translation>
 <translation id="4558542033859106586">Отваря се в <ph name="TARGET_APP" /></translation>
@@ -5820,6 +5821,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5247243947166567755">Избиране на <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Браузърът претърпя срив, преди изтеглянето да завърши.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> използва местоположението ви, за да ви предоставя местно съдържание. Можете да промените това от <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Създайте ПИН код за възстановяване за Google Мениджър на пароли</translation>
 <translation id="5252496130205799136">Да се използва ли профилът ви в Google за запазване и попълване на пароли?</translation>
 <translation id="5252653240322147470">ПИН кодът трябва да съдържа не повече от <ph name="MAXIMUM" /> цифри</translation>
 <translation id="5253554634804500860">Използване на <ph name="DEVICE_NAME" /></translation>
@@ -10277,7 +10279,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8557100046150195444">Използвайте Touch ID, за да продължите</translation>
 <translation id="8557180006508471423">Включете Google Chrome в услугите за местоположение на своя Mac</translation>
 <translation id="8557856025359704738">Следващото изтегляне е на <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558281414737757274">Парола за профила в Google</translation>
 <translation id="8559858985063901027">Кодове за достъп</translation>
 <translation id="8559961053328923750">Chrome ограничава общото количество данни, които сайтовете могат да споделят чрез браузъра с цел измерване на ефективността на рекламите.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Отваряне на всички в &amp;нов прозорец}=1{Отваряне в &amp;нов прозорец}other{Отваряне на всички ({COUNT}) в &amp;нов прозорец}}</translation>

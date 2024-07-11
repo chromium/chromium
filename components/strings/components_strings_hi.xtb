@@ -891,7 +891,6 @@
 <translation id="2655752832536625875">बाथरूम</translation>
 <translation id="2657637947725373811">{0,plural, =1{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}one{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}other{क्या आपको गोपनीय फ़ाइलें ट्रांसफ़र करनी हैं?}}</translation>
 <translation id="2658843814961855121">श्रम और रोज़गार कानून</translation>
-<translation id="2658944305627908367">ऐसे लेन-देन प्रोसेस नहीं किए जाएंगे जिनकी रकम आपके खाते में बाकी बैलेंस से ज़्यादा हो</translation>
 <translation id="2660779039299703961">इवेंट</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> से जुड़ी शर्तें यहां देखें</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">मुझे इसका तरीका दिखाएं</translation>
+<translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
 <translation id="3880456882942693779">कला और मनोरंजन</translation>
 <translation id="3880589673277376494">इंटरनेट और टेलीकॉम</translation>
 <translation id="3881478300875776315">कम लाइनें दिखाएं</translation>
@@ -2209,7 +2209,7 @@
 <translation id="5190072300954988691">कैमरा और माइक्रोफ़ोन को ऐक्सेस करने की अनुमति नहीं है</translation>
 <translation id="5190835502935405962">बुकमार्क बार</translation>
 <translation id="5191315092027169558">आपकी प्रोफ़ाइल को <ph name="DOMAIN" /> मैनेज करता है</translation>
-<translation id="51918995459521422"><ph name="ORIGIN" /> एक से ज़्यादा फ़ाइलें डाउनलोड करना चाहते हैं</translation>
+<translation id="51918995459521422"><ph name="ORIGIN" /> को एक से ज़्यादा फ़ाइलें डाउनलोड करनी हैं</translation>
 <translation id="519422657042045905">व्याख्या की सुविधा उपलब्ध नहीं है</translation>
 <translation id="5201306358585911203">इस पेज पर एम्बेड किए गए पेज का कहना है कि</translation>
 <translation id="5205222826937269299">नाम ज़रूरी है</translation>
@@ -3691,7 +3691,6 @@
 <translation id="800218591365569300">जगह खाली करने के लिए दूसरे टैब या प्रोग्राम बंद करके देखें.</translation>
 <translation id="8002230960325005199">मिलती-जुलती साइटें नए टैब में देखें</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
-<translation id="8003697335101170520">कॉपी किए और चिपकाए बिना, Pix की मदद से पेमेंट करें</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="8009058079740742415">होम सेफ़्टी और सिक्योरिटी</translation>
 <translation id="8009225694047762179">पासवर्ड संभालें</translation>

@@ -651,6 +651,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2168151236314517198">La stampa di questi contenuti è stata bloccata dal criterio dell'amministratore</translation>
 <translation id="2170417331417184438">Carta salvata solo sul dispositivo</translation>
 <translation id="2172089022819052306">Riparazione e manutenzione veicoli</translation>
+<translation id="2174875517416416684">La transazione non è andata a buon fine. Nessun fondo è stato prelevato dal tuo conto.</translation>
 <translation id="2175630235841878061">I file di dimensioni superiori a 100 MB non sono disponibili per il download</translation>
 <translation id="2176974405772725904">Salva l'indirizzo nell'account</translation>
 <translation id="2178665390943006934">Pulsante Aggiorna Chrome, attiva per aggiornare Chrome dalle relative impostazioni</translation>
@@ -890,7 +891,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2655752832536625875">Bagno</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vuoi trasferire il file riservato?}other{Vuoi trasferire i file riservati?}}</translation>
 <translation id="2658843814961855121">Normative sul lavoro</translation>
-<translation id="2658944305627908367">Le transazioni che superano il saldo non saranno elaborate</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nessuna}=1{1 password per <ph name="DOMAIN_LIST" />}=2{2 password per <ph name="DOMAIN_LIST" />}other{# password per <ph name="DOMAIN_LIST" />}}</translation>
 <translation id="2666092431469916601">In alto</translation>
@@ -1531,6 +1531,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3865339060090354361">Leggi i termini relativi a <ph name="CREDIT_CARD_NAME" /> qui</translation>
 <translation id="3872834068356954457">Scienze</translation>
 <translation id="3875783148670536197">Mostrami come fare</translation>
+<translation id="3879748587602334249">Gestione dei download</translation>
 <translation id="3880456882942693779">Arti e intrattenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicazioni</translation>
 <translation id="3881478300875776315">Mostra meno righe</translation>
@@ -1801,7 +1802,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4363729811203340554">Se condividi questo dispositivo, Chrome può chiederti di verificare ogni volta che paghi utilizzando la compilazione automatica</translation>
 <translation id="4366943895537458493">Lastra</translation>
 <translation id="437040971055499437">Si è verificato un evento di sicurezza</translation>
-<translation id="4371591986692297148">non attivo</translation>
+<translation id="4371591986692297148">Non attivo</translation>
 <translation id="4372948949327679948">È previsto il valore <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Aggiungi un elemento se vuoi che venga inserito nel gruppo di argomenti da cui Chrome può scegliere quando stima i tuoi interessi.</translation>
 <translation id="437620492464254965">Porte e finestre</translation>
@@ -3262,7 +3263,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7220786058474068424">Elaborazione in corso</translation>
 <translation id="7221855153210829124">Mostrare le notifiche</translation>
 <translation id="7221857374443660083">La tua banca vuole verificare la tua identità</translation>
-<translation id="722454870747268814">Nuova scheda di navigazione in incognito</translation>
+<translation id="722454870747268814">Nuova scheda in incognito</translation>
 <translation id="7227293336683593977">Cronologia dei prezzi</translation>
 <translation id="7227747683324411744">Gli utenti malintenzionati sul sito che stai tentando di visitare potrebbero indurti con l'inganno a installare software dannoso che influisce sulla tua navigazione, ad esempio cambiando la tua home page o mostrando annunci aggiuntivi sui siti che visiti.</translation>
 <translation id="7233592378249864828">Stampa foglio di conferma</translation>
@@ -3387,6 +3388,7 @@ Ulteriori dettagli:
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Pulsante Gestisci sincronizzazione, attiva per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Leggere ulteriori informazioni<ph name="END_LINK" /> sul problema.</translation>
+<translation id="745208957946308667">Gioco Dino, premi la barra spaziatrice per giocare</translation>
 <translation id="7454377933424667109">Account cloud</translation>
 <translation id="7455133967321480974">Usa predefinita globale (Blocca)</translation>
 <translation id="7455452752247248289">Tecnologia aziendale</translation>
@@ -3687,7 +3689,6 @@ Ulteriori dettagli:
 <translation id="800218591365569300">Prova a chiudere altri programmi o schede per liberare spazio in memoria.</translation>
 <translation id="8002230960325005199">Visualizza i siti correlati in una nuova scheda</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
-<translation id="8003697335101170520">Paga con Pix senza copiare e incollare</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009058079740742415">Sicurezza e protezione della casa</translation>
 <translation id="8009225694047762179">Gestisci password</translation>
@@ -4041,6 +4042,7 @@ Ulteriori dettagli:
 <translation id="8676424191133491403">Nessun ritardo</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, risposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Impossibile caricare la pagina web all'indirizzo <ph name="PAGE" /> perché:</translation>
+<translation id="8682297334444610648">Gioco Dino, tocca per giocare</translation>
 <translation id="8686424632716064939">Sicurezza informatica</translation>
 <translation id="8687278439622293018">La voce <ph name="ENTRY_VOICEOVER" /> è stata eliminata</translation>
 <translation id="8687429322371626002">Il tuo dispositivo e il tuo account sono gestiti da <ph name="MANAGER" />.</translation>

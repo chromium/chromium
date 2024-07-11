@@ -507,7 +507,6 @@
 <translation id="3780740315729837296">Priraďte kláves na klávesnici</translation>
 <translation id="3784455785234192852">Uzamknúť</translation>
 <translation id="3785643128701396311">pixelovom</translation>
-<translation id="3790109258688020991">pointilizmu</translation>
 <translation id="380097101658023925">ovládanie RGB</translation>
 <translation id="38114475217616659">Vymazať celú históriu</translation>
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
@@ -769,6 +768,7 @@
 <translation id="5180712487038406644">Výrazná</translation>
 <translation id="5190187232518914472">Pripomeňte si obľúbené spomienky. Ak chcete pridať alebo upraviť albumy, prejdite do <ph name="LINK_BEGIN" />Fotiek Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
+<translation id="5220549459260334974">Stiahnuté: <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="522307662484862935">Nezahŕňať e‑mailovú adresu</translation>
 <translation id="5227902338748591677">Plán tmavého motívu</translation>
@@ -866,7 +866,6 @@
 <translation id="57838592816432529">Vypnúť zvuk</translation>
 <translation id="5784136236926853061">Vysoká latencia protokolu HTTPS</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
-<translation id="5810296156135698005">baroka</translation>
 <translation id="5816802250591013230">Nebola priradená žiadna skratka</translation>
 <translation id="5826644637650799838">O umení</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>

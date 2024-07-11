@@ -890,7 +890,6 @@
 <translation id="2655752832536625875">浴室</translation>
 <translation id="2657637947725373811">{0,plural, =1{機密ファイルを転送しますか？}other{機密ファイルを転送しますか？}}</translation>
 <translation id="2658843814961855121">労働法、雇用法</translation>
-<translation id="2658944305627908367">残高を超える取引は処理されません</translation>
 <translation id="2660779039299703961">イベント</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{なし}=1{<ph name="DOMAIN_LIST" /> のパスワード 1 件}=2{<ph name="DOMAIN_LIST" /> のパスワード 2 件}other{<ph name="DOMAIN_LIST" /> のパスワード # 件}}</translation>
 <translation id="2666092431469916601">一番上</translation>
@@ -1534,6 +1533,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> の利用規約はこちらをご確認ください</translation>
 <translation id="3872834068356954457">科学</translation>
 <translation id="3875783148670536197">手順を見る</translation>
+<translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3880456882942693779">アート、エンターテインメント</translation>
 <translation id="3880589673277376494">インターネット、通信事業</translation>
 <translation id="3881478300875776315">表示する行数を減らす</translation>
@@ -3692,7 +3692,6 @@
 <translation id="800218591365569300">メモリを解放するために、他のタブやプログラムを閉じてみてください。</translation>
 <translation id="8002230960325005199">新しいタブで関連サイトを表示</translation>
 <translation id="8003046808285812021">「<ph name="SEARCH_TERMS" />」</translation>
-<translation id="8003697335101170520">コピーと貼り付けの手間なく Pix で支払う</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
 <translation id="8009058079740742415">ホーム セキュリティ</translation>
 <translation id="8009225694047762179">パスワードを管理</translation>

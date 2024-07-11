@@ -728,6 +728,17 @@ Ist diese Richtlinie nicht konfiguriert, dürfen Nutzer Ausnahmen hinzufügen, u
       Wenn die Richtlinie nicht konfiguriert ist, erhalten Nutzer eine Warnung und keinen Fehler, wenn sie eine schwache PIN festlegen.</translation>
 <translation id="1597684038583138808">Definition über „Schnellinfo“ aktivieren</translation>
 <translation id="1598258379228800626">„Objekt mit Tastaturfokus hervorheben“ auf dem Anmeldebildschirm aktivieren</translation>
+<translation id="1599334938346636409">Über diese Richtlinie wird ein benutzerdefiniertes Label gesteuert, mit dem identifiziert werden kann, wer ein Profil oder einen Browser verwaltet hat.
+
+Das Label wird in der Symbolleiste angezeigt.
+
+Wenn diese Richtlinie auf Browserebene konfiguriert ist, zeigen alle Profile das Label in der Symbolleiste an.
+
+Wenn diese Richtlinie auf Profilebene konfiguriert ist, wird das Label nur für dieses Profil angezeigt.
+
+Im Gegensatz zu anderen Richtlinien hat hier die Richtlinie, wenn sie auf Profilebene konfiguriert ist, Vorrang vor auf Browserebene konfigurierten Richtlinien.
+
+Das benutzerdefinierte Label wird nicht übersetzt.</translation>
 <translation id="1599424828227887013">Website-Isolierung für angegebene Ursprünge auf Android-Geräten aktivieren</translation>
 <translation id="159946228300522107">Wenn für diese Richtlinie "True" festgelegt ist, maximiert Chrome beim ersten Start das erste angezeigte Fenster.
 
@@ -4203,6 +4214,7 @@ Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirk
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, ist der intelligente Akkulademodus immer deaktiviert.
 
       Nutzer können diese Einstellung nicht ändern.</translation>
+<translation id="4307479555111916927">Benutzerdefiniertes Unternehmenslabel konfigurieren</translation>
 <translation id="4309091698378414920">„Caret hervorheben“ aktivieren</translation>
 <translation id="4311141497190183490">Wenn die Richtlinie auf „1“ gesetzt ist, können Websites standardmäßig den physischen Standort der Nutzer verfolgen. Wenn die Richtlinie auf „2“ gesetzt ist, wird die Standortermittlung standardmäßig verweigert. Sie können festlegen, dass nachgefragt wird, wenn eine Website den physischen Standort der Nutzer verfolgen möchte.
 

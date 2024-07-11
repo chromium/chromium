@@ -3105,7 +3105,6 @@
 <translation id="322708765617468434">सेटअप पूरा होने के बाद, डिवाइस में किसी भी व्यक्ति को कभी भी जोड़ा जा सकता है. हर व्यक्ति अपने अनुभव को पसंद के हिसाब से बना सकता है और डेटा को निजी रख सकता है.</translation>
 <translation id="3227137524299004712">माइक्रोफ़ोन</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{इस एक्सटेंशन को <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> पर मौजूद मिलते-जुलते एक्सटेंशन से बदलें या हटाएं.}one{इस एक्सटेंशन को <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> पर मौजूद मिलते-जुलते एक्सटेंशन से बदलें या हटाएं}other{इन एक्सटेंशन को <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> पर मौजूद मिलते-जुलते एक्सटेंशन से बदलें या हटाएं}}</translation>
-<translation id="3229412050601871341">डिवाइस का पासवर्ड</translation>
 <translation id="3230539834943294477">सहायता लेख देखें या डिवाइस से जुड़ी सहायता पाएं</translation>
 <translation id="3232168089952388105">क्या आपको अपने डिवाइस की जानकारी शेयर करनी है?</translation>
 <translation id="3232368113895801406">आपकी सुरक्षा प्राथमिकताएं आइसोलेटेड ऐप्लिकेशन को इंस्टॉल करने की अनुमति नहीं देती हैं. <ph name="CHANGE_PREFERENCE" /></translation>
@@ -4902,6 +4901,7 @@
 <translation id="4554591392113183336">बाहरी एक्‍सटेंशन मौजूदा की तुलना में समान या निम्नतर संस्‍करण पर है.</translation>
 <translation id="4555769855065597957">परछाई</translation>
 <translation id="4555863373929230635">अपने Google खाते में पासवर्ड सेव करने के लिए, साइन इन करें और सिंक करना चालू करें.</translation>
+<translation id="4556069465387849460">आपने पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल किया है</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> ने <ph name="WEBSITE_NAME" /> के लिए आपके साथ एक पासवर्ड शेयर किया है. साइन-इन फ़ॉर्म में इसका इस्तेमाल किया जा सकता है.</translation>
 <translation id="4558426062282641716">अपने-आपलॉन्च अनुमति का अनुरोध किया गया</translation>
 <translation id="4558542033859106586">फ़ाइल <ph name="TARGET_APP" /> में खुल रही है</translation>
@@ -8427,7 +8427,7 @@
 <translation id="721490496276866468">पासवर्ड इंपोर्ट करें</translation>
 <translation id="7218514093816577632">पक्का करें कि आपके <ph name="DEVICE_NAME" /> पर सूचनाएं पाने की सुविधा चालू हो.</translation>
 <translation id="7219254577985949841">क्या आपको साइट डेटा मिटाना है?</translation>
-<translation id="7219473482981809164">हमें ऐसी कई प्रोफ़ाइलें मिली हैं जिन्हें डाउनलोड करना है. आगे बढ़ने से पहले, वह प्रोफ़ाइल चुनें जिसे आप डाउनलोड करना चाहते हैं.</translation>
+<translation id="7219473482981809164">हमें ऐसी कई प्रोफ़ाइलें मिली हैं जिन्हें डाउनलोड किया जा सकता है. आगे बढ़ने से पहले वे प्रोफ़ाइलें चुनें जिन्हें आपको डाउनलोड करना है.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{कोई कमज़ोर पासवर्ड नहीं मिला}=1{1 कमज़ोर पासवर्ड मिला}one{{NUM_WEAK} कमज़ोर पासवर्ड मिला}other{{NUM_WEAK} कमज़ोर पासवर्ड मिले}}</translation>
 <translation id="7220019174139618249">पासवर्ड "<ph name="FOLDER" />" में निर्यात नहीं किए जा सकते</translation>
 <translation id="722099540765702221">चार्जिंग का स्रोत</translation>
@@ -10280,7 +10280,6 @@
 <translation id="8557100046150195444">साइन इन करने के लिए, टच आईडी का इस्तेमाल करें</translation>
 <translation id="8557180006508471423">अपने Mac पर, जगह की जानकारी में "Google Chrome" चालू करें</translation>
 <translation id="8557856025359704738">अगली बार <ph name="NEXT_DATE_DOWNLOAD" /> को डाउनलोड होंगी.</translation>
-<translation id="8558281414737757274">Google खाते का पासवर्ड</translation>
 <translation id="8559858985063901027">पासवर्ड</translation>
 <translation id="8559961053328923750">Chrome, विज्ञापन की परफ़ॉर्मेंस को मापने के लिए, ब्राउज़र की मदद से शेयर किए जा सकने वाले कुल डेटा को सीमित करता है</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{सभी यूआरएल को &amp;नई विंडो में खोलें}=1{यूआरएल को &amp;नई विंडो में खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;नई विंडो में खोलें}other{सभी ({COUNT}) यूआरएल को &amp;नई विंडो में खोलें}}</translation>

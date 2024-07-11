@@ -889,7 +889,6 @@
 <translation id="2655752832536625875">浴室</translation>
 <translation id="2657637947725373811">{0,plural, =1{要轉移機密檔案嗎？}other{要轉移機密檔案嗎？}}</translation>
 <translation id="2658843814961855121">勞動法規</translation>
-<translation id="2658944305627908367">系統不會處理超過餘額的交易</translation>
 <translation id="2660779039299703961">活動</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{無}=1{有 1 組密碼 (<ph name="DOMAIN_LIST" />)}=2{有 2 組密碼 (<ph name="DOMAIN_LIST" />)}other{有 # 組密碼 (<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">置頂</translation>
@@ -1532,6 +1531,7 @@
 <translation id="3865339060090354361">點按這個連結查看「<ph name="CREDIT_CARD_NAME" />」的條款</translation>
 <translation id="3872834068356954457">科學</translation>
 <translation id="3875783148670536197">顯示操作說明</translation>
+<translation id="3879748587602334249">下載管理員</translation>
 <translation id="3880456882942693779">藝術與娛樂</translation>
 <translation id="3880589673277376494">網際網路與電信</translation>
 <translation id="3881478300875776315">顯示較少行</translation>
@@ -3689,7 +3689,6 @@
 <translation id="800218591365569300">嘗試關閉其他分頁或程式，以釋出記憶體。</translation>
 <translation id="8002230960325005199">在新分頁中查看相關網站</translation>
 <translation id="8003046808285812021">「<ph name="SEARCH_TERMS" />」</translation>
-<translation id="8003697335101170520">透過 Pix 付款，無需複製及貼上</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8009058079740742415">居家安全與保全</translation>
 <translation id="8009225694047762179">管理密碼</translation>

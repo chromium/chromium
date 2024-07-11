@@ -35,7 +35,6 @@
 
 Таны вебсайтууд болон аппуудад аль хэдийн өгсөн зөвшөөрөл нь энэ бүртгэлд хэрэгжиж болзошгүй. Та Google Бүртгэлүүдээ <ph name="SETTINGS_LINK_BEGIN" />Тохиргоо<ph name="SETTINGS_LINK_END" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="1640672724030957280">Татаж байна...</translation>
-<translation id="1708666629004767631">Chromium-ийн шинэ, илүү аюулгүй хувилбар боломжтой байна.</translation>
 <translation id="1715127912119967311">Эдгээр онцлогийг сайжруулахад туслахын тулд Chromium таны түүнтэй хийсэн харилцан үйлдлүүдийг Google-д илгээнэ. Энэ өгөгдлийг хянагч хүмүүс уншиж, боловсруулж мөн тэмдэглэж магадгүй.</translation>
 <translation id="1722488837206509557">Энэ нь танд боломжтой төхөөрөмжүүд сонгож, тэдгээр төхөөрөмжид контент үзүүлэх боломжийг олгоно.</translation>
 <translation id="17264556997921157">Танд зар харуулахад ашиглах сонирхлын сайтуудын сэдвийг та харах болон хасах боломжтой. Chromium таны сонирхлыг саяхны хөтчийн түүхэд тань тулгуурлан тооцоолно.</translation>
@@ -169,7 +168,6 @@
 <translation id="3713809861844741608">Холбоосыг шинэ Chromium болон табад нээх</translation>
 <translation id="3728124580182886854">Хувийн болгох болон бусад зорилгоор Chromium болон Google-н бусад үйлчилгээг холбоно уу</translation>
 <translation id="3788675262216168505">Chromium-н профайлуудыг удирдах</translation>
-<translation id="378917192836375108">Chromium танд веб сайтад байгаа дугаар дээр дараад Skype-тай дуудлага хийх боломжийг олгоно.</translation>
 <translation id="3790262771324122253">Chromium зарим татаж авсан файлыг яагаад блоклодог болохыг мэдэж авах</translation>
 <translation id="379589255253486813">Та ямар нэг зүйлийг шалгах шаардлагатай бол Chromium танд мэдэгдэнэ</translation>
 <translation id="3802055581630249637">Chromium таны зочлох магадлалтай хуудаснуудыг урьдчилан ачаалах бөгөөд ингэснээр тэдгээр нь таныг зочлох үед илүү хурдан ачаална</translation>
@@ -266,7 +264,6 @@
 <translation id="5383439451358640070">Chromium зарим файлыг яагаад блоклодог болохыг мэдэж авах</translation>
 <translation id="5386450000063123300">Chromium-г шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
-<translation id="5398878173008909840">Ашиглах боломжтой Chromium-ийн шинэ хувилбар байна.</translation>
 <translation id="5405650547142096840">Chromium-аас устга</translation>
 <translation id="5427571867875391349">Chromium-ыг өөрийн анхдагч веб хөтөч болгон тохируулах</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Бета</translation>
@@ -300,7 +297,6 @@
 <translation id="6003112304606738118">Татаж байна... <ph name="HOURS" /> цаг үлдсэн</translation>
 <translation id="6019451407441383358">Та баруун дээр байх Chromium-н цэсээс хавчуурга, унших горим болон бусад зүйлийг нээх боломжтой</translation>
 <translation id="6040143037577758943">Хаах</translation>
-<translation id="6055895534982063517">Chromium-ийн шинэ хувилбар боломжтой байна. Хэзээ хэзээнээс ч хурдан.</translation>
 <translation id="6058380562449900225">Өгөгдлөө хамгаалахын тулд Chromium-д таны ойрын хугацаанд зочлоогүй сайтуудаас зөвшөөрлүүдийг хасахыг зөвшөөрнө үү. Мэдэгдлүүдийг зогсоохгүй.</translation>
 <translation id="6063093106622310249">&amp;Chromium-д нээх</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" />-г Chromium-д нэмсэн</translation>
@@ -379,7 +375,6 @@
 <translation id="684888714667046800">Интернэтэд холбогдох боломжгүй байна. Хэрэв та галт хана ашиглавал <ph name="PRODUCT_EXE_NAME" />-г зөвшөөрсөн жагсаалтад байгаа болохыг баталгаажуулна уу.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />" хортой программ агуулж байгааг Chromium олж мэдлээ</translation>
-<translation id="6893813176749746474">Chromium нь шинэчлэгдсэн байгаа хэдий ч та үүнийг доод тал нь 30 хоногийн турш ашиглаагүй байна.</translation>
 <translation id="691026815377248078">Үргэлжлүүлэн хослуулахын тулд Chromium-д Bluetooth-н 
  хандалт шаардлагатай. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6929417474050522668">Туршилтын хугацаанд байх үед Зарын хэмжилт нь таны зочилсон сайтуудад зарынхаа гүйцэтгэлийг хэмжихэд туслах мэдээллийг Chromium-с хүсэх боломжийг олгоно. Зарын хэмжилт нь сайт хооронд аль болох бага мэдээлэл шилжүүлснээр сайт хоорондын хяналтыг хязгаарлана.</translation>

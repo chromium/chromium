@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Falha – Falha no filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orquídea</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Tenho um par de chaves</translation>
 <translation id="1423591390236870726">Tecla <ph name="KEY_NAME" /> não pressionada</translation>
 <translation id="1432110487435300883">Para um resultado aproximado, divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
@@ -507,7 +508,6 @@
 <translation id="3780740315729837296">Atribua uma tecla do teclado</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="3785643128701396311">arte pixelizada</translation>
-<translation id="3790109258688020991">pontilhista</translation>
 <translation id="380097101658023925">controlos de RGB</translation>
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
@@ -772,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% transferido</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="522307662484862935">Não incluir endereço de email</translation>
+<translation id="5226879510707344687">Exportar transcrição</translation>
 <translation id="5227902338748591677">Horário do tema escuro</translation>
 <translation id="5229344016299762883">Sair do modo de ecrã inteiro</translation>
 <translation id="5234764350956374838">Ignorar</translation>
@@ -867,7 +868,6 @@
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">Latência elevada de HTTP</translation>
 <translation id="5790391387506209808">lápis-lazúli</translation>
-<translation id="5810296156135698005">barroco</translation>
 <translation id="5816802250591013230">Nenhum atalho atribuído</translation>
 <translation id="5826644637650799838">Acerca da arte</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
@@ -963,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">azul e roxo</translation>
 <translation id="6284632978374966585">Ativar tema escuro</translation>
+<translation id="6285260286443238386">Exporte a gravação</translation>
 <translation id="628726841779494414">Faça a gestão das suas impressoras nas definições da impressora</translation>
 <translation id="6292095526077353682">Durante o carregamento, mostrar a proteção de ecrã</translation>
 <translation id="629550705077076970">redução da luminosidade do teclado</translation>
@@ -997,6 +998,7 @@
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6419454453018688975">Ativar acesso à localização do sistema</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Fraca (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Aceda às definições da conta</translation>
 <translation id="6462978824459367242">O botão Adicionar APN está agora ativado</translation>
@@ -1467,6 +1469,7 @@ Pode desativar esta funcionalidade em qualquer altura nas Definições.</transla
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">pedra de sal</translation>
 <translation id="8919837981463578619">Falha – Tabuleiro em falta</translation>
+<translation id="8924154518905976972">Exportar áudio</translation>
 <translation id="8928727111548978589">Falha – Sem papel</translation>
 <translation id="8930521118335213258">Par</translation>
 <translation id="8930622219860340959">Sem fios</translation>

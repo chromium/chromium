@@ -890,7 +890,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2655752832536625875">Toilet</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transfer confidential file?}other{Transfer confidential files?}}</translation>
 <translation id="2658843814961855121">Labour and Employment Law</translation>
-<translation id="2658944305627908367">Transactions that exceed your balance will not be processed</translation>
 <translation id="2660779039299703961">Event</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{None}=1{1 password (for <ph name="DOMAIN_LIST" />)}=2{2 passwords (for <ph name="DOMAIN_LIST" />)}other{# passwords (for <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Top</translation>
@@ -1534,6 +1533,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3865339060090354361">See terms here for <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Science</translation>
 <translation id="3875783148670536197">Show me how</translation>
+<translation id="3879748587602334249">Download manager</translation>
 <translation id="3880456882942693779">Arts and entertainment</translation>
 <translation id="3880589673277376494">Internet and telecom</translation>
 <translation id="3881478300875776315">Show fewer lines</translation>
@@ -3691,7 +3691,6 @@ Additional details:
 <translation id="800218591365569300">Try closing other tabs or programmes to free up memory.</translation>
 <translation id="8002230960325005199">See related sites in a new tab</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
-<translation id="8003697335101170520">Pay with Pix without copy and paste</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009058079740742415">Home safety and security</translation>
 <translation id="8009225694047762179">Manage passwords</translation>
