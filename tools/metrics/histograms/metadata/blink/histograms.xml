@@ -3802,7 +3802,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.PermissionElement.UserInteractionDeniedReason"
     enum="PermissionElementUserInteractionDeniedReason"
-    expires_after="2024-08-04">
+    expires_after="2024-11-17">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -3814,7 +3814,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Blink.PermissionElementIntersectionObserver.UpdateTime"
-    units="microseconds" expires_after="2024-08-04">
+    units="microseconds" expires_after="2024-11-17">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>tungnh@chromium.org</owner>
