@@ -209,7 +209,7 @@ void H264RateCtrlRTC::PostEncodeUpdate(uint64_t encoded_frame_size,
                                        const H264FrameParamsRTC& frame_params) {
   DVLOG(3) << "Post encode update - "
            << "temporal_layer_id: " << frame_params.temporal_layer_id
-           << ", timestamp: " << frame_params.timestamp
+           << ", timestamp: " << frame_params.timestamp.InMilliseconds()
            << ", frame_type: " << (frame_params.keyframe ? "I" : "P")
            << ", encoded_frame_size: " << encoded_frame_size;
 
