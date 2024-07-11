@@ -8,7 +8,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/check.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -37,7 +36,6 @@ static std::vector<OutputStringType> SplitStringT(T str,
                                                   T delimiter,
                                                   WhitespaceHandling whitespace,
                                                   SplitResult result_type) {
-  CHECK(!delimiter.empty(), base::NotFatalUntil::M130);
   std::vector<OutputStringType> result;
   if (str.empty())
     return result;
