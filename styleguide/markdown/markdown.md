@@ -5,7 +5,7 @@
 Please write your Markdown file
 
 *   In accordance with [Google Documentation
-    Guide](https://github.com/google/styleguide/tree/gh-pages/docguide)
+    Guide](https://google.github.io/styleguide/docguide/style.html)
 *   [Limit lines to **80 characters** where
     possible](https://groups.google.com/a/chromium.org/d/msg/chromium-dev/KECdEn562vY/sqRor1frEgAJ)
 

@@ -23,7 +23,7 @@ Ok, so you're working on something big and important. Maybe it's a chunk of code
 
 ***Any self contained unit of code that merits a container directory should have a README.md file that describes what that component is, how it is expected to be used and provides rough outline of the code's structure.***
 
-The README.md file should be located at the root of the component directory and should be in [markdown format](https://www.chromium.org/developers/markdown-documentation) according to the markdown [style guide](https://github.com/google/styleguide/blob/gh-pages/docguide/style.md).
+The README.md file should be located at the root of the component directory and should be in [markdown format](/styleguide/markdown/markdown.md).
 
 The first thing in the README.md file should be a description of the component in sufficient detail that someone unfamiliar with the code will understand why it exists. It should answer the questions "what does this component do?" and "is there any in particular I should know about it?". Some larger components (e.g. v8, mojo, etc.) may have additional up-to-date documentation on [dev.chromium.org](http://dev.chromium.org) or elsewhere makes sense too.
 
