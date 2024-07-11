@@ -183,10 +183,6 @@ base::Value::Dict PolicyWatcher::GetDefaultPolicies() {
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
   result.Set(key::kRemoteAccessHostRequireCurtain, false);
-  result.Set(key::kRemoteAccessHostTokenUrl, std::string());
-  result.Set(key::kRemoteAccessHostTokenValidationUrl, std::string());
-  result.Set(key::kRemoteAccessHostTokenValidationCertificateIssuer,
-             std::string());
   result.Set(key::kRemoteAccessHostAllowClientPairing, true);
   result.Set(key::kRemoteAccessHostAllowGnubbyAuth, true);
   result.Set(key::kRemoteAccessHostAllowFileTransfer, true);
@@ -298,19 +294,6 @@ void PolicyWatcher::HandleDeprecatedPolicies(base::Value::Dict* dict) {
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-namespace {
-void CopyDictionaryValue(const base::Value::Dict& from,
-                         base::Value::Dict& to,
-                         std::string key) {
-  const base::Value* value = from.Find(key);
-  if (value) {
-    to.Set(key, value->Clone());
-  }
-}
-}  // namespace
-#endif
-
 base::Value::Dict PolicyWatcher::StoreNewAndReturnChangedPolicies(
     base::Value::Dict new_policies) {
   // Find the changed policies.
@@ -321,21 +304,6 @@ base::Value::Dict PolicyWatcher::StoreNewAndReturnChangedPolicies(
       changed_policies.Set(iter.first, iter.second.Clone());
     }
   }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  // If one of ThirdPartyAuthConfig policies changed, we need to include all.
-  if (changed_policies.Find(key::kRemoteAccessHostTokenUrl) ||
-      changed_policies.Find(key::kRemoteAccessHostTokenValidationUrl) ||
-      changed_policies.Find(
-          key::kRemoteAccessHostTokenValidationCertificateIssuer)) {
-    CopyDictionaryValue(new_policies, changed_policies,
-                        key::kRemoteAccessHostTokenUrl);
-    CopyDictionaryValue(new_policies, changed_policies,
-                        key::kRemoteAccessHostTokenValidationUrl);
-    CopyDictionaryValue(new_policies, changed_policies,
-                        key::kRemoteAccessHostTokenValidationCertificateIssuer);
-  }
-#endif
 
   // Save the new policies.
   std::swap(effective_policies_, new_policies);

@@ -1,4 +1,5 @@
 caption: Client certificate for connecting to RemoteAccessHostTokenValidationUrl
+deprecated: true
 desc: Setting the policy means the remote access host uses a client certificate with
   the given issuer CN to authenticate to <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME">RemoteAccessHostTokenValidationUrl</ph>.
   To use any available client certificate, set it to <ph name="WILDCARD_VALUE">*</ph>.
@@ -17,6 +18,6 @@ owners:
 schema:
   type: string
 supported_on:
-- chrome.*:28-
+- chrome.*:28-127
 tags: []
 type: string

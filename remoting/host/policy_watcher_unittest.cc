@@ -309,9 +309,6 @@ class PolicyWatcherTest : public testing::Test {
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
     dict.Set(key::kRemoteAccessHostRequireCurtain, false);
-    dict.Set(key::kRemoteAccessHostTokenUrl, "");
-    dict.Set(key::kRemoteAccessHostTokenValidationUrl, "");
-    dict.Set(key::kRemoteAccessHostTokenValidationCertificateIssuer, "");
     dict.Set(key::kRemoteAccessHostAllowClientPairing, true);
     dict.Set(key::kRemoteAccessHostAllowGnubbyAuth, true);
     dict.Set(key::kRemoteAccessHostAllowFileTransfer, true);
