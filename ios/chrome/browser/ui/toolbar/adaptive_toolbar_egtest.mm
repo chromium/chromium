@@ -483,8 +483,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Verifies that the back/forward buttons are working and are correctly enabled
 // during navigations.
-// TODO(crbug.com/40073965): Test is failing on downstream bots.
-- (void)DISABLED_testNavigationButtons {
+- (void)testNavigationButtons {
   // Setup the server.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
@@ -538,6 +537,9 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
       assertWithMatcher:grey_not(grey_enabled())];
+
+  // Close incognito tab.
+  [ChromeEarlGrey closeAllTabs];
 }
 
 // Tests that tapping the NewTab button opens a new tab.
