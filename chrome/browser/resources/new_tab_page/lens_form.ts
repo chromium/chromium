@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from './i18n_setup.js';
 import type {ProcessedFile} from './image_processor.js';
 import {processFile, SUPPORTED_FILE_TYPES} from './image_processor.js';
-import {getTemplate} from './lens_form.html.js';
+import {getCss} from './lens_form.css.js';
+import {getHtml} from './lens_form.html.js';
 
 /** Lens service endpoint for the Upload by File action. */
 const SCOTTY_UPLOAD_FILE_ACTION: string = 'https://lens.google.com/upload';
@@ -64,74 +65,54 @@ export interface LensFormElement {
   };
 }
 
-export class LensFormElement extends PolymerElement {
+export class LensFormElement extends CrLitElement {
   static get is() {
     return 'ntp-lens-form';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      supportedFileTypes_: {
-        type: String,
-        readOnly: true,
-        value: SUPPORTED_FILE_TYPES.join(','),
-      },
-      renderingEnvironment_: {
-        type: String,
-        readOnly: true,
-        value: RENDERING_ENVIRONMENT,
-      },
-      chromiumSurface_: {
-        type: String,
-        readOnly: true,
-        value: CHROMIUM_SURFACE,
-      },
-      useDirectUpload_: {
-        type: Boolean,
-        readOnly: true,
-        value: loadTimeData.getBoolean('realboxLensDirectUpload'),
-      },
-      uploadFileAction_: String,
-      uploadUrlAction_: {
-        type: String,
-        readOnly: true,
-        value: UPLOAD_BY_URL_ACTION,
-      },
-      uploadUrl_: String,
-      uploadUrlEntrypoint_: {
-        type: String,
-        readOnly: true,
-        value: UPLOAD_URL_ENTRYPOINT,
-      },
-      language_: {
-        type: String,
-        readOnly: true,
-        value: window.navigator.language,
-      },
-      clientData_: {
-        type: String,
-        readOnly: true,
-        value: loadTimeData.getString('realboxLensVariations'),
-      },
+      supportedFileTypes_: {type: String},
+      renderingEnvironment_: {type: String},
+      chromiumSurface_: {type: String},
+      useDirectUpload_: {type: Boolean},
+      uploadFileAction_: {type: String},
+      uploadUrlAction_: {type: String},
+      uploadUrl_: {type: String},
+      uploadUrlEntrypoint_: {type: String},
+      language_: {type: String},
+      clientData_: {type: String},
+      startTime_: {type: String},
     };
   }
 
-  private language_: string;
-  private uploadFileAction_: string = SCOTTY_UPLOAD_FILE_ACTION;
-  private uploadUrl_: string = '';
-  private startTime_: string|null = null;
-  private clientData_: string;
-  private useDirectUpload_: boolean;
+  protected supportedFileTypes_: string = SUPPORTED_FILE_TYPES.join(',');
+  protected renderingEnvironment_: string = RENDERING_ENVIRONMENT;
+  protected chromiumSurface_: string = CHROMIUM_SURFACE;
+  protected language_: string = window.navigator.language;
+  protected uploadFileAction_: string = SCOTTY_UPLOAD_FILE_ACTION;
+  protected uploadUrlAction_: string = UPLOAD_BY_URL_ACTION;
+  protected uploadUrl_: string = '';
+  protected uploadUrlEntrypoint_: string = UPLOAD_URL_ENTRYPOINT;
+  protected startTime_: string|null = null;
+  protected clientData_: string =
+      loadTimeData.getString('realboxLensVariations');
+  private useDirectUpload_: boolean =
+      loadTimeData.getBoolean('realboxLensDirectUpload');
 
   openSystemFilePicker() {
     this.$.fileInput.click();
   }
 
-  private handleFileInputChange_() {
+  protected handleFileInputChange_() {
     const fileList = this.$.fileInput.files;
     if (fileList) {
       this.submitFileList(fileList);
@@ -194,11 +175,12 @@ export class LensFormElement extends PolymerElement {
         processedFile.imageWidth ? processedFile.imageWidth.toString() : '');
     this.uploadFileAction_ = action.toString();
 
+    await this.updateComplete;
     this.dispatchLoading_(LensSubmitType.FILE);
     this.$.fileForm.submit();
   }
 
-  submitUrl(urlString: string) {
+  async submitUrl(urlString: string) {
     if (!urlString.startsWith('http://') && !urlString.startsWith('https://')) {
       this.dispatchError_(LensErrorType.INVALID_SCHEME);
       return;
@@ -220,6 +202,7 @@ export class LensFormElement extends PolymerElement {
 
     this.uploadUrl_ = encodedUri;
     this.startTime_ = Date.now().toString();
+    await this.updateComplete;
     this.dispatchLoading_(LensSubmitType.URL);
     this.$.urlForm.submit();
   }

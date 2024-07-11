@@ -54,6 +54,7 @@ suite('LensUploadDialogTest', () => {
     uploadDialog.$.lensForm.submitUrl = (url: string) => {
       submitUrlCalled = true;
       submittedUrl = url;
+      return Promise.resolve();
     };
   });
 
