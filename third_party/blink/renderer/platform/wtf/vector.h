@@ -39,6 +39,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -1189,6 +1190,11 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
   T& operator[](wtf_size_t i) { return at(i); }
   const T& operator[](wtf_size_t i) const { return at(i); }
+
+  // Returns a base::span representing the whole data.
+  // The base::span is valid until this Vector is modified.
+  base::span<T> MakeSpan() { return {data(), size()}; }
+  base::span<const T> MakeSpan() const { return {data(), size()}; }
 
   // Return a pointer to the front of the backing buffer. Those pointers get
   // invalidated on a reallocation.
