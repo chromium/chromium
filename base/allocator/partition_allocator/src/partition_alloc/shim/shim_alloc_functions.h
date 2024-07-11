@@ -59,7 +59,7 @@ PA_ALWAYS_INLINE void* ShimCppNew(size_t size) {
     context = malloc_default_zone();
 #endif
     ptr = chain_head->alloc_function(chain_head, size, context);
-  } while (!ptr && allocator_shim::internal::CallNewHandler(size));
+  } while (PA_UNLIKELY(!ptr && allocator_shim::internal::CallNewHandler(size)));
   return ptr;
 }
 
@@ -84,7 +84,7 @@ PA_ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
 #endif
     ptr = chain_head->alloc_aligned_function(chain_head, alignment, size,
                                              context);
-  } while (!ptr && allocator_shim::internal::CallNewHandler(size));
+  } while (PA_UNLIKELY(!ptr && allocator_shim::internal::CallNewHandler(size)));
   return ptr;
 }
 
@@ -104,9 +104,9 @@ PA_ALWAYS_INLINE void* ShimMalloc(size_t size, void* context) {
   void* ptr;
   do {
     ptr = chain_head->alloc_function(chain_head, size, context);
-  } while (!ptr &&
-           allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
-           allocator_shim::internal::CallNewHandler(size));
+  } while (PA_UNLIKELY(
+      !ptr && allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
+      allocator_shim::internal::CallNewHandler(size)));
   return ptr;
 }
 
@@ -117,9 +117,9 @@ PA_ALWAYS_INLINE void* ShimCalloc(size_t n, size_t size, void* context) {
   do {
     ptr = chain_head->alloc_zero_initialized_function(chain_head, n, size,
                                                       context);
-  } while (!ptr &&
-           allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
-           allocator_shim::internal::CallNewHandler(size));
+  } while (PA_UNLIKELY(
+      !ptr && allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
+      allocator_shim::internal::CallNewHandler(size)));
   return ptr;
 }
 
@@ -131,9 +131,10 @@ PA_ALWAYS_INLINE void* ShimRealloc(void* address, size_t size, void* context) {
   void* ptr;
   do {
     ptr = chain_head->realloc_function(chain_head, address, size, context);
-  } while (!ptr && size &&
-           allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
-           allocator_shim::internal::CallNewHandler(size));
+  } while (PA_UNLIKELY(
+      !ptr && size &&
+      allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
+      allocator_shim::internal::CallNewHandler(size)));
   return ptr;
 }
 
@@ -146,9 +147,9 @@ PA_ALWAYS_INLINE void* ShimMemalign(size_t alignment,
   do {
     ptr = chain_head->alloc_aligned_function(chain_head, alignment, size,
                                              context);
-  } while (!ptr &&
-           allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
-           allocator_shim::internal::CallNewHandler(size));
+  } while (PA_UNLIKELY(
+      !ptr && allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
+      allocator_shim::internal::CallNewHandler(size)));
   return ptr;
 }
 
@@ -252,9 +253,9 @@ PA_ALWAYS_INLINE void* ShimAlignedMalloc(size_t size,
   do {
     ptr = chain_head->aligned_malloc_function(chain_head, size, alignment,
                                               context);
-  } while (!ptr &&
-           allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
-           allocator_shim::internal::CallNewHandler(size));
+  } while (PA_UNLIKELY(
+      !ptr && allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
+      allocator_shim::internal::CallNewHandler(size)));
   return ptr;
 }
 
@@ -270,9 +271,10 @@ PA_ALWAYS_INLINE void* ShimAlignedRealloc(void* address,
   do {
     ptr = chain_head->aligned_realloc_function(chain_head, address, size,
                                                alignment, context);
-  } while (!ptr && size &&
-           allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
-           allocator_shim::internal::CallNewHandler(size));
+  } while (PA_UNLIKELY(
+      !ptr && size &&
+      allocator_shim::internal::g_call_new_handler_on_malloc_failure &&
+      allocator_shim::internal::CallNewHandler(size)));
   return ptr;
 }
 
