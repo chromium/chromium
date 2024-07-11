@@ -28,8 +28,7 @@ namespace {
 std::unique_ptr<HistoryClientImpl> BuildHistoryClient(
     ChromeBrowserState* browser_state) {
   return std::make_unique<HistoryClientImpl>(
-      BookmarkModelFactory::GetForBrowserState(browser_state),
-      /*account_bookmark_model=*/nullptr);
+      BookmarkModelFactory::GetForBrowserState(browser_state));
 }
 
 std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {

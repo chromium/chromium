@@ -19,26 +19,18 @@
 #include "ios/chrome/browser/history/model/history_utils.h"
 #include "url/gurl.h"
 
-HistoryClientImpl::HistoryClientImpl(
-    bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
-    bookmarks::BookmarkModel* account_bookmark_model)
-    : local_or_syncable_bookmark_model_(local_or_syncable_bookmark_model),
-      account_bookmark_model_(account_bookmark_model) {
-  if (local_or_syncable_bookmark_model_) {
-    bookmark_model_observations_.AddObservation(
-        local_or_syncable_bookmark_model_.get());
-  }
-  if (account_bookmark_model_) {
-    bookmark_model_observations_.AddObservation(account_bookmark_model_.get());
+HistoryClientImpl::HistoryClientImpl(bookmarks::BookmarkModel* bookmark_model)
+    : bookmark_model_(bookmark_model) {
+  if (bookmark_model_) {
+    bookmark_model_observation_.Observe(bookmark_model_.get());
   }
 }
 
 HistoryClientImpl::~HistoryClientImpl() = default;
 
-void HistoryClientImpl::StopObservingBookmarkModels() {
-  local_or_syncable_bookmark_model_ = nullptr;
-  account_bookmark_model_ = nullptr;
-  bookmark_model_observations_.RemoveAllObservations();
+void HistoryClientImpl::StopObservingBookmarkModel() {
+  bookmark_model_ = nullptr;
+  bookmark_model_observation_.Reset();
 }
 
 void HistoryClientImpl::OnHistoryServiceCreated(
@@ -53,7 +45,7 @@ void HistoryClientImpl::OnHistoryServiceCreated(
 
 void HistoryClientImpl::Shutdown() {
   favicons_changed_subscription_ = {};
-  StopObservingBookmarkModels();
+  StopObservingBookmarkModel();
 }
 
 history::CanAddURLCallback HistoryClientImpl::GetThreadSafeCanAddURLCallback()
@@ -66,44 +58,38 @@ void HistoryClientImpl::NotifyProfileError(sql::InitStatus init_status,
 
 std::unique_ptr<history::HistoryBackendClient>
 HistoryClientImpl::CreateBackendClient() {
-  std::vector<scoped_refptr<bookmarks::ModelLoader>> model_loaders;
-  for (bookmarks::BookmarkModel* model :
-       {local_or_syncable_bookmark_model_, account_bookmark_model_}) {
-    if (!model) {
-      continue;
-    }
-    scoped_refptr<bookmarks::ModelLoader> loader = model->model_loader();
-    CHECK(loader);
-    model_loaders.push_back(std::move(loader));
+  scoped_refptr<bookmarks::ModelLoader> loader;
+
+  if (bookmark_model_) {
+    loader = bookmark_model_->model_loader();
   }
-  return std::make_unique<HistoryBackendClientImpl>(std::move(model_loaders));
+
+  return std::make_unique<HistoryBackendClientImpl>(std::move(loader));
 }
 
 void HistoryClientImpl::UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
                                                    base::Time time) {
-  if (!local_or_syncable_bookmark_model_ || account_bookmark_model_) {
+  if (!bookmark_model_) {
     return;
   }
 
-  // If there is a single BookmarkModel, the node ID is guaranteed to
-  // correspond to this model.
   const bookmarks::BookmarkNode* node =
-      GetBookmarkNodeByID(local_or_syncable_bookmark_model_, bookmark_node_id);
+      GetBookmarkNodeByID(bookmark_model_, bookmark_node_id);
 
   // This call is async so the BookmarkNode could have already been deleted.
   if (!node) {
     return;
   }
 
-  local_or_syncable_bookmark_model_->UpdateLastUsedTime(node, time,
-                                                        /*just_opened=*/true);
+  bookmark_model_->UpdateLastUsedTime(node, time,
+                                      /*just_opened=*/true);
 }
 
 void HistoryClientImpl::BookmarkModelChanged() {
 }
 
 void HistoryClientImpl::BookmarkModelBeingDeleted() {
-  StopObservingBookmarkModels();
+  StopObservingBookmarkModel();
 }
 
 void HistoryClientImpl::BookmarkNodeRemoved(
@@ -123,12 +109,8 @@ void HistoryClientImpl::BookmarkAllUserNodesRemoved(
 
 void HistoryClientImpl::OnFaviconsChanged(const std::set<GURL>& page_urls,
                                           const GURL& favicon_url) {
-  for (bookmarks::BookmarkModel* bookmark_model :
-       {local_or_syncable_bookmark_model_, account_bookmark_model_}) {
-    if (!bookmark_model) {
-      continue;
-    }
-    bookmark_model->OnFaviconsChanged(page_urls, favicon_url);
+  if (bookmark_model_) {
+    bookmark_model_->OnFaviconsChanged(page_urls, favicon_url);
   }
 }
 
@@ -138,22 +120,5 @@ void HistoryClientImpl::HandleBookmarksRemovedFromModel(
     return;
   }
 
-  // Only notify when bookmarks are removed from both models.
-  // TODO(crbug.com/346918509): This verification shouldn't be needed when there
-  // is exactly one BookmarkModel instance per BrowserState.
-
-  // Compute URLs that were removed from `model` and are not bookmarked by
-  // either of the models.
-  std::set<GURL> removed_from_both_models = removed_urls;
-  if (account_bookmark_model_ != nullptr &&
-      local_or_syncable_bookmark_model_ != nullptr) {
-    std::erase_if(removed_from_both_models, [this](const GURL& url) {
-      return account_bookmark_model_->IsBookmarked(url) ||
-             local_or_syncable_bookmark_model_->IsBookmarked(url);
-    });
-  }
-
-  if (!removed_from_both_models.empty()) {
-    on_bookmarks_removed_.Run(removed_from_both_models);
-  }
+  on_bookmarks_removed_.Run(removed_urls);
 }

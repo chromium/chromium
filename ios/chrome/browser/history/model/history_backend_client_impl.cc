@@ -4,48 +4,46 @@
 
 #include "ios/chrome/browser/history/model/history_backend_client_impl.h"
 
-#include "base/check.h"
-#include "base/containers/contains.h"
 #include "components/bookmarks/browser/history_bookmark_model.h"
 #include "components/bookmarks/browser/model_loader.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "url/gurl.h"
 
 HistoryBackendClientImpl::HistoryBackendClientImpl(
-    std::vector<scoped_refptr<bookmarks::ModelLoader>> model_loaders)
-    : model_loaders_(std::move(model_loaders)) {
-  CHECK(!base::Contains(model_loaders_, nullptr));
-}
+    scoped_refptr<bookmarks::ModelLoader> model_loader)
+    : model_loader_(std::move(model_loader)) {}
 
 HistoryBackendClientImpl::~HistoryBackendClientImpl() = default;
 
 bool HistoryBackendClientImpl::IsPinnedURL(const GURL& url) {
-  for (auto& model_loader : model_loaders_) {
-    // HistoryBackendClient is used to determine if an URL is bookmarked. The
-    // data is loaded on a separate thread and may not be done when this method
-    // is called, therefore blocks until the bookmarks have finished loading.
-    model_loader->BlockTillLoaded();
-    if (model_loader->history_bookmark_model()->IsBookmarked(url)) {
-      return true;
-    }
+  if (!model_loader_) {
+    return false;
   }
-  return false;
+
+  // HistoryBackendClient is used to determine if an URL is bookmarked. The
+  // data is loaded on a separate thread and may not be done when this method
+  // is called, therefore blocks until the bookmarks have finished loading.
+  model_loader_->BlockTillLoaded();
+  return model_loader_->history_bookmark_model()->IsBookmarked(url);
 }
 
 std::vector<history::URLAndTitle> HistoryBackendClientImpl::GetPinnedURLs() {
+  if (!model_loader_) {
+    return {};
+  }
+
+  // HistoryBackendClient is used to determine the set of bookmarked URLs. The
+  // data is loaded on a separate thread and may not be done when this method
+  // is called, therefore blocks until the bookmarks have finished loading.
+  model_loader_->BlockTillLoaded();
+  std::vector<bookmarks::UrlAndTitle> url_and_titles =
+      model_loader_->history_bookmark_model()->GetUniqueUrls();
+
   std::vector<history::URLAndTitle> result;
-  for (auto& model_loader : model_loaders_) {
-    // HistoryBackendClient is used to determine the set of bookmarked URLs. The
-    // data is loaded on a separate thread and may not be done when this method
-    // is called, therefore blocks until the bookmarks have finished loading.
-    model_loader->BlockTillLoaded();
-    std::vector<bookmarks::UrlAndTitle> url_and_titles =
-        model_loader->history_bookmark_model()->GetUniqueUrls();
-    result.reserve(result.size() + url_and_titles.size());
-    for (auto& url_and_title : url_and_titles) {
-      result.push_back(history::URLAndTitle{std::move(url_and_title.url),
-                                            std::move(url_and_title.title)});
-    }
+  result.reserve(url_and_titles.size());
+  for (auto& url_and_title : url_and_titles) {
+    result.emplace_back(std::move(url_and_title.url),
+                        std::move(url_and_title.title));
   }
   return result;
 }
