@@ -181,10 +181,12 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   // Model used for testing.
   configs.emplace_back(OptimizationTargetSegmentationDummy::GetConfig());
 
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           webapps::features::kWebAppsEnableMLModelForPromotion)) {
     configs.emplace_back(GetConfigForWebAppInstallationPromo());
   }
+#endif
   if (base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleSegmentation)) {
     configs.emplace_back(GetConfigForDesktopNtpModule());
   }

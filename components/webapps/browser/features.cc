@@ -54,9 +54,15 @@ extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerDismissedKey{
 extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
     &kAppBannerTriggering, "days_after_ignore", kMinimumDaysBetweenBannerShows};
 
+// Do not remove this feature flag, since it serves as a kill-switch for the ML
+// promotion model. Kill switches are required for all ML model-backed features.
 BASE_FEATURE(kWebAppsEnableMLModelForPromotion,
              "WebAppsEnableMLModelForPromotion",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 extern const base::FeatureParam<double> kWebAppsMLGuardrailResultReportProb(
     &kWebAppsEnableMLModelForPromotion,
     "guardrail_report_prob",
