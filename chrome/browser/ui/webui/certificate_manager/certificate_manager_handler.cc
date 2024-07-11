@@ -336,18 +336,16 @@ CertificateManagerPageHandler::GetCertSource(
         break;
       case certificate_manager_v2::mojom::CertificateSource::
           kEnterpriseTrustedCerts:
-        source_ptr =
-            std::make_unique<EnterpriseTrustedCertSource>(profile_.get());
+        source_ptr = std::make_unique<EnterpriseTrustedCertSource>(profile_);
         break;
       case certificate_manager_v2::mojom::CertificateSource::
           kEnterpriseIntermediateCerts:
         source_ptr =
-            std::make_unique<EnterpriseIntermediateCertSource>(profile_.get());
+            std::make_unique<EnterpriseIntermediateCertSource>(profile_);
         break;
       case certificate_manager_v2::mojom::CertificateSource::
           kEnterpriseDistrustedCerts:
-        source_ptr =
-            std::make_unique<EnterpriseDistrustedCertSource>(profile_.get());
+        source_ptr = std::make_unique<EnterpriseDistrustedCertSource>(profile_);
         break;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       case certificate_manager_v2::mojom::CertificateSource::
@@ -374,7 +372,7 @@ CertificateManagerPageHandler::GetCertSource(
 void CertificateManagerPageHandler::GetPolicyInformation(
     GetPolicyInformationCallback callback) {
   ProfileNetworkContextService* service =
-      ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+      ProfileNetworkContextServiceFactory::GetForContext(profile_);
   ProfileNetworkContextService::CertificatePoliciesForView policies =
       service->GetCertificatePolicyForView();
 

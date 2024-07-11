@@ -89,7 +89,7 @@ void EnterpriseTrustedCertSource::ViewCertificate(
     return;
   }
   ProfileNetworkContextService* service =
-      ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+      ProfileNetworkContextServiceFactory::GetForContext(profile_);
   ProfileNetworkContextService::CertificatePoliciesForView policies =
       service->GetCertificatePolicyForView();
   std::vector<std::vector<uint8_t>> certs;
@@ -131,7 +131,7 @@ void EnterpriseTrustedCertSource::ViewCertificate(
 
 std::vector<std::vector<uint8_t>> EnterpriseTrustedCertSource::GetCerts() {
   ProfileNetworkContextService* service =
-      ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+      ProfileNetworkContextServiceFactory::GetForContext(profile_);
   ProfileNetworkContextService::CertificatePoliciesForView policies =
       service->GetCertificatePolicyForView();
   std::vector<std::vector<uint8_t>> certs;
@@ -153,12 +153,11 @@ std::vector<std::vector<uint8_t>> EnterpriseTrustedCertSource::GetCerts() {
 
 EnterpriseIntermediateCertSource::EnterpriseIntermediateCertSource(
     Profile* profile)
-    : EnterpriseCertSource("intermediate_certs.pem"),
-      profile_(std::move(profile)) {}
+    : EnterpriseCertSource("intermediate_certs.pem"), profile_(profile) {}
 
 std::vector<std::vector<uint8_t>> EnterpriseIntermediateCertSource::GetCerts() {
   ProfileNetworkContextService* service =
-      ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+      ProfileNetworkContextServiceFactory::GetForContext(profile_);
   ProfileNetworkContextService::CertificatePoliciesForView policies =
       service->GetCertificatePolicyForView();
   std::vector<std::vector<uint8_t>> certs;
@@ -170,12 +169,11 @@ std::vector<std::vector<uint8_t>> EnterpriseIntermediateCertSource::GetCerts() {
 }
 
 EnterpriseDistrustedCertSource::EnterpriseDistrustedCertSource(Profile* profile)
-    : EnterpriseCertSource("distrusted_certs.pem"),
-      profile_(std::move(profile)) {}
+    : EnterpriseCertSource("distrusted_certs.pem"), profile_(profile) {}
 
 std::vector<std::vector<uint8_t>> EnterpriseDistrustedCertSource::GetCerts() {
   ProfileNetworkContextService* service =
-      ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+      ProfileNetworkContextServiceFactory::GetForContext(profile_);
   ProfileNetworkContextService::CertificatePoliciesForView policies =
       service->GetCertificatePolicyForView();
   std::vector<std::vector<uint8_t>> certs;
