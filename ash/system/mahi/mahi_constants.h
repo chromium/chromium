@@ -48,6 +48,7 @@ enum ViewId {
   kErrorStatusRetryLink,
   kQuestionAnswerErrorImage,
   kQuestionAnswerErrorLabel,
+  kInfoSparkIcon,
 };
 
 // The size of the icon that appears in the panel's source row.
@@ -55,7 +56,7 @@ inline constexpr gfx::Size kContentIconSize = gfx::Size(16, 16);
 
 inline constexpr int kPanelDefaultWidth = 360;
 inline constexpr int kPanelDefaultHeight = 492;
-inline constexpr gfx::Insets kPanelPadding(/*all=*/16);
+inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
 
 inline constexpr int kScrollViewWidth = kPanelDefaultWidth -
                                         views::kHighlightBorderThickness * 2 -

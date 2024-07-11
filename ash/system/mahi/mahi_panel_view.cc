@@ -35,6 +35,7 @@
 #include "base/time/time.h"
 #include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -43,6 +44,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -75,7 +77,7 @@ namespace ash {
 namespace {
 
 constexpr SkScalar kContentScrollViewCornerRadius = 16;
-constexpr int kPanelChildSpacing = 8;
+constexpr int kPanelChildSpacing = 12;
 constexpr int kHeaderRowSpacing = 8;
 
 // Ask Question container constants.
@@ -89,16 +91,19 @@ constexpr gfx::Insets kInputTextfieldPadding = gfx::Insets::TLBR(0, 0, 0, 8);
 // the following spec, where an order is designated for the first, second, and
 // third curves of the cutout in the content section's bottom-right corner:
 // http://screen/9K4tXBZXihWN9KA.
+constexpr int kInfoSparkIconSize = 18;
+constexpr gfx::Insets kInfoSparkIconPadding = gfx::Insets::VH(0, 2);
 constexpr int kFeedbackButtonIconSize = 20;
 constexpr int kFeedbackButtonIconPaddingAbove = 8;
 constexpr int kFeedbackButtonIconPaddingBetween = 16;
 constexpr int kFeedbackButtonIconPaddingLeft = 12;
+constexpr int kFeedbackButtonIconPaddingRight = 8;
 
 // Width of the cutout in the content section's bottom-right corner, not
 // including the rounded corner immediately to its left.
-constexpr int kCutoutWidth = kFeedbackButtonIconPaddingLeft +
-                             kFeedbackButtonIconSize * 2 +
-                             kFeedbackButtonIconPaddingBetween;
+constexpr int kCutoutWidth =
+    kFeedbackButtonIconPaddingLeft + kFeedbackButtonIconPaddingRight +
+    kFeedbackButtonIconSize * 2 + kFeedbackButtonIconPaddingBetween;
 // Height of the cutout in the content section's bottom-right corner, not
 // including the rounded corner immediately above it.
 constexpr int kCutoutHeight =
@@ -565,6 +570,8 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
               // Add buttons for the user to give feedback on the content.
               views::Builder<views::BoxLayoutView>()
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+                  .SetInsideBorderInsets(gfx::Insets::TLBR(
+                      0, 0, 0, kFeedbackButtonIconPaddingRight))
                   .SetMainAxisAlignment(
                       views::BoxLayout::MainAxisAlignment::kEnd)
                   .SetCrossAxisAlignment(
@@ -766,16 +773,29 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
           views::Builder<GoToSummaryOutlinesButton>(
               std::make_unique<GoToSummaryOutlinesButton>(ui_controller_))
               .SetID(mahi_constants::ViewId::kGoToSummaryOutlinesButton),
+          views::Builder<views::ImageView>()
+              .SetID(mahi_constants::ViewId::kInfoSparkIcon)
+              .SetImage(ui::ImageModel::FromVectorIcon(chromeos::kInfoSparkIcon,
+                                                       ui::kColorMenuIcon,
+                                                       kInfoSparkIconSize))
+              .SetBorder(views::CreateEmptyBorder(kInfoSparkIconPadding)),
           // The Panel's title label
           views::Builder<views::Label>()
               .SetText(l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_TITLE))
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-                  TypographyToken::kCrosTitle1))
+                  TypographyToken::kCrosButton1))
               .SetEnabledColorId(cros_tokens::kCrosSysOnSurface),
           // Experimental badge
           views::Builder<views::View>(
-              std::make_unique<chromeos::ExperimentBadge>()),
+              std::make_unique<chromeos::ExperimentBadge>())
+              .CustomConfigure(base::BindOnce([](views::View* view) {
+                static_cast<chromeos::ExperimentBadge*>(view)
+                    ->label()
+                    ->SetFontList(
+                        ash::TypographyProvider::Get()->ResolveTypographyToken(
+                            ash::TypographyToken::kCrosLabel1));
+              })),
           // Close Button, aligned to the right by setting a `FlexSpecification`
           // with unbounded maximum flex size and `LayoutAlignment::kEnd`.
           views::Builder<views::Button>(

@@ -39,8 +39,8 @@ namespace ash {
 namespace {
 
 constexpr int64_t kSectionHeaderChildSpacing = 4;
-constexpr int64_t kSectionHeaderIconSize = 20;
-constexpr gfx::Insets kSectionPadding = gfx::Insets::TLBR(8, 8, 16, 8);
+constexpr int64_t kSectionHeaderIconSize = 16;
+constexpr gfx::Insets kSectionPadding = gfx::Insets(16);
 constexpr int64_t kSectionChildSpacing = 8;
 constexpr int kTextLabelDefaultMaximumWidth =
     mahi_constants::kScrollViewWidth - kSectionPadding.width();
@@ -60,6 +60,11 @@ std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
   label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label);
   view->AddChildView(std::move(label));
+
+  // TODO(b/330643995): Show the section header once other sections are
+  // available.
+  view->SetVisible(false);
+
   return view;
 }
 

@@ -35,8 +35,7 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Insets kContentSourceButtonBorderInsets =
-    gfx::Insets::TLBR(6, 12, 6, 14);
+constexpr gfx::Insets kContentSourceButtonBorderInsets = gfx::Insets::VH(6, 10);
 constexpr int kContentSourceImageLabelSpacing = 8;
 
 }  // namespace

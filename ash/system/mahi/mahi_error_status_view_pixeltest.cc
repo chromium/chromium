@@ -132,7 +132,7 @@ TEST_P(MahiErrorStatusViewPixelTest, Basics) {
           mahi_constants::ViewId::kErrorStatusView);
   ASSERT_TRUE(error_status_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/1,
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/3,
       error_status_view));
 }
 
@@ -161,7 +161,7 @@ TEST_P(MahiErrorStatusViewPixelTest, QuestionAnswerView) {
   LeftClickOn(send_button);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/0,
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/2,
       mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

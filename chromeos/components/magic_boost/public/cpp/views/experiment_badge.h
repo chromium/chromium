@@ -27,6 +27,8 @@ class COMPONENT_EXPORT(MAGIC_BOOST_VIEWS) ExperimentBadge : public views::View {
   ExperimentBadge& operator=(const ExperimentBadge&) = delete;
   ~ExperimentBadge() override;
 
+  views::Label* label() { return label_; }
+
  private:
   raw_ptr<views::Label> label_ = nullptr;
 };

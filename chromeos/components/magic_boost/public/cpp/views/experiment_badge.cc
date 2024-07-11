@@ -22,9 +22,8 @@ namespace chromeos {
 
 namespace {
 
-constexpr gfx::Insets kBadgePadding = gfx::Insets::VH(3, 8);
+constexpr gfx::Insets kBadgePadding = gfx::Insets::VH(0, 8);
 constexpr int kBadgeCornerRadius = 9;
-constexpr int kBadgeLabelHeight = 12;
 
 }  // namespace
 
@@ -37,7 +36,6 @@ ExperimentBadge::ExperimentBadge() {
   label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_EDITOR_MENU_EXPERIMENT_BADGE)));
   label_->SetEnabledColorId(ui::kColorSysOnSurface);
-  label_->SetLineHeight(kBadgeLabelHeight);
   label_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME));
   label_->SetBorder(views::CreateEmptyBorder(kBadgePadding));
