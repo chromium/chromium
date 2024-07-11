@@ -12,16 +12,12 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
-#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
@@ -76,9 +72,7 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
       PinnedToolbarButtonStatusIndicator::Install(image_container_view());
 }
 
-PinnedActionToolbarButton::~PinnedActionToolbarButton() {
-  content::WebContentsObserver::Observe(nullptr);
-}
+PinnedActionToolbarButton::~PinnedActionToolbarButton() = default;
 
 void PinnedActionToolbarButton::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
@@ -275,10 +269,7 @@ void PinnedActionToolbarButton::ExecuteCommand(int command_id,
   if (command_id == IDC_UPDATE_SIDE_PANEL_PIN_STATE) {
     UpdatePinnedStateForContextMenu();
   } else if (command_id == IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR) {
-    auto& web_contents = chrome::NewTab(browser_);
-    // Wait to show the side panel until the new tab has finished loading.
-    // See PinnedActionToolbarButton::DidFinishLoad.
-    content::WebContentsObserver::Observe(&web_contents);
+    chrome::ExecuteCommand(browser_, IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR);
   }
 }
 
@@ -287,24 +278,6 @@ bool PinnedActionToolbarButton::IsCommandIdEnabled(int command_id) const {
     return browser_->profile()->IsRegularProfile() && is_pinnable_;
   }
   return true;
-}
-
-void PinnedActionToolbarButton::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  if (validated_url == GURL(chrome::kChromeUINewTabPageURL)) {
-    auto* customize_chrome_controller =
-        browser_->GetActiveTabInterface()
-            ->GetTabFeatures()
-            ->customize_chrome_side_panel_controller();
-    customize_chrome_controller->SetCustomizeChromeSidePanelVisible(
-        true, CustomizeChromeSection::kToolbar);
-
-    // WebContentsObserver is only used for asynchronously showing the
-    // Customize Chrome side panel, and only observes during the lifecycle of
-    // that command.
-    content::WebContentsObserver::Observe(nullptr);
-  }
 }
 
 void PinnedActionToolbarButton::UpdatePinnedStateForContextMenu() {

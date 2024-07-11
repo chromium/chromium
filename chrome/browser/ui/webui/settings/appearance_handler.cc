@@ -14,6 +14,9 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/pref_names.h"
 #include "content/public/browser/web_ui.h"
 
 namespace settings {
@@ -46,6 +49,17 @@ void AppearanceHandler::RegisterMessages() {
       "openCustomizeChrome",
       base::BindRepeating(&AppearanceHandler::OpenCustomizeChrome,
                           base::Unretained(this)));
+  if (features::IsToolbarPinningEnabled()) {
+    web_ui()->RegisterMessageCallback(
+        "openCustomizeChromeToolbarSection",
+        base::BindRepeating(
+            &AppearanceHandler::OpenCustomizeChromeToolbarSection,
+            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        "resetPinnedToolbarActions",
+        base::BindRepeating(&AppearanceHandler::ResetPinnedToolbarActions,
+                            base::Unretained(this)));
+  }
 }
 
 void AppearanceHandler::HandleUseTheme(ui::SystemTheme system_theme,
@@ -60,6 +74,30 @@ void AppearanceHandler::OpenCustomizeChrome(const base::Value::List& args) {
     return;
   }
   chrome::ExecuteCommand(browser, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
+}
+
+void AppearanceHandler::OpenCustomizeChromeToolbarSection(
+    const base::Value::List& args) {
+  auto* browser = chrome::FindLastActive();
+  CHECK(browser);
+  chrome::ExecuteCommand(browser, IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR);
+}
+
+void AppearanceHandler::ResetPinnedToolbarActions(
+    const base::Value::List& args) {
+  // Home and forward buttons are special-case, and handled separately from
+  // PinnedToolbarActionsModel.
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->ClearPref(prefs::kShowHomeButton);
+  prefs->ClearPref(prefs::kShowForwardButton);
+
+  PinnedToolbarActionsModel* const actions_model =
+      PinnedToolbarActionsModel::Get(profile_);
+  const std::vector<actions::ActionId> pinned_ids =
+      actions_model->PinnedActionIds();
+  for (auto& id : pinned_ids) {
+    actions_model->UpdatePinnedState(id, false);
+  }
 }
 
 }  // namespace settings

@@ -28,6 +28,7 @@
 #include "chrome/browser/ssl/generated_https_first_mode_pref.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -214,6 +215,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Appearance settings.
   (*s_allowlist)[::prefs::kCurrentThemeID] = settings_api::PrefType::kString;
+  (*s_allowlist)[::prefs::kPinnedActions] = settings_api::PrefType::kList;
   (*s_allowlist)[::prefs::kPolicyThemeColor] = settings_api::PrefType::kNumber;
 #if BUILDFLAG(IS_LINUX)
   (*s_allowlist)[::prefs::kSystemTheme] = settings_api::PrefType::kNumber;

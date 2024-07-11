@@ -360,11 +360,12 @@
       Use Classic
     </message>
   </if>
-  <if expr="not is_linux or is_chromeos or is_fuchsia">
-    <message name="IDS_SETTINGS_RESET_TO_DEFAULT_THEME" desc="Name of the control which resets the browser theme back to the default theme.">
-      Reset to default
-    </message>
-  </if>
+  <message name="IDS_SETTINGS_RESET_TO_DEFAULT" desc="Name of the control which resets a browser setting back to the default value">
+    Reset to default
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_TOOLBAR" desc="Text of the button which allows you to customize your toolbar.">
+    Customize your toolbar
+  </message>
   <message name="IDS_SETTINGS_CHROME_COLORS" desc="Text of the label describing 'Chrome Colors' theme.">
     Chrome Colors
   </message>

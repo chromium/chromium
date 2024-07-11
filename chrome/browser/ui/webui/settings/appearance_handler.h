@@ -41,6 +41,10 @@ class AppearanceHandler : public SettingsPageUIHandler {
                       const base::Value::List& args);
   // Opens the Customize Chrome side panel.
   void OpenCustomizeChrome(const base::Value::List& args);
+  // Opens the Customize Chrome side panel to the toolbar section.
+  void OpenCustomizeChromeToolbarSection(const base::Value::List& args);
+  // Reset toolbar pinning to the default settings.
+  void ResetPinnedToolbarActions(const base::Value::List& args);
 
   raw_ptr<Profile> profile_;  // Weak pointer.
 

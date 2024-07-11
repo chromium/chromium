@@ -11,12 +11,18 @@
       /* The theme mixes a link and a cr-button divided by a separator with
        * grit expressions and dom-if templates. That leads to a tricky thing
        * to style correctly, these are a workaround. */
-      #themeRow cr-button {
+      #themeRow cr-button,
+      #toolbarRow cr-button {
         margin-inline-end: 20px;
       }
 
-      #themeRow .separator {
+      #themeRow .separator,
+      #toolbarRow .separator  {
          margin-inline-start: 0;
+      }
+
+      #toolbarRow {
+        border-top: var(--cr-separator-line);
       }
 
       .hover-card-toggles {
@@ -40,12 +46,12 @@
           <cr-link-row id="openTheme" class="first"
               hidden="[[!pageVisibility.setTheme]]"
               label="$i18n{themes}" sub-label="[[themeSublabel_]]"
-              on-click="openCustomizeChrome_" external></cr-link-row>
+              on-click="onThemeClick_" external></cr-link-row>
 <if expr="not is_linux">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>
             <cr-button id="useDefault" on-click="onUseDefaultClick_">
-              $i18n{resetToDefaultTheme}
+              $i18n{resetToDefault}
             </cr-button>
           </template>
 </if>
@@ -76,6 +82,21 @@
           </div>
 </if>
         </div>
+        <template is="dom-if" if="[[toolbarPinningEnabled_]]">
+          <div id="toolbarRow" class="settings-row">
+            <cr-link-row id="customizeToolbar"
+                label="$i18n{customizeToolbar}"
+                on-click="onCustomizeToolbarClick_" external>
+            </cr-link-row>
+            <template is="dom-if" if="[[showResetPinnedActionsButton_]]">
+              <div class="separator"></div>
+              <cr-button id="resetPinnedToolbarActions"
+                  on-click="onResetPinnedToolbarActionsClick_">
+                $i18n{resetToDefault}
+              </cr-button>
+            </template>
+          </div>
+        </template>
         <div id="colorSchemeModeRow" class="cr-row">
           <div id="colorSchemeModeLabel" class="flex cr-padded-text"
               aria-hidden="true">

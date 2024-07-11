@@ -55,11 +55,13 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -68,6 +70,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/ui/webui/inspect_ui.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -1076,6 +1079,15 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     }
 
+    case IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR: {
+      customize_chrome_section_ = CustomizeChromeSection::kToolbar;
+      auto& web_contents = chrome::NewTab(browser_);
+      // Wait to show the side panel until the new tab has finished loading.
+      // See BrowserCommandController::DidFinishLoad.
+      content::WebContentsObserver::Observe(&web_contents);
+      break;
+    }
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Profile submenu commands
     // This menu item is not enabled on ChromeOS and certain capabilities such
@@ -1215,13 +1227,19 @@ void BrowserCommandController::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   // TODO(b/338060778): Include 3P NTP/DSE here
-  if (validated_url == GURL(kChromeUINewTabPageURL)) {
-    browser_->GetFeatures().side_panel_ui()->Show(
-        SidePanelEntryId::kCustomizeChrome, SidePanelOpenTrigger::kAppMenu);
+  if (validated_url == GURL(chrome::kChromeUINewTabPageURL)) {
+    auto* customize_chrome_controller =
+        browser_->GetActiveTabInterface()
+            ->GetTabFeatures()
+            ->customize_chrome_side_panel_controller();
+    customize_chrome_controller->SetCustomizeChromeSidePanelVisible(
+        true, customize_chrome_section_);
+
     // WebContentsObserver is only used for asynchronously showing the
     // Customize Chrome side panel, and only observes during the lifecycle of
     // that command.
     content::WebContentsObserver::Observe(nullptr);
+    customize_chrome_section_ = CustomizeChromeSection::kUnspecified;
   }
 }
 
@@ -1338,6 +1356,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SAVE_AND_SHARE_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_READING_MODE_SIDE_PANEL, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+                                        true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR,
                                         true);
   command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF, false);
   command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR, false);

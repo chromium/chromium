@@ -3038,6 +3038,7 @@ if (!is_android) {
       "../browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler_browsertest.cc",
       "../browser/ui/webui/profile_helper_browsertest.cc",
       "../browser/ui/webui/searchbox/realbox_handler_browsertest.cc",
+      "../browser/ui/webui/settings/appearance_handler_browsertest.cc",
       "../browser/ui/webui/settings/settings_secure_dns_handler_browsertest.cc",
       "../browser/ui/webui/settings/settings_ui_browsertest.cc",
       "../browser/ui/webui/side_panel/customize_chrome/customize_chrome_browsertest.cc",

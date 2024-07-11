@@ -395,6 +395,20 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+                       ExecuteShowCustomizeChromeToolbar) {
+  EXPECT_TRUE(
+      chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
+  const std::optional<SidePanelEntryId> current_entry =
+      browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
+  EXPECT_TRUE(current_entry.has_value());
+  EXPECT_EQ(SidePanelEntryId::kCustomizeChrome, current_entry.value());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteProfileMenuOpenGuestProfile) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GUEST_PROFILE));
   Browser* guest_browser = ui_test_utils::WaitForBrowserToOpen();

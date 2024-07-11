@@ -389,6 +389,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"enterCustomWebAddress", IDS_SETTINGS_ENTER_CUSTOM_WEB_ADDRESS},
       {"homeButtonDisabled", IDS_SETTINGS_HOME_BUTTON_DISABLED},
       {"themes", IDS_SETTINGS_THEMES},
+      {"customizeToolbar", IDS_SETTINGS_CUSTOMIZE_TOOLBAR},
       {"chromeColors", IDS_SETTINGS_CHROME_COLORS},
       {"colorSchemeMode", IDS_SETTINGS_COLOR_SCHEME_MODE},
       {"lightMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_LIGHT_LABEL},
@@ -422,6 +423,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"huge", IDS_SETTINGS_HUGE_FONT_SIZE},
       {"uiFeatureAlignLeft", IDS_SETTINGS_UI_FEATURE_ALIGN_LEFT},
       {"uiFeatureAlignRight", IDS_SETTINGS_UI_FEATURE_ALIGN_RIGHT},
+      {"resetToDefault", IDS_SETTINGS_RESET_TO_DEFAULT},
 #if BUILDFLAG(IS_LINUX)
       {"gtkTheme", IDS_SETTINGS_GTK_THEME},
       {"useGtkTheme", IDS_SETTINGS_USE_GTK_THEME},
@@ -429,8 +431,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"useQtTheme", IDS_SETTINGS_USE_QT_THEME},
       {"classicTheme", IDS_SETTINGS_CLASSIC_THEME},
       {"useClassicTheme", IDS_SETTINGS_USE_CLASSIC_THEME},
-#else
-      {"resetToDefaultTheme", IDS_SETTINGS_RESET_TO_DEFAULT_THEME},
 #endif
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
       {"showWindowDecorations", IDS_SHOW_WINDOW_DECORATIONS},
@@ -455,6 +455,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
                           tabs::CanShowTabSearchPositionSetting());
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
                           tabs::GetTabSearchRightAligned(profile));
+  html_source->AddBoolean("toolbarPinningEnabled",
+                          features::IsToolbarPinningEnabled());
 
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

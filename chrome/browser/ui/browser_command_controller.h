@@ -13,6 +13,7 @@
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -235,6 +236,11 @@ class BrowserCommandController : public CommandUpdater,
 
   // In locked fullscreen mode disallow enabling/disabling commands.
   bool is_locked_fullscreen_ = false;
+
+  // If the Customize Chrome side panel is shown, determines which section to
+  // display.
+  CustomizeChromeSection customize_chrome_section_ =
+      CustomizeChromeSection::kUnspecified;
 };
 
 }  // namespace chrome
