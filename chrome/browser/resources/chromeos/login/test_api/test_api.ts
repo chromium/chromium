@@ -1399,6 +1399,47 @@ class HwDataCollectionScreenTester extends ScreenElementApi {
   }
 }
 
+class DeviceUseCaseScreenTester extends ScreenElementApi {
+  private loadingStep: PolymerElementApi;
+  private overviewStep: PolymerElementApi;
+  private skipButton: PolymerElementApi;
+
+  constructor() {
+    super('categories-selection');
+    this.loadingStep = new PolymerElementApi(this, '#progressDialog');
+    this.overviewStep = new PolymerElementApi(this, '#categoriesDialog');
+    this.skipButton = new PolymerElementApi(this, '#skipButton');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+  }
+
+  isReadyForTesting(): boolean {
+    // Return true only if we were able to fetch data from the server and
+    // rendered it on the screen.
+    return this.isVisible() && this.overviewStep.isVisible();
+  }
+}
+
+class PersonalizedRecommendAppsScreenTester extends ScreenElementApi {
+  private loadingStep: PolymerElementApi;
+  private overviewStep: PolymerElementApi;
+  private skipButton: PolymerElementApi;
+
+  constructor() {
+    super('personalized-apps');
+    this.loadingStep = new PolymerElementApi(this, '#progressDialog');
+    this.overviewStep =
+        new PolymerElementApi(this, '#personalizedRecommendDialog');
+    this.skipButton = new PolymerElementApi(this, '#skipButton');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+  }
+
+  isReadyForTesting(): boolean {
+    // Return true only if we were able to fetch data from the server and
+    // rendered it on the screen.
+    return this.isVisible() && this.overviewStep.isVisible();
+  }
+}
+
 export class OobeApiProvider {
   private screens: Record<string, ScreenElementApi>;
   private metricsClientID: string;
@@ -1460,6 +1501,9 @@ export class OobeApiProvider {
       ChoobeTouchpadScrollScreen: new ChoobeTouchpadScrollScreenTester(),
       ChoobeDisplaySizeScreen: new ChoobeDisplaySizeTester(),
       HWDataCollectionScreen: new HwDataCollectionScreenTester(),
+      DeviceUseCaseScreen: new DeviceUseCaseScreenTester(),
+      PersonalizedRecommendAppsScreen:
+          new PersonalizedRecommendAppsScreenTester(),
     };
 
     this.loginWithPin = function(username: string, pin: string): void {
