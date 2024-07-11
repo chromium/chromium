@@ -902,7 +902,10 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
   gfx::Insets new_safe_area = gfx::Insets().TLBR(
       max_safe_area_insets_.top(), max_safe_area_insets_.left(),
       safe_area_inset_bottom, max_safe_area_insets_.right());
-  SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
+  if (new_safe_area != applied_safe_area_insets_ || force_update) {
+    applied_safe_area_insets_ = new_safe_area;
+    SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
+  }
 }
 
 void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {

@@ -645,6 +645,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // |max_safe_area_insets_| is coming from the display cutout client.
   gfx::Insets max_safe_area_insets_;
+  gfx::Insets applied_safe_area_insets_;
 
   // The light, dark and forced_colors mode ColorProviders corresponding to the
   // top-level web container this Page is associated with.
