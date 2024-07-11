@@ -1,6 +1,6 @@
 <!-- A page that is used to test that a dynamic form fill is only triggered the first time the form changes. -->
 <body>
-  <form name="addr1.1" id="form1" action="https://example.com/" method="post">
+  <form name="addr1.1" id="form" action="https://example.com/" method="post">
     Name: <input type="text" name="firstname" id="firstname"><br>
     Address: <input type="text" name="address1" id="address1"><br>
     City: <input type="text" name="city" id="city"><br>
@@ -30,13 +30,13 @@
 <script src="dynamic_form_utils.js"></script>
 <script>
 function CountryChanged() {
-  RemoveForm('form1');
-  var new_form = AddNewFormAndFields('form1', 'addr1.1');
+  RemoveForm('form');
+  var new_form = AddNewFormAndFields('form', 'addr1.1');
 
   // Trigger a second form change on refill.
   new_form.elements[0].addEventListener('change', function(){
-    RemoveForm("form1")
-    var new_form2 = AddNewFormAndFields("form2", "addr1.2");
+    RemoveForm("form")
+    var new_form2 = AddNewFormAndFields("form", "addr1.2");
     document.body.appendChild(new_form2);
     window['refill'] = true;
     console.log('An event happened that should not trigger a second refill.');

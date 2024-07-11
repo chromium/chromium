@@ -2683,18 +2683,18 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/double_dynamic_form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ValueWaiter refill = ListenForRefill("firstname_form2");
+  ValueWaiter refill = ListenForRefill("firstname_form");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
   ASSERT_FALSE(std::move(refill).Wait());
 
   // Make sure the new form was not filled.
-  EXPECT_EQ("", GetFieldValueById("firstname_form2"));
-  EXPECT_EQ("", GetFieldValueById("address_form2"));
-  EXPECT_EQ("CA", GetFieldValueById("state_form2"));  // Default value.
-  EXPECT_EQ("", GetFieldValueById("city_form2"));
-  EXPECT_EQ("", GetFieldValueById("company_form2"));
-  EXPECT_EQ("", GetFieldValueById("email_form2"));
-  EXPECT_EQ("", GetFieldValueById("phone_form2"));
+  EXPECT_EQ("", GetFieldValueById("firstname_form"));
+  EXPECT_EQ("", GetFieldValueById("address_form"));
+  EXPECT_EQ("CA", GetFieldValueById("state_form"));  // Default value.
+  EXPECT_EQ("", GetFieldValueById("city_form"));
+  EXPECT_EQ("", GetFieldValueById("company_form"));
+  EXPECT_EQ("", GetFieldValueById("email_form"));
+  EXPECT_EQ("", GetFieldValueById("phone_form"));
 }
 
 // Test that forms that dynamically change after the refill limit do not get
