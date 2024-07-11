@@ -48,13 +48,10 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.single_tab.SingleTabSwitcherCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher.TabSwitcherType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -140,9 +137,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     // For pull-to-refresh.
     @Nullable private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
-    // The single or carousel Tab switcher module on the Start surface. Null when magic stack is
-    // enabled.
-    @Nullable private TabSwitcher mTabSwitcherModule;
     // The view of Start surface layout.
     private TasksView mView;
     private MostVisitedTilesCoordinator mMostVisitedCoordinator;
@@ -267,7 +261,6 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mStartSurfaceMediator =
                 new StartSurfaceMediator(
-                        mTabSwitcherModule,
                         mTabModelSelector,
                         mPropertyModel,
                         mIsStartSurfaceEnabled,
@@ -370,9 +363,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public void setOnTabSelectingListener(StartSurface.OnTabSelectingListener listener) {
         mStartSurfaceMediator.setOnTabSelectingListener(listener);
-        if (mTabSwitcherModule != null) {
-            mTabSwitcherModule.setOnTabSelectingListener(mStartSurfaceMediator);
-        }
     }
 
     @Override
@@ -443,12 +433,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
-        assert mTabSwitcherModule != null;
-        return () -> mTabSwitcherModule.getTabGridDialogVisibilitySupplier() != null;
-    }
-
-    @Override
     public void onOverviewShownAtLaunch(
             boolean isOverviewShownOnStartup, long activityCreationTimeMs) {
         if (isOverviewShownOnStartup) {
@@ -492,11 +476,6 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         assert mIsStartSurfaceEnabled;
 
-        int tabSwitcherType = TabSwitcherType.NONE;
-        if (!mUseMagicSpace) {
-            tabSwitcherType = TabSwitcherType.SINGLE;
-        }
-
         mView =
                 (TasksView)
                         LayoutInflater.from(mActivity).inflate(R.layout.tasks_view_layout, null);
@@ -506,24 +485,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mParentTabSupplier.hasValue() && mParentTabSupplier.get().isIncognito(),
                 mWindowAndroid,
                 mProfileSupplier);
-        if (tabSwitcherType == TabSwitcherType.SINGLE) {
-            // We always pass the parameter isTablet to be false here since StartSurfaceCoordinator
-            // is only created on phones.
-            mTabSwitcherModule =
-                    new SingleTabSwitcherCoordinator(
-                            mActivity,
-                            mView.getCardTabSwitcherContainer(),
-                            mTabModelSelector,
-                            /* isShownOnNtp= */ false,
-                            /* isTablet= */ false,
-                            /* mostRecentTab= */ null,
-                            /* singleTabCardClickedCallback= */ null,
-                            /* seeMoreLinkClickedCallback= */ null,
-                            /* snapshotParentViewRunnable= */ null,
-                            mTabContentManager,
-                            /* uiConfig= */ null,
-                            /* moduleDelegate= */ null);
-        }
         View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
         mMostVisitedCoordinator =
                 new MostVisitedTilesCoordinator(

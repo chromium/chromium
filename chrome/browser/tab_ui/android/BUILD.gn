@@ -9,6 +9,7 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/tab_ui/InvalidationAwareThumbnailProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/OnTabSelectingListener.java",
     "java/src/org/chromium/chrome/browser/tab_ui/RecyclerViewPosition.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProvider.java",

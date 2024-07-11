@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -94,9 +95,9 @@ public class SingleTabSwitcherOnNtpMediator {
                 mResources.getDimensionPixelSize(
                         R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
 
-        mThumbnailProvider = SingleTabSwitcherMediator.getThumbnailProvider(tabContentManager);
+        mThumbnailProvider = getThumbnailProvider(tabContentManager);
         if (mThumbnailProvider != null) {
-            mThumbnailSize = SingleTabSwitcherMediator.getThumbnailSize(mContext);
+            mThumbnailSize = getThumbnailSize(mContext);
         }
 
         mPropertyModel.set(
@@ -126,6 +127,23 @@ public class SingleTabSwitcherOnNtpMediator {
 
         mTabListFaviconProvider.initWithNative(
                 tabModelSelector.getModel(/* isIncognito= */ false).getProfile());
+    }
+
+    private static ThumbnailProvider getThumbnailProvider(TabContentManager tabContentManager) {
+        if (tabContentManager == null) return null;
+
+        return (tabId, thumbnailSize, callback, isSelected) -> {
+            tabContentManager.getTabThumbnailWithCallback(tabId, thumbnailSize, callback);
+        };
+    }
+
+    private static Size getThumbnailSize(Context context) {
+        int resourceId =
+                StartSurfaceConfiguration.useMagicStack()
+                        ? R.dimen.single_tab_module_tab_thumbnail_size_big
+                        : R.dimen.single_tab_module_tab_thumbnail_size;
+        int size = context.getResources().getDimensionPixelSize(resourceId);
+        return new Size(size, size);
     }
 
     private void onDisplayStyleChanged(DisplayStyle newDisplayStyle) {
@@ -250,16 +268,23 @@ public class SingleTabSwitcherOnNtpMediator {
                         public void onPageLoadFinished(Tab tab, GURL url) {
                             super.onPageLoadFinished(tab, url);
                             mPropertyModel.set(TITLE, tab.getTitle());
-                            mPropertyModel.set(
-                                    URL, SingleTabSwitcherMediator.getDomainUrl(tab.getUrl()));
+                            mPropertyModel.set(URL, getDomainUrl(tab.getUrl()));
                             tab.removeObserver(this);
                         }
                     };
             mMostRecentTab.addObserver(tabObserver);
         } else {
             mPropertyModel.set(TITLE, mMostRecentTab.getTitle());
-            mPropertyModel.set(
-                    URL, SingleTabSwitcherMediator.getDomainUrl(mMostRecentTab.getUrl()));
+            mPropertyModel.set(URL, getDomainUrl(mMostRecentTab.getUrl()));
+        }
+    }
+
+    private static String getDomainUrl(GURL url) {
+        if (StartSurfaceConfiguration.useMagicStack()) {
+            String domainUrl = UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
+            return !TextUtils.isEmpty(domainUrl) ? domainUrl : url.getHost();
+        } else {
+            return url.getHost();
         }
     }
 

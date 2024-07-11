@@ -5,10 +5,6 @@
 package org.chromium.chrome.features.start_surface;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import android.view.View;
 
@@ -35,7 +31,6 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -66,24 +61,6 @@ public class StartSurfaceCoordinatorUnitTest {
         MockitoAnnotations.initMocks(this);
         mCoordinator = mTestRule.getCoordinator();
         mCoordinator.initWithNative();
-    }
-
-    @Test
-    public void testShowAndHideWithRefactorEnabled() {
-        TabSwitcher tabSwitcherModule =
-                mCoordinator.getMediatorForTesting().getTabSwitcherModuleForTesting();
-        assertNotNull(tabSwitcherModule);
-        assertNotNull(mCoordinator.getViewForTesting());
-
-        mCoordinator.show(false);
-        assertTrue(mCoordinator.isMVTilesInitializedForTesting());
-        assertFalse(mCoordinator.isMVTilesCleanedUpForTesting());
-        assertNotNull(mCoordinator.getTileGroupDelegateForTesting());
-
-        mCoordinator.onHide();
-        assertTrue(mCoordinator.isMVTilesCleanedUpForTesting());
-        assertFalse(mCoordinator.isMVTilesInitializedForTesting());
-        assertNull(mCoordinator.getTileGroupDelegateForTesting());
     }
 
     @Test

@@ -31,21 +31,8 @@ public class TabSwitcherPaneAdapter implements TabSwitcher {
     }
 
     @Override
-    public void setOnTabSelectingListener(OnTabSelectingListener listener) {
-        assert false : "Not reached.";
-    }
-
-    @Override
     public void initWithNative() {
         mTabSwitcherPane.initWithNative();
-    }
-
-    @Override
-    public Controller getController() {
-        // TODO(crbug.com/40946413): So far no elements of Controller are needed. Consider
-        // deprecation.
-        assert false : "Not implemented.";
-        return null;
     }
 
     @Override

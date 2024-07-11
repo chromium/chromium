@@ -1186,7 +1186,6 @@ public class NewTabPage
                         mActivity,
                         mSingleTabCardContainer,
                         mTabModelSelector,
-                        true,
                         mIsTablet,
                         mostRecentTab,
                         this::onSingleTabCardClicked,
@@ -1196,7 +1195,6 @@ public class NewTabPage
                         /* tabContentManager= */ ,
                         mIsTablet ? mFeedSurfaceProvider.getUiConfig() : null,
                         /* moduleDelegate= */ null);
-        mSingleTabSwitcherCoordinator.initWithNative();
         mSingleTabSwitcherCoordinator.showModule();
     }
 

@@ -24,7 +24,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.EXPLORE_SURFACE_COORDINATOR;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_EXPLORE_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
@@ -247,28 +246,6 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    public void activityIsFinishingOrDestroyedSinglePaneWithRefactorEnabled() {
-        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-
-        StartSurfaceMediator mediator = createStartSurfaceMediator();
-        assertFalse(mediator.isHomepageShown());
-
-        doReturn(2).when(mNormalTabModel).getCount();
-        doReturn(true).when(mActivityStateChecker).isFinishingOrDestroyed();
-        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
-        showHomepageAndVerify(mediator);
-        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
-        assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
-
-        mediator.startedHiding();
-        assertFalse(mediator.isHomepageShown());
-    }
-
-    @Test
     public void setIncognitoDescriptionShowSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -457,8 +434,6 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator = createStartSurfaceMediator(/* hadWarmStart= */ false);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
-        assertNull(mediator.getTabSwitcherModuleForTesting());
-        assertNull(mediator.getControllerForTesting());
 
         showHomepageAndVerify(mediator);
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
@@ -522,8 +497,6 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator = createStartSurfaceMediator(/* hadWarmStart= */ false);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
-        assertNull(mediator.getTabSwitcherModuleForTesting());
-        assertNull(mediator.getControllerForTesting());
 
         showHomepageAndVerify(mediator);
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
@@ -603,7 +576,6 @@ public class StartSurfaceMediatorUnitTest {
 
     private StartSurfaceMediator createStartSurfaceMediatorWithoutInit(boolean hadWarmStart) {
         return new StartSurfaceMediator(
-                /* tabSwitcherContainer= */ null,
                 mTabModelSelector,
                 mPropertyModel,
                 /* isStartSurfaceEnabled= */ true,

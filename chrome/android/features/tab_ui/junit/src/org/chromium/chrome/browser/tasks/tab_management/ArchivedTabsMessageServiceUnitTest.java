@@ -38,8 +38,8 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
+import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -67,7 +67,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private TabCreator mRegularTabCreator;
     @Mock private BackPressManager mBackPressManager;
-    @Mock private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
+    @Mock private OnTabSelectingListener mOnTabSelectingListener;
 
     private Activity mActivity;
     private ViewGroup mRootView;

@@ -42,8 +42,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -87,7 +87,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private ViewGroup mRootView;
     @Mock private TabCreator mRegularTabCreator;
     @Mock private BackPressManager mBackPressManager;
-    @Mock private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
+    @Mock private OnTabSelectingListener mOnTabSelectingListener;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 

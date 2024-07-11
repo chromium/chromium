@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.appbar.AppBarLayout;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.features.tasks.TasksView;
 
 /** Interface to communicate with the start surface. */
@@ -55,10 +53,12 @@ public interface StartSurface {
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
 
     /** Defines an interface to pass out tab selecting event. */
-    interface OnTabSelectingListener extends TabSwitcher.OnTabSelectingListener {}
+    interface OnTabSelectingListener
+            extends org.chromium.chrome.browser.tab_ui.OnTabSelectingListener {}
 
     /**
      * Set the listener to get the {@link Layout#onTabSelecting} event from the Tab Switcher.
+     *
      * @param listener The {@link OnTabSelectingListener} to use.
      */
     void setOnTabSelectingListener(OnTabSelectingListener listener);
@@ -114,14 +114,10 @@ public interface StartSurface {
     boolean isHomepageShown();
 
     /**
-     * @return {@link Supplier} that provides dialog visibility.
-     */
-    Supplier<Boolean> getTabGridDialogVisibilitySupplier();
-
-    /**
      * Called after the Chrome activity is launched.
+     *
      * @param isOverviewShownOnStartup Whether the StartSurace is shown when Chrome is launched from
-     *                                 cold start.
+     *     cold start.
      * @param activityCreationTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
      */
     void onOverviewShownAtLaunch(

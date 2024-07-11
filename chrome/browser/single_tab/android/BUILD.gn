@@ -10,7 +10,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/single_tab/SingleTabModuleBuilder.java",
     "java/src/org/chromium/chrome/browser/single_tab/SingleTabSwitcherCoordinator.java",
-    "java/src/org/chromium/chrome/browser/single_tab/SingleTabSwitcherMediator.java",
     "java/src/org/chromium/chrome/browser/single_tab/SingleTabSwitcherOnNtpMediator.java",
     "java/src/org/chromium/chrome/browser/single_tab/SingleTabView.java",
     "java/src/org/chromium/chrome/browser/single_tab/SingleTabViewBinder.java",
@@ -58,7 +57,6 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/single_tab/SingleTabModuleViewBinderUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/single_tab/SingleTabSwitcherMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/single_tab/SingleTabSwitcherOnNtpMediatorUnitTest.java",
   ]
 

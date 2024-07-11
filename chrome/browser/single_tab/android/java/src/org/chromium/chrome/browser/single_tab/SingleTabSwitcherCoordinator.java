@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -24,21 +23,16 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.List;
-
 /** Coordinator of the single tab tab switcher. */
-public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider {
+public class SingleTabSwitcherCoordinator implements ModuleProvider {
 
-    private final SingleTabSwitcherMediator mMediator;
     private final SingleTabSwitcherOnNtpMediator mMediatorOnNtp;
     private final TabListFaviconProvider mTabListFaviconProvider;
-    private boolean mIsShownOnNtp;
     private TabObserver mLastActiveTabObserver;
     private Tab mLastActiveTab;
 
@@ -52,7 +46,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
             @NonNull Activity activity,
             @NonNull ViewGroup container,
             @NonNull TabModelSelector tabModelSelector,
-            boolean isShownOnNtp,
             boolean isTablet,
             Tab mostRecentTab,
             @Nullable Callback<Integer> singleTabCardClickedCallback,
@@ -61,7 +54,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
             @Nullable TabContentManager tabContentManager,
             @Nullable UiConfig uiConfig,
             @Nullable ModuleDelegate moduleDelegate) {
-        mIsShownOnNtp = isShownOnNtp;
         mLastActiveTab = mostRecentTab;
         mSnapshotParentViewRunnable = snapshotParentViewRunnable;
         PropertyModel propertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
@@ -83,33 +75,19 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
                         false,
                         org.chromium.chrome.browser.tab_ui.R.dimen
                                 .favicon_corner_radius_for_single_tab_switcher);
-        if (!mIsShownOnNtp) {
-            mMediator =
-                    new SingleTabSwitcherMediator(
-                            activity,
-                            propertyModel,
-                            tabModelSelector,
-                            mTabListFaviconProvider,
-                            tabContentManager,
-                            singleTabCardClickedCallback,
-                            moduleDelegate);
-            mMediatorOnNtp = null;
-        } else {
-            mMediatorOnNtp =
-                    new SingleTabSwitcherOnNtpMediator(
-                            activity,
-                            propertyModel,
-                            tabModelSelector,
-                            mTabListFaviconProvider,
-                            mostRecentTab,
-                            singleTabCardClickedCallback,
-                            seeMoreLinkClickedCallback,
-                            tabContentManager,
-                            isTablet ? uiConfig : null,
-                            isTablet,
-                            moduleDelegate);
-            mMediator = null;
-        }
+        mMediatorOnNtp =
+                new SingleTabSwitcherOnNtpMediator(
+                        activity,
+                        propertyModel,
+                        tabModelSelector,
+                        mTabListFaviconProvider,
+                        mostRecentTab,
+                        singleTabCardClickedCallback,
+                        seeMoreLinkClickedCallback,
+                        tabContentManager,
+                        isTablet ? uiConfig : null,
+                        isTablet,
+                        moduleDelegate);
 
         if (mLastActiveTab != null) {
             beginObserving();
@@ -141,46 +119,10 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
         mLastActiveTab.addObserver(mLastActiveTabObserver);
     }
 
-    // TabSwitcher implementation.
-    @Override
-    public void setOnTabSelectingListener(OnTabSelectingListener listener) {
-        assert mMediator != null;
-        mMediator.setOnTabSelectingListener(listener);
-    }
-
-    @Override
-    public void initWithNative() {
-        if (mMediator != null) {
-            mMediator.initWithNative();
-        }
-    }
-
-    @Override
-    public Controller getController() {
-        return mMediator;
-    }
-
-    @Override
-    public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
-        return null;
-    }
-
-    @Override
-    public int getTabSwitcherTabListModelSize() {
-        return 0;
-    }
-
-    @Override
-    public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
-        assert false : "should not reach here";
-    }
-
     /**
      * @see SingleTabSwitcherOnNtpMediator#setVisibility.
      */
     void setVisibility(boolean isVisible) {
-        if (!mIsShownOnNtp) return;
-
         mMediatorOnNtp.setVisibility(isVisible);
         if (mContainer != null) {
             mContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
@@ -199,8 +141,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
 
     /** Hides the single tab module. */
     public void hide() {
-        if (!mIsShownOnNtp) return;
-
         setVisibility(false);
     }
 
@@ -211,8 +151,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
      * @param mostRecentTab The most recent Tab to track.
      */
     private void show(boolean shouldUpdateTab, Tab mostRecentTab) {
-        if (!mIsShownOnNtp) return;
-
         boolean hasTabToTrack = true;
         if (shouldUpdateTab) {
             hasTabToTrack = updateTrackingTab(mostRecentTab);
@@ -227,7 +165,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
      * @return Whether has a Tab to track. Returns false if the Tab to track is set as null.
      */
     public boolean updateTrackingTab(Tab tabToTrack) {
-        assert mIsShownOnNtp;
         boolean hasTabToTrack = mMediatorOnNtp.setTab(tabToTrack);
         if (hasTabToTrack && mLastActiveTab == null) {
             mLastActiveTab = tabToTrack;
@@ -256,20 +193,12 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
 
     @Override
     public void showModule() {
-        if (mMediator != null) {
-            mMediator.showModule();
-        } else {
-            show(false, null);
-        }
+        show(false, null);
     }
 
     @Override
     public void hideModule() {
-        if (mMediator != null) {
-            mMediator.hideTabSwitcherView(false);
-        } else {
-            mMediatorOnNtp.destroy();
-        }
+        mMediatorOnNtp.destroy();
     }
 
     @Override
@@ -291,10 +220,5 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
         if (mMediatorOnNtp == null) return false;
 
         return mMediatorOnNtp.isVisible();
-    }
-
-    @Override
-    public void openInvitationModal(String invitationId) {
-        assert false;
     }
 }

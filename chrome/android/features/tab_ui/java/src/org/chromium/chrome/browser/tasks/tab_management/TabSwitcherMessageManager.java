@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -216,7 +217,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @NonNull ViewGroup container,
             @NonNull
                     PriceWelcomeMessageReviewActionProvider priceWelcomeMessageReviewActionProvider,
-            @NonNull TabSwitcher.OnTabSelectingListener onTabSelectingListener) {
+            @NonNull OnTabSelectingListener onTabSelectingListener) {
         TabListCoordinator oldTabListCoordinator = mTabListCoordinatorSupplier.get();
         if (oldTabListCoordinator != null) {
             if (oldTabListCoordinator != tabListCoordinator) {

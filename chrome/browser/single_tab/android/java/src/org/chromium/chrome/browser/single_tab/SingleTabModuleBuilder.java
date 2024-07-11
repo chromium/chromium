@@ -82,7 +82,6 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
                         mActivity,
                         /* container= */ null,
                         mTabModelSelectorSupplier.get(),
-                        isShownOnNtp,
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
                         isShownOnNtp ? moduleDelegate.getTrackingTab() : null,
                         singleTabCardClickedCallback,
