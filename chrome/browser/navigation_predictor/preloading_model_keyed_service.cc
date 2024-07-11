@@ -30,6 +30,9 @@ static_assert(1.0f == ToInput(true));
 }  // namespace
 
 PreloadingModelKeyedService::Inputs::Inputs() = default;
+PreloadingModelKeyedService::Inputs::Inputs(const Inputs& other) = default;
+PreloadingModelKeyedService::Inputs&
+PreloadingModelKeyedService::Inputs::operator=(const Inputs& other) = default;
 
 PreloadingModelKeyedService::PreloadingModelKeyedService(
     OptimizationGuideKeyedService* optimization_guide_keyed_service) {

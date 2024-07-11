@@ -1333,7 +1333,7 @@ TEST_F(NavigationPredictorUserInteractionsTest,
     predictor_service_host->SetModelScoreCallbackForTesting(
         base::BindLambdaForTesting(
             [&](const PreloadingModelKeyedService::Inputs& inputs) {
-              EXPECT_FLOAT_EQ(10.0f, inputs.percent_clickable_area);
+              EXPECT_EQ(10, inputs.percent_clickable_area);
               EXPECT_EQ(2, inputs.font_size);
               EXPECT_TRUE(inputs.is_bold);
               EXPECT_FALSE(inputs.has_text_sibling);

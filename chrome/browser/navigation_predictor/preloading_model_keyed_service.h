@@ -20,31 +20,34 @@ class PreloadingModelKeyedService : public KeyedService {
  public:
   using Result = const std::optional<float>&;
   using ResultCallback = base::OnceCallback<void(Result)>;
+  // These inputs are also recorded as part of
+  // `NavigationPredictorModelTrainingData`. They are also similar to the fields
+  // of `NavigationPredictorAnchorElementMetrics` and
+  // `NavigationPredictorUserInteractions` UKM metrics. For more details please
+  // check https://crsrc.org/c/tools/metrics/ukm/ukm.xml
   struct Inputs {
     Inputs();
-    // These inputs are similar to the fields of
-    // `NavigationPredictorAnchorElementMetrics` UKM metrics. For more details
-    // please check https://crsrc.org/c/tools/metrics/ukm/ukm.xml
-    bool contains_image;
-    int font_size;
-    bool has_text_sibling;
-    bool is_bold;
-    bool is_in_iframe;
-    bool is_url_incremented_by_one;
-    base::TimeDelta navigation_start_to_link_logged;
+    Inputs(const Inputs& other);
+    Inputs& operator=(const Inputs& other);
+
+    // Fields are arranged to minimize memory usage.
+    bool contains_image : 1;
+    bool has_text_sibling : 1;
+    bool is_bold : 1;
+    bool is_in_iframe : 1;
+    bool is_url_incremented_by_one : 1;
+    bool is_same_host : 1;
+    bool is_in_viewport : 1 = true;
+    bool is_pointer_hovering_over : 1 = true;
     uint8_t path_depth;
     uint8_t path_length;
-    double percent_clickable_area;
-    double percent_vertical_distance;
-    bool is_same_host;
-    // These inputs are similar to the fields of
-    // `NavigationPredictorUserInteractions` UKM metrics. For more details
-    // please check https://crsrc.org/c/tools/metrics/ukm/ukm.xml
-    bool is_in_viewport = true;
-    bool is_pointer_hovering_over = true;
+    uint8_t font_size;
+    uint8_t percent_clickable_area;
+    int percent_vertical_distance;
+    int pointer_hovering_over_count;
+    base::TimeDelta navigation_start_to_link_logged;
     base::TimeDelta entered_viewport_to_left_viewport;
     base::TimeDelta hover_dwell_time;
-    int pointer_hovering_over_count;
   };
 
   PreloadingModelKeyedService(const PreloadingModelKeyedService&) = delete;

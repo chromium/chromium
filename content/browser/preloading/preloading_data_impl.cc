@@ -69,6 +69,17 @@ size_t GetMaxPredictions(bool max_predictions_is_ten_for_testing) {
   return max_predictions_is_ten_for_testing ? 10 : kMaxPredictions;
 }
 
+std::optional<double> GetSamplingLikelihood(
+    bool max_predictions_is_ten_for_testing,
+    size_t total_seen_predictions) {
+  const size_t max_predictions =
+      GetMaxPredictions(max_predictions_is_ten_for_testing);
+  return (total_seen_predictions <= max_predictions)
+             ? std::nullopt
+             : std::optional<double>{static_cast<double>(max_predictions) /
+                                     total_seen_predictions};
+}
+
 // We may produce a large number of predictions over the lifetime of a long
 // lived page. After the number of predictions grows sufficiently large, we'll
 // start randomly sampling and replacing existing predictions in order to limit
@@ -456,13 +467,8 @@ void PreloadingDataImpl::RecordMetricsForPreloadingAttempts(
 
 void PreloadingDataImpl::RecordUKMForPreloadingPredictions(
     ukm::SourceId navigated_page_source_id) {
-  const size_t max_predictions =
-      GetMaxPredictions(max_predictions_is_ten_for_testing_);
-  const std::optional<double> sampling_likelihood =
-      (total_seen_preloading_predictions_ <= max_predictions)
-          ? std::nullopt
-          : std::optional<double>{static_cast<double>(max_predictions) /
-                                  total_seen_preloading_predictions_};
+  const std::optional<double> sampling_likelihood = GetSamplingLikelihood(
+      max_predictions_is_ten_for_testing_, total_seen_preloading_predictions_);
   for (auto& prediction : preloading_predictions_) {
     // Check the validity at the time of UKMs reporting, as the UKMs are
     // reported from the same thread (whichever thread calls
