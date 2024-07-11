@@ -676,3 +676,19 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   omnibox_view()->OnKeyEvent(&space);
   EXPECT_TRUE(edit_model()->is_keyword_selected());
 }
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
+                       AccesibilityAttributePopupForId) {
+  CreatePopupForTestQuery();
+  popup_view()->UpdatePopupAppearance();
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(0));
+
+  ui::AXNodeData ax_node_data_omnibox;
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_TRUE(ax_node_data_omnibox.HasIntAttribute(
+      ax::mojom::IntAttribute::kPopupForId));
+  EXPECT_EQ(ax_node_data_omnibox.GetIntAttribute(
+                ax::mojom::IntAttribute::kPopupForId),
+            omnibox_view()->GetViewAccessibility().GetUniqueId());
+}

@@ -170,6 +170,11 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
       location_bar_view_(location_bar_view) {
   model()->set_popup_view(this);
 
+  if (omnibox_view_) {
+    GetViewAccessibility().SetPopupForId(
+        omnibox_view_->GetViewAccessibility().GetUniqueId());
+  }
+
   // The contents is owned by the LocationBarView.
   set_owned_by_client();
 
@@ -616,11 +621,6 @@ void OmniboxPopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBox;
   if (!IsOpen()) {
     node_data->AddState(ax::mojom::State::kInvisible);
-  }
-
-  if (omnibox_view_) {
-    int32_t view_id = omnibox_view_->GetViewAccessibility().GetUniqueId();
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kPopupForId, view_id);
   }
 }
 
