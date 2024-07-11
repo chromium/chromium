@@ -3270,14 +3270,38 @@ PhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
 
 bool LayoutBox::HasTopOverflow() const {
   NOT_DESTROYED();
-  return !StyleRef().IsLeftToRightDirection() && !IsHorizontalWritingMode();
+  // Early-return for the major case.
+  if (IsHorizontalWritingMode()) {
+    return false;
+  }
+  switch (StyleRef().GetWritingMode()) {
+    case WritingMode::kHorizontalTb:
+      return false;
+    case WritingMode::kSidewaysLr:
+      return StyleRef().IsLeftToRightDirection();
+    case WritingMode::kVerticalLr:
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      return !StyleRef().IsLeftToRightDirection();
+  }
 }
 
 bool LayoutBox::HasLeftOverflow() const {
   NOT_DESTROYED();
-  if (IsHorizontalWritingMode())
+  // Early-return for the major case.
+  if (IsHorizontalWritingMode()) {
     return !StyleRef().IsLeftToRightDirection();
-  return StyleRef().GetWritingMode() == WritingMode::kVerticalRl;
+  }
+  switch (StyleRef().GetWritingMode()) {
+    case WritingMode::kHorizontalTb:
+      return !StyleRef().IsLeftToRightDirection();
+    case WritingMode::kVerticalLr:
+    case WritingMode::kSidewaysLr:
+      return false;
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      return true;
+  }
 }
 
 void LayoutBox::SetScrollableOverflowFromLayoutResults() {
