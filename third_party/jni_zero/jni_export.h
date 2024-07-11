@@ -11,4 +11,20 @@
 #define JNI_ZERO_COMPONENT_BUILD_EXPORT
 #endif
 
+#if defined(__i386__)
+// Dalvik JIT generated code doesn't guarantee 16-byte stack alignment on
+// x86 - use force_align_arg_pointer to realign the stack at the JNI
+// boundary. crbug.com/655248
+#define JNI_BOUNDARY_EXPORT \
+  extern "C" __attribute__((visibility("default"), force_align_arg_pointer))
+#else
+#define JNI_BOUNDARY_EXPORT extern "C" __attribute__((visibility("default")))
+#endif
+
+#if defined(JNI_ZERO_MULTIPLEXING_ENABLED)
+#define JNI_POSSIBLE_BOUNDARY_EXPORT extern "C" __attribute__((always_inline))
+#else
+#define JNI_POSSIBLE_BOUNDARY_EXPORT JNI_BOUNDARY_EXPORT
+#endif
+
 #endif  // JNI_ZERO_JNI_EXPORT_H_

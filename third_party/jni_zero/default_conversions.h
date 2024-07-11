@@ -6,6 +6,8 @@
 #define JNI_ZERO_DEFAULT_CONVERSIONS_H_
 
 #include <optional>
+#include <type_traits>
+#include <vector>
 
 #include "third_party/jni_zero/common_apis.h"
 #include "third_party/jni_zero/jni_zero.h"

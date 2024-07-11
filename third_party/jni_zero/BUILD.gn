@@ -53,10 +53,15 @@ component("jni_zero") {
     "common_apis.cc",
     "common_apis.h",
     "default_conversions.cc",
+    "java_refs.cc",
+    "java_refs.h",
     "jni_export.h",
+    "jni_methods.h",
+    "jni_wrappers.h",
     "jni_zero.cc",
     "logging.cc",
     "logging.h",
+    "type_conversions.h",
   ]
   configs += [ ":jni_include_dir" ]
   public_configs = [ ":jni_zero_defines" ]

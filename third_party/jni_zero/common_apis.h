@@ -5,7 +5,10 @@
 #ifndef JNI_ZERO_COMMON_APIS_H_
 #define JNI_ZERO_COMMON_APIS_H_
 
-#include "third_party/jni_zero/jni_zero.h"
+#include <jni.h>
+
+#include "third_party/jni_zero/java_refs.h"
+#include "third_party/jni_zero/jni_export.h"
 
 namespace jni_zero {
 // Wraps Collection.toArray().
