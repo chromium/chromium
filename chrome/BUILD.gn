@@ -231,11 +231,6 @@ if (!is_android && !is_mac) {
           "//ui/gl",
         ]
 
-        if (enable_platform_experience) {
-          deps +=
-              [ "//chrome/browser/platform_experience/win:os_update_handler" ]
-        }
-
         data_deps = [
           "//chrome/app/version_assembly:version_assembly_manifest",
           "//chrome/browser/web_applications/chrome_pwa_launcher",
@@ -243,6 +238,11 @@ if (!is_android && !is_mac) {
           "//chrome/elevation_service",
           "//chrome/notification_helper",
         ]
+
+        if (enable_platform_experience) {
+          data_deps +=
+              [ "//chrome/browser/platform_experience/win:os_update_handler" ]
+        }
 
         defines += [ "CHROME_EXE_MAIN" ]
 

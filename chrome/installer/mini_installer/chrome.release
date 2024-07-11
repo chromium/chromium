@@ -37,7 +37,6 @@ vk_swiftshader.dll: %(VersionDir)s\
 vk_swiftshader_icd.json: %(VersionDir)s\
 vulkan-1.dll: %(VersionDir)s\
 v8_context_snapshot.bin: %(VersionDir)s\
-os_update_handler.exe: %(VersionDir)s\
 #
 # Sub directories living in the version dir
 #
@@ -76,6 +75,7 @@ ffmpeg.dll: %(VersionDir)s\
 [GOOGLE_CHROME]
 # The elevation service is only installed for Google Chrome builds.
 elevation_service.exe: %(VersionDir)s\
+os_update_handler.exe: %(VersionDir)s\
 
 #
 # Sub directories living in the version dir
