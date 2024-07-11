@@ -67,7 +67,7 @@ MemorySaverChipView::MemorySaverChipView(
   OnMemorySaverModeChanged();
 
   SetUpForInOutAnimation(kChipAnimationDuration);
-  SetPaintLabelOverSolidBackground(true);
+  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   SetProperty(views::kElementIdentifierKey, kMemorySaverChipElementId);
 }
 

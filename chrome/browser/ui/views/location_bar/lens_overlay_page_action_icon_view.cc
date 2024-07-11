@@ -69,7 +69,7 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
     SetLabel(
         l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
     SetUseTonalColorsWhenExpanded(true);
-    SetPaintLabelOverSolidBackground(true);
+    SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   }
 
   // The accessible name should show the full text, independent of the what the

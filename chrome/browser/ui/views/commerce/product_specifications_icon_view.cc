@@ -132,7 +132,7 @@ void ProductSpecificationsIconView::SetVisualState(bool is_added) {
     SetLabel(l10n_util::GetStringUTF16(
         IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
   }
-  SetPaintLabelOverSolidBackground(true);
+  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   UpdateIconImage();
 }
 

@@ -60,7 +60,7 @@ CookieControlsIconView::CookieControlsIconView(
       browser_(browser) {
   CHECK(browser_);
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
-  SetPaintLabelOverSolidBackground(true);
+  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
   bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
 }
