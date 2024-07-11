@@ -68,6 +68,7 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE.equals(propertyKey)) {
             view.setVerboseStatusTextVisible(
                     model.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
+            applyStatusIconAndTooltipProperties(model, view);
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_WIDTH.equals(propertyKey)) {
             view.setVerboseStatusTextWidth(model.get(StatusProperties.VERBOSE_STATUS_TEXT_WIDTH));
         } else {
@@ -79,8 +80,12 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
         boolean showIcon = model.get(StatusProperties.SHOW_STATUS_ICON);
         statusView.setStatusIconShown(showIcon);
         if (showIcon) {
+            model.set(
+                    StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
+                    model.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE)
+                            ? R.drawable.status_view_verbose_ripple
+                            : R.drawable.status_view_ripple);
             model.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, R.string.accessibility_menu_info);
-            model.set(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT, R.drawable.status_view_ripple);
         } else {
             model.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, Resources.ID_NULL);
             model.set(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT, Resources.ID_NULL);

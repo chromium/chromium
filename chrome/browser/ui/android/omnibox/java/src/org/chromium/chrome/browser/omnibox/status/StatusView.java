@@ -12,6 +12,7 @@ import android.graphics.drawable.RotateDrawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,6 +105,33 @@ public class StatusView extends LinearLayout {
         mVerboseStatusTextView = findViewById(R.id.location_bar_verbose_status);
         mSeparatorView = findViewById(R.id.location_bar_verbose_status_separator);
         mStatusExtraSpace = findViewById(R.id.location_bar_verbose_status_extra_space);
+
+        // Set onHoverListener for verbose status view to hide the divider while the verbose hover
+        // highlight is showing.
+        setOnHoverListener(
+                new OnHoverListener() {
+                    private int mSeparatorVisibility;
+
+                    @Override
+                    public boolean onHover(View v, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_HOVER_ENTER:
+                                mSeparatorVisibility = mSeparatorView.getVisibility();
+                                if (getBackground() != null
+                                        && mSeparatorVisibility == View.VISIBLE) {
+                                    mSeparatorView.setVisibility(View.GONE);
+                                }
+                                return false;
+                            case MotionEvent.ACTION_HOVER_EXIT:
+                                if (mSeparatorView.getVisibility() != mSeparatorVisibility) {
+                                    mSeparatorView.setVisibility(mSeparatorVisibility);
+                                }
+                                return false;
+                            default:
+                                return false;
+                        }
+                    }
+                });
 
         // Configure icon rounding.
         mIconView.setOutlineProvider(
@@ -486,13 +514,6 @@ public class StatusView extends LinearLayout {
         mVerboseStatusTextView.setVisibility(visibility);
         mSeparatorView.setVisibility(visibility);
         mStatusExtraSpace.setVisibility(visibility);
-
-        if (visibility != View.VISIBLE) {
-            setBackground(
-                    AppCompatResources.getDrawable(getContext(), R.drawable.status_view_ripple));
-        } else {
-            setBackground(null);
-        }
     }
 
     /** Specify width of the verbose status text. */
