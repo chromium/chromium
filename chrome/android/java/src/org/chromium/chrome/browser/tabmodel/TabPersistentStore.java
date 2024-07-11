@@ -994,7 +994,7 @@ public class TabPersistentStore {
         }
 
         // If the tab can't be found in any selector, then cleanup it's data.
-        if (mTabWindowManager.canTabBeDeleted(tab.getId())) {
+        if (mTabWindowManager.canTabStateBeDeleted(tab.getId())) {
             cleanupPersistentData(tab.getId(), tab.isIncognito());
         }
     }

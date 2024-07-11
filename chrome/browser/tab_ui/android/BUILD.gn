@@ -28,6 +28,7 @@ android_library("java") {
     "//chrome/browser/hub:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/favicon:java_resources",
     "//chrome/browser/ui/android/native_page:java",

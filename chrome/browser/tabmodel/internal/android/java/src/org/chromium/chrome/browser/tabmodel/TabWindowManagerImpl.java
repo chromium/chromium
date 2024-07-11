@@ -449,13 +449,18 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     }
 
     @Override
-    public boolean canTabBeDeleted(int tabId) {
-        boolean isPossiblyAnArchivedTab =
-                ChromeFeatureList.sAndroidTabDeclutter.isEnabled()
-                        && (mArchivedTabModelSelector == null
-                                || !mArchivedTabModelSelector.isTabStateInitialized());
+    public boolean canTabStateBeDeleted(int tabId) {
+        boolean isPossiblyAnArchivedTab = isPossiblyAnArchivedTab();
         RecordHistogram.recordBooleanHistogram(
-                "Tabs.TabCleanupAbortedByArchive", isPossiblyAnArchivedTab);
+                "Tabs.TabStateCleanupAbortedByArchive", isPossiblyAnArchivedTab);
+        return !isPossiblyAnArchivedTab && getTabById(tabId) == null;
+    }
+
+    @Override
+    public boolean canTabThumbnailBeDeleted(int tabId) {
+        boolean isPossiblyAnArchivedTab = isPossiblyAnArchivedTab();
+        RecordHistogram.recordBooleanHistogram(
+                "Tabs.TabThumbnailCleanupAbortedByArchive", isPossiblyAnArchivedTab);
         return !isPossiblyAnArchivedTab && getTabById(tabId) == null;
     }
 
@@ -475,5 +480,11 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
             mSelectors.set(index, null);
         }
         return index;
+    }
+
+    private boolean isPossiblyAnArchivedTab() {
+        return ChromeFeatureList.sAndroidTabDeclutter.isEnabled()
+                && (mArchivedTabModelSelector == null
+                        || !mArchivedTabModelSelector.isTabStateInitialized());
     }
 }

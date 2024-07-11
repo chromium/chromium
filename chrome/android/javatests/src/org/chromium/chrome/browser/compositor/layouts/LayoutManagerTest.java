@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -90,10 +91,9 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
-
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
-
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private TabWindowManager mTabWindowManager;
 
     private TabModelSelector mTabModelSelector;
     private OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier;
@@ -196,7 +196,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter());
 
         LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
-        TabContentManager tabContentManager = new TabContentManager(context, null, false, null);
+        TabContentManager tabContentManager =
+                new TabContentManager(context, null, false, null, mTabWindowManager);
         tabContentManager.initWithNative();
 
         // Build a fake content container

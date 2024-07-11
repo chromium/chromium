@@ -12,6 +12,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -96,7 +97,8 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         ApplicationProvider.getApplicationContext(),
                         null,
                         false,
-                        mSelector::getTabById);
+                        mSelector::getTabById,
+                        TabWindowManagerSingleton.getInstance());
         tabContentManager.initWithNative();
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();

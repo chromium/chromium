@@ -35,6 +35,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -99,6 +100,7 @@ public class TabContentManager {
     private final boolean mSnapshotsEnabled;
     private final TabFinder mTabFinder;
     private final Context mContext;
+    private final TabWindowManager mTabWindowManager;
 
     /** The Java interface for listening to thumbnail changes. */
     public interface ThumbnailChangeListener {
@@ -139,11 +141,13 @@ public class TabContentManager {
             Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
             boolean snapshotsEnabled,
-            TabFinder tabFinder) {
+            TabFinder tabFinder,
+            TabWindowManager tabWindowManager) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabFinder = tabFinder;
         mSnapshotsEnabled = snapshotsEnabled;
+        mTabWindowManager = tabWindowManager;
 
         // Override the cache size on the command line with --thumbnails=100
         int defaultCacheSize =
@@ -639,9 +643,12 @@ public class TabContentManager {
 
     /**
      * Removes a thumbnail of the tab whose id is |tabId|.
+     *
      * @param tabId The Id of the tab whose thumbnail is being removed.
      */
     public void removeTabThumbnail(int tabId) {
+        if (!mTabWindowManager.canTabThumbnailBeDeleted(tabId)) return;
+
         if (mNativeTabContentManager != 0) {
             TabContentManagerJni.get().removeTabThumbnail(mNativeTabContentManager, tabId);
         }

@@ -121,7 +121,10 @@ public interface TabWindowManager {
     TabModelSelector getTabModelSelectorById(int index);
 
     /** Returns whether the tab with the given id can safely be deleted. */
-    boolean canTabBeDeleted(int tabId);
+    boolean canTabStateBeDeleted(int tabId);
+
+    /** Returns whether the tab with the given id can safely be deleted. */
+    boolean canTabThumbnailBeDeleted(int tabId);
 
     /** Sets the given archived {@link TabModelSelector} singleton instance. */
     void setArchivedTabModelSelector(TabModelSelector archivedTabModelSelector);

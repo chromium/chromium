@@ -690,17 +690,18 @@ public class TabWindowManagerTest {
 
     @Test
     @SmallTest
-    public void testCanTabBeDeleted_ArchiveDisabled() {
+    public void testcanTabStateBeDeleted_ArchiveDisabled() {
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Tabs.TabCleanupAbortedByArchive", false);
-        assertTrue(mSubject.canTabBeDeleted(0));
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabStateCleanupAbortedByArchive", false);
+        assertTrue(mSubject.canTabStateBeDeleted(0));
         histogramWatcher.assertExpected();
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
-    public void testCanTabBeDeleted() {
+    public void testcanTabStateBeDeleted() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
         Pair<Integer, TabModelSelector> assignment0 =
@@ -716,41 +717,110 @@ public class TabWindowManagerTest {
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
 
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Tabs.TabCleanupAbortedByArchive", true);
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabStateCleanupAbortedByArchive", true);
         // First check if a non-existent tab can be deleted when the archived tab model is
         // null.
-        assertFalse(mSubject.canTabBeDeleted(0));
+        assertFalse(mSubject.canTabStateBeDeleted(0));
         histogramWatcher.assertExpected();
 
         // Next set the archived tab model, but simulate like it hasn't finished loading.
         histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Tabs.TabCleanupAbortedByArchive", true);
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabStateCleanupAbortedByArchive", true);
         mSubject.setArchivedTabModelSelector(mArchivedTabModelSelector);
         doReturn(false).when(mArchivedTabModelSelector).isTabStateInitialized();
-        assertFalse(mSubject.canTabBeDeleted(0));
+        assertFalse(mSubject.canTabStateBeDeleted(0));
         histogramWatcher.assertExpected();
 
         // Next simulate the archived tab model being loaded. This should call through to
         // #getTabById, but there is no tab.
         histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Tabs.TabCleanupAbortedByArchive", false);
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabStateCleanupAbortedByArchive", false);
         doReturn(true).when(mArchivedTabModelSelector).isTabStateInitialized();
-        assertTrue(mSubject.canTabBeDeleted(0));
+        assertTrue(mSubject.canTabStateBeDeleted(0));
         histogramWatcher.assertExpected();
 
         // Now a tab exists, so it shouldn't be deletable.
         histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Tabs.TabCleanupAbortedByArchive", false);
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabStateCleanupAbortedByArchive", false);
         Tab tab1 = selector0.addMockTab();
-        assertFalse(mSubject.canTabBeDeleted(tab1.getId()));
+        assertFalse(mSubject.canTabStateBeDeleted(tab1.getId()));
         histogramWatcher.assertExpected();
 
         // Simulate moving it to the archived model.
         histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Tabs.TabCleanupAbortedByArchive", false);
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabStateCleanupAbortedByArchive", false);
         doReturn(tab1).when(mArchivedTabModelSelector).getTabById(tab1.getId());
         selector0.closeTab(tab1);
-        assertFalse(mSubject.canTabBeDeleted(tab1.getId()));
+        assertFalse(mSubject.canTabStateBeDeleted(tab1.getId()));
+        histogramWatcher.assertExpected();
+
+        destroyActivity(activityController0);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+    public void testcanTabThumbnailBeDeleted() {
+        ActivityController<Activity> activityController0 = createActivity();
+        Activity activity0 = activityController0.get();
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(
+                        activity0,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mMismatchedIndicesHandler,
+                        0);
+
+        assertEquals(0, assignment0.first.intValue());
+        MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabThumbnailCleanupAbortedByArchive", true);
+        // First check if a non-existent tab can be deleted when the archived tab model is
+        // null.
+        assertFalse(mSubject.canTabThumbnailBeDeleted(0));
+        histogramWatcher.assertExpected();
+
+        // Next set the archived tab model, but simulate like it hasn't finished loading.
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabThumbnailCleanupAbortedByArchive", true);
+        mSubject.setArchivedTabModelSelector(mArchivedTabModelSelector);
+        doReturn(false).when(mArchivedTabModelSelector).isTabStateInitialized();
+        assertFalse(mSubject.canTabThumbnailBeDeleted(0));
+        histogramWatcher.assertExpected();
+
+        // Next simulate the archived tab model being loaded. This should call through to
+        // #getTabById, but there is no tab.
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabThumbnailCleanupAbortedByArchive", false);
+        doReturn(true).when(mArchivedTabModelSelector).isTabStateInitialized();
+        assertTrue(mSubject.canTabThumbnailBeDeleted(0));
+        histogramWatcher.assertExpected();
+
+        // Now a tab exists, so it shouldn't be deletable.
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabThumbnailCleanupAbortedByArchive", false);
+        Tab tab1 = selector0.addMockTab();
+        assertFalse(mSubject.canTabThumbnailBeDeleted(tab1.getId()));
+        histogramWatcher.assertExpected();
+
+        // Simulate moving it to the archived model.
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabThumbnailCleanupAbortedByArchive", false);
+        doReturn(tab1).when(mArchivedTabModelSelector).getTabById(tab1.getId());
+        selector0.closeTab(tab1);
+        assertFalse(mSubject.canTabThumbnailBeDeleted(tab1.getId()));
         histogramWatcher.assertExpected();
 
         destroyActivity(activityController0);

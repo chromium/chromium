@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -95,6 +96,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     private ViewGroup mContainerView;
     private TemplateUrlService mTemplateUrlService;
     private LibraryLoader mLibraryLoader;
+    private TabWindowManager mTabWindowManager;
 
     private Activity mActivity;
     private StartSurfaceCoordinator mCoordinator;
@@ -148,6 +150,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                 mContainerView = Mockito.mock(ViewGroup.class);
                 mTemplateUrlService = Mockito.mock(TemplateUrlService.class);
                 mLibraryLoader = Mockito.mock(LibraryLoader.class);
+                mTabWindowManager = Mockito.mock(TabWindowManager.class);
 
                 initJniMocks();
                 initViewsMocks();
@@ -231,7 +234,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         BrowserControlsManager browserControlsManager = new BrowserControlsManager(mActivity, 0);
         SnackbarManager snackbarManager =
                 new SnackbarManager(mActivity, mContainerView, windowAndroid);
-        TabContentManager tabContentManager = new TabContentManager(mActivity, null, false, null);
+        TabContentManager tabContentManager =
+                new TabContentManager(mActivity, null, false, null, mTabWindowManager);
 
         VoiceRecognitionHandler voiceRecognitionHandler =
                 Mockito.mock(VoiceRecognitionHandler.class);
