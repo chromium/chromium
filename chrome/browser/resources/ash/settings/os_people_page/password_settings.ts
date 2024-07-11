@@ -40,21 +40,12 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
-
-      // The purpose of this attribute is to allow us to observe when it
-      // changes, i.e., when the user selects a different password type.
-      selectedPasswordType_: {
-        type: String,
-        value: null,
-        observer: 'onSelectedPasswordTypeChanged_',
-      },
     };
   }
 
   authToken: string|null;
   private hasGaiaPassword_: boolean;
   private hasLocalPassword_: boolean;
-  private selectedPasswordType_: PasswordType|null;
 
   override ready(): void {
     super.ready();
@@ -98,8 +89,6 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
 
     this.hasGaiaPassword_ = hasGaiaPassword;
     this.hasLocalPassword_ = hasLocalPassword;
-
-    this.selectedPasswordType_ = this.passwordType_();
   }
 
   private hasPassword_(): boolean {
@@ -127,26 +116,6 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     }
 
     return null;
-  }
-
-  private onSelectedPasswordTypeChanged_(): void {
-    // Check if the selected value is really a valid |PasswordType|. Recall
-    // that typescript's type system is unsound, so this fails at runtime if a
-    // |name| attribute of a select element in the template has a value that is
-    // not listed in |PasswordType|.
-    assert(
-        this.selectedPasswordType_ === null ||
-        Object.values(PasswordType).includes(this.selectedPasswordType_));
-
-    // The `selectedPasswordType_` must always match the actually
-    // configured `passwordType_`, so immediately switch back to it.
-    //
-    // TODO(b/290916811): However, we should now start changing the actually
-    // configured password type, e.g. switch from local to Gaia password, which
-    // will eventually result into an auth factor change notification and
-    // updatePasswordState_ being called, which then sets
-    // `selectedPasswordType_`.
-    this.selectedPasswordType_ = this.passwordType_();
   }
 
   private setLocalPasswordDialog(): SettingsSetLocalPasswordDialogElement {
