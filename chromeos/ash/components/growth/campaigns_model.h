@@ -62,6 +62,7 @@ enum class BuiltInImage {
 // be renumbered and numeric values should never be reused.
 enum class WindowAnchorType {
   kCaptionButtonContainer = 0,
+  kWindowBounds = 1,
 };
 
 // These values are deserialized from Growth Campaign, so entries should not

@@ -195,37 +195,22 @@ views::View* GetWindowCaptionButtonContainer() {
       chromeos::ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
 }
 
-bool IsCaptionButtonContainer(
+views::Widget* GetAnchorWidget() {
+  // Currently the anchor widget is the triggering window widget.
+  return GetTriggeringWindowWidget();
+}
+
+bool IsAnchorOnCaptionButtonContainer(
     std::optional<growth::WindowAnchorType> app_window_anchor_type) {
   return app_window_anchor_type &&
          app_window_anchor_type.value() ==
              growth::WindowAnchorType::kCaptionButtonContainer;
 }
 
-}  // namespace
-
-ShowNudgeActionPerformer::ShowNudgeActionPerformer() = default;
-
-ShowNudgeActionPerformer::~ShowNudgeActionPerformer() {
-  triggering_widget_ = nullptr;
-}
-
-void ShowNudgeActionPerformer::Run(int campaign_id,
-                                   std::optional<int> group_id,
-                                   const base::Value::Dict* action_params,
-                                   growth::ActionPerformer::Callback callback) {
-  if (!ShowNudge(campaign_id, group_id, action_params)) {
-    // TODO: b/331953307 - callback with concrete failure result reason.
-    std::move(callback).Run(growth::ActionResult::kFailure,
-                            growth::ActionResultReason::kParsingActionFailed);
-    return;
-  }
-  std::move(callback).Run(growth::ActionResult::kSuccess,
-                          /*action_result_reason=*/std::nullopt);
-}
-
-growth::ActionType ShowNudgeActionPerformer::ActionType() const {
-  return growth::ActionType::kShowNudge;
+bool IsAnchorOnWindowBounds(
+    std::optional<growth::WindowAnchorType> app_window_anchor_type) {
+  return app_window_anchor_type && app_window_anchor_type.value() ==
+                                       growth::WindowAnchorType::kWindowBounds;
 }
 
 std::optional<growth::Anchor> GetAnchorConfig(
@@ -245,7 +230,7 @@ std::optional<growth::Anchor> GetAnchorConfig(
 //    position.
 // 2. The targeted anchor view if available.
 // 3. nullopt if the anchor view is not found. Skip showing nudge in this case.
-std::optional<views::View*> GetAnchor(const NudgePayload* nudge_payload) {
+std::optional<views::View*> GetAnchorView(const NudgePayload* nudge_payload) {
   auto anchor = GetAnchorConfig(nudge_payload);
   if (!anchor) {
     return nullptr;
@@ -253,7 +238,7 @@ std::optional<views::View*> GetAnchor(const NudgePayload* nudge_payload) {
 
   auto app_window_anchor_type = anchor->GetActiveAppWindowAnchorType();
   if (app_window_anchor_type &&
-      IsCaptionButtonContainer(app_window_anchor_type)) {
+      IsAnchorOnCaptionButtonContainer(app_window_anchor_type)) {
     auto* anchor_view = GetWindowCaptionButtonContainer();
     if (!anchor_view) {
       // Can't find the targeted view. Return nullopt and skip showing nudge.
@@ -283,6 +268,32 @@ std::optional<views::View*> GetAnchor(const NudgePayload* nudge_payload) {
   return nullptr;
 }
 
+}  // namespace
+
+ShowNudgeActionPerformer::ShowNudgeActionPerformer() = default;
+
+ShowNudgeActionPerformer::~ShowNudgeActionPerformer() {
+  triggering_widget_ = nullptr;
+}
+
+void ShowNudgeActionPerformer::Run(int campaign_id,
+                                   std::optional<int> group_id,
+                                   const base::Value::Dict* action_params,
+                                   growth::ActionPerformer::Callback callback) {
+  if (!ShowNudge(campaign_id, group_id, action_params)) {
+    // TODO: b/331953307 - callback with concrete failure result reason.
+    std::move(callback).Run(growth::ActionResult::kFailure,
+                            growth::ActionResultReason::kParsingActionFailed);
+    return;
+  }
+  std::move(callback).Run(growth::ActionResult::kSuccess,
+                          /*action_result_reason=*/std::nullopt);
+}
+
+growth::ActionType ShowNudgeActionPerformer::ActionType() const {
+  return growth::ActionType::kShowNudge;
+}
+
 bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
                                          std::optional<int> group_id,
                                          const NudgePayload* nudge_payload) {
@@ -299,25 +310,67 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 
   std::u16string nudge_body = base::UTF8ToUTF16(*body_text);
 
-  auto anchor_view = GetAnchor(nudge_payload);
-  if (!anchor_view) {
-    // No targeted anchor view found. Skip showing nudge.
-    growth::RecordCampaignsManagerError(
-        growth::CampaignsManagerError::kNudgeAnchorViewNotFound);
-    LOG(ERROR) << "Targeted anchor view is not found. Skip showing nudge.";
-    return false;
-  }
-
   auto nudge_data = ash::AnchoredNudgeData(
       kGrowthNudgeId, ash::NudgeCatalogName::kGrowthCampaignNudge, nudge_body,
-      /*anchor_view=*/anchor_view.value());
+      /*anchor_view=*/nullptr);
 
-  if (!ash::features::IsGrowthCampaignsShowNudgeInDefaultParentEnabled() &&
-      anchor_view.value()) {
-    auto anchor = GetAnchorConfig(nudge_payload);
-    if (anchor &&
-        IsCaptionButtonContainer(anchor->GetActiveAppWindowAnchorType())) {
-      nudge_data.set_anchor_view_as_parent = true;
+  // Set arrow.
+  auto arrow_value =
+      nudge_payload->FindInt(kArrowPath).value_or(int(Arrow::kBottomRight));
+  nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
+
+  auto anchor = GetAnchorConfig(nudge_payload);
+  if (anchor &&
+      IsAnchorOnWindowBounds(anchor->GetActiveAppWindowAnchorType())) {
+    if (!ash::features::IsGrowthCampaignsShowNudgeInsideWindowBoundsEnabled()) {
+      // Not showing the nudge that anchors on bounds but the feature is
+      // disabled.
+      return false;
+    }
+
+    auto* anchor_widget = GetAnchorWidget();
+    if (!anchor_widget) {
+      // No targeted anchor widget found. Skip showing nudge.
+      growth::RecordCampaignsManagerError(
+          growth::CampaignsManagerError::kNudgeAnchorWidgetNotFound);
+      LOG(ERROR) << "Targeted anchor widget is not found. Skip showing nudge.";
+      return false;
+    }
+
+    // The arrow type will determine the nudge position in the widget, although
+    // we do not draw the arrow. Only the two bottom corners are supported.
+    switch (nudge_data.arrow) {
+      case views::BubbleBorder::Arrow::BOTTOM_LEFT:
+      case views::BubbleBorder::Arrow::LEFT_BOTTOM:
+      case views::BubbleBorder::Arrow::BOTTOM_RIGHT:
+      case views::BubbleBorder::Arrow::RIGHT_BOTTOM:
+        break;
+      default:
+        // Other arrows are not supported. Skip showing nudge.
+        growth::RecordCampaignsManagerError(
+            growth::CampaignsManagerError::kNudgeAnchorPositionNotSupported);
+        LOG(ERROR) << "Position is not supported. Skip showing nudge.";
+        return false;
+    }
+
+    nudge_data.anchor_widget = anchor_widget;
+  } else {
+    auto anchor_view = GetAnchorView(nudge_payload);
+    if (!anchor_view) {
+      // No targeted anchor view found. Skip showing nudge.
+      growth::RecordCampaignsManagerError(
+          growth::CampaignsManagerError::kNudgeAnchorViewNotFound);
+      LOG(ERROR) << "Targeted anchor view is not found. Skip showing nudge.";
+      return false;
+    }
+
+    nudge_data.SetAnchorView(anchor_view.value());
+    if (!ash::features::IsGrowthCampaignsShowNudgeInDefaultParentEnabled() &&
+        anchor_view.value()) {
+      if (anchor && IsAnchorOnCaptionButtonContainer(
+                        anchor->GetActiveAppWindowAnchorType())) {
+        nudge_data.set_anchor_view_as_parent = true;
+      }
     }
   }
 
@@ -342,11 +395,6 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 
   // Set image data if available.
   MaybeSetImageData(nudge_payload->FindDict(kImagePath), nudge_data);
-
-  // Set arrow.
-  auto arrow_value =
-      nudge_payload->FindInt(kArrowPath).value_or(int(Arrow::kBottomRight));
-  nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
 
   // Set nudge dismiss callback.
   nudge_data.dismiss_callback = base::BindRepeating(

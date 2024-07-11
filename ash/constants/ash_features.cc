@@ -1463,6 +1463,11 @@ BASE_FEATURE(kGrowthCampaignsShowNudgeInDefaultParent,
              "GrowthCampaignsShowNudgeInDefaultParent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Show the nudge widget inside the window bounds and parent to the window.
+BASE_FEATURE(kGrowthCampaignsShowNudgeInsideWindowBounds,
+             "GrowthCampaignsShowNudgeInsideWindowBounds",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether growth campaigns triggering when loading campaigns complete.
 BASE_FEATURE(kGrowthCampaignsTriggerAtLoadComplete,
              "GrowthCampaignsTriggerAtLoadComplete",
@@ -3830,6 +3835,11 @@ bool IsGrowthCampaignsInDemoModeEnabled() {
 
 bool IsGrowthCampaignsShowNudgeInDefaultParentEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsShowNudgeInDefaultParent);
+}
+
+bool IsGrowthCampaignsShowNudgeInsideWindowBoundsEnabled() {
+  return base::FeatureList::IsEnabled(
+      kGrowthCampaignsShowNudgeInsideWindowBounds);
 }
 
 bool IsGrowthCampaignsTriggerAtLoadComplete() {

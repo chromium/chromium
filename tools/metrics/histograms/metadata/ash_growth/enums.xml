@@ -68,6 +68,8 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Invalid button action in notification payload"/>
   <int value="31" label="Invalid notification payload"/>
   <int value="32" label="Invalid trigger targeting"/>
+  <int value="33" label="Anchor widget not found for anchoring nudge"/>
+  <int value="34" label="Position not supported for anchoring nudge"/>
 </enum>
 
 </enums>

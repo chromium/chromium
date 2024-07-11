@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -33,6 +34,8 @@
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace {
+using NudgeTestVariantsParam = std::tuple</*tablet_mode=*/bool,
+                                          /*anchor_type_window_bounds=*/bool>;
 
 constexpr char kCampaignsFileName[] = "campaigns.json";
 
@@ -42,7 +45,7 @@ constexpr char kEmptyCampaigns[] = R"(
 )";
 
 // Targeting Personalization App.
-constexpr char kCampaignsNudge[] = R"(
+constexpr char kCampaignsNudgeTemplate[] = R"(
 {
   "2": [
     {
@@ -64,9 +67,9 @@ constexpr char kCampaignsNudge[] = R"(
           "image": {
             "builtInIcon": 0
           },
-          "arrow": 1,
+          "arrow": %s,
           "anchor": {
-            "activeAppWindowAnchorType": 0
+            "activeAppWindowAnchorType": %s
           },
           "primaryButton": {
             "label": "Yes",
@@ -311,10 +314,14 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest, ClearConfig) {
 
 class CampaignsManagerInteractiveUiNudgeTest
     : public CampaignsManagerInteractiveUiTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<NudgeTestVariantsParam> {
  public:
   CampaignsManagerInteractiveUiNudgeTest() {
-    base::WriteFile(GetCampaignsFilePath(temp_dir_), kCampaignsNudge);
+    std::string arrow = AnchorToWindowBounds() ? "2" : "1";
+    std::string anchor_type = AnchorToWindowBounds() ? "1" : "0";
+    base::WriteFile(GetCampaignsFilePath(temp_dir_),
+                    base::StringPrintf(kCampaignsNudgeTemplate, arrow.c_str(),
+                                       anchor_type.c_str()));
   }
 
   void SetUpOnMainThread() override {
@@ -331,12 +338,23 @@ class CampaignsManagerInteractiveUiNudgeTest
         [=]() { ash::LaunchSystemWebAppAsync(GetActiveUserProfile(), type); });
   }
 
-  bool ShouldUseTabletMode() { return GetParam(); }
+  bool ShouldUseTabletMode() { return std::get<0>(GetParam()); }
+
+  bool AnchorToWindowBounds() { return std::get<1>(GetParam()); }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         CampaignsManagerInteractiveUiNudgeTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CampaignsManagerInteractiveUiNudgeTest,
+    testing::Combine(/*tablet_mode=*/testing::Bool(),
+                     /*anchor_type_window_bounds=*/testing::Bool()),
+    [](const testing::TestParamInfo<NudgeTestVariantsParam>& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "TabletModeEnabled" : "TabletModeDisabled",
+           "_",
+           std::get<1>(info.param) ? "AnchorInsideWindowBounds"
+                                   : "AnchorToCaptionButtonContainer"});
+    });
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
                        AnchorPersonalizationApp) {

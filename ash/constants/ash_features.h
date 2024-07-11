@@ -502,6 +502,8 @@ BASE_DECLARE_FEATURE(kGrowthCampaignsInDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsShowNudgeInDefaultParent);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGrowthCampaignsShowNudgeInsideWindowBounds);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerAtLoadComplete);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByAppOpen);
@@ -1186,6 +1188,8 @@ bool IsGrowthCampaignsInConsumerSessionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsInDemoModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsShowNudgeInDefaultParentEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGrowthCampaignsShowNudgeInsideWindowBoundsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerAtLoadComplete();
 COMPONENT_EXPORT(ASH_CONSTANTS)
