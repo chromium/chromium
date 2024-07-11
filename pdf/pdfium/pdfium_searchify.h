@@ -18,10 +18,24 @@
 
 namespace chrome_pdf {
 
+struct SearchifyBoundingBoxOrigin {
+  double x;
+  double y;
+  double theta;
+};
+
 std::vector<uint8_t> PDFiumSearchify(
     base::span<const uint8_t> pdf_buffer,
     base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
         const SkBitmap& bitmap)> perform_ocr_callback);
+
+// Internal function exposed for testing.
+SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(
+    int x,
+    int y,
+    int height,
+    double angle,
+    double coordinate_system_height);
 
 class PdfiumProgressiveSearchifier : public PdfProgressiveSearchifier {
  public:

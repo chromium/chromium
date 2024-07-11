@@ -47,20 +47,13 @@ std::vector<uint32_t> Utf8ToCharcodes(const std::string& string) {
   return charcodes;
 }
 
-struct BoundingBoxOrigin {
-  double x;
-  double y;
-  double theta;
-};
-
 // The coordinate systems between OCR and PDF are different. OCR's origin is at
 // top-left, so we need to convert them to PDF's bottom-left.
-BoundingBoxOrigin ConvertToPdfOrigin(int x,
-                                     int y,
-                                     int width,
-                                     int height,
-                                     double angle,
-                                     double coordinate_system_height) {
+SearchifyBoundingBoxOrigin ConvertToPdfOrigin(int x,
+                                              int y,
+                                              int height,
+                                              double angle,
+                                              double coordinate_system_height) {
   const double theta = base::DegToRad(angle);
   return {.x = x - (sin(theta) * height),
           .y = coordinate_system_height - (y + cos(theta) * height),
@@ -68,8 +61,9 @@ BoundingBoxOrigin ConvertToPdfOrigin(int x,
 }
 
 // Project the text object's origin to the baseline's origin.
-BoundingBoxOrigin ProjectToBaseline(const BoundingBoxOrigin& origin,
-                                    const BoundingBoxOrigin& baseline_origin) {
+SearchifyBoundingBoxOrigin ProjectToBaseline(
+    const SearchifyBoundingBoxOrigin& origin,
+    const SearchifyBoundingBoxOrigin& baseline_origin) {
   // The length between `origin` and `baseline_origin`.
   double length = (origin.x - baseline_origin.x) * cos(baseline_origin.theta) +
                   (origin.y - baseline_origin.y) * sin(baseline_origin.theta);
@@ -107,10 +101,10 @@ void AddTextOnImage(FPDF_DOCUMENT document,
   }
 
   for (const auto& line : annotation->lines) {
-    BoundingBoxOrigin baseline_origin = ConvertToPdfOrigin(
-        line->baseline_box.x(), line->baseline_box.y(),
-        line->baseline_box.width(), line->baseline_box.height(),
-        line->baseline_box_angle, image_rendered_height);
+    SearchifyBoundingBoxOrigin baseline_origin =
+        ConvertToPdfOrigin(line->baseline_box.x(), line->baseline_box.y(),
+                           line->baseline_box.height(),
+                           line->baseline_box_angle, image_rendered_height);
 
     for (const auto& word : line->words) {
       double width = word->bounding_box.width();
@@ -167,8 +161,8 @@ void AddTextOnImage(FPDF_DOCUMENT document,
       FPDFPageObj_Transform(text.get(), width_scale, 0, 0, height_scale, 0, 0);
 
       // Move text object to the corresponding text position on the full image.
-      BoundingBoxOrigin origin = ConvertToPdfOrigin(
-          word->bounding_box.x(), word->bounding_box.y(), width, height,
+      SearchifyBoundingBoxOrigin origin = ConvertToPdfOrigin(
+          word->bounding_box.x(), word->bounding_box.y(), height,
           word->bounding_box_angle, image_rendered_height);
       origin = ProjectToBaseline(origin, baseline_origin);
       double a = cos(origin.theta);
@@ -278,6 +272,15 @@ std::vector<uint8_t> PDFiumSearchify(
     return {};
   }
   return output_file_write.TakeBuffer();
+}
+
+SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(
+    int x,
+    int y,
+    int height,
+    double angle,
+    double coordinate_system_height) {
+  return ConvertToPdfOrigin(x, y, height, angle, coordinate_system_height);
 }
 
 PdfiumProgressiveSearchifier::ScopedSdkInitializer::ScopedSdkInitializer() {
