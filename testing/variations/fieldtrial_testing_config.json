@@ -9942,13 +9942,13 @@
             ],
             "experiments": [
                 {
-                    "name": "CounterfactualControl_20240620",
+                    "name": "CounterfactualControl_20240710",
                     "params": {
                         "IPH_ScalableIphGaming_availability": ">=0",
                         "IPH_ScalableIphGaming_event_1": "name:ScalableIphGameWindowOpened;comparator:>0;window:365;storage:365",
                         "IPH_ScalableIphGaming_event_trigger": "name:IphScalableIphGamingEventTrigger;comparator:==0;window:365;storage:365",
                         "IPH_ScalableIphGaming_event_used": "name:IphScalableIphGamingEventUsed;comparator:any;window:365;storage:365",
-                        "IPH_ScalableIphGaming_session_rate": "<1",
+                        "IPH_ScalableIphGaming_session_rate": "any",
                         "IPH_ScalableIphGaming_tracking_only": "true",
                         "IPH_ScalableIphGaming_x_CustomConditionTriggerEvent": "ScalableIphUnlocked",
                         "IPH_ScalableIphGaming_x_CustomUiType": "None",
@@ -9959,13 +9959,13 @@
                     ]
                 },
                 {
-                    "name": "Notification_20240620",
+                    "name": "Notification_20240710",
                     "params": {
                         "IPH_ScalableIphGaming_availability": ">=0",
                         "IPH_ScalableIphGaming_event_1": "name:ScalableIphGameWindowOpened;comparator:>0;window:365;storage:365",
                         "IPH_ScalableIphGaming_event_trigger": "name:IphScalableIphGamingEventTrigger;comparator:==0;window:365;storage:365",
                         "IPH_ScalableIphGaming_event_used": "name:IphScalableIphGamingEventUsed;comparator:any;window:365;storage:365",
-                        "IPH_ScalableIphGaming_session_rate": "<1",
+                        "IPH_ScalableIphGaming_session_rate": "any",
                         "IPH_ScalableIphGaming_x_CustomButtonActionType": "PerksMinecraftRealms2023",
                         "IPH_ScalableIphGaming_x_CustomConditionTriggerEvent": "ScalableIphUnlocked",
                         "IPH_ScalableIphGaming_x_CustomNotificationBodyText": "",
