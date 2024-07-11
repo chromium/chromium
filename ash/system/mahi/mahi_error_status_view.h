@@ -24,8 +24,10 @@ enum class VisibilityState;
 // Presents the current Mahi error if any. It should show when the UI controller
 // is in the error state. NOTE:
 // 1. This class is created only when the Mahi feature is enabled.
-// 2. `chromeos::MahiResponseStatus::kLowQuota` is presented in a toast view
-//    instead of this class.
+// 2. `chromeos::MahiResponseStatus::kLowQuota` is treated as a warning, so we
+//    will not handle it in this class.
+// 3. Some error statuses can be displayed inside the Q&A view instead of using
+//    this class.
 class MahiErrorStatusView : public views::FlexLayoutView,
                             public MahiUiController::Delegate {
   METADATA_HEADER(MahiErrorStatusView, views::View)

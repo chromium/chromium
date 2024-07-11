@@ -13,15 +13,17 @@
 namespace chromeos {
 
 enum class HMRConsentStatus : int {
-  // User has agreed to consent by pressing "Yes/Agree" button to all dialogs
-  // from the consent window.
+  // User has agreed to consent by pressing the accept button on the disclaimer
+  // UI.
   kApproved = 0,
-  // User has disagreed to consent by pressing "No/Disagree" button to any
-  // dialog from the consent window.
+  // User has disagreed to consent by pressing the decline button on the
+  // disclaimer UI or the opt-in card.
   kDeclined = 1,
-  // No explicit consent to use the feature has been received yet.
+  // This state is being used when the feature is turned on through the Settings
+  // app and consent status is unset. In this case, we will show the disclaimer
+  // UI when users try to access the Mahi feature through the Mahi menu card.
   kPending = 2,
-  // No request has been sent to users to collect their consent.
+  // Users hasn't accept nor decline the consent.
   kUnset = 3,
 };
 
