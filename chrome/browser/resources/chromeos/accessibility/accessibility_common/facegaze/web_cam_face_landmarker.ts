@@ -15,8 +15,6 @@ export interface FaceLandmarkerResultWithLatency {
 export class WebCamFaceLandmarker {
   private faceLandmarker_: FaceLandmarker|null = null;
   declare private intervalID_: number|null;
-  // TODO(b/309121742): Wire up type checking for ImageCapture.
-  //@ts-ignore
   private imageCapture_: ImageCapture|undefined;
   private onFaceLandmarkerResult_:
       (resultWithLatency: FaceLandmarkerResultWithLatency) => void;
@@ -86,8 +84,6 @@ export class WebCamFaceLandmarker {
     };
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     const tracks = stream.getVideoTracks();
-    // TODO(b/309121742): Wire up type checking for ImageCapture.
-    //@ts-ignore
     this.imageCapture_ = new ImageCapture(tracks[0]);
   }
 
@@ -102,7 +98,7 @@ export class WebCamFaceLandmarker {
       return;
     }
 
-    const frame = await this.imageCapture_.grabFrame();
+    const frame = await this.imageCapture_!.grabFrame();
     const startTime = performance.now();
     const result = this.faceLandmarker_.detect(/*image=*/ frame);
     const latency = performance.now() - startTime;
