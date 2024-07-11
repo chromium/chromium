@@ -101,9 +101,6 @@ class SkylabGPUTelemetryTestGenerator(GPUTelemetryTestGenerator):
 
 
 class GTestGenerator(BaseGenerator):
-  def __init__(self, bb_gen):
-    super(GTestGenerator, self).__init__(bb_gen)
-
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     # The relative ordering of some of the tests is important to
     # minimize differences compared to the handwritten JSON files, since
@@ -127,9 +124,6 @@ class GTestGenerator(BaseGenerator):
 
 
 class IsolatedScriptTestGenerator(BaseGenerator):
-  def __init__(self, bb_gen):
-    super(IsolatedScriptTestGenerator, self).__init__(bb_gen)
-
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     isolated_scripts = []
     for test_name, test_config in sorted(input_tests.items()):
@@ -147,9 +141,6 @@ class IsolatedScriptTestGenerator(BaseGenerator):
 
 
 class ScriptGenerator(BaseGenerator):
-  def __init__(self, bb_gen):
-    super(ScriptGenerator, self).__init__(bb_gen)
-
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     scripts = []
     for test_name, test_config in sorted(input_tests.items()):
@@ -161,9 +152,6 @@ class ScriptGenerator(BaseGenerator):
 
 
 class JUnitGenerator(BaseGenerator):
-  def __init__(self, bb_gen):
-    super(JUnitGenerator, self).__init__(bb_gen)
-
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     scripts = []
     for test_name, test_config in sorted(input_tests.items()):
@@ -175,9 +163,6 @@ class JUnitGenerator(BaseGenerator):
 
 
 class SkylabGenerator(BaseGenerator):
-  def __init__(self, bb_gen):
-    super(SkylabGenerator, self).__init__(bb_gen)
-
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     scripts = []
     for test_name, test_config in sorted(input_tests.items()):
