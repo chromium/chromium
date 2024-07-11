@@ -42,26 +42,6 @@ constexpr size_t kIvfFrameHeaderSize = 12;
 constexpr size_t kNALUHeaderSize = 4;
 constexpr size_t kNALUReducedHeaderSize = 3;
 
-bool IsH264SPSNALU(const uint8_t* data, size_t size) {
-  // Check if this is an H264 SPS NALU w/ a 3 or kNALUHeaderSize byte start
-  // code.
-  return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-          data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x1f) == 0x7) ||
-         (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-          data[2] == 0x0 && data[3] == 0x1 &&
-          (data[kNALUHeaderSize] & 0x1f) == 0x7);
-}
-
-bool IsHevcSPSNALU(const uint8_t* data, size_t size) {
-  // Check if this is an HEVC SPS NALU w/ a 3 or kNALUHeaderSize byte start
-  // code.
-  return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-          data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x7e) == 0x42) ||
-         (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-          data[2] == 0x0 && data[3] == 0x1 &&
-          (data[kNALUHeaderSize] & 0x7e) == 0x42);
-}
-
 // If |reverse| is true , GetNextFrame() for a frame returns frames in a
 // round-trip playback fashion (0, 1,.., |num_frames| - 2, |num_frames| - 1,
 // |num_frames| - 2, |num_frames_| - 3,.., 1, 0, 1, 2,..).
@@ -162,6 +142,29 @@ bool IvfWriter::WriteFrame(uint32_t data_size,
   return success;
 }
 
+// static
+std::unique_ptr<EncodedDataHelper> EncodedDataHelper::Create(
+    base::span<const uint8_t> stream,
+    VideoCodec codec) {
+  if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) {
+    return std::make_unique<EncodedDataHelperH26x>(std::move(stream), codec);
+  }
+  if (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9 ||
+      codec == VideoCodec::kAV1) {
+    return std::make_unique<EncodedDataHelperIVF>(std::move(stream), codec);
+  }
+  NOTREACHED_NORETURN() << "Unsupported codec " << GetCodecName(codec);
+}
+
+// static
+bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
+                                      size_t size,
+                                      VideoCodec codec) {
+  CHECK(codec == media::VideoCodec::kH264 || codec == media::VideoCodec::kHEVC)
+      << "Unsupported codec " << GetCodecName(codec);
+  return EncodedDataHelperH26x::HasConfigInfo(data, size, codec);
+}
+
 EncodedDataHelper::EncodedDataHelper(base::span<const uint8_t> stream,
                                      VideoCodec codec)
     : data_(std::string(reinterpret_cast<const char*>(stream.data()),
@@ -172,26 +175,36 @@ EncodedDataHelper::~EncodedDataHelper() {
   base::STLClearObject(&data_);
 }
 
-bool EncodedDataHelper::IsNALHeader(const std::string& data, size_t pos) {
-  return data[pos] == 0 && data[pos + 1] == 0 && data[pos + 2] == 0 &&
-         data[pos + 3] == 1;
+bool EncodedDataHelper::ReachEndOfStream() const {
+  return next_pos_to_parse_ == data_.size();
 }
 
-scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
-  switch (codec_) {
-    case VideoCodec::kH264:
-    case VideoCodec::kHEVC:
-      return GetNextFragment();
-    case VideoCodec::kVP8:
-    case VideoCodec::kVP9:
-    case VideoCodec::kAV1:
-      return GetNextFrame();
-    default:
-      NOTREACHED_NORETURN();
+EncodedDataHelperH26x::EncodedDataHelperH26x(base::span<const uint8_t> stream,
+                                             VideoCodec codec)
+    : EncodedDataHelper(std::move(stream), codec) {}
+
+// static
+bool EncodedDataHelperH26x::HasConfigInfo(const uint8_t* data,
+                                          size_t size,
+                                          VideoCodec codec) {
+  // Check if this is an H264 SPS NALU w/ a kNALUReducedHeaderSize or
+  // kNALUHeaderSize byte start code.
+  if (codec == media::VideoCodec::kH264) {
+    return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+            data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x1f) == 0x7) ||
+           (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+            data[2] == 0x0 && data[3] == 0x1 &&
+            (data[kNALUHeaderSize] & 0x1f) == 0x7);
   }
+  CHECK_EQ(codec, media::VideoCodec::kHEVC);
+  return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+          data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x7e) == 0x42) ||
+         (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+          data[2] == 0x0 && data[3] == 0x1 &&
+          (data[kNALUHeaderSize] & 0x7e) == 0x42);
 }
 
-scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFragment() {
+scoped_refptr<DecoderBuffer> EncodedDataHelperH26x::GetNextBuffer() {
   if (next_pos_to_parse_ == 0) {
     if (!LookForSPS()) {
       next_pos_to_parse_ = 0;
@@ -208,7 +221,7 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFragment() {
       base::as_byte_span(data_).subspan(start_pos, next_nalu_pos - start_pos));
 }
 
-size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
+size_t EncodedDataHelperH26x::GetBytesForNextNALU(size_t start_pos) {
   size_t pos = start_pos;
   if (pos + kNALUHeaderSize > data_.size()) {
     return pos;
@@ -227,7 +240,12 @@ size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
   return pos;
 }
 
-bool EncodedDataHelper::LookForSPS() {
+bool EncodedDataHelperH26x::IsNALHeader(const std::string& data, size_t pos) {
+  return data[pos] == 0 && data[pos + 1] == 0 && data[pos + 2] == 0 &&
+         data[pos + 3] == 1;
+}
+
+bool EncodedDataHelperH26x::LookForSPS() {
   while (next_pos_to_parse_ + kNALUHeaderSize < data_.size()) {
     if (codec_ == VideoCodec::kH264 &&
         (data_[next_pos_to_parse_ + kNALUHeaderSize] & 0x1f) == 0x7) {
@@ -241,7 +259,11 @@ bool EncodedDataHelper::LookForSPS() {
   return false;
 }
 
-scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
+EncodedDataHelperIVF::EncodedDataHelperIVF(base::span<const uint8_t> stream,
+                                           VideoCodec codec)
+    : EncodedDataHelper(std::move(stream), codec) {}
+
+scoped_refptr<DecoderBuffer> EncodedDataHelperIVF::GetNextBuffer() {
   // Helpful description: http://wiki.multimedia.cx/index.php?title=IVF
   // Only IVF video files are supported. The first 4bytes of an IVF video file's
   // header should be "DKIF".
@@ -322,7 +344,8 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
   return buffer;
 }
 
-std::optional<IvfFrameHeader> EncodedDataHelper::GetNextIvfFrameHeader() const {
+std::optional<IvfFrameHeader> EncodedDataHelperIVF::GetNextIvfFrameHeader()
+    const {
   const size_t pos = next_pos_to_parse_;
   // Read VP8/9 frame size from IVF header.
   if (pos + kIvfFrameHeaderSize > data_.size()) {
@@ -333,7 +356,7 @@ std::optional<IvfFrameHeader> EncodedDataHelper::GetNextIvfFrameHeader() const {
       reinterpret_cast<const uint8_t*>(&data_[pos]), kIvfFrameHeaderSize));
 }
 
-std::optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
+std::optional<IvfFrame> EncodedDataHelperIVF::ReadNextIvfFrame() {
   auto frame_header = GetNextIvfFrameHeader();
   if (!frame_header)
     return std::nullopt;
@@ -352,18 +375,6 @@ std::optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
   next_pos_to_parse_ = pos + frame_header->frame_size;
 
   return IvfFrame{*frame_header, reinterpret_cast<uint8_t*>(&data_[pos])};
-}
-
-// static
-bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
-                                      size_t size,
-                                      VideoCodec codec) {
-  CHECK(codec == media::VideoCodec::kH264 || codec == media::VideoCodec::kHEVC)
-      << "Unsupported codec " << GetCodecName(codec);
-  if (codec == media::VideoCodec::kH264) {
-    return IsH264SPSNALU(data, size);
-  }
-  return IsHevcSPSNALU(data, size);
 }
 
 struct AlignedDataHelper::VideoFrameData {

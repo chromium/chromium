@@ -198,7 +198,7 @@ void DecoderWrapper::InitializeTask(const VideoBitstream* video,
   ASSERT_TRUE(video);
 
   encoded_data_helper_ =
-      std::make_unique<EncodedDataHelper>(video->Data(), video->Codec());
+      EncodedDataHelper::Create(video->Data(), video->Codec());
 
   // (Re-)initialize the decoder.
   VideoDecoderConfig config(

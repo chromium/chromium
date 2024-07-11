@@ -214,7 +214,7 @@ class VideoDecoderTest : public ::testing::Test {
     if (!init_success)
       return false;
     auto encoded_data_helper =
-        std::make_unique<EncodedDataHelper>(video->Data(), video->Codec());
+        EncodedDataHelper::Create(video->Data(), video->Codec());
     DCHECK(encoded_data_helper);
     while (!encoded_data_helper->ReachEndOfStream()) {
       bool decode_success = false;

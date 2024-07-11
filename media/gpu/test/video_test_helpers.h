@@ -103,36 +103,54 @@ class IvfWriter {
 // Helper to extract fragments from encoded video stream.
 class EncodedDataHelper {
  public:
-  EncodedDataHelper(base::span<const uint8_t> stream, VideoCodec codec);
-  ~EncodedDataHelper();
-
-  // Compute and return the next fragment to be sent to the decoder, starting
-  // from the current position in the stream, and advance the current position
-  // to after the returned fragment.
-  scoped_refptr<DecoderBuffer> GetNextBuffer();
+  static std::unique_ptr<EncodedDataHelper> Create(
+      base::span<const uint8_t> stream,
+      VideoCodec codec);
 
   static bool HasConfigInfo(const uint8_t* data, size_t size, VideoCodec codec);
 
+  virtual ~EncodedDataHelper();
+  virtual scoped_refptr<DecoderBuffer> GetNextBuffer() = 0;
+
   void Rewind() { next_pos_to_parse_ = 0; }
-  bool AtHeadOfStream() const { return next_pos_to_parse_ == 0; }
-  bool ReachEndOfStream() const { return next_pos_to_parse_ == data_.size(); }
+  virtual bool ReachEndOfStream() const;
 
- private:
-  // For h.264/HEVC.
-  scoped_refptr<DecoderBuffer> GetNextFragment();
-  // For VP8/9.
-  scoped_refptr<DecoderBuffer> GetNextFrame();
-  std::optional<IvfFrameHeader> GetNextIvfFrameHeader() const;
-  std::optional<IvfFrame> ReadNextIvfFrame();
-
-  // Helpers for GetBytesForNextFragment above.
-  size_t GetBytesForNextNALU(size_t pos);
-  bool IsNALHeader(const std::string& data, size_t pos);
-  bool LookForSPS();
+ protected:
+  EncodedDataHelper(base::span<const uint8_t> stream, VideoCodec codec);
 
   std::string data_;
   const VideoCodec codec_;
   size_t next_pos_to_parse_ = 0;
+};
+
+// This class returns one by one the NALUs in |stream| via GetNextBuffer().
+// |stream| must be in H.264 Annex B or H.265 Annex B formats.
+class EncodedDataHelperH26x : public EncodedDataHelper {
+ public:
+  EncodedDataHelperH26x(base::span<const uint8_t> stream, VideoCodec codec);
+  ~EncodedDataHelperH26x() override = default;
+
+  static bool HasConfigInfo(const uint8_t* data, size_t size, VideoCodec codec);
+
+  scoped_refptr<DecoderBuffer> GetNextBuffer() override;
+
+ private:
+  size_t GetBytesForNextNALU(size_t pos);
+  bool IsNALHeader(const std::string& data, size_t pos);
+  bool LookForSPS();
+};
+
+// This class returns one by one the IVF frames in |stream| via GetNextBuffer().
+class EncodedDataHelperIVF : public EncodedDataHelper {
+ public:
+  EncodedDataHelperIVF(base::span<const uint8_t> stream, VideoCodec codec);
+  ~EncodedDataHelperIVF() override = default;
+
+  scoped_refptr<DecoderBuffer> GetNextBuffer() override;
+
+ private:
+  std::optional<IvfFrameHeader> GetNextIvfFrameHeader() const;
+  std::optional<IvfFrame> ReadNextIvfFrame();
 };
 
 #if defined(ARCH_CPU_ARM_FAMILY)

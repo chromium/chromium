@@ -266,12 +266,12 @@ int main(int argc, char** argv) {
   std::optional<std::vector<uint8_t>> video_stream =
       base::ReadFileToBytes(video_file);
   CHECK(video_stream.has_value());
-  media::test::EncodedDataHelper video_helper(video_stream.value(),
-                                              media::VideoCodec::kVP8);
+  auto video_helper = media::test::EncodedDataHelper::Create(
+      video_stream.value(), media::VideoCodec::kVP8);
 
   // Send first key frame.
   scoped_refptr<media::DecoderBuffer> video_decoder_buffer =
-      video_helper.GetNextBuffer();
+      video_helper->GetNextBuffer();
   video_decoder_buffer->set_timestamp(base::TimeDelta());
   video_decoder_buffer->set_is_key_frame(true);
   sender.SendVideoBuffer(video_decoder_buffer);
