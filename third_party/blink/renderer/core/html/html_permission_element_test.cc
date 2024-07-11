@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -858,11 +859,11 @@ TEST_F(HTMLPemissionElementSimTest, FontSizeCanDisableElement) {
     permission_element->setAttribute(html_names::kStyleAttr,
                                      AtomicString(font_size_string.c_str()));
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-    checker.CheckClickingEnabled(test.enabled);
+    checker.CheckClickingEnabledAfterDelay(kDefaultTimeout, test.enabled);
     permission_element->EnableClicking(
         HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree);
     permission_element->EnableClicking(
-        HTMLPermissionElement::DisableReason::kIntersectionChanged);
+        HTMLPermissionElement::DisableReason::kIntersectionVisibilityChanged);
     permission_element->EnableClicking(
         HTMLPermissionElement::DisableReason::kInvalidStyle);
 
@@ -927,7 +928,7 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest, DisableEnableClicking) {
     HTMLPermissionElement::DisableReason reason;
     String expected_invalid_reason;
   } kTestData[] = {
-      {HTMLPermissionElement::DisableReason::kIntersectionChanged,
+      {HTMLPermissionElement::DisableReason::kIntersectionVisibilityChanged,
        String("intersection_changed")},
       {HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree,
        String("recently_attached")},
@@ -984,6 +985,7 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest, DisableEnableClicking) {
                                           "event dispatched");
     EXPECT_TRUE(permission_element->isValid());
 
+    GetDocument().body()->RemoveChild(permission_element);
     ConsoleMessages().clear();
   }
 }
@@ -1041,7 +1043,7 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest,
       /*expected_count*/ 2u, "event dispatched");
   EXPECT_TRUE(permission_element->isValid());
   permission_element->DisableClickingTemporarily(
-      HTMLPermissionElement::DisableReason::kIntersectionChanged,
+      HTMLPermissionElement::DisableReason::kIntersectionVisibilityChanged,
       kDefaultTimeout);
   base::RunLoop().RunUntilIdle();
   checker.CheckConsoleMessage(
@@ -1062,7 +1064,7 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest,
   checker.CheckConsoleMessageAfterDelay(kDefaultTimeout,
                                         /*expected_count*/ 4u);
   permission_element->DisableClickingTemporarily(
-      HTMLPermissionElement::DisableReason::kIntersectionChanged,
+      HTMLPermissionElement::DisableReason::kIntersectionVisibilityChanged,
       kDefaultTimeout);
   EXPECT_FALSE(permission_element->isValid());
   EXPECT_EQ(permission_element->invalidReason(), "style_invalid");
@@ -1444,6 +1446,42 @@ TEST_F(HTMLPemissionElementLayoutChangeTest,
       To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
   div->SetInlineStyleProperty(CSSPropertyID::kTransform, "translateX(10px)");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  DeferredChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+}
+
+TEST_F(HTMLPemissionElementLayoutChangeTest,
+       InvalidatePEPCLayoutInAnimationFrameCallback) {
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+  <body>
+    <permission
+      style=' height: 3em; width: 40px;' id='camera' type='camera'>
+  </body>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element =
+      CheckAndQueryPermissionElement(AtomicString("permission"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  // Run an animation frame callback which mutates the style of the element and
+  // causes a synchronous style update. This should not result in an
+  // "intersection changed" lifecycle state update, but still lock the element
+  // temporarily.
+  ClassicScript::CreateUnspecifiedScript(
+      "window.requestAnimationFrame(function() {\n"
+      "  var camera = document.getElementById('camera');\n"
+      "  camera.style.width = '10px';\n"
+      "  camera.getBoundingClientRect();\n"
+      "  camera.style.width = '40px';\n"
+      "\n"
+      "});\n")
+      ->RunScript(&Window());
+  Compositor().BeginFrame();
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(permission_element->IsClickingEnabled());
   DeferredChecker checker(permission_element);

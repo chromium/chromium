@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
@@ -101,12 +102,15 @@ class CORE_EXPORT HTMLPermissionElement final
                            InvalidatePEPCAfterMoveContainer);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
                            InvalidatePEPCAfterTransformContainer);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+                           InvalidatePEPCLayoutInAnimationFrameCallback);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementDispatchValidationEventTest,
                            ChangeReasonRestartTimer);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementDispatchValidationEventTest,
                            DisableEnableClicking);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementDispatchValidationEventTest,
                            DisableEnableClickingDifferentReasons);
+
   enum class DisableReason {
     kUnknown,
 
@@ -116,8 +120,13 @@ class CORE_EXPORT HTMLPermissionElement final
 
     // This element is temporarily disabled for a short period
     // (`kDefaultDisableTimeout`) after its intersection status changed from
-    // invisible to visible.
-    kIntersectionChanged,
+    // invisible to visible (observed by IntersectionObserver).
+    kIntersectionVisibilityChanged,
+
+    // This element is temporarily disabled for a short period
+    // (`kDefaultDisableTimeout`) after its intersection rect with the viewport
+    // has been changed.
+    kIntersectionWithViewportChanged,
 
     // This element is disabled because of the element's style.
     kInvalidStyle,
@@ -129,10 +138,11 @@ class CORE_EXPORT HTMLPermissionElement final
     kInvalidType = 0,
     kFailedOrHasNotBeenRegistered = 1,
     kRecentlyAttachedToLayoutTree = 2,
-    kIntersectionChanged = 3,
+    kIntersectionVisibilityChanged = 3,
     kInvalidStyle = 4,
     kUntrustedEvent = 5,
-    kMaxValue = kUntrustedEvent,
+    kIntersectionWithViewportChanged = 6,
+    kMaxValue = kIntersectionWithViewportChanged,
   };
 
   // Customized HeapTaskRunnerTimer class to contain disable reason, firing to
@@ -340,6 +350,9 @@ class CORE_EXPORT HTMLPermissionElement final
 
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+
+  // Computes the intersection rect of the element with the viewport.
+  gfx::Rect ComputeIntersectionRectWithViewport(const Page* page);
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 

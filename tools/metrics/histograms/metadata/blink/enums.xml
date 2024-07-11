@@ -501,9 +501,10 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Invalid type"/>
   <int value="1" label="Failed or has not been registered"/>
   <int value="2" label="Recently attached to layout tree"/>
-  <int value="3" label="Intersection changed"/>
+  <int value="3" label="Intersection visibility changed"/>
   <int value="4" label="Invalid style"/>
   <int value="5" label="Untrusted event"/>
+  <int value="6" label="Intersection with viewport changed"/>
 </enum>
 
 <enum name="RaceTaskPriority">

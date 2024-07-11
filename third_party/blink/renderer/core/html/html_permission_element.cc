@@ -367,6 +367,10 @@ void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
   permission_observer_receivers_.Clear();
   permission_status_map_.clear();
   permissions_granted_ = false;
+  if (disable_reason_expire_timer_.IsActive()) {
+    disable_reason_expire_timer_.Stop();
+  }
+  intersection_rect_ = gfx::Rect();
   if (auto* view = GetDocument().View()) {
     view->UnregisterFromLifecycleNotifications(this);
   }
@@ -421,8 +425,10 @@ String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return "being recently attached to layout tree";
-    case DisableReason::kIntersectionChanged:
-      return "intersection change";
+    case DisableReason::kIntersectionVisibilityChanged:
+      return "intersection visibility changed";
+    case DisableReason::kIntersectionWithViewportChanged:
+      return "intersection with viewport changed";
     case DisableReason::kInvalidStyle:
       return "invalid style";
     case DisableReason::kUnknown:
@@ -437,8 +443,10 @@ HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return UserInteractionDeniedReason::kRecentlyAttachedToLayoutTree;
-    case DisableReason::kIntersectionChanged:
-      return UserInteractionDeniedReason::kIntersectionChanged;
+    case DisableReason::kIntersectionVisibilityChanged:
+      return UserInteractionDeniedReason::kIntersectionVisibilityChanged;
+    case DisableReason::kIntersectionWithViewportChanged:
+      return UserInteractionDeniedReason::kIntersectionWithViewportChanged;
     case DisableReason::kInvalidStyle:
       return UserInteractionDeniedReason::kInvalidStyle;
     case DisableReason::kUnknown:
@@ -452,7 +460,9 @@ AtomicString HTMLPermissionElement::DisableReasonToInvalidReasonString(
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return AtomicString("recently_attached");
-    case DisableReason::kIntersectionChanged:
+    case DisableReason::kIntersectionVisibilityChanged:
+      return AtomicString("intersection_changed");
+    case DisableReason::kIntersectionWithViewportChanged:
       return AtomicString("intersection_changed");
     case DisableReason::kInvalidStyle:
       return AtomicString("style_invalid");
@@ -659,11 +669,18 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
-  if (IsStyleValid()) {
-    EnableClickingAfterDelay(DisableReason::kInvalidStyle,
-                             kDefaultDisableTimeout);
-  } else {
+  if (!IsStyleValid()) {
     DisableClickingIndefinitely(DisableReason::kInvalidStyle);
+    return;
+  }
+  EnableClickingAfterDelay(DisableReason::kInvalidStyle,
+                           kDefaultDisableTimeout);
+  gfx::Rect intersection_rect =
+      ComputeIntersectionRectWithViewport(GetDocument().GetPage());
+  if (intersection_rect_ != intersection_rect) {
+    intersection_rect_ = intersection_rect;
+    DisableClickingTemporarily(DisableReason::kIntersectionWithViewportChanged,
+                               kDefaultDisableTimeout);
   }
 }
 
@@ -1026,13 +1043,13 @@ void HTMLPermissionElement::OnIntersectionChanged(
   CHECK_EQ(this, latest_observation->target());
   if (!latest_observation->isVisible() && is_fully_visible_) {
     is_fully_visible_ = false;
-    DisableClickingIndefinitely(DisableReason::kIntersectionChanged);
+    DisableClickingIndefinitely(DisableReason::kIntersectionVisibilityChanged);
     return;
   }
 
   if (latest_observation->isVisible() && !is_fully_visible_) {
     is_fully_visible_ = true;
-    EnableClickingAfterDelay(DisableReason::kIntersectionChanged,
+    EnableClickingAfterDelay(DisableReason::kIntersectionVisibilityChanged,
                              kDefaultDisableTimeout);
   }
 }
@@ -1185,25 +1202,29 @@ void HTMLPermissionElement::DidFinishLifecycleUpdate(
   // "Unstable state" in this context occurs when the intersection rectangle
   // between the viewport and the element's layout box changes, indicating that
   // the element has been moved or resized.
+  gfx::Rect intersection_rect = ComputeIntersectionRectWithViewport(
+      local_frame_view.GetFrame().GetPage());
+  if (intersection_rect_ != intersection_rect) {
+    intersection_rect_ = intersection_rect;
+    DisableClickingTemporarily(DisableReason::kIntersectionWithViewportChanged,
+                               kDefaultDisableTimeout);
+  }
+}
+
+gfx::Rect HTMLPermissionElement::ComputeIntersectionRectWithViewport(
+    const Page* page) {
   LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object) {
-    return;
+    return gfx::Rect();
   }
 
-  gfx::Rect viewport_in_root_frame = ToEnclosingRect(
-      local_frame_view.GetFrame().GetPage()->GetVisualViewport().VisibleRect());
+  gfx::Rect viewport_in_root_frame =
+      ToEnclosingRect(page->GetVisualViewport().VisibleRect());
   PhysicalRect rect = To<LayoutBox>(layout_object)->PhysicalBorderBoxRect();
   // `MapToVisualRectInAncestorSpace` with a null `ancestor` argument will
   // mutate `rect` to visible rect in the root frame's coordinate space.
   layout_object->MapToVisualRectInAncestorSpace(/*ancestor*/ nullptr, rect);
-  gfx::Rect intersection_rect =
-      IntersectRects(viewport_in_root_frame, ToEnclosingRect(rect));
-
-  if (intersection_rect_ != intersection_rect) {
-    intersection_rect_ = intersection_rect;
-    DisableClickingTemporarily(DisableReason::kRecentlyAttachedToLayoutTree,
-                               kDefaultDisableTimeout);
-  }
+  return IntersectRects(viewport_in_root_frame, ToEnclosingRect(rect));
 }
 
 }  // namespace blink
