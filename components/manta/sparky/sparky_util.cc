@@ -4,6 +4,9 @@
 
 #include "components/manta/sparky/sparky_util.h"
 
+#include <memory>
+#include <optional>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,12 +18,20 @@ namespace manta {
 namespace {
 using SettingType = proto::SettingType;
 
-static constexpr auto setting_map =
+static constexpr auto pref_to_setting_map =
     base::MakeFixedFlatMap<PrefType, SettingType>({
         {PrefType::kBoolean, SettingType::SETTING_TYPE_BOOL},
         {PrefType::kString, SettingType::SETTING_TYPE_STRING},
         {PrefType::kDouble, SettingType::SETTING_TYPE_DOUBLE},
         {PrefType::kInt, SettingType::SETTING_TYPE_INTEGER},
+    });
+
+static constexpr auto setting_to_pref_map =
+    base::MakeFixedFlatMap<SettingType, PrefType>({
+        {SettingType::SETTING_TYPE_BOOL, PrefType::kBoolean},
+        {SettingType::SETTING_TYPE_STRING, PrefType::kString},
+        {SettingType::SETTING_TYPE_DOUBLE, PrefType::kDouble},
+        {SettingType::SETTING_TYPE_INTEGER, PrefType::kInt},
     });
 
 static constexpr auto diagnostic_map =
@@ -41,9 +52,9 @@ std::optional<SettingType> VerifyValueAndConvertPrefTypeToSettingType(
   if (!value) {
     return std::nullopt;
   }
-  const auto iter = setting_map.find(pref_type);
+  const auto iter = pref_to_setting_map.find(pref_type);
 
-  auto type = iter != setting_map.end()
+  auto type = iter != pref_to_setting_map.end()
                   ? std::optional<SettingType>(iter->second)
                   : std::nullopt;
   if (!type.has_value()) {
@@ -58,31 +69,90 @@ std::optional<SettingType> VerifyValueAndConvertPrefTypeToSettingType(
 
   return std::nullopt;
 }
+
+// Converts the setting proto into the pref type. Also verifies that the value
+// is of the type specified.
+std::optional<PrefType> VerifyValueAndConvertSettingTypeToPrefType(
+    SettingType setting_type,
+    const proto::SettingsValue& value) {
+  const auto iter = setting_to_pref_map.find(setting_type);
+
+  auto type = iter != setting_to_pref_map.end()
+                  ? std::optional<PrefType>(iter->second)
+                  : std::nullopt;
+  if (!type.has_value()) {
+    return std::nullopt;
+  }
+  if ((type.value() == PrefType::kBoolean && value.has_bool_val()) ||
+      (type.value() == PrefType::kDouble && value.has_double_val()) ||
+      (type.value() == PrefType::kInt && value.has_int_val()) ||
+      (type.value() == PrefType::kString && value.has_text_val())) {
+    return type;
+  }
+
+  return std::nullopt;
+}
+
+std::optional<base::Value> GetSettingsValue(proto::SettingsValue value,
+                                            const PrefType& pref_type) {
+  if (pref_type == PrefType::kBoolean) {
+    return std::make_optional(base::Value(value.bool_val()));
+  } else if (pref_type == PrefType::kInt) {
+    return std::make_optional(base::Value(value.int_val()));
+  } else if (pref_type == PrefType::kDouble) {
+    return std::make_optional(base::Value(value.double_val()));
+  } else if (pref_type == PrefType::kString) {
+    return std::make_optional(base::Value(value.text_val()));
+  } else {
+    return std::nullopt;
+  }
+}
+
 }  // namespace
+
+Action::Action(std::unique_ptr<SettingsData> updated_setting, bool all_done)
+    : updated_setting(std::move(updated_setting)),
+      type(ActionType::kSetting),
+      all_done(all_done) {}
+
+Action::Action(std::string launched_app, bool all_done)
+    : launched_app(launched_app),
+      type(ActionType::kLaunchApp),
+      all_done(all_done) {}
+
+Action::~Action() = default;
+
+Action::Action(Action&& other) = default;
+Action& Action::operator=(Action&& other) = default;
+
+void AddSettingProto(SettingsData& setting,
+                     ::manta::proto::Setting* setting_proto) {
+  auto setting_type = VerifyValueAndConvertPrefTypeToSettingType(
+      setting.pref_type,
+      setting.value ? std::addressof(*setting.value) : nullptr);
+  if (setting_type == std::nullopt) {
+    DVLOG(1) << "Invalid setting type for" << setting.pref_name;
+    return;
+  }
+  setting_proto->set_type(setting_type.value());
+  setting_proto->set_settings_id(setting.pref_name);
+  auto* settings_value = setting_proto->mutable_value();
+  if (setting.pref_type == PrefType::kBoolean) {
+    settings_value->set_bool_val(setting.value->GetBool());
+  } else if (setting.pref_type == PrefType::kDouble) {
+    settings_value->set_double_val(setting.value->GetDouble());
+  } else if (setting.pref_type == PrefType::kInt) {
+    settings_value->set_int_val(setting.value->GetInt());
+  } else if (setting.pref_type == PrefType::kString) {
+    settings_value->set_text_val(setting.value->GetString());
+  }
+}
 
 void AddSettingsProto(const SparkyDelegate::SettingsDataList& settings_list,
                       ::manta::proto::SettingsData* settings_data) {
   for (auto const& [pref_name, setting] : settings_list) {
-    auto setting_type = VerifyValueAndConvertPrefTypeToSettingType(
-        setting->pref_type,
-        setting->value ? std::addressof(*setting->value) : nullptr);
-    if (setting_type == std::nullopt) {
-      DVLOG(1) << "Invalid setting type for" << pref_name;
-      continue;
-    }
     auto* setting_data = settings_data->add_setting();
-    setting_data->set_type(setting_type.value());
-    setting_data->set_settings_id(pref_name);
-    auto* settings_value = setting_data->mutable_value();
-    if (setting->pref_type == PrefType::kBoolean) {
-      settings_value->set_bool_val(setting->value->GetBool());
-    } else if (setting->pref_type == PrefType::kDouble) {
-      settings_value->set_double_val(setting->value->GetDouble());
-    } else if (setting->pref_type == PrefType::kInt) {
-      settings_value->set_int_val(setting->value->GetInt());
-    } else if (setting->pref_type == PrefType::kString) {
-      settings_value->set_text_val(setting->value->GetString());
-    }
+    AddSettingProto(*setting, setting_data);
   }
 }
 
@@ -151,6 +221,18 @@ void AddAppsData(base::span<const AppsData> apps_data,
     app_proto->mutable_searchable_term()->Add(app.searchable_text.begin(),
                                               app.searchable_text.end());
   }
+}
+
+std::unique_ptr<SettingsData> ObtainSettingFromProto(
+    proto::Setting setting_proto) {
+  auto pref_type = VerifyValueAndConvertSettingTypeToPrefType(
+      setting_proto.type(), setting_proto.value());
+  if (pref_type == std::nullopt) {
+    return nullptr;
+  }
+  return std::make_unique<SettingsData>(
+      setting_proto.settings_id(), *pref_type,
+      GetSettingsValue(setting_proto.value(), *pref_type));
 }
 
 }  // namespace manta

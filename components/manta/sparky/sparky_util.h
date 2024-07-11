@@ -16,6 +16,31 @@
 
 namespace manta {
 
+enum class ActionType {
+  kSetting = 0,
+  kLaunchApp = 1,
+  kMaxValue = kLaunchApp,
+};
+
+struct COMPONENT_EXPORT(MANTA) Action {
+  explicit Action(std::unique_ptr<SettingsData> updated_setting, bool all_done);
+  explicit Action(std::string launched_app, bool all_done);
+
+  ~Action();
+
+  Action(Action&& other);
+  Action& operator=(Action&& other);
+
+  std::string launched_app;
+  std::unique_ptr<SettingsData> updated_setting;
+  ActionType type;
+  bool all_done;
+};
+
+void COMPONENT_EXPORT(MANTA)
+    AddSettingProto(const SettingsData& setting,
+                    ::manta::proto::Setting* setting_proto);
+
 void COMPONENT_EXPORT(MANTA)
     AddSettingsProto(const SparkyDelegate::SettingsDataList& settings_list,
                      ::manta::proto::SettingsData* settings_data);
@@ -30,6 +55,9 @@ void COMPONENT_EXPORT(MANTA)
 
 void COMPONENT_EXPORT(MANTA) AddAppsData(base::span<const AppsData> apps_data,
                                          proto::AppsData* apps_proto);
+
+std::unique_ptr<SettingsData> COMPONENT_EXPORT(MANTA)
+    ObtainSettingFromProto(proto::Setting setting_proto);
 
 }  // namespace manta
 

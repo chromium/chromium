@@ -270,60 +270,30 @@ void SparkyProvider::OnDiagnosticsReceived(
 void SparkyProvider::OnActionResponse(proto::FinalResponse final_response,
                                       SparkyShowAnswerCallback done_callback,
                                       manta::MantaStatus status) {
-  if (!final_response.answer().empty()) {
-    auto answer = final_response.answer();
-    if (final_response.has_action()) {
-      auto action = final_response.action();
-      if (action.has_settings()) {
-        const bool setting_was_updated = UpdateSettings(action.settings());
-        if (!setting_was_updated) {
-          std::move(done_callback)
-              .Run("Unable to update the setting for that value", status);
-        }
-      }
-    }
-    std::move(done_callback).Run(answer, status);
-  } else {
+  if (final_response.answer().empty()) {
     std::move(done_callback).Run("", status);
+    return;
   }
-}
-
-bool SparkyProvider::UpdateSettings(proto::SettingsData settings) {
-  int settings_length = settings.setting_size();
-  // TODO (b:338483338) Add in error handling for the case where one setting is
-  // set correctly, and a different one is not set correctly.
-  bool has_set = false;
-  for (int index = 0; index < settings_length; index++) {
-    auto setting = settings.setting(index);
-    std::unique_ptr<SettingsData> setting_data = nullptr;
-    if (setting.type() == proto::SettingType::SETTING_TYPE_BOOL &&
-        setting.value().has_bool_val()) {
-      setting_data = std::make_unique<SettingsData>(
-          setting.settings_id(), PrefType::kBoolean,
-          std::make_optional<base::Value>(setting.value().bool_val()));
-    } else if (setting.type() == proto::SettingType::SETTING_TYPE_DOUBLE &&
-               setting.value().has_double_val()) {
-      setting_data = std::make_unique<SettingsData>(
-          setting.settings_id(), PrefType::kDouble,
-          std::make_optional<base::Value>(setting.value().double_val()));
-    } else if (setting.type() == proto::SettingType::SETTING_TYPE_INTEGER &&
-               setting.value().has_int_val()) {
-      setting_data = std::make_unique<SettingsData>(
-          setting.settings_id(), PrefType::kInt,
-          std::make_optional<base::Value>(setting.value().int_val()));
-    } else if (setting.type() == proto::SettingType::SETTING_TYPE_STRING &&
-               setting.value().has_text_val()) {
-      setting_data = std::make_unique<SettingsData>(
-          setting.settings_id(), PrefType::kString,
-          std::make_optional<base::Value>(setting.value().text_val()));
-    }
-
-    if (setting_data != nullptr) {
-      has_set = true;
+  auto answer = final_response.answer();
+  if (final_response.has_action()) {
+    auto action = final_response.action();
+    if (action.has_update_setting()) {
+      std::unique_ptr<SettingsData> setting_data =
+          ObtainSettingFromProto(action.update_setting());
+      if (!setting_data) {
+        // Return an error if the setting cannot be converted correctly from
+        // the proto.
+        DVLOG(1) << "Invalid setting action requested.";
+        std::move(done_callback).Run("", status);
+        return;
+      }
       sparky_delegate_->SetSettings(std::move(setting_data));
     }
+    if (action.has_launch_app_id()) {
+      sparky_delegate_->LaunchApp(action.launch_app_id());
+    }
   }
-  return has_set;
+  std::move(done_callback).Run(answer, status);
 }
 
 }  // namespace manta

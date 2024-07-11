@@ -95,7 +95,7 @@ message AppsData {
 }
 
 message Action {
-  optional SettingsData settings = 1;
+  optional Setting update_setting = 1;
   optional string launch_app_id = 2;
 }
 

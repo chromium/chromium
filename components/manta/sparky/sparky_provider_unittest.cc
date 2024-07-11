@@ -247,8 +247,7 @@ TEST_F(SparkyProviderTest, SettingAction) {
   auto* final_response = sparky_response.mutable_final_response();
   final_response->set_answer("text answer");
   auto* action = final_response->mutable_action();
-  auto* setting_actions = action->mutable_settings();
-  auto* setting_data = setting_actions->add_setting();
+  auto* setting_data = action->mutable_update_setting();
   setting_data->set_type(proto::SETTING_TYPE_BOOL);
   setting_data->set_settings_id("power.adaptive_charging_enabled");
   auto* settings_value = setting_data->mutable_value();
@@ -300,17 +299,13 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
   auto* final_response = sparky_response.mutable_final_response();
   final_response->set_answer("text answer");
   auto* action = final_response->mutable_action();
-  auto* setting_actions = action->mutable_settings();
-  auto* bool_setting = setting_actions->add_setting();
+  auto* bool_setting = action->mutable_update_setting();
   bool_setting->set_type(proto::SETTING_TYPE_BOOL);
   bool_setting->set_settings_id("ash.night_light.enabled");
   auto* bool_value = bool_setting->mutable_value();
   bool_value->set_bool_val(true);
-  auto* double_setting = setting_actions->add_setting();
-  double_setting->set_type(proto::SETTING_TYPE_DOUBLE);
-  double_setting->set_settings_id("ash.night_light.color_temperature");
-  auto* double_value = double_setting->mutable_value();
-  double_value->set_double_val(0.5);
+  // TODO (b:351099209) Add in multiple actions into a response back so that
+  // multiple settings can be returned.
 
   std::string response_data;
   response.SerializeToString(&response_data);
@@ -324,9 +319,6 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
   ASSERT_EQ(
       false,
       sparky_provider->CheckSettingValue("ash.night_light.enabled")->GetBool());
-  ASSERT_EQ(0.1, sparky_provider
-                     ->CheckSettingValue("ash.night_light.color_temperature")
-                     ->GetDouble());
 
   sparky_provider->QuestionAndAnswer(
       "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
@@ -343,9 +335,51 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
   ASSERT_EQ(
       true,
       sparky_provider->CheckSettingValue("ash.night_light.enabled")->GetBool());
-  ASSERT_EQ(0.5, sparky_provider
-                     ->CheckSettingValue("ash.night_light.color_temperature")
-                     ->GetDouble());
+
+  // Metric is logged when response is successfully parsed.
+  histogram_tester.ExpectTotalCount("Ash.MantaService.SparkyProvider.TimeCost",
+                                    1);
+}
+
+// Test that the returned callback is empty if the settings are not defined
+// correctly.
+TEST_F(SparkyProviderTest, SettingActionInvalidProto) {
+  base::HistogramTester histogram_tester;
+  manta::proto::Response response;
+  manta::proto::OutputData& output_data = *response.add_output_data();
+  manta::proto::SparkyResponse& sparky_response =
+      *output_data.mutable_sparky_response();
+
+  auto* final_response = sparky_response.mutable_final_response();
+  final_response->set_answer("text answer");
+  auto* action = final_response->mutable_action();
+  auto* setting_data = action->mutable_update_setting();
+  setting_data->set_type(proto::SETTING_TYPE_BOOL);
+  setting_data->set_settings_id("power.adaptive_charging_enabled");
+  auto* settings_value = setting_data->mutable_value();
+  // Int value set for setting of type bool.
+  settings_value->set_int_val(3);
+
+  std::string response_data;
+  response.SerializeToString(&response_data);
+
+  SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
+                          net::OK);
+  std::unique_ptr<FakeSparkyProvider> sparky_provider = CreateSparkyProvider();
+
+  auto quit_closure = task_environment_.QuitClosure();
+
+  sparky_provider->QuestionAndAnswer(
+      "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
+      "Turn on adaptive charging", proto::Task::TASK_SETTINGS, nullptr,
+      base::BindLambdaForTesting(
+          [&quit_closure](const std::string& answer_string,
+                          MantaStatus manta_status) {
+            ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
+            ASSERT_STREQ("", answer_string.c_str());
+            quit_closure.Run();
+          }));
+  task_environment_.RunUntilQuit();
 
   // Metric is logged when response is successfully parsed.
   histogram_tester.ExpectTotalCount("Ash.MantaService.SparkyProvider.TimeCost",

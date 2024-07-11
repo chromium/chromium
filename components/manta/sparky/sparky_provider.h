@@ -105,10 +105,6 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
       std::unique_ptr<proto::SparkyResponse> sparky_response,
       manta::MantaStatus status);
 
-  // If the setting was updated correctly, then the return will be true. If an
-  // error occurred, then the return type will be false.
-  bool UpdateSettings(proto::SettingsData);
-
   // If the response back is the final response to show to the user.
   void OnActionResponse(proto::FinalResponse,
                         SparkyShowAnswerCallback done_callback,

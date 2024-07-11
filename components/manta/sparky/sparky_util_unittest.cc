@@ -27,29 +27,37 @@ class SparkyUtilTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 
+  bool IsSameSetting(const proto::Setting& proto_setting,
+                     SettingsData* settings_data) {
+    if (proto_setting.settings_id() == settings_data->pref_name &&
+        proto_setting.has_value()) {
+      if (proto_setting.type() == proto::SETTING_TYPE_BOOL) {
+        return (proto_setting.value().has_bool_val() &&
+                proto_setting.value().bool_val() ==
+                    settings_data->value->GetBool());
+      } else if (proto_setting.type() == proto::SETTING_TYPE_STRING) {
+        return (proto_setting.value().has_text_val() &&
+                (proto_setting.value().text_val() ==
+                 settings_data->value->GetString()));
+      } else if (proto_setting.type() == proto::SETTING_TYPE_INTEGER) {
+        return (proto_setting.value().has_int_val() &&
+                (proto_setting.value().int_val() ==
+                 settings_data->value->GetInt()));
+      } else if (proto_setting.type() == proto::SETTING_TYPE_DOUBLE) {
+        EXPECT_DOUBLE_EQ(proto_setting.value().double_val(),
+                         settings_data->value->GetDouble());
+        return true;
+      }
+    }
+    return false;  // Settings do not match.
+  }
+
   bool ContainsSetting(
       const google::protobuf::RepeatedPtrField<proto::Setting>& repeatedField,
       SettingsData* settings_data) {
-    for (const auto& proto_setting : repeatedField) {
-      if (proto_setting.settings_id() == settings_data->pref_name &&
-          proto_setting.has_value()) {
-        if (proto_setting.type() == proto::SETTING_TYPE_BOOL) {
-          return (proto_setting.value().has_bool_val() &&
-                  proto_setting.value().bool_val() ==
-                      settings_data->value->GetBool());
-        } else if (proto_setting.type() == proto::SETTING_TYPE_STRING) {
-          return (proto_setting.value().has_text_val() &&
-                  (proto_setting.value().text_val() ==
-                   settings_data->value->GetString()));
-        } else if (proto_setting.type() == proto::SETTING_TYPE_INTEGER) {
-          return (proto_setting.value().has_int_val() &&
-                  (proto_setting.value().int_val() ==
-                   settings_data->value->GetInt()));
-        } else if (proto_setting.type() == proto::SETTING_TYPE_DOUBLE) {
-          EXPECT_DOUBLE_EQ(proto_setting.value().double_val(),
-                           settings_data->value->GetDouble());
-          return true;
-        }
+    for (const proto::Setting& proto_setting : repeatedField) {
+      if (IsSameSetting(proto_setting, settings_data)) {
+        return true;
       }
     }
     return false;  // Did not find the setting.
@@ -142,6 +150,44 @@ TEST_F(SparkyUtilTest, AddAppsData) {
   ASSERT_EQ(apps_proto->app_size(), 2);
   ASSERT_TRUE(ContainsApp(apps, "name2", "id2"));
   ASSERT_TRUE(ContainsApp(apps, "name1", "id1"));
+}
+
+TEST_F(SparkyUtilTest, ObtainSettingFromProto) {
+  proto::Setting bool_setting_proto;
+  bool_setting_proto.set_type(proto::SETTING_TYPE_BOOL);
+  bool_setting_proto.set_settings_id("power.adaptive_charging_enabled");
+  auto* bool_settings_value = bool_setting_proto.mutable_value();
+  bool_settings_value->set_bool_val(true);
+  std::unique_ptr<SettingsData> bool_settings_data =
+      ObtainSettingFromProto(bool_setting_proto);
+  ASSERT_TRUE(IsSameSetting(bool_setting_proto, bool_settings_data.get()));
+
+  proto::Setting int_setting_proto;
+  int_setting_proto.set_type(proto::SETTING_TYPE_INTEGER);
+  int_setting_proto.set_settings_id("ash.int.setting");
+  auto* int_settings_value = int_setting_proto.mutable_value();
+  int_settings_value->set_int_val(2);
+  std::unique_ptr<SettingsData> int_settings_data =
+      ObtainSettingFromProto(int_setting_proto);
+  ASSERT_TRUE(IsSameSetting(int_setting_proto, int_settings_data.get()));
+
+  proto::Setting double_setting_proto;
+  double_setting_proto.set_type(proto::SETTING_TYPE_DOUBLE);
+  double_setting_proto.set_settings_id("ash.night_light.color_temperature");
+  auto* double_settings_value = double_setting_proto.mutable_value();
+  double_settings_value->set_double_val(0.5);
+  std::unique_ptr<SettingsData> double_settings_data =
+      ObtainSettingFromProto(double_setting_proto);
+  ASSERT_TRUE(IsSameSetting(double_setting_proto, double_settings_data.get()));
+
+  proto::Setting string_setting_proto;
+  string_setting_proto.set_type(proto::SETTING_TYPE_STRING);
+  string_setting_proto.set_settings_id("ash.string.setting");
+  auto* string_settings_value = string_setting_proto.mutable_value();
+  string_settings_value->set_text_val("my string");
+  std::unique_ptr<SettingsData> string_settings_data =
+      ObtainSettingFromProto(string_setting_proto);
+  ASSERT_TRUE(IsSameSetting(string_setting_proto, string_settings_data.get()));
 }
 
 }  // namespace manta
