@@ -508,12 +508,14 @@
       stringWithFormat:
           @"<%@: %p, defaultAccountCoordinator: %p, alertCoordinator: %p, "
           @"accountChooserCoordinator %p, addAccountCoordinator %p, presented: "
-          @"%@>",
+          @"%@, base viewcontroller: %@ %@>",
           self.class.description, self, self.defaultAccountCoordinator,
           self.alertCoordinator, self.accountChooserCoordinator,
           self.addAccountCoordinator,
           ViewControllerPresentationStatusDescription(
-              self.navigationController)];
+              self.navigationController),
+          NSStringFromClass(self.baseViewController.class),
+          ViewControllerPresentationStatusDescription(self.baseViewController)];
 }
 
 @end

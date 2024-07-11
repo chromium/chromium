@@ -313,11 +313,13 @@ using signin_metrics::PromoAction;
       stringWithFormat:
           @"<%@: %p, signinIntent: %d, accessPoint: %d, "
           @"postSigninManagerCoordinator: %p, addAccountSigninManager: "
-          @"%p, historySyncPopupCoordinator: %p, alertCoordinator: %p>",
+          @"%p, historySyncPopupCoordinator: %p, alertCoordinator: %p, base "
+          @"view controller: %@>",
           self.class.description, self, static_cast<int>(self.signinIntent),
           static_cast<int>(self.accessPoint), self.postSigninManagerCoordinator,
           self.addAccountSigninManager, self.historySyncPopupCoordinator,
-          self.alertCoordinator];
+          self.alertCoordinator,
+          NSStringFromClass(self.baseViewController.class)];
 }
 
 @end
