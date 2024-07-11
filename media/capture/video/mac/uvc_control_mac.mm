@@ -678,7 +678,7 @@ bool UvcControl::IsControlAvailable(int control_selector) const {
     return false;
   }
   UInt8 byteIndex = bitIndex / 8;
-  if (byteIndex > controls_.size()) {
+  if (byteIndex >= controls_.size()) {
     return false;
   }
   return ((controls_[byteIndex] & (1 << bitIndex % 8)) != 0);
