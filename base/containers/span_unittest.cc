@@ -2221,6 +2221,147 @@ TEST(SpanTest, CopyFrom) {
 
   dynamic_span.first(1u).copy_from(span(source).last(1u));
   EXPECT_THAT(vec, ElementsAre(9, 9, 6));
+
+  struct NonTrivial {
+    NonTrivial(int o) : i(o) {}
+    NonTrivial(const NonTrivial& o) : i(o) {}
+    NonTrivial& operator=(const NonTrivial& o) {
+      i = o;
+      return *this;
+    }
+    operator int() const { return i; }
+    int i;
+  };
+
+  // Overlapping spans. Fixed size.
+  {
+    int long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span(long_arr_is_long).first<5>();
+    auto right = span(long_arr_is_long).last<5>();
+    left.copy_from(right);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(3, 4, 5, 6, 7, 6, 7));
+  }
+  {
+    int long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span(long_arr_is_long).first<5>();
+    auto right = span(long_arr_is_long).last<5>();
+    right.copy_from(left);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 1, 2, 3, 4, 5));
+  }
+  {
+    int long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span(long_arr_is_long).first<5>();
+    left.copy_from(left);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));
+  }
+  {
+    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span(long_arr_is_long).first<5>();
+    auto right = span(long_arr_is_long).last<5>();
+    left.copy_from(right);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(3, 4, 5, 6, 7, 6, 7));
+  }
+  {
+    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span(long_arr_is_long).first<5>();
+    auto right = span(long_arr_is_long).last<5>();
+    right.copy_from(left);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 1, 2, 3, 4, 5));
+  }
+  {
+    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span(long_arr_is_long).first<5>();
+    left.copy_from(left);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));
+  }
+
+  // Overlapping spans. Dynamic size.
+  {
+    int long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span<int>(long_arr_is_long).first(5u);
+    auto right = span<int>(long_arr_is_long).last(5u);
+    left.copy_from(right);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(3, 4, 5, 6, 7, 6, 7));
+  }
+  {
+    int long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span<int>(long_arr_is_long).first(5u);
+    auto right = span<int>(long_arr_is_long).last(5u);
+    right.copy_from(left);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 1, 2, 3, 4, 5));
+  }
+  {
+    int long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span<int>(long_arr_is_long).first(5u);
+    left.copy_from(left);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));
+  }
+  {
+    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span<NonTrivial>(long_arr_is_long).first(5u);
+    auto right = span<NonTrivial>(long_arr_is_long).last(5u);
+    left.copy_from(right);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(3, 4, 5, 6, 7, 6, 7));
+  }
+  {
+    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span<NonTrivial>(long_arr_is_long).first(5u);
+    auto right = span<NonTrivial>(long_arr_is_long).last(5u);
+    right.copy_from(left);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 1, 2, 3, 4, 5));
+  }
+  {
+    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    auto left = span<NonTrivial>(long_arr_is_long).first(5u);
+    left.copy_from(left);
+    EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));
+  }
+}
+
+TEST(SpanTest, CopyFromNonoverlapping) {
+  int arr[] = {1, 2, 3};
+  span<int, 0> empty_static_span;
+  span<int, 3> static_span = base::make_span(arr);
+
+  std::vector<int> vec = {4, 5, 6};
+  span<int> empty_dynamic_span;
+  span<int> dynamic_span = base::make_span(vec);
+
+  // Handle empty cases gracefully.
+  // Dynamic size to static size requires an explicit conversion.
+  UNSAFE_BUFFERS({
+    empty_static_span.copy_from_nonoverlapping(
+        make_span<0u>(empty_dynamic_span));
+    empty_dynamic_span.copy_from_nonoverlapping(empty_static_span);
+    static_span.first(empty_static_span.size())
+        .copy_from_nonoverlapping(empty_static_span);
+    dynamic_span.first(empty_dynamic_span.size())
+        .copy_from_nonoverlapping(empty_dynamic_span);
+    EXPECT_THAT(arr, ElementsAre(1, 2, 3));
+    EXPECT_THAT(vec, ElementsAre(4, 5, 6));
+
+    // Test too small destinations.
+    EXPECT_DEATH_IF_SUPPORTED(
+        empty_dynamic_span.copy_from_nonoverlapping(static_span), "");
+    EXPECT_DEATH_IF_SUPPORTED(
+        empty_dynamic_span.copy_from_nonoverlapping(dynamic_span), "");
+    EXPECT_DEATH_IF_SUPPORTED(
+        dynamic_span.last(2u).copy_from_nonoverlapping(static_span), "");
+
+    std::vector<int> source = {7, 8, 9};
+
+    static_span.first(2u).copy_from_nonoverlapping(span(source).last(2u));
+    EXPECT_THAT(arr, ElementsAre(8, 9, 3));
+
+    dynamic_span.first(2u).copy_from_nonoverlapping(span(source).last(2u));
+    EXPECT_THAT(vec, ElementsAre(8, 9, 6));
+
+    static_span.first(1u).copy_from_nonoverlapping(span(source).last(1u));
+    EXPECT_THAT(arr, ElementsAre(9, 9, 3));
+
+    dynamic_span.first(1u).copy_from_nonoverlapping(span(source).last(1u));
+    EXPECT_THAT(vec, ElementsAre(9, 9, 6));
+  })
 }
 
 TEST(SpanTest, CopyFromConversion) {
