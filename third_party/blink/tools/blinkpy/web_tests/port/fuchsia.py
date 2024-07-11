@@ -33,6 +33,7 @@ import socket
 import subprocess
 import sys
 import threading
+import time
 
 from argparse import Namespace
 from blinkpy.common import exit_codes
@@ -110,19 +111,13 @@ class SubprocessOutputLogger(object):
 
 
 class _TargetHost(object):
-    def __init__(self, ports_to_forward, target_id):
-        self._target_id = target_id
-        self._setup_target(ports_to_forward)
 
-    def _setup_target(self, ports_to_forward):
+    def __init__(self, ports, target_id):
+        self._target_id = target_id
         # Tell SSH to forward all server ports from the Fuchsia device to
         # the host.
-
         self._host_port_pair = get_ssh_address(self._target_id)
-        self._port_forward_list(ports_to_forward)
-
-    def _port_forward_list(self, ports):
-        """Reverse forward all ports listed in |ports| to the device."""
+        # Reverse forward all ports listed in |ports| to the device.
         forwarding_ports = []
         for port in ports:
             forwarding_ports.append((port, port))
@@ -259,6 +254,14 @@ class FuchsiaPort(base.Port):
             self._path_from_chromium_base('third_party', 'blink')
         super(FuchsiaPort, self).start_http_server(additional_dirs,
                                                    number_of_drivers)
+        # Wait for the ssh proxy to be ready.
+        for _ in range(5):
+            if self.get_target_host().run_command(
+                ['curl', 'http://127.0.0.1:8000/']).wait() == 0:
+                break
+            time.sleep(1)
+        # But still continue the tests if it's not working.
+
 
     def operating_system(self):
         return self._operating_system
