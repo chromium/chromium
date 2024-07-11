@@ -142,7 +142,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
                    .SetEnabledColorId(informed_restore::kItemTextColorId)
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .SetText(l10n_util::GetPluralStringFUTF16(
-                       IDS_ASH_FOREST_WINDOW_OVERFLOW_COUNT,
+                       IDS_ASH_INFORMED_RESTORE_WINDOW_OVERFLOW_COUNT,
                        num_elements - informed_restore::kOverflowMinThreshold))
                    .Build());
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,

@@ -239,8 +239,9 @@ void InformedRestoreContentsView::OnSettingsButtonPressed() {
   // will not take place until the next time they sign in.
   views::MenuItemView* container = root_menu_item->AppendMenuItem(
       InformedRestoreContextMenuModel::kDescriptionId);
-  auto context_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_ASH_PINE_DIALOG_CONTEXT_MENU_EXTRA_INFO));
+  const std::u16string label = l10n_util::GetStringUTF16(
+      IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_EXTRA_INFO);
+  auto context_label = std::make_unique<views::Label>(label);
   context_label->SetMultiLine(true);
   context_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   context_label->SizeToFit(kContextMenuMaxWidth);
@@ -252,8 +253,7 @@ void InformedRestoreContentsView::OnSettingsButtonPressed() {
 
   // Set the label container's a11y name to be the same as the label text so
   // that it can be read out by screen readers.
-  container->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ASH_PINE_DIALOG_CONTEXT_MENU_EXTRA_INFO));
+  container->SetAccessibleName(label);
 
   menu_runner_ =
       std::make_unique<views::MenuRunner>(std::move(root_menu_item), run_types);
@@ -290,14 +290,16 @@ InformedRestoreContentsView::CreateButtonContainerBuilder() {
                   weak_ptr_factory_.GetWeakPtr()))
               .SetID(informed_restore::kCancelButtonID)
               .SetPillButtonType(PillButton::Type::kDefaultLargeWithoutIcon)
-              .SetTextWithStringId(IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON),
+              .SetTextWithStringId(
+                  IDS_ASH_INFORMED_RESTORE_DIALOG_NO_THANKS_BUTTON),
           views::Builder<PillButton>()
               .SetCallback(base::BindRepeating(
                   &InformedRestoreContentsView::OnRestoreButtonPressed,
                   weak_ptr_factory_.GetWeakPtr()))
               .SetID(informed_restore::kRestoreButtonID)
               .SetPillButtonType(PillButton::Type::kPrimaryLargeWithoutIcon)
-              .SetTextWithStringId(IDS_ASH_PINE_DIALOG_RESTORE_BUTTON));
+              .SetTextWithStringId(
+                  IDS_ASH_INFORMED_RESTORE_DIALOG_RESTORE_BUTTON));
 }
 
 void InformedRestoreContentsView::CreateChildViews() {
@@ -312,12 +314,11 @@ void InformedRestoreContentsView::CreateChildViews() {
   const InformedRestoreContentsData* contents_data =
       Shell::Get()->informed_restore_controller()->contents_data();
   CHECK(contents_data);
-  const int title_message_id = contents_data->last_session_crashed
-                                   ? IDS_ASH_PINE_DIALOG_CRASH_TITLE
-                                   : IDS_ASH_PINE_DIALOG_TITLE;
-  const int description_message_id = contents_data->last_session_crashed
-                                         ? IDS_ASH_PINE_DIALOG_CRASH_DESCRIPTION
-                                         : IDS_ASH_PINE_DIALOG_DESCRIPTION;
+  const int title_message_id = IDS_ASH_INFORMED_RESTORE_DIALOG_TITLE;
+  const int description_message_id =
+      contents_data->last_session_crashed
+          ? IDS_ASH_INFORMED_RESTORE_DIALOG_CRASH_DESCRIPTION
+          : IDS_ASH_INFORMED_RESTORE_DIALOG_DESCRIPTION;
 
   auto* primary_container_view = AddChildView(
       // In landscape mode, this box layout view is the container for the left

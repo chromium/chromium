@@ -17,16 +17,16 @@ namespace ash {
 InformedRestoreContextMenuModel::InformedRestoreContextMenuModel()
     : ui::SimpleMenuModel(this) {
   const int group = 0;
-  AddTitleWithStringId(IDS_ASH_PINE_DIALOG_CONTEXT_MENU_TITLE);
+  AddTitleWithStringId(IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_TITLE);
   AddRadioItemWithStringId(
       static_cast<int>(full_restore::RestoreOption::kAskEveryTime),
-      IDS_ASH_PINE_DIALOG_CONTEXT_MENU_ASK_OPTION, group);
+      IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ASK_OPTION, group);
   AddRadioItemWithStringId(
       static_cast<int>(full_restore::RestoreOption::kAlways),
-      IDS_ASH_PINE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION, group);
+      IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION, group);
   AddRadioItemWithStringId(
       static_cast<int>(full_restore::RestoreOption::kDoNotRestore),
-      IDS_ASH_PINE_DIALOG_CONTEXT_MENU_NEVER_OPTION, group);
+      IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_NEVER_OPTION, group);
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 }
 

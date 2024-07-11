@@ -8279,70 +8279,58 @@ To shut down the device, press and hold the power button on the device again.
         View details in browser
       </message>
 
-      <!-- Forest -->
-      <message name="IDS_ASH_FOREST_WINDOW_OVERFLOW_COUNT" translateable="false" desc="Text summarizing how many windows left to restore. [ICU Syntax]">
+      <!-- Post login glanceables -->
+      <message name="IDS_ASH_INFORMED_RESTORE_WINDOW_OVERFLOW_COUNT" translateable="false" desc="Text summarizing how many windows left to restore. [ICU Syntax]">
         {NUM_OVERFLOW, plural,
          =1 {1 more window}
          other {# more windows}}
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_TITLE" translateable="false" desc="Label of the title for the pine dialog.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_TITLE" translateable="false" desc="Label of the title for the informed restore dialog.">
         Welcome Back
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_CRASH_TITLE" translateable="false" desc="Label of the title for the pine dialog, if the previous session ended with a crash.">
-        Your Chromebook restarted because of a problem
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_DESCRIPTION" desc="Label of the description for the informed restore dialog. Gives a little more information than the title.">
+        Open your previous windows and apps
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_DESCRIPTION" translateable="false" desc="Label of the description for the pine dialog. Gives a little more information than the title.">
-        Continue from where you left off?
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CRASH_DESCRIPTION" desc="Label of the description for the informed restore dialog, if the previous session ended with a crash. Gives a little more information than the title.">
+        Your Chromebook restarted unexpectedly. Open your previous windows and apps.
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_CRASH_DESCRIPTION" translateable="false" desc="Label of the description for the pine dialog, if the previous session ended with a crash. Gives a little more information than the title.">
-        Restore last opened apps and sites?
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_NO_THANKS_BUTTON" desc="Label of the no thanks button for the informed restore dialog, which users can click if they choose not to restore.">
+        No thanks
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON" translateable="false" desc="Label of the no thanks button for the pine dialog, which users can click if they choose not to restore.">
-        No Thanks
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_RESTORE_BUTTON" desc="Label of the restore button for the informed restore dialog.">
+        Open
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_RESTORE_BUTTON" translateable="false" desc="Label of the restore button for the pine dialog.">
-        Restore
-      </message>
-      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_TITLE" translateable="false" desc="Title of the pine dialog context menu.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_TITLE" translateable="false" desc="Title of the informed restore dialog context menu.">
         Continue where you left off
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_ASK_OPTION" translateable="false" desc="Ask every time option for the pine dialog context menu.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ASK_OPTION" translateable="false" desc="Ask every time option for the informed restore dialog context menu.">
         Ask every time
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION" translateable="false" desc="Always restore option for the pine dialog context menu.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION" translateable="false" desc="Always restore option for the informed restore dialog context menu.">
         Always restore
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_NEVER_OPTION" translateable="false" desc="Do not restore option for the pine dialog context menu.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_NEVER_OPTION" translateable="false" desc="Do not restore option for the informed restore dialog context menu.">
         Off
       </message>
-      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_EXTRA_INFO" translateable="false" desc="Text in the pine dialog's context menu. Gives users some information about the full restore setting.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_EXTRA_INFO" translateable="false" desc="Text in the informed restore dialog's context menu. Gives users some information about the full restore setting.">
         Change will be applied next time when you sign in. You can also change settings in Settings > System preferences > On startup.
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_TITLE" translateable="false" desc="Title of the onboarding message if the user had Restore set to Ask every time.">
-        A start page personalized for you
-      </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_DESCRIPTION" translateable="false" desc="Description of the onboarding message if the user had Restore set to Ask every time.">
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_DESCRIPTION" translateable="false" desc="Description of the onboarding message if the user had Restore set to Ask every time.">
         Get started with options to resume your last opened windows and tabs along with personalized suggestions.
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_ACCEPT" translateable="false" desc="Label of the accept button if the user had Restore set to Ask every time.">
-      Continue
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_ACCEPT" desc="Label of the accept button if the user had Restore set to Ask every time.">
+        Got it
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_TITLE" translateable="false" desc="Title of the onboarding message if the user had Restore off.">
-      Try a new start page personalized for you?
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_ACCEPT" desc="Label of the accept button if the user had Restore off.">
+        Turn on
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_DESCRIPTION" translateable="false" desc="Description of the onboarding message if the user had Restore off.">
-      Set your Restore options to "Ask every time" to see and resume your last opened windows along with personalized suggestions.
-      </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_ACCEPT" translateable="false" desc="Label of the accept button if the user had Restore off.">
-      Turn on restore
-      </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_CANCEL" translateable="false" desc="Label of the cancel button if the user had Restore off.">
-      Keep restore off
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_CANCEL" desc="Label of the cancel button if the user had Restore off.">
+        No thanks
       </message>
       <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_TOAST" translateable="false" desc="Label of the toast the user sees, if the user had Restore off and they clicked accept in the onboarding dialog.">
-      Your windows and apps will be restored next time when you sign in
+        Your windows and apps will be restored next time when you sign in
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE" translateable="false" desc="Text of the Pine education nudge.">
+      <message name="IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE" translateable="false" desc="Text of the informed restore education nudge.">
         You can go back to Overview at anytime to get back to suggestions
       </message>
       <message name="IDS_ASH_BIRCH_CALENDAR_ONGOING_SUBTITLE" desc="Subtitle for the suggestion chip for an ongoing calendar event (e.g. a meeting that is happening right now)">

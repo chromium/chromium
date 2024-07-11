@@ -117,14 +117,10 @@ void InformedRestoreController::MaybeShowInformedRestoreOnboarding(
 
   auto dialog =
       views::Builder<SystemDialogDelegateView>()
-          .SetTitleText(l10n_util::GetStringUTF16(
-              restore_on
-                  ? IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_TITLE
-                  : IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_TITLE))
+          .SetTitleText(
+              l10n_util::GetStringUTF16(IDS_ASH_INFORMED_RESTORE_DIALOG_TITLE))
           .SetDescription(l10n_util::GetStringUTF16(
-              restore_on
-                  ? IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_DESCRIPTION
-                  : IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_DESCRIPTION))
+              IDS_ASH_INFORMED_RESTORE_ONBOARDING_DESCRIPTION))
           .SetAcceptButtonText(l10n_util::GetStringUTF16(
               restore_on
                   ? IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_ACCEPT
