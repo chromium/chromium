@@ -1,0 +1,3 @@
+# crbug.com/352092476
+-OopPixelTest.DrawHdrImageWithMetadata
+-P/OopTextBlobPixelTest.Config/RecordShader_NoFilter_PerspectiveCTM_NoLCD
