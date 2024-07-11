@@ -410,12 +410,9 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectAppVersion(app_id, version);
   }
 
-  void InstallApp(
-      const std::string& app_id,
-      const base::Version& version = base::Version("0.1"),
-      base::FunctionRef<void()> post_install_action = [] {}) {
+  void InstallApp(const std::string& app_id,
+                  const base::Version& version = base::Version("0.1")) {
     test_commands_->InstallApp(app_id, version);
-    post_install_action();
   }
 
   void UninstallApp(const std::string& app_id) {
@@ -608,29 +605,28 @@ class IntegrationTest : public ::testing::Test {
 
   void InstallTestApp(const TestApp& app, bool install_v1 = true) {
     const base::Version version = install_v1 ? app.v1 : app.v2;
-    InstallApp(app.appid, version, [&] {
-      base::FilePath exe_path;
-      ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-      const base::CommandLine command = app.GetInstallCommandLine(install_v1);
-      VLOG(2) << "Launch app setup command: " << command.GetCommandLineString();
-      const base::Process process = base::LaunchProcess(
-          IsSystemInstall(GetUpdaterScopeForTesting()) ? MakeElevated(command)
-                                                       : command,
-          {});
-      if (!process.IsValid()) {
-        VLOG(2) << "Failed to launch the app setup command.";
-      }
-      int exit_code = -1;
-      EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
-                                                 &exit_code));
-      EXPECT_EQ(0, exit_code);
+    InstallApp(app.appid, version);
+    base::FilePath exe_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+    const base::CommandLine command = app.GetInstallCommandLine(install_v1);
+    VLOG(2) << "Launch app setup command: " << command.GetCommandLineString();
+    const base::Process process = base::LaunchProcess(
+        IsSystemInstall(GetUpdaterScopeForTesting()) ? MakeElevated(command)
+                                                     : command,
+        {});
+    if (!process.IsValid()) {
+      VLOG(2) << "Failed to launch the app setup command.";
+    }
+    int exit_code = -1;
+    EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                               &exit_code));
+    EXPECT_EQ(0, exit_code);
 #if !BUILDFLAG(IS_WIN)
-      SetExistenceCheckerPath(app.appid,
-                              GetInstallDirectory(GetUpdaterScopeForTesting())
-                                  ->DirName()
-                                  .AppendASCII(app.appid));
+    SetExistenceCheckerPath(app.appid,
+                            GetInstallDirectory(GetUpdaterScopeForTesting())
+                                ->DirName()
+                                .AppendASCII(app.appid));
 #endif
-    });
 
     ExpectAppInstalled(app.appid, version);
   }
@@ -1679,15 +1675,14 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb_UsageStatsEnabled_ExpectPing) {
 
   const std::string kAppId("test");
   // Enable usagestats.
-  InstallApp(kAppId, base::Version("0.1"), [&] {
-    ASSERT_EQ(
-        base::win::RegKey(
-            UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
-            base::StrCat({CLIENT_STATE_KEY, base::UTF8ToWide(kAppId)}).c_str(),
-            Wow6432(KEY_WRITE))
-            .WriteValue(L"usagestats", 1),
-        ERROR_SUCCESS);
-  });
+  InstallApp(kAppId, base::Version("0.1"));
+  ASSERT_EQ(
+      base::win::RegKey(
+          UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+          base::StrCat({CLIENT_STATE_KEY, base::UTF8ToWide(kAppId)}).c_str(),
+          Wow6432(KEY_WRITE))
+          .WriteValue(L"usagestats", 1),
+      ERROR_SUCCESS);
 
   base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
@@ -3277,23 +3272,22 @@ class IntegrationTestMsi : public IntegrationTest {
   }
 
   void InstallMsiWithVersion(const base::Version& version) {
-    InstallApp(kMsiAppId, version, [&] {
-      base::FilePath msi_path;
-      ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &msi_path));
-      msi_path = msi_path.Append(
-          GetInstallerPath(base::StrCat({kMsiAppId, ".", version.GetString()}))
-              .AppendASCII(kMsiCrx)
-              .RemoveExtension());
-      const std::wstring command = BuildMsiCommandLine({}, {}, msi_path);
-      base::Process process = base::LaunchProcess(command, {});
-      if (!process.IsValid()) {
-        LOG(ERROR) << "Invalid process launching command: " << command;
-      }
-      int exit_code = -1;
-      EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
-                                                 &exit_code));
-      EXPECT_EQ(0, exit_code);
-    });
+    InstallApp(kMsiAppId, version);
+    base::FilePath msi_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &msi_path));
+    msi_path = msi_path.Append(
+        GetInstallerPath(base::StrCat({kMsiAppId, ".", version.GetString()}))
+            .AppendASCII(kMsiCrx)
+            .RemoveExtension());
+    const std::wstring command = BuildMsiCommandLine({}, {}, msi_path);
+    base::Process process = base::LaunchProcess(command, {});
+    if (!process.IsValid()) {
+      LOG(ERROR) << "Invalid process launching command: " << command;
+    }
+    int exit_code = -1;
+    EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                               &exit_code));
+    EXPECT_EQ(0, exit_code);
 
     ExpectAppInstalled(kMsiAppId, version);
   }
