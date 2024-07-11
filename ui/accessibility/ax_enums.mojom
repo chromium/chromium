@@ -906,7 +906,7 @@ enum BoolAttribute {
 
   // Android does not provide nodes that are not on screen.
   // We need to distinguish containers that are like this.
-  [MinVersion=2] kHasHiddenOffscreenNodes,
+  [MinVersion=2] kHasHiddenOffscreenNodes = 22,
 };
 
 // Next version: 7
