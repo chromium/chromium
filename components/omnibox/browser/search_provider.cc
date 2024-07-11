@@ -1139,7 +1139,14 @@ void SearchProvider::DuplicateCardAnswer(ACMatches* matches) {
     return;
   }
 
-  matches->emplace_back(*iter).answer_template.reset();
+  bool orig_allowed_to_be_default_match = iter->allowed_to_be_default_match;
+  iter->allowed_to_be_default_match = false;
+
+  auto& copy = matches->emplace_back(*iter);
+  copy.answer_template.reset();
+  copy.actions.clear();
+  copy.allowed_to_be_default_match = orig_allowed_to_be_default_match;
+  copy.suggestion_group_id = omnibox::GROUP_SEARCH;
 }
 
 bool SearchProvider::IsTopMatchSearchWithURLInput() const {

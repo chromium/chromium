@@ -979,14 +979,14 @@ typedef std::vector<ACMatchClassification> ACMatchClassifications;
 typedef std::vector<AutocompleteMatch> ACMatches;
 
 // Can be used as the key for grouping AutocompleteMatches in a map based on a
-// std::pair of fields. This can be generalized to a std::tuple if ever needed.
+// std::tuple of fields.
 // The accompanying hash function makes the key usable in an std::unordered_map.
-template <typename S, typename T>
-using ACMatchKey = std::pair<S, T>;
+template <typename... Args>
+using ACMatchKey = std::tuple<Args...>;
 
-template <typename S, typename T>
+template <typename... Args>
 struct ACMatchKeyHash {
-  size_t operator()(const ACMatchKey<S, T>& key) const;
+  size_t operator()(const ACMatchKey<Args...>& key) const;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_MATCH_H_

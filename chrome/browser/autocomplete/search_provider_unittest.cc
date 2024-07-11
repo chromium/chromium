@@ -4114,7 +4114,9 @@ TEST_F(SearchProviderTest, DuplicateCardAnswer) {
   AutocompleteMatch match1, match2, match3;
   match1.contents = u"match 1";
   match1.type = AutocompleteMatchType::SEARCH_SUGGEST;
+  match1.allowed_to_be_default_match = true;
   match1.answer_template = omnibox::RichAnswerTemplate();
+  match1.destination_url = GURL("http://www.google.com/google.com/search?");
 
   matches.push_back(match1);
   matches.push_back(match2);
@@ -4124,7 +4126,10 @@ TEST_F(SearchProviderTest, DuplicateCardAnswer) {
 
   EXPECT_EQ(4u, matches.size());
   EXPECT_TRUE(matches[0].answer_template);
+  EXPECT_FALSE(matches[0].allowed_to_be_default_match);
   EXPECT_FALSE(matches[3].answer_template);
+  EXPECT_TRUE(matches[3].allowed_to_be_default_match);
+  EXPECT_EQ(matches[3].suggestion_group_id, omnibox::GROUP_SEARCH);
   EXPECT_EQ(matches[0].contents, matches[3].contents);
   EXPECT_EQ(matches[0].type, matches[3].type);
 }

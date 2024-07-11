@@ -183,17 +183,22 @@ inline void hash_combine(std::size_t& seed, const T& value) {
 
 }  // namespace
 
-template <typename S, typename T>
-size_t ACMatchKeyHash<S, T>::operator()(const ACMatchKey<S, T>& key) const {
+template <typename... Args>
+size_t ACMatchKeyHash<Args...>::operator()(
+    const ACMatchKey<Args...>& key) const {
   size_t seed = 0;
-  hash_combine(seed, key.first);
-  hash_combine(seed, key.second);
+  // Compute a hash by applying hash_combine to each element of the "key" tuple.
+  std::apply([&seed](auto&&... args) { ((hash_combine(seed, args)), ...); },
+             key);
   return seed;
 }
 
 // This trick allows implementing ACMatchKeyHash in the implementation file.
-template struct ACMatchKeyHash<std::u16string, std::string>;
-template struct ACMatchKeyHash<std::string, bool>;
+// Every unique specialization of ACMatchKey should have a corresponding
+// declaration here.
+template struct ACMatchKeyHash<std::u16string,
+                               std::string>;  // base_search_provider
+template struct ACMatchKeyHash<std::string, bool, bool>;  // autocomplete_result
 
 // RichAutocompletionParams ---------------------------------------------------
 
@@ -1448,6 +1453,10 @@ int AutocompleteMatch::GetSortingOrder() const {
     return 3;
   }
 #endif  // !BUILDFLAG(IS_IOS)
+  if (answer_template && actions.size() > 0 &&
+      OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) {
+    return 4;
+  }
   if (IsSearchType(type)) {
     return 3;
   }

@@ -544,8 +544,8 @@ void BaseSearchProvider::AddMatchToMap(
   // Try to add `match` to `map`.
   // NOTE: Keep this ToLower() call in sync with url_database.cc.
   MatchKey match_key(
-      std::make_pair(base::i18n::ToLower(result.suggestion()),
-                     match.search_terms_args->additional_query_params));
+      std::make_tuple(base::i18n::ToLower(result.suggestion()),
+                      match.search_terms_args->additional_query_params));
   const std::pair<MatchMap::iterator, bool> i(
       map->insert(std::make_pair(match_key, match)));
   if (i.second) {
@@ -562,12 +562,12 @@ void BaseSearchProvider::AddMatchToMap(
     // Note that the match previously added to the map will continue to get the
     // typical `stripped_destination_url` allowing it to be deduped with the
     // plain-text matches (i.e., with no additional query params) as expected.
-    const auto& added_match_query = match_key.first;
-    const auto& added_match_query_params = match_key.second;
+    const auto& added_match_query = std::get<0>(match_key);
+    const auto& added_match_query_params = std::get<1>(match_key);
     if (!added_match_query_params.empty()) {
       for (const auto& entry : *map) {
-        const auto& existing_match_query = entry.first.first;
-        const auto& existing_match_query_params = entry.first.second;
+        const auto& existing_match_query = std::get<0>(entry.first);
+        const auto& existing_match_query_params = std::get<1>(entry.first);
         if (existing_match_query == added_match_query &&
             !existing_match_query_params.empty() &&
             existing_match_query_params != added_match_query_params) {
