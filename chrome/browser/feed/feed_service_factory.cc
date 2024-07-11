@@ -117,6 +117,8 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
 #endif
   }
   void RegisterExperiments(const Experiments& experiments) override {
+    experiments_ = experiments;
+
     // Note that this does not affect the contents of the X-Client-Data
     // by design. We do not provide the variations IDs from the backend
     // and do not attach them to the X-Client-Data header.
@@ -137,6 +139,10 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "FeedUserSettings", group);
   }
+  const Experiments& GetExperiments() const override { return experiments_; }
+
+ private:
+  Experiments experiments_;
 };
 
 // static

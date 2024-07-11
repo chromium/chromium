@@ -60,8 +60,23 @@ JNI_FeedProcessScopeDependencyProvider_GetExperimentIds(JNIEnv* env) {
       variations::VariationsIdsProvider::GetInstance();
   DCHECK(variations_ids_provider != nullptr);
 
-  return base::android::ToJavaIntArray(
-      env, variations_ids_provider->GetVariationsVectorForWebPropertiesKeys());
+  // Include the experiment IDs from Finch.
+  std::vector<int> experiment_ids =
+      variations_ids_provider->GetVariationsVectorForWebPropertiesKeys();
+
+  // Include the synthetic experiment IDs sent by the server.
+  FeedService* service = FeedServiceFactory::GetForBrowserContext(
+      ProfileManager::GetLastUsedProfile());
+  if (service) {
+    const Experiments& experiments = service->GetExperiments();
+    for (const auto& e : experiments) {
+      for (const auto& g : e.second) {
+        experiment_ids.push_back(g.experiment_id);
+      }
+    }
+  }
+
+  return base::android::ToJavaIntArray(env, experiment_ids);
 }
 
 }  // namespace android

@@ -77,6 +77,8 @@ class FeedService : public KeyedService {
     virtual void PrefetchImage(const GURL& url) = 0;
     // Register the synthetic field experiments for UMA.
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
+    // Returns the synthetic field experiments.
+    virtual const Experiments& GetExperiments() const = 0;
     // Registers a synthetic field trial "FollowingFeedFollowCount".
     virtual void RegisterFollowingFeedFollowCountFieldTrial(
         size_t follow_count) = 0;
@@ -131,6 +133,9 @@ class FeedService : public KeyedService {
   // TODO(iwells): Add comments and consider renaming to explain exceptional
   // cases.
   bool IsSignedIn();
+
+  // Returns the synthetic field experiments.
+  const Experiments& GetExperiments() const;
 
  private:
   class StreamDelegateImpl;

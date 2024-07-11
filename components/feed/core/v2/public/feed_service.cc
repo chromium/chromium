@@ -334,6 +334,10 @@ void FeedService::ClearCachedData() {
   stream_->OnCacheDataCleared();
 }
 
+const Experiments& FeedService::GetExperiments() const {
+  return delegate_->GetExperiments();
+}
+
 // static
 bool FeedService::IsEnabled(const PrefService& pref_service) {
   return pref_service.GetBoolean(feed::prefs::kEnableSnippets);
