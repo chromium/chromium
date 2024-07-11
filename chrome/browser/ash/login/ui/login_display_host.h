@@ -173,7 +173,6 @@ class LoginDisplayHost {
   virtual void UpdateOobeDialogState(OobeDialogState state) = 0;
 
   // Confirms sign in by provided credentials in `user_context`.
-  // Used for new user login via GAIA extension.
   virtual void CompleteLogin(const UserContext& user_context) = 0;
 
   // Notify the backend controller when the GAIA UI is finished loading.
