@@ -86,6 +86,12 @@ struct StructTraits<
     return profile.is_software_codec;
   }
 
+  static const std::vector<media::VideoPixelFormat>&
+  gpu_supported_pixel_formats(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    return profile.gpu_supported_pixel_formats;
+  }
+
   static bool Read(
       media::mojom::VideoEncodeAcceleratorSupportedProfileDataView data,
       media::VideoEncodeAccelerator::SupportedProfile* out);

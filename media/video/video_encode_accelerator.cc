@@ -217,13 +217,15 @@ VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     uint32_t max_framerate_numerator,
     uint32_t max_framerate_denominator,
     SupportedRateControlMode rc_modes,
-    const std::vector<SVCScalabilityMode>& scalability_modes)
+    const std::vector<SVCScalabilityMode>& scalability_modes,
+    const std::vector<VideoPixelFormat>& gpu_supported_pixel_formats)
     : profile(profile),
       max_resolution(max_resolution),
       max_framerate_numerator(max_framerate_numerator),
       max_framerate_denominator(max_framerate_denominator),
       rate_control_modes(rc_modes),
-      scalability_modes(scalability_modes) {}
+      scalability_modes(scalability_modes),
+      gpu_supported_pixel_formats(gpu_supported_pixel_formats) {}
 
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     const SupportedProfile& other) = default;

@@ -197,7 +197,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
         uint32_t max_framerate_numerator = 0u,
         uint32_t max_framerate_denominator = 1u,
         SupportedRateControlMode rc_modes = kConstantMode,
-        const std::vector<SVCScalabilityMode>& scalability_modes = {});
+        const std::vector<SVCScalabilityMode>& scalability_modes = {},
+        const std::vector<VideoPixelFormat>& gpu_suppoted_pixel_formats = {});
     SupportedProfile(const SupportedProfile& other);
     SupportedProfile& operator=(const SupportedProfile& other) = default;
     ~SupportedProfile();
@@ -209,6 +210,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     SupportedRateControlMode rate_control_modes = kNoMode;
     std::vector<SVCScalabilityMode> scalability_modes;
     bool is_software_codec = false;
+    std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
   };
   using SupportedProfiles = std::vector<SupportedProfile>;
   using FlushCallback = base::OnceCallback<void(bool)>;

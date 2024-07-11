@@ -90,6 +90,12 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
 
   out->is_software_codec = data.is_software_codec();
 
+  std::vector<media::VideoPixelFormat> gpu_supported_pixel_formats;
+  if (!data.ReadGpuSupportedPixelFormats(&gpu_supported_pixel_formats)) {
+    return false;
+  }
+  out->gpu_supported_pixel_formats = std::move(gpu_supported_pixel_formats);
+
   return true;
 }
 

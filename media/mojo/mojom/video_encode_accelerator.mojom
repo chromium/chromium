@@ -54,6 +54,7 @@ struct VideoEncodeAcceleratorSupportedProfile {
   array<VideoEncodeAcceleratorSupportedRateControlMode> rate_control_modes;
   array<SVCScalabilityMode> scalability_modes;
   bool is_software_codec;
+  array<VideoPixelFormat> gpu_supported_pixel_formats;
 };
 
 // A renderer process calls this interface's functions. GPU process implements
