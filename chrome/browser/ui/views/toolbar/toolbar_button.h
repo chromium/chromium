@@ -330,13 +330,6 @@ class ToolbarButton : public views::LabelButton,
   // Optional identifier for the menu when it runs.
   ui::ElementIdentifier menu_identifier_;
 
-  // Used to ensure the button remains highlighted while the menu is active.
-  std::optional<Button::ScopedAnchorHighlight> menu_anchor_higlight_;
-
-  // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
-  // Reacts to theme changes using default colors.
-  std::optional<VectorIcons> vector_icons_;
-
   // Layout insets to use. This is used when the ToolbarButton is not actually
   // hosted inside the toolbar. If not supplied,
   // |GetLayoutInsets(TOOLBAR_BUTTON)| is used instead which is not appropriate
@@ -348,6 +341,13 @@ class ToolbarButton : public views::LabelButton,
   // CastToolbarButton for instance uses larger insets for touchable mode to
   // match the expected touchable UI.
   gfx::Insets layout_inset_delta_;
+
+  // Used to ensure the button remains highlighted while the menu is active.
+  std::optional<Button::ScopedAnchorHighlight> menu_anchor_higlight_;
+
+  // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
+  // Reacts to theme changes using default colors.
+  std::optional<VectorIcons> vector_icons_;
 
   // Class responsible for animating highlight color (calling a callback on
   // |this| to refresh UI).
