@@ -1028,6 +1028,10 @@ void HostProcess::ShutdownOnUiThread() {
   desktop_session_connector_ = nullptr;
 #endif  // defined(REMOTING_MULTI_PROCESS)
 
+  // Release the remotes after the daemon channel has been closed.
+  remoting_host_control_.reset();
+  worker_process_control_.reset();
+
   // It is now safe for the HostProcess to be deleted.
   self_ = nullptr;
 
