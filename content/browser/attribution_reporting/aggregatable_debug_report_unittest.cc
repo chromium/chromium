@@ -579,23 +579,28 @@ TEST_P(AggregatableDebugReportTest, TriggerDebugReport_EventLevelUnsupported) {
   const struct {
     CreateReportResult::EventLevel result;
     bool has_matching_source = false;
+    bool expected;
   } kTestCases[] = {
       {
           .result = CreateReportResult::EventLevelSuccess(
               DefaultEventLevelReport(), /*replaced_report=*/std::nullopt),
           .has_matching_source = true,
+          .expected = true,
       },
       {
           .result = CreateReportResult::EventLevelSuccess(
               DefaultEventLevelReport(),
               /*replaced_report=*/DefaultEventLevelReport()),
           .has_matching_source = true,
+          .expected = true,
       },
       {
           .result = CreateReportResult::ProhibitedByBrowserPolicy(),
+          .expected = true,
       },
       {
           .result = CreateReportResult::NotRegistered(),
+          .expected = false,
       },
   };
 
@@ -620,9 +625,15 @@ TEST_P(AggregatableDebugReportTest, TriggerDebugReport_EventLevelUnsupported) {
 
     SCOPED_TRACE(result.event_level_status());
 
-    EXPECT_THAT(
-        AggregatableDebugReport::Create(OperationAllowed, result),
-        Optional(Property(&AggregatableDebugReport::contributions, IsEmpty())));
+    auto report = AggregatableDebugReport::Create(OperationAllowed, result);
+
+    if (test_case.expected) {
+      EXPECT_THAT(report,
+                  Optional(Property(&AggregatableDebugReport::contributions,
+                                    IsEmpty())));
+    } else {
+      EXPECT_FALSE(report.has_value());
+    }
   }
 }
 
@@ -740,17 +751,21 @@ TEST_P(AggregatableDebugReportTest,
   const struct {
     CreateReportResult::Aggregatable result;
     bool has_matching_source = false;
+    bool expected;
   } kTestCases[] = {
       {
           .result = CreateReportResult::AggregatableSuccess(
               DefaultAggregatableReport()),
           .has_matching_source = true,
+          .expected = true,
       },
       {
           .result = CreateReportResult::ProhibitedByBrowserPolicy(),
+          .expected = true,
       },
       {
           .result = CreateReportResult::NotRegistered(),
+          .expected = false,
       },
   };
 
@@ -775,9 +790,15 @@ TEST_P(AggregatableDebugReportTest,
 
     SCOPED_TRACE(result.aggregatable_status());
 
-    EXPECT_THAT(
-        AggregatableDebugReport::Create(OperationAllowed, result),
-        Optional(Property(&AggregatableDebugReport::contributions, IsEmpty())));
+    auto report = AggregatableDebugReport::Create(OperationAllowed, result);
+
+    if (test_case.expected) {
+      EXPECT_THAT(report,
+                  Optional(Property(&AggregatableDebugReport::contributions,
+                                    IsEmpty())));
+    } else {
+      EXPECT_FALSE(report.has_value());
+    }
   }
 }
 

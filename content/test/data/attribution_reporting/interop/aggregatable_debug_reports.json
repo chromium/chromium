@@ -264,6 +264,34 @@
         ]
       },
       // Changes to a different reporting site. `trigger-no-matching-source` can
+      // consume up to a budget of 65536. However, no aggregatable debug report
+      // was created due to no attribution data.
+      {
+        "timestamp": "8500",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter2.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x1f",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-no-matching-source"],
+                      "key_piece": "0x321",
+                      "value": 65536
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Changes to a different reporting site. `trigger-no-matching-source` can
       // consume up to a budget of 65536. Creates an aggregatable debug report.
       {
         "timestamp": "9000",
