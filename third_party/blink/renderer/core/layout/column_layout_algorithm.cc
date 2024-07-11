@@ -1018,9 +1018,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     // TODO(layout-dev): Consider adjusting break appeal based on the preceding
     // column spanner (if any), e.g. if it has break-after:avoid, so that we can
     // support early-breaks.
-    if (!MovePastBreakpoint(GetConstraintSpace(), *result,
-                            fragmentainer_block_offset, kBreakAppealPerfect,
-                            &container_builder_)) {
+    if (!MovePastBreakpoint(*result, fragmentainer_block_offset,
+                            kBreakAppealPerfect)) {
       // This row didn't fit nicely in the outer fragmentation context. Breaking
       // before is better.
       if (!next_column_token) {
@@ -1116,8 +1115,8 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
         GetConstraintSpace().FragmentainerOffset() + block_offset;
 
     BreakStatus break_status = BreakBeforeChildIfNeeded(
-        GetConstraintSpace(), spanner_node, *result, fragmentainer_block_offset,
-        has_processed_first_child_, &container_builder_);
+        spanner_node, *result, fragmentainer_block_offset,
+        has_processed_first_child_);
 
     if (break_status != BreakStatus::kContinue) {
       // We need to break, either before the spanner, or even earlier.

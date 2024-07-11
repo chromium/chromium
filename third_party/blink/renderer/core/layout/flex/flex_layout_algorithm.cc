@@ -1799,10 +1799,9 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         }
       }
       break_status = BreakBeforeChildIfNeeded(
-          GetConstraintSpace(), flex_item->ng_input_node, *layout_result,
+          flex_item->ng_input_node, *layout_result,
           GetConstraintSpace().FragmentainerOffset() + offset.block_offset,
-          has_container_separation, &container_builder_, !is_column_,
-          current_column_break_info);
+          has_container_separation, !is_column_, current_column_break_info);
 
       if (current_column_break_info) {
         current_column_break_info->break_after =

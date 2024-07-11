@@ -115,6 +115,19 @@ class CORE_EXPORT FlexLayoutAlgorithm
       NGFlexLine* flex_line,
       const FlexColumnBreakInfo* column_break_info = nullptr);
 
+  BreakStatus BreakBeforeChildIfNeeded(
+      LayoutInputNode child,
+      const LayoutResult& layout_result,
+      LayoutUnit fragmentainer_block_offset,
+      bool has_container_separation,
+      bool is_row_item,
+      FlexColumnBreakInfo* flex_column_break_info) {
+    return ::blink::BreakBeforeChildIfNeeded(
+        GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
+        has_container_separation, &container_builder_, is_row_item,
+        flex_column_break_info);
+  }
+
   // Insert a fragmentainer break before a row if necessary. Rows do not produce
   // a layout result, so when breaking before a row, we will insert a
   // fragmentainer break before the first child in a row. |child| should be

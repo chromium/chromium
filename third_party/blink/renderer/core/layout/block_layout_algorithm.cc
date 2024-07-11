@@ -2805,9 +2805,8 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
 
   // Attempt to move past the break point, and if we can do that, also assess
   // the appeal of breaking there, even if we didn't.
-  if (MovePastBreakpoint(GetConstraintSpace(), child, layout_result,
-                         fragmentainer_block_offset, appeal_before,
-                         &container_builder_)) {
+  if (MovePastBreakpoint(child, layout_result, fragmentainer_block_offset,
+                         appeal_before)) {
     return BreakStatus::kContinue;
   }
 

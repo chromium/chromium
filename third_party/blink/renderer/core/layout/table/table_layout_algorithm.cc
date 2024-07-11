@@ -1366,8 +1366,8 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
           constraint_space.FragmentainerOffset() + child_block_start_margin +
           child_block_offset - repeated_header_block_size;
       BreakStatus break_status = BreakBeforeChildIfNeeded(
-          constraint_space, child, *child_result, fragmentainer_block_offset,
-          has_container_separation, &container_builder_);
+          child, *child_result, fragmentainer_block_offset,
+          has_container_separation);
       if (break_status == BreakStatus::kNeedsEarlierBreak) {
         return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
       }
@@ -1506,10 +1506,9 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
       // necessary.
       LayoutUnit fragmentainer_block_offset =
           constraint_space.FragmentainerOffset() + offset.block_offset;
-      break_status = BreakBeforeChildIfNeeded(
-          constraint_space, grouped_children.footer, *result,
-          fragmentainer_block_offset, has_container_separation,
-          &container_builder_);
+      break_status = BreakBeforeChildIfNeeded(grouped_children.footer, *result,
+                                              fragmentainer_block_offset,
+                                              has_container_separation);
     }
     if (break_status == BreakStatus::kContinue) {
       container_builder_.AddResult(*result, offset);

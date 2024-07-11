@@ -401,9 +401,9 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
   BreakStatus break_status = BreakStatus::kContinue;
   if (GetConstraintSpace().HasBlockFragmentation() && !early_break_) {
     break_status = BreakBeforeChildIfNeeded(
-        GetConstraintSpace(), fieldset_content, *result,
+        fieldset_content, *result,
         GetConstraintSpace().FragmentainerOffset() + intrinsic_block_size_,
-        /* has_container_separation */ false, &container_builder_);
+        /*has_container_separation=*/false);
   }
 
   if (break_status == BreakStatus::kContinue) {

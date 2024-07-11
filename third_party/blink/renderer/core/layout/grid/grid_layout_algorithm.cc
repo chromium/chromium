@@ -3948,9 +3948,12 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
             constraint_space, grid_item.node, *result, container_builder_,
             row_has_container_separation);
 
-        if (!MovePastBreakpoint(constraint_space, grid_item.node, *result,
-                                fragment_relative_block_offset, appeal_before,
-                                /* builder */ nullptr)) {
+        // TODO(layout-dev): Explain the special usage of
+        // MovePastBreakpoint(). No fragment builder passed?
+        if (!::blink::MovePastBreakpoint(
+                constraint_space, grid_item.node, *result,
+                fragment_relative_block_offset, appeal_before,
+                /*builder=*/nullptr)) {
           UpdateBreakpointRowSetIndex(item_row_set_index);
 
           // We are choosing to add an early breakpoint at a row. Propagate our
