@@ -80,7 +80,12 @@ namespace ash {
 
 class PowerNotificationControllerTest : public AshTestBase {
  public:
-  PowerNotificationControllerTest() = default;
+  PowerNotificationControllerTest(
+      const std::vector<base::test::FeatureRefAndParams>& enabled_features = {},
+      const std::vector<base::test::FeatureRef>& disabled_features =
+          {features::kBatterySaver})
+      : enabled_features_(enabled_features),
+        disabled_features_(disabled_features) {}
 
   PowerNotificationControllerTest(const PowerNotificationControllerTest&) =
       delete;
@@ -94,6 +99,10 @@ class PowerNotificationControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeaturesAndParameters(enabled_features_,
+                                                        disabled_features_);
+
     AshTestBase::SetUp();
     message_center_ = std::make_unique<MockMessageCenter>();
     controller_ =
@@ -106,6 +115,7 @@ class PowerNotificationControllerTest : public AshTestBase {
     message_center_.reset();
     histogram_tester_.reset();
     AshTestBase::TearDown();
+    scoped_feature_list_.reset();
   }
 
   PowerNotificationController::NotificationState notification_state() const {
@@ -196,38 +206,38 @@ class PowerNotificationControllerTest : public AshTestBase {
  private:
   std::unique_ptr<MockMessageCenter> message_center_;
   std::unique_ptr<PowerNotificationController> controller_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  const std::vector<base::test::FeatureRefAndParams> enabled_features_;
+  const std::vector<base::test::FeatureRef> disabled_features_;
 };
 
 class PowerNotificationControllerWithBatterySaverTest
     : public PowerNotificationControllerTest,
       public testing::WithParamInterface<
           features::BatterySaverNotificationBehavior> {
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>(
-        features::kBatterySaver);
-    PowerNotificationControllerTest::SetUp();
-  }
-
-  void TearDown() override {
-    PowerNotificationControllerTest::TearDown();
-    scoped_feature_list_.reset();
-  }
-
  public:
-  void SetExperimentArm(features::BatterySaverNotificationBehavior arm) {
-    scoped_feature_list_.reset();
-    base::FieldTrialParams parameters;
-    parameters[features::kBatterySaverNotificationBehavior.name] =
-        features::kBatterySaverNotificationBehavior.options[arm].name;
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeatureWithParameters(
-        features::kBatterySaver, parameters);
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
-  }
+  PowerNotificationControllerWithBatterySaverTest()
+      : PowerNotificationControllerTest(
+            {{features::kBatterySaver,
+              {{features::kBatterySaverNotificationBehavior.name,
+                features::kBatterySaverNotificationBehavior.options[GetParam()]
+                    .name}}}},
+            {}) {}
 
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  PowerNotificationController::NotificationState GetLowPowerNotificationState()
+      const {
+    const auto arm = features::kBatterySaverNotificationBehavior.Get();
+    CHECK(arm == GetParam());
+    switch (arm) {
+      case features::kBSMAutoEnable:
+        return PowerNotificationController::
+            NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
+
+      case features::kBSMOptIn:
+        return PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN;
+    }
+    NOTREACHED();
+  }
 };
 
 TEST_F(PowerNotificationControllerTest, MaybeShowUsbChargerNotification) {
@@ -616,19 +626,6 @@ TEST_F(PowerNotificationControllerTest, UpdateNotificationState) {
 
 TEST_P(PowerNotificationControllerWithBatterySaverTest,
        UpdateNotificationStateWithBSM) {
-  PowerNotificationController::NotificationState low_power_notification_state;
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kBSMAutoEnable:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
-      break;
-    case features::kBSMOptIn:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN;
-      break;
-    default:
-      FAIL();
-  }
 
   // There should be no notification when we are above the threshold.
   PowerSupplyProperties battery_saver_low = DefaultPowerSupplyProperties();
@@ -644,7 +641,7 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
   battery_saver_low.set_battery_percent(GetLowPowerPercentageExperiment());
   {
     SCOPED_TRACE("Notification when percentage matches threshold");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
   }
 
@@ -652,7 +649,7 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
   battery_saver_low.set_battery_percent(GetLowPowerPercentageExperiment() - 1);
   {
     SCOPED_TRACE("Notification persists at lower values");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             false, false);
   }
 
@@ -676,7 +673,7 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
   {
     SCOPED_TRACE(
         "Notification when previously charging, but no longer charging.");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
   }
 
@@ -706,28 +703,12 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
 
 TEST_P(PowerNotificationControllerWithBatterySaverTest,
        StickyOptStatusOnChargerUnplugHonorNoInput) {
-  SetExperimentArm(GetParam());
-
-  PowerNotificationController::NotificationState low_power_notification_state;
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kBSMAutoEnable:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
-      break;
-    case features::kBSMOptIn:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN;
-      break;
-    default:
-      FAIL();
-  }
-
   // Show Battery Saver notification by going below the threshold.
   PowerSupplyProperties battery_saver_low = DefaultPowerSupplyProperties();
   battery_saver_low.set_battery_percent(GetLowPowerPercentageExperiment() - 1);
   {
     SCOPED_TRACE("'Turning on BSM' Notification should appear.");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
     const Notification* notification =
         message_center()->FindVisibleNotificationById("battery");
@@ -757,35 +738,19 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
     SCOPED_TRACE(
         "'Turning on BSM' Notification should reappear due to charger "
         "unplugged.");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
   }
 }
 
 TEST_P(PowerNotificationControllerWithBatterySaverTest,
        StickyOptStatusOnChargerUnplugHonorViaButton) {
-  SetExperimentArm(GetParam());
-
-  PowerNotificationController::NotificationState low_power_notification_state;
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kBSMAutoEnable:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
-      break;
-    case features::kBSMOptIn:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN;
-      break;
-    default:
-      FAIL();
-  }
-
   // Show Battery Saver notification by going below the threshold.
   PowerSupplyProperties battery_saver_low = DefaultPowerSupplyProperties();
   battery_saver_low.set_battery_percent(GetLowPowerPercentageExperiment() - 1);
   {
     SCOPED_TRACE("'Turning on BSM' Notification should appear.");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
 
     const Notification* notification =
