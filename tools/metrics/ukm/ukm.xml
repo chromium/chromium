@@ -30928,6 +30928,48 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="WebAuthn.RegisterCompletion">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Information about the completion of a request to register a new Web
+    Authentication credential.
+  </summary>
+  <metric name="RegisterCompletionResult"
+      enum="WebAuthenticationMakeCredentialOutcome">
+    <summary>
+      The outcome of the request, indicating whether it was successful, and the
+      cause of failure if not successful.
+    </summary>
+  </metric>
+  <metric name="RequestMode" enum="WebAuthenticationRequestMode">
+    <summary>
+      The mode of WebAuthn register request that has been completed.
+    </summary>
+  </metric>
+</event>
+
+<event name="WebAuthn.SignCompletion">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Information about the completion of a request for a signed assertion by a
+    Web Authentication credential.
+  </summary>
+  <metric name="RequestMode" enum="WebAuthenticationRequestMode">
+    <summary>
+      The mode of WebAuthn assertion request that has been completed.
+    </summary>
+  </metric>
+  <metric name="SignCompletionResult"
+      enum="WebAuthenticationGetAssertionOutcome">
+    <summary>
+      The outcome of the request, indicating whether it was successful, and the
+      cause of failure if not successful.
+    </summary>
+  </metric>
+</event>
+
 <event name="WebOTPImpact">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>

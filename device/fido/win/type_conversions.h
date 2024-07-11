@@ -65,6 +65,7 @@ MakeCredentialStatus WinErrorNameToMakeCredentialStatus(
 // WinErrorNameToGetAssertionStatus maps a string returned by
 // WebAuthNGetErrorName() to a GetAssertionStatus.
 COMPONENT_EXPORT(DEVICE_FIDO)
+
 GetAssertionStatus WinErrorNameToGetAssertionStatus(
     std::u16string_view error_name);
 

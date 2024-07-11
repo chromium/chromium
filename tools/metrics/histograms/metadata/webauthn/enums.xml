@@ -240,6 +240,24 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Android Accessory"/>
 </enum>
 
+<enum name="WebAuthenticationGetAssertionOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Security Error"/>
+  <int value="2" label="User Cancellation"/>
+  <int value="3" label="Credential Not Recognized"/>
+  <int value="4" label="Invalid Response From Authenticator"/>
+  <int value="5" label="RK Not Supported"/>
+  <int value="6" label="UV Not Supported"/>
+  <int value="7" label="Soft PIN Block"/>
+  <int value="8" label="Hard PIN Block"/>
+  <int value="9" label="Platform Not Allowed Error"/>
+  <int value="10" label="Hybrid Transport Error"/>
+  <int value="11" label="Blocked By Filter"/>
+  <int value="12" label="Enclave Authenticator Error"/>
+  <int value="13" label="Timeout Occurred"/>
+  <int value="14" label="Other Failure"/>
+</enum>
+
 <enum name="WebAuthenticationMacOSPasskeysPermission">
   <int value="0" label="Requested permission during a create() call"/>
   <int value="1" label="Permission approved during a create() call"/>
@@ -282,6 +300,33 @@ chromium-metrics-reviews@google.com.
              Keychain recognised a credential"/>
   <int value="11" label="Successful get() from the profile authenticator"/>
   <int value="12" label="Successful get() from iCloud Keychain"/>
+</enum>
+
+<enum name="WebAuthenticationMakeCredentialOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Security Error"/>
+  <int value="2" label="User Cancellation"/>
+  <int value="3" label="Credential Excluded"/>
+  <int value="4" label="Invalid Response From Authenticator"/>
+  <int value="5" label="RK Not Supported"/>
+  <int value="6" label="UV Not Supported"/>
+  <int value="7" label="Large Blob Not Supported"/>
+  <int value="8" label="Algorithm Not Supported"/>
+  <int value="9" label="Soft PIN Block"/>
+  <int value="10" label="Hard PIN Block"/>
+  <int value="11" label="Storage Full"/>
+  <int value="12" label="Platform Not Allowed Error"/>
+  <int value="13" label="Hybrid Transport Error"/>
+  <int value="14" label="Blocked By Filter"/>
+  <int value="15" label="Enclave Authenticator Error"/>
+  <int value="16" label="Timeout Occurred"/>
+  <int value="17" label="Other Failure"/>
+</enum>
+
+<enum name="WebAuthenticationRequestMode">
+  <int value="0" label="WebAuthn Modal Request"/>
+  <int value="1" label="WebAuthn Conditional UI Request"/>
+  <int value="2" label="Payment Request"/>
 </enum>
 
 <enum name="WindowsForegroundedHelloDialog">

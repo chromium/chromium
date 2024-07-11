@@ -25,6 +25,7 @@
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/enclave/enclave_websocket_client.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/network_context_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
