@@ -91,11 +91,17 @@ void AndroidSessionDurationsService::InitializeForRegularProfile(
     signin::IdentityManager* identity_manager) {
   DCHECK(!incognito_session_metrics_recorder_);
   DCHECK(!sync_session_metrics_recorder_);
+  CHECK(!password_session_duration_metrics_recorder_,
+        base::NotFatalUntil::M130);
   DCHECK(!msbb_session_metrics_recorder_);
 
   sync_session_metrics_recorder_ =
       std::make_unique<syncer::SyncSessionDurationsMetricsRecorder>(
           sync_service, identity_manager);
+
+  password_session_duration_metrics_recorder_ = std::make_unique<
+      password_manager::PasswordSessionDurationsMetricsRecorder>(pref_service,
+                                                                 sync_service);
 
   msbb_session_metrics_recorder_ =
       std::make_unique<unified_consent::MsbbSessionDurationsMetricsRecorder>(
@@ -112,6 +118,8 @@ void AndroidSessionDurationsService::InitializeForRegularProfile(
 void AndroidSessionDurationsService::InitializeForIncognitoProfile() {
   DCHECK(!incognito_session_metrics_recorder_);
   DCHECK(!sync_session_metrics_recorder_);
+  CHECK(!password_session_duration_metrics_recorder_,
+        base::NotFatalUntil::M130);
   DCHECK(!msbb_session_metrics_recorder_);
 
   incognito_session_metrics_recorder_ =
@@ -129,6 +137,7 @@ bool AndroidSessionDurationsService::IsSyncing() const {
 
 void AndroidSessionDurationsService::Shutdown() {
   sync_session_metrics_recorder_.reset();
+  password_session_duration_metrics_recorder_.reset();
   msbb_session_metrics_recorder_.reset();
   incognito_session_metrics_recorder_.reset();
 }
@@ -140,6 +149,8 @@ void AndroidSessionDurationsService::OnAppEnterForeground(
     CHECK(msbb_session_metrics_recorder_);
 
     sync_session_metrics_recorder_->OnSessionStarted(session_start);
+    password_session_duration_metrics_recorder_->OnSessionStarted(
+        session_start);
     msbb_session_metrics_recorder_->OnSessionStarted(session_start);
   } else {
     CHECK(!msbb_session_metrics_recorder_);
@@ -154,6 +165,7 @@ void AndroidSessionDurationsService::OnAppEnterBackground(
     CHECK(msbb_session_metrics_recorder_);
 
     sync_session_metrics_recorder_->OnSessionEnded(session_length);
+    password_session_duration_metrics_recorder_->OnSessionEnded(session_length);
     msbb_session_metrics_recorder_->OnSessionEnded(session_length);
   } else {
     CHECK(!msbb_session_metrics_recorder_);
