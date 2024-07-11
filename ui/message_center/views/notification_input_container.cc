@@ -22,6 +22,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/view_class_properties.h"
 
 namespace message_center {
 
@@ -48,7 +49,9 @@ NotificationInputContainer::NotificationInputContainer(
                 container->textfield_->GetProperty(kTextfieldIndexKey),
                 container->textfield_->GetText());
           },
-          base::Unretained(this)))) {}
+          base::Unretained(this)))) {
+  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+}
 
 NotificationInputContainer::~NotificationInputContainer() {
   // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
@@ -150,14 +153,21 @@ void NotificationInputContainer::OnThemeChanged() {
   UpdateButtonImage();
 }
 
-void NotificationInputContainer::Layout(PassKey) {
-  LayoutSuperclass<View>(this);
-
-  if (!ink_drop_container_)
-    return;
+views::ProposedLayout NotificationInputContainer::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layout;
+  DCHECK(size_bounds.is_fully_bounded());
+  layout.host_size =
+      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+  if (!ink_drop_container_) {
+    return layout;
+  }
 
   // The animation is needed to run inside of the border.
-  ink_drop_container_->SetBoundsRect(GetLocalBounds());
+  layout.child_layouts.emplace_back(ink_drop_container_.get(),
+                                    ink_drop_container_->GetVisible(),
+                                    gfx::Rect(layout.host_size));
+  return layout;
 }
 
 bool NotificationInputContainer::HandleKeyEvent(views::Textfield* sender,
@@ -191,7 +201,10 @@ views::InkDropContainerView* NotificationInputContainer::InstallInkDrop() {
   views::InkDrop::Get(this)->SetBaseColorId(
       ui::kColorNotificationInputBackground);
 
-  return AddChildView(std::make_unique<views::InkDropContainerView>());
+  auto* ink_drop_container =
+      AddChildView(std::make_unique<views::InkDropContainerView>());
+  ink_drop_container->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  return ink_drop_container;
 }
 
 gfx::Insets NotificationInputContainer::GetTextfieldPadding() const {

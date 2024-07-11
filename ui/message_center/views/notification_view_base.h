@@ -22,6 +22,7 @@
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace views {
@@ -41,7 +42,8 @@ class ProportionalImageView;
 
 // CompactTitleMessageView shows notification title and message in a single
 // line. This view is used for NOTIFICATION_TYPE_PROGRESS.
-class CompactTitleMessageView : public views::View {
+class CompactTitleMessageView : public views::View,
+                                public views::LayoutDelegate {
   METADATA_HEADER(CompactTitleMessageView, views::View)
 
  public:
@@ -52,7 +54,10 @@ class CompactTitleMessageView : public views::View {
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& /*available_size*/) const override;
-  void Layout(PassKey) override;
+
+  // Overridden from views::LayoutDelegate:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override;
 
   void set_title(const std::u16string& title);
   void set_message(const std::u16string& message);

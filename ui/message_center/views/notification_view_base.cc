@@ -129,6 +129,7 @@ CompactTitleMessageView::CompactTitleMessageView() {
       std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY));
   message_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 }
 
 gfx::Size CompactTitleMessageView::CalculatePreferredSize(
@@ -140,7 +141,12 @@ gfx::Size CompactTitleMessageView::CalculatePreferredSize(
                    std::max(title_size.height(), message_size.height()));
 }
 
-void CompactTitleMessageView::Layout(PassKey) {
+views::ProposedLayout CompactTitleMessageView::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layout;
+  DCHECK(size_bounds.is_fully_bounded());
+  layout.host_size =
+      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
   // Elides title and message.
   // * If the message is too long, the message occupies at most
   //   kProgressNotificationMessageRatio of the width.
@@ -149,16 +155,22 @@ void CompactTitleMessageView::Layout(PassKey) {
   //   title is shown.
   // * If they are short enough, the title is left-aligned and the message is
   //   right-aligned.
-  const int message_width = std::min(
-      message_->GetPreferredSize().width(),
-      title_->GetPreferredSize().width() > 0
-          ? static_cast<int>(kProgressNotificationMessageRatio * width())
-          : width());
-  const int title_width =
-      std::max(0, width() - message_width - kCompactTitleMessageViewSpacing);
-
-  title_->SetBounds(0, 0, title_width, height());
-  message_->SetBounds(width() - message_width, 0, message_width, height());
+  const int message_width =
+      std::min(message_->GetPreferredSize().width(),
+               title_->GetPreferredSize().width() > 0
+                   ? static_cast<int>(kProgressNotificationMessageRatio *
+                                      layout.host_size.width())
+                   : layout.host_size.width());
+  const int title_width = std::max(0, layout.host_size.width() - message_width -
+                                          kCompactTitleMessageViewSpacing);
+  layout.child_layouts.emplace_back(
+      title_.get(), title_->GetVisible(),
+      gfx::Rect(0, 0, title_width, layout.host_size.height()));
+  layout.child_layouts.emplace_back(
+      message_.get(), message_->GetVisible(),
+      gfx::Rect(layout.host_size.width() - message_width, 0, message_width,
+                layout.host_size.height()));
+  return layout;
 }
 
 void CompactTitleMessageView::set_title(const std::u16string& title) {

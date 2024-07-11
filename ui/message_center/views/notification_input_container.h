@@ -10,6 +10,7 @@
 #include "ui/message_center/message_center_export.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -35,7 +36,8 @@ class MESSAGE_CENTER_EXPORT NotificationInputDelegate {
 // A view which shows a textfield with a send button for notifications.
 class MESSAGE_CENTER_EXPORT NotificationInputContainer
     : public views::View,
-      public views::TextfieldController {
+      public views::TextfieldController,
+      public views::LayoutDelegate {
   METADATA_HEADER(NotificationInputContainer, views::View)
 
  public:
@@ -66,12 +68,15 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
   void OnThemeChanged() override;
-  void Layout(PassKey) override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   void OnAfterUserAction(views::Textfield* sender) override;
+
+  // Overridden from views::LayoutDelegate:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override;
 
   views::Textfield* textfield() const { return textfield_; }
   views::ImageButton* button() const { return button_; }
