@@ -100,18 +100,19 @@ void TriggerManager::set_trigger_throttler(TriggerThrottler* throttler) {
 SBErrorOptions TriggerManager::GetSBErrorDisplayOptions(
     const PrefService& pref_service,
     content::WebContents* web_contents) {
-  return SBErrorOptions(/*is_main_frame_load_pending=*/false,
-                        IsExtendedReportingOptInAllowed(pref_service),
-                        web_contents->GetBrowserContext()->IsOffTheRecord(),
-                        IsExtendedReportingEnabled(pref_service),
-                        IsExtendedReportingPolicyManaged(pref_service),
-                        IsEnhancedProtectionEnabled(pref_service),
-                        /*is_proceed_anyway_disabled=*/false,
-                        /*should_open_links_in_new_tab=*/false,
-                        /*always_show_back_to_safety=*/true,
-                        /*is_enhanced_protection_message_enabled=*/true,
-                        IsSafeBrowsingPolicyManaged(pref_service),
-                        /*help_center_article_link=*/std::string());
+  return SBErrorOptions(
+      /*is_main_frame_load_pending=*/false,
+      IsExtendedReportingOptInAllowed(pref_service),
+      web_contents->GetBrowserContext()->IsOffTheRecord(),
+      IsExtendedReportingEnabledBypassDeprecationFlag(pref_service),
+      IsExtendedReportingPolicyManaged(pref_service),
+      IsEnhancedProtectionEnabled(pref_service),
+      /*is_proceed_anyway_disabled=*/false,
+      /*should_open_links_in_new_tab=*/false,
+      /*always_show_back_to_safety=*/true,
+      /*is_enhanced_protection_message_enabled=*/true,
+      IsSafeBrowsingPolicyManaged(pref_service),
+      /*help_center_article_link=*/std::string());
 }
 
 bool TriggerManager::CanStartDataCollection(

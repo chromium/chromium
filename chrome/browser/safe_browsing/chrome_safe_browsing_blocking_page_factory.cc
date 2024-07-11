@@ -76,7 +76,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
       display_options(BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
                       is_extended_reporting_opt_in_allowed,
                       web_contents->GetBrowserContext()->IsOffTheRecord(),
-                      IsExtendedReportingEnabled(*prefs),
+                      IsExtendedReportingEnabledBypassDeprecationFlag(*prefs),
                       IsExtendedReportingPolicyManaged(*prefs),
                       IsEnhancedProtectionEnabled(*prefs),
                       is_proceed_anyway_disabled,

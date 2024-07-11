@@ -110,7 +110,8 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
           IsMainPageLoadPending(unsafe_resources),
           safe_browsing::IsExtendedReportingOptInAllowed(*pref_service),
           browser_context->IsOffTheRecord(),
-          safe_browsing::IsExtendedReportingEnabled(*pref_service),
+          safe_browsing::IsExtendedReportingEnabledBypassDeprecationFlag(
+              *pref_service),
           safe_browsing::IsExtendedReportingPolicyManaged(*pref_service),
           safe_browsing::IsEnhancedProtectionEnabled(*pref_service),
           pref_service->GetBoolean(::prefs::kSafeBrowsingProceedAnywayDisabled),

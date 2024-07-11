@@ -121,6 +121,12 @@ bool IsExtendedReportingEnabled(const PrefService& prefs) {
          IsEnhancedProtectionEnabled(prefs);
 }
 
+bool IsExtendedReportingEnabledBypassDeprecationFlag(const PrefService& prefs) {
+  return (IsSafeBrowsingEnabled(prefs) &&
+          prefs.GetBoolean(prefs::kSafeBrowsingScoutReportingEnabled)) ||
+         IsEnhancedProtectionEnabled(prefs);
+}
+
 bool IsExtendedReportingPolicyManaged(const PrefService& prefs) {
   return prefs.IsManagedPreference(prefs::kSafeBrowsingScoutReportingEnabled);
 }
