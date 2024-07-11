@@ -325,12 +325,12 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   //
   // Will cause a pref change notification to be fired if this causes
   // the effective value to change.
-  void SetDefaultPrefValue(const std::string& path, base::Value value);
+  void SetDefaultPrefValue(std::string_view path, base::Value value);
 
   // Returns the default value of the given preference. |path| must point to a
   // registered preference. In that case, will never return nullptr, so callers
   // do not need to check this.
-  const base::Value* GetDefaultPrefValue(const std::string& path) const;
+  const base::Value* GetDefaultPrefValue(std::string_view path) const;
 
   // Returns true if a value has been set for the specified path.
   // NOTE: this is NOT the same as FindPreference. In particular

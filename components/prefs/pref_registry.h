@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/prefs_export.h"
+#include "components/prefs/transparent_unordered_string_map.h"
 
 namespace base {
 class Value;
@@ -52,8 +53,8 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   // Registering a pref as public allows other services to access it.
   static constexpr PrefRegistrationFlags PUBLIC = 1 << 9;
 
-  typedef PrefValueMap::const_iterator const_iterator;
-  typedef std::unordered_map<std::string, uint32_t> PrefRegistrationFlagsMap;
+  using const_iterator = PrefValueMap::const_iterator;
+  using PrefRegistrationFlagsMap = TransparentUnorderedStringMap<uint32_t>;
 
   PrefRegistry();
 
@@ -62,7 +63,7 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
 
   // Retrieve the set of registration flags for the given preference. The return
   // value is a bitmask of PrefRegistrationFlags.
-  uint32_t GetRegistrationFlags(const std::string& pref_name) const;
+  uint32_t GetRegistrationFlags(std::string_view pref_name) const;
 
   // Gets the registered defaults.
   scoped_refptr<PrefStore> defaults();
@@ -74,7 +75,7 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   // Changes the default value for a preference.
   //
   // `pref_name` must be a previously registered preference.
-  void SetDefaultPrefValue(const std::string& pref_name, base::Value value);
+  void SetDefaultPrefValue(std::string_view pref_name, base::Value value);
 
  protected:
   friend class base::RefCounted<PrefRegistry>;

@@ -383,14 +383,14 @@ const base::Value* PrefService::GetUserPrefValue(std::string_view path) const {
   return value;
 }
 
-void PrefService::SetDefaultPrefValue(const std::string& path,
+void PrefService::SetDefaultPrefValue(std::string_view path,
                                       base::Value value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_registry_->SetDefaultPrefValue(path, std::move(value));
 }
 
 const base::Value* PrefService::GetDefaultPrefValue(
-    const std::string& path) const {
+    std::string_view path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Lookup the preference in the default store.
   const base::Value* value = nullptr;

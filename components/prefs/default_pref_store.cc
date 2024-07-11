@@ -4,7 +4,6 @@
 
 #include "components/prefs/default_pref_store.h"
 
-#include <string>
 #include <string_view>
 #include <utility>
 
@@ -41,8 +40,7 @@ void DefaultPrefStore::SetDefaultValue(std::string_view key, Value value) {
   prefs_.SetValue(key, std::move(value));
 }
 
-void DefaultPrefStore::ReplaceDefaultValue(const std::string& key,
-                                           Value value) {
+void DefaultPrefStore::ReplaceDefaultValue(std::string_view key, Value value) {
   DCHECK(GetValue(key, nullptr));
   bool notify = prefs_.SetValue(key, std::move(value));
   if (notify) {

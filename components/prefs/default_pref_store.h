@@ -6,7 +6,6 @@
 #define COMPONENTS_PREFS_DEFAULT_PREF_STORE_H_
 
 #include <memory>
-#include <string>
 #include <string_view>
 
 #include "base/observer_list.h"
@@ -39,7 +38,7 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
 
   // Replaces the the value for `key` with a new value. Should only be called
   // if a value has already been set; otherwise call SetDefaultValue().
-  void ReplaceDefaultValue(const std::string& key, base::Value value);
+  void ReplaceDefaultValue(std::string_view key, base::Value value);
 
   const_iterator begin() const;
   const_iterator end() const;
