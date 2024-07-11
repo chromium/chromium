@@ -27,17 +27,6 @@
   # this dict to look up which config to use for a given bot.
   'builder_groups': {
     'chrome': {
-      'chromeos-arm-generic-cfi-thin-lto-chrome': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
-      'chromeos-arm64-generic-cfi-thin-lto-chrome': 'chromeos_arm64-generic_cfi_thin_lto_official_reclient',
-      'chromeos-betty-arc-r-chrome': 'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients_reclient',
-      'chromeos-betty-cfi-thin-lto-chrome': 'chromeos_betty_cfi_thin_lto_official_reclient',
-      'chromeos-betty-chrome': 'chromeos_betty_include_unwind_tables_official_reclient',
-      'chromeos-betty-pi-arc-cfi-thin-lto-chrome': 'chromeos_betty-pi-arc_cfi_thin_lto_official_reclient',
-      'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
-      'chromeos-brya-chrome-skylab': 'chromeos_brya_include_unwind_tables_official_skylab_reclient',
-      'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient',
-      'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_skylab',
-      'chromeos-reven-chrome': 'chromeos_reven_include_unwind_tables_official_dchecks_reclient',
       'chromeos-volteer-chrome-skylab': 'chromeos_volteer_include_unwind_tables_official_skylab_reclient',
       'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
       'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official_skylab_reclient',
@@ -45,8 +34,6 @@
       # Don't include unwind tables for linux-/mac-/win-/win64-chrome builders.
       # They monitor binary size growth, which may be affected by the tables.
       'linux-chrome': 'official_reclient',
-      'linux-chromeos-chrome': 'official_reclient_chromeos_include_unwind_tables',
-      'linux-chromeos-chrome-with-lacros': 'official_reclient_chromeos_include_unwind_tables_with_lacros',
       'linux-lacros-chrome': 'official_reclient_lacros_include_unwind_tables',
       'mac-chrome': 'official_reclient_mac',
       'win-branded-rel': 'chrome_branded_reclient_minimal_symbols',
@@ -69,15 +56,6 @@
       'win-arm64-pgo': 'official_win_arm64_pgo',
       'win32-pgo': 'official_x86_pgo',
       'win64-pgo': 'official_x64_pgo',
-    },
-
-    'chromeos.preuprev': {
-      'chromeos-betty-chrome-preuprev': 'chromeos_betty_include_unwind_tables_official_reclient',
-      'chromeos-betty-pi-arc-chrome-preuprev': 'chromeos_betty-pi-arc_dchecks_reclient',
-      'chromeos-brya-chrome-preuprev': 'chromeos_brya_include_unwind_tables_official_skylab_reclient',
-      'chromeos-jacuzzi-chrome-preuprev': 'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient',
-      'chromeos-volteer-chrome-preuprev': 'chromeos_volteer_include_unwind_tables_official_skylab_reclient',
-      'linux-chromeos-chrome-preuprev': 'official_reclient_chromeos_include_unwind_tables',
     },
 
     'chromium.chromiumos': {
@@ -212,19 +190,6 @@
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
       'win-celab-rel': 'official_celab_release_bot',
       'win-finch-smoke-chrome': 'official_reclient',
-    },
-
-    'internal.chromeos.fyi': {
-      'chromeos-betty-chrome-dchecks-fyi': 'chromeos_betty_include_unwind_tables_official_dcheck_reclient',
-      'chromeos-betty-pi-arc-chrome-accessibility-fyi': 'chromeos_betty-pi-arc_dchecks_reclient',
-      'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks_reclient',
-      'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
-      'chromeos-brya-chrome-dchecks-skylab': 'chromeos_brya_include_unwind_tables_official_dchecks_skylab_reclient',
-      'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks_reclient',
-      'chromeos-jacuzzi-chrome-dchecks-skylab': 'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient',
-      'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks_reclient',
-      'chromeos-octopus-chrome-skylab-fyi': 'chromeos_octopus_include_unwind_tables_official_skylab_reclient',
-      'chromeos-trogdor-chrome-skylab-fyi': 'chromeos_trogdor_include_unwind_tables_official_skylab_reclient',
     },
 
     'internal.optimization_guide': {
@@ -435,9 +400,6 @@
     'chromeos_arm64-generic_cfi_thin_lto_official': [
       'chromeos_device', 'arm64-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
     ],
-    'chromeos_arm64-generic_cfi_thin_lto_official_reclient': [
-      'chromeos_device_reclient', 'arm64-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols', 'ozone_headless'
-    ],
 
     'chromeos_arm64-generic_lacros_official_reclient': [
       'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
@@ -454,18 +416,10 @@
       'chromeos_device', 'betty-arc-r', 'include_unwind_tables', 'official', 'use_fake_dbus_clients',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
-    'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients_reclient': [
-      'chromeos_device_reclient', 'betty-arc-r', 'include_unwind_tables', 'official', 'use_fake_dbus_clients',
-      'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
-    ],
 
     'chromeos_betty-pi-arc_cfi_thin_lto_official': [
       'chromeos_device', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official', 'minimal_symbols',
       'also_build_lacros_chrome_for_architecture_amd64',
-    ],
-    'chromeos_betty-pi-arc_cfi_thin_lto_official_reclient': [
-      'chromeos_device_reclient', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official', 'minimal_symbols',
-      'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
     ],
 
     'chromeos_betty-pi-arc_dchecks': [
@@ -473,21 +427,11 @@
       'use_fake_dbus_clients', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
-    'chromeos_betty-pi-arc_dchecks_reclient': [
-      'chromeos_device_reclient', 'betty-pi-arc', 'include_unwind_tables', 'official',
-      'use_fake_dbus_clients', 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
-    ],
 
     'chromeos_betty_cfi_thin_lto_official_reclient': [
       'chromeos_device_reclient', 'betty', 'official', 'is_skylab',
       'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless',
       'cfi_full', 'thin_lto', 'minimal_symbols',
-    ],
-
-    'chromeos_betty_include_unwind_tables_official_dcheck_reclient': [
-      'chromeos_device_reclient', 'betty', 'include_unwind_tables', 'official', 'is_skylab',
-      'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless', 'dcheck_always_on',
     ],
 
     'chromeos_betty_include_unwind_tables_official_reclient': [
@@ -503,19 +447,12 @@
       'chromeos_device', 'brya', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
-    'chromeos_brya_include_unwind_tables_official_skylab_reclient': [
-      'chromeos_device_reclient', 'brya', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless',
-      'also_build_lacros_chrome_for_architecture_amd64',
-    ],
 
     'chromeos_eve_include_unwind_tables_official_dchecks': [
       'chromeos_device', 'eve', 'include_unwind_tables', 'official', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
-    'chromeos_eve_include_unwind_tables_official_dchecks_reclient': [
-      'chromeos_device_reclient', 'eve', 'include_unwind_tables', 'official', 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
-    ],
+
     'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
       'also_build_lacros_chrome_for_architecture_arm64', 'no_symbols',
@@ -533,17 +470,9 @@
       'chromeos_device', 'octopus', 'include_unwind_tables', 'official', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
-    'chromeos_octopus_include_unwind_tables_official_dchecks_reclient': [
-      'chromeos_device_reclient', 'octopus', 'include_unwind_tables', 'official',
-      'dcheck_always_on', 'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
-    ],
+
     'chromeos_octopus_include_unwind_tables_official_skylab': [
       'chromeos_device', 'octopus', 'include_unwind_tables', 'official', 'is_skylab',
-      'also_build_lacros_chrome_for_architecture_amd64',
-    ],
-
-    'chromeos_octopus_include_unwind_tables_official_skylab_reclient': [
-      'chromeos_device_reclient', 'octopus', 'include_unwind_tables', 'official', 'is_skylab',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
@@ -551,17 +480,9 @@
       'chromeos_device', 'reven', 'include_unwind_tables', 'official', 'is_skylab', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
-    'chromeos_reven_include_unwind_tables_official_dchecks_reclient': [
-      'chromeos_device_reclient', 'reven', 'include_unwind_tables', 'official', 'is_skylab', 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
-    ],
 
     'chromeos_trogdor_include_unwind_tables_official_skylab': [
       'chromeos_device', 'trogdor', 'include_unwind_tables', 'official', 'is_skylab',
-      'also_build_lacros_chrome_for_architecture_arm64',
-    ],
-    'chromeos_trogdor_include_unwind_tables_official_skylab_reclient': [
-      'chromeos_device_reclient', 'trogdor', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless',
       'also_build_lacros_chrome_for_architecture_arm64',
     ],
 
