@@ -353,8 +353,8 @@ void BrowserActions::InitializeBrowserActions() {
                  actions::ActionInvocationContext context) {
                 auto* controller = autofill::AddressBubblesIconController::Get(
                     browser->tab_strip_model()->GetActiveWebContents());
-                if (controller && controller->IsBubbleActive()) {
-                  controller->OnIconClicked();
+                if (controller && controller->GetBubbleView()) {
+                  controller->GetBubbleView()->Hide();
                 } else {
                   chrome::ShowAddresses(browser);
                 }

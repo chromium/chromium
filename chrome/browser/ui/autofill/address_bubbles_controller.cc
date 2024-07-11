@@ -177,11 +177,6 @@ void AddressBubblesController::OnUserDecision(
 }
 
 void AddressBubblesController::OnBubbleClosed() {
-  if (::features::IsToolbarPinningEnabled() &&
-      address_profile_save_prompt_callback_) {
-    std::move(address_profile_save_prompt_callback_)
-        .Run(AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
-  }
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
 }
@@ -189,12 +184,6 @@ void AddressBubblesController::OnBubbleClosed() {
 void AddressBubblesController::OnIconClicked() {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
-    if (::features::IsToolbarPinningEnabled()) {
-      std::move(address_profile_save_prompt_callback_)
-          .Run(AutofillClient::AddressPromptUserDecision::kIgnored,
-               std::nullopt);
-      HideBubble();
-    }
     return;
   }
   shown_by_user_gesture_ = true;

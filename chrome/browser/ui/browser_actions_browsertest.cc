@@ -16,7 +16,9 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/actions/actions.h"
+#include "url/url_constants.h"
 
 namespace chrome {
 
@@ -51,6 +53,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowAddressesBubbleOrPage) {
   ASSERT_NE(bubble_controller->GetBubbleView(), nullptr);
   action_manager.FindAction(kActionShowAddressesBubbleOrPage)->InvokeAction();
   EXPECT_EQ(bubble_controller->GetBubbleView(), nullptr);
+
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+  ASSERT_NE(GetActiveWebContents()->GetURL(), addresses_url);
+  action_manager.FindAction(kActionShowAddressesBubbleOrPage)->InvokeAction();
+  EXPECT_EQ(GetActiveWebContents()->GetURL(), addresses_url);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowPaymentsBubbleOrPage) {
