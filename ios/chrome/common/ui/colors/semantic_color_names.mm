@@ -49,9 +49,6 @@ NSString* const kTabGroupFaviconBackgroundColor =
 NSString* const kOmniboxPopoutOverlayColor = @"omnibox_popout_overlay_color";
 NSString* const kTabStripBackgroundColor = @"tab_strip_background_color";
 NSString* const kTabStripNewTabButtonColor = @"tab_strip_new_tab_button_color";
-NSString* const kTabGroupPinkColor = @"tab_group_pink_color";
-NSString* const kTabGroupOrangeColor = @"tab_group_orange_color";
-NSString* const kTabGroupCyanColor = @"tab_group_cyan_color";
 
 #pragma mark - Standard Colors
 NSString* const kSolidBlackColor = @"solid_black_color";
@@ -88,6 +85,7 @@ NSString* const kRedColor = @"red_600_color";
 NSString* const kPink400Color = @"pink_400_color";
 NSString* const kPink500Color = @"pink_500_color";
 NSString* const kPink600Color = @"pink_600_color";
+NSString* const kPink700Color = @"pink_700_color";
 
 NSString* const kPurple500Color = @"purple_500_color";
 NSString* const kPurple600Color = @"purple_600_color";
@@ -99,6 +97,7 @@ NSString* const kOrange500Color = @"orange_500_color";
 NSString* const kOrange600Color = @"orange_600_color";
 
 NSString* const kCyan600Color = @"cyan_600_color";
+NSString* const kCyan700Color = @"cyan_700_color";
 
 #pragma mark - Grey Palette
 NSString* const kGrey50Color = @"grey_50_color";

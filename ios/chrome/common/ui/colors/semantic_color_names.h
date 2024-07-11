@@ -66,10 +66,6 @@ extern NSString* const kOmniboxPopoutOverlayColor;
 extern NSString* const kTabStripBackgroundColor;
 // Color of the symbol of the Tab Strip new tab button.
 extern NSString* const kTabStripNewTabButtonColor;
-// Colors for the TabGroup.
-extern NSString* const kTabGroupPinkColor;
-extern NSString* const kTabGroupOrangeColor;
-extern NSString* const kTabGroupCyanColor;
 
 // ***************
 // Standard Colors
@@ -128,6 +124,7 @@ extern NSString* const kRed600Color;
 extern NSString* const kPink400Color;
 extern NSString* const kPink500Color;
 extern NSString* const kPink600Color;
+extern NSString* const kPink700Color;
 
 // Purple palette.
 extern NSString* const kPurple500Color;
@@ -141,8 +138,9 @@ extern NSString* const kYellow600Color;
 extern NSString* const kOrange500Color;
 extern NSString* const kOrange600Color;
 
-// Orange palette.
+// Cyan palette.
 extern NSString* const kCyan600Color;
+extern NSString* const kCyan700Color;
 
 // Grey Color Palette.
 extern NSString* const kGrey50Color;

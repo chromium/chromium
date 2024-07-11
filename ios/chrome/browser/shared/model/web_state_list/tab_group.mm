@@ -58,7 +58,7 @@ UIColor* TabGroup::ColorForTabGroupColorId(
     tab_groups::TabGroupColorId tab_group_color_id) {
   switch (tab_group_color_id) {
     case tab_groups::TabGroupColorId::kGrey:
-      return [UIColor colorNamed:kGrey600Color];
+      return [UIColor colorNamed:kGrey700Color];
     case tab_groups::TabGroupColorId::kBlue:
       return [UIColor colorNamed:kBlue600Color];
     case tab_groups::TabGroupColorId::kRed:
@@ -66,15 +66,15 @@ UIColor* TabGroup::ColorForTabGroupColorId(
     case tab_groups::TabGroupColorId::kYellow:
       return [UIColor colorNamed:kYellow600Color];
     case tab_groups::TabGroupColorId::kGreen:
-      return [UIColor colorNamed:kGreen600Color];
+      return [UIColor colorNamed:kGreen700Color];
     case tab_groups::TabGroupColorId::kPink:
-      return [UIColor colorNamed:kTabGroupPinkColor];
+      return [UIColor colorNamed:kPink700Color];
     case tab_groups::TabGroupColorId::kPurple:
       return [UIColor colorNamed:kPurple600Color];
     case tab_groups::TabGroupColorId::kCyan:
-      return [UIColor colorNamed:kTabGroupCyanColor];
+      return [UIColor colorNamed:kCyan700Color];
     case tab_groups::TabGroupColorId::kOrange:
-      return [UIColor colorNamed:kTabGroupOrangeColor];
+      return [UIColor colorNamed:kOrange600Color];
     case tab_groups::TabGroupColorId::kNumEntries:
       NOTREACHED_NORETURN() << "kNumEntries is not a supported color enum.";
   }
@@ -84,16 +84,16 @@ UIColor* TabGroup::ColorForTabGroupColorId(
 UIColor* TabGroup::ForegroundColorForTabGroupColorId(
     tab_groups::TabGroupColorId tab_group_color_id) {
   switch (tab_group_color_id) {
-    case tab_groups::TabGroupColorId::kBlue:  // Fallthrough
-    case tab_groups::TabGroupColorId::kRed:   // Fallthrough
-    case tab_groups::TabGroupColorId::kPink:  // Fallthrough
-    case tab_groups::TabGroupColorId::kCyan:  // Fallthrough
-    case tab_groups::TabGroupColorId::kPurple:
+    case tab_groups::TabGroupColorId::kGrey:    // Fallthrough
+    case tab_groups::TabGroupColorId::kBlue:    // Fallthrough
+    case tab_groups::TabGroupColorId::kRed:     // Fallthrough
+    case tab_groups::TabGroupColorId::kGreen:   // Fallthrough
+    case tab_groups::TabGroupColorId::kPink:    // Fallthrough
+    case tab_groups::TabGroupColorId::kPurple:  // Fallthrough
+    case tab_groups::TabGroupColorId::kCyan:
       // For those colors, they are using white in light mode and black in dark
       // mode.
       return [UIColor colorNamed:kSolidWhiteColor];
-    case tab_groups::TabGroupColorId::kGrey:    // Fallthrough
-    case tab_groups::TabGroupColorId::kGreen:   // Fallthrough
     case tab_groups::TabGroupColorId::kYellow:  // Fallthrough
     case tab_groups::TabGroupColorId::kOrange:
       // Those colors are always using black.
