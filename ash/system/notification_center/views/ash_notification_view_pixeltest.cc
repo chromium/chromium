@@ -144,7 +144,7 @@ TEST_P(AshNotificationViewPixelTest, CollapsedNoMessage) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("collapsed_no_message",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/1, notification_view));
+      /*revision_number=*/2, notification_view));
 }
 
 // Tests that a progress notification does not have its title vertically
@@ -347,7 +347,7 @@ TEST_P(AshNotificationViewIconPixelTest, NotificationIcon) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName(base::StringPrintf("expanded_icon_size_%u", size),
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/1, notification_view));
+      /*revision_number=*/2, notification_view));
 
   notification_view->ToggleExpand();
   ASSERT_FALSE(notification_view->IsExpanded());
@@ -359,7 +359,7 @@ TEST_P(AshNotificationViewIconPixelTest, NotificationIcon) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName(base::StringPrintf("collapsed_icon_size_%u", size),
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/1, notification_view));
+      /*revision_number=*/2, notification_view));
 }
 
 class AshNotificationViewTitlePixelTest
@@ -422,7 +422,7 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       ::ash::GetScreenshotName(screenshot_name,
                                IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/1, notification_view));
+      /*revision_number=*/2, notification_view));
 }
 
 class AshNotificationViewCollapsedLongTextPixelTest
@@ -492,7 +492,7 @@ TEST_P(AshNotificationViewCollapsedLongTextPixelTest, ElidedTextSpacing) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("elided_text_spacing",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/1, notification_view));
+      /*revision_number=*/2, notification_view));
 }
 
 }  // namespace ash
