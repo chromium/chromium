@@ -5359,6 +5359,16 @@
       'Dawn Win10 x86 Release (Intel)',
     ],
   },
+  'webgpu_cts_fxc_tests': {
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        # ASAN builds taking a bit longer so needs extra shards to not timeout.
+        'swarming': {
+          'shards': 12,
+        }
+      },
+    },
+  },
   'webgpu_cts_fxc_with_validation_tests': {
     'remove_from': [
       # Disable testing with validation on x86 where they frequently OOM.
@@ -5431,7 +5441,7 @@
       'Dawn Win10 x64 ASAN Release (Intel)': {
         # ASAN builds taking a bit longer so needs extra shards to not timeout.
         'swarming': {
-          'shards': 10,
+          'shards': 12,
         }
       },
       # These tests must run with a GPU.
