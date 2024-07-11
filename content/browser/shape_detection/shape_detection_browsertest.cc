@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_tokenizer.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
@@ -24,11 +23,9 @@ const char kShapeDetectionTestHtml[] = "/media/shape_detection_test.html";
 struct TestParameters {
   const std::string detector_name;
   const std::string image_path;
-  // RAW_PTR_EXCLUSION: global-scope
-  RAW_PTR_EXCLUSION const std::vector<std::vector<float>>&
-      expected_bounding_boxes;
+  const std::vector<std::vector<float>> expected_bounding_boxes;
 } const kTestParameters[] = {
-    {"FaceDetector", "/blank.jpg", std::vector<std::vector<float>>{}},
+    {"FaceDetector", "/blank.jpg", {}},
     {"FaceDetector",
      "/single_face.jpg",
 #if BUILDFLAG(IS_ANDROID)
