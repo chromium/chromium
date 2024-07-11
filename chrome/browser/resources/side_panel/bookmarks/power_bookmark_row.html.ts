@@ -59,7 +59,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
 </cr-url-list-item>`;
 
 return (this.bookmark?.children && this.bookmark.children.length > 0 &&
-    this.bookmarksTreeViewEnabled) ? html`
+    this.bookmarksTreeViewEnabled && this.compact) ? html`
 <cr-expand-button no-hover id="expandButton">${urlListItem}
     </cr-expand-button>` : urlListItem;
 }
