@@ -66,7 +66,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/network_connection_change_simulator.h"
-#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -3077,37 +3076,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify that TriggerCopyText was sent.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_controller->fake_overlay_page_.did_trigger_copy; }));
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       OverlayClosesIfRendererExits) {
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the Overlay
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Force the renderer to crash.
-  content::RenderProcessHost* process =
-      controller->GetOverlayWebViewForTesting()
-          ->GetWebContents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess();
-  content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
-  process->ForceCrash();
-
-  // Overlay should close
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOff; }));
 }
 
 class LensOverlayControllerBrowserFullscreenDisabled
