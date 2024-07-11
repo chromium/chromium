@@ -135,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
       /* storage_namespace=*/nullptr,
       /* user_agent_override=*/sessions::SerializedUserAgentOverride(),
       /* extra_data*/ std::map<std::string, std::string>(),
-      /* from_session_restore=*/true,
-      /* is_active_browser=*/true);
+      /* from_session_restore=*/true);
 
   EXPECT_TRUE(web_contents->GetController().GetPendingEntry());
 }
@@ -159,8 +158,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
       /* storage_namespace=*/nullptr,
       /* user_agent_override=*/sessions::SerializedUserAgentOverride(),
       /* extra_data*/ std::map<std::string, std::string>(),
-      /* from_session_restore=*/true,
-      /* is_active_browser=*/true);
+      /* from_session_restore=*/true);
 
   EXPECT_FALSE(web_contents->GetController().GetPendingEntry());
 }
