@@ -671,6 +671,14 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
     return path;
   }
 
+  // Allow paths under /tmp if the feature flag is enabled.
+  base::FilePath temp_path;
+  if (base::FeatureList::IsEnabled(features::kSkyVaultV2) &&
+      base::GetTempDir(&temp_path) &&
+      ((temp_path == path) || temp_path.IsParent(path))) {
+    return path;
+  }
+
   // Allow removable media.
   if (ash::CrosDisksClient::GetRemovableDiskMountPoint().IsParent(path))
     return path;

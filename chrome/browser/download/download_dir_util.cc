@@ -12,6 +12,7 @@
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/files/file_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -89,13 +90,9 @@ bool ExpandOneDrivePolicyVariable(Profile* profile,
   base::FilePath onedrive_path;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
-    std::optional<ash::file_system_provider::ProvidedFileSystemInfo>
-        file_system_info = ash::cloud_upload::GetODFSInfo(profile);
-    if (!file_system_info.has_value()) {
+    if (!base::GetTempDir(&onedrive_path)) {
       return false;
     }
-
-    onedrive_path = file_system_info->mount_path();
   } else {
     onedrive_path = ash::cloud_upload::GetODFSFuseboxMount(profile);
     if (onedrive_path.empty()) {  // failed to get OneDrive path.
