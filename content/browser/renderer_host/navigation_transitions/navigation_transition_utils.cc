@@ -390,7 +390,7 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
       base::BindOnce(&CacheScreenshotImpl, nav_controller.GetWeakPtr(),
                      navigation_request.GetWeakPtr(),
                      nav_controller.GetLastCommittedEntry()->GetUniqueID(),
-                     /*is_copied_from_embedder=*/true));
+                     /*is_copied_from_embedder=*/false));
 }
 
 }  // namespace content
