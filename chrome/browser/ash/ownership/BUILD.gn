@@ -26,6 +26,7 @@ static_library("ownership") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/dbus/session_manager",
@@ -49,6 +50,7 @@ static_library("ownership") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/system",
   ]
 }
 

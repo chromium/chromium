@@ -75,6 +75,7 @@ static_library("core") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/invalidation",
     "//chrome/browser/ash/printing/enterprise",
+    "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -132,7 +133,10 @@ static_library("core") {
     "//components/webapps/browser",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/policy/enrollment" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/system",
+  ]
 }
 
 static_library("test_support") {

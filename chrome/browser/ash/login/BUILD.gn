@@ -152,6 +152,7 @@ static_library("login") {
     "//chrome/browser/ash/net/rollback_network_config",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/system",
     "//chrome/browser/profiles",
     "//chrome/browser/sync",
     "//chrome/common",
@@ -249,6 +250,7 @@ static_library("login") {
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/system",
     "//chrome/browser/sync",
   ]
 }

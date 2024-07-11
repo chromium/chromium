@@ -23,6 +23,7 @@ static_library("profiles") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/users/avatar",
+    "//chrome/browser/ash/system",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/profiles",
     "//chrome/common:non_code_constants",
@@ -37,5 +38,6 @@ static_library("profiles") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/login/users/avatar",
+    "//chrome/browser/ash/system",
   ]
 }

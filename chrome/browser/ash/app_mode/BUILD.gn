@@ -69,6 +69,7 @@ static_library("app_mode") {
   public_deps = [
     "//ash/public/cpp",
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/system",
     "//chrome/browser/extensions:cws_item_service_proto",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/dbus/userdataauth",
