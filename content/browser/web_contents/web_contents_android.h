@@ -235,13 +235,6 @@ class CONTENT_EXPORT WebContentsAndroid {
   void OnContentForNavigationEntryShown(JNIEnv* env);
   jint GetCurrentBackForwardTransitionStage(JNIEnv* env);
 
-  void CaptureContentAsBitmapForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcallback);
-  void OnFinishGetContentBitmapForTesting(
-      const base::android::JavaRef<jobject>& callback,
-      gfx::Image snapshot);
-
   // Adds a crash report, like DumpWithoutCrashing(), including the Java stack
   // trace from which `web_contents` was created. This is meant to help debug
   // cases where BrowserContext is destroyed before its WebContents.
