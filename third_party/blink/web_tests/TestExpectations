@@ -7576,3 +7576,6 @@ crbug.com/346794458 [ Mac ] external/wpt/permissions-policy/permissions-policy-f
 
 # Branch gardener 2024-07-09
 crbug.com/40899458 [ Mac14 ] fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
+
+# Gardener 2024-06-28
+crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
