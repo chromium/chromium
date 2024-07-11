@@ -818,6 +818,8 @@ export class NetworkRequest {
         size: 0,
       },
       ...(authChallenges ? {authChallenges} : {}),
+      // @ts-expect-error this is a CDP-specific extension.
+      'goog:securityDetails': this.#response.info?.securityDetails,
     };
   }
 
