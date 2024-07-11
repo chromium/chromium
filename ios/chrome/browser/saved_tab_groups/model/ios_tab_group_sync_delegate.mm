@@ -7,6 +7,7 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/saved_tab_groups/saved_tab_group_tab.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
@@ -257,7 +258,45 @@ std::vector<LocalTabID> IOSTabGroupSyncDelegate::GetLocalTabIdsForTabGroup(
 
 void IOSTabGroupSyncDelegate::CreateRemoteTabGroup(
     const LocalTabGroupID& local_tab_group_id) {
-  // TODO(crbug.com/329640035): Implement this.
+  if (sync_service_->GetGroup(local_tab_group_id)) {
+    // The group already exists.
+    return;
+  }
+
+  LocalTabGroupInfo tab_group_info =
+      GetLocalTabGroupInfo(browser_list_, local_tab_group_id);
+  if (!tab_group_info.tab_group) {
+    // This group doesn't exists locally.
+    return;
+  }
+
+  const TabGroup* tab_group = tab_group_info.tab_group;
+  WebStateList* web_state_list = tab_group_info.web_state_list;
+  const TabGroupRange& tab_group_range = tab_group->range();
+
+  ScopedPauseSyncOperation lock = local_update_observer_->PauseSyncUpdate();
+
+  // Generate and id for the synced tab group.
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+
+  // Create a vector of `saved_tabs` based on local tabs.
+  std::vector<SavedTabGroupTab> saved_tabs;
+  for (int index = 0; index < tab_group_range.count(); ++index) {
+    int web_state_index = tab_group_range.range_begin() + index;
+    web::WebState* web_state = web_state_list->GetWebStateAt(web_state_index);
+
+    SavedTabGroupTab saved_tab(
+        web_state->GetVisibleURL(), web_state->GetTitle(), saved_tab_group_id,
+        std::make_optional(index), /*position=*/std::nullopt,
+        web_state->GetUniqueIdentifier().identifier());
+    saved_tabs.push_back(saved_tab);
+  }
+
+  SavedTabGroup saved_group(base::SysNSStringToUTF16(tab_group->GetRawTitle()),
+                            tab_group->visual_data().color(), saved_tabs,
+                            /*position=*/std::nullopt, saved_tab_group_id,
+                            tab_group->tab_group_id());
+  sync_service_->AddGroup(saved_group);
 }
 
 Browser* IOSTabGroupSyncDelegate::GetMostActiveSceneBrowser() {

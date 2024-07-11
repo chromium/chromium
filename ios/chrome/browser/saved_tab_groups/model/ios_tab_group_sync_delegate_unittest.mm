@@ -44,6 +44,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using testing::_;
+using ::testing::Property;
 
 namespace tab_groups {
 
@@ -161,6 +162,31 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
   SavedTabGroupTab ThirdTab(base::Uuid group_guid) {
     return SavedTabGroupTab(kThirdTabURL, kThirdTabTitle, group_guid,
                             std::make_optional(2), kThirdTabId);
+  }
+
+  // Returns the sync tab group prediction for the given `saved_group`.
+  auto SyncTabGroupPrediction(SavedTabGroup saved_group) {
+    return AllOf(
+        Property(&SavedTabGroup::local_group_id, saved_group.local_group_id()),
+        Property(&SavedTabGroup::title, saved_group.title()),
+        Property(&SavedTabGroup::color, saved_group.color()));
+  }
+
+  // Creates a vector of `saved_tabs` based on the given `range`.
+  std::vector<SavedTabGroupTab> SavedTabGroupTabsFromTabs(
+      std::vector<int> indexes,
+      WebStateList* web_state_list,
+      base::Uuid saved_tab_group_id) {
+    std::vector<SavedTabGroupTab> saved_tabs;
+    for (int index : indexes) {
+      web::WebState* web_state = web_state_list->GetWebStateAt(index);
+      SavedTabGroupTab saved_tab(web_state->GetVisibleURL(),
+                                 web_state->GetTitle(), saved_tab_group_id,
+                                 std::make_optional(index), std::nullopt,
+                                 web_state->GetUniqueIdentifier().identifier());
+      saved_tabs.push_back(saved_tab);
+    }
+    return saved_tabs;
   }
 
  protected:
@@ -437,6 +463,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateTabGroup) {
   EXPECT_EQ(2, tab_group->range().count());
 }
 
+// Tests that the service correctly returns local ids.
 TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabGroupIds) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -446,6 +473,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabGroupIds) {
   EXPECT_EQ(2u, local_group_ids.size());
 }
 
+// Tests that the service correctly returns local ids.
 TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabIdsForTabGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -460,6 +488,29 @@ TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabIdsForTabGroup) {
   LocalTabGroupID local_id_group_2 = TabGroupId::GenerateNew();
   local_tab_ids = delegate_->GetLocalTabIdsForTabGroup(local_id_group_2);
   EXPECT_EQ(0u, local_tab_ids.size());
+}
+
+// Tests that the service is correctly updated when creating a remote tab group.
+TEST_F(IOSTabGroupSyncDelegateTest, CreateRemoteTabGroup) {
+  WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a b c* d e f"));
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+
+  tab_groups::TabGroupVisualData visual_data(
+      kGroupTitle, tab_groups::TabGroupColorId::kBlue);
+  web_state_list->CreateGroup({0, 1}, visual_data, tab_group_id);
+
+  std::vector<SavedTabGroupTab> saved_tabs =
+      SavedTabGroupTabsFromTabs({0, 1}, web_state_list, saved_tab_group_id);
+  SavedTabGroup saved_group(kGroupTitle, visual_data.color(), saved_tabs,
+                            std::nullopt, saved_tab_group_id, tab_group_id);
+
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id));
+  EXPECT_CALL(*mock_service_, AddGroup(SyncTabGroupPrediction(saved_group)));
+  delegate_->CreateRemoteTabGroup(tab_group_id);
 }
 
 }  // namespace tab_groups
