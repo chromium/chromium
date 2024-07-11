@@ -136,6 +136,8 @@ enum class ConversionReportSendRetryCount {
 
 const base::TimeDelta kPrivacySandboxAttestationsTimeout = base::Minutes(5);
 
+}  // namespace
+
 // This class consolidates logic regarding when to schedule the browser to send
 // attribution reports. It talks directly to the `AttributionResolver` to help
 // make these decisions.
@@ -143,54 +145,69 @@ const base::TimeDelta kPrivacySandboxAttestationsTimeout = base::Minutes(5);
 // While the class does not make large changes to the underlying database, it
 // is responsible for notifying the `AttributionResolver` when the browser comes
 // back online, which mutates report times for some scheduled reports.
-class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
+class AttributionManagerImpl::ReportScheduler
+    : public ReportSchedulerTimer::Delegate {
  public:
-  AttributionReportScheduler(
-      base::RepeatingClosure send_reports,
-      base::RepeatingClosure on_reporting_paused_cb,
-      base::SequenceBound<AttributionResolver>& attribution_resolver)
-      : send_reports_(std::move(send_reports)),
-        on_reporting_paused_cb_(std::move(on_reporting_paused_cb)),
-        attribution_resolver_(attribution_resolver) {}
-  ~AttributionReportScheduler() override = default;
+  explicit ReportScheduler(base::WeakPtr<AttributionManagerImpl> manager)
+      : manager_(manager) {}
 
-  AttributionReportScheduler(const AttributionReportScheduler&) = delete;
-  AttributionReportScheduler& operator=(const AttributionReportScheduler&) =
-      delete;
-  AttributionReportScheduler(AttributionReportScheduler&&) = delete;
-  AttributionReportScheduler& operator=(AttributionReportScheduler&&) = delete;
+  ~ReportScheduler() override = default;
+
+  ReportScheduler(const ReportScheduler&) = delete;
+  ReportScheduler& operator=(const ReportScheduler&) = delete;
+  ReportScheduler(ReportScheduler&&) = delete;
+  ReportScheduler& operator=(ReportScheduler&&) = delete;
 
  private:
   // ReportSchedulerTimer::Delegate:
   void GetNextReportTime(
       base::OnceCallback<void(std::optional<base::Time>)> callback,
       base::Time now) override {
-    attribution_resolver_->AsyncCall(&AttributionResolver::GetNextReportTime)
+    if (!manager_) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    manager_->attribution_resolver_
+        .AsyncCall(&AttributionResolver::GetNextReportTime)
         .WithArgs(now)
         .Then(std::move(callback));
   }
+
   void OnReportingTimeReached(base::Time now,
                               base::Time timer_desired_run_time) override {
-    send_reports_.Run();
+    if (manager_) {
+      manager_->GetReportsToSend();
+    }
   }
+
   void AdjustOfflineReportTimes(
       base::OnceCallback<void(std::optional<base::Time>)> maybe_set_timer_cb)
       override {
+    if (!manager_) {
+      std::move(maybe_set_timer_cb).Run(std::nullopt);
+      return;
+    }
+
     // Add delay to all reports that should have been sent while the browser was
     // offline so they are not temporally joinable. We do this in storage to
     // avoid pulling an unbounded number of reports into memory, only to
     // immediately issue async storage calls to modify their report times.
-    attribution_resolver_
-        ->AsyncCall(&AttributionResolver::AdjustOfflineReportTimes)
+    manager_->attribution_resolver_
+        .AsyncCall(&AttributionResolver::AdjustOfflineReportTimes)
         .Then(std::move(maybe_set_timer_cb));
   }
 
-  void OnReportingPaused() override { on_reporting_paused_cb_.Run(); }
+  void OnReportingPaused() override {
+    if (manager_) {
+      manager_->RecordPendingAggregatableReportsTimings();
+    }
+  }
 
-  base::RepeatingClosure send_reports_;
-  base::RepeatingClosure on_reporting_paused_cb_;
-  const raw_ref<base::SequenceBound<AttributionResolver>> attribution_resolver_;
+  base::WeakPtr<AttributionManagerImpl> manager_;
 };
+
+namespace {
 
 bool IsStorageKeySessionOnly(
     scoped_refptr<storage::SpecialStoragePolicy> storage_policy,
@@ -1884,13 +1901,7 @@ void AttributionManagerImpl::OnAttestationsLoaded() {
                                 /*buckets=*/50);
 
   scheduler_timer_ = std::make_unique<ReportSchedulerTimer>(
-      std::make_unique<AttributionReportScheduler>(
-          base::BindRepeating(&AttributionManagerImpl::GetReportsToSend,
-                              base::Unretained(this)),
-          base::BindRepeating(
-              &AttributionManagerImpl::RecordPendingAggregatableReportsTimings,
-              base::Unretained(this)),
-          attribution_resolver_));
+      std::make_unique<ReportScheduler>(weak_factory_.GetWeakPtr()));
 
   PrepareNextEvent();
   PrepareNextOsEvent();

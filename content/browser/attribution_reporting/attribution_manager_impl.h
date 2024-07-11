@@ -168,6 +168,8 @@ class CONTENT_EXPORT AttributionManagerImpl
  private:
   friend class AttributionManagerImplTest;
 
+  class ReportScheduler;
+
   using ReportSentCallback =
       base::OnceCallback<void(const AttributionReport&, SendResult)>;
   using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;
