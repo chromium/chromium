@@ -136,7 +136,9 @@ public class IncognitoReauthCoordinatorFactory {
      * This method is responsible for clean-up work. Typically, called when the Activity is being
      * destroyed.
      */
-    void destroy() {}
+    void destroy() {
+        mIncognitoReauthManager.destroy();
+    }
 
     private IncognitoReauthMenuDelegate getIncognitoReauthMenuDelegate() {
         if (mIncognitoReauthMenuDelegateForTesting != null) {

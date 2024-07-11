@@ -425,4 +425,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         }
         return false;
     }
+
+    @Override
+    public void onDestroy() {
+        if (mIncognitoLockSettings != null) {
+            mIncognitoLockSettings.destroy();
+        }
+        super.onDestroy();
+    }
 }

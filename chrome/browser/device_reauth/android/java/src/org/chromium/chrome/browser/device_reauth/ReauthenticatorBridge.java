@@ -64,6 +64,12 @@ public class ReauthenticatorBridge {
         }
     }
 
+    /** Deletes the C++ counterpart. */
+    public void destroy() {
+        ReauthenticatorBridgeJni.get().destroy(mNativeReauthenticatorBridge);
+        mNativeReauthenticatorBridge = 0;
+    }
+
     /**
      * Create an instance of {@link ReauthenticatorBridge} based on the provided {@link
      * DeviceAuthSource}.
@@ -102,5 +108,7 @@ public class ReauthenticatorBridge {
         boolean canUseAuthenticationWithBiometricOrScreenLock(long nativeReauthenticatorBridge);
 
         void reauthenticate(long nativeReauthenticatorBridge);
+
+        void destroy(long nativeReauthenticatorBridge);
     }
 }

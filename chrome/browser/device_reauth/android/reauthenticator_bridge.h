@@ -39,6 +39,9 @@ class ReauthenticatorBridge {
   // Called when reauthentication is completed.
   void OnReauthenticationCompleted(bool auth_succeeded);
 
+  // Called from java to delete this object.
+  void Destroy(JNIEnv* env);
+
  private:
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;

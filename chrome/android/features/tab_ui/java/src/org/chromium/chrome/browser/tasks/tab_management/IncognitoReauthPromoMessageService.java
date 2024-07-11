@@ -111,7 +111,8 @@ public class IncognitoReauthPromoMessageService extends MessageService
      * @param sharedPreferencesManager The {@link SharedPreferencesManager} to query about re-auth
      *     promo shared preference.
      * @param incognitoReauthManager The {@link IncognitoReauthManager} to trigger re-auth for the
-     *     review action.
+     *     review action. This class takes ownership of the {@link IncognitoReauthManager} object
+     *     and is responsible for its cleanup, see `destroy` method.
      * @param snackbarManager {@link SnackbarManager} to show a snack-bar after a successful review
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} dispacther to
      *     register listening to onResume events.
@@ -135,6 +136,7 @@ public class IncognitoReauthPromoMessageService extends MessageService
     }
 
     void destroy() {
+        mIncognitoReauthManager.destroy();
         // Duplicate unregister is safe if dismiss() was invoked.
         mActivityLifecycleDispatcher.unregister(this);
     }

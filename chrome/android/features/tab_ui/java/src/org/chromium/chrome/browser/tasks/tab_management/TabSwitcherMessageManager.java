@@ -143,7 +143,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @NonNull BackPressManager mBackPressManager;
 
     private @Nullable Profile mProfile;
-    private @Nullable IncognitoReauthManager mIncognitoReauthManager;
     private @Nullable PriceMessageService mPriceMessageService;
     private @Nullable IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
     private @Nullable ArchivedTabsMessageService mArchivedTabsMessageService;
@@ -304,7 +303,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
                 && mIncognitoReauthPromoMessageService == null) {
-            mIncognitoReauthManager =
+            IncognitoReauthManager incognitoReauthManager =
                     new IncognitoReauthManager(ContextUtils.activityFromContext(mContext), profile);
             mIncognitoReauthPromoMessageService =
                     new IncognitoReauthPromoMessageService(
@@ -312,7 +311,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             profile,
                             mContext,
                             ChromeSharedPreferences.getInstance(),
-                            mIncognitoReauthManager,
+                            incognitoReauthManager,
                             mSnackbarManager,
                             mLifecylceDispatcher);
             mMessageCardProviderCoordinator.subscribeMessageService(

@@ -104,6 +104,13 @@ public class IncognitoLockSettings {
         updateCheckedStatePerformedByChrome(lastPrefValue);
     }
 
+    /** Performs cleanup. Should be called when the owning activity/fragment is destroyed. */
+    public void destroy() {
+        if (mIncognitoReauthManager != null) {
+            mIncognitoReauthManager.destroy();
+        }
+    }
+
     /**
      * This method is responsible for initiating the re-authentication flow when a user tries to
      * change the preference value. The preference is updated iff the re-authentication was

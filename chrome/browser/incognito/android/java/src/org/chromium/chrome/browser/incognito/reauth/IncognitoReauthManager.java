@@ -74,6 +74,14 @@ public class IncognitoReauthManager {
     }
 
     /**
+     * Cleans up C++ objects owned by this class. Typically, called when the Activity is being
+     * destroyed.
+     */
+    public void destroy() {
+        mReauthenticatorBridge.destroy();
+    }
+
+    /**
      * @return A boolean indicating whether the platform version supports reauth and the
      *     corresponding Chrome feature flag is on;
      *     <p>For a more complete check, rely on the method {@link

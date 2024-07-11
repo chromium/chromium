@@ -72,3 +72,7 @@ void ReauthenticatorBridge::OnReauthenticationCompleted(bool auth_succeeded) {
   Java_ReauthenticatorBridge_onReauthenticationCompleted(
       base::android::AttachCurrentThread(), java_bridge_, auth_succeeded);
 }
+
+void ReauthenticatorBridge::Destroy(JNIEnv* env) {
+  delete this;
+}
