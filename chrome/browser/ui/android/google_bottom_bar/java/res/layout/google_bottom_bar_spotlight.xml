@@ -10,7 +10,7 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/google_bottom_bar_container"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/google_bottom_bar_height"
+    android:layout_height="@dimen/google_bottom_bar_buttons_container_height"
     android:paddingStart="@dimen/google_bottom_bar_padding"
     android:paddingEnd="@dimen/google_bottom_bar_padding"
     android:background="@color/google_bottom_bar_background_color"

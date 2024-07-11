@@ -8,10 +8,9 @@ found in the LICENSE file.
 <!--TODO: move page_insights_icon to its own resource target-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/google_bottom_bar_container"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/google_bottom_bar_height"
+    android:layout_height="@dimen/google_bottom_bar_buttons_container_height"
     android:background="@color/google_bottom_bar_background_color"
     android:baselineAligned="false"
     android:orientation="horizontal">

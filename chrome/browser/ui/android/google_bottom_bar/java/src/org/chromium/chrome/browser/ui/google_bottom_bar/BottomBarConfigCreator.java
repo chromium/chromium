@@ -332,6 +332,9 @@ public class BottomBarConfigCreator {
             return false;
         }
 
+        buttonIdList.addAll(
+                encodedLayoutList.subList(1, encodedLayoutList.size())); // remove spotlight
+
         if (variantLayoutType == SINGLE_DECKER_WITH_RIGHT_BUTTONS && buttonIdList.size() > 2) {
             Log.e(
                     TAG,
@@ -339,9 +342,6 @@ public class BottomBarConfigCreator {
                             + " elements.");
             return false;
         }
-
-        buttonIdList.addAll(
-                encodedLayoutList.subList(1, encodedLayoutList.size())); // remove spotlight
 
         long validButtonListSize =
                 buttonIdList.stream().filter(BottomBarConfigCreator::isValidButtonId).count();
