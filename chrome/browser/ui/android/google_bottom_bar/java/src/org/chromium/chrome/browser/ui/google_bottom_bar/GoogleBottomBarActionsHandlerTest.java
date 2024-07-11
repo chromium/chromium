@@ -377,7 +377,8 @@ public class GoogleBottomBarActionsHandlerTest {
     public void
             testSearchAction_buttonConfigHasNoPendingIntent_canNotBeResolved_throwsIllegalStateException() {
         mHistogramWatcher =
-                HistogramWatcher.newBuilder().expectNoRecords(BUTTON_CLICKED_HISTOGRAM).build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCH_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         Drawable icon = mock(Drawable.class);
@@ -506,8 +507,8 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testOpenGoogleAppHome_canNotBeResolved_throwsIllegalStateException() {
-        mGoogleBottomBarActionsHandler.openGoogleAppHome();
+    public void testOnSearchboxHomeTap_canNotBeResolved_throwsIllegalStateException() {
+        mGoogleBottomBarActionsHandler.onSearchboxHomeTap();
 
         assertNull(Shadows.shadowOf(mActivity).getNextStartedActivityForResult());
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
@@ -515,13 +516,16 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test
-    public void testOpenGoogleAppHome_canBeResolved_googleAppHomeIntentStarted() {
+    public void testOnSearchboxHomeTap_canBeResolved_googleAppHomeIntentStarted() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_INFO);
         intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
-        mGoogleBottomBarActionsHandler.openGoogleAppHome();
+        mGoogleBottomBarActionsHandler.onSearchboxHomeTap();
 
         Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(Intent.ACTION_MAIN, startedIntent.getAction());
@@ -536,8 +540,8 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testOpenGoogleAppSearch_canNotBeResolved_throwsIllegalStateException() {
-        mGoogleBottomBarActionsHandler.openGoogleAppSearch();
+    public void testOnSearchboxHintTextTap_canNotBeResolved_throwsIllegalStateException() {
+        mGoogleBottomBarActionsHandler.onSearchboxHintTextTap();
 
         assertNull(Shadows.shadowOf(mActivity).getNextStartedActivityForResult());
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
@@ -545,12 +549,15 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test
-    public void testOpenGoogleAppSearch_canBeResolved_googleAppSearchIntentStarted() {
+    public void testOnSearchboxHintTextTap_canBeResolved_googleAppSearchIntentStarted() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
         Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
         intent.setPackage(PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
-        mGoogleBottomBarActionsHandler.openGoogleAppSearch();
+        mGoogleBottomBarActionsHandler.onSearchboxHintTextTap();
 
         Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(SearchManager.INTENT_ACTION_GLOBAL_SEARCH, startedIntent.getAction());
@@ -562,8 +569,8 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testOpenGoogleAppVoiceSearch_canNotBeResolved_throwsIllegalStateException() {
-        mGoogleBottomBarActionsHandler.openGoogleAppVoiceSearch();
+    public void testOnSearchboxMicTap_canNotBeResolved_throwsIllegalStateException() {
+        mGoogleBottomBarActionsHandler.onSearchboxMicTap();
 
         assertNull(Shadows.shadowOf(mActivity).getNextStartedActivityForResult());
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
@@ -571,12 +578,16 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test
-    public void testOpenGoogleAppVoiceSearch_canBeResolved_googleAppVoiceSearchIntentStarted() {
+    public void testOnSearchboxMicTap_canBeResolved_googleAppVoiceSearchIntentStarted() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM,
+                        GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
         Intent intent = new Intent(VOICE_SEARCH_INTENT_ACTION);
         intent.setPackage(PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
-        mGoogleBottomBarActionsHandler.openGoogleAppVoiceSearch();
+        mGoogleBottomBarActionsHandler.onSearchboxMicTap();
 
         Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(VOICE_SEARCH_INTENT_ACTION, startedIntent.getAction());
@@ -588,19 +599,25 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test
-    public void testOpenLens_lensNotEnabled_lensNotStarted() {
+    public void testOnSearchboxLensTap_lensNotEnabled_lensNotStarted() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
         ShadowLensController.sIsAvailable = false;
 
-        mGoogleBottomBarActionsHandler.openLens();
+        mGoogleBottomBarActionsHandler.onSearchboxLensTap();
 
         verify(ShadowLensController.getInstance(), never()).startLens(any(), any());
     }
 
     @Test
-    public void testOpenLens_lensEnabled_lensStarted() {
+    public void testOnSearchboxLensTap_lensEnabled_lensStarted() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
         ShadowLensController.sIsAvailable = true;
 
-        mGoogleBottomBarActionsHandler.openLens();
+        mGoogleBottomBarActionsHandler.onSearchboxLensTap();
 
         verify(ShadowLensController.getInstance())
                 .startLens(any(), mLensIntentParamsArgumentCaptor.capture());

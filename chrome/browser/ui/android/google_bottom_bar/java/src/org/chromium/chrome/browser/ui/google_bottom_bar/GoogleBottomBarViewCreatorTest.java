@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.B
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SEARCH;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_UPDATED_HISTOGRAM;
 
@@ -31,6 +32,7 @@ import android.widget.ImageButton;
 import androidx.annotation.Nullable;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,6 +53,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarVariantCreatedEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
 import org.chromium.ui.base.TestActivity;
@@ -84,6 +87,8 @@ public class GoogleBottomBarViewCreatorTest {
     private BottomBarConfigCreator mConfigCreator;
     private GoogleBottomBarViewCreator mGoogleBottomBarViewCreator;
 
+    private HistogramWatcher mHistogramWatcher;
+
     @Before
     public void setup() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
@@ -93,6 +98,15 @@ public class GoogleBottomBarViewCreatorTest {
 
         when(mTabSupplier.get()).thenReturn(mTab);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
+    }
+
+    @After
+    public void tearDown() {
+        if (mHistogramWatcher != null) {
+            mHistogramWatcher.assertExpected();
+            mHistogramWatcher.close();
+            mHistogramWatcher = null;
+        }
     }
 
     private GoogleBottomBarViewCreator getGoogleBottomBarViewCreator(
@@ -166,34 +180,32 @@ public class GoogleBottomBarViewCreatorTest {
     @Test
     public void
             testCreateGoogleBottomBarView_evenLayout_logsGoogleBottomBarCreatedWithEvenLayout() {
-        HistogramWatcher histogramWatcher =
+        mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BOTTOM_BAR_CREATED_HISTOGRAM, GoogleBottomBarCreatedEvent.EVEN_LAYOUT);
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(getEvenLayoutConfig());
 
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test
     public void
             testCreateGoogleBottomBarView_spotlightLayout_logsGoogleBottomBarCreatedWithSpotlightLayout() {
-        HistogramWatcher histogramWatcher =
+        mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BOTTOM_BAR_CREATED_HISTOGRAM, GoogleBottomBarCreatedEvent.SPOTLIGHT_LAYOUT);
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(getSpotlightLayoutConfig());
 
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test
     public void
             testCreateGoogleBottomBarView_noVariantLayout_returnsLayoutWithBottomBarButtonsContainer() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
+                        GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(getEvenLayoutConfig());
 
         View view = mGoogleBottomBarViewCreator.createGoogleBottomBarView();
@@ -210,6 +222,18 @@ public class GoogleBottomBarViewCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             testCreateGoogleBottomBarView_doubleDeckerLayout_returnsLayoutWithBottomBarButtonsAndSearchboxContainers() {
+        mHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
+                                GoogleBottomBarVariantCreatedEvent.DOUBLE_DECKER)
+                        .expectIntRecords(
+                                BUTTON_SHOWN_HISTOGRAM,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_HOME,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_LENS)
+                        .build();
         BottomBarConfig bottomBarConfig =
                 mConfigCreator.create(
                         GoogleBottomBarIntentParams.newBuilder()
@@ -233,6 +257,18 @@ public class GoogleBottomBarViewCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             testCreateGoogleBottomBarView_singleDeckerLayout_returnsLayoutWithBottomBarSearchboxContainer() {
+        mHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
+                                GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER)
+                        .expectIntRecords(
+                                BUTTON_SHOWN_HISTOGRAM,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_HOME,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_LENS)
+                        .build();
         BottomBarConfig bottomBarConfig =
                 mConfigCreator.create(
                         GoogleBottomBarIntentParams.newBuilder()
@@ -254,6 +290,18 @@ public class GoogleBottomBarViewCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             testCreateGoogleBottomBarView_singleDeckerWithRightButtonsLayout_returnsLayoutWithBottomBarButtonsOnRightAndSearchboxContainers() {
+        mHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
+                                GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
+                        .expectIntRecords(
+                                BUTTON_SHOWN_HISTOGRAM,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_HOME,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH,
+                                GoogleBottomBarButtonEvent.SEARCHBOX_LENS)
+                        .build();
         BottomBarConfig bottomBarConfig =
                 mConfigCreator.create(
                         GoogleBottomBarIntentParams.newBuilder()
@@ -275,7 +323,7 @@ public class GoogleBottomBarViewCreatorTest {
 
     @Test
     public void testLogButtons_logsAllChromeButtonsShown() {
-        HistogramWatcher histogramWatcher =
+        mHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
@@ -287,14 +335,11 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test
     public void testLogButtons_logsAllEmbedderButtonsShown() {
-        HistogramWatcher histogramWatcher =
+        mHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
@@ -306,15 +351,11 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test
-    public void
-            testLogButtons_pageInsightCoordinatorIsNullAndPendingIntentIsNull_logsUnknownButtons() {
-        HistogramWatcher histogramWatcher =
+    public void testLogButtons_pageInsightsPendingIntentIsNull_logsUnknownButtons() {
+        mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_SHOWN_HISTOGRAM, GoogleBottomBarButtonEvent.UNKNOWN);
         List<Integer> buttonIdList = List.of(0, PIH_BASIC);
@@ -328,14 +369,11 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test
     public void testLogButtons_customButtonHasAssociatedCustomButtonParams_logsCustomButtons() {
-        HistogramWatcher histogramWatcher =
+        mHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
@@ -356,14 +394,11 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test
     public void testLogButtons_customButtonWithoutCustomButtonParams_doesNotLogCustomButton() {
-        HistogramWatcher histogramWatcher =
+        mHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
@@ -381,14 +416,11 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test
     public void testLogButtons_searchButtonHasAssociatedCustomButtonParams_logsSearchButton() {
-        HistogramWatcher histogramWatcher =
+        mHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
@@ -409,14 +441,11 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test
     public void testLogButtons_searchButtonWithoutCustomButtonParams_doesNotLogSearchButton() {
-        HistogramWatcher histogramWatcher =
+        mHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
@@ -434,9 +463,6 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test
@@ -494,7 +520,7 @@ public class GoogleBottomBarViewCreatorTest {
 
     @Test
     public void testUpdateBottomBarButton_logsButtonUpdated() {
-        HistogramWatcher histogramWatcher =
+        mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_UPDATED_HISTOGRAM, GoogleBottomBarButtonEvent.SAVE_EMBEDDER);
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(getAllEmbedderButtonsConfig());
@@ -503,9 +529,6 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.updateBottomBarButton(
                 BottomBarConfigCreator.createButtonConfigFromCustomParams(
                         mActivity, getMockCustomButtonParams(SAVE)));
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
     }
 
     @Test

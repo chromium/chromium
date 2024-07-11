@@ -189,11 +189,24 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Embedder Search button"/>
   <int value="9" label="Chrome Search button"/>
   <int value="10" label="Embedder Home button"/>
+  <int value="11" label="Chrome Home button"/>
+  <int value="12" label="Searchbox Home button"/>
+  <int value="13" label="Searchbox Search entrypoint"/>
+  <int value="14" label="Searchbox Voice Search button"/>
+  <int value="15" label="Searchbox Lens button"/>
 </enum>
 
 <enum name="GoogleBottomBarCreatedEvent">
   <int value="0" label="Even layout"/>
   <int value="1" label="Spotlight layout"/>
+</enum>
+
+<enum name="GoogleBottomBarVariantCreatedEvent">
+  <int value="0" label="Unknown variant"/>
+  <int value="1" label="No variant"/>
+  <int value="2" label="Double decker"/>
+  <int value="3" label="Single decker"/>
+  <int value="4" label="Single decker with right buttons"/>
 </enum>
 
 <enum name="IncognitoCCTCallerId">

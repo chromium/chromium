@@ -8,6 +8,10 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.G
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.NO_VARIANT;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_HOME;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_LENS;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,6 +31,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarVariantCreatedEvent;
 
 /** Builds the GoogleBottomBar view. */
 public class GoogleBottomBarViewCreator {
@@ -111,19 +116,23 @@ public class GoogleBottomBarViewCreator {
 
         searchboxView
                 .findViewById(R.id.google_bottom_bar_searchbox_super_g_button)
-                .setOnClickListener(v -> mActionsHandler.openGoogleAppHome());
+                .setOnClickListener(v -> mActionsHandler.onSearchboxHomeTap());
+        GoogleBottomBarLogger.logButtonShown(SEARCHBOX_HOME);
 
         searchboxView
                 .findViewById(R.id.google_bottom_bar_searchbox_hint_text_view)
-                .setOnClickListener(v -> mActionsHandler.openGoogleAppSearch());
+                .setOnClickListener(v -> mActionsHandler.onSearchboxHintTextTap());
+        GoogleBottomBarLogger.logButtonShown(SEARCHBOX_SEARCH);
 
         searchboxView
                 .findViewById(R.id.google_bottom_bar_searchbox_mic_button)
-                .setOnClickListener(v -> mActionsHandler.openGoogleAppVoiceSearch());
+                .setOnClickListener(v -> mActionsHandler.onSearchboxMicTap());
+        GoogleBottomBarLogger.logButtonShown(SEARCHBOX_VOICE_SEARCH);
 
         searchboxView
                 .findViewById(R.id.google_bottom_bar_searchbox_lens_button)
-                .setOnClickListener(v -> mActionsHandler.openLens());
+                .setOnClickListener(v -> mActionsHandler.onSearchboxLensTap());
+        GoogleBottomBarLogger.logButtonShown(SEARCHBOX_LENS);
 
         return searchboxView;
     }
@@ -153,22 +162,40 @@ public class GoogleBottomBarViewCreator {
     }
 
     private ViewGroup getLayoutRoot() {
-        int rootLayoutId =
-                switch (mConfig.getVariantLayoutType()) {
-                    case NO_VARIANT -> R.layout.bottom_bar_no_variant_root_layout;
-                    case DOUBLE_DECKER -> R.layout.bottom_bar_double_decker_root_layout;
-                    case SINGLE_DECKER -> R.layout.bottom_bar_single_decker_root_layout;
-                    case SINGLE_DECKER_WITH_RIGHT_BUTTONS -> R.layout
-                            .bottom_bar_single_decker_with_right_buttons_root_layout;
-                    default -> {
-                        Log.e(
-                                TAG,
-                                "Unexpected variant layout type: %s. Fallback to no variant"
-                                        + " layout.",
-                                mConfig.getVariantLayoutType());
-                        yield R.layout.bottom_bar_no_variant_root_layout;
-                    }
-                };
+        int rootLayoutId = 0;
+        switch (mConfig.getVariantLayoutType()) {
+            case NO_VARIANT -> {
+                GoogleBottomBarLogger.logVariantCreatedEvent(
+                        GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
+                rootLayoutId = R.layout.bottom_bar_no_variant_root_layout;
+            }
+            case DOUBLE_DECKER -> {
+                GoogleBottomBarLogger.logVariantCreatedEvent(
+                        GoogleBottomBarVariantCreatedEvent.DOUBLE_DECKER);
+                rootLayoutId = R.layout.bottom_bar_double_decker_root_layout;
+            }
+            case SINGLE_DECKER -> {
+                GoogleBottomBarLogger.logVariantCreatedEvent(
+                        GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER);
+                rootLayoutId = R.layout.bottom_bar_single_decker_root_layout;
+            }
+            case SINGLE_DECKER_WITH_RIGHT_BUTTONS -> {
+                GoogleBottomBarLogger.logVariantCreatedEvent(
+                        GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER_WITH_RIGHT_BUTTONS);
+                rootLayoutId = R.layout.bottom_bar_single_decker_with_right_buttons_root_layout;
+            }
+            default -> {
+                GoogleBottomBarLogger.logVariantCreatedEvent(
+                        GoogleBottomBarVariantCreatedEvent.UNKNOWN_VARIANT);
+                GoogleBottomBarLogger.logVariantCreatedEvent(
+                        GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
+                Log.e(
+                        TAG,
+                        "Unexpected variant layout type: %s. Fallback to no variant" + " layout.",
+                        mConfig.getVariantLayoutType());
+                rootLayoutId = R.layout.bottom_bar_no_variant_root_layout;
+            }
+        }
         return (ViewGroup) LayoutInflater.from(mContext).inflate(rootLayoutId, /* root= */ null);
     }
 

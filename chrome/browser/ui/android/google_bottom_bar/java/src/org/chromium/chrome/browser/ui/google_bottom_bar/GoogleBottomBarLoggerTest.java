@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_CLICKED_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_UPDATED_HISTOGRAM;
@@ -17,6 +18,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarVariantCreatedEvent;
 
 /** Unit tests for {@link GoogleBottomBarLogger}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,6 +60,71 @@ public class GoogleBottomBarLoggerTest {
                 HistogramWatcher.newBuilder().expectNoRecords(BOTTOM_BAR_CREATED_HISTOGRAM).build();
 
         GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.COUNT);
+    }
+
+    @Test
+    public void logVariantCreatedEvent_unknownVariant_logsUnknownVariant() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
+                        GoogleBottomBarVariantCreatedEvent.UNKNOWN_VARIANT);
+
+        GoogleBottomBarLogger.logVariantCreatedEvent(
+                GoogleBottomBarVariantCreatedEvent.UNKNOWN_VARIANT);
+    }
+
+    @Test
+    public void logVariantCreatedEvent_noVariant_logsNoVariant() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
+                        GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
+
+        GoogleBottomBarLogger.logVariantCreatedEvent(GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
+    }
+
+    @Test
+    public void logVariantCreatedEvent_doubleDeckerVariant_logsDoubleDecker() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
+                        GoogleBottomBarVariantCreatedEvent.DOUBLE_DECKER);
+
+        GoogleBottomBarLogger.logVariantCreatedEvent(
+                GoogleBottomBarVariantCreatedEvent.DOUBLE_DECKER);
+    }
+
+    @Test
+    public void logVariantCreatedEvent_singleDeckerVariant_logsSingleDecker() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
+                        GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER);
+
+        GoogleBottomBarLogger.logVariantCreatedEvent(
+                GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER);
+    }
+
+    @Test
+    public void
+            logVariantCreatedEvent_singleDeckerWithRightButtonsVariant_logsSingleDeckerWithRightButtons() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
+                        GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER_WITH_RIGHT_BUTTONS);
+
+        GoogleBottomBarLogger.logVariantCreatedEvent(
+                GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER_WITH_RIGHT_BUTTONS);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void logVariantCreatedEvent_unsupportedVariant_doesNotLogEvent() {
+        mHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM)
+                        .build();
+
+        GoogleBottomBarLogger.logVariantCreatedEvent(GoogleBottomBarVariantCreatedEvent.COUNT);
     }
 
     @Test
@@ -148,6 +215,60 @@ public class GoogleBottomBarLoggerTest {
                         BUTTON_SHOWN_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCH_CHROME);
 
         GoogleBottomBarLogger.logButtonShown(GoogleBottomBarButtonEvent.SEARCH_CHROME);
+    }
+
+    @Test
+    public void logButtonShown_homeEmbedderButton_logsHomeEmbedderButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_SHOWN_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_EMBEDDER);
+
+        GoogleBottomBarLogger.logButtonShown(GoogleBottomBarButtonEvent.HOME_EMBEDDER);
+    }
+
+    @Test
+    public void logButtonShown_homeChromeButton_logsHomeChromeButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_SHOWN_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_CHROME);
+
+        GoogleBottomBarLogger.logButtonShown(GoogleBottomBarButtonEvent.HOME_CHROME);
+    }
+
+    @Test
+    public void logButtonShown_searchboxHomeButton_logsSearchboxHomeButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_SHOWN_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
+
+        GoogleBottomBarLogger.logButtonShown(GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
+    }
+
+    @Test
+    public void logButtonShown_searchboxSearchButton_logsSearchboxSearchButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_SHOWN_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
+
+        GoogleBottomBarLogger.logButtonShown(GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
+    }
+
+    @Test
+    public void logButtonShown_searchboxSearchVoiceButton_logsSearchboxSearchVoiceButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_SHOWN_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
+
+        GoogleBottomBarLogger.logButtonShown(GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
+    }
+
+    @Test
+    public void logButtonShown_searchboxLensButton_logsSearchboxLensButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_SHOWN_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
+
+        GoogleBottomBarLogger.logButtonShown(GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
     }
 
     @Test(expected = AssertionError.class)
@@ -248,6 +369,61 @@ public class GoogleBottomBarLoggerTest {
         GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SEARCH_CHROME);
     }
 
+    @Test
+    public void logButtonClicked_homeEmbedderButton_logsHomeEmbedderButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_EMBEDDER);
+
+        GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.HOME_EMBEDDER);
+    }
+
+    @Test
+    public void logButtonClicked_homeChromeButton_logsHomeChromeButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_CHROME);
+
+        GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.HOME_CHROME);
+    }
+
+    @Test
+    public void logButtonClicked_searchboxHomeButton_logsSearchboxHomeButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
+
+        GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
+    }
+
+    @Test
+    public void logButtonClicked_searchboxSearchButton_logsSearchboxSearchButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
+
+        GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
+    }
+
+    @Test
+    public void logButtonClicked_searchboxSearchVoiceButton_logsSearchboxSearchVoiceButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM,
+                        GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
+
+        GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
+    }
+
+    @Test
+    public void logButtonClicked_searchboxLensButton_logsSearchboxLensButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
+
+        GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
+    }
+
     @Test(expected = AssertionError.class)
     public void logButtonClicked_unsupportedButton_doesNotLogEvent() {
         mHistogramWatcher =
@@ -344,6 +520,61 @@ public class GoogleBottomBarLoggerTest {
                         BUTTON_UPDATED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCH_CHROME);
 
         GoogleBottomBarLogger.logButtonUpdated(GoogleBottomBarButtonEvent.SEARCH_CHROME);
+    }
+
+    @Test
+    public void logButtonUpdated_homeEmbedderButton_logsHomeEmbedderButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_UPDATED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_EMBEDDER);
+
+        GoogleBottomBarLogger.logButtonUpdated(GoogleBottomBarButtonEvent.HOME_EMBEDDER);
+    }
+
+    @Test
+    public void logButtonUpdated_homeChromeButton_logsHomeChromeButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_UPDATED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_CHROME);
+
+        GoogleBottomBarLogger.logButtonUpdated(GoogleBottomBarButtonEvent.HOME_CHROME);
+    }
+
+    @Test
+    public void logButtonUpdated_searchboxHomeButton_logsSearchboxHomeButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_UPDATED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
+
+        GoogleBottomBarLogger.logButtonUpdated(GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
+    }
+
+    @Test
+    public void logButtonUpdated_searchboxSearchButton_logsSearchboxSearchButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_UPDATED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
+
+        GoogleBottomBarLogger.logButtonUpdated(GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
+    }
+
+    @Test
+    public void logButtonUpdated_searchboxSearchVoiceButton_logsSearchboxSearchVoiceButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_UPDATED_HISTOGRAM,
+                        GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
+
+        GoogleBottomBarLogger.logButtonUpdated(GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
+    }
+
+    @Test
+    public void logButtonUpdated_searchboxLensButton_logsSearchboxLensButton() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_UPDATED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
+
+        GoogleBottomBarLogger.logButtonUpdated(GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
     }
 
     @Test(expected = AssertionError.class)
