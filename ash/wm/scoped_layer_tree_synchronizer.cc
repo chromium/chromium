@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
-#include "base/notreached.h"
+#include "base/check_op.h"
+#include "base/numerics/angle_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
@@ -25,8 +25,6 @@ namespace {
 
 using Corner = gfx::RRectF::Corner;
 
-constexpr float PI = 3.1415926f;
-
 float Square(float n) {
   return std::pow(n, 2);
 }
@@ -34,11 +32,11 @@ float Square(float n) {
 // Represents an arc of the circle, defined by its center, radius and start and
 // end angles.
 struct CircularArc {
-  static constexpr int DEGREE_0 = 0;
-  static constexpr int DEGREE_90 = 90;
-  static constexpr int DEGREE_180 = 180;
-  static constexpr int DEGREE_270 = 270;
-  static constexpr int DEGREE_360 = 360;
+  static constexpr int kDegree0 = 0;
+  static constexpr int kDegree90 = 90;
+  static constexpr int kDegree180 = 180;
+  static constexpr int kDegree270 = 270;
+  static constexpr int kDegree360 = 360;
 
   gfx::PointF center;
   float radius;
@@ -53,9 +51,8 @@ struct CircularArc {
 
   // Return true if the arc inclusively contains the `point`.
   bool InclusivelyContains(const gfx::PointF point) const {
-    const float distance = std::sqrt(Square(point.x() - center.x()) +
-                                     Square(point.y() - center.y()));
-    if (distance > radius) {
+    const gfx::Vector2dF distance_vec = point - center;
+    if (distance_vec.Length() > radius) {
       return false;
     }
 
@@ -65,33 +62,29 @@ struct CircularArc {
     // to top, whereas our positive y-axis runs from top to bottom. Therefore,
     // we need to flip the direction y vector.
     const float angle_in_radians =
-        std::atan2(-(point.y() - center.y()), point.x() - center.x());
+        std::atan2(-distance_vec.y(), distance_vec.x());
 
     const int normalized_angle_in_degree =
-        angle_in_radians < DEGREE_0
-            ? (angle_in_radians + 2 * PI) * (DEGREE_180 / PI)
-            : angle_in_radians * (DEGREE_180 / PI);
+        base::RadToDeg(angle_in_radians) +
+        (angle_in_radians < kDegree0 ? kDegree360 : kDegree0);
 
     return normalized_angle_in_degree >= start_angle &&
            normalized_angle_in_degree <= end_angle;
   }
 
   gfx::PointF GetMidPointOnArc() const {
-    const float mid_angle_in_degree =
-        start_angle + (end_angle - start_angle) / 2;
-    const float mid_angle_in_radian = mid_angle_in_degree * PI / DEGREE_180;
+    const float mid_angle_in_degree = (start_angle + end_angle) / 2;
+    const float mid_angle_in_radian = base::DegToRad(mid_angle_in_degree);
 
     // The parametric equations for a circle with center (cx, cy) and radius r
     // are:
     // x = cx + r * cos(theta)
     // y = cy + r * sin(theta)
     // where theta is the angle counter-clockwise from +x axis.
-    // Note: For y coordinate, We have a negative sign calculation since
+    // Note: For y coordinate, we have a negative sign calculation since
     // our y-axis runs positive top-down.
-    const float x = center.x() + radius * std::cos(mid_angle_in_radian);
-    const float y = center.y() - radius * std::sin(mid_angle_in_radian);
-
-    return {x, y};
+    return {center.x() + radius * std::cos(mid_angle_in_radian),
+            center.y() - radius * std::sin(mid_angle_in_radian)};
   }
 
  private:
@@ -133,7 +126,8 @@ struct CircularArc {
     }
 
     // Distance between the centers of the two cycles.
-    float d = std::sqrt(Square(c2.x() - c1.x()) + Square(c2.y() - c1.y()));
+    const gfx::Vector2dF distance_vec = c2 - c1;
+    const float d = distance_vec.Length();
 
     // No intersection.
     if (d > r1 + r2) {
@@ -153,24 +147,23 @@ struct CircularArc {
     }
 
     // Circles intersect at two points.
-    if (d > std::abs(r1 - r2) && d < r1 + r2) {
-      float a = (Square(r1) - Square(r2) + Square(d)) / (2 * d);
-      float h = std::sqrt(Square(r1) - Square(a));
+    CHECK_GT(d, std::abs(r1 - r2));
+    CHECK_LT(d, r1 + r2);
 
-      float p5_x = c1.x() + (a / d) * (c2.x() - c1.x());
-      float p5_y = c1.y() + (a / d) * (c2.y() - c1.y());
+    float a = (Square(r1) - Square(r2) + Square(d)) / (2 * Square(d));
+    float h = std::sqrt(Square(r1) - Square(a)) / d;
 
-      float p3_x = p5_x - (h / d) * (c2.y() - c1.y());
-      float p3_y = p5_y + (h / d) * (c2.x() - c1.x());
+    float p5_x = c1.x() + a * distance_vec.x();
+    float p5_y = c1.y() + a * distance_vec.y();
 
-      float p4_x = p3_x + (h / d) * (c2.y() - c1.y());
-      float p4_y = p3_y - (h / d) * (c2.x() - c1.x());
+    float p3_x = p5_x - h * distance_vec.y();
+    float p3_y = p5_y + h * distance_vec.x();
 
-      return {{gfx::PointF(p3_x, p3_y), gfx::PointF(p4_x, p4_y)},
-              /*infinite_points=*/false};
-    }
+    float p4_x = p3_x + h * distance_vec.y();
+    float p4_y = p3_y - h * distance_vec.x();
 
-    NOTREACHED_NORETURN();
+    return {{gfx::PointF(p3_x, p3_y), gfx::PointF(p4_x, p4_y)},
+            /*infinite_points=*/false};
   }
 };
 
@@ -185,23 +178,23 @@ CircularArc GetArcForCorner(const gfx::RRectF& rrectf, Corner corner) {
   switch (corner) {
     case Corner::kUpperRight:
       corner_arc.center = bounding_box.bottom_left();
-      corner_arc.start_angle = CircularArc::DEGREE_0;
-      corner_arc.end_angle = CircularArc::DEGREE_90;
+      corner_arc.start_angle = CircularArc::kDegree0;
+      corner_arc.end_angle = CircularArc::kDegree90;
       break;
     case Corner::kUpperLeft:
       corner_arc.center = bounding_box.bottom_right();
-      corner_arc.start_angle = CircularArc::DEGREE_90;
-      corner_arc.end_angle = CircularArc::DEGREE_180;
+      corner_arc.start_angle = CircularArc::kDegree90;
+      corner_arc.end_angle = CircularArc::kDegree180;
       break;
     case Corner::kLowerLeft:
       corner_arc.center = bounding_box.top_right();
-      corner_arc.start_angle = CircularArc::DEGREE_180;
-      corner_arc.end_angle = CircularArc::DEGREE_270;
+      corner_arc.start_angle = CircularArc::kDegree180;
+      corner_arc.end_angle = CircularArc::kDegree270;
       break;
     case Corner::kLowerRight:
       corner_arc.center = bounding_box.origin();
-      corner_arc.start_angle = CircularArc::DEGREE_270;
-      corner_arc.end_angle = CircularArc::DEGREE_360;
+      corner_arc.start_angle = CircularArc::kDegree270;
+      corner_arc.end_angle = CircularArc::kDegree360;
       break;
   }
 
@@ -219,44 +212,52 @@ bool CheckCornerContainment(const gfx::PointF& p, const gfx::RRectF& rrectf) {
   Corner containing_corner;
   gfx::PointF canonical_point;  // p translated to one of the quadrants
 
-  const float x = p.x(), y = p.y();
+  const float x = p.x();
+  const float y = p.y();
 
-  if (x < rectf.x() + rrectf.GetCornerRadii(Corner::kUpperLeft).x() &&
-      y < rectf.y() + rrectf.GetCornerRadii(Corner::kUpperLeft).y()) {
+  const gfx::Vector2dF lower_left_corner_radii =
+      rrectf.GetCornerRadii(Corner::kLowerLeft);
+  const gfx::Vector2dF lower_right_corner_radii =
+      rrectf.GetCornerRadii(Corner::kLowerRight);
+  const gfx::Vector2dF upper_left_corner_radii =
+      rrectf.GetCornerRadii(Corner::kUpperLeft);
+  const gfx::Vector2dF upper_right_corner_radii =
+      rrectf.GetCornerRadii(Corner::kUpperRight);
+
+  if (x < rectf.x() + upper_left_corner_radii.x() &&
+      y < rectf.y() + upper_left_corner_radii.y()) {
     // Upper left corner.
     containing_corner = Corner::kUpperLeft;
-    canonical_point.SetPoint(
-        x - (rectf.x() + rrectf.GetCornerRadii(Corner::kUpperLeft).x()),
-        y - (rectf.y() + rrectf.GetCornerRadii(Corner::kUpperLeft).y()));
-    CHECK(canonical_point.x() < 0 && canonical_point.y() < 0);
-  } else if (x < rectf.x() + rrectf.GetCornerRadii(Corner::kLowerLeft).x() &&
-             y > rectf.bottom() -
-                     rrectf.GetCornerRadii(Corner::kLowerLeft).y()) {
+    canonical_point.SetPoint(x - (rectf.x() + upper_left_corner_radii.x()),
+                             y - (rectf.y() + upper_left_corner_radii.y()));
+    CHECK_LT(canonical_point.x(), 0);
+    CHECK_LT(canonical_point.y(), 0);
+  } else if (x < rectf.x() + lower_left_corner_radii.x() &&
+             y > rectf.bottom() - lower_left_corner_radii.y()) {
     // Lower left corner.
     containing_corner = Corner::kLowerLeft;
     canonical_point.SetPoint(
-        x - (rectf.x() + rrectf.GetCornerRadii(Corner::kLowerLeft).x()),
-        y - (rectf.bottom() - rrectf.GetCornerRadii(Corner::kLowerLeft).y()));
-    CHECK(canonical_point.x() < 0 && canonical_point.y() > 0);
-  } else if (x > rectf.right() -
-                     rrectf.GetCornerRadii(Corner::kUpperRight).x() &&
-             y < rectf.y() + rrectf.GetCornerRadii(Corner::kUpperRight).y()) {
+        x - (rectf.x() + lower_left_corner_radii.x()),
+        y - (rectf.bottom() - lower_left_corner_radii.y()));
+    CHECK_LT(canonical_point.x(), 0);
+    CHECK_GT(canonical_point.y(), 0);
+  } else if (x > rectf.right() - upper_right_corner_radii.x() &&
+             y < rectf.y() + upper_right_corner_radii.y()) {
     // Upper right corner.
     containing_corner = Corner::kUpperRight;
-    canonical_point.SetPoint(
-        x - (rectf.right() - rrectf.GetCornerRadii(Corner::kUpperRight).x()),
-        y - (rectf.y() + rrectf.GetCornerRadii(Corner::kUpperRight).y()));
-    CHECK(canonical_point.x() > 0 && canonical_point.y() < 0);
-  } else if (x > rectf.right() -
-                     rrectf.GetCornerRadii(Corner::kLowerRight).x() &&
-             y > rectf.bottom() -
-                     rrectf.GetCornerRadii(Corner::kLowerRight).y()) {
+    canonical_point.SetPoint(x - (rectf.right() - upper_right_corner_radii.x()),
+                             y - (rectf.y() + upper_right_corner_radii.y()));
+    CHECK_GT(canonical_point.x(), 0);
+    CHECK_LT(canonical_point.y(), 0);
+  } else if (x > rectf.right() - lower_right_corner_radii.x() &&
+             y > rectf.bottom() - lower_right_corner_radii.y()) {
     // Lower right corner.
     containing_corner = Corner::kLowerRight;
     canonical_point.SetPoint(
-        x - (rectf.right() - rrectf.GetCornerRadii(Corner::kLowerRight).x()),
-        y - (rectf.bottom() - rrectf.GetCornerRadii(Corner::kLowerRight).y()));
-    CHECK(canonical_point.x() > 0 && canonical_point.y() > 0);
+        x - (rectf.right() - lower_right_corner_radii.x()),
+        y - (rectf.bottom() - lower_right_corner_radii.y()));
+    CHECK_GT(canonical_point.x(), 0);
+    CHECK_GT(canonical_point.y(), 0);
   } else {
     // Not in any of the corners.
     return true;
@@ -268,14 +269,14 @@ bool CheckCornerContainment(const gfx::PointF& p, const gfx::RRectF& rrectf) {
   //      a^2     b^2
   // or :
   //     b^2*x^2 + a^2*y^2 <= (ab)^2
+  const gfx::Vector2dF containing_corner_radii =
+      rrectf.GetCornerRadii(containing_corner);
   const float distance =
-      Square(canonical_point.x()) *
-          Square(rrectf.GetCornerRadii(containing_corner).y()) +
-      Square(canonical_point.y()) *
-          Square(rrectf.GetCornerRadii(containing_corner).x());
+      Square(canonical_point.x()) * Square(containing_corner_radii.y()) +
+      Square(canonical_point.y()) * Square(containing_corner_radii.x());
 
-  return distance <= Square(rrectf.GetCornerRadii(containing_corner).x() *
-                            rrectf.GetCornerRadii(containing_corner).y());
+  return distance <=
+         Square(containing_corner_radii.x() * containing_corner_radii.y());
 }
 
 gfx::PointF GetCornerCoordinates(const gfx::RectF& rectf, Corner corner) {
