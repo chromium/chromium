@@ -98,12 +98,14 @@
                      buttonText:(NSString*)buttonText
                   messageAction:(void (^)(void))messageAction
                completionAction:(void (^)(BOOL))completionAction {
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
-  action.handler = messageAction;
-  action.title = buttonText;
-  action.accessibilityLabel = buttonText;
   MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
-  message.action = action;
+  if (buttonText) {
+    MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+    action.handler = messageAction;
+    action.title = buttonText;
+    action.accessibilityLabel = buttonText;
+    message.action = action;
+  }
   message.completionHandler = completionAction;
 
   [self showSnackbarMessage:message];
