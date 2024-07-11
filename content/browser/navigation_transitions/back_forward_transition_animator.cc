@@ -1104,6 +1104,13 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
   if (primary_main_frame_request->IsNavigationStarted()) {
     navigation_state_ = NavigationState::kStarted;
     if (primary_main_frame_request->IsSameDocument()) {
+      // For same-doc navigations, we clone the old surface layer and subscribe
+      // to the widget host immediately after sending the "CommitNavigation"
+      // message. Once the browser receives the renderer's "DidCommitNavigation"
+      // message, it is too late to make a clone or subscribe to the widget
+      // host.
+      CloneOldSurfaceLayer(
+          primary_main_frame_request->GetRenderFrameHost()->GetView());
       SubscribeToNewRenderWidgetHost(primary_main_frame_request.get());
     }
   } else {
@@ -1200,7 +1207,6 @@ void BackForwardTransitionAnimator::CloneOldSurfaceLayer(
                ->GetNativeView()
                ->GetLayer(),
            parent_for_web_widgets->parent());
-
   parent_for_web_widgets->parent()->AddChild(old_surface_clone_);
 }
 
