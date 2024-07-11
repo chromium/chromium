@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
+#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
@@ -607,7 +608,10 @@ void Tab::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
-  if (mouse_hovered_ || !GetWidget()->IsMouseEventsEnabled()) {
+  // During system-DnD-based tab dragging we sometimes receive mouse events, but
+  // we shouldn't update the hover status during a drag.
+  if (mouse_hovered_ || !GetWidget()->IsMouseEventsEnabled() ||
+      TabDragController::IsActive()) {
     return;
   }
 
