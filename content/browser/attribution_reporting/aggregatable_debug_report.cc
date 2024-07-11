@@ -382,7 +382,9 @@ AggregatableDebugReport::CreateAggregatableReportRequest() const {
           filtering_id_max_bytes.has_value()
               ? kVersionWithFlexibleContributionFiltering
               : kVersion,
-          kApiIdentifier));
+          kApiIdentifier),
+      // The returned request cannot be serialized due to the null `delay_type`.
+      /*delay_type=*/std::nullopt);
 }
 
 }  // namespace content

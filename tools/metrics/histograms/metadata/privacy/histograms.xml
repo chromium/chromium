@@ -735,18 +735,29 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.AggregationService.ReportSender.HttpResponseOrNetErrorCode"
+    name="PrivacySandbox.AggregationService.ReportSender{DelayType}.HttpResponseOrNetErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-08">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
     Error info for sending an aggregatable report to a reporting endpoint,
-    recorded for every aggregatable report sent. The HTTP response code is
-    recorded if there is no net error code for the request.
+    recorded after attempting to send {DelayType}. The HTTP response code is
+    recorded if there is no net error code for the request. (See
+    content/browser/aggregation_service/README.md for more info on scheduled vs
+    unscheduled requests.)
   </summary>
+  <token key="DelayType">
+    <variant name="" summary="every aggregatable report"/>
+    <variant name=".ScheduledWithFullDelay"
+        summary="reports that were scheduled with a full delay"/>
+    <variant name=".ScheduledWithReducedDelay"
+        summary="reports that were scheduled with a reduced delay"/>
+    <variant name=".Unscheduled" summary="unscheduled reports"/>
+  </token>
 </histogram>
 
-<histogram name="PrivacySandbox.AggregationService.ReportSender.Status"
+<histogram
+    name="PrivacySandbox.AggregationService.ReportSender{DelayType}.Status"
     enum="PrivacySandboxAggregationServiceReportSenderStatus"
     expires_after="never">
 <!-- expires-never: critical system health metric for monitoring -->
@@ -754,18 +765,28 @@ reviewer.
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
-    Records the high level request status for each aggregatable report being
-    sent to a reporting endpoint. Recorded for reports requested from any API
-    (e.g. Attribution Reporting API).
+    Records the high level request status for {DelayType} sent sent to a
+    reporting endpoint. Recorded for reports requested from any API (e.g.
+    Attribution Reporting API).
 
-    Recorded for every aggregatable report sent. It might retry in case of
-    failure but only the final status will be counted for each report.
+    Recorded for {DelayType}. It might retry in case of failure but only the
+    final status will be counted for each report. (See
+    content/browser/aggregation_service/README.md for more info on scheduled vs
+    unscheduled requests.)
 
     This is a critical histogram monitored by alerts to
     measurement-api-dev+alerts@google.com. Please make sure future versions of
     this histogram are properly set up for alerting, but prefer not to version
     the histogram if possible.
   </summary>
+  <token key="DelayType">
+    <variant name="" summary="every aggregatable report"/>
+    <variant name=".ScheduledWithFullDelay"
+        summary="reports that were scheduled with a full delay"/>
+    <variant name=".ScheduledWithReducedDelay"
+        summary="reports that were scheduled with a reduced delay"/>
+    <variant name=".Unscheduled" summary="unscheduled reports"/>
+  </token>
 </histogram>
 
 <histogram

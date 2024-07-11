@@ -15,6 +15,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -288,6 +289,31 @@ class CONTENT_EXPORT AggregatableReport {
 // processing URL.
 class CONTENT_EXPORT AggregatableReportRequest {
  public:
+  // Rough categories of report scheduling delays used for metrics. Keep this
+  // synchronized with `proto::AggregatableReportRequest::DelayType`. Do not
+  // remove or renumber enumerators because protos containing these values are
+  // persisted to disk.
+  enum class DelayType : uint8_t {
+    ScheduledWithReducedDelay = 0,
+    ScheduledWithFullDelay = 1,
+    Unscheduled = 2,
+
+    kMinValue = ScheduledWithReducedDelay,
+    kMaxValue = Unscheduled,
+  };
+
+  static constexpr std::string_view DelayTypeToString(DelayType delay_type) {
+    switch (delay_type) {
+      case DelayType::ScheduledWithReducedDelay:
+        return "ScheduledWithReducedDelay";
+      case DelayType::ScheduledWithFullDelay:
+        return "ScheduledWithFullDelay";
+      case DelayType::Unscheduled:
+        return "Unscheduled";
+    }
+    NOTREACHED_NORETURN();
+  }
+
   // Returns `std::nullopt` if any of the following are true:
   //
   //   * The number of contributions within `payload_contents` is invalid for
@@ -317,6 +343,8 @@ class CONTENT_EXPORT AggregatableReportRequest {
   static std::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info,
+      std::optional<AggregatableReportRequest::DelayType> delay_type =
+          std::nullopt,
       std::string reporting_path = std::string(),
       std::optional<uint64_t> debug_key = std::nullopt,
       base::flat_map<std::string, std::string> additional_fields = {},
@@ -329,6 +357,8 @@ class CONTENT_EXPORT AggregatableReportRequest {
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info,
+      std::optional<AggregatableReportRequest::DelayType> delay_type =
+          std::nullopt,
       std::string reporting_path = std::string(),
       std::optional<uint64_t> debug_key = std::nullopt,
       base::flat_map<std::string, std::string> additional_fields = {},
@@ -357,20 +387,23 @@ class CONTENT_EXPORT AggregatableReportRequest {
     return additional_fields_;
   }
   int failed_send_attempts() const { return failed_send_attempts_; }
+  std::optional<DelayType> delay_type() const { return delay_type_; }
 
   // Returns the URL this report should be sent to. The return value is invalid
   // if the reporting_path is empty.
   GURL GetReportingUrl() const;
 
-  // Serializes the report request to a binary protobuf encoding. Returns an
-  // empty vector in case of an error.
-  std::vector<uint8_t> Serialize();
+  // Serializes the report request to a binary protobuf encoding. Crashes when
+  // `delay_type()` is empty or equals `DelayType::Unscheduled`. Returns an
+  // empty vector when proto serialization fails.
+  std::vector<uint8_t> Serialize() const;
 
  private:
   static std::optional<AggregatableReportRequest> CreateInternal(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info,
+      std::optional<AggregatableReportRequest::DelayType> delay_type,
       std::string reporting_path,
       std::optional<uint64_t> debug_key,
       base::flat_map<std::string, std::string> additional_fields,
@@ -380,6 +413,7 @@ class CONTENT_EXPORT AggregatableReportRequest {
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info,
+      std::optional<AggregatableReportRequest::DelayType> delay_type,
       std::string reporting_path,
       std::optional<uint64_t> debug_key,
       base::flat_map<std::string, std::string> additional_fields,
@@ -404,6 +438,13 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // this attempt. The value in this class is not incremented if this attempt
   // fails (until a new object is requested from storage)
   int failed_send_attempts_ = 0;
+
+  // The rough category of report scheduling delay selected when this report
+  // request was first created. This field should be set to `std::nullopt` for
+  // requests that do not pass through the scheduler or network sender.
+  // `Deserialize()` will set this to `std::nullopt` when parsing a protobuf
+  // that was serialized before the addition of this field.
+  std::optional<AggregatableReportRequest::DelayType> delay_type_;
 };
 
 CONTENT_EXPORT GURL GetAggregationServiceProcessingUrl(const url::Origin&);

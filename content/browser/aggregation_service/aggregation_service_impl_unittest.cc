@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -95,6 +96,7 @@ class MockAggregatableReportSender : public AggregatableReportSender {
               SendReport,
               (const GURL& url,
                const base::Value& contents,
+               std::optional<AggregatableReportRequest::DelayType> delay_type,
                ReportSentCallback callback),
               (override));
 };
@@ -318,12 +320,13 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Fail) {
 
 TEST_F(AggregationServiceImplTest, SendReport) {
   EXPECT_CALL(*test_sender_, SendReport)
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           AggregatableReportSender::RequestStatus::kOk));
 
   base::RunLoop run_loop;
   service_impl_->SendReport(
       GURL("https://example.com/reports"), CreateExampleAggregatableReport(),
+      AggregatableReportRequest::DelayType::Unscheduled,
       base::BindLambdaForTesting([&](AggregationService::SendStatus status) {
         EXPECT_EQ(status, AggregationService::SendStatus::kOk);
         run_loop.Quit();
@@ -356,7 +359,7 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_Success) {
           InvokeCallback(CreateExampleAggregatableReport(),
                          AggregatableReportAssembler::AssemblyStatus::kOk));
   EXPECT_CALL(*test_sender_, SendReport)
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           AggregatableReportSender::RequestStatus::kOk));
   EXPECT_CALL(*test_scheduler_, NotifyInProgressRequestSucceeded(request_id));
 
@@ -450,7 +453,7 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
           InvokeCallback(CreateExampleAggregatableReport(),
                          AggregatableReportAssembler::AssemblyStatus::kOk));
   EXPECT_CALL(*test_sender_, SendReport)
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           AggregatableReportSender::RequestStatus::kNetworkError));
   EXPECT_CALL(*test_scheduler_, NotifyInProgressRequestFailed(
                                     request_id, /*previous_failed_attempts=*/0))
@@ -514,7 +517,7 @@ TEST_F(AggregationServiceImplTest,
           InvokeCallback(CreateExampleAggregatableReport(),
                          AggregatableReportAssembler::AssemblyStatus::kOk));
   EXPECT_CALL(*test_sender_, SendReport)
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
           AggregatableReportSender::RequestStatus::kOk));
 
   EXPECT_CALL(*test_scheduler_, NotifyInProgressRequestSucceeded(request_id_1));
@@ -547,7 +550,7 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_Success) {
                          AggregatableReportAssembler::AssemblyStatus::kOk));
 
   EXPECT_CALL(*test_sender_, SendReport)
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           AggregatableReportSender::RequestStatus::kOk));
 
   StrictMock<MockAggregationServiceObserver> observer;
@@ -612,7 +615,7 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedSender) {
                          AggregatableReportAssembler::AssemblyStatus::kOk));
 
   EXPECT_CALL(*test_sender_, SendReport)
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           AggregatableReportSender::RequestStatus::kNetworkError));
 
   StrictMock<MockAggregationServiceObserver> observer;
@@ -641,8 +644,16 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedSender) {
 }
 
 TEST_F(AggregationServiceImplTest, GetPendingReportRequestsForWebUI) {
-  StoreReport(aggregation_service::CreateExampleRequest());
-  StoreReport(aggregation_service::CreateExampleRequest());
+  StoreReport(aggregation_service::CreateExampleRequest(
+      blink::mojom::AggregationServiceMode::kDefault,
+      /*failed_send_attempts=*/0,
+      /*aggregation_coordinator_origin=*/std::nullopt,
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay));
+  StoreReport(aggregation_service::CreateExampleRequest(
+      blink::mojom::AggregationServiceMode::kDefault,
+      /*failed_send_attempts=*/0,
+      /*aggregation_coordinator_origin=*/std::nullopt,
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay));
 
   base::RunLoop run_loop;
   service_impl_->GetPendingReportRequestsForWebUI(base::BindLambdaForTesting(
@@ -659,7 +670,11 @@ TEST_F(AggregationServiceImplTest, GetPendingReportRequestsForWebUI) {
 }
 
 TEST_F(AggregationServiceImplTest, SendReportsForWebUI) {
-  StoreReport(aggregation_service::CreateExampleRequest());
+  StoreReport(aggregation_service::CreateExampleRequest(
+      blink::mojom::AggregationServiceMode::kDefault,
+      /*failed_send_attempts=*/0,
+      /*aggregation_coordinator_origin=*/std::nullopt,
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay));
 
   EXPECT_CALL(*test_assembler_, AssembleReport)
       .WillOnce(
@@ -670,7 +685,7 @@ TEST_F(AggregationServiceImplTest, SendReportsForWebUI) {
   EXPECT_CALL(*test_sender_, SendReport)
       .WillOnce(
           testing::DoAll(base::test::RunOnceClosure(run_loop.QuitClosure()),
-                         base::test::RunOnceCallback<2>(
+                         base::test::RunOnceCallback<3>(
                              AggregatableReportSender::RequestStatus::kOk)));
 
   // IDs autoincrement from 1.
