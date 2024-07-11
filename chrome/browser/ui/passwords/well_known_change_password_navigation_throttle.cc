@@ -75,7 +75,7 @@ WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
   }
 
   // Don't handle navigations in subframes or main frames that are in a nested
-  // frame tree (e.g. portals, fenced frames)
+  // frame tree (e.g. fenced frames)
   if (handle->IsInOutermostMainFrame() &&
       IsWellKnownChangePasswordUrl(handle->GetURL()) &&
       IsTriggeredByGoogleOwnedUI(handle)) {

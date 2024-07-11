@@ -138,7 +138,7 @@ TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame()) {
-    // Note that portal and other main but non-outermost frames are
+    // Note that fenced frames and other main but non-outermost frames are
     // currently disallowed from queries by the PermissionService. This check
     // ensures that we do not assume that behavior, however.
     net::SchemefulSite top_level_site(

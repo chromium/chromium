@@ -66,7 +66,7 @@ std::unique_ptr<PasswordManagerNavigationThrottle>
 PasswordManagerNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
   // Don't handle navigations in subframes or main frames that are in a nested
-  // frame tree (e.g. portals, fenced frames)
+  // frame tree (e.g. fenced frames)
   if (!handle->GetParentFrameOrOuterDocument() &&
       IsTriggeredOnGoogleOwnedUI(handle)) {
     return std::make_unique<PasswordManagerNavigationThrottle>(handle);

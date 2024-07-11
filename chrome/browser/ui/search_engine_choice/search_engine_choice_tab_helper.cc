@@ -84,8 +84,8 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  // The browser will be null if the web contents are rendered in a portal, in
-  // devtools or if the renderer crashes.
+  // The browser will be null if the web contents are rendered in devtools or
+  // if the renderer crashes.
   if (!browser) {
     return;
   }

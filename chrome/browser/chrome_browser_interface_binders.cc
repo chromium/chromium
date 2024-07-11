@@ -536,8 +536,8 @@ void BindCommerceHintObserver(
     content::RenderFrameHost* const frame_host,
     mojo::PendingReceiver<cart::mojom::CommerceHintObserver> receiver) {
   // This is specifically restricting this to main frames, whether they are the
-  // main frame of the tab or a <portal> element, while preventing this from
-  // working in subframes and fenced frames.
+  // main frame of the tab, while preventing this from working in subframes and
+  // fenced frames.
   if (frame_host->GetParent() || frame_host->IsFencedFrameRoot()) {
     mojo::ReportBadMessage(
         "Unexpected the message from subframe or fenced frame.");

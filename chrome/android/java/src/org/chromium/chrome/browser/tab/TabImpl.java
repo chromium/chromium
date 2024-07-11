@@ -1587,7 +1587,7 @@ class TabImpl implements Tab {
         }
     }
 
-    /** This is currently called when committing a pre-rendered page or activating a portal. */
+    /** This is currently used when restoring tabs, and by DOMDistiller */
     @CalledByNative
     void swapWebContents(WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {
         boolean hasWebContents = mContentView != null && mWebContents != null;

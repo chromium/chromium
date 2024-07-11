@@ -164,7 +164,7 @@ class MediaStreamCaptureIndicator
                              gfx::ImageSkia* image,
                              std::u16string* tool_tip);
 
-  // Checks if |web_contents| or any portal WebContents in its tree is using
+  // Checks if |web_contents| or any inner WebContents in its tree is using
   // a device for capture. The type of capture is specified using |pred|.
   using WebContentsDeviceUsagePredicate =
       base::FunctionRef<bool(const WebContentsDeviceUsage*)>;
