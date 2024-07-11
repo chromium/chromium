@@ -6094,6 +6094,9 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_CHROMEVOX" desc="Subcategory named 'ChromeVox' shown within main shortcuts section">
           ChromeVox
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_MOUSE_KEYS" desc="Subcategory named 'Mouse keys' shown within main shortcuts section">
+          Mouse keys
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_VISIBILITY" desc="Subcategory named 'Visibility' shown within main shortcuts section">
           Visibility
         </message>

@@ -1722,6 +1722,14 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSubcategory::kChromeVox,
             /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kToggleMouseKeys,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kToggleMouseKeys,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MOUSE_KEYS,
+            mojom::AcceleratorCategory::kAccessibility,
+            mojom::AcceleratorSubcategory::kMouseKeys,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kToggleHighContrast,
         AcceleratorLayoutDetails(
             AcceleratorAction::kToggleHighContrast,

@@ -157,6 +157,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"subcategoryDesks", IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_DESKS},
       {"subcategoryChromeVox",
        IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_CHROMEVOX},
+      {"subcategoryMouseKeys",
+       IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_MOUSE_KEYS},
       {"subcategoryVisibility",
        IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_VISIBILITY},
       {"subcategoryAccessibilityNavigation",

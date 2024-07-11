@@ -197,6 +197,8 @@ export const getSubcategoryNameStringId =
           return `${subcategoryPrefix}Desks`;
         case AcceleratorSubcategory.kChromeVox:
           return `${subcategoryPrefix}ChromeVox`;
+        case AcceleratorSubcategory.kMouseKeys:
+          return `${subcategoryPrefix}MouseKeys`;
         case AcceleratorSubcategory.kVisibility:
           return `${subcategoryPrefix}Visibility`;
         case AcceleratorSubcategory.kAccessibilityNavigation:

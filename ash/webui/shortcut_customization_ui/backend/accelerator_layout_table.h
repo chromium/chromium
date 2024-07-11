@@ -268,8 +268,6 @@ constexpr auto kAshAcceleratorsWithoutLayout =
         AcceleratorAction::kToggleWifi,
         AcceleratorAction::kTouchHudClear,
         AcceleratorAction::kTouchHudModeChange,
-        // TODO(b/335456364): Allow modification of Toggle Mouse Keys
-        AcceleratorAction::kToggleMouseKeys,
         AcceleratorAction::kVolumeMuteToggle,
         AcceleratorAction::kUnpin,
     });
@@ -479,6 +477,9 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     // TODO(jimmyxgong): Allow this to be modifiable but only after revising the
     // notification that hardcodes ctrl + alt + z into the notification message.
     AcceleratorAction::kToggleSpokenFeedback,
+
+    // Accessibility > Mouse Keys
+    AcceleratorAction::kToggleMouseKeys,
 
     // Accessibility > Visibility
     AcceleratorAction::kEnableSelectToSpeak,

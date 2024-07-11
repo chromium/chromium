@@ -4310,6 +4310,9 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MIRROR_MODE" desc="Label for accelerator action - Mirror monitors.">
         Mirror monitors
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MOUSE_KEYS" desc="Label for accelerator action - Pause and resume mouse keys.">
+        Pause/resume mouse keys when it's on
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_OVERVIEW" desc="Label for accelerator action - Overview mode.">
         Overview mode
       </message>
