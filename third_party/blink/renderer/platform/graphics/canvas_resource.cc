@@ -71,6 +71,10 @@ CanvasResource::~CanvasResource() {
 }
 
 void CanvasResource::OnDestroy() {
+#if DCHECK_IS_ON()
+  did_call_on_destroy_ = true;
+#endif
+
   if (is_cross_thread()) {
     // Destroyed on wrong thread. This can happen when the thread of origin was
     // torn down, in which case the GPU context owning any underlying resources
@@ -78,15 +82,13 @@ void CanvasResource::OnDestroy() {
     // done and any resources tied to the context may be leaked. As such, this
     // case should arise only when the owning thread and its associated context
     // were torn down before this resource could be deleted.
-  } else {
-    if (provider_) {
-      provider_->OnDestroyResource();
-    }
-    TearDown();
+    return;
   }
-#if DCHECK_IS_ON()
-  did_call_on_destroy_ = true;
-#endif
+
+  if (provider_) {
+    provider_->OnDestroyResource();
+  }
+  TearDown();
 }
 
 void CanvasResource::Release() {
