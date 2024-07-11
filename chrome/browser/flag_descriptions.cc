@@ -7403,6 +7403,10 @@ const char kScalableIphDebugDescription[] =
 const char kSeaPenName[] = "SeaPen";
 const char kSeaPenDescription[] = "Enable SeaPen Wallpaper";
 
+const char kSeaPenEnterpriseName[] = "SeaPenEnterprise";
+const char kSeaPenEnterpriseDescription[] =
+    "Enable SeaPen Features for managed users";
+
 const char kSealKeyName[] = "Secret key for Seal feature";
 const char kSealKeyDescription[] = "Secret key for Seal feature.";
 
