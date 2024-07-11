@@ -10,12 +10,12 @@ if (is_android) {
 }
 
 source_set("reading") {
-  sources = [ "reading/distillable_urls.h" ]
+  sources = [ "reading/distillable_pages.h" ]
 
   if (is_chrome_branded) {
-    sources += [ "internal/reading/distillable_urls.cc" ]
+    sources += [ "internal/reading/distillable_pages.cc" ]
   } else {
-    sources += [ "reading/distillable_urls.cc" ]
+    sources += [ "reading/distillable_pages.cc" ]
   }
 
   deps = [

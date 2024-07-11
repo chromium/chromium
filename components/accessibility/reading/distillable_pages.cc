@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility/reading/distillable_urls.h"
+#include "components/accessibility/reading/distillable_pages.h"
 
 #include "base/no_destructor.h"
 
 namespace a11y {
 
-const std::vector<GURL>& GetDistillableURLs() {
-  static const base::NoDestructor<std::vector<GURL>> g_urls;
-  return *g_urls;
+const std::vector<std::string>& GetDistillableDomains() {
+  static const base::NoDestructor<std::vector<std::string>> g_domains;
+  return *g_domains;
 }
 
 }  // namespace a11y
