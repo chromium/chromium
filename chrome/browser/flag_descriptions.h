@@ -136,6 +136,9 @@ extern const char kContentSettingsPartitioningDescription[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kCoralFeatureKeyName[];
 extern const char kCoralFeatureKeyDescription[];
+
+extern const char kCrosSwitcherName[];
+extern const char kCrosSwitcherDescription[];
 #endif  // IS_CHROMEOS_ASH
 
 extern const char kCssGamutMappingName[];

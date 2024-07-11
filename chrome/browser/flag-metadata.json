@@ -1766,6 +1766,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "cros-switcher",
+    "owners": [ "assistive-eng@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "cros-web-app-shortcut-ui-update",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 130

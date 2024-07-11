@@ -11258,6 +11258,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"coral-feature-key", flag_descriptions::kCoralFeatureKeyName,
      flag_descriptions::kCoralFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kCoralFeatureKey, "")},
+
+    {"cros-switcher", flag_descriptions::kCrosSwitcherName,
+     flag_descriptions::kCrosSwitcherDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kCrosSwitcher)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"sync-session-on-visibility-changed",

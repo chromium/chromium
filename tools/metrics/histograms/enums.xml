@@ -17437,6 +17437,7 @@ from previous Chrome versions.
   <int value="-1418524927" label="AutoPictureInPictureVideoHeuristics:enabled"/>
   <int value="-1418200801" label="LauncherLacrosIntegration:enabled"/>
   <int value="-1418199391" label="FilesInlineSyncStatusProgressEvents:enabled"/>
+  <int value="-1418079944" label="CrosSwitcher:disabled"/>
   <int value="-1418070574" label="VcWebApi:disabled"/>
   <int value="-1417642561" label="AutofillCreditCardUploadFeedback:enabled"/>
   <int value="-1417122729"
@@ -20056,6 +20057,7 @@ from previous Chrome versions.
   <int value="-301689561" label="PermissionQuietChip:disabled"/>
   <int value="-301228557" label="PageInfoDiscoverability:disabled"/>
   <int value="-301120116" label="PasswordSuggestionBottomSheetV2:disabled"/>
+  <int value="-300817167" label="CrosSwitcher:enabled"/>
   <int value="-300018686" label="disable-cloud-import"/>
   <int value="-299841473" label="top-document-isolation:enabled"/>
   <int value="-299116652" label="CCTResizable90MaximumHeight:enabled"/>

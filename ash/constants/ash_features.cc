@@ -286,6 +286,8 @@ BASE_FEATURE(kBluetoothQualityReport,
              "BluetoothQualityReport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCameraAppAutoQRDetection,
              "CameraAppAutoQRDetection",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3538,6 +3540,10 @@ bool IsCrossDeviceFeatureSuiteAllowed() {
   }
 
   return base::FeatureList::IsEnabled(kAllowCrossDeviceFeatureSuite);
+}
+
+bool IsCrosSwitcherEnabled() {
+  return base::FeatureList::IsEnabled(kCrosSwitcher);
 }
 
 bool IsDeskBarWindowOcclusionOptimizationEnabled() {

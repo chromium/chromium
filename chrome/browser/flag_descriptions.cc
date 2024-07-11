@@ -174,6 +174,10 @@ const char kContentSettingsPartitioningDescription[] =
 const char kCoralFeatureKeyName[] = "Secret key for Coral feature.";
 const char kCoralFeatureKeyDescription[] =
     "Secret key for Coral feature. Incorrect values will cause chrome crashes.";
+
+const char kCrosSwitcherName[] = "ChromeOS Switcher feature.";
+const char kCrosSwitcherDescription[] =
+    "Enable/Disable ChromeOS Switcher feature.";
 #endif  // IS_CHROMEOS_ASH
 
 const char kCssGamutMappingName[] = "CSS Gamut Mapping";
