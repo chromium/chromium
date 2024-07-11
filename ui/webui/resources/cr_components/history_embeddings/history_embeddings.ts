@@ -37,10 +37,15 @@ function jsDateToMojoDate(date: Date): Time {
   return {internalValue};
 }
 
+/* Minimum time the loading state should be visible. This is to prevent the
+ * loading animation from flashing. */
+export const LOADING_STATE_MINIMUM_MS = 300;
+
 export interface HistoryEmbeddingsElement {
   $: {
     feedbackButtons: CrFeedbackButtonsElement,
     heading: HTMLElement,
+    loading: HTMLElement,
     sharedMenu: CrLazyRenderElement<CrActionMenuElement>,
   };
 }
@@ -99,6 +104,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private clickedIndices_: Set<number> = new Set();
   private feedbackState_: CrFeedbackOption;
   private loading_ = false;
+  private loadingStateMinimumMs_ = LOADING_STATE_MINIMUM_MS;
   private queryResultMinAge_ = QUERY_RESULT_MINIMUM_AGE;
   private searchResult_: SearchResult;
   /**
@@ -219,20 +225,26 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       timeRangeStart:
           this.timeRangeStart ? jsDateToMojoDate(this.timeRangeStart) : null,
     };
-    this.browserProxy_.search(query).then((result) => {
-      if (query.query !== this.searchQuery) {
-        // Results are for an outdated query. Skip these results.
-        return;
-      }
+    Promise
+        .all([
+          this.browserProxy_.search(query),
+          new Promise(
+              resolve => setTimeout(resolve, this.loadingStateMinimumMs_)),
+        ])
+        .then(([result]) => {
+          if (query.query !== this.searchQuery) {
+            // Results are for an outdated query. Skip these results.
+            return;
+          }
 
-      // Reset feedback state for new results.
-      this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
+          // Reset feedback state for new results.
+          this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
 
-      this.searchResult_ = result;
-      this.loading_ = false;
+          this.searchResult_ = result;
+          this.loading_ = false;
 
-      this.resultPendingMetricsTimestamp_ = performance.now();
-    });
+          this.resultPendingMetricsTimestamp_ = performance.now();
+        });
   }
 
   /**
@@ -267,6 +279,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     // Clear this regardless if it was recorded or not, because we don't want
     // to "try again" to record the same query.
     this.resultPendingMetricsTimestamp_ = null;
+  }
+
+  overrideLoadingStateMinimumMsForTesting(ms: number) {
+    this.loadingStateMinimumMs_ = ms;
   }
 
   overrideQueryResultMinAgeForTesting(ms: number) {

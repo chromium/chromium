@@ -50,6 +50,7 @@ suite('cr-history-embeddings', () => {
 
     element = document.createElement('cr-history-embeddings');
     document.body.appendChild(element);
+    element.overrideLoadingStateMinimumMsForTesting(0);
 
     element.numCharsForQuery = 21;
     element.searchQuery = 'some query';
@@ -75,6 +76,20 @@ suite('cr-history-embeddings', () => {
     await flushTasks();
     assertEquals(
         'searched for "my query"', element.$.heading.textContent!.trim());
+  });
+
+  test('DisplaysLoading', async () => {
+    element.overrideLoadingStateMinimumMsForTesting(100);
+    element.searchQuery = 'my new query';
+    await handler.whenCalled('search');
+    assertTrue(
+        isVisible(element.$.loading),
+        'Loading state should be visible even if search immediately resolved');
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    assertFalse(
+        isVisible(element.$.loading),
+        'Loading state should disappear once the minimum of 100ms is over');
   });
 
   test('DisplaysResults', async () => {
@@ -229,17 +244,18 @@ suite('cr-history-embeddings', () => {
     // Override the minimum result age and ensure transient results are not
     // logged. Only after the 100ms passes and another search is performed
     // should the quality log be sent.
+    element.overrideLoadingStateMinimumMsForTesting(50);
     element.overrideQueryResultMinAgeForTesting(100);
     element.numCharsForQuery = 25;
     element.searchQuery = 'some newer que';
     await handler.whenCalled('search');
-
     // Perform another query immediately and then wait 100ms. This will ensure
     // that this is the result set that the quality log is sent for.
     element.numCharsForQuery = 30;
     element.searchQuery = 'some newer query';
     await handler.whenCalled('search');
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 50));   // Loading state.
+    await new Promise(resolve => setTimeout(resolve, 100));  // Result age.
 
     // A new query should now send quality log for the last result.
     element.numCharsForQuery = 50;
