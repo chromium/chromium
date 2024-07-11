@@ -49,7 +49,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
@@ -214,7 +213,6 @@ class WizardControllerTestBase : public ::testing::Test {
         std::make_unique<ScopedEnrollmentLauncherFactoryOverrideForTesting>(
             base::BindRepeating(FakeEnrollmentLauncher::Create,
                                 &mock_enrollment_launcher_));
-    DlcserviceClient::InitializeFake();
     network_portal_detector::InitializeForTesting(&network_portal_detector_);
     chromeos::TpmManagerClient::InitializeFake();
     StatsReportingController::Initialize(
@@ -239,7 +237,6 @@ class WizardControllerTestBase : public ::testing::Test {
     StatsReportingController::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
     network_portal_detector::InitializeForTesting(nullptr);
-    DlcserviceClient::Shutdown();
     enrollment_launcher_factory_.reset();
     OobeConfigurationClient::Shutdown();
     DBusThreadManager::Shutdown();

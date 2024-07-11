@@ -16,6 +16,7 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/test/test_ash_web_view.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/functional/bind.h"
@@ -28,6 +29,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -43,6 +45,12 @@ constexpr base::TimeDelta kVideoPlaybackTimeout = base::Seconds(10);
 
 class AutotestAmbientApiTest : public AmbientAshTestBase {
  protected:
+  void SetUp() override {
+    AmbientAshTestBase::SetUp();
+    ash_test_helper()->dlc_service_client()->set_install_root_path(
+        "/test/dlc/root/path");
+  }
+
   void ScheduleVideoPlaybackStarted(base::TimeDelta delay, bool success) {
     auto signal_video_playback_started = [this, success]() {
       TestAshWebView* web_view = static_cast<TestAshWebView*>(

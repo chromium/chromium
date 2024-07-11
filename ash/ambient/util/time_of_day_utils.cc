@@ -101,14 +101,9 @@ void InstallTimeOfDayDlc(std::string dlc_metrics_label,
 
 void GetAmbientVideoHtmlPath(std::string dlc_metrics_label,
                              base::OnceCallback<void(base::FilePath)> on_done) {
-  if (features::IsTimeOfDayDlcEnabled()) {
-    InstallTimeOfDayDlc(
-        std::move(dlc_metrics_label),
-        base::BindOnce(&BuildAmbientVideoHtmlPath, std::move(on_done)));
-  } else {
-    BuildAmbientVideoHtmlPath(std::move(on_done),
-                              base::FilePath(kTimeOfDayAssetsRootfsRootDir));
-  }
+  InstallTimeOfDayDlc(
+      std::move(dlc_metrics_label),
+      base::BindOnce(&BuildAmbientVideoHtmlPath, std::move(on_done)));
 }
 
 void InstallAmbientVideoDlcInBackground() {
@@ -120,8 +115,6 @@ const base::FilePath::CharType kTimeOfDayCloudsVideo[] =
     FILE_PATH_LITERAL("clouds.webm");
 const base::FilePath::CharType kTimeOfDayNewMexicoVideo[] =
     FILE_PATH_LITERAL("new_mexico.webm");
-const base::FilePath::CharType kTimeOfDayAssetsRootfsRootDir[] =
-    FILE_PATH_LITERAL("/usr/share/chromeos-assets");
 const base::FilePath::CharType kTimeOfDayVideoHtmlSubPath[] =
     FILE_PATH_LITERAL("personalization/time_of_day/src/ambient_video.html");
 

@@ -4373,9 +4373,6 @@ extern const char kTetherDescription[];
 extern const char kTilingWindowResizeName[];
 extern const char kTilingWindowResizeDescription[];
 
-extern const char kTimeOfDayDlcName[];
-extern const char kTimeOfDayDlcDescription[];
-
 extern const char kTouchscreenCalibrationName[];
 extern const char kTouchscreenCalibrationDescription[];
 

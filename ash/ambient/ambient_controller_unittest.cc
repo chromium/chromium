@@ -199,7 +199,6 @@ class AmbientControllerTest : public AmbientAshTestBase {
   void SetUp() override {
     std::vector<base::test::FeatureRef> features_to_enable =
         personalization_app::GetTimeOfDayEnabledFeatures();
-    features_to_enable.emplace_back(features::kTimeOfDayDlc);
     features_to_enable.emplace_back(features::kAmbientModeThrottleAnimation);
     feature_list_.InitWithFeatures(features_to_enable, {});
     AmbientAshTestBase::SetUp();

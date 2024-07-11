@@ -54,6 +54,7 @@ namespace ash {
 class AppListTestHelper;
 class AmbientAshTestHelper;
 class AshPixelTestHelper;
+class FakeDlcserviceClient;
 class FakeFwupdDownloadClient;
 class SavedDeskTestHelper;
 class TestKeyboardControllerObserver;
@@ -186,6 +187,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return cros_hotspot_config_test_helper_.get();
   }
 
+  FakeDlcserviceClient* dlc_service_client() {
+    return dlc_service_client_.get();
+  }
+
  private:
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
@@ -216,6 +221,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       power_policy_controller_initializer_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_delegate_provider_;
   std::unique_ptr<views::TestViewsDelegate> test_views_delegate_;
+  std::unique_ptr<FakeDlcserviceClient> dlc_service_client_;
   std::unique_ptr<TestSessionControllerClient> session_controller_client_;
   std::unique_ptr<TestKeyboardControllerObserver>
       test_keyboard_controller_observer_;

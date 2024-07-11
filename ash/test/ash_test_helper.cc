@@ -46,6 +46,8 @@
 #include "base/system/system_monitor.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
@@ -218,6 +220,7 @@ void AshTestHelper::TearDown() {
   cros_hotspot_config_test_helper_.reset();
   test_keyboard_controller_observer_.reset();
   session_controller_client_.reset();
+  dlc_service_client_.reset();
   test_views_delegate_.reset();
   new_window_delegate_provider_.reset();
   bluez_dbus_manager_initializer_.reset();
@@ -339,6 +342,9 @@ void AshTestHelper::SetUp(InitParams init_params) {
   }
   if (!views::ViewsDelegate::GetInstance()) {
     test_views_delegate_ = MakeTestViewsDelegate();
+  }
+  if (!DlcserviceClient::Get()) {
+    dlc_service_client_ = std::make_unique<FakeDlcserviceClient>();
   }
 
   cros_hotspot_config_test_helper_ =

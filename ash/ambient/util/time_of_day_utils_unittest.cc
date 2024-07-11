@@ -30,22 +30,9 @@ constexpr base::FilePath::CharType kTestDlcRootPath[] =
 class TimeOfDayUtilsTest : public testing::Test {
  protected:
   TimeOfDayUtilsTest() {
-    dlcservice_client_.set_install_root_path(kTestDlcRootPath);
-  }
-
-  void EnableDlc() {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> features_to_enable =
-        personalization_app::GetTimeOfDayEnabledFeatures();
-    features_to_enable.emplace_back(features::kTimeOfDayDlc);
-    feature_list_.InitWithFeatures(features_to_enable, {});
-  }
-
-  void DisableDlc() {
-    feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(),
-        {features::kTimeOfDayDlc});
+        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+    dlcservice_client_.set_install_root_path(kTestDlcRootPath);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -59,7 +46,6 @@ class TimeOfDayUtilsMetricsTest
           std::tuple<const char*, std::pair<const char*, DlcError>>> {};
 
 TEST_F(TimeOfDayUtilsTest, GetAmbientVideoHtmlPathDlcEnabled) {
-  EnableDlc();
   base::test::TestFuture<base::FilePath> future;
   GetAmbientVideoHtmlPath(ambient::kAmbientVideoDlcForegroundLabel,
                           future.GetCallback());
@@ -68,17 +54,7 @@ TEST_F(TimeOfDayUtilsTest, GetAmbientVideoHtmlPathDlcEnabled) {
       base::FilePath(kTestDlcRootPath).Append(kTimeOfDayVideoHtmlSubPath));
 }
 
-TEST_F(TimeOfDayUtilsTest, GetAmbientVideoHtmlPathDlcDisabled) {
-  DisableDlc();
-  base::test::TestFuture<base::FilePath> future;
-  GetAmbientVideoHtmlPath(ambient::kAmbientVideoDlcForegroundLabel,
-                          future.GetCallback());
-  EXPECT_EQ(future.Get(), base::FilePath(kTimeOfDayAssetsRootfsRootDir)
-                              .Append(kTimeOfDayVideoHtmlSubPath));
-}
-
 TEST_F(TimeOfDayUtilsTest, GetAmbientVideoHtmlPathDlcInstallError) {
-  EnableDlc();
   dlcservice_client_.set_install_error(dlcservice::kErrorInternal);
   base::test::TestFuture<base::FilePath> future;
   GetAmbientVideoHtmlPath(ambient::kAmbientVideoDlcForegroundLabel,
@@ -87,7 +63,6 @@ TEST_F(TimeOfDayUtilsTest, GetAmbientVideoHtmlPathDlcInstallError) {
 }
 
 TEST_P(TimeOfDayUtilsMetricsTest, GetAmbientVideoHtmlPathDlcMetrics) {
-  EnableDlc();
   dlcservice_client_.set_install_error(std::get<1>(GetParam()).first);
   base::test::TestFuture<base::FilePath> future;
   base::HistogramTester histogram_tester;

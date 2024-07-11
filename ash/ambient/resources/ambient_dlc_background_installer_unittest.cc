@@ -8,7 +8,6 @@
 
 #include "ash/constants/ambient_time_of_day_constants.h"
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
@@ -25,10 +24,8 @@ namespace {
 class AmbientDlcBackgroundInstallerTest : public ::testing::Test {
  protected:
   AmbientDlcBackgroundInstallerTest() {
-    std::vector<base::test::FeatureRef> features_to_enable =
-        personalization_app::GetTimeOfDayEnabledFeatures();
-    features_to_enable.emplace_back(features::kTimeOfDayDlc);
-    feature_list_.InitWithFeatures(features_to_enable, {});
+    feature_list_.InitWithFeatures(
+        personalization_app::GetTimeOfDayEnabledFeatures(), {});
     wifi_device_path_ =
         cros_network_config_helper_.network_state_helper().ConfigureWiFi(
             shill::kStateIdle);
@@ -98,19 +95,6 @@ TEST_F(AmbientDlcBackgroundInstallerTest, InstallsOnlyOnce) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(GetNumTimeOfDayInstallRequests(), 1u);
-}
-
-TEST_F(AmbientDlcBackgroundInstallerTest, DoesNotInstallWhenFeatureDisabled) {
-  base::test::ScopedFeatureList disable_dlc_override;
-  disable_dlc_override.InitWithFeatures({}, {features::kTimeOfDayDlc});
-
-  cros_network_config_helper_.network_state_helper().SetServiceProperty(
-      wifi_device_path_, shill::kStateProperty,
-      base::Value(shill::kStateOnline));
-
-  AmbientBackgroundDlcInstaller installer;
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(IsTimeOfDayDlcInstalled());
 }
 
 }  // namespace

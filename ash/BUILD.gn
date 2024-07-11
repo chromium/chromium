@@ -5177,6 +5177,7 @@ static_library("test_support") {
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/audio",
+    "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/rgbkbd",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/dbus/typecd",

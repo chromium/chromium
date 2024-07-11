@@ -2930,10 +2930,6 @@ BASE_FEATURE(kTilingWindowResize,
              "TilingWindowResize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables retrieving time of day screen saver assets from DLC, rather than from
-// rootfs.
-BASE_FEATURE(kTimeOfDayDlc, "TimeOfDayDlc", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable or disable listening to prefs for virtual keyboard policy in login
 // screen.
 BASE_FEATURE(kTouchVirtualKeyboardPolicyListenPrefsAtLogin,
@@ -4647,11 +4643,6 @@ bool IsTimeOfDayScreenSaverEnabled() {
 
 bool IsTimeOfDayWallpaperEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementTimeOfDayWallpaper);
-}
-
-bool IsTimeOfDayDlcEnabled() {
-  return IsTimeOfDayScreenSaverEnabled() &&
-         base::FeatureList::IsEnabled(kTimeOfDayDlc);
 }
 
 bool IsTabClusterUIEnabled() {

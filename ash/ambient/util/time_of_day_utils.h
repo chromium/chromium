@@ -33,16 +33,14 @@ enum class DlcError {
 // The returned path will be empty if an error occurred and the html is
 // temporarily unavailable.
 //
-// `dlc_metrics_label` is only used if the `kTimeOfDayDlc` feature is enabled.
-// It's part of the UMA metric name
+// `dlc_metrics_label` is part of the UMA metric name
 // ("Ash.AmbientMode.VideoDlcInstall.<dlc_metrics_label>.Error") that tracks the
 // success/failure of the DLC installation performed within this function.
 ASH_EXPORT void GetAmbientVideoHtmlPath(
     std::string dlc_metrics_label,
     base::OnceCallback<void(base::FilePath)> on_done);
 
-// Installs the ambient video DLC package silently in the background. This is
-// a no-op if the `kTimeOfDayDlc` feature is disabled.
+// Installs the ambient video DLC package silently in the background.
 //
 // The background install increases the probability of a successful DLC install
 // happening before the video screen saver is launched. If it fails, another
@@ -55,8 +53,6 @@ ASH_EXPORT void InstallAmbientVideoDlcInBackground();
 // TimeOfDay video file names.
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayCloudsVideo[];
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayNewMexicoVideo[];
-ASH_EXPORT extern const base::FilePath::CharType
-    kTimeOfDayAssetsRootfsRootDir[];
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayVideoHtmlSubPath[];
 
 }  // namespace ash
