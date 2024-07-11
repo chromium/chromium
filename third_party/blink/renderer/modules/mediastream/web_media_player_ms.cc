@@ -1134,7 +1134,7 @@ bool WebMediaPlayerMS::HasReadableVideoFrame() const {
   return has_first_frame_;
 }
 
-void WebMediaPlayerMS::OnFrameHidden() {
+void WebMediaPlayerMS::OnPageHidden() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   bool in_picture_in_picture =
@@ -1189,7 +1189,7 @@ void WebMediaPlayerMS::SuspendForFrameClosed() {
   }
 }
 
-void WebMediaPlayerMS::OnFrameShown() {
+void WebMediaPlayerMS::OnPageShown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (watch_time_reporter_)
@@ -1490,10 +1490,11 @@ void WebMediaPlayerMS::MaybeCreateWatchTimeReporter() {
 
   watch_time_reporter_->OnVolumeChange(volume_);
 
-  if (delegate_->IsFrameHidden())
+  if (delegate_->IsPageHidden()) {
     watch_time_reporter_->OnHidden();
-  else
+  } else {
     watch_time_reporter_->OnShown();
+  }
 
   if (client_) {
     if (client_->HasNativeControls())

@@ -2165,10 +2165,11 @@ void WebMediaPlayerImpl::CreateVideoDecodeStatsReporter() {
       pipeline_metadata_.natural_size, cdm_config_,
       frame_->GetTaskRunner(TaskType::kInternalMedia));
 
-  if (delegate_->IsFrameHidden())
+  if (delegate_->IsPageHidden()) {
     video_decode_stats_reporter_->OnHidden();
-  else
+  } else {
     video_decode_stats_reporter_->OnShown();
+  }
 
   if (paused_)
     video_decode_stats_reporter_->OnPaused();
@@ -2525,12 +2526,13 @@ void WebMediaPlayerImpl::OnVideoPipelineInfoChange(
   UpdateSecondaryProperties();
 }
 
-void WebMediaPlayerImpl::OnFrameHidden() {
+void WebMediaPlayerImpl::OnPageHidden() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   // Backgrounding a video requires a user gesture to resume playback.
-  if (IsHidden())
+  if (IsPageHidden()) {
     video_locked_when_paused_when_hidden_ = true;
+  }
 
   if (watch_time_reporter_)
     watch_time_reporter_->OnHidden();
@@ -2549,7 +2551,7 @@ void WebMediaPlayerImpl::OnFrameHidden() {
   vfc_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoFrameCompositor::SetIsPageVisible,
-                     base::Unretained(compositor_.get()), !IsHidden()));
+                     base::Unretained(compositor_.get()), !IsPageHidden()));
 }
 
 void WebMediaPlayerImpl::SuspendForFrameClosed() {
@@ -2560,7 +2562,7 @@ void WebMediaPlayerImpl::SuspendForFrameClosed() {
   UpdatePlayState();
 }
 
-void WebMediaPlayerImpl::OnFrameShown() {
+void WebMediaPlayerImpl::OnPageShown() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   background_pause_timer_.Stop();
 
@@ -2579,7 +2581,7 @@ void WebMediaPlayerImpl::OnFrameShown() {
   vfc_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoFrameCompositor::SetIsPageVisible,
-                     base::Unretained(compositor_.get()), !IsHidden()));
+                     base::Unretained(compositor_.get()), !IsPageHidden()));
 
   UpdateBackgroundVideoOptimizationState();
 
@@ -3020,7 +3022,7 @@ void WebMediaPlayerImpl::UpdatePlayState() {
   }
 
   bool is_suspended = pipeline_controller_->IsSuspended();
-  bool is_backgrounded = IsBackgroundSuspendEnabled(this) && IsHidden();
+  bool is_backgrounded = IsBackgroundSuspendEnabled(this) && IsPageHidden();
   PlayState state = UpdatePlayState_ComputePlayState(
       is_flinging_, can_auto_suspend, is_suspended, is_backgrounded,
       IsInPictureInPicture());
@@ -3030,7 +3032,7 @@ void WebMediaPlayerImpl::UpdatePlayState() {
   if (power_status_helper_) {
     // Make sure that we're in something like steady-state before recording.
     power_status_helper_->SetIsPlaying(
-        !paused_ && !seeking_ && !IsHidden() && !state.is_suspended &&
+        !paused_ && !seeking_ && !IsPageHidden() && !state.is_suspended &&
         ready_state_ == kReadyStateHaveEnoughData);
   }
   UpdateSmoothnessHelper();
@@ -3441,10 +3443,11 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   watch_time_reporter_->OnVolumeChange(volume_);
   watch_time_reporter_->OnDurationChanged(GetPipelineMediaDuration());
 
-  if (delegate_->IsFrameHidden())
+  if (delegate_->IsPageHidden()) {
     watch_time_reporter_->OnHidden();
-  else
+  } else {
     watch_time_reporter_->OnShown();
+  }
 
   if (client_->HasNativeControls())
     watch_time_reporter_->OnNativeControlsEnabled();
@@ -3485,10 +3488,10 @@ void WebMediaPlayerImpl::UpdateSecondaryProperties() {
           pipeline_metadata_.natural_size));
 }
 
-bool WebMediaPlayerImpl::IsHidden() const {
+bool WebMediaPlayerImpl::IsPageHidden() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  return delegate_->IsFrameHidden() && !was_suspended_for_frame_closed_;
+  return delegate_->IsPageHidden() && !was_suspended_for_frame_closed_;
 }
 
 bool WebMediaPlayerImpl::IsStreaming() const {
@@ -3665,7 +3668,7 @@ bool WebMediaPlayerImpl::ShouldDisableVideoWhenHidden() const {
 }
 
 void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
-  if (IsHidden()) {
+  if (IsPageHidden()) {
     if (ShouldPausePlaybackWhenHidden()) {
       update_background_status_cb_.Cancel();
       is_background_status_change_cancelled_ = true;
@@ -3693,7 +3696,7 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
 }
 
 void WebMediaPlayerImpl::PauseVideoIfNeeded() {
-  DCHECK(IsHidden());
+  DCHECK(IsPageHidden());
 
   // Don't pause video while the pipeline is stopped, resuming or seeking.
   // Also if the video is paused already.
@@ -3726,7 +3729,7 @@ void WebMediaPlayerImpl::EnableVideoTrackIfNeeded() {
 }
 
 void WebMediaPlayerImpl::DisableVideoTrackIfNeeded() {
-  DCHECK(IsHidden());
+  DCHECK(IsPageHidden());
 
   // Don't change video track while the pipeline is resuming or seeking.
   if (is_pipeline_resuming_ || seeking_)

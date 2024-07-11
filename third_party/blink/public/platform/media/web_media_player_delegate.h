@@ -27,13 +27,15 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
   // from within Observer callbacks.
   class Observer {
    public:
-    // Called when the host frame is hidden (usually by tab switching).
-    // Note: OnFrameHidden() is not called when the frame is closed, even though
-    // IsFrameHidden() will start returning true.
-    virtual void OnFrameHidden() = 0;
+    // Called when the page containing the host frame is hidden (usually by tab
+    // switching or by minimizing the current browser window). Note:
+    // OnPageHidden() is not called when the frame is closed, even though
+    // IsPageHidden() will start returning true.
+    virtual void OnPageHidden() = 0;
 
-    // Called when the host frame is shown (usually by tab switching).
-    virtual void OnFrameShown() = 0;
+    // Called when the page containing the host frame is shown (usually by tab
+    // switching).
+    virtual void OnPageShown() = 0;
 
     // Called when an idle player has become stale, usually interpreted to mean
     // that it is unlikely to be interacted with in the near future.
@@ -43,8 +45,8 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
     virtual void OnIdleTimeout() = 0;
   };
 
-  // Returns true if the host frame is hidden or closed.
-  virtual bool IsFrameHidden() = 0;
+  // Returns true if the hosting page (WebView) is hidden or closed.
+  virtual bool IsPageHidden() = 0;
 
   // Subscribe to observer callbacks. A player must use the returned |player_id|
   // for the rest of the calls below.

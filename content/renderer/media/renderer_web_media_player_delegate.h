@@ -50,7 +50,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   bool has_played_media() const { return has_played_media_; }
 
   // blink::WebMediaPlayerDelegate implementation.
-  bool IsFrameHidden() override;
+  bool IsPageHidden() override;
   int AddObserver(Observer* observer) override;
   void RemoveObserver(int player_id) override;
   void DidMediaMetadataChange(int player_id,

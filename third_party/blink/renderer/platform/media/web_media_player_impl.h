@@ -276,8 +276,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void OnDisplayTypeChanged(DisplayType display_type) override;
 
   // WebMediaPlayerDelegate::Observer implementation.
-  void OnFrameHidden() override;
-  void OnFrameShown() override;
+  void OnPageHidden() override;
+  void OnPageShown() override;
   void OnIdleTimeout() override;
 
   void RequestRemotePlaybackDisabled(bool disabled) override;
@@ -586,8 +586,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   void CreateVideoDecodeStatsReporter();
 
-  // Returns true if the player is hidden.
-  bool IsHidden() const;
+  // // Returns true if the player's hosting page (WebView) is hidden or closed.
+  bool IsPageHidden() const;
 
   // Returns true if the player is in streaming mode, meaning that the source
   // or the demuxer doesn't support timeline or seeking.
@@ -617,7 +617,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Pauses a hidden video only player to save power if possible.
   // Must be called when either of the following happens:
   // - right after the video was hidden,
-  // - right ater the pipeline has resumed if the video is hidden.
+  // - right after the pipeline has resumed if the video is hidden.
   void PauseVideoIfNeeded();
 
   // Disables the video track to save power if possible.
@@ -625,7 +625,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // - right after the video was hidden,
   // - right after the pipeline has started (|seeking_| is used to detect the
   //   when pipeline started) if the video is hidden,
-  // - right ater the pipeline has resumed if the video is hidden.
+  // - right after the pipeline has resumed if the video is hidden.
   void DisableVideoTrackIfNeeded();
 
   // Enables the video track if it was disabled before to save power.

@@ -180,8 +180,8 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void SuspendForFrameClosed() override;
 
   // WebMediaPlayerDelegate::Observer implementation.
-  void OnFrameHidden() override;
-  void OnFrameShown() override;
+  void OnPageHidden() override;
+  void OnPageShown() override;
   void OnIdleTimeout() override;
 
   void OnFirstFrameReceived(media::VideoTransformation video_transform,

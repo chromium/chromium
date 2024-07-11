@@ -54,7 +54,7 @@ RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
 
 RendererWebMediaPlayerDelegate::~RendererWebMediaPlayerDelegate() {}
 
-bool RendererWebMediaPlayerDelegate::IsFrameHidden() {
+bool RendererWebMediaPlayerDelegate::IsPageHidden() {
   if (is_frame_hidden_for_testing_)
     return true;
 
@@ -215,7 +215,7 @@ void RendererWebMediaPlayerDelegate::OnPageVisibilityChanged(
 
     for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
          it.Advance())
-      it.GetCurrentValue()->OnFrameShown();
+      it.GetCurrentValue()->OnPageShown();
 
     ScheduleUpdateTask();
   } else {
@@ -223,7 +223,7 @@ void RendererWebMediaPlayerDelegate::OnPageVisibilityChanged(
 
     for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
          it.Advance())
-      it.GetCurrentValue()->OnFrameHidden();
+      it.GetCurrentValue()->OnPageHidden();
 
     ScheduleUpdateTask();
   }
