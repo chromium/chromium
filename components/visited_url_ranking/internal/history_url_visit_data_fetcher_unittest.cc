@@ -80,27 +80,37 @@ class HistoryURLVisitDataFetcherTest
  public:
   HistoryURLVisitDataFetcherTest() {
     mock_history_service_ = std::make_unique<MockHistoryService>();
+
+    history_url_visit_fetcher_ = std::make_unique<HistoryURLVisitDataFetcher>(
+        mock_history_service_.get());
+  }
+
+  std::vector<history::AnnotatedVisit> GetSampleAnnotatedVisits() {
+    std::vector<history::AnnotatedVisit> annotated_visits = {};
+    annotated_visits.emplace_back(
+        SampleAnnotatedVisit(1, GURL(base::StrCat({kSampleSearchUrl, "1"})),
+                             1.0f, "", "sample_app_id"));
+    annotated_visits.emplace_back(
+        SampleAnnotatedVisit(2, GURL(base::StrCat({kSampleSearchUrl, "2"})),
+                             0.75f, "foreign_session_guid"));
+    return annotated_visits;
+  }
+
+  void SetHistoryServiceExpectations(
+      std::vector<history::AnnotatedVisit> annotated_visits) {
     EXPECT_CALL(*mock_history_service_,
                 GetAnnotatedVisits(_, true, false, _, _))
         .WillOnce(testing::Invoke(
-            [](const history::QueryOptions& options,
-               bool compute_redirect_chain_start_properties,
-               bool get_unclustered_visits_only,
-               history::HistoryService::GetAnnotatedVisitsCallback callback,
-               base::CancelableTaskTracker* tracker)
+            [annotated_visits](
+                const history::QueryOptions& options,
+                bool compute_redirect_chain_start_properties,
+                bool get_unclustered_visits_only,
+                history::HistoryService::GetAnnotatedVisitsCallback callback,
+                base::CancelableTaskTracker* tracker)
                 -> base::CancelableTaskTracker::TaskId {
-              std::vector<history::AnnotatedVisit> annotated_visits = {};
-              annotated_visits.emplace_back(SampleAnnotatedVisit(
-                  1, GURL(base::StrCat({kSampleSearchUrl, "1"})), 1.0f, "",
-                  "sample_app_id"));
-              annotated_visits.emplace_back(SampleAnnotatedVisit(
-                  2, GURL(base::StrCat({kSampleSearchUrl, "2"})), 0.75f,
-                  "foreign_session_guid"));
               std::move(callback).Run(std::move(annotated_visits));
               return 0;
             }));
-    history_url_visit_fetcher_ = std::make_unique<HistoryURLVisitDataFetcher>(
-        mock_history_service_.get());
   }
 
   FetchResult FetchAndGetResult(const FetchOptions& options) {
@@ -126,6 +136,7 @@ class HistoryURLVisitDataFetcherTest
 };
 
 TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
+  SetHistoryServiceExpectations(GetSampleAnnotatedVisits());
   FetchOptions options =
       FetchOptions({{Fetcher::kHistory, FetchOptions::kOriginSources}},
                    base::Time::Now() - base::Days(1));
@@ -139,11 +150,38 @@ TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
   EXPECT_EQ(history->last_app_id, "sample_app_id");
 }
 
+TEST_F(HistoryURLVisitDataFetcherTest,
+       FetchURLVisitData_SomeDefaultVisibilyScores) {
+  const float kSampleVisibilityScore = 0.75f;
+  std::vector<history::AnnotatedVisit> annotated_visits = {};
+  annotated_visits.emplace_back(SampleAnnotatedVisit(
+      1, GURL(kSampleSearchUrl),
+      history::VisitContentModelAnnotations::kDefaultVisibilityScore,
+      /*originator_cache_guid=*/""));
+  annotated_visits.emplace_back(
+      SampleAnnotatedVisit(2, GURL(kSampleSearchUrl), kSampleVisibilityScore,
+                           /*originator_cache_guid=*/""));
+  SetHistoryServiceExpectations(std::move(annotated_visits));
+
+  FetchOptions options =
+      FetchOptions({{Fetcher::kHistory, FetchOptions::kOriginSources}},
+                   base::Time::Now() - base::Days(1));
+  auto result = FetchAndGetResult(options);
+  EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
+  EXPECT_EQ(result.data.size(), 1u);
+  const auto* history =
+      std::get_if<URLVisitAggregate::HistoryData>(&result.data.begin()->second);
+  EXPECT_FLOAT_EQ(history->last_visited.content_annotations.model_annotations
+                      .visibility_score,
+                  kSampleVisibilityScore);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          HistoryURLVisitDataFetcherTest,
                          ::testing::Values(Source::kLocal, Source::kForeign));
 
 TEST_P(HistoryURLVisitDataFetcherTest, FetchURLVisitData) {
+  SetHistoryServiceExpectations(GetSampleAnnotatedVisits());
   const auto source = GetParam();
   FetchOptions options = FetchOptions({{Fetcher::kHistory, {source}}},
                                       base::Time::Now() - base::Days(1));

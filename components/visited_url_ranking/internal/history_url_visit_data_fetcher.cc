@@ -82,6 +82,17 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
         history.last_app_id = annotated_visit.visit_row.app_id;
       }
 
+      if (history.last_visited.content_annotations.model_annotations
+                  .visibility_score ==
+              history::VisitContentModelAnnotations::kDefaultVisibilityScore &&
+          annotated_visit.content_annotations.model_annotations
+                  .visibility_score !=
+              history::VisitContentModelAnnotations::kDefaultVisibilityScore) {
+        history.last_visited.content_annotations.model_annotations
+            .visibility_score = annotated_visit.content_annotations
+                                    .model_annotations.visibility_score;
+      }
+
       // TODO(crbug.com/340885723): Wire `in_cluster` signal.
       // TODO(crbug.com/340887237): Wire `interaction_state` signal.
     }
