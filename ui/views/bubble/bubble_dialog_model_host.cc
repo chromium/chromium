@@ -21,7 +21,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/bubble/bubble_dialog_utils.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -795,15 +794,25 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   auto* ok_button = model_->ok_button(DialogModelHost::GetPassKey());
   if (ok_button) {
     button_mask |= ui::DIALOG_BUTTON_OK;
-    ConfigureBubbleButtonForParams(*this, /*button_view=*/nullptr,
-                                   ui::DIALOG_BUTTON_OK, *ok_button);
+    if (!ok_button->label().empty()) {
+      SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button->label());
+    }
+    if (ok_button->style()) {
+      SetButtonStyle(ui::DIALOG_BUTTON_OK, ok_button->style());
+    }
+    SetButtonEnabled(ui::DIALOG_BUTTON_OK, ok_button->is_enabled());
   }
 
   auto* cancel_button = model_->cancel_button(DialogModelHost::GetPassKey());
   if (cancel_button) {
     button_mask |= ui::DIALOG_BUTTON_CANCEL;
-    ConfigureBubbleButtonForParams(*this, /*button_view=*/nullptr,
-                                   ui::DIALOG_BUTTON_CANCEL, *cancel_button);
+    if (!cancel_button->label().empty()) {
+      SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_button->label());
+    }
+    if (cancel_button->style()) {
+      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, cancel_button->style());
+    }
+    SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, cancel_button->is_enabled());
   }
 
   // TODO(pbos): Consider refactoring ::SetExtraView() so it can be called
@@ -1136,13 +1145,19 @@ void BubbleDialogModelHost::OnWindowClosing() {
 void BubbleDialogModelHost::UpdateDialogButtons() {
   if (ui::DialogModel::Button* const ok_button =
           model_->ok_button(DialogModelHost::GetPassKey())) {
-    ConfigureBubbleButtonForParams(*this, GetOkButton(), ui::DIALOG_BUTTON_OK,
-                                   *ok_button);
+    SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button->label());
+    SetButtonEnabled(ui::DIALOG_BUTTON_OK, ok_button->is_enabled());
+    MdTextButton* const ok_button_view = GetOkButton();
+    ok_button_view->SetVisible(ok_button->is_visible());
+    ok_button_view->SetProperty(kElementIdentifierKey, ok_button->id());
   }
   if (ui::DialogModel::Button* const cancel_button =
           model_->cancel_button(DialogModelHost::GetPassKey())) {
-    ConfigureBubbleButtonForParams(*this, GetCancelButton(),
-                                   ui::DIALOG_BUTTON_CANCEL, *cancel_button);
+    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_button->label());
+    SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, cancel_button->is_enabled());
+    MdTextButton* const cancel_button_view = GetCancelButton();
+    cancel_button_view->SetVisible(cancel_button->is_visible());
+    cancel_button_view->SetProperty(kElementIdentifierKey, cancel_button->id());
   }
   if (ui::DialogModel::Button* const extra_button =
           model_->extra_button(DialogModelHost::GetPassKey())) {
