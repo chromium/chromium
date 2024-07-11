@@ -114,8 +114,7 @@ class ValidateCrxHelper : public SandboxedUnpackerClient {
                        std::unique_ptr<base::Value::Dict> original_manifest,
                        const Extension* extension,
                        const SkBitmap& install_icon,
-                       declarative_net_request::RulesetInstallPrefs
-                           ruleset_install_prefs) override {
+                       base::Value::Dict ruleset_install_prefs) override {
     DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
     success_ = true;
     content::GetUIThreadTaskRunner({})->PostTask(

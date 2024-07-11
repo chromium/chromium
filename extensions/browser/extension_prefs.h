@@ -19,7 +19,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/model/string_ordinal.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/install_flag.h"
@@ -235,8 +234,7 @@ class ExtensionPrefs : public KeyedService {
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,
                             const std::string& install_parameter,
-                            const declarative_net_request::RulesetInstallPrefs&
-                                ruleset_install_prefs);
+                            base::Value::Dict ruleset_install_prefs);
   // OnExtensionInstalled with no install flags and |ruleset_install_prefs|.
   void OnExtensionInstalled(const Extension* extension,
                             Extension::State initial_state,
@@ -597,8 +595,7 @@ class ExtensionPrefs : public KeyedService {
                              DelayReason delay_reason,
                              const syncer::StringOrdinal& page_ordinal,
                              const std::string& install_parameter,
-                             const declarative_net_request::RulesetInstallPrefs&
-                                 ruleset_install_prefs = {});
+                             base::Value::Dict ruleset_install_prefs = {});
 
   // Removes any delayed install information we have for the given
   // |extension_id|. Returns true if there was info to remove; false otherwise.
@@ -847,15 +844,14 @@ class ExtensionPrefs : public KeyedService {
   // `extension_dict` does not directly point to the extension's own prefs.
   // This is the case when this method is used to populate
   // `kDelayedInstallInfo`.
-  void PopulateExtensionInfoPrefs(
-      const Extension* extension,
-      const base::Time install_time,
-      Extension::State initial_state,
-      int install_flags,
-      const std::string& install_parameter,
-      const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs,
-      prefs::DictionaryValueUpdate* extension_dict,
-      base::Value::List& removed_prefs);
+  void PopulateExtensionInfoPrefs(const Extension* extension,
+                                  const base::Time install_time,
+                                  Extension::State initial_state,
+                                  int install_flags,
+                                  const std::string& install_parameter,
+                                  base::Value::Dict ruleset_install_prefs,
+                                  prefs::DictionaryValueUpdate* extension_dict,
+                                  base::Value::List& removed_prefs);
 
   void InitExtensionControlledPrefs(const ExtensionsInfo& extensions_info);
 

@@ -38,7 +38,6 @@
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host_registry.h"
@@ -379,8 +378,7 @@ class ExtensionService : public ExtensionServiceInterface,
   void OnExtensionInstalled(const Extension* extension,
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,
-                            const declarative_net_request::RulesetInstallPrefs&
-                                ruleset_install_prefs = {});
+                            base::Value::Dict ruleset_install_prefs = {});
   void OnExtensionInstalled(const Extension* extension,
                             const syncer::StringOrdinal& page_ordinal) {
     OnExtensionInstalled(extension, page_ordinal,
@@ -587,14 +585,12 @@ class ExtensionService : public ExtensionServiceInterface,
   // pages; and perform other extension install tasks before calling
   // AddExtension.
   // |install_flags| is a bitmask of InstallFlags.
-  void AddNewOrUpdatedExtension(
-      const Extension* extension,
-      Extension::State initial_state,
-      int install_flags,
-      const syncer::StringOrdinal& page_ordinal,
-      const std::string& install_parameter,
-      const declarative_net_request::RulesetInstallPrefs&
-          ruleset_install_prefs);
+  void AddNewOrUpdatedExtension(const Extension* extension,
+                                Extension::State initial_state,
+                                int install_flags,
+                                const syncer::StringOrdinal& page_ordinal,
+                                const std::string& install_parameter,
+                                base::Value::Dict ruleset_install_prefs);
 
   // Common helper to finish installing the given extension.
   void FinishInstallation(const Extension* extension);

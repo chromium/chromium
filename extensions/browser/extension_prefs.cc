@@ -237,16 +237,9 @@ constexpr const char kPrefDoNotSync[] = "do_not_sync";
 // that need to be synced. Default value is false.
 constexpr const char kPrefNeedsSync[] = "needs_sync";
 
-// Key corresponding to which we store a ruleset's checksum for the Declarative
-// Net Request API.
-constexpr const char kDNRChecksumKey[] = "checksum";
-
 // Key corresponding to the list of enabled static ruleset IDs for an extension.
 // Used for the Declarative Net Request API.
 constexpr const char kDNREnabledStaticRulesetIDs[] = "dnr_enabled_ruleset_ids";
-
-// A boolean that indicates if a ruleset should be ignored.
-constexpr const char kDNRIgnoreRulesetKey[] = "ignore_ruleset";
 
 // The default value to use for permission withholding when setting the pref on
 // installation or for extensions where the pref has not been set.
@@ -1349,7 +1342,7 @@ void ExtensionPrefs::OnExtensionInstalled(
     const syncer::StringOrdinal& page_ordinal,
     int install_flags,
     const std::string& install_parameter,
-    const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs) {
+    base::Value::Dict ruleset_install_prefs) {
   // If the extension was previously an external extension that was uninstalled,
   // clear the external uninstall bit.
   // TODO(devlin): We previously did this because we indicated external
@@ -1370,7 +1363,7 @@ void ExtensionPrefs::OnExtensionInstalled(
   base::Value::List prefs_to_remove;
   PopulateExtensionInfoPrefs(
       extension, install_time, initial_state, install_flags, install_parameter,
-      ruleset_install_prefs, extension_dict.get(), prefs_to_remove);
+      std::move(ruleset_install_prefs), extension_dict.get(), prefs_to_remove);
 
   for (const auto& pref_to_remove : prefs_to_remove) {
     extension_dict->Remove(pref_to_remove.GetString());
@@ -1571,13 +1564,13 @@ void ExtensionPrefs::SetDelayedInstallInfo(
     DelayReason delay_reason,
     const syncer::StringOrdinal& page_ordinal,
     const std::string& install_parameter,
-    const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs) {
+    base::Value::Dict ruleset_install_prefs) {
   ScopedDictionaryUpdate update(this, extension->id(), kDelayedInstallInfo);
   auto extension_dict = update.Create();
   base::Value::List prefs_to_remove;
   PopulateExtensionInfoPrefs(
       extension, clock_->Now(), initial_state, install_flags, install_parameter,
-      ruleset_install_prefs, extension_dict.get(), prefs_to_remove);
+      std::move(ruleset_install_prefs), extension_dict.get(), prefs_to_remove);
 
   // Add transient data that is needed by FinishDelayedInstallInfo(), but
   // should not be in the final extension prefs. All entries here should have
@@ -2180,7 +2173,7 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
     Extension::State initial_state,
     int install_flags,
     const std::string& install_parameter,
-    const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs,
+    base::Value::Dict ruleset_install_prefs,
     prefs::DictionaryValueUpdate* extension_dict,
     base::Value::List& removed_prefs) {
   extension_dict->SetInteger(kPrefState, initial_state);
@@ -2215,23 +2208,8 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
   if (ruleset_install_prefs.empty()) {
     removed_prefs.Append(kDNRStaticRulesetPref);
   } else {
-    base::Value::Dict ruleset_prefs;
-    for (const declarative_net_request::RulesetInstallPref& install_pref :
-         ruleset_install_prefs) {
-      std::string id_key =
-          base::NumberToString(install_pref.ruleset_id.value());
-
-      base::Value::Dict ruleset_dict;
-      ruleset_dict.Set(kDNRIgnoreRulesetKey, install_pref.ignored);
-      if (install_pref.checksum)
-        ruleset_dict.Set(kDNRChecksumKey, *install_pref.checksum);
-
-      DCHECK(!ruleset_prefs.Find(id_key));
-      ruleset_prefs.Set(id_key, std::move(ruleset_dict));
-    }
-
     extension_dict->SetDictionary(kDNRStaticRulesetPref,
-                                  std::move(ruleset_prefs));
+                                  std::move(ruleset_install_prefs));
   }
 
   // Clear the list of enabled static rulesets for the extension since it

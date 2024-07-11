@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/image_sanitizer.h"
@@ -44,6 +43,7 @@ namespace extensions {
 class Extension;
 enum class SandboxedUnpackerFailureReason;
 enum class InstallationStage;
+struct RulesetParseResult;
 
 namespace declarative_net_request {
 struct IndexAndPersistJSONRulesetResult;
@@ -94,7 +94,7 @@ class SandboxedUnpackerClient
       std::unique_ptr<base::Value::Dict> original_manifest,
       const Extension* extension,
       const SkBitmap& install_icon,
-      declarative_net_request::RulesetInstallPrefs ruleset_install_prefs) = 0;
+      base::Value::Dict ruleset_install_prefs) = 0;
   virtual void OnUnpackFailure(const CrxInstallError& error) = 0;
 
   // Called after stage of installation is changed.
@@ -242,8 +242,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   // rulesets.
   void IndexAndPersistJSONRulesetsIfNeeded();
 
-  void OnJSONRulesetsIndexed(
-      declarative_net_request::InstallIndexHelper::Result result);
+  void OnJSONRulesetsIndexed(RulesetParseResult result);
 
   // Computed hashes: if requested (via ShouldComputeHashes callback in
   // SandbloxedUnpackerClient), calculate hashes of all extensions' resources
@@ -284,7 +283,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   std::optional<base::Value::Dict> manifest_;
 
   // Install prefs needed for the Declarative Net Request API.
-  declarative_net_request::RulesetInstallPrefs ruleset_install_prefs_;
+  base::Value::Dict ruleset_install_prefs_;
 
   // Represents the extension we're unpacking.
   scoped_refptr<Extension> extension_;

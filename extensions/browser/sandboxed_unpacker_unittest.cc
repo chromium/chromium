@@ -139,8 +139,7 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
                        std::unique_ptr<base::Value::Dict> original_manifest,
                        const Extension* extension,
                        const SkBitmap& install_icon,
-                       declarative_net_request::RulesetInstallPrefs
-                           ruleset_install_prefs) override {
+                       base::Value::Dict ruleset_install_prefs) override {
     temp_dir_ = temp_dir;
     callback_runner_->PostTask(FROM_HERE, std::move(quit_closure_));
   }

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 
 namespace extensions {
@@ -60,8 +61,7 @@ class KioskExternalUpdateValidator
                        std::unique_ptr<base::Value::Dict> original_manifest,
                        const extensions::Extension* extension,
                        const SkBitmap& install_icon,
-                       extensions::declarative_net_request::RulesetInstallPrefs
-                           ruleset_install_prefs) override;
+                       base::Value::Dict ruleset_install_prefs) override;
 
   // Task runner for executing file I/O tasks.
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

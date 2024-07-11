@@ -255,7 +255,7 @@ void CrxInstaller::ConvertUserScriptOnSharedFileThread() {
 
   OnUnpackSuccessOnSharedFileThread(extension->path(), extension->path(),
                                     nullptr, extension, SkBitmap(),
-                                    {} /* ruleset_install_prefs */);
+                                    /*ruleset_install_prefs=*/{});
 }
 
 void CrxInstaller::UpdateExtensionFromUnpackedCrx(
@@ -528,7 +528,7 @@ void CrxInstaller::OnUnpackSuccess(
     std::unique_ptr<base::Value::Dict> original_manifest,
     const Extension* extension,
     const SkBitmap& install_icon,
-    declarative_net_request::RulesetInstallPrefs ruleset_install_prefs) {
+    base::Value::Dict ruleset_install_prefs) {
   DCHECK(GetUnpackerTaskRunner()->RunsTasksInCurrentSequence());
   shared_file_task_runner_->PostTask(
       FROM_HERE,
@@ -544,7 +544,7 @@ void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
     std::unique_ptr<base::Value::Dict> original_manifest,
     scoped_refptr<const Extension> extension,
     SkBitmap install_icon,
-    declarative_net_request::RulesetInstallPrefs ruleset_install_prefs) {
+    base::Value::Dict ruleset_install_prefs) {
   DCHECK(shared_file_task_runner_->RunsTasksInCurrentSequence());
 
   extension_ = extension;
@@ -1037,7 +1037,8 @@ void CrxInstaller::ReportSuccessFromUIThread() {
   }
 
   service_weak_->OnExtensionInstalled(extension(), page_ordinal_,
-                                      install_flags_, ruleset_install_prefs_);
+                                      install_flags_,
+                                      std::move(ruleset_install_prefs_));
   NotifyCrxInstallComplete(std::nullopt);
 }
 
