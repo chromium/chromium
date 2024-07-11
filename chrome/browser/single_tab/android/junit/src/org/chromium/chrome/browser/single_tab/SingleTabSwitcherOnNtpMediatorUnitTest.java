@@ -159,9 +159,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         int width =
                 ContextUtils.getApplicationContext()
                         .getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen
-                                        .single_tab_module_tab_thumbnail_size_big);
+                        .getDimensionPixelSize(R.dimen.single_tab_module_tab_thumbnail_size_big);
         int height = width;
         Size thumbnailSize = new Size(width, height);
 

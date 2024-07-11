@@ -15,7 +15,15 @@ found in the LICENSE file.
     <dimen name="chip_state_layer_hover_alpha">@dimen/chip_state_layer_hover_alpha_dark</dimen>
     <dimen name="chip_state_layer_focused_alpha">@dimen/chip_state_layer_focused_alpha_dark</dimen>
     <dimen name="chip_state_layer_pressed_alpha">@dimen/chip_state_layer_pressed_alpha_dark</dimen>
+
     <!-- Surface Polish -->
     <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_0</dimen>
     <item name="home_surface_search_box_background_alpha" format="float" type="dimen">0.2</item>
+    <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_1</dimen>
+
+    <!-- Single Tab module -->
+    <dimen name="favicon_background_color_elevation">@dimen/default_elevation_2</dimen>
+
+    <!-- Tab Resumption module -->
+    <dimen name="tab_resumption_module_icon_background_color_elevation">@dimen/default_elevation_3</dimen>
 </resources>

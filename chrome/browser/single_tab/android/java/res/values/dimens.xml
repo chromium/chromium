@@ -16,8 +16,4 @@ found in the LICENSE file.
 <dimen name="single_tab_thumbnail_radius">12dp</dimen>
 <dimen name="favicon_padding">4dp</dimen>
 <dimen name="favicon_background_radius">4dp</dimen>
-<dimen name="favicon_background_color_elevation">@dimen/default_elevation_0</dimen>
-
-    <!-- Tab Resumption Module -->
-<dimen name="tab_resumption_module_icon_background_color_elevation">@dimen/default_elevation_1</dimen>
 </resources>

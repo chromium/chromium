@@ -52,8 +52,7 @@ class SingleTabView extends LinearLayout {
                         (MarginLayoutParams) mTabThumbnail.getLayoutParams();
                 int size =
                         resources.getDimensionPixelSize(
-                                org.chromium.chrome.browser.tab_ui.R.dimen
-                                        .single_tab_module_tab_thumbnail_size_big);
+                                R.dimen.single_tab_module_tab_thumbnail_size_big);
                 marginLayoutParams.width = size;
                 marginLayoutParams.height = size;
 

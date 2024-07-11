@@ -100,9 +100,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         when(mTab.getId()).thenReturn(TAB_ID);
         int size =
                 mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.tab_ui.R.dimen
-                                        .single_tab_module_tab_thumbnail_size_big);
+                        .getDimensionPixelSize(R.dimen.single_tab_module_tab_thumbnail_size_big);
         mThumbnailSize = new Size(size, size);
 
         mClickCallback =

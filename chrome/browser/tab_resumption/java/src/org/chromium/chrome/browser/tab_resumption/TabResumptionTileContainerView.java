@@ -39,9 +39,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
 
         int size =
                 context.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.tab_ui.R.dimen
-                                        .single_tab_module_tab_thumbnail_size_big);
+                        .getDimensionPixelSize(R.dimen.single_tab_module_tab_thumbnail_size_big);
         mThumbnailSize = new Size(size, size);
         mPackageManager = context.getPackageManager();
     }
