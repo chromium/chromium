@@ -15,10 +15,9 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
-#endif  // BUILDFLAG(IS_APPLE) ||
-        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 namespace device {
 
@@ -57,11 +56,10 @@ class DeviceServiceTestBase : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   raw_ptr<FakeGeolocationSystemPermissionManager>
       fake_geolocation_system_permission_manager_;
-#endif  // BUILDFLAG(IS_APPLE) ||
-        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 

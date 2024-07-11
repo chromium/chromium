@@ -16,10 +16,9 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
-#endif  // BUILDFLAG(IS_APPLE) ||
-        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 namespace device {
 
@@ -63,15 +62,14 @@ DeviceServiceTestBase::DeviceServiceTestBase()
 DeviceServiceTestBase::~DeviceServiceTestBase() = default;
 
 void DeviceServiceTestBase::SetUp() {
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   auto geolocation_system_permission_manager =
       std::make_unique<FakeGeolocationSystemPermissionManager>();
   fake_geolocation_system_permission_manager_ =
       geolocation_system_permission_manager.get();
   device::GeolocationSystemPermissionManager::SetInstance(
       std::move(geolocation_system_permission_manager));
-#endif  // BUILDFLAG(IS_APPLE) ||
-        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   service_ = CreateTestDeviceService(
       file_task_runner_, io_task_runner_,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

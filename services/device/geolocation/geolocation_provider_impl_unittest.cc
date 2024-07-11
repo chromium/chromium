@@ -28,7 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
 #endif
 
@@ -105,7 +105,7 @@ Matcher<const mojom::GeopositionResult&> GeopositionResultEq(
 class GeolocationProviderTest : public testing::Test {
  public:
   void SetUp() override {
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
     if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
       fake_geolocation_system_permission_manager_ =
           std::make_unique<FakeGeolocationSystemPermissionManager>();
@@ -155,7 +155,7 @@ class GeolocationProviderTest : public testing::Test {
   }
 
   void SetSystemPermission(LocationSystemPermissionStatus status) {
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
     fake_geolocation_system_permission_manager_->SetSystemPermission(status);
     RunUntilIdle();
 #endif
@@ -183,7 +183,7 @@ class GeolocationProviderTest : public testing::Test {
   // Called on provider thread.
   void GetProvidersStarted();
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   std::unique_ptr<FakeGeolocationSystemPermissionManager>
       fake_geolocation_system_permission_manager_;
 #endif
@@ -517,7 +517,7 @@ TEST_F(GeolocationProviderTest, DiagnosticsObserverDisabled) {
   observer.Disconnect();
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 TEST_F(GeolocationProviderTest, StartProviderAfterSystemPermissionGranted) {
   SetFakeLocationProviderManager();
 

@@ -47,7 +47,7 @@ void GeolocationSystemPermissionManager::SetInstance(
   CheckedAccessWrapper::GetInstance().SetManager(std::move(manager));
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 GeolocationSystemPermissionManager::GeolocationSystemPermissionManager(
     std::unique_ptr<SystemGeolocationSource> system_geolocation_source)
     : system_geolocation_source_(std::move(system_geolocation_source)),
@@ -108,7 +108,7 @@ void GeolocationSystemPermissionManager::RequestSystemPermission() {
 }
 
 void GeolocationSystemPermissionManager::OpenSystemPermissionSetting() {
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   system_geolocation_source_->OpenSystemPermissionSetting();
 #endif
 }

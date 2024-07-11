@@ -17,8 +17,7 @@
 
 namespace device {
 
-#if !BUILDFLAG(IS_APPLE) && \
-    !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #error This file should be compiled only on Apple, ChromeOS, or Windows\
   (i.e. platforms where we support system-based geolocation permissions)
 #endif

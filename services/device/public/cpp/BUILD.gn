@@ -80,7 +80,7 @@ source_set("test_support") {
     "//url",
   ]
 
-  if (os_level_geolocation_permission_supported || is_ios) {
+  if (os_level_geolocation_permission_supported) {
     sources += [
       "test/fake_geolocation_system_permission_manager.cc",
       "test/fake_geolocation_system_permission_manager.h",

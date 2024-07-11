@@ -14,12 +14,11 @@
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
-#endif  // BUILDFLAG(IS_APPLE) ||
-        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 #if BUILDFLAG(IS_APPLE)
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -45,7 +44,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
   // Opens appropriate system preferences/setting page.
   void OpenSystemPermissionSetting();
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   class PermissionObserver : public base::CheckedObserver {
    public:
     virtual void OnSystemPermissionUpdated(
@@ -85,16 +84,15 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
         // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
  private:
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   void UpdateSystemPermission(LocationSystemPermissionStatus status);
   void NotifyPermissionObservers();
-#endif  // BUILDFLAG(IS_APPLE) ||
-        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
   LocationSystemPermissionStatus permission_cache_ =
       LocationSystemPermissionStatus::kNotDetermined;
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   std::unique_ptr<SystemGeolocationSource> system_geolocation_source_;
 
   // Using scoped_refptr so objects can hold a reference and ensure this list
@@ -103,8 +101,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
   scoped_refptr<PermissionObserverList> observers_;
 
   base::WeakPtrFactory<GeolocationSystemPermissionManager> weak_factory_{this};
-#endif  // BUILDFLAG(IS_APPLE) ||
-        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 };
 
 

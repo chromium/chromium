@@ -36,16 +36,16 @@ class SourceImpl : public device::SystemGeolocationSource {
   }
 
   // These methods are not used in the tests, but need to be implemented.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   void StartWatchingPosition(bool) override {}
   void StopWatchingPosition() override {}
   void AddPositionUpdateObserver(PositionObserver* observer) override {}
   void RemovePositionUpdateObserver(PositionObserver* observer) override {}
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   void RequestPermission() override {}
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
 
   // Helper function to force observer notification (normally done by
   // implementations of PermissionProvider).
