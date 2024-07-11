@@ -301,8 +301,7 @@ public class LocationBarLayout extends FrameLayout {
 
         ViewGroup.MarginLayoutParams urlActionContainerParams =
                 (ViewGroup.MarginLayoutParams) mUrlActionContainer.getLayoutParams();
-        if (mIsSurfacePolishEnabled
-                && urlActionContainerParams.getMarginEnd() != mUrlActionContainerEndMargin) {
+        if (urlActionContainerParams.getMarginEnd() != mUrlActionContainerEndMargin) {
             urlActionContainerParams.setMarginEnd(mUrlActionContainerEndMargin);
         }
 
@@ -501,7 +500,7 @@ public class LocationBarLayout extends FrameLayout {
                 && isUrlFocusChangeInProgress
                 && ntpSearchBoxScrollFraction == 1) {
             // For the focus and un-focus animation when the real search box is visible
-            // on Start Surface or NTP.
+            // on NTP.
             return mStatusIconAndUrlBarOffsetForSurfacePolish * (1 - urlFocusChangeFraction);
         }
 
@@ -573,7 +572,7 @@ public class LocationBarLayout extends FrameLayout {
      *
      * @param useDefaultUrlActionContainerEndMargin Whether to use the default end margin for the
      *     url action container in the search box. If not we will use the specific end margin value
-     *     for surface polish.
+     *     for NTP's un-focus state.
      */
     public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {
         mUrlActionContainerEndMargin =
@@ -581,8 +580,7 @@ public class LocationBarLayout extends FrameLayout {
                         ? getResources()
                                 .getDimensionPixelSize(R.dimen.location_bar_url_action_offset)
                         : getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.location_bar_url_action_offset_polish);
+                                .getDimensionPixelSize(R.dimen.location_bar_url_action_offset_ntp);
     }
 
     int getUrlActionContainerEndMarginForTesting() {

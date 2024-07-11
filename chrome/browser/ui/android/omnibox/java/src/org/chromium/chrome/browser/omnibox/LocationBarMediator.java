@@ -1620,13 +1620,13 @@ class LocationBarMediator
      * Updates the color of the hint text in the search box.
      *
      * @param useDefaultUrlBarHintTextColor Whether to use the default color for the search text in
-     *     the search box. If not we will use specific color for surface polish.
+     *     the search box. If not we will use specific color for NTP's un-focus state.
      */
     public void updateUrlBarHintTextColor(boolean useDefaultUrlBarHintTextColor) {
         if (useDefaultUrlBarHintTextColor) {
             mUrlCoordinator.setUrlBarHintTextColorForDefault(mBrandedColorScheme);
         } else {
-            mUrlCoordinator.setUrlBarHintTextColorForSurfacePolish();
+            mUrlCoordinator.setUrlBarHintTextColorForNtp();
         }
     }
 
@@ -1635,7 +1635,7 @@ class LocationBarMediator
      *
      * @param useDefaultUrlActionContainerEndMargin Whether to use the default end margin for the
      *     url action container in the search box. If not we will use the specific end margin value
-     *     for surface polish.
+     *     for NTP's un-focus state.
      */
     public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {
         mLocationBarLayout.updateUrlActionContainerEndMargin(useDefaultUrlActionContainerEndMargin);

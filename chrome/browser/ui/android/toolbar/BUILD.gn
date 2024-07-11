@@ -229,7 +229,6 @@ android_resources("java_resources") {
     "java/res/drawable-mdpi/modern_location_bar.9.png",
     "java/res/drawable-mdpi/popup_bg_bottom.9.png",
     "java/res/drawable-night/home_surface_search_box_background.xml",
-    "java/res/drawable-v21/ntp_search_box.xml",
     "java/res/drawable-v31/menu_bg_bottom_tinted.xml",
     "java/res/drawable-xhdpi/badge_update_dark.png",
     "java/res/drawable-xhdpi/badge_update_light.png",

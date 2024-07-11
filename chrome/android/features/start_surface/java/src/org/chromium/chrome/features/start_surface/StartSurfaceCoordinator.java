@@ -626,7 +626,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         int realEndPadding =
                 mIsSurfacePolishEnabled
                         ? getPixelSize(R.dimen.location_bar_end_padding)
-                                + getPixelSize(R.dimen.location_bar_url_action_offset_polish)
+                                + getPixelSize(R.dimen.location_bar_url_action_offset_ntp)
                         : 0;
         int endPaddingDiff = fakeEndPadding - realEndPadding;
 

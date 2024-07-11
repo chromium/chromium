@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -187,7 +186,6 @@ public class NewTabPage
     @Nullable private final HomeSurfaceTracker mHomeSurfaceTracker;
     private final boolean mIsNtpAsHomeSurfaceEnabled;
     private boolean mSnapshotSingleTabCardChanged;
-    private final boolean mIsSurfacePolishEnabled;
     private final boolean mIsInNightMode;
     @Nullable private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
 
@@ -439,7 +437,6 @@ public class NewTabPage
         mContext = activity;
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
-        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mBackgroundColor =
                 ChromeColors.getSurfaceColor(
                         mContext, R.dimen.home_surface_background_color_elevation);
@@ -566,7 +563,6 @@ public class NewTabPage
                 uma,
                 mTab.getProfile(),
                 windowAndroid,
-                mIsSurfacePolishEnabled,
                 mIsTablet,
                 mTabStripHeightSupplier);
 
@@ -1032,12 +1028,6 @@ public class NewTabPage
     @Override
     public @ColorInt int getToolbarTextBoxBackgroundColor(@ColorInt int defaultColor) {
         if (isLocationBarShownInNtp()) {
-            if (!mIsSurfacePolishEnabled) {
-                return isLocationBarScrolledToTopInNtp()
-                        ? ChromeColors.getSurfaceColor(mContext, R.dimen.toolbar_text_box_elevation)
-                        : ChromeColors.getPrimaryBackgroundColor(mContext, false);
-            }
-
             if (!isLocationBarScrolledToTopInNtp()) {
                 return ChromeColors.getSurfaceColor(
                         mContext, R.dimen.home_surface_background_color_elevation);

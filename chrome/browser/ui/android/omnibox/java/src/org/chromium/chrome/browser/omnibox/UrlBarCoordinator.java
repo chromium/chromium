@@ -329,9 +329,9 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#setUrlBarHintTextColorForSurfacePolish()
+     * @see UrlBarMediator#setUrlBarHintTextColorForNtp()
      */
-    public void setUrlBarHintTextColorForSurfacePolish() {
-        mMediator.setUrlBarHintTextColorForSurfacePolish();
+    public void setUrlBarHintTextColorForNtp() {
+        mMediator.setUrlBarHintTextColorForNtp();
     }
 }

@@ -41,9 +41,9 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     private @SelectionState int mSelectionState = UrlBarCoordinator.SelectionState.SELECT_ALL;
 
     private int mPreviousBrandedColorScheme;
-    // For both Start Surface and NTP, when the surface polish flag is enabled, the search text hint
-    // color is fixed for the real search box and we couldn't change it by the branded color scheme.
-    private boolean mIsHintTextFixedForStartOrNtp;
+    // For NTP, when in un-focus state, the search text hint color is fixed for the real search box
+    // and we couldn't change it by the branded color scheme.
+    private boolean mIsHintTextFixedForNtp;
 
     /**
      * Creates a URLBarMediator.
@@ -261,7 +261,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
                 OmniboxResourceProvider.getUrlBarHintTextColor(mContext, brandedColorScheme);
 
         mModel.set(UrlBarProperties.TEXT_COLOR, textColor);
-        if (!mIsHintTextFixedForStartOrNtp) {
+        if (!mIsHintTextFixedForNtp) {
             mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
         }
 
@@ -392,13 +392,13 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
      * @param brandedColorScheme The {@link @BrandedColorScheme}.
      */
     void setUrlBarHintTextColorForDefault(@BrandedColorScheme int brandedColorScheme) {
-        mIsHintTextFixedForStartOrNtp = false;
+        mIsHintTextFixedForNtp = false;
         setBrandedColorScheme(brandedColorScheme);
     }
 
-    /** Sets search box hint text color to be colorOnSurface for Surface Polish. */
-    void setUrlBarHintTextColorForSurfacePolish() {
-        mIsHintTextFixedForStartOrNtp = true;
+    /** Sets search box hint text color to be colorOnSurface for NTP's un-focus state. */
+    void setUrlBarHintTextColorForNtp() {
+        mIsHintTextFixedForNtp = true;
         final @ColorInt int hintTextColor = SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
     }

@@ -32,7 +32,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
@@ -116,17 +115,6 @@ public class StatusView extends LinearLayout {
         mIconView.setClipToOutline(true);
 
         configureAccessibilityDescriptions();
-
-        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            // Set Icon background size
-            ViewGroup.LayoutParams params = mIconBackground.getLayoutParams();
-            int iconBackgroundSize =
-                    getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.omnibox_search_engine_logo_composed_size);
-            params.width = iconBackgroundSize;
-            params.height = iconBackgroundSize;
-        }
     }
 
     /**

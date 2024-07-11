@@ -220,10 +220,8 @@ public class ToolbarPhone extends ToolbarLayout
     private final Rect mNtpSearchBoxBounds = new Rect();
     protected final Point mNtpSearchBoxTranslation = new Point();
 
-    protected final int mToolbarSidePadding;
-    // If the surface polish flag is disabled, mToolbarSidePaddingForRealOmnibox will have
-    // the same value as mToolbarSidePadding.
-    protected final int mToolbarSidePaddingForRealOmnibox;
+    private final int mToolbarSidePadding;
+    private final int mToolbarSidePaddingForNtp;
     private final int mBackgroundHeightIncreaseWhenFocus;
 
     private ValueAnimator mBrandColorTransitionAnimation;
@@ -242,8 +240,8 @@ public class ToolbarPhone extends ToolbarLayout
     private PhoneCaptureStateToken mPhoneCaptureStateToken;
     private ButtonData mButtonData;
 
-    private @ColorInt int mHomeSurfaceToolbarBackgroundColor;
-    private @ColorInt int mHomeSurfaceLocationBarBackgroundColor;
+    private @ColorInt int mToolbarBackgroundColorForNtp;
+    private @ColorInt int mLocationBarBackgroundColorForNtp;
     private boolean mHasFocus;
 
     /** Used to specify the visual state of the toolbar. */
@@ -279,11 +277,11 @@ public class ToolbarPhone extends ToolbarLayout
 
     private final boolean mIsSurfacePolishEnabled;
 
-    // For both Start Surface and NTP, when the surface polish flag is enabled, we will change the
-    // appearance (G logo background, search text color and style) of the real search box after it's
-    // pinned at top when scrolling up the surface. This variable distinguishes whether the current
-    // page is Start Surface / NTP, to indicate that the appearance of the real search box changed.
-    private boolean mIsNtpWithSurfacePolish;
+    // For NTP, we have a different appearance (G logo background, search text color and style) of
+    // the real search box after it's pinned at top when scrolling up the surface. This variable
+    // distinguishes whether the current page is NTP with unfocused real omnibox, to indicate that
+    // the appearance of the real search box changed.
+    private boolean mIsNtpWithUnfocusedRealOmnibox;
 
     // Added due to https://crbug.com/323888159 to mark the loading phase while navigating from NTP
     // to webpages.
@@ -315,24 +313,19 @@ public class ToolbarPhone extends ToolbarLayout
         super(context, attrs);
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
-        mToolbarSidePaddingForRealOmnibox =
-                mIsSurfacePolishEnabled
-                        ? OmniboxResourceProvider.getToolbarSidePaddingForNtp(context)
-                        : OmniboxResourceProvider.getToolbarSidePadding(context);
+        mToolbarSidePaddingForNtp = OmniboxResourceProvider.getToolbarSidePaddingForNtp(context);
         mBackgroundHeightIncreaseWhenFocus =
                 OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(context);
-        mHomeSurfaceToolbarBackgroundColor =
+        mToolbarBackgroundColorForNtp =
                 ChromeColors.getSurfaceColor(
                         getContext(), R.dimen.home_surface_background_color_elevation);
-        if (mIsSurfacePolishEnabled) {
-            float homeSurfaceLocationBarBackgroundColorAlpha =
-                    ResourcesCompat.getFloat(
-                            getResources(), R.dimen.home_surface_search_box_background_alpha);
-            mHomeSurfaceLocationBarBackgroundColor =
-                    ColorUtils.setAlphaComponentWithFloat(
-                            SemanticColorUtils.getDefaultIconColorAccent1(context),
-                            homeSurfaceLocationBarBackgroundColorAlpha);
-        }
+        float LocationBarBackgroundColorAlphaForNtp =
+                ResourcesCompat.getFloat(
+                        getResources(), R.dimen.home_surface_search_box_background_alpha);
+        mLocationBarBackgroundColorForNtp =
+                ColorUtils.setAlphaComponentWithFloat(
+                        SemanticColorUtils.getDefaultIconColorAccent1(context),
+                        LocationBarBackgroundColorAlphaForNtp);
         mTabCountSupplierObserver = this::onTabCountChanged;
     }
 
@@ -466,8 +459,7 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private @ColorInt int getLocationBarColorForToolbarColor(@ColorInt int toolbarColor) {
         if (isLocationBarShownInGeneralNtp() || mIsInLoadingPhaseFromNtpToWebpage) {
-            assert mHomeSurfaceLocationBarBackgroundColor != 0;
-            return mHomeSurfaceLocationBarBackgroundColor;
+            return mLocationBarBackgroundColorForNtp;
         }
         return ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
                 getContext(), toolbarColor, isIncognitoBranded());
@@ -737,10 +729,7 @@ public class ToolbarPhone extends ToolbarLayout
             int containerWidth, int priorVisibleWidth, boolean isInFocusedMode) {
         int width =
                 containerWidth
-                        - (2
-                                * (isInFocusedMode
-                                        ? mToolbarSidePadding
-                                        : mToolbarSidePaddingForRealOmnibox))
+                        - (2 * (isInFocusedMode ? mToolbarSidePadding : mToolbarSidePaddingForNtp))
                         + priorVisibleWidth;
 
         return width;
@@ -752,8 +741,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The left margin of the location bar when it has focus.
      */
     private int getFocusedLocationBarLeftMargin(int priorVisibleWidth, boolean isInFocusedMode) {
-        int baseMargin =
-                (isInFocusedMode ? mToolbarSidePadding : mToolbarSidePaddingForRealOmnibox);
+        int baseMargin = (isInFocusedMode ? mToolbarSidePadding : mToolbarSidePaddingForNtp);
         if (mLocationBar.getPhoneCoordinator().getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
             return baseMargin;
         } else {
@@ -770,7 +758,7 @@ public class ToolbarPhone extends ToolbarLayout
         // Uses getMeasuredWidth()s instead of getLeft() because this is called in onMeasure
         // and the layout values have not yet been set.
         if (visualState == VisualState.NEW_TAB_NORMAL && mTabSwitcherState == STATIC_TAB) {
-            return mToolbarSidePaddingForRealOmnibox;
+            return mToolbarSidePaddingForNtp;
         } else if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
             return getBoundsAfterAccountingForRightButtons();
         } else {
@@ -782,7 +770,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The left bounds of the location bar after accounting for any visible left buttons.
      */
     private int getBoundsAfterAccountingForLeftButton() {
-        int padding = mToolbarSidePaddingForRealOmnibox;
+        int padding = mToolbarSidePaddingForNtp;
 
         // If home button is visible, mHomeButton.getMeasuredWidth() should be returned as the left
         // bound.
@@ -801,7 +789,7 @@ public class ToolbarPhone extends ToolbarLayout
         // Uses getMeasuredWidth()s instead of getRight() because this is called in onMeasure
         // and the layout values have not yet been set.
         if (visualState == VisualState.NEW_TAB_NORMAL && mTabSwitcherState == STATIC_TAB) {
-            return getMeasuredWidth() - mToolbarSidePaddingForRealOmnibox;
+            return getMeasuredWidth() - mToolbarSidePaddingForNtp;
         } else if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
             return getMeasuredWidth() - getBoundsAfterAccountingForLeftButton();
         } else {
@@ -822,7 +810,7 @@ public class ToolbarPhone extends ToolbarLayout
             toolbarButtonsContainerWidth = mToolbarButtonsContainer.getWidth();
         }
 
-        return Math.max(mToolbarSidePaddingForRealOmnibox, toolbarButtonsContainerWidth);
+        return Math.max(mToolbarSidePaddingForNtp, toolbarButtonsContainerWidth);
     }
 
     private void updateToolbarBackground(@ColorInt int color) {
@@ -839,20 +827,14 @@ public class ToolbarPhone extends ToolbarLayout
         updateToolbarBackground(getToolbarColorForVisualState(visualState));
     }
 
-    private @ColorInt int getToolbarColorOnNtp() {
-        return mIsSurfacePolishEnabled
-                ? mHomeSurfaceToolbarBackgroundColor
-                : ChromeColors.getDefaultThemeColor(getContext(), false);
-    }
-
     private @ColorInt int getToolbarColorForVisualState(final @VisualState int visualState) {
         switch (visualState) {
             case VisualState.NEW_TAB_NORMAL:
                 // We are likely in the middle of a layout animation, and the NTP cannot draw itself
-                // yet. Use the default background color, which will match what the NTP eventually
+                // yet. Use the NTP background color, which will match what the NTP eventually
                 // draws itself.
                 if (!getToolbarDataProvider().getNewTabPageDelegate().hasCompletedFirstLayout()) {
-                    return getToolbarColorOnNtp();
+                    return mToolbarBackgroundColorForNtp;
                 }
 
                 // During transition we cannot rely on the background to be opaque yet, so keep full
@@ -861,16 +843,16 @@ public class ToolbarPhone extends ToolbarLayout
 
                 // When the NTP fake search box is visible, the background color should be
                 // transparent. When the location bar reaches the top of the screen (i.e. location
-                // bar is fully expanded), the background needs to change back to the default
-                // toolbar color so that the NTP content is not visible beneath the toolbar. In
-                // between the transition, we set a translucent default toolbar color based on
-                // the expansion progress of the toolbar.
-                return ColorUtils.setAlphaComponent(getToolbarColorOnNtp(), alpha);
+                // bar is fully expanded), the background needs to change back to the NTP toolbar
+                // color so that the NTP content is not visible beneath the toolbar. In between the
+                // transition, we set a translucent NTP toolbar color based on the expansion
+                // progress of the toolbar.
+                return ColorUtils.setAlphaComponent(mToolbarBackgroundColorForNtp, alpha);
             case VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO:
-                return mHomeSurfaceToolbarBackgroundColor;
+                return mToolbarBackgroundColorForNtp;
             case VisualState.NORMAL:
                 if (mIsInLoadingPhaseFromNtpToWebpage) {
-                    return mHomeSurfaceToolbarBackgroundColor;
+                    return mToolbarBackgroundColorForNtp;
                 }
                 return ChromeColors.getDefaultThemeColor(getContext(), false);
             case VisualState.INCOGNITO:
@@ -914,8 +896,8 @@ public class ToolbarPhone extends ToolbarLayout
 
     private void onNtpScrollChanged(float scrollFraction) {
         mNtpSearchBoxScrollFraction = scrollFraction;
-        if (mIsSurfacePolishEnabled && mNtpSearchBoxScrollFraction > 0) {
-            updateLocationBarForSurfacePolish(mVisualState, mHasFocus);
+        if (mNtpSearchBoxScrollFraction > 0) {
+            updateLocationBarForNtp(mVisualState, mHasFocus);
         }
         updateUrlExpansionFraction();
         updateUrlExpansionAnimation();
@@ -1016,14 +998,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private float getExpansionFractionForVisualState(@VisualState int visualState) {
-        if (mIsSurfacePolishEnabled) {
-            return visualState == VisualState.NEW_TAB_NORMAL && mTabSwitcherState == STATIC_TAB
-                    ? mUrlFocusChangeFraction
-                    : mUrlExpansionFraction;
-        }
-
         return visualState == VisualState.NEW_TAB_NORMAL && mTabSwitcherState == STATIC_TAB
-                ? 1
+                ? mUrlFocusChangeFraction
                 : mUrlExpansionFraction;
     }
 
@@ -1174,12 +1150,11 @@ public class ToolbarPhone extends ToolbarLayout
             // change.
             if ((mLocationBar.getPhoneCoordinator().hasFocus() || !isLocationBarShownInNtp)
                     && mTabSwitcherState == STATIC_TAB) {
-                boolean usePolishedLocationBar =
+                boolean isInGeneralNtp =
                         isLocationBarShownInGeneralNtp() || mIsInLoadingPhaseFromNtpToWebpage;
-                // Add a special case for general NTP and Start Surface to the defaultColor to
-                // ensure that the color is right and changes smoothly during the un-focus
-                // animation.
-                boolean shouldUseFocusColor = usePolishedLocationBar && mUrlFocusChangeInProgress;
+                // Add a special case for general NTP to the defaultColor to ensure that the color
+                // is right and changes smoothly during the un-focus animation.
+                boolean shouldUseFocusColor = isInGeneralNtp && mUrlFocusChangeInProgress;
                 @ColorInt int defaultColor = getToolbarDefaultColor(shouldUseFocusColor);
                 @ColorInt
                 int defaultLocationBarColor =
@@ -1187,8 +1162,8 @@ public class ToolbarPhone extends ToolbarLayout
                                 defaultColor, shouldUseFocusColor);
                 @ColorInt
                 int primaryColor =
-                        usePolishedLocationBar
-                                ? mHomeSurfaceToolbarBackgroundColor
+                        isInGeneralNtp
+                                ? mToolbarBackgroundColorForNtp
                                 : getToolbarDataProvider().getPrimaryColor();
                 @ColorInt
                 int themedLocationBarColor = getLocationBarColorForToolbarColor(primaryColor);
@@ -1222,7 +1197,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @param locationBarBaseTranslationX The base location bar translation for the URL expansion
      *     animation.
      * @param isUrlFocusChangeInProgressWithScrollCompleted True if it is a focus or un-focus
-     *     animation while the real omnibox is visible on Start Surface or NTP.
+     *     animation while the real omnibox is visible on NTP.
      * @return The translation X for the URL actions container.
      */
     private float getUrlActionsTranslationXForExpansionAnimation(
@@ -1234,13 +1209,11 @@ public class ToolbarPhone extends ToolbarLayout
 
         if (isUrlFocusChangeInProgressWithScrollCompleted) {
             int urlActionContainerEndMarginChangeForSurfacePolish =
-                    getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen.location_bar_url_action_offset_polish)
+                    getResources().getDimensionPixelSize(R.dimen.location_bar_url_action_offset_ntp)
                             - getResources()
                                     .getDimensionPixelSize(R.dimen.location_bar_url_action_offset);
             int toolbarSidePaddingChangeForSurfacePolish =
-                    mToolbarSidePaddingForRealOmnibox - mToolbarSidePadding;
+                    mToolbarSidePaddingForNtp - mToolbarSidePadding;
             if (mLocationBar.getPhoneCoordinator().hasFocus()) {
                 urlActionsTranslationX =
                         MathUtils.flipSignIf(
@@ -1383,8 +1356,7 @@ public class ToolbarPhone extends ToolbarLayout
                 verticalInset = (int) (((float) (baseInset) / 2) * urlExpansionFractionComplement);
 
                 int locationBarUrlActionOffsetChangeForSurfacePolish =
-                        resources.getDimensionPixelSize(
-                                        R.dimen.location_bar_url_action_offset_polish)
+                        resources.getDimensionPixelSize(R.dimen.location_bar_url_action_offset_ntp)
                                 - resources.getDimensionPixelSize(
                                         R.dimen.location_bar_url_action_offset);
                 int focusChangeDelta =
@@ -2200,7 +2172,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         updateBackground(hasFocus);
 
-        updateLocationBarForSurfacePolish(mVisualState, mHasFocus);
+        updateLocationBarForNtp(mVisualState, mHasFocus);
 
         if (mToggleTabStackButton != null) mToggleTabStackButton.setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
@@ -2398,7 +2370,7 @@ public class ToolbarPhone extends ToolbarLayout
         final @ColorInt int initialColor = mToolbarBackground.getColor();
         final @ColorInt int finalColor =
                 isLocationBarShownInGeneralNtp()
-                        ? mHomeSurfaceToolbarBackgroundColor
+                        ? mToolbarBackgroundColorForNtp
                         : getToolbarDataProvider().getPrimaryColor();
         if (initialColor == finalColor) return;
 
@@ -2555,7 +2527,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private @VisualState int computeVisualState() {
         if (isLocationBarShownInNtp()) return VisualState.NEW_TAB_NORMAL;
-        if (mIsSurfacePolishEnabled && isLocationBarShownInGeneralNtp()) {
+        if (isLocationBarShownInGeneralNtp()) {
             return VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO;
         }
         if (isIncognitoBranded()) return VisualState.INCOGNITO;
@@ -2572,46 +2544,40 @@ public class ToolbarPhone extends ToolbarLayout
 
     /**
      * Update the appearance (logo background, search text's color and style) of the location bar
-     * based on the state of the current page. For Start Surface and NTP, while not on the focus
-     * state, the real search box's search text has a particular color and style. The style would be
+     * based on the state of the current page. For NTP, while not on the focus state, the real
+     * search box's search text has a particular color and style. The style would be
      * "google-sans-medium" and the color would be colorOnSurface. When being in light mode, there
      * is also a round white background for the G logo. For other situations such as browser tabs,
-     * and search result pages, the real search box will stay the same.
+     * and focus state, the real search box will stay the same.
      *
      * @param visualState The Visual State of the current page.
      * @param hasFocus True if the current page is the focus state.
      */
     @VisibleForTesting
-    void updateLocationBarForSurfacePolish(@VisualState int visualState, boolean hasFocus) {
-        if (!mIsSurfacePolishEnabled) {
-            return;
-        }
-
+    void updateLocationBarForNtp(@VisualState int visualState, boolean hasFocus) {
         // Detect whether state has changed and update only when that happens.
-        boolean prevIsNtpWithSurfacePolish = mIsNtpWithSurfacePolish;
+        boolean prevIsNtpWithUnfocusedRealOmnibox = mIsNtpWithUnfocusedRealOmnibox;
 
         // Check whether the current page is NTP (the focus state is not included) and the
         // real omnibox is pinned on the top of the screen. We need to make sure the real omnibox is
         // visible here to forbid the situation that the background of the G logo shows and then
-        // vanishes during the un-focus animation(from focus state to NTP). This situation
-        // won't happen in Start Surface, so we don't need to check the scroll fraction for Start
-        // Surface.
+        // vanishes during the un-focus animation(from focus state to NTP).
         boolean isNtpShowingWithRealOmnibox =
                 visualState == VisualState.NEW_TAB_NORMAL && mNtpSearchBoxScrollFraction > 0;
-        mIsNtpWithSurfacePolish = isNtpShowingWithRealOmnibox && !hasFocus;
+        mIsNtpWithUnfocusedRealOmnibox = isNtpShowingWithRealOmnibox && !hasFocus;
 
-        if (mIsNtpWithSurfacePolish == prevIsNtpWithSurfacePolish) {
+        if (mIsNtpWithUnfocusedRealOmnibox == prevIsNtpWithUnfocusedRealOmnibox) {
             return;
         }
 
-        if (mIsNtpWithSurfacePolish) {
-            updateLocationBarForSurfacePolishImpl(
+        if (mIsNtpWithUnfocusedRealOmnibox) {
+            updateLocationBarForNtpImpl(
                     !ColorUtils.inNightMode(getContext()),
                     /* useDefaultUrlBarAndUrlActionContainerAppearance= */ false);
         } else {
-            // Restore the appearance of the real search box when transitioning from Start Surface
-            // or NTP to other pages.
-            updateLocationBarForSurfacePolishImpl(
+            // Restore the appearance of the real search box when transitioning from NTP to other
+            // pages.
+            updateLocationBarForNtpImpl(
                     /* statusIconBackgroundVisibility= */ false,
                     /* useDefaultUrlBarAndUrlActionContainerAppearance= */ true);
         }
@@ -2624,10 +2590,10 @@ public class ToolbarPhone extends ToolbarLayout
      * @param statusIconBackgroundVisibility The visibility of the status icon background.
      * @param useDefaultUrlBarAndUrlActionContainerAppearance Whether to use the default typeface
      *     and color for the search text in the search box and use the default end margin for the
-     *     url action container in the search box. If not we will use specific settings for surface
-     *     polish.
+     *     url action container in the search box. If not we will use specific settings for NTP's
+     *     un-focus state.
      */
-    private void updateLocationBarForSurfacePolishImpl(
+    private void updateLocationBarForNtpImpl(
             boolean statusIconBackgroundVisibility,
             boolean useDefaultUrlBarAndUrlActionContainerAppearance) {
         mLocationBar.setStatusIconBackgroundVisibility(statusIconBackgroundVisibility);
@@ -2643,7 +2609,7 @@ public class ToolbarPhone extends ToolbarLayout
                 mTabSwitcherState == STATIC_TAB || mTabSwitcherState == EXITING_TAB_SWITCHER;
 
         @VisualState int newVisualState = computeVisualState();
-        updateLocationBarForSurfacePolish(newVisualState, mHasFocus);
+        updateLocationBarForNtp(newVisualState, mHasFocus);
 
         if (newVisualState == VisualState.NEW_TAB_NORMAL && mHomeButton != null) {
             mHomeButton.setAccessibilityTraversalBefore(R.id.toolbar_buttons);
@@ -2671,7 +2637,7 @@ public class ToolbarPhone extends ToolbarLayout
         @ColorInt
         int currentPrimaryColor =
                 isLocationBarShownInGeneralNtp()
-                        ? mHomeSurfaceToolbarBackgroundColor
+                        ? mToolbarBackgroundColorForNtp
                         : getToolbarDataProvider().getPrimaryColor();
         @ColorInt int themeColorForProgressBar = getProgressBarColor();
 
@@ -2756,10 +2722,10 @@ public class ToolbarPhone extends ToolbarLayout
     /**
      * Initiates the loading phase when transitioning from the NTP to a webpage. When the old visual
      * state is either VisualState.NEW_TAB_NORMAL or VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO, and
-     * the new visual state updates to VisualState.NORMAL, and the current page is NTP instead of
-     * Start Surface, this indicates the beginning of the process of navigating from the New Tab
-     * Page to other webpages. This condition is unique because in other scenarios, the visual state
-     * does not change in this manner.
+     * the new visual state updates to VisualState.NORMAL, and the current page is NTP, this
+     * indicates the beginning of the process of navigating from the New Tab Page to other webpages.
+     * This condition is unique because in other scenarios, the visual state does not change in this
+     * manner.
      */
     private void startLoadingPhaseFromNtpToWebpage(@VisualState int newVisualState) {
         boolean isStartLoadingPhaseFromNtpToWebpage =
@@ -2936,10 +2902,7 @@ public class ToolbarPhone extends ToolbarLayout
         public NtpSearchBoxDrawable(Context context, Drawable.Callback callback) {
             super(
                     AppCompatResources.getDrawable(
-                            context,
-                            ChromeFeatureList.sSurfacePolish.isEnabled()
-                                    ? R.drawable.home_surface_search_box_background
-                                    : R.drawable.ntp_search_box));
+                            context, R.drawable.home_surface_search_box_background));
 
             mCallback = callback;
             setCallback(mCallback);

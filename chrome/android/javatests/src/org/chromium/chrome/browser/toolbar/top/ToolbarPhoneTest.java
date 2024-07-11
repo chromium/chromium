@@ -498,7 +498,7 @@ public class ToolbarPhoneTest {
         View iconBackground = mToolbar.findViewById(R.id.location_bar_status_icon_bg);
         int expectedEndMarginForNtp =
                 mToolbar.getResources()
-                        .getDimensionPixelSize(R.dimen.location_bar_url_action_offset_polish);
+                        .getDimensionPixelSize(R.dimen.location_bar_url_action_offset_ntp);
         int expectedEndMargin =
                 mToolbar.getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_url_action_offset);
@@ -517,7 +517,7 @@ public class ToolbarPhoneTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.setNtpSearchBoxScrollFractionForTesting(1);
-                    mToolbar.updateLocationBarForSurfacePolish(
+                    mToolbar.updateLocationBarForNtp(
                             VisualState.NEW_TAB_NORMAL, /* hasFocus= */ false);
                 });
         if (nightModeEnabled) {

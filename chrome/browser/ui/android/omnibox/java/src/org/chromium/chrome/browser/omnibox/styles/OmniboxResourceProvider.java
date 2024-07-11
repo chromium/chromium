@@ -496,8 +496,7 @@ public class OmniboxResourceProvider {
      * top of the screen in NTP.
      */
     public static @Px int getToolbarSidePaddingForNtp(Context context) {
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.toolbar_edge_padding_modern_polish);
+        return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding_ntp);
     }
 
     /** Return the width of the Omnibox Suggestion decoration icon. */

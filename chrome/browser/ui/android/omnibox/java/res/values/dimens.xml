@@ -25,7 +25,7 @@ found in the LICENSE file.
     <dimen name="split_toolbar_button_width">@dimen/split_toolbar_button_height</dimen>
 
     <dimen name="toolbar_edge_padding">8dp</dimen>
-    <dimen name="toolbar_edge_padding_modern_polish">16dp</dimen>
+    <dimen name="toolbar_edge_padding_ntp">16dp</dimen>
     <dimen name="location_bar_vertical_margin">8dp</dimen>
     <dimen name="location_bar_url_text_size">16sp</dimen>
     <dimen name="ntp_fake_search_box_text_size">18sp</dimen>
@@ -48,7 +48,7 @@ found in the LICENSE file.
     <dimen name="incognito_badge_lateral_padding_start">4dp</dimen>
     <dimen name="incognito_badge_lateral_padding_end">4dp</dimen>
     <dimen name="location_bar_status_icon_width">24dp</dimen>
-    <dimen name="location_bar_status_icon_bg_size">32dp</dimen>
+    <dimen name="location_bar_status_icon_bg_size">28dp</dimen>
     <dimen name="location_bar_status_icon_holding_space_size">8dp</dimen>
     <dimen name="location_bar_icon_end_padding_focused">12dp</dimen>
     <dimen name="location_bar_icon_end_padding_focused_smaller">10dp</dimen>
@@ -56,7 +56,7 @@ found in the LICENSE file.
     <dimen name="location_bar_verbose_start_padding_verbose_text">4dp</dimen>
     <dimen name="location_bar_status_extra_padding">4dp</dimen>
     <dimen name="location_bar_url_action_offset">-8dp</dimen>
-    <dimen name="location_bar_url_action_offset_polish">-4dp</dimen>
+    <dimen name="location_bar_url_action_offset_ntp">-4dp</dimen>
     <dimen name="location_bar_url_action_padding">8dp</dimen>
 
     <dimen name="location_bar_status_view_left_space_width_bigger">12dp</dimen>
