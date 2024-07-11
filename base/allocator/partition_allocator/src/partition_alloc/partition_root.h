@@ -1543,7 +1543,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
       }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       GetSchedulerLoopQuarantineBranch().Quarantine(
-          object, slot_span, slot_start.untagged_slot_start);
+          object, slot_span, slot_start.untagged_slot_start,
+          GetSlotUsableSize(slot_span));
       return;
     }
   }

@@ -167,7 +167,8 @@ inline bool Quarantine(void* object) {
   ExtremeLightweightDetectorUtil::Zap(object, usable_size);
 
   uintptr_t slot_start = root->ObjectToSlotStart(object);
-  lightweight_quarantine_branch->Quarantine(object, slot_span, slot_start);
+  lightweight_quarantine_branch->Quarantine(object, slot_span, slot_start,
+                                            usable_size);
 
   return true;
 }

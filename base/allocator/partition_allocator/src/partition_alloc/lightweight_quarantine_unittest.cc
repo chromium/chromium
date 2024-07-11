@@ -52,7 +52,9 @@ class PartitionAllocLightweightQuarantineTest
   bool Quarantine(void* object) {
     auto* slot_span = internal::SlotSpanMetadata::FromObject(object);
     uintptr_t slot_start = GetPartitionRoot()->ObjectToSlotStart(object);
-    return GetQuarantineBranch()->Quarantine(object, slot_span, slot_start);
+    size_t usable_size = GetPartitionRoot()->GetSlotUsableSize(slot_span);
+    return GetQuarantineBranch()->Quarantine(object, slot_span, slot_start,
+                                             usable_size);
   }
 
   size_t GetObjectSize(void* object) {

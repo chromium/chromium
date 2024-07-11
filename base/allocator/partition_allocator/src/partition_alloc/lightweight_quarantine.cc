@@ -64,8 +64,9 @@ LightweightQuarantineBranch::~LightweightQuarantineBranch() {
 
 bool LightweightQuarantineBranch::Quarantine(void* object,
                                              SlotSpanMetadata* slot_span,
-                                             uintptr_t slot_start) {
-  const auto usable_size = root_.allocator_root_.GetSlotUsableSize(slot_span);
+                                             uintptr_t slot_start,
+                                             size_t usable_size) {
+  PA_DCHECK(usable_size == root_.allocator_root_.GetSlotUsableSize(slot_span));
 
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
