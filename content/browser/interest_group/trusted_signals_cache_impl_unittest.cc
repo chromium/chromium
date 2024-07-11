@@ -240,12 +240,13 @@ void ValidateFetchParams(
 TrustedSignalsFetcher::CompressionGroupResult CreateCompressionGroupResult(
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
-    std::string_view body = kSuccessBody) {
+    std::string_view body = kSuccessBody,
+    base::TimeDelta ttl = base::Hours(1)) {
   TrustedSignalsFetcher::CompressionGroupResult result;
   result.compression_group_data =
       std::vector<std::uint8_t>(body.begin(), body.end());
   result.compression_scheme = compression_scheme;
-  result.ttl = base::Hours(1);
+  result.ttl = ttl;
   return result;
 }
 
@@ -254,10 +255,11 @@ CreateCompressionGroupResultMap(
     int compression_group_id,
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
-    std::string_view body = kSuccessBody) {
+    std::string_view body = kSuccessBody,
+    base::TimeDelta ttl = base::Hours(1)) {
   TrustedSignalsFetcher::CompressionGroupResultMap map;
   map[compression_group_id] =
-      CreateCompressionGroupResult(compression_scheme, body);
+      CreateCompressionGroupResult(compression_scheme, body, ttl);
   return map;
 }
 
@@ -268,7 +270,8 @@ void RespondToFetchWithSuccess(
         PendingBiddingSignalsFetch& trusted_bidding_signals_fetch,
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
-    std::string_view body = kSuccessBody) {
+    std::string_view body = kSuccessBody,
+    base::TimeDelta ttl = base::Hours(1)) {
   // Shouldn't be calling this after the fetcher was destroyed.
   ASSERT_TRUE(trusted_bidding_signals_fetch.fetcher_alive);
 
@@ -279,7 +282,7 @@ void RespondToFetchWithSuccess(
   std::move(trusted_bidding_signals_fetch.callback)
       .Run(CreateCompressionGroupResultMap(
           trusted_bidding_signals_fetch.compression_groups.begin()->first,
-          compression_scheme, body));
+          compression_scheme, body, ttl));
 }
 
 // Responds to a two-compression group fetch with two successful responses, with
@@ -287,18 +290,20 @@ void RespondToFetchWithSuccess(
 // uses brotli with kOtherSuccessBody.
 void RespondToTwoCompressionGroupFetchWithSuccess(
     TestTrustedSignalsCache::TestTrustedSignalsFetcher::
-        PendingBiddingSignalsFetch& trusted_bidding_signals_fetch) {
+        PendingBiddingSignalsFetch& trusted_bidding_signals_fetch,
+    base::TimeDelta ttl1 = base::Hours(1),
+    base::TimeDelta ttl2 = base::Hours(1)) {
   ASSERT_EQ(trusted_bidding_signals_fetch.compression_groups.size(), 2u);
   TrustedSignalsFetcher::CompressionGroupResultMap map;
   map[trusted_bidding_signals_fetch.compression_groups.begin()->first] =
       CreateCompressionGroupResult(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
-          kSuccessBody);
+          kSuccessBody, ttl1);
   map[std::next(trusted_bidding_signals_fetch.compression_groups.begin())
           ->first] =
       CreateCompressionGroupResult(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
-          kOtherSuccessBody);
+          kOtherSuccessBody, ttl2);
   std::move(trusted_bidding_signals_fetch.callback).Run(std::move(map));
 }
 
@@ -691,7 +696,8 @@ class TrustedSignalsCacheTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // Defaults used by most tests.
   const url::Origin kMainFrameOrigin =
@@ -898,12 +904,9 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetMultipleTimes) {
   ValidateFetchParams(fetch, bidding_params,
                       /*expected_compression_group_id=*/0, partition_id);
 
-  TestTrustedSignalsCacheClient client1(handle->compression_group_token(),
-                                        cache_mojo_pipe_);
-  TestTrustedSignalsCacheClient client2(handle->compression_group_token(),
-                                        cache_mojo_pipe_);
-  TestTrustedSignalsCacheClient client3(handle->compression_group_token(),
-                                        cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client1(handle, cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client2(handle, cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client3(handle, cache_mojo_pipe_);
 
   // Wait for the GetTrustedSignals call to make it to the cache.
   task_environment_.RunUntilIdle();
@@ -912,12 +915,9 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetMultipleTimes) {
   EXPECT_FALSE(client3.has_result());
 
   RespondToFetchWithSuccess(fetch);
-  TestTrustedSignalsCacheClient client4(handle->compression_group_token(),
-                                        cache_mojo_pipe_);
-  TestTrustedSignalsCacheClient client5(handle->compression_group_token(),
-                                        cache_mojo_pipe_);
-  TestTrustedSignalsCacheClient client6(handle->compression_group_token(),
-                                        cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client4(handle, cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client5(handle, cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client6(handle, cache_mojo_pipe_);
   client1.WaitForSuccess();
   client2.WaitForSuccess();
   client3.WaitForSuccess();
@@ -1041,6 +1041,375 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsNotReused) {
   client2.WaitForError(kRequestCancelledError);
   client3.WaitForSuccess();
   client4.WaitForError(kRequestCancelledError);
+}
+
+// Test the case where a bidding signals request is made while there's still an
+// outstanding Handle, but the response has expired.
+TEST_F(TrustedSignalsCacheTest,
+       BiddingSignalsOutstandingHandleResponseExpired) {
+  const base::TimeDelta kTtl = base::Minutes(10);
+  // A small amount of time. Test will wait until this much time before
+  // expiration, and then wait for this much time to pass, to check before/after
+  // expiration behavior.
+  const base::TimeDelta kTinyTime = base::Milliseconds(1);
+
+  auto bidding_params = CreateDefaultBiddingParams();
+  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params);
+
+  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  ValidateFetchParams(fetch, bidding_params,
+                      /*expected_compression_group_id=*/0, partition_id1);
+  RespondToFetchWithSuccess(
+      fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      kSuccessBody, kTtl);
+
+  // Wait until just before the response has expired.
+  task_environment_.FastForwardBy(kTtl - kTinyTime);
+
+  // A request for `handle1`'s data should succeed.
+  TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_).WaitForSuccess();
+
+  // Re-requesting the data before expiration time should return the same Handle
+  // and partition.
+  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params);
+  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(partition_id1, partition_id2);
+
+  // Run until the expiration time. When the time exactly equals the expiration
+  // time, the entry should be considered expired.
+  task_environment_.FastForwardBy(kTinyTime);
+
+  // A request for `handle1`'s data should return the same value as before.
+  TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_).WaitForSuccess();
+
+  // Re-request the data. A different handle should be returned, since the old
+  // data has expired.
+  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params);
+  EXPECT_NE(handle1->compression_group_token(),
+            handle3->compression_group_token());
+
+  // Give a different response for the second fetch.
+  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  ValidateFetchParams(fetch, bidding_params,
+                      /*expected_compression_group_id=*/0, partition_id3);
+  RespondToFetchWithSuccess(
+      fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+      kOtherSuccessBody, kTtl);
+
+  // A request for `handle3`'s data should return the different data.
+  TestTrustedSignalsCacheClient(handle3, cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+          kOtherSuccessBody);
+
+  // A request for `handle1`'s data should return the same value as before, even
+  // though it has expired.
+  TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_).WaitForSuccess();
+}
+
+// Check that bidding signals error responses are not cached beyond the end of
+// the fetch.
+TEST_F(TrustedSignalsCacheTest, BiddingSignalsOutstandingHandleError) {
+  auto bidding_params = CreateDefaultBiddingParams();
+  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params);
+
+  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  ValidateFetchParams(fetch, bidding_params,
+                      /*expected_compression_group_id=*/0, partition_id1);
+
+  // Re-requesting the data before the response is received should return the
+  // same Handle and partition.
+  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params);
+  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(partition_id1, partition_id2);
+
+  RespondToFetchWithError(fetch);
+
+  // A request for `handle1`'s data should return the error.
+  TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_).WaitForError();
+
+  // Re-request the data. A different handle should be returned, since the error
+  // should not be cached.
+  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params);
+  EXPECT_NE(handle1->compression_group_token(),
+            handle3->compression_group_token());
+
+  // Give a success response for the second fetch.
+  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  ValidateFetchParams(fetch, bidding_params,
+                      /*expected_compression_group_id=*/0, partition_id3);
+  RespondToFetchWithSuccess(fetch);
+
+  // A request for `handle3`'s data should return a success.
+  TestTrustedSignalsCacheClient(handle3, cache_mojo_pipe_).WaitForSuccess();
+
+  // A request for `handle1`'s data should still return the error.
+  TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_).WaitForError();
+}
+
+// Check that zero (and negative) TTL bidding signals responses are handled
+// appropriately.
+TEST_F(TrustedSignalsCacheTest, BiddingSignalsOutstandingHandleSuccessZeroTTL) {
+  for (base::TimeDelta ttl : {base::Seconds(-1), base::Seconds(0)}) {
+    // Start with a clean slate for each test. Not strictly necessary, but
+    // limits what's under test a bit.
+    CreateCache();
+
+    auto bidding_params = CreateDefaultBiddingParams();
+    auto [handle1, partition_id1] =
+        RequestTrustedBiddingSignals(bidding_params);
+
+    auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+    ValidateFetchParams(fetch, bidding_params,
+                        /*expected_compression_group_id=*/0, partition_id1);
+
+    // Re-requesting the data before a response is received should return the
+    // same Handle and partition.
+    auto [handle2, partition_id2] =
+        RequestTrustedBiddingSignals(bidding_params);
+    EXPECT_EQ(handle1, handle2);
+    EXPECT_EQ(partition_id1, partition_id2);
+
+    RespondToFetchWithSuccess(
+        fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+        kSuccessBody, ttl);
+
+    // A request for `handle1`'s data should succeed.
+    TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_).WaitForSuccess();
+
+    // Re-request the data. A different handle should be returned, since the
+    // data should not be cached.
+    auto [handle3, partition_id3] =
+        RequestTrustedBiddingSignals(bidding_params);
+    EXPECT_NE(handle1->compression_group_token(),
+              handle3->compression_group_token());
+
+    // Give a different response for the second fetch.
+    fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+    ValidateFetchParams(fetch, bidding_params,
+                        /*expected_compression_group_id=*/0, partition_id3);
+    RespondToFetchWithSuccess(
+        fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+        kOtherSuccessBody, ttl);
+
+    // A request for `handle3`'s data should return the different data.
+    TestTrustedSignalsCacheClient(handle3, cache_mojo_pipe_)
+        .WaitForSuccess(
+            auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+            kOtherSuccessBody);
+
+    // A request for `handle1`'s data should return the same value as before,
+    // even though it has expired.
+    TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_).WaitForSuccess();
+  }
+}
+
+// Test the case of expiration of two requests that share the same compression
+// group, but are in different partitions.
+TEST_F(TrustedSignalsCacheTest,
+       BiddingSignalsOutstandingHandleResponseExpiredSharedCompressionGroup) {
+  const base::TimeDelta kTtl = base::Minutes(10);
+  // A small amount of time. Test will wait until this much time before
+  // expiration, and then wait for this much time to pass, to check before/after
+  // expiration behavior.
+  const base::TimeDelta kTinyTime = base::Milliseconds(1);
+
+  auto bidding_params1 = CreateDefaultBiddingParams();
+  auto bidding_params2 = CreateDefaultBiddingParams();
+  bidding_params2.interest_group_names = {"other interest group"};
+
+  // Since the two IGs have the same joining origin, but different names, and do
+  // not use group-by-origin mode, the requests for the two sets of parameters
+  // should be in different partitions in the same compression group, so should
+  // share a Handle, but have different partition IDs.
+  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params1);
+  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params2);
+  EXPECT_EQ(handle1, handle2);
+  EXPECT_NE(partition_id1, partition_id2);
+  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+
+  EXPECT_EQ(fetch.trusted_bidding_signals_url,
+            bidding_params1.trusted_bidding_signals_url);
+  ASSERT_EQ(fetch.compression_groups.size(), 1u);
+  EXPECT_EQ(fetch.compression_groups.begin()->first, 0);
+
+  const auto& partitions = fetch.compression_groups.begin()->second;
+  ASSERT_EQ(partitions.size(), 2u);
+  ValidateFetchParamsForPartition(partitions[0], bidding_params1,
+                                  partition_id1);
+  ValidateFetchParamsForPartition(partitions[1], bidding_params2,
+                                  partition_id2);
+  RespondToFetchWithSuccess(
+      fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      kSuccessBody, kTtl);
+
+  // Wait until just before the response has expired.
+  task_environment_.FastForwardBy(kTtl - kTinyTime);
+
+  // Re-requesting either set of parameters should return the same Handle and
+  // partition as the first requests.
+  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params1);
+  EXPECT_EQ(handle1, handle3);
+  EXPECT_EQ(partition_id1, partition_id3);
+  auto [handle4, partition_id4] = RequestTrustedBiddingSignals(bidding_params2);
+  EXPECT_EQ(handle2, handle4);
+  EXPECT_EQ(partition_id2, partition_id4);
+
+  // Run until the expiration time. When the time exactly equals the expiration
+  // time, the entry should be considered expired.
+  task_environment_.FastForwardBy(kTinyTime);
+
+  // Re-request the data for both parameters. A different Handle should be
+  // returned from the original, since the old data has expired. As before, both
+  // requests should share a Handle but have distinct partition IDs.
+  auto [handle5, partition_id5] = RequestTrustedBiddingSignals(bidding_params1);
+  EXPECT_NE(handle1->compression_group_token(),
+            handle5->compression_group_token());
+  auto [handle6, partition_id6] = RequestTrustedBiddingSignals(bidding_params2);
+  EXPECT_NE(handle2->compression_group_token(),
+            handle6->compression_group_token());
+  EXPECT_EQ(handle5, handle6);
+  EXPECT_NE(partition_id5, partition_id6);
+
+  // Give a different response for the second fetch.
+  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  RespondToFetchWithSuccess(
+      fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+      kOtherSuccessBody, kTtl);
+
+  // A request for `handle5`'s data should return the second fetch's data. No
+  // need to request the data for `handle6`, since it's the same Handle.
+  TestTrustedSignalsCacheClient(handle5, cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+          kOtherSuccessBody);
+
+  // A request for `handle1`'s data should return the first fetch's data. No
+  // need to request the data for `handle2`, since it's the same Handle.
+  TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_).WaitForSuccess();
+}
+
+// Test the case of expiration of two requests that are sent in the same fetch,
+// but in different compression groups. The requests have different expiration
+// times.
+TEST_F(
+    TrustedSignalsCacheTest,
+    BiddingSignalsOutstandingHandleResponseExpiredDifferentCompressionGroup) {
+  const base::TimeDelta kTtl1 = base::Minutes(5);
+  const base::TimeDelta kTtl2 = base::Minutes(10);
+  // A small amount of time. Test will wait until this much time before
+  // expiration, and then wait for this much time to pass, to check before/after
+  // expiration behavior.
+  const base::TimeDelta kTinyTime = base::Milliseconds(1);
+
+  auto bidding_params1 = CreateDefaultBiddingParams();
+  auto bidding_params2 = CreateDefaultBiddingParams();
+  bidding_params2.joining_origin =
+      url::Origin::Create(GURL("https://other.joining.origin.test"));
+
+  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params1);
+  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params2);
+  EXPECT_NE(handle1, handle2);
+  EXPECT_NE(handle1->compression_group_token(),
+            handle2->compression_group_token());
+  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+
+  EXPECT_EQ(fetch.trusted_bidding_signals_url,
+            bidding_params1.trusted_bidding_signals_url);
+  ASSERT_EQ(fetch.compression_groups.size(), 2u);
+
+  // Compression groups are appended in FIFO order.
+  ASSERT_EQ(1u, fetch.compression_groups.count(0));
+  ValidateFetchParamsForPartitions(fetch.compression_groups.at(0),
+                                   bidding_params1, partition_id1);
+  ASSERT_EQ(1u, fetch.compression_groups.count(1));
+  ValidateFetchParamsForPartitions(fetch.compression_groups.at(1),
+                                   bidding_params2, partition_id2);
+
+  // Respond with different results for each compression group.
+  RespondToTwoCompressionGroupFetchWithSuccess(fetch, kTtl1, kTtl2);
+
+  // Wait until just before the first compression group's data has expired.
+  task_environment_.FastForwardBy(kTtl1 - kTinyTime);
+
+  // Re-request both sets of parameters. The same Handles should be returned.
+  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params1);
+  EXPECT_EQ(handle1, handle3);
+  EXPECT_EQ(partition_id1, partition_id3);
+  auto [handle4, partition_id4] = RequestTrustedBiddingSignals(bidding_params2);
+  EXPECT_EQ(handle2, handle4);
+  EXPECT_EQ(partition_id2, partition_id4);
+
+  // Wait until the first compression group's data has expired.
+  task_environment_.FastForwardBy(kTinyTime);
+
+  // Re-request both sets of parameters. The first set of parameters should get
+  // a new handle, and trigger a new fetch. The second set of parameters should
+  // get the same Handle, since it has yet to expire.
+  auto [handle5, partition_id5] = RequestTrustedBiddingSignals(bidding_params1);
+  EXPECT_NE(handle1, handle5);
+  auto [handle6, partition_id6] = RequestTrustedBiddingSignals(bidding_params2);
+  EXPECT_EQ(handle2, handle6);
+  EXPECT_EQ(partition_id2, partition_id6);
+
+  // Validate there is indeed a new fetch for the first set of parameters, and
+  // provide a response.
+  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  ValidateFetchParams(fetch, bidding_params1,
+                      /*expected_compression_group_id=*/0, partition_id5);
+  RespondToFetchWithSuccess(
+      fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+      kSomeOtherSuccessBody, kTtl2);
+
+  // Wait until just before the first compression group's data has expired.
+  task_environment_.FastForwardBy(kTtl1 - kTinyTime);
+
+  // Re-request both sets of parameters. The same Handles should be returned as
+  // the last time.
+  auto [handle7, partition_id7] = RequestTrustedBiddingSignals(bidding_params1);
+  EXPECT_EQ(handle5, handle7);
+  EXPECT_EQ(partition_id5, partition_id7);
+  auto [handle8, partition_id8] = RequestTrustedBiddingSignals(bidding_params2);
+  EXPECT_EQ(handle2, handle8);
+  EXPECT_EQ(partition_id2, partition_id8);
+
+  // Wait until the second compression group's data has expired.
+  task_environment_.FastForwardBy(kTinyTime);
+
+  // Re-request both sets of parameters. This time, only the second set of
+  // parameters should get a new Handle.
+  auto [handle9, partition_id9] = RequestTrustedBiddingSignals(bidding_params1);
+  EXPECT_EQ(handle5, handle9);
+  EXPECT_EQ(partition_id5, partition_id9);
+  auto [handle10, partition_id10] =
+      RequestTrustedBiddingSignals(bidding_params2);
+  EXPECT_NE(handle2, handle10);
+
+  // Validate there is indeed a new fetch for the second set of parameters, and
+  // provide a response.
+  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  ValidateFetchParams(fetch, bidding_params2,
+                      /*expected_compression_group_id=*/0, partition_id9);
+  RespondToFetchWithSuccess(
+      fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      kSomeOtherSuccessBody, kTtl2);
+
+  // Validate the responses for each of the distinct Handles. Even the ones
+  // associated with expired data should still receive success responses, since
+  // data lifetime is scoped to that of the associated Handle.
+  TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_).WaitForSuccess();
+  TestTrustedSignalsCacheClient(handle2, cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
+          kOtherSuccessBody);
+  TestTrustedSignalsCacheClient(handle5, cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+          kSomeOtherSuccessBody);
+  TestTrustedSignalsCacheClient(handle10, cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+          kSomeOtherSuccessBody);
 }
 
 // Tests the case where request is made, and then a second request with one

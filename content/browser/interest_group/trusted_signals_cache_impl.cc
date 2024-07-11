@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
@@ -289,6 +290,13 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
     DCHECK(!data_);
     data_ = std::make_unique<CachedResult>(std::move(data));
 
+    // Errors are given TTLs of 0.
+    if (!data_->has_value()) {
+      expiry_ = base::TimeTicks::Now();
+    } else {
+      expiry_ = base::TimeTicks::Now() + data_->value().ttl;
+    }
+
     // The fetch has now completed and the caller will delete it once it's done
     // sending the data to any consumers.
     fetch_ = std::nullopt;
@@ -300,6 +308,16 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
 
   // May only be called if has_data() returns true.
   const CachedResult& data() const { return *data_; }
+
+  // Returns true if the data has expired. If there's still a pending fetch,
+  // `expiry_` won't have been set yet, but the data is considered not to be
+  // expired.
+  bool IsExpired() const {
+    if (fetch_) {
+      return false;
+    }
+    return *expiry_ <= base::TimeTicks::Now();
+  }
 
   // Associates a BiddingCacheEntry with the CompressionGroupData. When the
   // CompressionGroupData is destroyed, this is used by the cache to destroy all
@@ -379,6 +397,9 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
 
   std::unique_ptr<CachedResult> data_;
 
+  // Expiration time. Populated when `data_` is set.
+  std::optional<base::TimeTicks> expiry_;
+
   // All BiddingCacheEntries associated with this CompressionGroupData. The map
   // is indexed by partition ID.
   //
@@ -454,10 +475,11 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
       return scoped_refptr<Handle>(compression_group_data);
     }
 
-    // Otherwise, check if the interest group name and all keys (if there are
-    // any) already appear in the entry. If so, can reuse the cache entry
-    // without doing any more work.
-    if (cache_entry->ContainsInterestGroup(interest_group_name,
+    // Otherwise, check if the entry is not expired and all necessary value that
+    // aren't part of the BiddingCacheKey appear in the entry. If both are the
+    // case, reuse the cache entry without doing any more work.
+    if (!compression_group_data->IsExpired() &&
+        cache_entry->ContainsInterestGroup(interest_group_name,
                                            trusted_bidding_signals_keys)) {
       partition_id = cache_entry->partition_id;
       return scoped_refptr<Handle>(compression_group_data);

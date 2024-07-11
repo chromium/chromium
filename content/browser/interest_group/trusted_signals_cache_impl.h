@@ -86,8 +86,6 @@ namespace content {
 // Each handed out Handle object will keep its corresponding
 // CompressionGroupData alive until the handle is destroyed.
 //
-// TODO(https://crbug.com/333445540): Respect TTL.
-//
 // TODO(https://crbug.com/333445540): Add caching support. Right now, entries
 // are cached only as long as there's something that owns a Handle, but should
 // instead cache for at least a short duration as long as an entry's TTL hasn't
