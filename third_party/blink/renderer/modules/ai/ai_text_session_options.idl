@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/343126579): Add link to spec/explainer.
+// https://github.com/explainers-by-googlers/prompt-api
+
 dictionary AITextSessionOptions {
   [EnforceRange] unsigned long topK;
   float temperature;
