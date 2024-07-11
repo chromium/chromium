@@ -3245,6 +3245,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mTabGroupVisualDataManager = null;
         }
 
+        if (mDseNewTabUrlManager != null) {
+            mDseNewTabUrlManager.destroy();
+        }
+
         super.onDestroyInternal();
     }
 
