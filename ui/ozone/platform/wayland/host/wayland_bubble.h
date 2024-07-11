@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUBBLE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUBBLE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -12,7 +13,7 @@ namespace ui {
 
 // A WaylandWindow implementation to show kBubble and kPopup widgets.
 // Implemented using a wl_subsurface object.
-class WaylandBubble : public WaylandWindow {
+class WaylandBubble final : public WaylandWindow {
  public:
   WaylandBubble(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection,
@@ -45,6 +46,7 @@ class WaylandBubble : public WaylandWindow {
   // TODO(crbug.com/329145822): this needs to apply the offset that is requested
   // by SetBoundsInDIP.
   void AckConfigure(uint32_t serial) override {}
+  base::WeakPtr<WaylandWindow> AsWeakPtr() override;
   bool IsScreenCoordinatesEnabled() const override;
   bool IsActive() const override;
   WaylandBubble* AsWaylandBubble() override;
@@ -69,6 +71,8 @@ class WaylandBubble : public WaylandWindow {
   // Copied from Widget::InitParams::accept_events, indicates whether this
   // bubble traps inputs.
   bool accept_events_ = true;
+
+  base::WeakPtrFactory<WaylandBubble> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

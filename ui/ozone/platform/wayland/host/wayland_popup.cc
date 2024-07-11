@@ -313,6 +313,10 @@ bool WaylandPopup::IsScreenCoordinatesEnabled() const {
   return parent_window()->IsScreenCoordinatesEnabled();
 }
 
+base::WeakPtr<WaylandWindow> WaylandPopup::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void WaylandPopup::OnCloseRequest() {
   // Before calling OnCloseRequest, the |shell_popup_| must become hidden and
   // only then call OnCloseRequest().

@@ -72,8 +72,7 @@ class WaylandWindow : public PlatformWindow,
                       public WmDragHandler,
                       public WaylandExtension,
                       public EventTarget,
-                      public WaylandZAuraSurface::Delegate,
-                      public base::SupportsWeakPtr<WaylandWindow> {
+                      public WaylandZAuraSurface::Delegate {
  public:
   WaylandWindow(const WaylandWindow&) = delete;
   WaylandWindow& operator=(const WaylandWindow&) = delete;
@@ -102,6 +101,9 @@ class WaylandWindow : public PlatformWindow,
 
   // Propagates the buffer scale of the next commit to exo.
   virtual void PropagateBufferScale(float new_scale) = 0;
+
+  // Returns a WeakPtr to the implementation instance.
+  virtual base::WeakPtr<WaylandWindow> AsWeakPtr() = 0;
 
   WaylandSurface* root_surface() const { return root_surface_.get(); }
   WaylandSubsurface* primary_subsurface() const {

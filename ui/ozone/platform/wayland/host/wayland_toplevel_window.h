@@ -10,6 +10,7 @@
 #include <ostream>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
@@ -102,6 +103,7 @@ class WaylandToplevelWindow : public WaylandWindow,
                    const base::TimeDelta hide_delay) override;
   void HideTooltip() override;
   void PropagateBufferScale(float new_scale) override;
+  base::WeakPtr<WaylandWindow> AsWeakPtr() override;
   void OnRotateFocus(uint32_t serial, uint32_t direction, bool restart);
   void OnOverviewChange(uint32_t in_overview_as_int);
 
@@ -325,6 +327,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   std::optional<float> last_sent_buffer_scale_;
 
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
+
+  base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

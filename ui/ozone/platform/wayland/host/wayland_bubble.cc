@@ -136,6 +136,10 @@ void WaylandBubble::OnSequencePoint(int64_t seq) {
   MaybeApplyLatestStateRequest(/*force=*/false);
 }
 
+base::WeakPtr<WaylandWindow> WaylandBubble::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool WaylandBubble::IsScreenCoordinatesEnabled() const {
   return parent_window()->IsScreenCoordinatesEnabled();
 }

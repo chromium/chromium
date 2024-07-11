@@ -327,8 +327,9 @@ void WaylandToplevelWindow::Activate() {
     if (auto token = base::nix::TakeXdgActivationToken()) {
       ActivateWithToken(token.value());
     } else {
-      connection()->xdg_activation()->RequestNewToken(base::BindOnce(
-          &WaylandToplevelWindow::ActivateWithToken, base::AsWeakPtr(this)));
+      connection()->xdg_activation()->RequestNewToken(
+          base::BindOnce(&WaylandToplevelWindow::ActivateWithToken,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   } else if (gtk_surface1_) {
     gtk_surface1_->RequestFocus();
@@ -799,6 +800,10 @@ void WaylandToplevelWindow::PropagateBufferScale(float new_scale) {
     shell_toplevel()->SetScaleFactor(new_scale);
     last_sent_buffer_scale_ = new_scale;
   }
+}
+
+base::WeakPtr<WaylandWindow> WaylandToplevelWindow::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void WaylandToplevelWindow::ShowTooltip(
