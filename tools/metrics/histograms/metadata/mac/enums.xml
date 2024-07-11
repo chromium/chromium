@@ -114,6 +114,13 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="errSecSuccess"/>
 </enum>
 
+<enum name="MacCloneExists">
+  <int value="0" label="EXISTS"/>
+  <int value="1" label="MISSING_MAIN_EXECUTABLE"/>
+  <int value="2" label="MISSING_INFO_PLIST"/>
+  <int value="3" label="MISSING_MAIN_EXECUTABLE_AND_INFO_PLIST"/>
+</enum>
+
 <!-- Generated from macOS 14 SDK: <sys/errno.h> -->
 
 <enum name="MacErrno">

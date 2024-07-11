@@ -52,6 +52,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mac.AppCodeSignCloneExists" enum="MacCloneExists"
+    expires_after="2025-06-03">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The existence of the clone on disk. This histogram is emitted up to two
+    times. Once, immediately after successful clone creation. Then again, if the
+    clone is prematurely removed.
+  </summary>
+</histogram>
+
 <histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
     expires_after="2025-03-06">
   <owner>bur@google.com</owner>

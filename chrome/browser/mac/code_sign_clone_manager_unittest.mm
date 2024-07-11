@@ -22,11 +22,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -63,7 +63,7 @@ base::FilePath CreateTestApp() {
 namespace code_sign_clone_manager {
 
 TEST(CodeSignCloneManagerTest, Clone) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       code_sign_clone_manager::kMacAppCodeSignClone);
@@ -119,7 +119,7 @@ TEST(CodeSignCloneManagerTest, InvalidDirhelperPath) {
   // Remove the @available check once `MAC_OS_X_VERSION_MIN_REQUIRED` is macOS
   // 11+.
   if (@available(macOS 11.0, *)) {
-    base::test::TaskEnvironment task_environment;
+    content::BrowserTaskEnvironment task_environment;
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         code_sign_clone_manager::kMacAppCodeSignClone);
@@ -152,7 +152,7 @@ TEST(CodeSignCloneManagerTest, InvalidDirhelperPath) {
 }
 
 TEST(CodeSignCloneManagerTest, FailedHardLink) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       code_sign_clone_manager::kMacAppCodeSignClone);
