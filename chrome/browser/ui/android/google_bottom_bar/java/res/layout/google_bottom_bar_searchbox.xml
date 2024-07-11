@@ -9,26 +9,38 @@ found in the LICENSE file.
     android:id="@+id/google_bottom_bar_searchbox"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/google_bottom_bar_searchbox_container_height">
+    android:background="@drawable/bottom_bar_searchbox_background"
+    android:layout_height="@dimen/google_bottom_bar_searchbox_container_height" >
 
   <ImageButton
       android:id="@+id/google_bottom_bar_searchbox_super_g_button"
       android:layout_width="@dimen/google_bottom_bar_button_size"
       android:layout_height="@dimen/google_bottom_bar_button_size"
-      android:src="@drawable/ic_google_24dp"
+      android:gravity="center_vertical"
+      android:layout_gravity="center_vertical"
+      android:src="@drawable/bottom_bar_searchbox_superg_icon"
+      android:background="@android:color/transparent"
       android:contentDescription="@string/google_bottom_bar_searchbox_super_g_button_description"/>
 
   <TextView
       android:id="@+id/google_bottom_bar_searchbox_hint_text_view"
-      android:layout_width="wrap_content"
       android:layout_height="@dimen/google_bottom_bar_button_size"
-      android:text="@string/google_bottom_bar_searchbox_text"/>
+      android:text="@string/google_bottom_bar_searchbox_text"
+      android:gravity="center_vertical"
+      android:layout_gravity="center_vertical"
+      android:layout_width="0dp"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      android:background="@android:color/transparent"
+      android:layout_weight="1"/>
 
   <ImageButton
       android:id="@+id/google_bottom_bar_searchbox_mic_button"
       android:layout_width="@dimen/google_bottom_bar_button_size"
       android:layout_height="@dimen/google_bottom_bar_button_size"
-      android:src="@drawable/ic_mic_white_24dp"
+      android:src="@drawable/bottom_bar_searchbox_mic_icon"
+      android:gravity="center_vertical"
+      android:layout_gravity="center_vertical"
+      android:background="@android:color/transparent"
       android:contentDescription="@string/google_bottom_bar_searchbox_mic_button_description"/>
 
   <ImageButton
@@ -36,6 +48,9 @@ found in the LICENSE file.
       android:layout_width="@dimen/google_bottom_bar_button_size"
       android:layout_height="@dimen/google_bottom_bar_button_size"
       android:src="@drawable/lens_icon"
+      android:gravity="center_vertical"
+      android:layout_gravity="center_vertical"
+      android:background="@android:color/transparent"
       android:contentDescription="@string/google_bottom_bar_searchbox_lens_button_description"/>
 
 </LinearLayout>
