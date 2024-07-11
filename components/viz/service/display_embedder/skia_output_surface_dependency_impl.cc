@@ -131,6 +131,7 @@ scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(
       GetSharedContextState()->display(), surface_handle_, format);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CachePresenter(
     gl::Presenter* presenter) {
   // We're running on the viz thread here. We want to release ref on the
@@ -170,6 +171,7 @@ base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CacheGLSurface(
 
   return base::ScopedClosureRunner(std::move(release_callback));
 }
+#endif
 
 scoped_refptr<base::SingleThreadTaskRunner>
 SkiaOutputSurfaceDependencyImpl::GetClientTaskRunner() {

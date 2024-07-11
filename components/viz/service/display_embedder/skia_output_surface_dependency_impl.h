@@ -48,8 +48,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
   scoped_refptr<gl::GLSurface> CreateGLSurface(
       gl::GLSurfaceFormat format) override;
   scoped_refptr<gl::Presenter> CreatePresenter() override;
+#if BUILDFLAG(IS_ANDROID)
   base::ScopedClosureRunner CachePresenter(gl::Presenter* presenter) override;
   base::ScopedClosureRunner CacheGLSurface(gl::GLSurface* surface) override;
+#endif
   scoped_refptr<base::SingleThreadTaskRunner> GetClientTaskRunner() override;
   void ScheduleGrContextCleanup() override;
   void ScheduleDelayedGPUTaskFromGPUThread(base::OnceClosure task) override;

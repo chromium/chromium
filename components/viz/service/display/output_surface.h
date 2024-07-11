@@ -245,7 +245,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   virtual void SetDisplayTransformHint(gfx::OverlayTransform transform) = 0;
   virtual gfx::OverlayTransform GetDisplayTransform() = 0;
 
+#if BUILDFLAG(IS_ANDROID)
   virtual base::ScopedClosureRunner GetCacheBackBufferCb();
+#endif
 
   // If set to true, the OutputSurface must deliver
   // OutputSurfaceclient::DidSwapWithSize notifications to its client.

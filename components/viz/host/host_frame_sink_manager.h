@@ -234,11 +234,13 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       const FrameSinkId& root_frame_sink_id,
       const std::vector<FrameSinkId>& hit_test_async_queried_debug_queue);
 
+#if BUILDFLAG(IS_ANDROID)
   // Preserves the back buffer associated with the |root_sink_id|, even after
   // the associated Display has been torn down, and returns an id for this cache
   // entry.
   uint32_t CacheBackBufferForRootSink(const FrameSinkId& root_sink_id);
   void EvictCachedBackBuffer(uint32_t cache_id);
+#endif
 
   void CreateHitTestQueryForSynchronousCompositor(
       const FrameSinkId& frame_sink_id);
@@ -369,8 +371,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // class.
   base::ObserverList<HitTestRegionObserver>::Unchecked observers_;
 
+#if BUILDFLAG(IS_ANDROID)
   uint32_t next_cache_back_buffer_id_ = 1;
   uint32_t min_valid_cache_back_buffer_id_ = 1;
+#endif
 
   // This is kept in sync with implementation.
   DebugRendererSettings debug_renderer_settings_;

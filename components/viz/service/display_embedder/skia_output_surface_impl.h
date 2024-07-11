@@ -111,7 +111,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl
   gpu::Mailbox GetOverlayMailbox() const override;
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
+#if BUILDFLAG(IS_ANDROID)
   base::ScopedClosureRunner GetCacheBackBufferCb() override;
+#endif
   gfx::Rect GetCurrentFramebufferDamage() const override;
   void SetFrameRate(float frame_rate) override;
   void SetNeedsMeasureNextDrawLatency() override;

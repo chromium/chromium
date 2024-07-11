@@ -65,9 +65,11 @@ void OutputSurface::SetNeedsSwapSizeNotifications(
   DCHECK(!needs_swap_size_notifications);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 base::ScopedClosureRunner OutputSurface::GetCacheBackBufferCb() {
   return base::ScopedClosureRunner();
 }
+#endif
 
 gpu::Mailbox OutputSurface::GetOverlayMailbox() const {
   return gpu::Mailbox();

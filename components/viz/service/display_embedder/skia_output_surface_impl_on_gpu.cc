@@ -2757,6 +2757,7 @@ gpu::SkiaImageRepresentation* SkiaOutputSurfaceImplOnGpu::GetSkiaRepresentation(
   return it->second.get();
 }
 
+#if BUILDFLAG(IS_ANDROID)
 base::ScopedClosureRunner SkiaOutputSurfaceImplOnGpu::GetCacheBackBufferCb() {
   if (gl_surface_) {
     DCHECK(!presenter_);
@@ -2769,6 +2770,7 @@ base::ScopedClosureRunner SkiaOutputSurfaceImplOnGpu::GetCacheBackBufferCb() {
 
   return base::ScopedClosureRunner();
 }
+#endif
 
 void SkiaOutputSurfaceImplOnGpu::CheckAsyncWorkCompletion() {
   if (auto* graphite_context = context_state_->graphite_context()) {

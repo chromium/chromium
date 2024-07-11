@@ -627,9 +627,11 @@ void RootCompositorFrameSinkImpl::DisplayWillDrawAndSwap(
   support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId());
 }
 
+#if BUILDFLAG(IS_ANDROID)
 base::ScopedClosureRunner RootCompositorFrameSinkImpl::GetCacheBackBufferCb() {
   return display_->GetCacheBackBufferCb();
 }
+#endif
 
 void RootCompositorFrameSinkImpl::SetHwSupportForMultipleRefreshRates(
     bool support) {

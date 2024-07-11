@@ -1634,10 +1634,12 @@ void SkiaOutputSurfaceImpl::SetNeedsSwapSizeNotifications(
   needs_swap_size_notifications_ = needs_swap_size_notifications;
 }
 
+#if BUILDFLAG(IS_ANDROID)
 base::ScopedClosureRunner SkiaOutputSurfaceImpl::GetCacheBackBufferCb() {
   // Note, that we call it directly on viz thread to get the callback.
   return impl_on_gpu_->GetCacheBackBufferCb();
 }
+#endif
 
 void SkiaOutputSurfaceImpl::AddContextLostObserver(
     ContextLostObserver* observer) {

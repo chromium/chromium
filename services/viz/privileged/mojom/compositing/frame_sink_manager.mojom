@@ -194,9 +194,12 @@ interface FrameSinkManager {
   // Caches the back buffer for the |root_frame_sink_id|. The back buffer is
   // keyed using |cache_id| and evicted when EvictBackBuffer with the same id is
   // called.
+  [EnableIf=is_android]
   CacheBackBuffer(uint32 cache_id, FrameSinkId root_frame_sink_id);
 
-  [Sync]
+  // Evicts a previously cached back buffer for the |root_frame_sink_id|
+  // matching the |cache_id|.
+  [EnableIf=is_android, Sync]
   EvictBackBuffer(uint32 cache_id) => ();
 
   // This allows dynamic manipulation of the viz debug options stored in

@@ -80,10 +80,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   virtual scoped_refptr<gl::Presenter> CreatePresenter() = 0;
   virtual scoped_refptr<gl::GLSurface> CreateGLSurface(
       gl::GLSurfaceFormat format) = 0;
+#if BUILDFLAG(IS_ANDROID)
   // Hold a ref of the given surface until the returned closure is fired.
   virtual base::ScopedClosureRunner CacheGLSurface(gl::GLSurface* surface) = 0;
   virtual base::ScopedClosureRunner CachePresenter(
       gl::Presenter* presenter) = 0;
+#endif
   virtual void ScheduleGrContextCleanup() = 0;
 
   void PostTaskToClientThread(base::OnceClosure closure) {

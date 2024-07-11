@@ -155,10 +155,12 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request,
                            bool capture_exact_surface_id) override;
+#if BUILDFLAG(IS_ANDROID)
   void CacheBackBuffer(uint32_t cache_id,
                        const FrameSinkId& root_frame_sink_id) override;
   void EvictBackBuffer(uint32_t cache_id,
                        EvictBackBufferCallback callback) override;
+#endif
   void UpdateDebugRendererSettings(
       const DebugRendererSettings& debug_settings) override;
   void Throttle(const std::vector<FrameSinkId>& ids,
@@ -477,7 +479,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // often BeginFrames are sent for all current and future frame sinks.
   std::optional<base::TimeDelta> global_throttle_interval_ = std::nullopt;
 
+#if BUILDFLAG(IS_ANDROID)
   base::flat_map<uint32_t, base::ScopedClosureRunner> cached_back_buffers_;
+#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

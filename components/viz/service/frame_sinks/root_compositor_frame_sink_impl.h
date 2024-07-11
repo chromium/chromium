@@ -131,7 +131,9 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void SetThreadIds(const std::vector<int32_t>& thread_ids) override;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
   base::ScopedClosureRunner GetCacheBackBufferCb();
+#endif
   ExternalBeginFrameSource* external_begin_frame_source() {
     return external_begin_frame_source_.get();
   }

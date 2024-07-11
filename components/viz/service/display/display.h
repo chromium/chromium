@@ -198,7 +198,9 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   void PreserveChildSurfaceControls();
 
+#if BUILDFLAG(IS_ANDROID)
   base::ScopedClosureRunner GetCacheBackBufferCb();
+#endif
 
   bool IsRootFrameMissing() const;
   bool HasPendingSurfaces(const BeginFrameArgs& args) const;

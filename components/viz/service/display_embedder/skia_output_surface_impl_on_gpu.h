@@ -279,8 +279,10 @@ class SkiaOutputSurfaceImplOnGpu
   void DestroySharedImage(gpu::Mailbox mailbox);
   void SetSharedImagePurgeable(const gpu::Mailbox& mailbox, bool purgeable);
 
+#if BUILDFLAG(IS_ANDROID)
   // Called on the viz thread!
   base::ScopedClosureRunner GetCacheBackBufferCb();
+#endif
 
   // Checks the relevant context for completed tasks and, indirectly, causes
   // associated completion callbacks to run.

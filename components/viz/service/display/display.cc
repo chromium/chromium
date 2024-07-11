@@ -1324,9 +1324,11 @@ void Display::SetHwSupportForMultipleRefreshRates(bool support) {
   frame_rate_decider_->SetHwSupportForMultipleRefreshRates(support);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 base::ScopedClosureRunner Display::GetCacheBackBufferCb() {
   return output_surface_->GetCacheBackBufferCb();
 }
+#endif
 
 void Display::DisableGPUAccessByDefault() {
   DCHECK(resource_provider_);
