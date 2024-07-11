@@ -199,7 +199,11 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     // If image is lazy decoded, call readPixels() to trigger decoding.
     if (skia_image_->isLazyGenerated()) {
       SkImageInfo info = SkImageInfo::MakeN32Premul(1, 1);
-      uint8_t pixel[info.bytesPerPixel()];
+      // MakeN32Premul uses the kN32_SkColorType, which has 8 bytes per pixel.
+      // Sadly the compiler can't determine that automatically.
+      constexpr int kMaxBytesPerPixel = 16;
+      CHECK_LE(info.bytesPerPixel(), kMaxBytesPerPixel);
+      uint8_t pixel[kMaxBytesPerPixel];
       skia_image_->readPixels(info, pixel, info.minRowBytes(), 0, 0);
     }
 
