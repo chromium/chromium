@@ -48,6 +48,54 @@ static_library("remote_apps") {
   ]
 }
 
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "remote_apps_manager_browsertest.cc" ]
+
+  deps = [
+    ":remote_apps",
+    "//ash",
+    "//ash:test_support",
+    "//ash/app_list",
+    "//ash/app_list/model:app_list_model",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/components/remote_apps/mojom",
+    "//components/account_id",
+    "//components/policy/proto",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/sync:test_support",
+    "//components/sync/protocol",
+    "//components/user_manager",
+    "//components/user_manager:common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

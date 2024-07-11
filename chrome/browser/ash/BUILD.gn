@@ -3328,6 +3328,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/platform_keys:browser_tests",
     "//chrome/browser/ash/printing/print_management:browser_tests",
     "//chrome/browser/ash/privacy_hub:browser_tests",
+    "//chrome/browser/ash/remote_apps:browser_tests",
     "//chrome/browser/ash/scalable_iph:browser_tests",
     "//chrome/browser/ash/system:browser_tests",
     "//chrome/browser/ash/system_logs:browser_tests",
