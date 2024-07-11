@@ -11,8 +11,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 
-class LegacyBookmarkModel;
-
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
@@ -59,8 +57,6 @@ class BookmarkNode;
 class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
  public:
   BookmarkModelBridge(id<BookmarkModelBridgeObserver> observer,
-                      LegacyBookmarkModel* model);
-  BookmarkModelBridge(id<BookmarkModelBridgeObserver> observer,
                       bookmarks::BookmarkModel* model);
   ~BookmarkModelBridge() override;
 
@@ -96,8 +92,6 @@ class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 
   __weak id<BookmarkModelBridgeObserver> observer_;
 
-  base::ScopedObservation<LegacyBookmarkModel, bookmarks::BookmarkModelObserver>
-      legacy_model_observation_{this};
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>
       model_observation_{this};

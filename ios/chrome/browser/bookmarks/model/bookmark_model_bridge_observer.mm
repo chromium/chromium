@@ -9,16 +9,6 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "components/bookmarks/browser/bookmark_node.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-
-BookmarkModelBridge::BookmarkModelBridge(
-    id<BookmarkModelBridgeObserver> observer,
-    LegacyBookmarkModel* model)
-    : observer_(observer) {
-  DCHECK(observer_);
-  DCHECK(model);
-  legacy_model_observation_.Observe(model);
-}
 
 BookmarkModelBridge::BookmarkModelBridge(
     id<BookmarkModelBridgeObserver> observer,
@@ -37,7 +27,6 @@ void BookmarkModelBridge::BookmarkModelLoaded(bool ids_reassigned) {
 
 void BookmarkModelBridge::BookmarkModelBeingDeleted() {
   model_observation_.Reset();
-  legacy_model_observation_.Reset();
 
   SEL selector = @selector(bookmarkModelBeingDeleted);
   if ([observer_ respondsToSelector:selector]) {

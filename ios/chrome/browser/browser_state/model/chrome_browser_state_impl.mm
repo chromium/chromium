@@ -34,8 +34,6 @@
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/model/constants.h"
 #import "ios/chrome/browser/browser_state/model/off_the_record_chrome_browser_state_impl.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"

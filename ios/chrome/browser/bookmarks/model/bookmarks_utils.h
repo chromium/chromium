@@ -13,7 +13,6 @@
 
 enum class BookmarkModelType;
 class ChromeBrowserState;
-class LegacyBookmarkModel;
 class PrefService;
 
 namespace bookmarks {
@@ -66,12 +65,6 @@ extern const int64_t kLastUsedBookmarkFolderNone;
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     const bookmarks::BookmarkModel* model,
     BookmarkModelType type);
-
-// Legacy equivalent of the above. In this case, the subset of permanent folders
-// is implicit in the LegacyBookmarkModel instance itself, which exclusively
-// exposes three permanent folders.
-std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
-    LegacyBookmarkModel* model);
 
 // Whether a bookmark was manually moved by the user to a different folder since
 // last signin/signout.

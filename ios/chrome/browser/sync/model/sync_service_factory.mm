@@ -27,10 +27,9 @@
 #import "components/sync_device_info/local_device_info_provider.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/variations/service/google_groups_updater_service.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
@@ -206,11 +205,10 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(ios::AboutSigninInternalsFactory::GetInstance());
-  DependsOn(ios::AccountBookmarkModelFactory::GetInstance());
   DependsOn(ios::AccountBookmarkSyncServiceFactory::GetInstance());
-  DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
-  DependsOn(ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
+  DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(ios::BookmarkUndoServiceFactory::GetInstance());
+  DependsOn(ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
   DependsOn(ios::FaviconServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());

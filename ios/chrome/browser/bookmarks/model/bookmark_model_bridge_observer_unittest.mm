@@ -8,7 +8,6 @@
 
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 
 @class TestBookmarkModelBridgeObserver;
 

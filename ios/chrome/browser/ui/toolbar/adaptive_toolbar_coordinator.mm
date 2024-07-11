@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"

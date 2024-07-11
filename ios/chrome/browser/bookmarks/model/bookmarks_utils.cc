@@ -12,7 +12,6 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
-#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -78,32 +77,6 @@ std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     }
   }
   NOTREACHED_NORETURN();
-}
-
-std::vector<const BookmarkNode*> PrimaryPermanentNodes(
-    LegacyBookmarkModel* model) {
-  DCHECK(model);
-  DCHECK(model->loaded());
-  std::vector<const BookmarkNode*> nodes;
-
-  // When dealing with account bookmarks, it is possible that they don't
-  // actually exist (e.g. the user is signed out). It is guaranteed that all
-  // exist or none.
-  if (!model->subtle_mobile_node()) {
-    // Account bookmarks do not exist, no need to return them.
-    DCHECK(!model->subtle_bookmark_bar_node());
-    DCHECK(!model->subtle_other_node());
-    return nodes;
-  }
-
-  // Account bookmarks do exist (all three). Return them.
-  DCHECK(model->subtle_bookmark_bar_node());
-  DCHECK(model->subtle_other_node());
-
-  nodes.push_back(model->subtle_mobile_node());
-  nodes.push_back(model->subtle_bookmark_bar_node());
-  nodes.push_back(model->subtle_other_node());
-  return nodes;
 }
 
 bool IsLastUsedBookmarkFolderSet(PrefService* prefs) {

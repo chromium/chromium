@@ -16,7 +16,6 @@
 
 class Browser;
 class GURL;
-class LegacyBookmarkModel;
 class TestChromeBrowserState;
 class PrefService;
 
@@ -51,8 +50,6 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
       const std::u16string& title);
   void ChangeTitle(const std::u16string& title,
                    const bookmarks::BookmarkNode* node);
-  LegacyBookmarkModel* GetBookmarkModelForNode(
-      const bookmarks::BookmarkNode* node);
 
   const bool wait_for_initialization_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -60,11 +57,6 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  // Bookmark model for the LocalOrSyncable storage.
-  raw_ptr<LegacyBookmarkModel> local_or_syncable_bookmark_model_;
-  // Bookmark model for the account storage.
-  raw_ptr<LegacyBookmarkModel> account_bookmark_model_;
-  // Bookmark model providing a merged view.
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   raw_ptr<PrefService> pref_service_;

@@ -18,7 +18,6 @@
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 
@@ -422,109 +421,6 @@ TEST_F(BookmarkIOSUtilsUnitTest, IsAccountBookmarkStorageOptedIn) {
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, /*types=*/syncer::UserSelectableTypeSet());
   EXPECT_FALSE(IsAccountBookmarkStorageOptedIn(&sync_service));
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedNoMatchingBookmarks) {
-  AddBookmark(local_or_syncable_bookmark_model_->subtle_mobile_node(), u"a",
-              GURL("http://example.com/a"));
-  AddBookmark(account_bookmark_model_->subtle_mobile_node(), u"b",
-              GURL("http://example.com/b"));
-
-  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
-      GURL("http://example.com/c"), local_or_syncable_bookmark_model_,
-      account_bookmark_model_);
-  EXPECT_EQ(result, nullptr);
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingLocalBookmark) {
-  const BookmarkNode* local_bookmark =
-      AddBookmark(local_or_syncable_bookmark_model_->subtle_mobile_node(), u"a",
-                  GURL("http://example.com/a"));
-  AddBookmark(account_bookmark_model_->subtle_mobile_node(), u"b",
-              GURL("http://example.com/b"));
-
-  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
-      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
-      account_bookmark_model_);
-  EXPECT_EQ(result, local_bookmark);
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingAccountBookmark) {
-  AddBookmark(local_or_syncable_bookmark_model_->subtle_mobile_node(), u"a",
-              GURL("http://example.com/a"));
-  const BookmarkNode* account_bookmark =
-      AddBookmark(account_bookmark_model_->subtle_mobile_node(), u"b",
-                  GURL("http://example.com/b"));
-
-  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
-      GURL("http://example.com/b"), local_or_syncable_bookmark_model_,
-      account_bookmark_model_);
-  EXPECT_EQ(result, account_bookmark);
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest,
-       GetMostRecentlyAddedMatchingBothStoragesLocalWins) {
-  const BookmarkNode* local_bookmark =
-      AddBookmark(local_or_syncable_bookmark_model_->subtle_mobile_node(), u"a",
-                  GURL("http://example.com/a"));
-  const BookmarkNode* account_bookmark =
-      AddBookmark(account_bookmark_model_->subtle_mobile_node(), u"b",
-                  GURL("http://example.com/a"));
-
-  base::Time added_time_account_bookmark = base::Time::Now();
-  account_bookmark_model_->SetDateAdded(account_bookmark,
-                                        added_time_account_bookmark);
-  // Simulate local bookmark being added after the account one.
-  base::Time added_time_local_bookmark =
-      added_time_account_bookmark + base::Seconds(1);
-  local_or_syncable_bookmark_model_->SetDateAdded(local_bookmark,
-                                                  added_time_local_bookmark);
-
-  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
-      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
-      account_bookmark_model_);
-  // Local bookmark is more recent, so it should be returned.
-  EXPECT_EQ(result, local_bookmark);
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest,
-       GetMostRecentlyAddedMatchingBothStoragesAccountWins) {
-  const BookmarkNode* local_bookmark =
-      AddBookmark(local_or_syncable_bookmark_model_->subtle_mobile_node(), u"a",
-                  GURL("http://example.com/a"));
-  const BookmarkNode* account_bookmark =
-      AddBookmark(account_bookmark_model_->subtle_mobile_node(), u"b",
-                  GURL("http://example.com/a"));
-
-  base::Time added_time_local_bookmark = base::Time::Now();
-  local_or_syncable_bookmark_model_->SetDateAdded(local_bookmark,
-                                                  added_time_local_bookmark);
-  // Simulate account bookmark being added after the local one.
-  base::Time added_time_account_bookmark =
-      added_time_local_bookmark + base::Seconds(1);
-  account_bookmark_model_->SetDateAdded(account_bookmark,
-                                        added_time_account_bookmark);
-
-  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
-      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
-      account_bookmark_model_);
-  // Account bookmark is more recent, so it should be returned.
-  EXPECT_EQ(result, account_bookmark);
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest, IsAccountBookmarkStorageAvailable) {
-  ASSERT_NE(nullptr, bookmark_model_->account_mobile_node());
-
-  EXPECT_TRUE(IsAccountBookmarkStorageAvailable(bookmark_model_));
-  EXPECT_TRUE(IsAccountBookmarkStorageAvailable(
-      /*sync_service=*/nullptr /*unused*/, account_bookmark_model_));
-
-  bookmark_model_->RemoveAccountPermanentFolders();
-  ASSERT_EQ(nullptr, bookmark_model_->account_mobile_node());
-
-  EXPECT_FALSE(IsAccountBookmarkStorageAvailable(bookmark_model_));
-  EXPECT_FALSE(IsAccountBookmarkStorageAvailable(
-      /*sync_service=*/nullptr /*unused*/, account_bookmark_model_));
 }
 
 }  // namespace

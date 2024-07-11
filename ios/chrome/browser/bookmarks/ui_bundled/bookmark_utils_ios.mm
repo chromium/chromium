@@ -40,7 +40,6 @@
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/undo_manager_wrapper.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
@@ -61,19 +60,6 @@ namespace bookmark_utils_ios {
 NSString* const kBookmarksSnackbarCategory = @"BookmarksSnackbarCategory";
 
 namespace {
-
-// Returns the underlying bookmarks::BookmarkModel instance powering the two
-// given LegacyBookmarkModel views `legacy_model1` and `legacy_model2`. The two
-// must have the same underlying BookmarkModel instance or the function will
-// CHECK fail.
-bookmarks::BookmarkModel* GetSharedUnderlyingModel(
-    LegacyBookmarkModel* legacy_model1,
-    LegacyBookmarkModel* legacy_model2) {
-  bookmarks::BookmarkModel* model1 = legacy_model1->underlying_model();
-  bookmarks::BookmarkModel* model2 = legacy_model2->underlying_model();
-  CHECK_EQ(model1, model2);
-  return model1;
-}
 
 void RemoveBookmarksRecursive(const std::set<const BookmarkNode*>& bookmarks,
                               bookmarks::BookmarkModel* model,
@@ -165,18 +151,6 @@ NSString* TitleForBookmarkNode(const BookmarkNode* node) {
 
 #pragma mark - Profile and account
 
-BookmarkModelType GetBookmarkModelType(const BookmarkNode* bookmark_node,
-                                       LegacyBookmarkModel* profile_model,
-                                       LegacyBookmarkModel* account_model) {
-  DCHECK(bookmark_node);
-  DCHECK(profile_model);
-  if (profile_model->IsNodePartOfModel(bookmark_node)) {
-    return BookmarkModelType::kLocalOrSyncable;
-  }
-  DCHECK(account_model && account_model->IsNodePartOfModel(bookmark_node));
-  return BookmarkModelType::kAccount;
-}
-
 BookmarkModelType GetBookmarkModelType(
     const BookmarkNode* bookmark_node,
     const bookmarks::BookmarkModel* bookmark_model) {
@@ -185,16 +159,6 @@ BookmarkModelType GetBookmarkModelType(
   return bookmark_model->IsLocalOnlyNode(*bookmark_node)
              ? BookmarkModelType::kLocalOrSyncable
              : BookmarkModelType::kAccount;
-}
-
-LegacyBookmarkModel* GetBookmarkModelForNode(
-    const BookmarkNode* bookmark_node,
-    LegacyBookmarkModel* profile_model,
-    LegacyBookmarkModel* account_model) {
-  BookmarkModelType modelType =
-      GetBookmarkModelType(bookmark_node, profile_model, account_model);
-  return modelType == BookmarkModelType::kAccount ? account_model
-                                                  : profile_model;
 }
 
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
@@ -214,12 +178,6 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
 bool IsAccountBookmarkStorageAvailable(const bookmarks::BookmarkModel* model) {
   CHECK(model);
   return model->account_mobile_node() != nullptr;
-}
-
-bool IsAccountBookmarkStorageAvailable(syncer::SyncService* sync_service,
-                                       LegacyBookmarkModel* account_model) {
-  CHECK(account_model);
-  return account_model->subtle_mobile_node() != nullptr;
 }
 
 #pragma mark - Updating Bookmarks
@@ -249,17 +207,6 @@ MDCSnackbarMessage* CreateUndoToastWithWrapper(UndoManagerWrapper* wrapper,
   message.action = action;
   message.category = kBookmarksSnackbarCategory;
   return message;
-}
-
-bool UpdateBookmark(const bookmarks::BookmarkNode* node,
-                    NSString* title,
-                    const GURL& url,
-                    const bookmarks::BookmarkNode* folder,
-                    LegacyBookmarkModel* local_or_syncable_model,
-                    LegacyBookmarkModel* account_model) {
-  return UpdateBookmark(
-      node, title, url, folder,
-      GetSharedUnderlyingModel(local_or_syncable_model, account_model));
 }
 
 bool UpdateBookmark(const BookmarkNode* node,
@@ -376,23 +323,6 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     const GURL& url,
     const BookmarkNode* original_folder,
     const BookmarkNode* folder,
-    LegacyBookmarkModel* local_or_syncable_model,
-    LegacyBookmarkModel* account_model,
-    ChromeBrowserState* browser_state,
-    base::WeakPtr<AuthenticationService> authenticationService,
-    raw_ptr<syncer::SyncService> syncService) {
-  return UpdateBookmarkWithUndoToast(
-      node, title, url, original_folder, folder,
-      GetSharedUnderlyingModel(local_or_syncable_model, account_model),
-      browser_state, authenticationService, syncService);
-}
-
-MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
-    const BookmarkNode* node,
-    NSString* title,
-    const GURL& url,
-    const BookmarkNode* original_folder,
-    const BookmarkNode* folder,
     bookmarks::BookmarkModel* model,
     ChromeBrowserState* browser_state,
     base::WeakPtr<AuthenticationService> authenticationService,
@@ -432,20 +362,6 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
     const GURL& url,
     const BookmarkNode* folder,
     int position,
-    LegacyBookmarkModel* local_or_syncable_model,
-    LegacyBookmarkModel* account_model,
-    ChromeBrowserState* browser_state) {
-  return CreateBookmarkAtPositionWithUndoToast(
-      title, url, folder, position,
-      GetSharedUnderlyingModel(local_or_syncable_model, account_model),
-      browser_state);
-}
-
-MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
-    NSString* title,
-    const GURL& url,
-    const BookmarkNode* folder,
-    int position,
     bookmarks::BookmarkModel* model,
     ChromeBrowserState* browser_state) {
   std::u16string titleString = base::SysNSStringToUTF16(title);
@@ -467,19 +383,6 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_CREATED);
   return CreateUndoToastWithWrapper(wrapper, text,
                                     "MobileBookmarkManagerAddedBookmarkUndone");
-}
-
-MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
-    const BookmarkNode* node,
-    const BookmarkNode* folder,
-    size_t position,
-    LegacyBookmarkModel* local_or_syncable_model,
-    LegacyBookmarkModel* account_model,
-    ChromeBrowserState* browser_state) {
-  return UpdateBookmarkPositionWithUndoToast(
-      node, folder, position,
-      GetSharedUnderlyingModel(local_or_syncable_model, account_model),
-      browser_state);
 }
 
 MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
@@ -516,12 +419,6 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
                                     "MobileBookmarkManagerMoveToFolderUndone");
 }
 
-void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
-                     LegacyBookmarkModel* model,
-                     const base::Location& location) {
-  DeleteBookmarks(bookmarks, model->underlying_model(), location);
-}
-
 void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
                      bookmarks::BookmarkModel* bookmark_model,
                      const base::Location& location) {
@@ -530,20 +427,6 @@ void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
   RemoveBookmarksRecursive(bookmarks, bookmark_model,
                            bookmarks::metrics::BookmarkEditSource::kUser,
                            bookmark_model->root_node(), location);
-}
-
-MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
-    const std::set<const BookmarkNode*>& nodes,
-    const std::vector<LegacyBookmarkModel*>& bookmark_models,
-    ChromeBrowserState* browser_state,
-    const base::Location& location) {
-  CHECK_GT(bookmark_models.size(), 0u);
-  for (LegacyBookmarkModel* model : bookmark_models) {
-    CHECK_EQ(model->underlying_model(), bookmark_models[0]->underlying_model());
-  }
-
-  return DeleteBookmarksWithUndoToast(
-      nodes, bookmark_models[0]->underlying_model(), browser_state, location);
 }
 
 MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
@@ -572,15 +455,6 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
 
 using BookmarkNodeVectorIterator = std::vector<const BookmarkNode*>::iterator;
 
-bool MoveBookmarks(std::vector<const BookmarkNode*>& bookmarks_to_move,
-                   LegacyBookmarkModel* local_model,
-                   LegacyBookmarkModel* account_model,
-                   const BookmarkNode* destination_folder) {
-  return MoveBookmarks(bookmarks_to_move,
-                       GetSharedUnderlyingModel(local_model, account_model),
-                       destination_folder);
-}
-
 bool MoveBookmarks(const std::vector<const BookmarkNode*>& bookmarks_to_move,
                    bookmarks::BookmarkModel* model,
                    const BookmarkNode* destination_folder) {
@@ -601,20 +475,6 @@ bool MoveBookmarks(const std::vector<const BookmarkNode*>& bookmarks_to_move,
   }
 
   return did_perform_move;
-}
-
-MDCSnackbarMessage* MoveBookmarksWithUndoToast(
-    std::vector<const BookmarkNode*>& bookmarks_to_move,
-    LegacyBookmarkModel* local_or_syncable_model,
-    LegacyBookmarkModel* account_model,
-    const BookmarkNode* destination_folder,
-    ChromeBrowserState* browser_state,
-    base::WeakPtr<AuthenticationService> authenticationService,
-    raw_ptr<syncer::SyncService> syncService) {
-  return MoveBookmarksWithUndoToast(
-      bookmarks_to_move,
-      GetSharedUnderlyingModel(local_or_syncable_model, account_model),
-      destination_folder, browser_state, authenticationService, syncService);
 }
 
 MDCSnackbarMessage* MoveBookmarksWithUndoToast(
@@ -859,25 +719,6 @@ GURL ConvertUserDataToGURL(NSString* urlString) {
   } else {
     return GURL();
   }
-}
-
-const BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
-    const GURL& url,
-    LegacyBookmarkModel* local_model,
-    LegacyBookmarkModel* account_model) {
-  CHECK(local_model);
-  const BookmarkNode* local_bookmark =
-      local_model->GetMostRecentlyAddedUserNodeForURL(url);
-  const BookmarkNode* account_bookmark =
-      account_model ? account_model->GetMostRecentlyAddedUserNodeForURL(url)
-                    : nullptr;
-  if (local_bookmark && account_bookmark) {
-    // Found bookmarks in both models, return one that was added more recently.
-    return local_bookmark->date_added() > account_bookmark->date_added()
-               ? local_bookmark
-               : account_bookmark;
-  }
-  return local_bookmark ? local_bookmark : account_bookmark;
 }
 
 }  // namespace bookmark_utils_ios

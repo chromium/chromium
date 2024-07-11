@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_MODEL_TYPE_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_MODEL_TYPE_H_
 
-// On iOS, there are two BookmarkModel instances, with one factory each. This
-// enum allows representing which of the two is relevant in a context.
+// Distinguishes whether or not a bookmark node is considered an account node,
+// as opposed to a local-only node.
 //
 // Do not change the explicitly set values. This enum is saved in preference
 // kIosBookmarkLastUsedStorageReceivingBookmarks.
@@ -14,12 +14,11 @@
 // a single BookmarkModel instance. It could instead represent the bookmark
 // storage type or a similar concept.
 enum class BookmarkModelType {
-  // Bookmarks that are stored on the local device only. Corresponds to
-  // LocalOrSyncableBookmarkModelFactory.
+  // Bookmarks that are stored on the local device only.
   kLocalOrSyncable = 0,
   // Account storage indicates all data can be attributed to an account, which
   // also means the data will be removed from the BookmarkModel when the user
-  // signs out. Corresponds to AccountBookmarkModelFactory.
+  // signs out.
   kAccount = 1,
 };
 

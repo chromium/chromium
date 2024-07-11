@@ -11,11 +11,7 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model_test_helpers.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -38,12 +34,6 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       AuthenticationServiceFactory::GetInstance(),
       AuthenticationServiceFactory::GetDefaultFactory());
   test_cbs_builder.AddTestingFactory(
-      ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
-      ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
-      ios::AccountBookmarkModelFactory::GetInstance(),
-      ios::AccountBookmarkModelFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
       ios::BookmarkModelFactory::GetInstance(),
       ios::BookmarkModelFactory::GetDefaultFactory());
   test_cbs_builder.AddTestingFactory(
@@ -58,19 +48,10 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       chrome_browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());
 
-  local_or_syncable_bookmark_model_ =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          chrome_browser_state_.get());
-
-  account_bookmark_model_ =
-      ios::AccountBookmarkModelFactory::GetForBrowserState(
-          chrome_browser_state_.get());
   bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
       chrome_browser_state_.get());
   if (wait_for_initialization_) {
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
-    EXPECT_TRUE(local_or_syncable_bookmark_model_->loaded());
-    EXPECT_TRUE(account_bookmark_model_->loaded());
   }
 
   pref_service_ = chrome_browser_state_->GetPrefs();
