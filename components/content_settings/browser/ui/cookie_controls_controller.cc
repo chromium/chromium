@@ -164,7 +164,7 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
                              status.enforcement, status.blocking_status,
                              status.expiration, status.features);
     observer.OnCookieControlsIconStatusChanged(
-        ShouldUserBypassIconBeVisible(status.protections_on,
+        ShouldUserBypassIconBeVisible(status.features, status.protections_on,
                                       status.controls_visible),
         status.protections_on, status.blocking_status,
         ShouldHighlightUserBypass());
@@ -224,15 +224,17 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   CookieControlsEnforcement enforcement =
       GetEnforcementForThirdPartyCookieBlocking(blocking_status, url, info,
                                                 is_allowed);
+
+  std::vector<TrackingProtectionFeature> features =
+      CreateTrackingProtectionFeatureList(enforcement, is_allowed,
+                                          protections_on);
   return {// Hide controls if the exception is from a metadata grant.
-          /*controls_visible=*/enforcement !=
-              CookieControlsEnforcement::kEnforcedByTpcdGrant,
+          enforcement != CookieControlsEnforcement::kEnforcedByTpcdGrant,
           /*protections_on=*/!is_allowed,
           enforcement,
           blocking_status,
           info.metadata.expiration(),
-          CreateTrackingProtectionFeatureList(enforcement, is_allowed,
-                                              protections_on)};
+          features};
 }
 
 std::vector<TrackingProtectionFeature>
@@ -449,7 +451,7 @@ void CookieControlsController::UpdateUserBypass() {
   auto status = GetStatus(GetWebContents());
   for (auto& observer : observers_) {
     observer.OnCookieControlsIconStatusChanged(
-        ShouldUserBypassIconBeVisible(status.protections_on,
+        ShouldUserBypassIconBeVisible(status.features, status.protections_on,
                                       status.controls_visible),
         status.protections_on, status.blocking_status,
         ShouldHighlightUserBypass());
@@ -622,8 +624,23 @@ bool CookieControlsController::ShouldHighlightUserBypass() {
 }
 
 bool CookieControlsController::ShouldUserBypassIconBeVisible(
+    std::vector<TrackingProtectionFeature> features,
     bool protections_on,
     bool controls_visible) {
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtectionSettingsLaunch)) {
+    bool has_controllable_feature = false;
+    std::vector<TrackingProtectionFeature>::iterator it;
+    for (it = features.begin(); it != features.end(); it++) {
+      has_controllable_feature |=
+          it->enforcement == CookieControlsEnforcement::kNoEnforcement;
+    }
+    // Don't show UB if none of the ACT features can be controlled
+    if (!has_controllable_feature) {
+      return false;
+    }
+  }
+
   // If no 3P sites have attempted to access site data, nor were any stateful
   // bounces recorded, the icon should not be displayed. Take into account both
   // allow and blocked counts, since the breakage might be related to storage

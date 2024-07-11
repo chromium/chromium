@@ -200,8 +200,10 @@ class CookieControlsController final
                         int third_party_blocked_sites);
 
   bool ShouldHighlightUserBypass();
-  bool ShouldUserBypassIconBeVisible(bool protections_on,
-                                     bool controls_visible);
+  bool ShouldUserBypassIconBeVisible(
+      std::vector<TrackingProtectionFeature> features,
+      bool protections_on,
+      bool controls_visible);
   content::WebContents* GetWebContents() const;
 
   std::unique_ptr<TabObserver> tab_observer_;

@@ -1601,22 +1601,21 @@ class CookieControlsUserBypassTrackingProtectionUiTest
   }
   ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;
 
-  std::vector<TrackingProtectionFeature> GetFeatureVector() {
+  std::vector<TrackingProtectionFeature> GetFeatureVector(
+      CookieControlsEnforcement enforcement,
+      bool protections_on) {
     std::vector<TrackingProtectionFeature> features_list;
-    bool protections_on = std::get<0>(GetParam());
     features_list.push_back(
-        {FeatureType::kThirdPartyCookies,
-         CookieControlsEnforcement::kNoEnforcement,
+        {FeatureType::kThirdPartyCookies, enforcement,
          protections_on ? BlockingStatus::kBlocked : BlockingStatus::kAllowed});
     if (tracking_protection_settings()->IsIpProtectionEnabled()) {
-      features_list.push_back({FeatureType::kIpProtection,
-                               CookieControlsEnforcement::kNoEnforcement,
+      features_list.push_back({FeatureType::kIpProtection, enforcement,
                                protections_on ? BlockingStatus::kHidden
                                               : BlockingStatus::kVisible});
     }
     if (tracking_protection_settings()->IsFingerprintingProtectionEnabled()) {
       features_list.push_back({FeatureType::kFingerprintingProtection,
-                               CookieControlsEnforcement::kNoEnforcement,
+                               enforcement,
                                protections_on ? BlockingStatus::kLimited
                                               : BlockingStatus::kAllowed});
     }
@@ -1646,11 +1645,53 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
                                     std::get<2>(GetParam()));
 
   NavigateAndCommit(GURL("https://example.com"));
-  EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, protections_on,
-                           CookieControlsEnforcement::kNoEnforcement,
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, protections_on,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetFeatureVector(CookieControlsEnforcement::kNoEnforcement,
+                                   protections_on)));
+
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_F(CookieControlsUserBypassTrackingProtectionUiTest,
+       DisplayEyeIconWhenActFeaturesNotEnforced) {
+  tracking_protection_settings()->AddTrackingProtectionException(
+      GURL("https://example.com"));
+  cookie_settings()->SetThirdPartyCookieSetting(
+      GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
+
+  NavigateAndCommit(GURL("https://example.com"));
+  // The first param in this function call is the return value for
+  // `ShouldUserBypassIconBeVisible` function. If true, show icon in omnibox.
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
-                           zero_expiration(), GetFeatureVector()));
+                           /*should_highlight=*/false));
+
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_F(CookieControlsUserBypassTrackingProtectionUiTest,
+       DoesNotDisplayEyeIconWhenActFeaturesAreEnforced) {
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
+
+  NavigateAndCommit(GURL("https://cool.things.com"));
+  // The first param in this function call is the return value for
+  // `ShouldUserBypassIconBeVisible` function. If false, do not show icon in
+  // omnibox.
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/false, /*protections_on=*/false,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("[*.]cool.things.com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
 
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
