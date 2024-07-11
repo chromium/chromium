@@ -13786,9 +13786,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "use_sync_transactions": "true"
-                    },
                     "enable_features": [
                         "MojoUseBinder"
                     ]
