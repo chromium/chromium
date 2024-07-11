@@ -49,6 +49,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/app_install/app_install_service_ash.h"
+#include "chrome/test/base/ui_test_utils.h"
 #endif
 
 namespace apps {
@@ -157,7 +158,7 @@ class AppInstallNavigationThrottleBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
-                       UrlTriggeredInstallation) {
+                       JavaScriptTriggeredInstallation) {
   base::HistogramTester histograms;
 
   auto [app_id, package_id] = SetupDefaultServerResponse();
@@ -193,6 +194,33 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", false, 0);
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
+                       OmniboxTriggeredInstallation) {
+  base::HistogramTester histograms;
+
+  auto [app_id, package_id] = SetupDefaultServerResponse();
+
+  auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
+
+  AutoAcceptInstallDialogScope auto_accept_scope;
+
+  ui_test_utils::SendToOmniboxAndSubmit(
+      browser(), base::StringPrintf("cros-apps://install-app?package_id=%s",
+                                    package_id.ToString().c_str()));
+
+  // This should trigger the sequence:
+  // - AppInstallNavigationThrottle
+  // - AppInstallServiceAsh
+  // - NavigateAndTriggerInstallDialogCommand
+
+  // Await install to complete.
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({app_id});
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        GeForceNowInstall) {

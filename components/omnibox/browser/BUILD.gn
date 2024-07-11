@@ -512,6 +512,10 @@ static_library("location_bar") {
     deps += [ "//chromeos/crosapi/cpp:cpp" ]
   }
 
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/constants" ]
+  }
+
   if ((!is_android || enable_vr) && !is_ios) {
     deps += [ ":vector_icons" ]
   }

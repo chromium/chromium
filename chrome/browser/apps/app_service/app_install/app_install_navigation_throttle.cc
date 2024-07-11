@@ -119,6 +119,10 @@ std::optional<AppInstallService::WindowIdentifier> GetAnchorWindow(
 }
 
 bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
+  if (!handle->IsRendererInitiated()) {
+    return true;
+  }
+
   switch (handle->GetNavigationInitiatorActivationAndAdStatus()) {
     case blink::mojom::NavigationInitiatorActivationAndAdStatus::
         kDidNotStartWithTransientActivation:

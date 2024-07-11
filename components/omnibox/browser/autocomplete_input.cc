@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/constants/url_constants.h"           // nogncheck
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"  // nogncheck
@@ -294,6 +295,15 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     return metrics::OmniboxInputType::URL;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::EqualsCaseInsensitiveASCII(parsed_scheme_utf8,
+                                       chromeos::kAppInstallUriScheme) ||
+      base::EqualsCaseInsensitiveASCII(parsed_scheme_utf8,
+                                       chromeos::kLegacyAppInstallUriScheme)) {
+    return metrics::OmniboxInputType::URL;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (base::EqualsCaseInsensitiveASCII(parsed_scheme_utf8, url::kFileScheme)) {
     // A user might or might not type a scheme when entering a file URL.  In
