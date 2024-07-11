@@ -85,6 +85,16 @@ TEST(PickerModel, AvailableCategoriesContainsEditorRewriteWhenEnabled) {
               Contains(PickerCategory::kEditorRewrite));
 }
 
+TEST(PickerModel, AvailableCategoriesDoesNotContainExpressionsForUrlFields) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_URL});
+
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Not(Contains(PickerCategory::kExpressions)));
+}
+
 TEST(PickerModel, AvailableCategoriesOmitsEditorRewriteWhenDisabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});

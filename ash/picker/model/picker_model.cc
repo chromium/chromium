@@ -72,9 +72,11 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
       if (editor_status_ == EditorStatus::kEnabled) {
         categories.push_back(PickerCategory::kEditorWrite);
       }
+      categories.push_back(PickerCategory::kLinks);
+      if (text_input_type_ != ui::TextInputType::TEXT_INPUT_TYPE_URL) {
+        categories.push_back(PickerCategory::kExpressions);
+      }
       categories.insert(categories.end(), {
-                                              PickerCategory::kLinks,
-                                              PickerCategory::kExpressions,
                                               PickerCategory::kClipboard,
                                               PickerCategory::kDriveFiles,
                                               PickerCategory::kLocalFiles,
