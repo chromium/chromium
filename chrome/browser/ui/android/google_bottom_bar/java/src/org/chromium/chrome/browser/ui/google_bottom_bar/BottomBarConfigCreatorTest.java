@@ -12,10 +12,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.ADD_NOTES;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.CUSTOM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.REFRESH;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SAVE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.DOUBLE_DECKER;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.NO_VARIANT;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -36,8 +42,13 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
+import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.TestActivity;
 
@@ -68,9 +79,44 @@ public class BottomBarConfigCreatorTest {
     }
 
     @Test
-    public void emptyString_returnsDefaultConfig() {
+    public void emptyList_returnsDefaultConfig() {
         GoogleBottomBarIntentParams params = GoogleBottomBarIntentParams.getDefaultInstance();
-        assertDefaultConfig(mConfigCreator.create(params, List.of()));
+
+        assertDefaultConfig(mConfigCreator.create(params, List.of()), NO_VARIANT);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void doubleDecker_emptyList_returnsDefaultConfig() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.DOUBLE_DECKER)
+                        .build();
+
+        assertDefaultConfig(mConfigCreator.create(params, List.of()), DOUBLE_DECKER);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void singleDecker_emptyList_returnsDefaultConfig() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .build();
+
+        assertDefaultConfig(mConfigCreator.create(params, List.of()), SINGLE_DECKER);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void singleDeckerWithRightButtons_emptyList_returnsDefaultConfig() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
+                        .build();
+
+        assertDefaultConfig(
+                mConfigCreator.create(params, List.of()), SINGLE_DECKER_WITH_RIGHT_BUTTONS);
     }
 
     @Test
@@ -78,7 +124,35 @@ public class BottomBarConfigCreatorTest {
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder().addEncodedButton(1).build();
 
-        assertDefaultConfig(mConfigCreator.create(params, List.of()));
+        assertDefaultConfig(mConfigCreator.create(params, List.of()), NO_VARIANT);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void singleDeckerWithRightButtons_moreThanTwoButtons_returnsDefaultConfig() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
+                        .addAllEncodedButton(List.of(1, 1, 2, 3))
+                        .build();
+
+        assertDefaultConfig(
+                mConfigCreator.create(params, List.of()), SINGLE_DECKER_WITH_RIGHT_BUTTONS);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            singleDeckerWithRightButtons_withSpotlightButtonInList_returnsConfigWithoutSpotlight() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
+                        .addAllEncodedButton(List.of(1, 1, 2))
+                        .build();
+
+        BottomBarConfig config = mConfigCreator.create(params, List.of());
+
+        assertNull(config.getSpotlightId());
     }
 
     @Test
@@ -88,7 +162,7 @@ public class BottomBarConfigCreatorTest {
                         .addAllEncodedButton(List.of(0, 10, 1))
                         .build();
 
-        assertDefaultConfig(mConfigCreator.create(params, List.of()));
+        assertDefaultConfig(mConfigCreator.create(params, List.of()), NO_VARIANT);
     }
 
     @Test
@@ -98,7 +172,7 @@ public class BottomBarConfigCreatorTest {
                         .addAllEncodedButton(List.of(10, 1, 2, 3))
                         .build();
 
-        assertDefaultConfig(mConfigCreator.create(params, List.of()));
+        assertDefaultConfig(mConfigCreator.create(params, List.of()), NO_VARIANT);
     }
 
     @Test
@@ -143,15 +217,15 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void createButtonConfigList_withCustomButtonParamsList() {
+        Drawable drawable = mock(Drawable.class);
+        when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
         List<Integer> buttonIdList =
                 List.of(
                         PIH_BASIC, PIH_BASIC, SHARE, SAVE, ADD_NOTES,
                         REFRESH); // PIH_BASIC, SHARE, SAVE, ADD_NOTES, REFRESH
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder().addAllEncodedButton(buttonIdList).build();
-        Drawable drawable = mock(Drawable.class);
-        when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
-        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
 
         // ADD_NOTES and REFRESH are not included in the final list as they are not supported
         BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of(mCustomButtonParams));
@@ -216,6 +290,200 @@ public class BottomBarConfigCreatorTest {
         assertTrue(expectedBitmap.sameAs(actualBitmap));
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void singleDeckerWithRightButtons_returnsCorrectConfig() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
+                        .addAllEncodedButton(List.of(0, SHARE))
+                        .build();
+
+        BottomBarConfig config = mConfigCreator.create(params, List.of());
+
+        assertNull(config.getSpotlightId());
+        assertEquals(1, config.getButtonList().size());
+        assertEquals(SHARE, config.getButtonList().get(0).getId());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getVariantLayoutType_variantLayoutsDisabled_intentParamDoubleDecker_showsOnlyButtons() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.DOUBLE_DECKER)
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(NO_VARIANT, bottomBarConfig.getVariantLayoutType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getVariantLayoutType_variantLayoutsEnabled_intentParamNotSet_finchParamNotSet_showsOnlyButtons() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(NO_VARIANT, bottomBarConfig.getVariantLayoutType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getVariantLayoutType_variantLayoutsEnabled_intentParamChromeControlled_finchParamNotSet_returnsDoubleDecker() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.CHROME_CONTROLLED)
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(DOUBLE_DECKER, bottomBarConfig.getVariantLayoutType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getVariantLayoutType_variantLayoutsEnabled_intentParamChromeControlled_finchParamDoubleDecker_returnsDoubleDecker() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .setVariantLayoutType(VariantLayoutType.CHROME_CONTROLLED)
+                        .build();
+        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(DOUBLE_DECKER);
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(DOUBLE_DECKER, bottomBarConfig.getVariantLayoutType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getVariantLayoutType_variantLayoutsEnabled_intentParamChromeControlled_finchParamSingleDecker_returnsSingleDecker() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .setVariantLayoutType(VariantLayoutType.CHROME_CONTROLLED)
+                        .build();
+        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(SINGLE_DECKER);
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(SINGLE_DECKER, bottomBarConfig.getVariantLayoutType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getVariantLayoutType_variantLayoutsEnabled_intentParamChromeControlled_finchParamSingleDeckerWithRightButtons_returnsSingleDeckerWithRightButtons() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .setVariantLayoutType(VariantLayoutType.CHROME_CONTROLLED)
+                        .build();
+        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(SINGLE_DECKER_WITH_RIGHT_BUTTONS);
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(SINGLE_DECKER_WITH_RIGHT_BUTTONS, bottomBarConfig.getVariantLayoutType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getVariantLayoutType_variantLayoutsEnabled_intentParamDoubleDecker_showsDoubleDecker() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .setVariantLayoutType(VariantLayoutType.DOUBLE_DECKER)
+                        .build();
+        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(NO_VARIANT);
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(DOUBLE_DECKER, bottomBarConfig.getVariantLayoutType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getVariantLayoutType_variantLayoutsEnabled_intentParamSingleDecker_showsSingleDecker() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .build();
+        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(NO_VARIANT);
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(SINGLE_DECKER, bottomBarConfig.getVariantLayoutType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getVariantLayoutType_variantLayoutsEnabled_intentParamSingleDeckerWithRightButtons_showsSingleDeckerWithRightButtons() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .build();
+        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(NO_VARIANT);
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(SINGLE_DECKER, bottomBarConfig.getVariantLayoutType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void create_singleDecker_withEmptyList_hasCorrectBottomBarConfig() {
+        Drawable drawable = mock(Drawable.class);
+        when(mCustomButtonParams.getId()).thenReturn(105); // CUSTOM
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
+        var pendingIntent = mock(PendingIntent.class);
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, SAVE, SHARE, CUSTOM))
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .build();
+
+        BottomBarConfig bottomBarConfig =
+                mConfigCreator.create(params, List.of(mCustomButtonParams));
+
+        assertEquals(SINGLE_DECKER, bottomBarConfig.getVariantLayoutType());
+        assertEquals(0, bottomBarConfig.getButtonList().size());
+        assertNull(bottomBarConfig.getSpotlightId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void create_withEmptyList_singleDeckerWithRightButtons_hasCorrectBottomBarConfig() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1))
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(SINGLE_DECKER, bottomBarConfig.getVariantLayoutType());
+        assertEquals(0, bottomBarConfig.getButtonList().size());
+        assertNull(bottomBarConfig.getSpotlightId());
+    }
+
     private static Bitmap drawableToBitmap(Drawable drawable) {
         Bitmap bitmap =
                 Bitmap.createBitmap(
@@ -228,11 +496,24 @@ public class BottomBarConfigCreatorTest {
         return bitmap;
     }
 
-    private static void assertDefaultConfig(BottomBarConfig config) {
+    private static void assertDefaultConfig(
+            BottomBarConfig config, @GoogleBottomBarVariantLayoutType int layoutType) {
         assertNull(config.getSpotlightId());
-        assertEquals(3, config.getButtonList().size());
-        assertEquals(SAVE, config.getButtonList().get(0).getId());
-        assertEquals(PIH_BASIC, config.getButtonList().get(1).getId());
-        assertEquals(SHARE, config.getButtonList().get(2).getId());
+
+        if (layoutType == NO_VARIANT || layoutType == DOUBLE_DECKER) {
+            assertEquals(3, config.getButtonList().size());
+            assertEquals(SAVE, config.getButtonList().get(0).getId());
+            assertEquals(PIH_BASIC, config.getButtonList().get(1).getId());
+            assertEquals(SHARE, config.getButtonList().get(2).getId());
+        } else if (layoutType == SINGLE_DECKER_WITH_RIGHT_BUTTONS) {
+            assertEquals(1, config.getButtonList().size());
+            assertEquals(SHARE, config.getButtonList().get(0).getId());
+        } else if (layoutType == SINGLE_DECKER) {
+            assertEquals(0, config.getButtonList().size());
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Layout type with id %s is not tested.", layoutType));
+        }
+        assertEquals(config.getVariantLayoutType(), layoutType);
     }
 }

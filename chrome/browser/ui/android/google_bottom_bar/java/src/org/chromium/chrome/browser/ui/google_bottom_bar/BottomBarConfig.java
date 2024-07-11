@@ -22,6 +22,24 @@ import java.util.List;
  */
 class BottomBarConfig {
 
+    // LINT.IfChange
+    /** Defines the possible variant layout types for the Google Bottom Bar. */
+    @IntDef({
+        GoogleBottomBarVariantLayoutType.NO_VARIANT,
+        GoogleBottomBarVariantLayoutType.DOUBLE_DECKER,
+        GoogleBottomBarVariantLayoutType.SINGLE_DECKER,
+        GoogleBottomBarVariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface GoogleBottomBarVariantLayoutType {
+        int NO_VARIANT = 0;
+        int DOUBLE_DECKER = 1;
+        int SINGLE_DECKER = 2;
+        int SINGLE_DECKER_WITH_RIGHT_BUTTONS = 3;
+    }
+
+    // LINT.ThenChange(//chrome/browser/about_flags.cc)
+
     /**
      * Each button is encoded as: 1 - Page Insights Hub with basic icon 2 - Chrome Share 3 - Save 4
      * - Add notes 5 - Chrome Refresh 6 - Page Insights Hub with coloured icon 7 - Page Insights Hub
@@ -51,12 +69,17 @@ class BottomBarConfig {
         int MAX_BUTTON_ID = CUSTOM;
     }
 
+    private final @GoogleBottomBarVariantLayoutType int mVariantLayoutType;
     private final @Nullable @ButtonId Integer mSpotlightId;
     private final List<ButtonConfig> mButtonList;
 
-    BottomBarConfig(@Nullable @ButtonId Integer spotlightId, List<ButtonConfig> buttonList) {
+    BottomBarConfig(
+            @Nullable @ButtonId Integer spotlightId,
+            List<ButtonConfig> buttonList,
+            @GoogleBottomBarVariantLayoutType int variantLayoutType) {
         mSpotlightId = spotlightId;
         mButtonList = buttonList;
+        mVariantLayoutType = variantLayoutType;
     }
 
     /**
@@ -74,6 +97,14 @@ class BottomBarConfig {
      */
     List<ButtonConfig> getButtonList() {
         return mButtonList;
+    }
+
+    /**
+     * @return The variant layout type that should be used to display Google bottom bar.
+     */
+    @GoogleBottomBarVariantLayoutType
+    int getVariantLayoutType() {
+        return mVariantLayoutType;
     }
 
     /**
