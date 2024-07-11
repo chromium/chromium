@@ -968,12 +968,24 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   const WebStatePolicyDecider::ResponseInfo expected_response_info(
       /*for_main_frame=*/true);
+  if (@available(iOS 18, *)) {
+    // The timing of the navigation policy decision has changed in iOS 18, with
+    // additional asynchrony in WebKit, so the `DidStopLoading` call arrives
+    // before the navigation policy callback.
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
+
   EXPECT_CALL(*decider_, MockShouldAllowRequest(
                              _, RequestInfoMatch(expected_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
 
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  if (@available(iOS 18, *)) {
+    // On iOS 18, the `DidStopLoading` call already happened above.
+  } else {
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
+
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
 
   EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
