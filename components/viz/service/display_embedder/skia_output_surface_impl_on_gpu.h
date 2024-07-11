@@ -539,7 +539,7 @@ class SkiaOutputSurfaceImplOnGpu
   gfx::Size size_;
   // Only one of GLSurface of Presenter exists at the time.
   scoped_refptr<gl::GLSurface> gl_surface_;
-  raw_ptr<gl::Presenter> presenter_;
+  raw_ptr<gl::Presenter> presenter_ = nullptr;
   scoped_refptr<gpu::SharedContextState> context_state_;
   size_t max_resource_cache_bytes_ = 0u;
 
