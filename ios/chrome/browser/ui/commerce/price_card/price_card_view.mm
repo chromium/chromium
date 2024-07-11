@@ -39,14 +39,14 @@
 - (void)setupViews {
   UILabel* currentPriceLabel = [[UILabel alloc] init];
   self.translatesAutoresizingMaskIntoConstraints = NO;
-  self.backgroundColor = [UIColor colorNamed:kGreen50Color];
+  self.backgroundColor = [UIColor colorNamed:kStaticGreen50Color];
   self.layer.cornerRadius = kPriceCardCornerRadius;
 
   currentPriceLabel.translatesAutoresizingMaskIntoConstraints = NO;
   currentPriceLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  currentPriceLabel.textColor = [UIColor colorNamed:kGreen700Color];
-  currentPriceLabel.backgroundColor = [UIColor colorNamed:kGreen50Color];
+  currentPriceLabel.textColor = [UIColor colorNamed:kStaticGreen700Color];
+  currentPriceLabel.backgroundColor = [UIColor colorNamed:kStaticGreen50Color];
   currentPriceLabel.adjustsFontForContentSizeCategory = YES;
   _currentPriceLabel = currentPriceLabel;
 
@@ -57,7 +57,7 @@
   previousPriceLabel.textColor =
       [UIColor colorNamed:kPriceDropPreviousPriceTextColor];
   previousPriceLabel.adjustsFontForContentSizeCategory = YES;
-  previousPriceLabel.backgroundColor = [UIColor colorNamed:kGreen50Color];
+  previousPriceLabel.backgroundColor = [UIColor colorNamed:kStaticGreen50Color];
   _previousPriceLabel = previousPriceLabel;
 
   [self addSubview:currentPriceLabel];

@@ -15,6 +15,24 @@
           "green" : "0x80"
         }
       }
+    },
+    {
+      "idiom" : "universal",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "color" : {
+        "color-space" : "display-p3",
+        "components" : {
+          "alpha" : "1.000",
+          "red" : "0xA8",
+          "green" : "0xDA",
+          "blue" : "0xB5"
+        }
+      }
     }
   ]
 }

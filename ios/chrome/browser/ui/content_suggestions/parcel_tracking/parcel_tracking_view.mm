@@ -325,7 +325,7 @@ BOOL isInProgressState(ParcelState state) {
       [_secondStatusBar configureAsError:NO lighterTone:YES];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kLabelCreated:
       _titleLabel.text = l10n_util::GetNSString(
@@ -334,7 +334,7 @@ BOOL isInProgressState(ParcelState state) {
       [_secondStatusBar configureAsError:NO lighterTone:YES];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kFinished: {
       if (!estimatedDeliveryTime.has_value()) {
@@ -359,7 +359,7 @@ BOOL isInProgressState(ParcelState state) {
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:NO];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     }
     case ParcelState::kAtPickupLocation:
@@ -369,7 +369,7 @@ BOOL isInProgressState(ParcelState state) {
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:NO];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kPickedUp:
     case ParcelState::kHandedOff:
@@ -381,7 +381,7 @@ BOOL isInProgressState(ParcelState state) {
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kOutForDelivery:
       _titleLabel.text = l10n_util::GetNSStringF(
@@ -392,7 +392,7 @@ BOOL isInProgressState(ParcelState state) {
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kDeliveryFailed:
       _titleLabel.text = l10n_util::GetNSString(
