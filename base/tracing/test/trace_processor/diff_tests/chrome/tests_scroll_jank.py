@@ -26,7 +26,11 @@ class ChromeScrollJankStdlib(TestSuite):
         """,
         out=Path('scroll_jank_v3.out'))
 
-  def test_chrome_frames_with_missed_vsyncs_new(self):
+  # https://crrev.com/c/5634125 introduces new *ToPresentation slices,
+  # and a new test trace file was added that contains them.
+  # TODO(b/341047059): after M128 is rolled out to stable,
+  # the test using the old trace can be removed.
+  def test_chrome_frames_with_missed_vsyncs_m128(self):
     return DiffTestBlueprint(
         trace=DataPath('chrome_input_with_frame_view_new.pftrace'),
         query="""

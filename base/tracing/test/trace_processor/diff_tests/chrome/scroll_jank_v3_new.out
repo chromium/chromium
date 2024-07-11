@@ -1,0 +1,9 @@
+"cause_of_jank","sub_cause_of_jank","delay_since_last_frame","vsync_interval"
+"BrowserMainToRendererCompositor","[NULL]",22.219000,11.111000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.242000,11.111000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.194000,11.111000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.223000,11.111000
+"SubmitCompositorFrameToPresentationCompositorFrame","SwapEndToPresentationCompositorFrame",22.222000,11.111000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",33.326000,11.111000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.220000,11.111000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",33.324000,11.111000

@@ -2329,7 +2329,7 @@ deps = {
         'size_bytes': 1967821,
         'generation': 1719520814352733,
         'output_file': 'chrome_input_with_frame_view_new.pftrace'
-      }
+      },
     ],
     'dep_type': 'gcs'
   },
