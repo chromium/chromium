@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.DOUBLE_DECKER;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.NO_VARIANT;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER;
@@ -14,10 +15,14 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType;
@@ -37,6 +42,8 @@ public class BottomBarConfigCreator {
     private static final String TAG = "GoogleBottomBar";
     private static final String BUTTON_LIST_PARAM = "google_bottom_bar_button_list";
     private static final String VARIANT_LAYOUT_PARAM = "google_bottom_bar_variant_layout";
+    private static final String IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED_PARAM =
+            "google_bottom_bar_variant_is_google_default_search_engine_check_enabled";
 
     private static final Map<Integer, Integer> CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP =
             Map.of(
@@ -53,7 +60,7 @@ public class BottomBarConfigCreator {
                     106,
                     ButtonId.SEARCH);
     private static final List<Integer> DEFAULT_BUTTON_ID_LIST =
-            List.of(ButtonId.SAVE, ButtonId.PIH_BASIC, ButtonId.SHARE);
+            List.of(ButtonId.SAVE, ButtonId.SHARE);
     private static final List<Integer> DEFAULT_RIGHT_BUTTON_ID_LIST = List.of(ButtonId.SHARE);
 
     private final Context mContext;
@@ -65,6 +72,17 @@ public class BottomBarConfigCreator {
     public static final StringCachedFieldTrialParameter GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST =
             ChromeFeatureList.newStringCachedFieldTrialParameter(
                     ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM, "");
+
+    /**
+     * A cached boolean parameter to decide whether to check if Google is Chrome's default search
+     * engine.
+     */
+    public static final BooleanCachedFieldTrialParameter
+            IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED =
+                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                            ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
+                            IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED_PARAM,
+                            false);
 
     /**
      * A cached parameter representing the Google Bottom Bar layout variants value based on
@@ -98,6 +116,42 @@ public class BottomBarConfigCreator {
     }
 
     /**
+     * Caches whether the Chrome's default search engine is Google in Chrome Shared Preferences.
+     *
+     * <p>This method is designed to be called after profile is available. It checks if Chrome's default
+     * search engine for the given profile is Google and stores this information in Chrome Shared
+     * Preferences for later retrieval.
+     *
+     * <p>This caching mechanism is used to optimize UI decision in {@link
+     * BottomBarConfig#getLayoutType).
+     *
+     * @param originalProfile The profile to check. This can be null, in which case the method does
+     *     nothing.
+     */
+    static void initDefaultSearchEngine(Profile originalProfile) {
+        if (isGoogleBottomBarVariantLayoutsEnabled()
+                && shouldPerformIsGoogleDefaultSearchEngineCheck()
+                && originalProfile != null) {
+            // Must be called on UI thread
+            boolean isDefaultSearchEngineGoogle =
+                    TemplateUrlServiceFactory.getForProfile(originalProfile)
+                            .isDefaultSearchEngineGoogle();
+            boolean storedValue =
+                    ChromeSharedPreferences.getInstance()
+                            .readBoolean(
+                                    IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE,
+                                    /* defaultValue= */ false);
+
+            if (storedValue != isDefaultSearchEngineGoogle) {
+                ChromeSharedPreferences.getInstance()
+                        .writeBoolean(
+                                IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE,
+                                isDefaultSearchEngineGoogle);
+            }
+        }
+    }
+
+    /**
      * @param intentParams that optionally contains:
      *     <p>Integer list with the following representation [5,1,2,3,4,5], where the first item
      *     represents the spotlight button and the rest of the list the order of the buttons in the
@@ -111,10 +165,31 @@ public class BottomBarConfigCreator {
             GoogleBottomBarIntentParams intentParams,
             List<CustomButtonParams> customButtonParamsList) {
 
-        return create(
-                getEncodedLayoutList(intentParams),
-                customButtonParamsList,
-                getLayoutType(intentParams));
+        int layoutType = getLayoutType(intentParams);
+        List<Integer> encodedLayoutList = getEncodedLayoutList(intentParams);
+
+        if (layoutType != NO_VARIANT && !isGoogleBottomBarVariantLayoutsSupported()) {
+            if (layoutType == SINGLE_DECKER || layoutType == SINGLE_DECKER_WITH_RIGHT_BUTTONS) {
+                if (encodedLayoutList.size() < 3) {
+
+                    Log.v(
+                            TAG,
+                            "Can't proceed with configured variant layout: %s as Google is not"
+                                    + " default search engine. Fallback to default version of"
+                                    + " GoogleBottomBar with default button order.",
+                            layoutType);
+                    return createDefaultConfig(customButtonParamsList, NO_VARIANT);
+                }
+            }
+            Log.v(
+                    TAG,
+                    "Can't proceed with configured variant layout: %s as Google is not default"
+                            + " search engine. Fallback to default version of GoogleBottomBar while"
+                            + " respecting custom button order.",
+                    layoutType);
+            return create(encodedLayoutList, customButtonParamsList, NO_VARIANT);
+        }
+        return create(encodedLayoutList, customButtonParamsList, layoutType);
     }
 
     BottomBarConfigCreator(Context context) {
@@ -411,6 +486,24 @@ public class BottomBarConfigCreator {
 
     private static boolean isGoogleBottomBarVariantLayoutsEnabled() {
         return ChromeFeatureList.sCctGoogleBottomBarVariantLayouts.isEnabled();
+    }
+
+    private static boolean shouldPerformIsGoogleDefaultSearchEngineCheck() {
+        return IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.getValue();
+    }
+
+    private static boolean isGoogleBottomBarVariantLayoutsSupported() {
+        if (shouldPerformIsGoogleDefaultSearchEngineCheck()) {
+            boolean isSupported =
+                    isGoogleBottomBarVariantLayoutsEnabled()
+                            && ChromeSharedPreferences.getInstance()
+                                    .readBoolean(
+                                            IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE,
+                                            /* defaultValue= */ false);
+            Log.v(TAG, "isGoogleBottomBarVariantLayoutsSupported: %s", isSupported);
+            return isSupported;
+        }
+        return isGoogleBottomBarVariantLayoutsEnabled();
     }
 
     private static List<Integer> getEncodedListFromString(String encodedConfig) {

@@ -97,6 +97,7 @@ public class ChromeCachedFlags {
                         DseNewTabUrlManager.SWAP_OUT_NTP,
                         BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST,
                         BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE,
+                        BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED,
                         HubFieldTrial.PANE_SWITCHER_USES_TEXT,
                         HubFieldTrial.SUPPORTS_OTHER_TABS,
                         HubFieldTrial.SUPPORTS_SEARCH,
