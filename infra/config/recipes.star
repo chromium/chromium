@@ -197,6 +197,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium_rr/test_launcher",
+    bootstrappable = POLYMORPHIC,
+)
+
+build_recipe(
     name = "recipe:chromium_3pp",
 )
 
