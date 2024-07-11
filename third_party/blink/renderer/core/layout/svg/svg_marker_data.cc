@@ -17,11 +17,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/svg/svg_marker_data.h"
 
 #include "base/auto_reset.h"
@@ -46,8 +41,8 @@ void SVGMarkerDataBuilder::Build(const Path& path) {
 }
 
 void SVGMarkerDataBuilder::UpdateFromPathElement(void* info,
-                                                 const PathElement* element) {
-  static_cast<SVGMarkerDataBuilder*>(info)->UpdateFromPathElement(*element);
+                                                 const PathElement& element) {
+  static_cast<SVGMarkerDataBuilder*>(info)->UpdateFromPathElement(element);
 }
 
 namespace {
@@ -126,31 +121,35 @@ void SVGMarkerDataBuilder::Build(const SVGPathByteStream& stream) {
 }
 
 void SVGMarkerDataBuilder::EmitSegment(const PathSegmentData& segment) {
-  PathElement element;
-  gfx::PointF points[3];
-  element.points = points;
+  PathElementType type;
+  std::array<gfx::PointF, 3> points;
+  size_t count;
   switch (segment.command) {
     case kPathSegClosePath:
-      element.type = kPathElementCloseSubpath;
+      type = kPathElementCloseSubpath;
+      count = 0;
       break;
     case kPathSegMoveToAbs:
-      element.type = kPathElementMoveToPoint;
-      element.points[0] = segment.target_point;
+      type = kPathElementMoveToPoint;
+      count = 1;
+      points[0] = segment.target_point;
       break;
     case kPathSegLineToAbs:
-      element.type = kPathElementAddLineToPoint;
-      element.points[0] = segment.target_point;
+      type = kPathElementAddLineToPoint;
+      count = 1;
+      points[0] = segment.target_point;
       break;
     case kPathSegCurveToCubicAbs:
-      element.type = kPathElementAddCurveToPoint;
-      element.points[0] = segment.point1;
-      element.points[1] = segment.point2;
-      element.points[2] = segment.target_point;
+      type = kPathElementAddCurveToPoint;
+      count = 3;
+      points[0] = segment.point1;
+      points[1] = segment.point2;
+      points[2] = segment.target_point;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  UpdateFromPathElement(element);
+  UpdateFromPathElement({type, base::span(points).first(count)});
 }
 
 double SVGMarkerDataBuilder::CurrentAngle(AngleType type) const {
@@ -215,7 +214,7 @@ SVGMarkerDataBuilder::SegmentData
 SVGMarkerDataBuilder::ExtractPathElementFeatures(
     const PathElement& element) const {
   SegmentData data;
-  const gfx::PointF* points = element.points;
+  const base::span<const gfx::PointF> points = element.points;
   switch (element.type) {
     case kPathElementAddCurveToPoint:
       data.position = points[2];

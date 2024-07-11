@@ -27,11 +27,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/path.h"
 
 #include <math.h>
@@ -162,65 +157,70 @@ gfx::RectF Path::StrokeBoundingRect(const StrokeData& stroke_data) const {
       StrokePath(stroke_data, kStrokePrecision).computeTightBounds());
 }
 
-static gfx::PointF* ConvertPathPoints(gfx::PointF dst[],
-                                      const SkPoint src[],
-                                      int count) {
-  for (int i = 0; i < count; i++) {
-    dst[i].set_x(SkScalarToFloat(src[i].fX));
-    dst[i].set_y(SkScalarToFloat(src[i].fY));
+static base::span<gfx::PointF> ConvertPathPoints(
+    std::array<gfx::PointF, 3>& dst,
+    base::span<const SkPoint> src) {
+  for (size_t i = 0; i < src.size(); ++i) {
+    const SkPoint& src_point = src[i];
+    dst[i].set_x(SkScalarToFloat(src_point.fX));
+    dst[i].set_y(SkScalarToFloat(src_point.fY));
   }
-  return dst;
+  return base::span(dst).first(src.size());
 }
 
 void Path::Apply(void* info, PathApplierFunction function) const {
   SkPath::RawIter iter(path_);
-  SkPoint pts[4];
-  gfx::PointF path_points[3];
+  std::array<SkPoint, 4> pts;
+  std::array<gfx::PointF, 3> path_points;
   PathElement path_element;
 
   for (;;) {
-    switch (iter.next(pts)) {
+    switch (iter.next(pts.data())) {
       case SkPath::kMove_Verb:
         path_element.type = kPathElementMoveToPoint;
-        path_element.points = ConvertPathPoints(path_points, &pts[0], 1);
+        path_element.points =
+            ConvertPathPoints(path_points, base::span(pts).first(1u));
         break;
       case SkPath::kLine_Verb:
         path_element.type = kPathElementAddLineToPoint;
-        path_element.points = ConvertPathPoints(path_points, &pts[1], 1);
+        path_element.points =
+            ConvertPathPoints(path_points, base::span(pts).subspan(1, 1));
         break;
       case SkPath::kQuad_Verb:
         path_element.type = kPathElementAddQuadCurveToPoint;
-        path_element.points = ConvertPathPoints(path_points, &pts[1], 2);
+        path_element.points =
+            ConvertPathPoints(path_points, base::span(pts).subspan(1, 2));
         break;
       case SkPath::kCubic_Verb:
         path_element.type = kPathElementAddCurveToPoint;
-        path_element.points = ConvertPathPoints(path_points, &pts[1], 3);
+        path_element.points =
+            ConvertPathPoints(path_points, base::span(pts).subspan(1, 3));
         break;
       case SkPath::kConic_Verb: {
         // Approximate with quads.  Use two for now, increase if more precision
         // is needed.
         const int kPow2 = 1;
         const unsigned kQuadCount = 1 << kPow2;
-        SkPoint quads[1 + 2 * kQuadCount];
+        std::array<SkPoint, 1 + 2 * kQuadCount> quads;
         SkPath::ConvertConicToQuads(pts[0], pts[1], pts[2], iter.conicWeight(),
-                                    quads, kPow2);
+                                    quads.data(), kPow2);
 
         path_element.type = kPathElementAddQuadCurveToPoint;
         for (unsigned i = 0; i < kQuadCount; ++i) {
-          path_element.points =
-              ConvertPathPoints(path_points, &quads[1 + 2 * i], 2);
-          function(info, &path_element);
+          path_element.points = ConvertPathPoints(
+              path_points, base::span(quads).subspan(1 + 2 * i, 2));
+          function(info, path_element);
         }
         continue;
       }
       case SkPath::kClose_Verb:
         path_element.type = kPathElementCloseSubpath;
-        path_element.points = ConvertPathPoints(path_points, nullptr, 0);
+        path_element.points = ConvertPathPoints(path_points, {});
         break;
       case SkPath::kDone_Verb:
         return;
     }
-    function(info, &path_element);
+    function(info, path_element);
   }
 }
 
