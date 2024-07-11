@@ -56,6 +56,9 @@ public interface AccountSelectionComponent {
          * <p>For use by code running in the CCT popup.
          */
         WebContents getWebContents();
+
+        /** Called to associate the popup with the delegate. */
+        void setPopupComponent(AccountSelectionComponent popupComponent);
     }
 
     /**
@@ -124,7 +127,10 @@ public interface AccountSelectionComponent {
             @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error);
 
-    /** Closes the outstanding bottom sheet. */
+    /**
+     * Closes the outstanding bottom sheet or the popup, depending on what this object corresponds
+     * to.
+     */
     void close();
 
     /** Gets the sheet's title. */
@@ -159,4 +165,7 @@ public interface AccountSelectionComponent {
      * RP, i.e. the WebContents for the object that showModalDialog was called on.
      */
     WebContents getRpWebContents();
+
+    /** Called to associate the popup with the delegate. */
+    void setPopupComponent(AccountSelectionComponent popupComponent);
 }

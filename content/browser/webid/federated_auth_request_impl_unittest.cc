@@ -6117,21 +6117,10 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowDismissLoadingUI) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {
-#if BUILDFLAG(IS_ANDROID)
-  auto dialog_controller =
-      std::make_unique<TestDialogController>(kConfigurationValid);
-  TestDialogController* dialog_controller_ptr = dialog_controller.get();
-  EXPECT_CALL(*dialog_controller_ptr, CloseModalDialog()).Times(1);
-  federated_auth_request_impl_->SetDialogControllerForTests(
-      std::move(dialog_controller));
-  federated_auth_request_impl_->CloseModalDialogView();
-#else
-  // On desktop, test that IdentityRegistry is notified when modal dialog view
-  // is closed.
+  // Test that IdentityRegistry is notified when modal dialog view is closed.
   EXPECT_FALSE(test_identity_registry_->notified_);
   federated_auth_request_impl_->CloseModalDialogView();
   EXPECT_TRUE(test_identity_registry_->notified_);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(FederatedAuthRequestImplTest, ShouldNotMediateAuthz) {

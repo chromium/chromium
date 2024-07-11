@@ -1129,15 +1129,6 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
 
   bool accepted =
       identity_registry_->NotifyResolve(origin(), account_id, token);
-#if BUILDFLAG(IS_ANDROID)
-  if (accepted) {
-    if (!request_dialog_controller_) {
-      request_dialog_controller_ = CreateDialogController();
-      CHECK(request_dialog_controller_);
-    }
-    request_dialog_controller_->CloseModalDialog();
-  }
-#endif
   std::move(callback).Run(accepted);
 }
 
@@ -1973,15 +1964,12 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
 
 void FederatedAuthRequestImpl::CloseModalDialogView() {
 #if BUILDFLAG(IS_ANDROID)
-  // On android, invoke OnClose on the modal dialog, as the UI code needs to
-  // then notify the opener.
-  OnClose();
-#else
-  // On desktop, invoke NotifyClose on the opener.
+  SetupIdentityRegistryFromPopup();
+#endif
+  // Invoke OnClose on the opener.
   if (identity_registry_) {
     identity_registry_->NotifyClose(origin());
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
@@ -2982,13 +2970,6 @@ void FederatedAuthRequestImpl::SetDialogControllerForTests(
 }
 
 void FederatedAuthRequestImpl::OnClose() {
-#if BUILDFLAG(IS_ANDROID)
-  // We invoke this method on the modal dialog on Android, so we may need to
-  // create the controller at this point.
-  if (!request_dialog_controller_) {
-    request_dialog_controller_ = CreateDialogController();
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   CHECK(request_dialog_controller_);
   request_dialog_controller_->CloseModalDialog();
 

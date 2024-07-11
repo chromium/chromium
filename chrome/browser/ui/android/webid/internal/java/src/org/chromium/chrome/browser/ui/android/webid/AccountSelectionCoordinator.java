@@ -81,6 +81,8 @@ public class AccountSelectionCoordinator
     private AccountSelectionComponent.Delegate mDelegate;
     private AccountSelectionMediator mMediator;
     private RecyclerView mSheetItemListView;
+    private WeakReference<AccountSelectionComponent> mPopupComponent;
+    private WeakReference<AccountSelectionComponent.Delegate> mOpenerDelegate;
 
     public AccountSelectionCoordinator(
             Tab tab,
@@ -129,6 +131,16 @@ public class AccountSelectionCoordinator
                         imageFetcher,
                         avatarSize,
                         rpMode);
+
+        // If this object is corresponding to the custom tab opened by showModalDialog, this
+        // is the first chance to associate it with the opener, so do so now.
+        int fedcmId = getFedCmId();
+        if (fedcmId == -1) return;
+        mOpenerDelegate = sFedCMDelegateMap.remove(fedcmId);
+        if (mOpenerDelegate == null || mOpenerDelegate.get() == null) {
+            return;
+        }
+        mOpenerDelegate.get().setPopupComponent(this);
     }
 
     static View setupContentView(
@@ -229,7 +241,16 @@ public class AccountSelectionCoordinator
 
     @Override
     public void close() {
-        mMediator.close();
+        if (mOpenerDelegate == null) {
+            // Close the bottom sheet.
+            mMediator.close();
+            return;
+        }
+        // This is the popup.
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity != null) {
+            activity.finish();
+        }
     }
 
     @Override
@@ -286,19 +307,11 @@ public class AccountSelectionCoordinator
 
     @Override
     public void closeModalDialog() {
-        // Note that this method is invoked on the object corresponding to the CCT. It
-        // will notify the opener that it is being closed and close itself.
-        int fedcmId = getFedCmId();
-        // Close the current tab by finishing the activity, if we know it was initiated
-        // by the FedCM API.
-        if (fedcmId == -1) return;
-        Activity activity = mWindowAndroid.getActivity().get();
-        activity.finish();
-        WeakReference<AccountSelectionComponent.Delegate> delegate =
-                sFedCMDelegateMap.remove(fedcmId);
-        if (delegate != null && delegate.get() != null) {
-            delegate.get().onModalDialogClosed();
+        if (mPopupComponent == null || mPopupComponent.get() == null) {
+            return;
         }
+        mPopupComponent.get().close();
+        mDelegate.onModalDialogClosed();
     }
 
     @Override
@@ -317,13 +330,15 @@ public class AccountSelectionCoordinator
 
     @Override
     public WebContents getRpWebContents() {
-        int fedcmId = getFedCmId();
-        if (fedcmId == -1) return null;
-        WeakReference<AccountSelectionComponent.Delegate> delegate = sFedCMDelegateMap.get(fedcmId);
-        if (delegate == null || delegate.get() == null) {
+        if (mOpenerDelegate == null || mOpenerDelegate.get() == null) {
             return null;
         }
-        return delegate.get().getWebContents();
+        return mOpenerDelegate.get().getWebContents();
+    }
+
+    @Override
+    public void setPopupComponent(AccountSelectionComponent component) {
+        mPopupComponent = new WeakReference<AccountSelectionComponent>(component);
     }
 
     // ActivityStateObserver

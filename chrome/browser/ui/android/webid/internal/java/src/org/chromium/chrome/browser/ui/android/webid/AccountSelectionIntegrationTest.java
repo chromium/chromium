@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -285,6 +286,14 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
     @MediumTest
     public void testShowAndCloseModalDialog() {
         when(mMockBridge.getWebContents()).thenReturn(mAccountSelection.getWebContents());
+        doAnswer(
+                        i -> {
+                            mAccountSelection.setPopupComponent(
+                                    (AccountSelectionComponent) i.getArguments()[0]);
+                            return null;
+                        })
+                .when(mMockBridge)
+                .setPopupComponent(any());
         CustomTabActivity activity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         CustomTabActivity.class,
@@ -319,7 +328,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             customTabComponent.getWebContents(), Matchers.notNullValue());
                     Criteria.checkThat(
                             customTabComponent.getRpWebContents(), Matchers.notNullValue());
-                    customTabComponent.closeModalDialog();
+                    mAccountSelection.closeModalDialog();
                 });
         verify(mCustomTabMockBridge, never()).getWebContents();
     }

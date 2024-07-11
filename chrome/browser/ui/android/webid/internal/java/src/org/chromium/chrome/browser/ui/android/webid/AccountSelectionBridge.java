@@ -265,6 +265,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         return mAccountSelectionComponent.getWebContents();
     }
 
+    @Override
+    public void setPopupComponent(AccountSelectionComponent popupComponent) {
+        mAccountSelectionComponent.setPopupComponent(popupComponent);
+    }
+
     @NativeMethods
     interface Natives {
         void onAccountSelected(

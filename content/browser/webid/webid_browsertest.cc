@@ -1138,24 +1138,8 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdPClose) {
         }) ()
     )";
 
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, IdentityProvider.close() should invoke CloseModalDialog() on
-  // the dialog controller.
-  auto controller = std::make_unique<MockIdentityRequestDialogController>();
-  base::RunLoop run_loop;
-  EXPECT_CALL(*controller, CloseModalDialog).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
-  test_browser_client_->SetIdentityRequestDialogController(
-      std::move(controller));
-
-  // Run the script.
-  EXPECT_EQ(true, EvalJs(shell(), script));
-  run_loop.Run();
-#else
-  // On desktop, IdentityProvider.close() should invoke NotifyClose() on the
-  // delegate set on the identity registry. Check that modal dialog is not
-  // closed.
+  // IdentityProvider.close() should invoke NotifyClose() on the delegate set
+  // on the identity registry. Check that modal dialog is not closed.
   EXPECT_FALSE(test_modal_dialog_view_delegate_->closed_);
 
   // Run the script.
@@ -1168,7 +1152,6 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdPClose) {
 
   // Check that modal dialog is closed.
   EXPECT_TRUE(test_modal_dialog_view_delegate_->closed_);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
@@ -1597,21 +1580,9 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
   std::string token = "--fake-token-from-pop-up-window--";
 
   base::RunLoop run_loop2;
-#if BUILDFLAG(IS_ANDROID)
-  mock = std::make_unique<
-      testing::NiceMock<MockIdentityRequestDialogController>>();
-  // On Android, IdentityProvider.resolve() should invoke CloseModalDialog() on
-  // the popup's dialog controller.
-  EXPECT_CALL(*mock, CloseModalDialog).WillOnce([&run_loop2]() {
-    run_loop2.Quit();
-  });
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
-#else
-  // On desktop, CloseModalDialog gets called on the RP's dialog controller.
   EXPECT_CALL(*controller, CloseModalDialog).WillOnce([&run_loop2]() {
     run_loop2.Quit();
   });
-#endif
 
   // Resolve the hanging token request by notifying the registry.
   EXPECT_TRUE(content::ExecJs(
