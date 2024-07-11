@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -57,7 +58,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/web_state.h"
@@ -88,7 +88,8 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       // renderer.
       log_manager_(LogManager::Create(
           AutofillLogRouterFactory::GetForBrowserState(browser_state),
-          base::RepeatingClosure())) {}
+          base::RepeatingClosure())),
+      ablation_study_(browser_state->GetPrefs()) {}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
@@ -381,6 +382,10 @@ ChromeAutofillClientIOS::GetCurrentFormInteractionsFlowId() {
 
 LogManager* ChromeAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
+}
+
+const AutofillAblationStudy& ChromeAutofillClientIOS::GetAblationStudy() const {
+  return ablation_study_;
 }
 
 bool ChromeAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {

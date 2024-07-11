@@ -8,15 +8,20 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 class GURL;
+class PrefService;
 namespace base {
 class Time;
 }
 
 namespace autofill {
 
-// The ablation group of a specific [site * day * browsing session].
+// Number of days for which the ablation behavior stays constant for a client.
+inline constexpr int kAblationWindowInDays = 14;
+
+// The ablation group of a specific [site * 14 day window * seed].
 enum class AblationGroup {
   // Autofill (the drop down or chip in the keyboard accessory) is disabled.
   kAblation,
@@ -44,16 +49,27 @@ uint64_t GetAblationHash(const std::string& seed,
 
 // A class to control the ablation study. The decision whether a given form
 // is subject to an ablated experience is pseudorandomly derived from the
-// combination of [site * browsing session * day]: Different sites may have
-// ablation configurations. Restarting the browser or waiting for the next day
-// may lead to different ablation configurations as well.
+// combination of [site * 14 day window * seed]: Different sites may have
+// ablation configurations. The ablation state changes every 14 days.
+// Different users may have different ablation configurations.
 // The ablation is controlled by features::kAutofillEnableAblationStudy.
 class AutofillAblationStudy {
  public:
-  AutofillAblationStudy();
+  // The `seed` controls diversion between clients. If `seed` is empty, clients
+  // cannot participate in the ablation study and end-up in
+  // AblationGroup::kDefault.
+  explicit AutofillAblationStudy(std::string_view seed);
+  // Constructs an ablation study with entropy stored in a preference in the
+  // PrefService. `pref_service` may be a nullptr in which case, the study
+  // always returns the `AblationGroup::kDefault`.
+  explicit AutofillAblationStudy(PrefService* pref_service);
   ~AutofillAblationStudy();
   AutofillAblationStudy(const AutofillAblationStudy&) = delete;
   AutofillAblationStudy& operator=(const AutofillAblationStudy&) = delete;
+
+  // Returns an `AutofillAblationStudy` that always returns
+  // `AblationGroup::kDefault`.
+  static const AutofillAblationStudy& disabled_study();
 
   // Returns for a site and form type, whether autofill should give the ablated
   // experience.
@@ -65,8 +81,9 @@ class AutofillAblationStudy {
                                      base::Time now,
                                      uint32_t ablation_weight_per_mille) const;
 
-  // Random seed so that different users (and browsing experiences) don't have
-  // correlated behavior.
+  // Seed so that different users (and browsing experiences) don't have
+  // correlated behavior. If empty, clients cannot participate in the ablation
+  // study.
   const std::string seed_;
 };
 

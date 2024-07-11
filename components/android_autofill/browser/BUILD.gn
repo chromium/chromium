@@ -145,6 +145,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "android_autofill_client_unittest.cc",
     "android_autofill_provider_unittest.cc",
     "form_data_android_unittest.cc",
     "form_event_logger_weblayer_android_unittest.cc",

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_CHROME_AUTOFILL_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -164,6 +166,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
                             bool is_refill) override;
   bool IsContextSecure() const override;
   LogManager* GetLogManager() const override;
+  const AutofillAblationStudy& GetAblationStudy() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
@@ -241,6 +244,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       autofill_field_promo_controller_manual_fallback_;
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;
+  const AutofillAblationStudy ablation_study_;
   base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
 };
 

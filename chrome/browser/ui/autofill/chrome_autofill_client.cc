@@ -744,6 +744,10 @@ LogManager* ChromeAutofillClient::GetLogManager() const {
   return log_manager_.get();
 }
 
+const AutofillAblationStudy& ChromeAutofillClient::GetAblationStudy() const {
+  return ablation_study_;
+}
+
 FormInteractionsFlowId
 ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
   constexpr base::TimeDelta max_flow_time = base::Minutes(20);
@@ -812,7 +816,10 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
           // renderer.
           LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
                                  web_contents->GetBrowserContext()),
-                             base::NullCallback())) {
+                             base::NullCallback())),
+      ablation_study_(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->GetPrefs()) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();

@@ -18,6 +18,7 @@
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -365,6 +366,11 @@ class TestAutofillClientTemplate : public T {
   }
 
   LogManager* GetLogManager() const override { return log_manager_.get(); }
+
+  const AutofillAblationStudy& GetAblationStudy() const override {
+    static const AutofillAblationStudy default_ablation_study("seed");
+    return default_ablation_study;
+  }
 
   bool ShouldFormatForLargeKeyboardAccessory() const override {
     return format_for_large_keyboard_accessory_;

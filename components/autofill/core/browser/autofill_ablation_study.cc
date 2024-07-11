@@ -4,17 +4,23 @@
 
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 
+#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/hash/md5.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/no_destructor.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -29,16 +35,29 @@ using ::autofill::features::test::kAutofillShowTypePredictions;
 
 namespace {
 
+// Number of bytes that we use to randomly seed the MD5Sum.
+constexpr size_t kSeedLengthInBytes = 8;
+
 // Converts the 8-byte prefix of an MD5 hash into a uint64_t value.
 inline uint64_t DigestToUInt64(const base::MD5Digest& digest) {
   return base::numerics::U64FromBigEndian(base::span(digest.a).first<8u>());
 }
 
-}  // namespace
+// Returns the ablation seed from prefs and creates one if that has not happened
+// before.
+std::string GetSeed(PrefService* pref_service) {
+  if (!pref_service) {
+    return std::string();
+  }
+  if (!pref_service->HasPrefPath(autofill::prefs::kAutofillAblationSeedPref)) {
+    pref_service->SetString(
+        autofill::prefs::kAutofillAblationSeedPref,
+        base::Base64Encode(base::RandBytesAsVector(kSeedLengthInBytes)));
+  }
+  return pref_service->GetString(autofill::prefs::kAutofillAblationSeedPref);
+}
 
-// Number of bytes that we use to randomly seed the MD5Sum. This seed is stable
-// for the life time of the AutofillAblationStudy.
-constexpr size_t kSeedLengthInBytes = 8;
+}  // namespace
 
 // Returns the number of days since Windows epoch but aligns timezones so that
 // the first day starts at midnight in the local timezone (ignoring daylight
@@ -47,12 +66,16 @@ int DaysSinceLocalWindowsEpoch(base::Time now) {
   base::TimeDelta delta = now.ToDeltaSinceWindowsEpoch();
 
   // Windows Epoch coincides with 1601-01-01 00:00:00 UTC.
-  // If on 1601-01-01 some settler on the East Cost of North America (UTC+6)
+  // If on 1601-01-01 some settler on the East Cost of North America (UTC+5)
   // turned on their computer at midnight, their base::Time::now() was
-  // 1601-01-01 00:00:00 UTC+06, i.e. 6 * 60 * 60 seconds after UTC midnight but
+  // 1601-01-01 00:00:00 UTC+05, i.e. 6 * 60 * 60 seconds after UTC midnight but
   // 0 seconds after local midnight. For that reason, we should decrease delta
-  // by the timeoffset of the timezone.
-  std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
+  // by the timeoffset of the timezone to virtually strip of the timezone.
+  // In other words, 2024-06-27 10:00:00 ETC would be mapped to
+  // 2024-06-27 10:00:00 UTC and all calculation would happen with that value so
+  // that we stay in UTC. This way the day window aligns with midnights.
+  std::unique_ptr<icu::TimeZone> zone =
+      base::WrapUnique(icu::TimeZone::createDefault());
 
   // We don't take daylight saving into account. The complexity is not worth it.
   int32_t raw_offset_in_ms = zone->getRawOffset();
@@ -89,13 +112,11 @@ uint64_t GetAblationHash(const std::string& seed,
   url::Origin origin = url::Origin::Create(url);
   base::MD5Update(&ctx, origin.Serialize());
 
-  // Incorporate the date into MD5Sum. This ensures that the behavior can change
-  // from one day to another but stays the same for the day. Daylight saving
-  // time is not considered. This means that a day may wrap at 11pm.
+  // Incorporate the date into MD5Sum. This ensures that the behavior stays the
+  // same during a `kAblationWindowInDays` period but changes afterwards.
   int days_since_epoch = DaysSinceLocalWindowsEpoch(now);
-  std::string serialized_days_since_epoch =
-      base::NumberToString(days_since_epoch);
-  base::MD5Update(&ctx, serialized_days_since_epoch);
+  int day_window = days_since_epoch / kAblationWindowInDays;
+  base::MD5Update(&ctx, base::NumberToString(day_window));
 
   // Derive 64 bit hash.
   base::MD5Digest digest;
@@ -103,10 +124,18 @@ uint64_t GetAblationHash(const std::string& seed,
   return DigestToUInt64(digest);
 }
 
-AutofillAblationStudy::AutofillAblationStudy()
-    : seed_(base::RandBytesAsString(kSeedLengthInBytes)) {}
-
+AutofillAblationStudy::AutofillAblationStudy(std::string_view seed)
+    : seed_(seed) {}
+AutofillAblationStudy::AutofillAblationStudy(PrefService* pref_service)
+    : seed_(GetSeed(pref_service)) {}
 AutofillAblationStudy::~AutofillAblationStudy() = default;
+
+// static
+const AutofillAblationStudy& AutofillAblationStudy::disabled_study() {
+  // The empty seed creates a disabled ablation study.
+  static base::NoDestructor<AutofillAblationStudy> ablation_study{""};
+  return *ablation_study;
+}
 
 AblationGroup AutofillAblationStudy::GetAblationGroup(
     const GURL& url,
@@ -150,6 +179,9 @@ AblationGroup AutofillAblationStudy::GetAblationGroupImpl(
     const GURL& url,
     base::Time now,
     uint32_t ablation_weight_per_mille) const {
+  if (seed_.empty()) {
+    return AblationGroup::kDefault;
+  }
   uint64_t hash = GetAblationHash(seed_, url, now) % 1000;
   if (hash < ablation_weight_per_mille)
     return AblationGroup::kAblation;

@@ -174,20 +174,24 @@ TEST_F(AutofillAblationStudyTestInUTC, GetAblationHash_DependsOnDay) {
   GURL url = GetDefaultUrl();
   base::Time t = GetDefaultTime();
 
-  // 1 minute difference but not crossing the break of the day.
+  // 1 minute difference but not crossing the ablation time window of 14 days.
   EXPECT_EQ(GetAblationHash("seed", url, t),
             GetAblationHash("seed", url, t + base::Minutes(1)));
 
-  // 1 day difference leads to crossing the break of the day.
+  // 1 day difference leads to not crossing the ablation time window of 14 days.
+  EXPECT_EQ(GetAblationHash("seed", url, t),
+            GetAblationHash("seed", url, t + base::Days(1)));
+
+  // 14 days difference leads to crossing the ablation time window of 14 days.
   EXPECT_NE(GetAblationHash("seed", url, t),
-            GetAblationHash("seed", url, t + base::Hours(24)));
+            GetAblationHash("seed", url, t + base::Days(14)));
 }
 
 // Ensure that if the feature is disabled, only kDefault is returned.
 TEST_F(AutofillAblationStudyTestInUTC, FeatureDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(kAutofillEnableAblationStudy);
-  AutofillAblationStudy study;
+  AutofillAblationStudy study("seed");
   auto result = RunNIterations(study, 100, FormTypeForAblationStudy::kAddress);
   EXPECT_EQ(1u, result.size());
   EXPECT_EQ(100, result[AblationGroup::kDefault]);
@@ -196,7 +200,7 @@ TEST_F(AutofillAblationStudyTestInUTC, FeatureDisabled) {
 // Ensure that if the weight is invalid, only kDefault is returned.
 TEST_F(AutofillAblationStudyTestInUTC, InvalidParameters) {
   base::test::ScopedFeatureList features;
-  AutofillAblationStudy study;
+  AutofillAblationStudy study("seed");
   base::FieldTrialParams feature_parameters{
       {kAutofillAblationStudyEnabledForAddressesParam.name, "true"},
       {kAutofillAblationStudyEnabledForPaymentsParam.name, "true"},
@@ -221,7 +225,7 @@ TEST_F(AutofillAblationStudyTestInUTC, FormTypesDisabled) {
   };
   features.InitAndEnableFeatureWithParameters(kAutofillEnableAblationStudy,
                                               feature_parameters);
-  AutofillAblationStudy study;
+  AutofillAblationStudy study("seed");
   auto result = RunNIterations(study, 100, FormTypeForAblationStudy::kAddress);
   EXPECT_EQ(1u, result.size());
   EXPECT_EQ(100, result[AblationGroup::kDefault]);
@@ -239,7 +243,7 @@ TEST_F(AutofillAblationStudyTestInUTC, IntegrationTest) {
   };
   features.InitAndEnableFeatureWithParameters(kAutofillEnableAblationStudy,
                                               feature_parameters);
-  AutofillAblationStudy study;
+  AutofillAblationStudy study("seed");
   auto result = RunNIterations(study, 1000, FormTypeForAblationStudy::kAddress);
   EXPECT_EQ(3u, result.size());
   // Note that these are not guaranteed but the chances are good enough that we
@@ -249,6 +253,26 @@ TEST_F(AutofillAblationStudyTestInUTC, IntegrationTest) {
   EXPECT_NE(0, result[AblationGroup::kControl]);
   EXPECT_LT(result[AblationGroup::kAblation] + result[AblationGroup::kControl],
             result[AblationGroup::kDefault]);
+}
+
+// Verify that an empty seed always gives kDefault.
+TEST_F(AutofillAblationStudyTestInUTC, IntegrationTestForEmptySeed) {
+  base::test::ScopedFeatureList features;
+  base::FieldTrialParams feature_parameters{
+      {kAutofillAblationStudyEnabledForAddressesParam.name, "true"},
+      {kAutofillAblationStudyEnabledForPaymentsParam.name, "true"},
+      // 10% chance for ablation group, 10% chance for control group,
+      // 80% change for default group.
+      {kAutofillAblationStudyAblationWeightPerMilleParam.name, "100"},
+  };
+  features.InitAndEnableFeatureWithParameters(kAutofillEnableAblationStudy,
+                                              feature_parameters);
+  // Because the seed is empty, the ablation weight is ignored and all clients
+  // end in the default group.
+  AutofillAblationStudy study("");
+  auto result = RunNIterations(study, 1000, FormTypeForAblationStudy::kAddress);
+  EXPECT_EQ(1u, result.size());
+  EXPECT_EQ(1000, result[AblationGroup::kDefault]);
 }
 
 }  // namespace autofill

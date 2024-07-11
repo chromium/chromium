@@ -138,10 +138,12 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
       base::PassKey<autofill::ContentAutofillDriver> pass_key,
       autofill::ContentAutofillDriver& driver) override;
 
+ protected:
+  // Protected for testing.
+  explicit AndroidAutofillClient(content::WebContents* web_contents);
+
  private:
   friend class content::WebContentsUserData<AndroidAutofillClient>;
-
-  explicit AndroidAutofillClient(content::WebContents* web_contents);
 
   content::WebContents& GetWebContents() const;
 
