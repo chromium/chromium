@@ -31,8 +31,9 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
       return PickerSectionType::kLinks;
     case PickerSearchSource::kDate:
     case PickerSearchSource::kMath:
+      return PickerSectionType::kNone;
     case PickerSearchSource::kClipboard:
-      return PickerSectionType::kSuggestions;
+      return PickerSectionType::kClipboard;
     case PickerSearchSource::kAction:
       return PickerSectionType::kNone;
     case PickerSearchSource::kLocalFile:
@@ -88,15 +89,13 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   const PickerSectionType section_type = SectionTypeFromSearchSource(source);
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
-  // TODO: b/351224614 - This should include all the section types that do not
-  // have a title.
-  if (section_type == PickerSectionType::kSuggestions) {
+  if (section_type == PickerSectionType::kNone) {
     // Suggested results cannot have more results, since it's not a proper
     // category.
     CHECK(!has_more_results);
     base::ranges::move(
         results,
-        std::back_inserter(results_[PickerSectionType::kSuggestions].results));
+        std::back_inserter(results_[PickerSectionType::kNone].results));
     return;
   }
 
@@ -153,23 +152,21 @@ void PickerSearchAggregator::PublishBurnInResults() {
   std::vector<PickerSearchResultsSection> sections;
   base::flat_set<PickerSectionType> published_types;
 
-  // TODO: b/351224614 - Replace this with a new PickerSectionType::kBestMatch.
-  for (PickerSectionType type : {
-           PickerSectionType::kSuggestions,
-           PickerSectionType::kNone,
-       }) {
-    if (auto it = results_.find(type);
-        it != results_.end() && !it->second.results.empty()) {
-      sections.emplace_back(type, std::move(it->second.results),
-                            /*has_more=*/false);
-      published_types.insert(type);
-    }
+  // The None section always goes first.
+  if (auto it = results_.find(PickerSectionType::kNone);
+      it != results_.end() && !it->second.results.empty()) {
+    sections.emplace_back(PickerSectionType::kNone,
+                          std::move(it->second.results),
+                          /*has_more=*/false);
+    published_types.insert(PickerSectionType::kNone);
   }
 
+  // User generated results can be ranked amongst themselves.
   for (PickerSectionType type : {
            PickerSectionType::kLinks,
            PickerSectionType::kLocalFiles,
            PickerSectionType::kDriveFiles,
+           PickerSectionType::kClipboard,
        }) {
     if (auto it = results_.find(type);
         it != results_.end() &&
@@ -180,10 +177,12 @@ void PickerSearchAggregator::PublishBurnInResults() {
     }
   }
 
+  // The remaining results are ranked based on a predefined order
   for (PickerSectionType type : {
            PickerSectionType::kLinks,
            PickerSectionType::kLocalFiles,
            PickerSectionType::kDriveFiles,
+           PickerSectionType::kClipboard,
            PickerSectionType::kEditorWrite,
            PickerSectionType::kEditorRewrite,
        }) {

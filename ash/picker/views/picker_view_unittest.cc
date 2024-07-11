@@ -317,7 +317,7 @@ TEST_F(PickerViewTest, LeftClickSearchResultInsertsResult) {
               future.SetValue();
               callback.Run({
                   PickerSearchResultsSection(
-                      PickerSectionType::kSuggestions,
+                      PickerSectionType::kClipboard,
                       {{PickerSearchResult::Text(u"result")}},
                       /*has_more_results=*/false),
               });
@@ -581,7 +581,7 @@ TEST_F(PickerViewTest,
 
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
   callback.Run({{PickerSearchResultsSection(
-      PickerSectionType::kSuggestions, {{PickerSearchResult::Text(u"result")}},
+      PickerSectionType::kClipboard, {{PickerSearchResult::Text(u"result")}},
       /*has_more_results=*/false)}});
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
 }
@@ -882,7 +882,7 @@ TEST_F(PickerViewTest, DoesNotClearResultsBeforeTimeout) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
   first_callback.Run({{PickerSearchResultsSection(
-      PickerSectionType::kSuggestions, {{PickerSearchResult::Text(u"result")}},
+      PickerSectionType::kClipboard, {{PickerSearchResult::Text(u"result")}},
       /*has_more_results=*/false)}});
   task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
   ASSERT_FALSE(picker_view->search_results_view_for_testing()
@@ -914,7 +914,7 @@ TEST_F(PickerViewTest, ClearsResultsAfterTimeout) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
   first_callback.Run({{PickerSearchResultsSection(
-      PickerSectionType::kSuggestions, {{PickerSearchResult::Text(u"result")}},
+      PickerSectionType::kClipboard, {{PickerSearchResult::Text(u"result")}},
       /*has_more_results=*/false)}});
   task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
   ASSERT_FALSE(picker_view->search_results_view_for_testing()
@@ -945,7 +945,7 @@ TEST_F(PickerViewTest, ClearsResultsWhenQueryClearedNoCategory) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback callback = future.Take();
   callback.Run({{PickerSearchResultsSection(
-      PickerSectionType::kSuggestions, {{PickerSearchResult::Text(u"result")}},
+      PickerSectionType::kClipboard, {{PickerSearchResult::Text(u"result")}},
       /*has_more_results=*/false)}});
   ASSERT_FALSE(picker_view->search_results_view_for_testing()
                    .section_views_for_testing()
@@ -1215,7 +1215,7 @@ TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
             search_called.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kSuggestions,
+                    PickerSectionType::kClipboard,
                     {{PickerSearchResult::Text(u"result")}},
                     /*has_more_results=*/false),
             });
@@ -1263,7 +1263,7 @@ TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
             // records search latency even if "no results found" was shown.
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kSuggestions,
+                    PickerSectionType::kClipboard,
                     {{PickerSearchResult::Text(u"result")}},
                     /*has_more_results=*/false),
             });
@@ -1494,7 +1494,7 @@ TEST_F(PickerViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kSuggestions,
+                    PickerSectionType::kClipboard,
                     {{PickerSearchResult::Text(u"Result A"),
                       PickerSearchResult::Text(u"Result B")}},
                     /*has_more_results=*/false),
@@ -1634,7 +1634,7 @@ TEST_F(PickerViewTest, TabKeyNavigatesSearchResults) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kSuggestions,
+                    PickerSectionType::kClipboard,
                     {{PickerSearchResult::Text(u"Result A"),
                       PickerSearchResult::Text(u"Result B")}},
                     /*has_more_results=*/false),
@@ -1666,7 +1666,7 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResultsWithEmojiBar) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kSuggestions,
+                    PickerSectionType::kClipboard,
                     {{PickerSearchResult::Text(u"Result A"),
                       PickerSearchResult::Text(u"Result B")}},
                     /*has_more_results=*/false),
@@ -1705,7 +1705,7 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResultsWithoutEmojiBar) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kSuggestions,
+                    PickerSectionType::kClipboard,
                     {{PickerSearchResult::Text(u"Result A"),
                       PickerSearchResult::Text(u"Result B")}},
                     /*has_more_results=*/false),
@@ -1741,7 +1741,7 @@ TEST_F(PickerViewTest, ShiftTabNavigatesToClearButton) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kSuggestions,
+                    PickerSectionType::kClipboard,
                     {{PickerSearchResult::Text(u"Result A"),
                       PickerSearchResult::Text(u"Result B")}},
                     /*has_more_results=*/false),
@@ -1776,7 +1776,7 @@ TEST_F(PickerViewTest, DownArrowKeyNavigatesFromClearButtonToSearchResults) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kSuggestions,
+                    PickerSectionType::kClipboard,
                     {{PickerSearchResult::Text(u"Result A"),
                       PickerSearchResult::Text(u"Result B")}},
                     /*has_more_results=*/false),
@@ -1936,7 +1936,7 @@ TEST_F(PickerViewTest, KeyNavigationToSeeMoreResults) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kSuggestions,
+                    PickerSectionType::kClipboard,
                     {{PickerSearchResult::Text(u"Result A")}},
                     /*has_more_results=*/false),
                 PickerSearchResultsSection(
@@ -2201,7 +2201,7 @@ TEST_F(PickerViewTest, EnterOnSearchResults) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
   first_callback.Run(
-      {PickerSearchResultsSection(PickerSectionType::kSuggestions,
+      {PickerSearchResultsSection(PickerSectionType::kClipboard,
                                   {PickerSearchResult::Text(u"first search")},
                                   /*has_more_results=*/false)});
   base::span<const raw_ptr<PickerSectionView>> section_views =
@@ -2249,7 +2249,7 @@ TEST_F(PickerViewTest, EnterDuringBurnInOnSearchResults) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
   first_callback.Run(
-      {PickerSearchResultsSection(PickerSectionType::kSuggestions,
+      {PickerSearchResultsSection(PickerSectionType::kClipboard,
                                   {PickerSearchResult::Text(u"first search")},
                                   /*has_more_results=*/false)});
   base::span<const raw_ptr<PickerSectionView>> section_views =

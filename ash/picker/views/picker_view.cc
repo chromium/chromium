@@ -142,10 +142,11 @@ gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
 PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
   switch (type) {
     case PickerSectionType::kNone:
-    case PickerSectionType::kSuggestions:
     case PickerSectionType::kEditorWrite:
     case PickerSectionType::kEditorRewrite:
       NOTREACHED_NORETURN();
+    case PickerSectionType::kClipboard:
+      return PickerCategory::kClipboard;
     case PickerSectionType::kLinks:
       return PickerCategory::kLinks;
     case PickerSectionType::kLocalFiles:

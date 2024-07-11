@@ -118,7 +118,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
                                &submenu_controller);
 
   view.AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kSuggestions,
+      PickerSearchResultsSection(PickerSectionType::kNone,
                                  {{PickerSearchResult::Text(u"Result A"),
                                    PickerSearchResult::Text(u"Result B")}},
                                  /*has_more_results=*/false));
@@ -141,7 +141,7 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResultsClearsView) {
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
                                &submenu_controller);
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kSuggestions, {{PickerSearchResult::Text(u"Result")}},
+      PickerSectionType::kClipboard, {{PickerSearchResult::Text(u"Result")}},
       /*has_more_results=*/false));
 
   view.ClearSearchResults();
@@ -219,10 +219,9 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
       PickerSectionType::kLocalFiles,
       {{PickerSearchResult::LocalFile(u"Result", base::FilePath())}},
       /*has_more_results=*/false));
-  view.AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kSuggestions,
-                                 {{PickerSearchResult::Text(u"New Result")}},
-                                 /*has_more_results=*/false));
+  view.AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kNone, {{PickerSearchResult::Text(u"New Result")}},
+      /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(2));
   EXPECT_THAT(view.section_views_for_testing(),
@@ -242,7 +241,7 @@ TEST_F(PickerSearchResultsViewTest, GetsTopItem) {
               SelectSearchResult(PickerSearchResult::Text(u"Result A")));
 
   view.AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kSuggestions,
+      PickerSearchResultsSection(PickerSectionType::kClipboard,
                                  {{PickerSearchResult::Text(u"Result A"),
                                    PickerSearchResult::Text(u"Result B")}},
                                  /*has_more_results=*/false));
@@ -261,7 +260,7 @@ TEST_F(PickerSearchResultsViewTest, GetsBottomItem) {
               SelectSearchResult(PickerSearchResult::Text(u"Result B")));
 
   view.AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kSuggestions,
+      PickerSearchResultsSection(PickerSectionType::kClipboard,
                                  {{PickerSearchResult::Text(u"Result A"),
                                    PickerSearchResult::Text(u"Result B")}},
                                  /*has_more_results=*/false));
@@ -548,7 +547,7 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
           &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
   widget->Show();
   view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kSuggestions, {{test_case.result}},
+      PickerSectionType::kClipboard, {{test_case.result}},
       /*has_more_results=*/false));
   ASSERT_THAT(view->section_views_for_testing(), Not(IsEmpty()));
   ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),

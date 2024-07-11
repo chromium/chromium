@@ -115,8 +115,9 @@ std::u16string GetSectionTitleForPickerSectionType(
     PickerSectionType section_type) {
   switch (section_type) {
     case PickerSectionType::kNone:
-    case PickerSectionType::kSuggestions:
       return u"";
+    case PickerSectionType::kClipboard:
+      return l10n_util::GetStringUTF16(IDS_PICKER_CLIPBOARD_CATEGORY_LABEL);
     case PickerSectionType::kEditorWrite:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(

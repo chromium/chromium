@@ -57,16 +57,10 @@ class PickerSearchAggregatorTest : public testing::TestWithParam<TestCase> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-// Gifs are tested separately since they have a special dependency on Drive
-// results.
-const TestCase kNonSuggestionTestCases[] = {
+const TestCase kNamedSectionTestCases[] = {
     TestCase{
         .source = PickerSearchSource::kOmnibox,
         .section_type = PickerSectionType::kLinks,
-    },
-    TestCase{
-        .source = PickerSearchSource::kAction,
-        .section_type = PickerSectionType::kNone,
     },
     TestCase{
         .source = PickerSearchSource::kLocalFile,
@@ -84,37 +78,41 @@ const TestCase kNonSuggestionTestCases[] = {
         .source = PickerSearchSource::kEditorRewrite,
         .section_type = PickerSectionType::kEditorRewrite,
     },
+    TestCase{
+        .source = PickerSearchSource::kClipboard,
+        .section_type = PickerSectionType::kClipboard,
+    },
 };
 
-const TestCase kSuggestionTestCases[] = {
+const TestCase kNoneSectionTestCases[] = {
+    TestCase{
+        .source = PickerSearchSource::kAction,
+        .section_type = PickerSectionType::kNone,
+    },
     TestCase{
         .source = PickerSearchSource::kDate,
-        .section_type = PickerSectionType::kSuggestions,
+        .section_type = PickerSectionType::kNone,
     },
     TestCase{
         .source = PickerSearchSource::kMath,
-        .section_type = PickerSectionType::kSuggestions,
-    },
-    TestCase{
-        .source = PickerSearchSource::kClipboard,
-        .section_type = PickerSectionType::kSuggestions,
+        .section_type = PickerSectionType::kNone,
     },
 };
 
-INSTANTIATE_TEST_SUITE_P(NonSuggestions,
+INSTANTIATE_TEST_SUITE_P(NamedSections,
                          PickerSearchAggregatorTest,
-                         testing::ValuesIn(kNonSuggestionTestCases));
+                         testing::ValuesIn(kNamedSectionTestCases));
 
-INSTANTIATE_TEST_SUITE_P(Suggestions,
+INSTANTIATE_TEST_SUITE_P(NoneSections,
                          PickerSearchAggregatorTest,
-                         testing::ValuesIn(kSuggestionTestCases));
+                         testing::ValuesIn(kNoneSectionTestCases));
 
-class PickerSearchAggregatorNonSuggestionsTest
+class PickerSearchAggregatorNamedSectionTest
     : public PickerSearchAggregatorTest {};
 
 INSTANTIATE_TEST_SUITE_P(,
-                         PickerSearchAggregatorNonSuggestionsTest,
-                         testing::ValuesIn(kNonSuggestionTestCases));
+                         PickerSearchAggregatorNamedSectionTest,
+                         testing::ValuesIn(kNamedSectionTestCases));
 
 TEST_P(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
@@ -337,8 +335,9 @@ TEST_P(PickerSearchAggregatorTest,
   aggregator.HandleNoMoreResults(/*interrupted=*/false);
 }
 
-// Suggestions are never published post burn in, so don't test on those.
-TEST_P(PickerSearchAggregatorNonSuggestionsTest,
+// Results in the "none" section are never published post burn in, so don't test
+// on those.
+TEST_P(PickerSearchAggregatorNamedSectionTest,
        PublishesEmptyAfterResultsIfNoMoreResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   {
@@ -473,16 +472,10 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       Call(ElementsAre(
           AllOf(
               Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kSuggestions),
+                       PickerSectionType::kNone),
               Property(
                   "results", &PickerSearchResultsSection::results,
                   ElementsAre(
-                      Property(
-                          "data", &PickerSearchResult::data,
-                          VariantWith<PickerSearchResult::ClipboardData>(Field(
-                              "display_text",
-                              &PickerSearchResult::ClipboardData::display_text,
-                              u"clipboard"))),
                       Property("data", &PickerSearchResult::data,
                                VariantWith<PickerSearchResult::TextData>(Field(
                                    "primary_text",
@@ -492,16 +485,12 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                VariantWith<PickerSearchResult::TextData>(Field(
                                    "primary_text",
                                    &PickerSearchResult::TextData::primary_text,
+                                   u"category"))),
+                      Property("data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
                                    u"math")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kNone),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"category")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLinks),
                 Property("results", &PickerSearchResultsSection::results,
@@ -529,6 +518,16 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
                                  u"drive")))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kClipboard),
+              Property("results", &PickerSearchResultsSection::results,
+                       ElementsAre(Property(
+                           "data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::ClipboardData>(Field(
+                               "display_text",
+                               &PickerSearchResult::ClipboardData::display_text,
+                               u"clipboard")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kEditorWrite),
                 Property("results", &PickerSearchResultsSection::results,
@@ -558,7 +557,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        {PickerSearchResult::Text(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kDate,
+      PickerSearchSource::kClipboard,
       {PickerSearchResult::Clipboard(
           base::UnguessableToken::Create(),
           PickerSearchResult::ClipboardData::DisplayFormat::kText, u"clipboard",
@@ -597,16 +596,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kSuggestions),
-              Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerSearchResult::ClipboardData>(Field(
-                               "display_text",
-                               &PickerSearchResult::ClipboardData::display_text,
-                               u"clipboard")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
                 Property(
@@ -625,6 +614,16 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
                                  u"omnibox")))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kClipboard),
+              Property("results", &PickerSearchResultsSection::results,
+                       ElementsAre(Property(
+                           "data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::ClipboardData>(Field(
+                               "display_text",
+                               &PickerSearchResult::ClipboardData::display_text,
+                               u"clipboard")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kEditorWrite),
                 Property("results", &PickerSearchResultsSection::results,
@@ -645,7 +644,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        {PickerSearchResult::Text(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kDate,
+      PickerSearchSource::kClipboard,
       {PickerSearchResult::Clipboard(
           base::UnguessableToken::Create(),
           PickerSearchResult::ClipboardData::DisplayFormat::kText, u"clipboard",
@@ -669,16 +668,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kSuggestions),
-              Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerSearchResult::ClipboardData>(Field(
-                               "display_text",
-                               &PickerSearchResult::ClipboardData::display_text,
-                               u"clipboard")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
                 Property(
@@ -688,6 +677,16 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                         VariantWith<PickerSearchResult::LocalFileData>(Field(
                             "title", &PickerSearchResult::LocalFileData::title,
                             u"local")))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kClipboard),
+              Property("results", &PickerSearchResultsSection::results,
+                       ElementsAre(Property(
+                           "data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::ClipboardData>(Field(
+                               "display_text",
+                               &PickerSearchResult::ClipboardData::display_text,
+                               u"clipboard")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLinks),
                 Property("results", &PickerSearchResultsSection::results,
@@ -717,7 +716,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        {PickerSearchResult::Text(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kDate,
+      PickerSearchSource::kClipboard,
       {PickerSearchResult::Clipboard(
           base::UnguessableToken::Create(),
           PickerSearchResult::ClipboardData::DisplayFormat::kText, u"clipboard",
@@ -768,14 +767,14 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(search_results_callback,
               Call(ElementsAre(AllOf(
                   Property("type", &PickerSearchResultsSection::type,
-                           PickerSectionType::kNone),
+                           PickerSectionType::kClipboard),
                   Property("results", &PickerSearchResultsSection::results,
                            ElementsAre(Property(
                                "data", &PickerSearchResult::data,
                                VariantWith<PickerSearchResult::TextData>(Field(
                                    "primary_text",
                                    &PickerSearchResult::TextData::primary_text,
-                                   u"category")))))))))
+                                   u"clipboard")))))))))
       .Times(1);
   EXPECT_CALL(search_results_callback,
               Call(ElementsAre(AllOf(
@@ -831,6 +830,9 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kAction,
                                        {PickerSearchResult::Text(u"category")},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kClipboard,
+                                       {PickerSearchResult::Text(u"clipboard")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
                                        {PickerSearchResult::Text(u"local")},
