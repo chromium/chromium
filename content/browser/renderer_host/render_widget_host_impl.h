@@ -1426,6 +1426,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // to ESC being pressed by the user, this will be false.
   bool is_last_unlocked_by_target_ = false;
 
+  // True when the cursor has entered the autoscroll mode. A GSB is not
+  // necessarily sent yet.
+  bool autoscroll_in_progress_ = false;
+
   // TODO(crbug.com/40263900): The gesture controller can cause synchronous
   // destruction of the page (sending a click to the tab close button). Since
   // that'll destroy the RenderWidgetHostImpl, having it own the controller is
@@ -1437,6 +1441,13 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   base::OneShotTimer input_event_ack_timeout_;
   std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
       user_input_active_handle_;
+
+  // The View associated with the RenderWidgetHost. The lifetime of this object
+  // is associated with the lifetime of the Render process. If the Renderer
+  // crashes, its View is destroyed and this pointer becomes NULL, even though
+  // render_view_host_ lives on to load another URL (creating a new View while
+  // doing so).
+  base::WeakPtr<RenderWidgetHostViewBase> view_;
 
   // Receives and handles input events.
   std::unique_ptr<input::RenderInputRouter> render_input_router_;
@@ -1495,10 +1506,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool sent_autoscroll_scroll_begin_ = false;
   gfx::PointF autoscroll_start_position_;
 
-  // True when the cursor has entered the autoscroll mode. A GSB is not
-  // necessarily sent yet.
-  bool autoscroll_in_progress_ = false;
-
   // Counter for possible-activation-triggering input event.
   int pending_user_activation_counter_ = 0;
   // This timer resets |pending_user_activation_counter_| after a short delay.
@@ -1553,13 +1560,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool view_is_frame_sink_id_owner_{false};
 
   std::unique_ptr<CompositorMetricRecorder> compositor_metric_recorder_;
-
-  // The View associated with the RenderWidgetHost. The lifetime of this object
-  // is associated with the lifetime of the Render process. If the Renderer
-  // crashes, its View is destroyed and this pointer becomes NULL, even though
-  // render_view_host_ lives on to load another URL (creating a new View while
-  // doing so).
-  base::WeakPtr<RenderWidgetHostViewBase> view_;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };
