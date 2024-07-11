@@ -226,4 +226,66 @@ TEST_P(RTCEncodedVideoStreamTransformerTest, WaitsForMetronomeTick) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       FramesBufferedBeforeShortcircuiting) {
+  // Send some frames to be transformed before shortcircuiting.
+  const size_t transform_count = 5;
+  for (size_t i = 0; i < transform_count; i++) {
+    PostCrossThreadTask(
+        *webrtc_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&webrtc::FrameTransformerInterface::Transform,
+                            encoded_video_stream_transformer_.Delegate(),
+                            CreateMockFrame()));
+  }
+
+  task_environment_.RunUntilIdle();
+
+  // All frames should be passed back once short circuiting starts.
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame).Times(transform_count);
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  encoded_video_stream_transformer_.StartShortCircuiting();
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       FrameArrivingAfterShortcircuitingIsPassedBack) {
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  encoded_video_stream_transformer_.StartShortCircuiting();
+
+  // Frames passed to Transform after shortcircuting should be passed straight
+  // back.
+  PostCrossThreadTask(
+      *webrtc_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&webrtc::FrameTransformerInterface::Transform,
+                          encoded_video_stream_transformer_.Delegate(),
+                          CreateMockFrame()));
+
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       FramesBufferedBeforeSettingTransform) {
+  // Send some frames to be transformed before a transform is set.
+  const size_t transform_count = 5;
+  for (size_t i = 0; i < transform_count; i++) {
+    PostCrossThreadTask(
+        *webrtc_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&webrtc::FrameTransformerInterface::Transform,
+                            encoded_video_stream_transformer_.Delegate(),
+                            CreateMockFrame()));
+  }
+
+  task_environment_.RunUntilIdle();
+
+  // All frames should be passed as soon as a transform callback is provided
+  EXPECT_CALL(mock_transformer_callback_holder_, OnEncodedFrame)
+      .Times(transform_count);
+  encoded_video_stream_transformer_.SetTransformerCallback(
+      WTF::CrossThreadBindRepeating(
+          &MockTransformerCallbackHolder::OnEncodedFrame,
+          WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
+}
+
 }  // namespace blink

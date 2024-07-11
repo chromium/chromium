@@ -139,15 +139,23 @@ class PLATFORM_EXPORT RTCEncodedVideoStreamTransformer {
   void StartShortCircuiting();
 
  private:
+  void LogMessage(const std::string& message);
+
   const scoped_refptr<Broker> broker_;
   const rtc::scoped_refptr<webrtc::FrameTransformerInterface> delegate_;
+
   mutable base::Lock sink_lock_;
   Vector<
       std::pair<uint32_t, rtc::scoped_refptr<webrtc::TransformedFrameCallback>>>
       send_frame_to_sink_callbacks_ GUARDED_BY(sink_lock_);
+  bool short_circuit_ GUARDED_BY(sink_lock_) = false;
+  Vector<std::unique_ptr<webrtc::TransformableVideoFrameInterface>>
+      buffered_frames_ GUARDED_BY(sink_lock_);
+  uint16_t dropped_frames_count_ = 0;
+
+  // source_lock_ must be taken *before* sink_lock_ to avoid deadlock.
   base::Lock source_lock_;
   TransformerCallback transformer_callback_ GUARDED_BY(source_lock_);
-  bool short_circuit_ GUARDED_BY(sink_lock_) = false;
 };
 
 }  // namespace blink
