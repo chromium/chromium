@@ -173,7 +173,6 @@ import java.util.concurrent.ExecutionException;
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableFeatures({TAB_GROUP_PARITY_ANDROID})
 @EnableFeatures({ANDROID_TAB_GROUP_STABLE_IDS})
-@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2, message = "crbug.com/1435573")
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
