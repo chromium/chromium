@@ -316,6 +316,7 @@
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelected) \
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelectedRowHovered) \
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelectedRowSelected) \
+  E_CPONLY(kColorOmniboxResultsChipBackground) \
   E_CPONLY(kColorOmniboxResultsFocusIndicator) \
   E_CPONLY(kColorOmniboxResultsIcon) \
   E_CPONLY(kColorOmniboxResultsIconGM3Background) \

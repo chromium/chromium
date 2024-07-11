@@ -60,6 +60,14 @@ class OmniboxSuggestionRowChip : public views::MdTextButton {
                      CONTEXT_OMNIBOX_POPUP_ROW_CHIP,
                      /*use_text_color_for_icon=*/true),
         icon_(&icon) {
+    // Default margin of the suggestion row's children is (0, 4, 0, 8). Remove
+    // the left margin for chips per UX decision.
+    SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, 0,
+                          ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+
     SetImageLabelSpacing(5);
     SetCustomPadding(gfx::Insets::VH(0, 7));
     SetCornerRadius(100);  // Large number to ensure 100% rounded.
@@ -92,9 +100,9 @@ class OmniboxSuggestionRowChip : public views::MdTextButton {
   }
 
   void UpdateBackgroundColor() override {
-    // TODO(b/345519857): Waiting on color token from UX to replace hardcoded
-    //   RGB. This isn't theme responsive and obviously looks bad in dark mode.
-    const SkColor color = SkColorSetRGB(230, 230, 230);
+    const auto* const color_provider = GetColorProvider();
+    const SkColor color =
+        color_provider->GetColor(kColorOmniboxResultsChipBackground);
     SetBackground(
         views::CreateRoundedRectBackground(color, GetCornerRadiusValue()));
   }
