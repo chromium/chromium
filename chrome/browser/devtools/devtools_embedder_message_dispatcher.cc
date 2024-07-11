@@ -228,10 +228,9 @@ bool GetValue(const base::Value& value, KeyDownEvent* event) {
   }
 
   std::optional<int> veid = value.GetDict().FindInt("veid");
-  if (!veid) {
-    return false;
+  if (veid) {
+    event->veid = *veid;
   }
-  event->veid = *veid;
 
   std::optional<int> context = value.GetDict().FindInt("context");
   if (context) {
