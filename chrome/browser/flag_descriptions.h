@@ -2183,6 +2183,10 @@ extern const char kVideoPictureInPictureMinimizeButtonDescription[];
 extern const char kViewportSegmentsName[];
 extern const char kViewportSegmentsDescription[];
 
+extern const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterName[];
+extern const char
+    kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription[];
+
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 

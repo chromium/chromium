@@ -174,6 +174,7 @@
 #include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "components/webapps/browser/features.h"
@@ -11956,6 +11957,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(syncer::kSyncEnableBookmarksInTransportMode)},
 #endif
+
+    {"visited-url-ranking-service-history-visibility-score-filter",
+     flag_descriptions::
+         kVisitedURLRankingServiceHistoryVisibilityScoreFilterName,
+     flag_descriptions::
+         kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(visited_url_ranking::features::
+                            kVisitedURLRankingHistoryVisibilityScoreFilter)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -849,6 +849,12 @@ const char kViewportSegmentsDescription[] =
     "Enable the viewport segment API, giving information about the logical "
     "segments of the device (dual screen and foldable devices)";
 
+const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterName[] =
+    "Enable visited URL aggregates visibility score based filtering";
+const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription[] =
+    "Enables filtering of visited URL aggregates based on history URL "
+    "visibility scores.";
+
 const char kDiscountConsentV2Name[] = "Discount Consent V2";
 const char kDiscountConsentV2Description[] = "Enables Discount Consent V2";
 

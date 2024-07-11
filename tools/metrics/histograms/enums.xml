@@ -17150,6 +17150,8 @@ from previous Chrome versions.
   <int value="-1538734579"
       label="AutofillEnableSendingBcnInGetUploadDetails:disabled"/>
   <int value="-1538492024" label="OmniboxReverseAnswers:enabled"/>
+  <int value="-1538476948"
+      label="VisitedURLRankingHistoryVisibilityScoreFilter:disabled"/>
   <int value="-1538084940" label="PageInfoCookiesSubpage:disabled"/>
   <int value="-1537773844"
       label="ContextualSuggestionsAlternateCardLayout:disabled"/>
@@ -18027,6 +18029,8 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-language-detection-dynamic"/>
   <int value="-1168123287" label="WebRTC-FrameBuffer3:disabled"/>
   <int value="-1167992523" label="DesktopPWAsCustomTabUI:disabled"/>
+  <int value="-1167716837"
+      label="VisitedURLRankingHistoryVisibilityScoreFilter:enabled"/>
   <int value="-1166745977"
       label="BluetoothAggressiveAppearanceFilter:disabled"/>
   <int value="-1166715563" label="ChromeOSAssistant:disabled"/>
