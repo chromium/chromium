@@ -10,7 +10,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -280,10 +279,6 @@ class SearchPrefetchService : public KeyedService,
 
   // The current state of the DSE.
   std::optional<TemplateURLData> template_url_service_data_;
-
-  // A subscription to the omnibox log service to track when a navigation is
-  // about to happen.
-  base::CallbackListSubscription omnibox_subscription_;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       observer_{this};
