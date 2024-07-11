@@ -718,11 +718,20 @@ def nacl_list(options):
   return packages
 
 
+# Packages suffixed with t64 are "transition packages" and should be preferred.
+def maybe_append_t64(package):
+  name = package.split(":")
+  name[0] += "t64"
+  renamed = ":".join(name)
+  return renamed if package_exists(renamed) else package
+
+
 # Debian is in the process of transitioning to automatic debug packages, which
 # have the -dbgsym suffix (https://wiki.debian.org/AutomaticDebugPackages).
 # Untransitioned packages have the -dbg suffix.  And on some systems, neither
 # will be available, so exclude the ones that are missing.
 def dbg_package_name(package):
+  package = maybe_append_t64(package)
   if package_exists(package + "-dbgsym"):
     return [package + "-dbgsym"]
   if package_exists(package + "-dbg"):
@@ -761,10 +770,11 @@ def package_list(options):
   packages = (dev_list() + lib_list() + dbg_list(options) +
               lib32_list(options) + arm_list(options) + nacl_list(options) +
               backwards_compatible_list(options))
+  packages = [maybe_append_t64(package) for package in set(packages)]
 
   # Sort all the :i386 packages to the front, to avoid confusing dpkg-query
   # (https://crbug.com/446172).
-  return sorted(set(packages), key=lambda x: (not x.endswith(":i386"), x))
+  return sorted(packages, key=lambda x: (not x.endswith(":i386"), x))
 
 
 def missing_packages(packages):
