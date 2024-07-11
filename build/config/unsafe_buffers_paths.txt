@@ -126,7 +126,6 @@
 +ui/views/
 -url/third_party
 -v8/
--webkit/
 
 # TODO(crbug.com/41497066#comment22) The Win SDK headers don't get categorized
 # as system headers when building with DEPOT_TOOLS_WIN_TOOLCHAIN=0 ?
