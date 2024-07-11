@@ -156,7 +156,8 @@ using PriceNotificationItems =
 
 - (void)navigateToWebpageForItem:(PriceNotificationsTableViewItem*)item {
   DCHECK(item.tracking);
-  [self navigateToWebpageForURL:item.entryURL];
+  [self navigateToWebpageForURL:item.entryURL
+                    disposition:WindowOpenDisposition::CURRENT_TAB];
   [self.handler hidePriceNotifications];
 }
 
@@ -219,7 +220,8 @@ using PriceNotificationItems =
 
 - (void)priceInsightsNavigateToWebpageForItem:(PriceInsightsItem*)item {
   DCHECK(item.buyingOptionsURL.is_valid());
-  [self navigateToWebpageForURL:item.buyingOptionsURL];
+  [self navigateToWebpageForURL:item.buyingOptionsURL
+                    disposition:WindowOpenDisposition::NEW_FOREGROUND_TAB];
   [self.priceInsightsConsumer didStartNavigationToWebpage];
 }
 
@@ -516,10 +518,11 @@ using PriceNotificationItems =
   base::UmaHistogramEnumeration(kPriceTrackingStatusHistogram, status);
 }
 
-- (void)navigateToWebpageForURL:(const GURL&)URL {
+- (void)navigateToWebpageForURL:(const GURL&)URL
+                    disposition:(WindowOpenDisposition)disposition {
   self.webState->OpenURL(web::WebState::OpenURLParams(
-      URL, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
+      URL, web::Referrer(), disposition, ui::PAGE_TRANSITION_GENERATED,
+      /*is_renderer_initiated=*/false));
 }
 
 - (void)stopTrackingForURL:(const GURL&)URL
