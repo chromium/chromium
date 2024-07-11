@@ -509,10 +509,6 @@ if (is_clang_or_gcc) {
     ]
     deps = [ ":allocator_base" ]
     public_configs = []
-    if (is_android) {
-      # tagging.cc requires __arm_mte_set_* functions.
-      deps += [ "//third_party/cpu_features:ndk_compat" ]
-    }
     if (is_fuchsia) {
       deps += [
         "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.kernel:fuchsia.kernel_cpp",
