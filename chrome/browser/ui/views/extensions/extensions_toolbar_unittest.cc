@@ -26,20 +26,8 @@
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view_utils.h"
 
-namespace {
-
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
-
-base::Value::List ToListValue(const std::vector<std::string>& permissions) {
-  base::Value::List builder;
-  for (const std::string& permission : permissions) {
-    builder.Append(permission);
-  }
-  return builder;
-}
-
-}  // namespace
 
 ExtensionsToolbarUnitTest::ExtensionsToolbarUnitTest() = default;
 
@@ -112,8 +100,8 @@ ExtensionsToolbarUnitTest::InstallExtension(
       extensions::ExtensionBuilder(name)
           .SetManifestVersion(3)
           .SetLocation(location)
-          .AddPermissions(permissions)
-          .SetManifestKey("host_permissions", ToListValue(host_permissions))
+          .AddAPIPermissions(permissions)
+          .AddHostPermissions(host_permissions)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
   extension_service()->AddExtension(extension.get());

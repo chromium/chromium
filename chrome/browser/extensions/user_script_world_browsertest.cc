@@ -137,8 +137,7 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("extension")
             .SetManifestVersion(3)
-            .SetManifestKey("host_permissions",
-                            base::Value::List().Append(host_permission))
+            .AddHostPermission(host_permission)
             .Build();
     extension_service()->AddExtension(extension.get());
     EXPECT_TRUE(

@@ -70,13 +70,11 @@ scoped_refptr<const Extension>
 SiteAccessRequestsHelperUnittest::InstallExtensionAndWithholdHostPermissions(
     const std::string& name,
     const std::string& host_permission) {
-  auto extension =
-      ExtensionBuilder(name)
-          .SetManifestVersion(3)
-          .SetManifestKey("host_permissions",
-                          base::Value::List().Append(host_permission))
-          .SetID(crx_file::id_util::GenerateId(name))
-          .Build();
+  auto extension = ExtensionBuilder(name)
+                       .SetManifestVersion(3)
+                       .AddHostPermission(host_permission)
+                       .SetID(crx_file::id_util::GenerateId(name))
+                       .Build();
   service()->AddExtension(extension.get());
 
   ScriptingPermissionsModifier(profile(), extension)

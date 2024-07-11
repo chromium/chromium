@@ -87,13 +87,37 @@ class ExtensionBuilder {
   //////////////////////////////////////////////////////////////////////////////
   // Utility methods for use with aided manifest construction.
 
-  // Add one or more permissions to the extension.
+  // DEPRECATED. Please use one of AddHostPermission() or AddAPIPermission()
+  // below.
+  // TODO(https://crbug.com/40804030): Remove these methods.
   ExtensionBuilder& AddPermission(const std::string& permission);
   ExtensionBuilder& AddPermissions(const std::vector<std::string>& permissions);
 
-  // Add one or more optional permissions to the extension.
+  // DEPRECATED. Please use one of AddOptionalHostPermission() or
+  // AddOptionalAPIPermission() below.
+  // TODO(https://crbug.com/40804030): Remove these methods.
   ExtensionBuilder& AddOptionalPermission(const std::string& permission);
   ExtensionBuilder& AddOptionalPermissions(
+      const std::vector<std::string>& permissions);
+
+  // Adds one or more API permissions to the extension.
+  ExtensionBuilder& AddAPIPermission(const std::string& permission);
+  ExtensionBuilder& AddAPIPermissions(
+      const std::vector<std::string>& permissions);
+
+  // Adds one or more optional API permissions to the extension.
+  ExtensionBuilder& AddOptionalAPIPermission(const std::string& permission);
+  ExtensionBuilder& AddOptionalAPIPermissions(
+      const std::vector<std::string>& permissions);
+
+  // Adds one or more host permissions to the extension.
+  ExtensionBuilder& AddHostPermission(const std::string& permission);
+  ExtensionBuilder& AddHostPermissions(
+      const std::vector<std::string>& permissions);
+
+  // Adds one or more optional host permissions to the extension.
+  ExtensionBuilder& AddOptionalHostPermission(const std::string& permission);
+  ExtensionBuilder& AddOptionalHostPermissions(
       const std::vector<std::string>& permissions);
 
   // Sets an action type for the extension to have. By default, no action will

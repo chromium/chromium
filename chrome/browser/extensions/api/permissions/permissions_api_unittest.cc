@@ -811,8 +811,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest, AddSiteAccessRequest_TabId) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestVersion(3)
-          .SetManifestKey("host_permissions",
-                          base::Value::List().Append("*://*.requested.com/*"))
+          .AddHostPermission("*://*.requested.com/*")
           .Build();
   AddExtensionAndWithheldPermissions(*extension);
 
@@ -874,8 +873,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestVersion(3)
-          .SetManifestKey("host_permissions",
-                          base::Value::List().Append("*://*.requested.com/*"))
+          .AddHostPermission("*://*.requested.com/*")
           .Build();
   AddExtensionAndWithheldPermissions(*extension);
 

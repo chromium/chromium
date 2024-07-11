@@ -25,18 +25,6 @@
 
 namespace extensions {
 
-namespace {
-
-base::Value::List ToValueList(const std::vector<std::string>& permissions) {
-  base::Value::List list;
-  for (const std::string& permission : permissions) {
-    list.Append(permission);
-  }
-  return list;
-}
-
-}  // namespace
-
 using UserSiteAccess = PermissionsManager::UserSiteAccess;
 using SiteInteraction = SitePermissionsHelper::SiteInteraction;
 
@@ -85,13 +73,12 @@ SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
     const std::string& name,
     const std::vector<std::string>& host_permissions,
     const std::vector<std::string>& permissions) {
-  auto extension =
-      ExtensionBuilder(name)
-          .SetManifestVersion(3)
-          .SetManifestKey("host_permissions", ToValueList(host_permissions))
-          .AddPermissions(permissions)
-          .SetID(crx_file::id_util::GenerateId(name))
-          .Build();
+  auto extension = ExtensionBuilder(name)
+                       .SetManifestVersion(3)
+                       .AddHostPermissions(host_permissions)
+                       .AddAPIPermissions(permissions)
+                       .SetID(crx_file::id_util::GenerateId(name))
+                       .Build();
   service()->AddExtension(extension.get());
 
   return extension;
