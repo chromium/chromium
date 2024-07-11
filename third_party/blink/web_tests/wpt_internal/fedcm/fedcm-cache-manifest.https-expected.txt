@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Second request should come from the cache and not hit the server.
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

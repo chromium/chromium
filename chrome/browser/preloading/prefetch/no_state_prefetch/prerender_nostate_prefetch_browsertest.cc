@@ -471,9 +471,7 @@ class NoStatePrefetchBrowserTest
 
 enum SplitCacheTestCase {
   kSplitCacheDisabled,
-  kSplitCacheEnabledDoublePlusBitKeyed,
   kSplitCacheEnabledTripleKeyed,
-  kSplitCacheEnabledTripleKeyedSharedOpaque,
 };
 
 class NoStatePrefetchBrowserTestHttpCache
@@ -494,22 +492,6 @@ class NoStatePrefetchBrowserTestHttpCache
           net::features::kSplitCacheByNetworkIsolationKey);
     }
 
-    if (GetParam() == kSplitCacheEnabledDoublePlusBitKeyed) {
-      enabled_features.push_back(
-          net::features::kEnableCrossSiteFlagNetworkIsolationKey);
-    } else {
-      disabled_features.push_back(
-          net::features::kEnableCrossSiteFlagNetworkIsolationKey);
-    }
-
-    if (GetParam() == kSplitCacheEnabledTripleKeyedSharedOpaque) {
-      enabled_features.push_back(
-          net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
-    } else {
-      disabled_features.push_back(
-          net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
-    }
-
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -521,12 +503,21 @@ class NoStatePrefetchBrowserTestHttpCache
   base::test::ScopedFeatureList feature_list_;
 };
 
-using NoStatePrefetchBrowserTestHttpCache_DefaultAndAppendFrameOrigin =
-    NoStatePrefetchBrowserTestHttpCache;
+class NoStatePrefetchBrowserTest_HttpCacheDefaultAndAppendFrameOrigin
+    : public NoStatePrefetchBrowserTest {
+ protected:
+  NoStatePrefetchBrowserTest_HttpCacheDefaultAndAppendFrameOrigin() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Test that the network isolation key is correctly populated during a prefetch.
-IN_PROC_BROWSER_TEST_P(
-    NoStatePrefetchBrowserTestHttpCache_DefaultAndAppendFrameOrigin,
+IN_PROC_BROWSER_TEST_F(
+    NoStatePrefetchBrowserTest_HttpCacheDefaultAndAppendFrameOrigin,
     PrefetchTwoCrossOriginFrames) {
   GURL image_src =
       embedded_test_server()->GetURL("/prerender/cacheable_image.png");
@@ -549,40 +540,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       current_browser(), src_server()->GetURL(prerender_path)));
 
-  switch (GetParam()) {
-    case SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed:
-      // If the NIK only uses an is-cross-site bit instead of the full frame
-      // site in the cache key, then the two iframes will share a cache
-      // partition.
-      WaitForRequestCount(image_src, 1);
-      break;
-    case SplitCacheTestCase::kSplitCacheEnabledTripleKeyed:
-    case SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque:
-    case SplitCacheTestCase::kSplitCacheDisabled:
-      WaitForRequestCount(image_src, 2);
-      break;
-  }
+  WaitForRequestCount(image_src, 2);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NoStatePrefetchBrowserTestHttpCache_DefaultAndAppendFrameOrigin,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kSplitCacheEnabledTripleKeyed,
-         SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed,
-         SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque}),
-    [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
-      switch (info.param) {
-        case (SplitCacheTestCase::kSplitCacheDisabled):
-          return "NotUsedForThisTestSuite";
-        case (SplitCacheTestCase::kSplitCacheEnabledTripleKeyed):
-          return "TripleKeyed";
-        case (SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed):
-          return "DoublePlusBitKeyed";
-        case (SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque):
-          return "TripleKeyedSharedOpaque";
-      }
-    });
 
 // Checks that a page is correctly prefetched in the case of a
 // <link rel=prerender> tag and the JavaScript on the page is not executed.
@@ -691,21 +650,16 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     NoStatePrefetchBrowserTestHttpCache_DefaultAndDoubleKeyedHttpCache,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kSplitCacheDisabled,
-         SplitCacheTestCase::kSplitCacheEnabledTripleKeyed,
-         SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed,
-         SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque}),
+    testing::ValuesIn({
+        SplitCacheTestCase::kSplitCacheDisabled,
+        SplitCacheTestCase::kSplitCacheEnabledTripleKeyed,
+    }),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case (SplitCacheTestCase::kSplitCacheDisabled):
           return "SplitCacheDisabled";
         case (SplitCacheTestCase::kSplitCacheEnabledTripleKeyed):
           return "TripleKeyed";
-        case (SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed):
-          return "DoublePlusBitKeyed";
-        case (SplitCacheTestCase::kSplitCacheEnabledTripleKeyedSharedOpaque):
-          return "DoublePlusBitKeyedSharedOpaque";
       }
     });
 

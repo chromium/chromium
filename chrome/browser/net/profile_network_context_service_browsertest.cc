@@ -19,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -277,9 +276,8 @@ class ProfileNetworkContextServiceCacheSameBrowsertest
  public:
   ProfileNetworkContextServiceCacheSameBrowsertest() {
     // Override features that are enabled via the fieldtrial testing config.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {net::features::kSplitCacheByNetworkIsolationKey,
-             net::features::kEnableCrossSiteFlagNetworkIsolationKey});
+    scoped_feature_list_.InitAndDisableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
   }
   ~ProfileNetworkContextServiceCacheSameBrowsertest() override = default;
 
@@ -416,125 +414,6 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
       local_state->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
       "None None None scoped_feature_list_trial_group");
-}
-
-// This subclass adds tests for the 2023 HTTP Cache keying experiment flags.
-enum class HttpCache2023ExperimentTestCase {
-  kDoublePlusBitExperimentGroup,
-  kTripleKeyedSharedOpaqueExperimentGroup,
-  kControlGroup,
-};
-
-class ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest
-    : public ProfileNetworkContextServiceBrowsertest,
-      public testing::WithParamInterface<HttpCache2023ExperimentTestCase> {
- public:
-  ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest() {
-    // Override any configured experiments for the
-    // SplitCacheByNetworkIsolationKey feature.
-    always_enabled_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kSplitCacheByNetworkIsolationKey, {});
-
-    switch (GetParam()) {
-      case HttpCache2023ExperimentTestCase::kDoublePlusBitExperimentGroup:
-        test_feature_list_.InitWithFeatures(
-            {net::features::kEnableCrossSiteFlagNetworkIsolationKey},
-            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey,
-             net::features::kHttpCacheKeyingExperimentControlGroup});
-        break;
-      case HttpCache2023ExperimentTestCase::
-          kTripleKeyedSharedOpaqueExperimentGroup:
-        test_feature_list_.InitWithFeatures(
-            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey},
-            {net::features::kEnableCrossSiteFlagNetworkIsolationKey,
-             net::features::kHttpCacheKeyingExperimentControlGroup});
-        break;
-      case HttpCache2023ExperimentTestCase::kControlGroup:
-        test_feature_list_.InitWithFeatures(
-            {net::features::kHttpCacheKeyingExperimentControlGroup},
-            {net::features::kEnableCrossSiteFlagNetworkIsolationKey,
-             net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
-        break;
-    }
-  }
-
-  const char* GetExperimentString() {
-    switch (GetParam()) {
-      case HttpCache2023ExperimentTestCase::kDoublePlusBitExperimentGroup:
-        return "CrossSiteFlagNIK";
-      case HttpCache2023ExperimentTestCase::
-          kTripleKeyedSharedOpaqueExperimentGroup:
-        return "FrameSiteSharedOpaqueNIK";
-      case HttpCache2023ExperimentTestCase::kControlGroup:
-        return "2023ExperimentControlGroup";
-    }
-  }
-  ~ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest() override =
-      default;
-
-  base::HistogramTester histograms_;
-
- private:
-  base::test::ScopedFeatureList always_enabled_feature_list_;
-  base::test::ScopedFeatureList test_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest,
-    testing::ValuesIn(
-        {HttpCache2023ExperimentTestCase::kDoublePlusBitExperimentGroup,
-         HttpCache2023ExperimentTestCase::
-             kTripleKeyedSharedOpaqueExperimentGroup,
-         HttpCache2023ExperimentTestCase::kControlGroup}),
-    [](const testing::TestParamInfo<HttpCache2023ExperimentTestCase>& info) {
-      switch (info.param) {
-        case (HttpCache2023ExperimentTestCase::kDoublePlusBitExperimentGroup):
-          return "DoublePlusBitExperimentGroup";
-        case (HttpCache2023ExperimentTestCase::
-                  kTripleKeyedSharedOpaqueExperimentGroup):
-          return "TripleKeyedSharedOpaqueExperimentGroup";
-        case (HttpCache2023ExperimentTestCase::kControlGroup):
-          return "ControlGroup";
-      }
-    });
-
-IN_PROC_BROWSER_TEST_P(
-    ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest,
-    PRE_TestCacheResetParameter) {
-  NavigateToCreateHttpCache();
-  CheckCacheResetStatus(&histograms_, false);
-
-  // At this point, we have already called the initialization.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK_EQ(
-      local_state->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      base::StrCat({"scoped_feature_list_trial_group None None None ",
-                    GetExperimentString()}));
-  // Set the local state for the next test.
-  local_state->SetString(
-      "profile_network_context_service.http_cache_finch_experiment_groups",
-      "None None None None");
-}
-
-// The second time we load we know the state, which was "None None None None"
-// for the previous test, so we should see a reset being in an experiment.
-IN_PROC_BROWSER_TEST_P(
-    ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest,
-    TestCacheResetParameter) {
-  NavigateToCreateHttpCache();
-  CheckCacheResetStatus(&histograms_, true);
-
-  // At this point, we have already called the initialization once.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK_EQ(
-      local_state->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      base::StrCat({"scoped_feature_list_trial_group None None None ",
-                    GetExperimentString()}));
 }
 
 class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {

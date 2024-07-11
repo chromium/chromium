@@ -16,58 +16,7 @@
 
 namespace mojo {
 
-class NetworkIsolationKeyMojomTraitsTestWithNikMode
-    : public testing::Test,
-      public testing::WithParamInterface<net::NetworkIsolationKey::Mode> {
- public:
-  NetworkIsolationKeyMojomTraitsTestWithNikMode() {
-    switch (GetParam()) {
-      case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {},
-            {net::features::kEnableCrossSiteFlagNetworkIsolationKey,
-             net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
-        break;
-
-      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey},
-            {
-                net::features::kEnableCrossSiteFlagNetworkIsolationKey,
-            });
-        break;
-
-      case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {net::features::kEnableCrossSiteFlagNetworkIsolationKey},
-            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
-        break;
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    Tests,
-    NetworkIsolationKeyMojomTraitsTestWithNikMode,
-    testing::ValuesIn(
-        {net::NetworkIsolationKey::Mode::kFrameSiteEnabled,
-         net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled,
-         net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled}),
-    [](const testing::TestParamInfo<net::NetworkIsolationKey::Mode>& info) {
-      switch (info.param) {
-        case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-          return "FrameSiteEnabled";
-        case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-          return "CrossSiteFlagEnabled";
-        case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-          return "FrameSiteSharedOpaqueEnabled";
-      }
-    });
-
-TEST_P(NetworkIsolationKeyMojomTraitsTestWithNikMode, SerializeAndDeserialize) {
+TEST(NetworkIsolationKeyMojomTraitsTest, SerializeAndDeserialize) {
   base::UnguessableToken token = base::UnguessableToken::Create();
   std::vector<net::NetworkIsolationKey> keys = {
       net::NetworkIsolationKey(),
@@ -94,17 +43,8 @@ TEST_P(NetworkIsolationKeyMojomTraitsTestWithNikMode, SerializeAndDeserialize) {
                 network::mojom::NetworkIsolationKey>(original, copied));
     EXPECT_EQ(original, copied);
     EXPECT_EQ(original.GetTopFrameSite(), copied.GetTopFrameSite());
-    switch (net::NetworkIsolationKey::GetMode()) {
-      case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-        EXPECT_EQ(original.GetFrameSiteForTesting(),
-                  copied.GetFrameSiteForTesting());
-        break;
-      case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        EXPECT_EQ(original.GetIsCrossSiteForTesting(),
-                  copied.GetIsCrossSiteForTesting());
-        break;
-    }
+    EXPECT_EQ(original.GetFrameSiteForTesting(),
+              copied.GetFrameSiteForTesting());
     EXPECT_EQ(original.IsTransient(), copied.IsTransient());
   }
 }

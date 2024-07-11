@@ -450,45 +450,4 @@ TEST_P(CookiePartitionKeyTest, Localhost) {
   EXPECT_TRUE(key.has_value());
 }
 
-// Test that creating nonced partition keys works with both types of
-// NetworkIsolationKey modes. See https://crbug.com/1442260.
-TEST_P(CookiePartitionKeyTest, NetworkIsolationKeyMode) {
-  const net::SchemefulSite kTopFrameSite(GURL("https://a.com"));
-  const net::SchemefulSite kFrameSite(GURL("https://b.com"));
-  const auto kNonce = base::UnguessableToken::Create();
-
-  SiteForCookies site_for_cookies =
-      SiteForCookies::FromUrl(GURL("https://a.com"));
-
-  {  // Frame site mode.
-    base::test::ScopedFeatureList feature_list;
-
-    feature_list.InitWithFeatureState(
-        features::kEnableCrossSiteFlagNetworkIsolationKey, false);
-
-    const auto key = CookiePartitionKey::FromNetworkIsolationKey(
-        NetworkIsolationKey(kTopFrameSite, kFrameSite, kNonce),
-        site_for_cookies, kTopFrameSite, /*main_frame_navigation=*/false);
-    EXPECT_TRUE(key);
-    EXPECT_EQ(key->site(), kFrameSite);
-    EXPECT_EQ(key->nonce().value(), kNonce);
-    EXPECT_TRUE(key->IsThirdParty());
-  }
-
-  {  // Cross-site flag mode.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureStates(
-        {{net::features::kEnableCrossSiteFlagNetworkIsolationKey, true},
-         {features::kAncestorChainBitEnabledInPartitionedCookies,
-          AncestorChainBitEnabled()}});
-
-    const auto key = CookiePartitionKey::FromNetworkIsolationKey(
-        NetworkIsolationKey(kTopFrameSite, kFrameSite, kNonce),
-        site_for_cookies, kTopFrameSite, /*main_frame_navigation=*/false);
-    EXPECT_TRUE(key);
-    EXPECT_EQ(key->site(), kFrameSite);
-    EXPECT_EQ(key->nonce().value(), kNonce);
-    EXPECT_TRUE(key->IsThirdParty());
-  }
-}
 }  // namespace net

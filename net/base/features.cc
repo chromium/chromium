@@ -121,16 +121,6 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
              "PartitionConnectionsByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableCrossSiteFlagNetworkIsolationKey,
-             "EnableCrossSiteFlagNetworkIsolationKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableFrameSiteSharedOpaqueNetworkIsolationKey,
-             "EnableFrameSiteSharedOpaqueNetworkIsolationKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kHttpCacheKeyingExperimentControlGroup,
-             "HttpCacheKeyingExperimentControlGroup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTLS13KeyUpdate,
              "TLS13KeyUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);

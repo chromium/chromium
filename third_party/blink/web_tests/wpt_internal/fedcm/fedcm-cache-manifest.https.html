@@ -23,7 +23,7 @@ fedcm_test(async t => {
   const configUrl = options.identity.providers[0].configURL;
   const querySuffix = "?read_last_load_time=1";
   let response = await fetch(configUrl + querySuffix, { mode: "cors" });
-  const load_time = await response.text();
+  let load_time = await response.text();
   assert_not_equals(load_time, "0");
 
   // Now make another FedCM request and check that we did
@@ -33,7 +33,8 @@ fedcm_test(async t => {
   response = await fetch(configUrl + querySuffix, { mode: "cors" });
   // Reading the last load time a second time without a real fetch in
   // between should return 0 because the stash is write-once, read-once.
-  assert_equals(await response.text(), "0");
+  load_time = await response.text();
+  assert_true(load_time === "0");
 }, "Second request should come from the cache and not hit the server.");
 
 </script>

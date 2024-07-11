@@ -8537,38 +8537,6 @@
             ]
         }
     ],
-    "EnableCrossSiteFlagNetworkIsolationKey": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableCrossSiteFlag",
-                    "enable_features": [
-                        "EnableCrossSiteFlagNetworkIsolationKey"
-                    ]
-                },
-                {
-                    "name": "EnableFrameSiteSharedOpaque",
-                    "enable_features": [
-                        "EnableFrameSiteSharedOpaqueNetworkIsolationKey"
-                    ]
-                },
-                {
-                    "name": "CacheClearedControl",
-                    "enable_features": [
-                        "HttpCacheKeyingExperimentControlGroup"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCustomInputStreamBufferSize": [
         {
             "platforms": [

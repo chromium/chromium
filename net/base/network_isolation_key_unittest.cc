@@ -25,116 +25,38 @@ namespace net {
 namespace {
 const char kDataUrl[] = "data:text/html,<body>Hello World</body>";
 
-class NetworkIsolationKeyTest
-    : public testing::Test,
-      public testing::WithParamInterface<NetworkIsolationKey::Mode> {
- public:
-  NetworkIsolationKeyTest() {
-    switch (GetParam()) {
-      case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {},
-            {net::features::kEnableCrossSiteFlagNetworkIsolationKey,
-             net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
-        break;
-
-      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey},
-            {
-                net::features::kEnableCrossSiteFlagNetworkIsolationKey,
-            });
-        break;
-
-      case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {net::features::kEnableCrossSiteFlagNetworkIsolationKey},
-            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
-        break;
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-INSTANTIATE_TEST_SUITE_P(
-    Tests,
-    NetworkIsolationKeyTest,
-    testing::ValuesIn(
-        {NetworkIsolationKey::Mode::kFrameSiteEnabled,
-         NetworkIsolationKey::Mode::kCrossSiteFlagEnabled,
-         NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled}),
-    [](const testing::TestParamInfo<NetworkIsolationKey::Mode>& info) {
-      switch (info.param) {
-        case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-          return "FrameSiteEnabled";
-        case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-          return "CrossSiteFlagEnabled";
-        case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-          return "FrameSiteSharedOpaqueEnabled";
-      }
-    });
-
-TEST_P(NetworkIsolationKeyTest, EmptyKey) {
+TEST(NetworkIsolationKeyTest, EmptyKey) {
   NetworkIsolationKey key;
   EXPECT_FALSE(key.IsFullyPopulated());
   EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ("null null", key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ("null", key.ToDebugString());
-      break;
-  }
+  EXPECT_EQ("null null", key.ToDebugString());
 }
 
-TEST_P(NetworkIsolationKeyTest, NonEmptySameSiteKey) {
+TEST(NetworkIsolationKeyTest, NonEmptySameSiteKey) {
   SchemefulSite site1 = SchemefulSite(GURL("http://a.test/"));
   NetworkIsolationKey key(site1, site1);
   EXPECT_TRUE(key.IsFullyPopulated());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ(site1.Serialize() + " " + site1.Serialize(),
-                key.ToCacheKeyString());
-      EXPECT_EQ(site1.GetDebugString() + " " + site1.GetDebugString(),
-                key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ(site1.Serialize() + " _0", key.ToCacheKeyString());
-      EXPECT_EQ(site1.GetDebugString() + " same-site", key.ToDebugString());
-      EXPECT_FALSE(*key.GetIsCrossSiteForTesting());
-      break;
-  }
+  EXPECT_EQ(site1.Serialize() + " " + site1.Serialize(),
+            key.ToCacheKeyString());
+  EXPECT_EQ(site1.GetDebugString() + " " + site1.GetDebugString(),
+            key.ToDebugString());
   EXPECT_FALSE(key.IsTransient());
 }
 
-TEST_P(NetworkIsolationKeyTest, NonEmptyCrossSiteKey) {
+TEST(NetworkIsolationKeyTest, NonEmptyCrossSiteKey) {
   SchemefulSite site1 = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site2 = SchemefulSite(GURL("http://b.test/"));
   NetworkIsolationKey key(site1, site2);
   EXPECT_TRUE(key.IsFullyPopulated());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ(site1.Serialize() + " " + site2.Serialize(),
-                key.ToCacheKeyString());
-      EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString(),
-                key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ(site1.Serialize() + " _1", key.ToCacheKeyString());
-      EXPECT_EQ(site1.GetDebugString() + " cross-site", key.ToDebugString());
-      EXPECT_TRUE(*key.GetIsCrossSiteForTesting());
-      break;
-  }
+  EXPECT_EQ(site1.Serialize() + " " + site2.Serialize(),
+            key.ToCacheKeyString());
+  EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString(),
+            key.ToDebugString());
   EXPECT_FALSE(key.IsTransient());
 }
 
-TEST_P(NetworkIsolationKeyTest, KeyWithNonce) {
+TEST(NetworkIsolationKeyTest, KeyWithNonce) {
   SchemefulSite site1 = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site2 = SchemefulSite(GURL("http://b.test/"));
   base::UnguessableToken nonce = base::UnguessableToken::Create();
@@ -142,19 +64,9 @@ TEST_P(NetworkIsolationKeyTest, KeyWithNonce) {
   EXPECT_TRUE(key.IsFullyPopulated());
   EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString() +
-                    " (with nonce " + nonce.ToString() + ")",
-                key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ(site1.GetDebugString() + " cross-site (with nonce " +
-                    nonce.ToString() + ")",
-                key.ToDebugString());
-      break;
-  }
+  EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString() +
+                " (with nonce " + nonce.ToString() + ")",
+            key.ToDebugString());
 
   // Create another NetworkIsolationKey with the same input parameters, and
   // check that it is equal.
@@ -169,27 +81,14 @@ TEST_P(NetworkIsolationKeyTest, KeyWithNonce) {
   EXPECT_NE(key.ToDebugString(), key2.ToDebugString());
 }
 
-TEST_P(NetworkIsolationKeyTest, OpaqueOriginKey) {
+TEST(NetworkIsolationKeyTest, OpaqueOriginKey) {
   SchemefulSite site_data = SchemefulSite(GURL(kDataUrl));
   NetworkIsolationKey key(site_data, site_data);
   EXPECT_TRUE(key.IsFullyPopulated());
   EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      EXPECT_EQ(site_data.GetDebugString() + " " + site_data.GetDebugString(),
-                key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ(site_data.GetDebugString() + " opaque-origin",
-                key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      // Even though the site is opaque, it won't be considered cross-site since
-      // the top-level site and frame site have the same opaque origin.
-      EXPECT_EQ(site_data.GetDebugString() + " same-site", key.ToDebugString());
-      break;
-  }
+  EXPECT_EQ(site_data.GetDebugString() + " " + site_data.GetDebugString(),
+            key.ToDebugString());
 
   // Create another site with an opaque origin, and make sure it's different and
   // has a different debug string.
@@ -197,40 +96,19 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginKey) {
   NetworkIsolationKey other_key(other_site, other_site);
   EXPECT_NE(key, other_key);
   EXPECT_NE(key.ToDebugString(), other_key.ToDebugString());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      EXPECT_EQ(other_site.GetDebugString() + " " + other_site.GetDebugString(),
-                other_key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ(other_site.GetDebugString() + " opaque-origin",
-                other_key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ(other_site.GetDebugString() + " same-site",
-                other_key.ToDebugString());
-      break;
-  }
+  EXPECT_EQ(other_site.GetDebugString() + " " + other_site.GetDebugString(),
+            other_key.ToDebugString());
 }
 
-TEST_P(NetworkIsolationKeyTest, OpaqueOriginTopLevelSiteKey) {
+TEST(NetworkIsolationKeyTest, OpaqueOriginTopLevelSiteKey) {
   SchemefulSite site1 = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site_data = SchemefulSite(GURL(kDataUrl));
   NetworkIsolationKey key(site_data, site1);
   EXPECT_TRUE(key.IsFullyPopulated());
   EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ(site_data.GetDebugString() + " " + site1.GetDebugString(),
-                key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ(site_data.GetDebugString() + " cross-site",
-                key.ToDebugString());
-      break;
-  }
+  EXPECT_EQ(site_data.GetDebugString() + " " + site1.GetDebugString(),
+            key.ToDebugString());
 
   // Create another site with an opaque origin, and make sure it's different and
   // has a different debug string.
@@ -238,65 +116,31 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginTopLevelSiteKey) {
   NetworkIsolationKey other_key(other_site, site1);
   EXPECT_NE(key, other_key);
   EXPECT_NE(key.ToDebugString(), other_key.ToDebugString());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ(other_site.GetDebugString() + " " + site1.GetDebugString(),
-                other_key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ(other_site.GetDebugString() + " cross-site",
-                other_key.ToDebugString());
-      break;
-  }
+  EXPECT_EQ(other_site.GetDebugString() + " " + site1.GetDebugString(),
+            other_key.ToDebugString());
 }
 
-TEST_P(NetworkIsolationKeyTest, OpaqueOriginIframeKey) {
+TEST(NetworkIsolationKeyTest, OpaqueOriginIframeKey) {
   SchemefulSite site1 = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site_data = SchemefulSite(GURL(kDataUrl));
   NetworkIsolationKey key(site1, site_data);
   EXPECT_TRUE(key.IsFullyPopulated());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
-      EXPECT_TRUE(key.IsTransient());
-      EXPECT_EQ(site1.GetDebugString() + " " + site_data.GetDebugString(),
-                key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ(site1.Serialize() + " _opaque", key.ToCacheKeyString());
-      EXPECT_EQ(site1.GetDebugString() + " opaque-origin", key.ToDebugString());
-      EXPECT_FALSE(key.IsTransient());
-      break;
-
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ(site1.Serialize() + " _1", key.ToCacheKeyString());
-      EXPECT_EQ(site1.GetDebugString() + " cross-site", key.ToDebugString());
-      EXPECT_FALSE(key.IsTransient());
-      break;
-  }
+  EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
+  EXPECT_TRUE(key.IsTransient());
+  EXPECT_EQ(site1.GetDebugString() + " " + site_data.GetDebugString(),
+            key.ToDebugString());
 
   // Create another site with an opaque origin iframe, and make sure it's
   // different and has a different debug string when the frame site is in use.
   SchemefulSite other_site = SchemefulSite(GURL(kDataUrl));
   NetworkIsolationKey other_key(site1, other_site);
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      EXPECT_NE(key, other_key);
-      EXPECT_NE(key.ToDebugString(), other_key.ToDebugString());
-      EXPECT_EQ(site1.GetDebugString() + " " + other_site.GetDebugString(),
-                other_key.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ(key, other_key);
-      EXPECT_EQ(key.ToDebugString(), other_key.ToDebugString());
-      EXPECT_EQ(key.ToCacheKeyString(), other_key.ToCacheKeyString());
-      break;
-  }
+  EXPECT_NE(key, other_key);
+  EXPECT_NE(key.ToDebugString(), other_key.ToDebugString());
+  EXPECT_EQ(site1.GetDebugString() + " " + other_site.GetDebugString(),
+            other_key.ToDebugString());
 }
 
-TEST_P(NetworkIsolationKeyTest, Operators) {
+TEST(NetworkIsolationKeyTest, Operators) {
   base::UnguessableToken nonce1 = base::UnguessableToken::Create();
   base::UnguessableToken nonce2 = base::UnguessableToken::Create();
   if (nonce2 < nonce1)
@@ -349,7 +193,7 @@ TEST_P(NetworkIsolationKeyTest, Operators) {
   }
 }
 
-TEST_P(NetworkIsolationKeyTest, UniqueOriginOperators) {
+TEST(NetworkIsolationKeyTest, UniqueOriginOperators) {
   const auto kSite1 = SchemefulSite(GURL(kDataUrl));
   const auto kSite2 = SchemefulSite(GURL(kDataUrl));
   NetworkIsolationKey key1(kSite1, kSite1);
@@ -370,7 +214,7 @@ TEST_P(NetworkIsolationKeyTest, UniqueOriginOperators) {
   EXPECT_TRUE(!(key1 < key2) || !(key2 < key1));
 }
 
-TEST_P(NetworkIsolationKeyTest, OpaqueSiteKeyBoth) {
+TEST(NetworkIsolationKeyTest, OpaqueSiteKeyBoth) {
   SchemefulSite site_data_1 = SchemefulSite(GURL(kDataUrl));
   SchemefulSite site_data_2 = SchemefulSite(GURL(kDataUrl));
   SchemefulSite site_data_3 = SchemefulSite(GURL(kDataUrl));
@@ -390,19 +234,9 @@ TEST_P(NetworkIsolationKeyTest, OpaqueSiteKeyBoth) {
   // Test the equality/comparisons of the various keys
   EXPECT_TRUE(key1 == key2);
   EXPECT_FALSE(key1 < key2 || key2 < key1);
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      EXPECT_FALSE(key1 == key3);
-      EXPECT_TRUE(key1 < key3 || key3 < key1);
-      EXPECT_NE(key1.ToDebugString(), key3.ToDebugString());
-      break;
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_TRUE(key1 == key3);
-      EXPECT_FALSE(key1 < key3 || key3 < key1);
-      EXPECT_EQ(key1.ToDebugString(), key3.ToDebugString());
-      break;
-  }
+  EXPECT_FALSE(key1 == key3);
+  EXPECT_TRUE(key1 < key3 || key3 < key1);
+  EXPECT_NE(key1.ToDebugString(), key3.ToDebugString());
 
   // Test the ToString and ToDebugString
   EXPECT_EQ(key1.ToDebugString(), key2.ToDebugString());
@@ -413,7 +247,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueSiteKeyBoth) {
 
 // Make sure that the logic to extract the registerable domain from an origin
 // does not affect the host when using a non-standard scheme.
-TEST_P(NetworkIsolationKeyTest, NonStandardScheme) {
+TEST(NetworkIsolationKeyTest, NonStandardScheme) {
   // Have to register the scheme, or SchemefulSite() will return an opaque
   // origin.
   url::ScopedSchemeRegistryForTests scoped_registry;
@@ -422,36 +256,18 @@ TEST_P(NetworkIsolationKeyTest, NonStandardScheme) {
   SchemefulSite site = SchemefulSite(GURL("foo://a.foo.com"));
   NetworkIsolationKey key(site, site);
   EXPECT_FALSE(key.GetTopFrameSite()->opaque());
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ("foo://a.foo.com foo://a.foo.com", key.ToCacheKeyString());
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_EQ("foo://a.foo.com _0", key.ToCacheKeyString());
-      break;
-  }
+  EXPECT_EQ("foo://a.foo.com foo://a.foo.com", key.ToCacheKeyString());
 }
 
-TEST_P(NetworkIsolationKeyTest, CreateWithNewFrameSite) {
+TEST(NetworkIsolationKeyTest, CreateWithNewFrameSite) {
   SchemefulSite site_a = SchemefulSite(GURL("http://a.com"));
   SchemefulSite site_b = SchemefulSite(GURL("http://b.com"));
   SchemefulSite site_c = SchemefulSite(GURL("http://c.com"));
 
   NetworkIsolationKey key(site_a, site_b);
   NetworkIsolationKey key_c = key.CreateWithNewFrameSite(site_c);
-  switch (NetworkIsolationKey::GetMode()) {
-    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-    case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_EQ(site_c, key_c.GetFrameSiteForTesting());
-      EXPECT_NE(key_c, key);
-      break;
-    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      NetworkIsolationKey same_site_key(site_a, site_a);
-      EXPECT_EQ(key_c, key);
-      EXPECT_NE(key_c, same_site_key);
-      break;
-  }
+  EXPECT_EQ(site_c, key_c.GetFrameSiteForTesting());
+  EXPECT_NE(key_c, key);
   EXPECT_EQ(site_a, key_c.GetTopFrameSite());
 
   // Ensure that `CreateWithNewFrameSite()` preserves the nonce if one exists.
@@ -461,19 +277,9 @@ TEST_P(NetworkIsolationKeyTest, CreateWithNewFrameSite) {
       key_with_nonce.CreateWithNewFrameSite(site_c);
   EXPECT_EQ(key_with_nonce.GetNonce(), key_with_nonce_c.GetNonce());
   EXPECT_TRUE(key_with_nonce_c.IsTransient());
-
-  // If `CreateWithNewFrameSite()` causes a key to go from cross site to same
-  // site, ensure that is reflected internally.
-  NetworkIsolationKey key_a = key.CreateWithNewFrameSite(site_a);
-  if (NetworkIsolationKey::GetMode() ==
-      NetworkIsolationKey::Mode::kCrossSiteFlagEnabled) {
-    NetworkIsolationKey same_site_key(site_a, site_a);
-    EXPECT_EQ(key_a, same_site_key);
-    EXPECT_NE(key_a, key);
-  }
 }
 
-TEST_P(NetworkIsolationKeyTest, CreateTransientForTesting) {
+TEST(NetworkIsolationKeyTest, CreateTransientForTesting) {
   NetworkIsolationKey transient_key =
       NetworkIsolationKey::CreateTransientForTesting();
   EXPECT_TRUE(transient_key.IsFullyPopulated());

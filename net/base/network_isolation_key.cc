@@ -40,9 +40,6 @@ NetworkIsolationKey::NetworkIsolationKey(
     std::optional<base::UnguessableToken>&& nonce)
     : top_frame_site_(std::move(top_frame_site)),
       frame_site_(std::make_optional(std::move(frame_site))),
-      is_cross_site_((GetMode() == Mode::kCrossSiteFlagEnabled)
-                         ? std::make_optional(*top_frame_site_ != *frame_site_)
-                         : std::nullopt),
       nonce_(std::move(nonce)) {
   DCHECK(!nonce_ || !nonce_->is_empty());
 }
@@ -84,46 +81,14 @@ std::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
   if (IsTransient())
     return std::nullopt;
 
-  std::string variable_key_piece;
-  switch (GetMode()) {
-    case Mode::kFrameSiteEnabled:
-      variable_key_piece = frame_site_->Serialize();
-      break;
-    case Mode::kFrameSiteWithSharedOpaqueEnabled:
-      if (frame_site_->opaque()) {
-        variable_key_piece = "_opaque";
-        break;
-      }
-      variable_key_piece = frame_site_->Serialize();
-      break;
-    case Mode::kCrossSiteFlagEnabled:
-      variable_key_piece = (*is_cross_site_ ? "_1" : "_0");
-      break;
-  }
-  return top_frame_site_->Serialize() + " " + variable_key_piece;
+  return top_frame_site_->Serialize() + " " + frame_site_->Serialize();
 }
 
 std::string NetworkIsolationKey::ToDebugString() const {
   // The space-separated serialization of |top_frame_site_| and
   // |frame_site_|.
   std::string return_string = GetSiteDebugString(top_frame_site_);
-  switch (GetMode()) {
-    case Mode::kFrameSiteEnabled:
-      return_string += " " + GetSiteDebugString(frame_site_);
-      break;
-    case Mode::kFrameSiteWithSharedOpaqueEnabled:
-      if (frame_site_ && frame_site_->opaque()) {
-        return_string += " opaque-origin";
-        break;
-      }
-      return_string += " " + GetSiteDebugString(frame_site_);
-      break;
-    case Mode::kCrossSiteFlagEnabled:
-      if (is_cross_site_.has_value()) {
-        return_string += (*is_cross_site_ ? " cross-site" : " same-site");
-      }
-      break;
-  }
+  return_string += " " + GetSiteDebugString(frame_site_);
 
   if (nonce_.has_value()) {
     return_string += " (with nonce " + nonce_->ToString() + ")";
@@ -136,7 +101,7 @@ bool NetworkIsolationKey::IsFullyPopulated() const {
   if (!top_frame_site_.has_value()) {
     return false;
   }
-  if (GetMode() == Mode::kFrameSiteEnabled && !frame_site_.has_value()) {
+  if (!frame_site_.has_value()) {
     return false;
   }
   return true;
@@ -148,22 +113,6 @@ bool NetworkIsolationKey::IsTransient() const {
   return IsOpaque();
 }
 
-// static
-NetworkIsolationKey::Mode NetworkIsolationKey::GetMode() {
-  if (base::FeatureList::IsEnabled(
-          net::features::kEnableCrossSiteFlagNetworkIsolationKey)) {
-    DCHECK(!base::FeatureList::IsEnabled(
-        net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey));
-    return Mode::kCrossSiteFlagEnabled;
-  } else if (base::FeatureList::IsEnabled(
-                 net::features::
-                     kEnableFrameSiteSharedOpaqueNetworkIsolationKey)) {
-    return Mode::kFrameSiteWithSharedOpaqueEnabled;
-  } else {
-    return Mode::kFrameSiteEnabled;
-  }
-}
-
 bool NetworkIsolationKey::IsEmpty() const {
   return !top_frame_site_.has_value() && !frame_site_.has_value();
 }
@@ -172,9 +121,7 @@ bool NetworkIsolationKey::IsOpaque() const {
   if (top_frame_site_->opaque()) {
     return true;
   }
-  // For Mode::kCrossSiteFlagEnabled and Mode::kFrameSiteWithSharedOpaqueEnabled
-  // we don't want to treat NIKs for opaque origin frames as opaque.
-  if (GetMode() == Mode::kFrameSiteEnabled && frame_site_->opaque()) {
+  if (frame_site_->opaque()) {
     return true;
   }
   if (nonce_.has_value()) {

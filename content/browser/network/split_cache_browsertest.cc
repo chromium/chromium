@@ -279,10 +279,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
       }
     }
 
-    if (!top_frame_origin.opaque() &&
-        (net::NetworkIsolationKey::GetMode() !=
-             net::NetworkIsolationKey::Mode::kFrameSiteEnabled ||
-         !frame_origin.opaque())) {
+    if (!top_frame_origin.opaque() && !frame_origin.opaque()) {
       EXPECT_EQ(net::NetworkIsolationKey(top_frame_origin, frame_origin),
                 frame_host->GetNetworkIsolationKey());
     } else {
@@ -401,43 +398,12 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
   }
 };
 
-class SplitCacheRegistrableDomainContentBrowserTestP
-    : public SplitCacheContentBrowserTest,
-      public testing::WithParamInterface<net::NetworkIsolationKey::Mode> {
+class SplitCacheRegistrableDomainContentBrowserTest
+    : public SplitCacheContentBrowserTest {
  public:
-  SplitCacheRegistrableDomainContentBrowserTestP() = default;
-
-  void SetUp() override {
-    InitializeScopedFeatureList();
-    SplitCacheContentBrowserTest::SetUp();
-  }
-
-  void InitializeScopedFeatureList() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-
-    switch (GetParam()) {
-      case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-        disabled_features.push_back(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
-        disabled_features.push_back(
-            net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
-        break;
-      case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        enabled_features.push_back(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
-        disabled_features.push_back(
-            net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
-        break;
-      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-        enabled_features.push_back(
-            net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
-        disabled_features.push_back(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  SplitCacheRegistrableDomainContentBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
   }
 
  private:
@@ -550,7 +516,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled, MAYBE_SplitCache) {
   EXPECT_FALSE(TestResourceLoad(blank_url, GURL()));
 }
 
-IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                        SplitCache) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
@@ -573,21 +539,11 @@ IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
                                GenURL("a.com", "/title1.html")));
 
   // Load the resource from a cross-origin iframe on a page where the
-  // iframe hasn't been cached previously.  It should not be cached if the NIK
-  // is triple-keyed.
-  switch (net::NetworkIsolationKey::GetMode()) {
-    case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-    case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"),
-                                    GenURL("e.com", "/title1.html")));
-      EXPECT_TRUE(TestResourceLoad(GenURL("a.com", "/title1.html"),
-                                   GenURL("e.com", "/title1.html")));
-      break;
-    case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-      EXPECT_TRUE(TestResourceLoad(GenURL("a.com", "/title1.html"),
-                                   GenURL("e.com", "/title1.html")));
-      break;
-  }
+  // iframe hasn't been cached previously.
+  EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"),
+                                GenURL("e.com", "/title1.html")));
+  EXPECT_TRUE(TestResourceLoad(GenURL("a.com", "/title1.html"),
+                               GenURL("e.com", "/title1.html")));
 
   // Load the resource from a same-origin iframe on a page where it's not
   // cached. It should not be cached.
@@ -602,7 +558,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
                                 GenURL("a.com", "/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                        SplitCacheAndDataUrl) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
@@ -612,22 +568,12 @@ IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
   GURL data_url("data:text/html,<body>Hello World</body>");
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), data_url));
 
-  // Load the same resource from the same data url. If the NIK is triple-keyed,
-  // it shouldn't be cached because the cache isn't used for transient origins.
-  // When the NIK only uses an is-cross-site bit instead of the frame origin,
-  // the cache should be used.
-  switch (net::NetworkIsolationKey::GetMode()) {
-    case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), data_url));
-      break;
-    case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-    case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-      EXPECT_TRUE(TestResourceLoad(GenURL("a.com", "/title1.html"), data_url));
-      break;
-  }
+  // Load the same resource from the same data url. It shouldn't be cached
+  // because the cache isn't used for transient origins.
+  EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), data_url));
 }
 
-IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                        SplitCacheAndAboutBlank) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
@@ -647,7 +593,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
       TestResourceLoadFromPopup(GenURL("a.com", "/title1.html"), blank_url));
 }
 
-IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                        SplitCacheAndPopup) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
@@ -692,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(SplitCacheContentBrowserTestDisabled, NonSplitCache) {
                                GenURL("c.com", "/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                        SplitCacheDedicatedWorkers) {
   // Load 3p.com/script from a.com's worker. The first time it's loaded from the
   // network and the second it's cached.
@@ -761,7 +707,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
       GenURL("a.com", "/title1.html"), false));
 }
 
-IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                        SubframeNavigationResources) {
   // Navigate for the first time, and it's not cached.
   NavigationResourceCached(
@@ -795,7 +741,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
 // Tests that when a subresource URL which is same-site to the fetching frame
 // is later used to create a subframe from the same top-level site, it should
 // not be a cache hit (crbug.com/1135149).
-IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                        SubframeNavigationResource) {
   // main.com iframes 3p.com which fetches a subresource 3p.com/script with
   // cache key (main.com, 3p.com, 3p.com/script). Then main.com iframes evil.com
@@ -883,7 +829,7 @@ class SplitCacheComputeHttpCacheSize {
 #define MAYBE_NotifyExternalCacheHitCheckSubframeBit \
   NotifyExternalCacheHitCheckSubframeBit
 #endif
-IN_PROC_BROWSER_TEST_P(SplitCacheRegistrableDomainContentBrowserTestP,
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                        MAYBE_NotifyExternalCacheHitCheckSubframeBit) {
   ResourceLoadObserver observer(shell());
   BrowserContext* context = shell()->web_contents()->GetBrowserContext();
@@ -1048,24 +994,6 @@ IN_PROC_BROWSER_TEST_F(SplitCacheContentBrowserTestDisabled,
 INSTANTIATE_TEST_SUITE_P(All,
                          SplitCacheContentBrowserTestEnabled,
                          ::testing::Values(true, false));
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SplitCacheRegistrableDomainContentBrowserTestP,
-    testing::ValuesIn(
-        {net::NetworkIsolationKey::Mode::kFrameSiteEnabled,
-         net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled,
-         net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled}),
-    [](const testing::TestParamInfo<net::NetworkIsolationKey::Mode>& info) {
-      switch (info.param) {
-        case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-          return "FrameSiteEnabled";
-        case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-          return "CrossSiteFlagEnabled";
-        case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-          return "FrameSiteSharedOpaqueEnabled";
-      }
-    });
 
 class ScopeBlinkMemoryCachePerContext : public SplitCacheContentBrowserTest {
  public:

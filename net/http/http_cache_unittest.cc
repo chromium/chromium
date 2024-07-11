@@ -1207,47 +1207,20 @@ TEST_F(HttpCacheTest, SimpleGET_DelayedCacheLock) {
 enum class SplitCacheTestCase {
   kSplitCacheDisabled,
   kSplitCacheNikFrameSiteEnabled,
-  kSplitCacheNikCrossSiteFlagEnabled,
-  kSplitCacheNikFrameSiteSharedOpaqueEnabled,
 };
-
-void InitializeSplitCacheScopedFeatureList(
-    base::test::ScopedFeatureList& scoped_feature_list,
-    SplitCacheTestCase test_case) {
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-
-  if (test_case == SplitCacheTestCase::kSplitCacheDisabled) {
-    disabled_features.push_back(features::kSplitCacheByNetworkIsolationKey);
-  } else {
-    enabled_features.push_back(features::kSplitCacheByNetworkIsolationKey);
-  }
-
-  if (test_case == SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled) {
-    enabled_features.push_back(
-        features::kEnableCrossSiteFlagNetworkIsolationKey);
-  } else {
-    disabled_features.push_back(
-        features::kEnableCrossSiteFlagNetworkIsolationKey);
-  }
-
-  if (test_case ==
-      SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled) {
-    enabled_features.push_back(
-        features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
-  } else {
-    disabled_features.push_back(
-        features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey);
-  }
-  scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
-}
 
 class HttpCacheTest_SplitCacheFeature
     : public HttpCacheTest,
       public ::testing::WithParamInterface<SplitCacheTestCase> {
  public:
   HttpCacheTest_SplitCacheFeature() {
-    InitializeSplitCacheScopedFeatureList(feature_list_, GetParam());
+    if (GetParam() == SplitCacheTestCase::kSplitCacheDisabled) {
+      feature_list_.InitAndDisableFeature(
+          features::kSplitCacheByNetworkIsolationKey);
+    } else {
+      feature_list_.InitAndEnableFeature(
+          features::kSplitCacheByNetworkIsolationKey);
+    }
   }
 
   bool IsSplitCacheEnabled() const {
@@ -1282,52 +1255,27 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SimpleGETVerifyGoogleFontMetrics) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     HttpCacheTest_SplitCacheFeature,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kSplitCacheDisabled,
-         SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled,
-         SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled,
-         SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled}),
+    testing::ValuesIn({SplitCacheTestCase::kSplitCacheDisabled,
+                       SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case (SplitCacheTestCase::kSplitCacheDisabled):
           return "SplitCacheDisabled";
         case (SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled):
           return "SplitCacheNikFrameSiteEnabled";
-        case (SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled):
-          return "SplitCacheNikCrossSiteFlagEnabled";
-        case (SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled):
-          return "SplitCacheNikFrameSiteSharedOpaqueEnabled";
       }
     });
 
-class HttpCacheTest_SplitCacheFeatureEnabled
-    : public HttpCacheTest_SplitCacheFeature {
+class HttpCacheTest_SplitCacheFeatureEnabled : public HttpCacheTest {
  public:
   HttpCacheTest_SplitCacheFeatureEnabled() {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kSplitCacheByNetworkIsolationKey));
+    feature_list_.InitAndEnableFeature(
+        features::kSplitCacheByNetworkIsolationKey);
   }
-};
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HttpCacheTest_SplitCacheFeatureEnabled,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled,
-         SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled,
-         SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled}),
-    [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
-      switch (info.param) {
-        case (SplitCacheTestCase::kSplitCacheDisabled):
-          return "NotUsedForThisTestSuite";
-        case (SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled):
-          return "SplitCacheNikFrameSiteEnabled";
-        case (SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled):
-          return "SplitCacheNikCrossSiteFlagEnabled";
-        case (SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled):
-          return "SplitCacheNikFrameSiteSharedOpaqueEnabled";
-      }
-    });
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 TEST_F(HttpCacheTest, SimpleGETNoDiskCache) {
   MockHttpCache cache;
@@ -7168,7 +7116,7 @@ TEST_F(HttpCacheTest, SimplePOST_Invalidate_205) {
 
 // Tests that a successful POST invalidates a previously cached GET,
 // with cache split by top-frame origin.
-TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
+TEST_F(HttpCacheTest_SplitCacheFeatureEnabled,
        SimplePOST_Invalidate_205_SplitCache) {
   SchemefulSite site_a(GURL("http://a.com"));
   SchemefulSite site_b(GURL("http://b.com"));
@@ -11169,7 +11117,7 @@ TEST_F(HttpCacheTest, UpdatesRequestResponseTimeOn304) {
       ToSimpleString(response.headers));
 }
 
-TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
+TEST_F(HttpCacheTest_SplitCacheFeatureEnabled,
        SplitCacheWithNetworkIsolationKey) {
   MockHttpCache cache;
   HttpResponseInfo response;
@@ -11217,47 +11165,22 @@ TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
   EXPECT_TRUE(response.was_cached);
 
   // Now make a request with an opaque subframe site. It shouldn't cause
-  // anything to be added to the cache when the NIK makes use of the frame site.
-  // Note that we will use `site_b` as the top-level site so that this resource
-  // won't be in the cache at first regardless of the NIK partitioning scheme.
+  // anything to be added to the cache because the NIK makes use of the frame
+  // site.
   trans_info.network_isolation_key = NetworkIsolationKey(site_b, site_data);
   trans_info.network_anonymization_key =
       NetworkAnonymizationKey::CreateCrossSite(site_b);
-  switch (GetParam()) {
-    case SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled:
-      EXPECT_EQ(std::nullopt,
-                trans_info.network_isolation_key.ToCacheKeyString());
-      break;
-    case SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled:
-      EXPECT_EQ("http://b.com _1",
-                trans_info.network_isolation_key.ToCacheKeyString().value());
-      break;
-    case SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled:
-      EXPECT_EQ("http://b.com _opaque",
-                trans_info.network_isolation_key.ToCacheKeyString().value());
-      break;
-    case SplitCacheTestCase::kSplitCacheDisabled:
-      NOTREACHED_NORETURN();
-  }
+  EXPECT_EQ(std::nullopt, trans_info.network_isolation_key.ToCacheKeyString());
 
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // On the second request, expect a cache miss if the NIK uses the frame site.
+  // On the second request, expect a cache miss since the NIK uses the frame
+  // site.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
-  switch (GetParam()) {
-    case SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled:
-      EXPECT_FALSE(response.was_cached);
-      break;
-    case SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled:
-    case SplitCacheTestCase::kSplitCacheNikFrameSiteSharedOpaqueEnabled:
-      EXPECT_TRUE(response.was_cached);
-      break;
-    case SplitCacheTestCase::kSplitCacheDisabled:
-      NOTREACHED_NORETURN();
-  }
+  EXPECT_FALSE(response.was_cached);
 
   // Verify that a post transaction with a data stream uses a separate key.
   const int64_t kUploadId = 1;  // Just a dummy value.
@@ -11408,7 +11331,7 @@ TEST_F(HttpCacheTest, HttpCacheProfileThirdPartyFont) {
   histograms.ExpectTotalCount("HttpCache.Pattern.FontThirdParty", 1);
 }
 
-TEST_P(HttpCacheTest_SplitCacheFeatureEnabled, SplitCache) {
+TEST_F(HttpCacheTest_SplitCacheFeatureEnabled, SplitCache) {
   MockHttpCache cache;
   HttpResponseInfo response;
 
@@ -11558,7 +11481,7 @@ TEST_F(HttpCacheTest, SplitCacheEnabledByDefaultButOverridden) {
   EXPECT_FALSE(HttpCache::IsSplitCacheEnabled());
 }
 
-TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
+TEST_F(HttpCacheTest_SplitCacheFeatureEnabled,
        SplitCacheUsesRegistrableDomain) {
   MockHttpCache cache;
   HttpResponseInfo response;
