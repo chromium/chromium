@@ -5,6 +5,7 @@
 #include "media/gpu/test/video_test_helpers.h"
 
 #include <limits>
+#include <numeric>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -23,8 +24,6 @@
 #include "media/gpu/test/raw_video.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/media_buildflags.h"
-#include "media/parsers/vp8_parser.h"
-#include "media/parsers/vp9_parser.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
@@ -146,8 +145,17 @@ bool IvfWriter::WriteFrame(uint32_t data_size,
 std::unique_ptr<EncodedDataHelper> EncodedDataHelper::Create(
     base::span<const uint8_t> stream,
     VideoCodec codec) {
-  if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) {
+  if (codec == VideoCodec::kH264) {
     return std::make_unique<EncodedDataHelperH26x>(std::move(stream), codec);
+  }
+  if (codec == VideoCodec::kHEVC) {
+    // Depending on ENABLE_HEVC_PARSER_AND_HW_DECODER, use a sophisticated H265
+    // parser or the same NALU hunter as EncodedDataHelperH26x.
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    return std::make_unique<EncodedDataHelperH265>(std::move(stream), codec);
+#else
+    return std::make_unique<EncodedDataHelperH26x>(std::move(stream), codec);
+#endif
   }
   if (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9 ||
       codec == VideoCodec::kAV1) {
@@ -258,6 +266,177 @@ bool EncodedDataHelperH26x::LookForSPS() {
   }
   return false;
 }
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+EncodedDataHelperH265::EncodedDataHelperH265(base::span<const uint8_t> stream,
+                                             VideoCodec codec)
+    : EncodedDataHelper(std::move(stream), codec),
+      h265_parser_(std::make_unique<H265Parser>()) {
+  h265_parser_->SetStream(reinterpret_cast<uint8_t*>(data_.data()),
+                          data_.size());
+}
+
+EncodedDataHelperH265::~EncodedDataHelperH265() = default;
+
+scoped_refptr<DecoderBuffer> EncodedDataHelperH265::GetNextBuffer() {
+  CHECK(h265_parser_);
+  // This method is expected to send back DecoderBuffers with full frames, but
+  // oftentimes NALUs are only slices and part of a frame. HEVC uses SPS/PPS/SEI
+  // NALUs and "data" NALU's |first_slice_segment_in_pic_flag| flag to delimit
+  // those full frames; these  mark what's loosely called "first-slice" (of a
+  // frame) or a "(new) frame boundary":
+  //
+  // - VPS/SPS/PPS/SEI etc NALUs always mark a new frame boundary.
+  // - A |first_slice_segment_in_pic_flag| of 1/true also marks a new frame
+  //   boundary.
+  // - A |first_slice_segment_in_pic_flag| of 0/false means that the current
+  //   slice is part of a larger frame (and should be stored for later
+  //   reassembly.
+  //
+  // Note how we can only tell that a full frame is seen when we parse the
+  // _next_ NALU (or the stream ends). This complicates the code below greatly,
+  // since it needs to accumulate NALUs for later reassembly.
+
+  while (true) {
+    H265NALU nalu;
+    {
+      const auto result = h265_parser_->AdvanceToNextNALU(&nalu);
+      if (result == H265Parser::kEOStream) {
+        // |h265_parser_| has consumed all the data that was passed to it. This
+        // inherently signals a frame boundary.
+        auto decoder_buffer = ReassembleNALUs(previous_nalus_);
+        previous_nalus_.clear();
+        return decoder_buffer;
+      }
+      if (result == H265Parser::kInvalidStream ||
+          result == H265Parser::kUnsupportedStream) {
+        LOG(ERROR) << __func__ << " Invalid or unsupported bitstream";
+        return nullptr;
+      }
+      CHECK_EQ(result, H265Parser::kOk);
+    }
+    CHECK_LE(nalu.data,
+             reinterpret_cast<uint8_t*>(data_.data()) + data_.size());
+    CHECK_LE(nalu.data + nalu.size,
+             reinterpret_cast<uint8_t*>(data_.data()) + data_.size());
+
+    struct NALUMetadata nalu_metadata;
+    nalu_metadata.start_pointer =
+        reinterpret_cast<uint8_t*>(data_.data()) + next_pos_to_parse_;
+    nalu_metadata.start_index = next_pos_to_parse_;
+    nalu_metadata.header_size = nalu.data - nalu_metadata.start_pointer;
+    nalu_metadata.size_with_header = nalu_metadata.header_size + nalu.size;
+    VLOG(2) << "NALU (" << nalu.nal_unit_type << ") found " << nalu_metadata
+            << " next_pos_to_parse_=" << next_pos_to_parse_;
+
+    next_pos_to_parse_ += nalu_metadata.size_with_header;
+
+    bool is_new_frame_boundary = false;
+    switch (nalu.nal_unit_type) {
+      case H265NALU::SPS_NUT: {
+        int sps_id;
+        const auto result = h265_parser_->ParseSPS(&sps_id);
+        if (result != H265Parser::kOk) {
+          LOG(ERROR) << __func__ << "Error parsing SPS";
+          return nullptr;
+        }
+        is_new_frame_boundary = true;
+        break;
+      }
+      case H265NALU::PPS_NUT: {
+        int pps_id;
+        const auto result = h265_parser_->ParsePPS(nalu, &pps_id);
+        if (result != H265Parser::kOk) {
+          LOG(ERROR) << __func__ << "Error parsing PPS";
+          return nullptr;
+        }
+        is_new_frame_boundary = true;
+        break;
+      }
+      case H265NALU::BLA_W_LP:
+      case H265NALU::BLA_W_RADL:
+      case H265NALU::BLA_N_LP:
+      case H265NALU::IDR_W_RADL:
+      case H265NALU::IDR_N_LP:
+      case H265NALU::TRAIL_N:
+      case H265NALU::TRAIL_R:
+      case H265NALU::TSA_N:
+      case H265NALU::TSA_R:
+      case H265NALU::STSA_N:
+      case H265NALU::STSA_R:
+      case H265NALU::RADL_N:
+      case H265NALU::RADL_R:
+      case H265NALU::RASL_N:
+      case H265NALU::RASL_R:
+      case H265NALU::CRA_NUT: {
+        auto current_slice_header = std::make_unique<H265SliceHeader>();
+        const auto result = h265_parser_->ParseSliceHeader(
+            nalu, current_slice_header.get(), previous_slice_header_.get());
+        if (result != H265Parser::kOk) {
+          LOG(ERROR) << __func__ << "Error parsing slice header";
+          return nullptr;
+        }
+
+        is_new_frame_boundary =
+            current_slice_header->first_slice_segment_in_pic_flag;
+        VLOG_IF(4, is_new_frame_boundary) << "|is_new_frame_boundary|";
+
+        previous_slice_header_ = std::move(current_slice_header);
+        break;
+      }
+      default:  // Not a special NALU. Assume it marks the start of a new frame.
+        is_new_frame_boundary = true;
+        break;
+    }
+
+    if (!is_new_frame_boundary) {
+      VLOG(3) << "Storing current NALU " << nalu_metadata;
+      previous_nalus_.push_back(std::move(nalu_metadata));
+      continue;
+    }
+
+    const bool is_stand_alone_NALU = nalu.nal_unit_type >= H265NALU::VPS_NUT;
+    if (previous_nalus_.empty() && is_stand_alone_NALU) {
+      // Nothing stored from before, return the current NALU instantly (this is
+      // the case for e.g. SPS/PPS/SEI).
+      VLOG(3) << "Returning current NALU " << nalu_metadata;
+      return DecoderBuffer::CopyFrom(base::as_byte_span(data_).subspan(
+          nalu_metadata.start_index, nalu_metadata.size_with_header));
+    }
+
+    if (previous_nalus_.empty()) {
+      VLOG(3) << "Storing current NALU " << nalu_metadata;
+      previous_nalus_.push_back(std::move(nalu_metadata));
+      continue;
+    }
+
+    // Accumulate what we have and send it; store |nalu_metadata| for later.
+    auto decoder_buffer = ReassembleNALUs(previous_nalus_);
+    previous_nalus_.clear();
+    VLOG(3) << "Storing current NALU " << nalu_metadata;
+    previous_nalus_.push_back(std::move(nalu_metadata));
+    return decoder_buffer;
+  }
+}
+
+bool EncodedDataHelperH265::ReachEndOfStream() const {
+  return EncodedDataHelper::ReachEndOfStream() && previous_nalus_.empty();
+}
+
+scoped_refptr<DecoderBuffer> EncodedDataHelperH265::ReassembleNALUs(
+    const std::vector<struct NALUMetadata>& nalus) {
+  if (nalus.empty()) {
+    return nullptr;
+  }
+  const size_t total_size = std::accumulate(
+      nalus.begin(), nalus.end(), 0, [](size_t total, NALUMetadata metadata) {
+        return total + metadata.size_with_header;
+      });
+  VLOG(4) << "Reassembling " << nalus.size() << " NALUs, " << total_size << "B";
+  return DecoderBuffer::CopyFrom(base::as_byte_span(data_).subspan(
+      nalus.begin()->start_index, total_size));
+}
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 EncodedDataHelperIVF::EncodedDataHelperIVF(base::span<const uint8_t> stream,
                                            VideoCodec codec)

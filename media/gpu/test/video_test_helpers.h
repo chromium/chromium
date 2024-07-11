@@ -25,9 +25,14 @@
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "media/gpu/test/raw_video.h"
+#include "media/media_buildflags.h"
 #include "media/parsers/ivf_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/parsers/h265_parser.h"
+#endif
 
 namespace media {
 namespace test {
@@ -100,7 +105,7 @@ class IvfWriter {
   base::File output_file_;
 };
 
-// Helper to extract fragments from encoded video stream.
+// Helper to extract (full) frames from a video |stream|.
 class EncodedDataHelper {
  public:
   static std::unique_ptr<EncodedDataHelper> Create(
@@ -139,6 +144,49 @@ class EncodedDataHelperH26x : public EncodedDataHelper {
   bool IsNALHeader(const std::string& data, size_t pos);
   bool LookForSPS();
 };
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+// This class returns one by one the full frames (which can be composed of one
+// or multiple NALUs) in |stream| via GetNextBuffer(). |stream| must be in H.265
+// Annex B format (see www.itu.int/rec/T-REC-H.265).
+// Note that this is an issue specific to testing (which this class serves),
+// since in production there's always a container to give information about
+// frame boundaries, hence the logic here.
+class EncodedDataHelperH265 : public EncodedDataHelper {
+ public:
+  EncodedDataHelperH265(base::span<const uint8_t> stream, VideoCodec codec);
+  ~EncodedDataHelperH265() override;
+
+  scoped_refptr<DecoderBuffer> GetNextBuffer() override;
+  bool ReachEndOfStream() const override;
+
+ private:
+  // This struct is needed because:
+  // a) We need to keep both a pointer and an index to where a NALU starts (the
+  //    pointer is for |data_| arithmetic, the index is for base::span ops.
+  // b) H265NALUs don't provide NALU header size (it can be 3 or 4 bytes long),
+  //    so a few pointer ops are needed to calculate the |size_with_header|.
+  struct NALUMetadata {
+    const uint8_t* start_pointer;
+    size_t start_index;
+    size_t header_size;
+    size_t size_with_header;
+
+    friend std::ostream& operator<<(std::ostream& os, const NALUMetadata& m) {
+      return os << "start_index=" << m.start_index
+                << ", header_size=" << m.header_size
+                << ", size_with_header=" << m.size_with_header;
+    }
+  };
+
+  scoped_refptr<DecoderBuffer> ReassembleNALUs(
+      const std::vector<struct NALUMetadata>& nalus);
+
+  std::unique_ptr<H265Parser> h265_parser_;
+  std::vector<struct NALUMetadata> previous_nalus_;
+  std::unique_ptr<H265SliceHeader> previous_slice_header_;
+};
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // This class returns one by one the IVF frames in |stream| via GetNextBuffer().
 class EncodedDataHelperIVF : public EncodedDataHelper {
