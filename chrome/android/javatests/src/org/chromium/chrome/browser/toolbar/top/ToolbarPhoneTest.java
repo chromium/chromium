@@ -45,6 +45,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -82,7 +83,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
@@ -114,7 +114,7 @@ public class ToolbarPhoneTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
                 });
@@ -131,7 +131,7 @@ public class ToolbarPhoneTest {
 
         mActivityTestRule.startMainActivityOnBlankPage();
         TemplateUrlService originalService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -154,7 +154,7 @@ public class ToolbarPhoneTest {
         mToolbar.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
         doReturn(mMenuButton).when(mMenuButtonCoordinator).getMenuButton();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.draWithoutBackground(mCanvas);
                     verify(mMenuButtonCoordinator)
@@ -173,13 +173,13 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     public void testFocusAnimation_menuButtonHidesAndShows() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.onUrlFocusChange(true);
                 });
         onView(allOf(withId(R.id.menu_button_wrapper), withEffectiveVisibility(Visibility.GONE)));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.onUrlFocusChange(false);
                 });
@@ -200,7 +200,7 @@ public class ToolbarPhoneTest {
                 AppCompatResources.getDrawable(
                         mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Has to be created on the main thread.
                     MenuButtonCoordinator realMenuButtonCoordinator =
@@ -303,7 +303,7 @@ public class ToolbarPhoneTest {
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(focusedRadius);
 
         // Clear focus on the Omnibox
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().clearFocus();
                 });
@@ -339,7 +339,7 @@ public class ToolbarPhoneTest {
                         false);
 
         // Show a button, this will inflate the optional button view and create its coordinator.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.updateOptionalButton(buttonData);
                 });
@@ -358,7 +358,7 @@ public class ToolbarPhoneTest {
 
         mToolbar.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Draw the toolbar.
                     mToolbar.draWithoutBackground(mCanvas);
@@ -387,7 +387,7 @@ public class ToolbarPhoneTest {
                         false);
 
         // Show a button, this will inflate the optional button view and create its coordinator.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.updateOptionalButton(buttonData);
                 });
@@ -406,7 +406,7 @@ public class ToolbarPhoneTest {
 
         mToolbar.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Draw the toolbar.
                     mToolbar.draWithoutBackground(mCanvas);
@@ -436,7 +436,7 @@ public class ToolbarPhoneTest {
                         false);
 
         // Show a button, this will inflate the optional button view and create its coordinator.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.updateOptionalButton(buttonData);
                 });
@@ -453,7 +453,7 @@ public class ToolbarPhoneTest {
 
         mToolbar.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Draw the toolbar.
                     mToolbar.draWithoutBackground(mCanvas);
@@ -514,7 +514,7 @@ public class ToolbarPhoneTest {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         assertEquals(true, mToolbar.isLocationBarShownInNtp());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.setNtpSearchBoxScrollFractionForTesting(1);
                     mToolbar.updateLocationBarForSurfacePolish(
@@ -606,7 +606,7 @@ public class ToolbarPhoneTest {
 
         // Test focus on non-NTP pages.
         doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             0,
@@ -620,7 +620,7 @@ public class ToolbarPhoneTest {
 
         // Test focus when should not show search engine logo.
         doReturn(false).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             0,
@@ -629,7 +629,7 @@ public class ToolbarPhoneTest {
 
         // Test un-focus on NTP.
         doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             0,
@@ -637,7 +637,7 @@ public class ToolbarPhoneTest {
                 });
 
         // Test focus on NTP.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertNotEquals(
                             0,

@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -35,7 +36,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.TestContentProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.SelectFileDialog;
@@ -52,14 +52,14 @@ public class SelectFileDialogTest {
     private static final String DATA_URL =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head><meta name=\"viewport\"content=\"width=device-width,"
-                            + " initial-scale=2.0, maximum-scale=2.0\" /></head><body><form"
-                            + " action=\"about:blank\"><input id=\"input_file\" type=\"file\""
-                            + " /><br/><input id=\"input_text\" type=\"file\" accept=\"text/plain\""
-                            + " /><br/><input id=\"input_any\" type=\"file\" accept=\"*/*\""
-                            + " /><br/><input id=\"input_file_multiple\" type=\"file\" multiple /><br"
-                            + " /><input id=\"input_image\" type=\"file\" accept=\"image/*\" capture"
-                            + " /><br/><input id=\"input_audio\" type=\"file\" accept=\"audio/*\""
-                            + " capture /></form></body></html>");
+                        + " initial-scale=2.0, maximum-scale=2.0\" /></head><body><form"
+                        + " action=\"about:blank\"><input id=\"input_file\" type=\"file\""
+                        + " /><br/><input id=\"input_text\" type=\"file\" accept=\"text/plain\""
+                        + " /><br/><input id=\"input_any\" type=\"file\" accept=\"*/*\""
+                        + " /><br/><input id=\"input_file_multiple\" type=\"file\" multiple /><br"
+                        + " /><input id=\"input_image\" type=\"file\" accept=\"image/*\" capture"
+                        + " /><br/><input id=\"input_audio\" type=\"file\" accept=\"audio/*\""
+                        + " capture /></form></body></html>");
 
     private static class ActivityWindowAndroidForTest extends ActivityWindowAndroid {
         public Intent lastIntent;
@@ -102,7 +102,7 @@ public class SelectFileDialogTest {
     public void setUp() {
         mActivityTestRule.startMainActivityWithURL(DATA_URL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityWindowAndroidForTest =
                             new ActivityWindowAndroidForTest(mActivityTestRule.getActivity());
@@ -115,7 +115,7 @@ public class SelectFileDialogTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityWindowAndroidForTest.destroy();
                 });
@@ -228,7 +228,7 @@ public class SelectFileDialogTest {
     }
 
     private void resetActivityWindowAndroidForTest() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mActivityWindowAndroidForTest.lastCallback.onIntentCompleted(
                                 Activity.RESULT_CANCELED, null));

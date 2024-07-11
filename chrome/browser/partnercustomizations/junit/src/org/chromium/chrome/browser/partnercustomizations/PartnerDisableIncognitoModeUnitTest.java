@@ -21,12 +21,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsDelayedProvider;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Unit tests for the partner disabling incognito mode functionality. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -72,7 +72,7 @@ public class PartnerDisableIncognitoModeUnitTest {
                 false);
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -92,7 +92,7 @@ public class PartnerDisableIncognitoModeUnitTest {
     public void testNoProvider() throws InterruptedException {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_NO_PROVIDER);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -112,7 +112,7 @@ public class PartnerDisableIncognitoModeUnitTest {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         setParentalControlsEnabled(false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -133,7 +133,7 @@ public class PartnerDisableIncognitoModeUnitTest {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         setParentalControlsEnabled(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -157,7 +157,7 @@ public class PartnerDisableIncognitoModeUnitTest {
         mTestRule.setDelayProviderUriPathForDelay(
                 PartnerBrowserCustomizations.PARTNER_DISABLE_INCOGNITO_MODE_PATH);
         setParentalControlsEnabled(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), 2000);

@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -63,7 +64,6 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -214,7 +214,7 @@ public class ShowNtpAtStartupTest {
         // Verifies that closing the tracking Tab will remove the "continue browsing" card from
         // the NTP.
         Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getCurrentTabModel().closeTab(lastActiveTab);
                 });
@@ -223,13 +223,13 @@ public class ShowNtpAtStartupTest {
 
         // Tests to set another tracking Tab on the NTP.
         Tab newTrackingTab = cta.getCurrentTabModel().getTabAt(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ntp.showMagicStack(newTrackingTab);
                 });
         CriteriaHelper.pollUiThread(() -> ntp.isMagicStackVisibleForTesting());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getCurrentTabModel().closeTab(newTrackingTab);
                 });
@@ -393,7 +393,7 @@ public class ShowNtpAtStartupTest {
         waitForNtpLoaded(cta.getActivityTab());
 
         try {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> cta.findViewById(R.id.single_tab_view).performClick());
         } catch (ExecutionException e) {
             Assert.fail("Failed to tap the single tab card " + e.toString());
@@ -413,7 +413,7 @@ public class ShowNtpAtStartupTest {
                         null,
                         null,
                         "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ntpLayout.getOnLogoAvailableCallback().onResult(logo));
     }
 
@@ -465,13 +465,13 @@ public class ShowNtpAtStartupTest {
                 ntp.getSnapshotSingleTabCardChangedForTesting());
 
         try {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> cta.findViewById(R.id.tab_switcher_button).performClick());
         } catch (ExecutionException e) {
             fail("Failed to tap 'more tabs' " + e.toString());
         }
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getTabModelSelector().getModel(false).closeTab(lastActiveTab);
                 });
@@ -480,12 +480,12 @@ public class ShowNtpAtStartupTest {
                         + "snapshot for the NTP.",
                 ntp.getSnapshotSingleTabCardChangedForTesting());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
         NewTabPageTestUtils.waitForNtpLoaded(ntpTab);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> cta.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
         NewTabPageTestUtils.waitForNtpLoaded(ntpTab);
         assertFalse(
                 "There is no extra snapshot for the NTP to cache the change "
@@ -595,7 +595,7 @@ public class ShowNtpAtStartupTest {
             ChromeTabbedActivity cta, int tabCount, String url, Boolean expectHomeSurfaceUiShown) {
         Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
         Tab tab = StartSurfaceTestUtils.getCurrentTabFromUIThread(cta);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(TextUtils.equals(url, tab.getUrl().getSpec()));
                 });

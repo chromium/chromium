@@ -63,7 +63,6 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestSelectionPopupController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -244,7 +243,7 @@ public class ContextualSearchInstrumentationBase {
     /** Trigger text selection on the contextual search manager. */
     protected void mockLongpressText(String text) {
         mContextualSearchManager.getBaseSelectionPopupController().setSelectedText(text);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mContextualSearchClient.onSelectionEvent(
                                 SelectionEventType.SELECTION_HANDLES_SHOWN, 0, 0));
@@ -253,7 +252,7 @@ public class ContextualSearchInstrumentationBase {
     /** Trigger text selection on the contextual search manager. */
     protected void mockTapText(String text) {
         mContextualSearchManager.getBaseSelectionPopupController().setSelectedText(text);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContextualSearchManager.getGestureStateListener().onTouchDown();
                     mContextualSearchManager.onShowUnhandledTapUIIfNeeded(0, 0);
@@ -262,7 +261,7 @@ public class ContextualSearchInstrumentationBase {
 
     /** Trigger empty space tap. */
     protected void mockTapEmptySpace() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContextualSearchManager.onShowUnhandledTapUIIfNeeded(0, 0);
                     mContextualSearchClient.onSelectionEvent(
@@ -272,7 +271,7 @@ public class ContextualSearchInstrumentationBase {
 
     /** Generates a call indicating that surrounding text and selection range are available. */
     protected void generateTextSurroundingSelectionAvailable() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // It only makes sense to send placeholder data here because we can't easily
                     // control what's in the native context.
@@ -286,7 +285,7 @@ public class ContextualSearchInstrumentationBase {
      * action has completed with the given result.
      */
     protected void generateSelectWordAroundCaretAck() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // It only makes sense to send placeholder data here because we can't easily
                     // control what's in the native context.
@@ -353,7 +352,7 @@ public class ContextualSearchInstrumentationBase {
     @Before
     public void setUp() throws Exception {
         final ChromeActivity activity = sActivityTestRule.getActivity();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FirstRunStatus.setFirstRunFlowComplete(true);
 
@@ -429,7 +428,7 @@ public class ContextualSearchInstrumentationBase {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FirstRunStatus.setFirstRunFlowComplete(false);
 
@@ -634,7 +633,7 @@ public class ContextualSearchInstrumentationBase {
         // TODO(donnd): figure out how to reliably simulate a drag on all platforms.
         float unused = 0.0f;
         @SelectionEventType int dragStoppedEvent = SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mSelectionController.handleSelectionEvent(dragStoppedEvent, unused, unused));
 
         waitForSelectActionBarVisible();
@@ -1282,7 +1281,7 @@ public class ContextualSearchInstrumentationBase {
 
     /** Expands the panel by directly asking the panel to expand. */
     protected void expandPanel() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPanel.notifyBarTouched(0);
                     if (mFakeServer.getContentsObserver() != null) {
@@ -1307,7 +1306,7 @@ public class ContextualSearchInstrumentationBase {
     /** Force the Panel to peek. */
     protected void peekPanel() {
         // TODO(donnd): use a consistent method of running these test tasks, and it's probably
-        // best to use TestThreadUtils.runOnUiThreadBlocking as done elsewhere in this file.
+        // best to use ThreadUtils.runOnUiThreadBlocking as done elsewhere in this file.
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
                         () -> {
@@ -1319,7 +1318,7 @@ public class ContextualSearchInstrumentationBase {
     /** Force the Panel to maximize, and wait for it to do so. */
     protected void maximizePanel() {
         // TODO(donnd): use a consistent method of running these test tasks, and it's probably
-        // best to use TestThreadUtils.runOnUiThreadBlocking as done elsewhere in this file.
+        // best to use ThreadUtils.runOnUiThreadBlocking as done elsewhere in this file.
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
                         () -> {

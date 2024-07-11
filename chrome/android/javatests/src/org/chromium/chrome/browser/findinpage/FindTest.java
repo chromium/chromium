@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -48,7 +49,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.KeyUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 
@@ -76,7 +76,7 @@ public class FindTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivityTestRule
                             .getActivity()
@@ -137,7 +137,7 @@ public class FindTest {
         KeyCharacterMap keyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
         final KeyEvent[] events = keyCharacterMap.getEvents(query.toCharArray());
         Assert.assertNotNull(events);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (int i = 0; i < events.length; i++) {
                         if (!findQueryText.dispatchKeyEventPreIme(events[i])) {
@@ -382,7 +382,7 @@ public class FindTest {
         try (CloseableOnMainThread ignored =
                 CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
             // Emulate pasting the text into the find query text box
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         // Setup the clipboard with a selection of stylized text
                         ClipboardManager clipboard =

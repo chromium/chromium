@@ -8,8 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.equalTo;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 import static org.chromium.ui.modaldialog.DialogDismissalCause.ACTIVITY_DESTROYED;
 
 import android.os.Handler;

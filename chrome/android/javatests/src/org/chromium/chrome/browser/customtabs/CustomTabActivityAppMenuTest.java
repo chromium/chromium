@@ -45,6 +45,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -78,7 +79,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.webapps.WebappsUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -163,7 +163,7 @@ public class CustomTabActivityAppMenuTest {
                 mTranslateBridgeJniMock);
         jniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mTranslateBridgeJniMock);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         mTestPage = mCustomTabActivityTestRule.getTestServer().getURL(TEST_PAGE);
         WebappsUtils.setAddToHomeIntentSupportedForTesting(true);
         LibraryLoader.getInstance().ensureInitialized();
@@ -171,11 +171,11 @@ public class CustomTabActivityAppMenuTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
         // finish() is called on a non-UI thread by the testing harness. Must hide the menu
         // first, otherwise the UI is manipulated on a non-UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mCustomTabActivityTestRule.getActivity() == null) return;
                     AppMenuCoordinator coordinator =
@@ -442,7 +442,7 @@ public class CustomTabActivityAppMenuTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         // Mark the first run as not completed. This has to be done after we start the intent,
         // otherwise we are going to hit the FRE.
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
         openAppMenuAndAssertMenuShown();
         ModelList menuItemsModelList =

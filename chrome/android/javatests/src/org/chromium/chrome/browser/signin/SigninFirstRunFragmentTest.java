@@ -58,6 +58,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -108,7 +109,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -172,7 +172,7 @@ public class SigninFirstRunFragmentTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppCompatDelegate.setDefaultNightMode(
                             nightModeEnabled
@@ -198,7 +198,7 @@ public class SigninFirstRunFragmentTest {
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNativeInitializationPromise = new Promise<>();
                     mNativeInitializationPromise.fulfill(null);
@@ -215,7 +215,7 @@ public class SigninFirstRunFragmentTest {
         when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(false);
 
         OneshotSupplierImpl<ProfileProvider> profileSupplier =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             OneshotSupplierImpl<ProfileProvider> supplier =
                                     new OneshotSupplierImpl<>();
@@ -368,7 +368,7 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     public void testFragmentWhenSigninIsDisabledByPolicy() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -390,7 +390,7 @@ public class SigninFirstRunFragmentTest {
         CoreAccountInfo coreAccountInfo =
                 mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -427,7 +427,7 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     public void testFragmentWhenAddingAccountDynamicallyAndSigninIsDisabledByPolicy() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -597,7 +597,7 @@ public class SigninFirstRunFragmentTest {
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
 
         // Continue past the device lock page
-        TestThreadUtils.runOnUiThreadBlocking(() -> mFragment.onDeviceLockReady());
+        ThreadUtils.runOnUiThreadBlocking(() -> mFragment.onDeviceLockReady());
 
         // ToS should be accepted right away, without waiting for the sign-in to complete.
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
@@ -642,7 +642,7 @@ public class SigninFirstRunFragmentTest {
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
 
         // Continue past the device lock page
-        TestThreadUtils.runOnUiThreadBlocking(() -> mFragment.onDeviceLockRefused());
+        ThreadUtils.runOnUiThreadBlocking(() -> mFragment.onDeviceLockRefused());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -729,7 +729,7 @@ public class SigninFirstRunFragmentTest {
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
                 .thenReturn(signedInAccount);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -800,7 +800,7 @@ public class SigninFirstRunFragmentTest {
     @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testContinueButtonWithChildAccount() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -821,7 +821,7 @@ public class SigninFirstRunFragmentTest {
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testContinueButtonWithChildAccount_replaceSyncWithSigninPromosEnabled() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -860,7 +860,7 @@ public class SigninFirstRunFragmentTest {
     @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testContinueButtonWithChildAccountWithNonDisplayableAccountEmail() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -885,7 +885,7 @@ public class SigninFirstRunFragmentTest {
     public void
             testContinueButtonWithChildAccountWithNonDisplayableAccountEmail_replaceSyncWithSigninPromosEnabled() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -912,7 +912,7 @@ public class SigninFirstRunFragmentTest {
     public void
             testContinueButtonWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -934,7 +934,7 @@ public class SigninFirstRunFragmentTest {
     public void
             testContinueButtonWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName_replaceSyncPromosWithSigninPromosEnabled() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -961,7 +961,7 @@ public class SigninFirstRunFragmentTest {
     public void testProgressSpinnerOnContinueButtonPress() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
@@ -1202,7 +1202,7 @@ public class SigninFirstRunFragmentTest {
         // TODO(crbug.com/40232416): Use OneshotSupplierImpl instead.
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         verify(mPolicyLoadListenerMock, atLeastOnce()).onAvailable(mCallbackCaptor.capture());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (Callback<Boolean> callback : mCallbackCaptor.getAllValues()) {
                         callback.onResult(false);
@@ -1220,7 +1220,7 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenNativeIsLoadedAfterPolicyAndChildStatus() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNativeInitializationPromise = new Promise<>();
                 });
@@ -1230,7 +1230,7 @@ public class SigninFirstRunFragmentTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "MobileFre.SlowestLoadPoint", LoadPoint.NATIVE_INITIALIZATION);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
 
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
         slowestPointHistogram.assertExpected(
@@ -1256,7 +1256,7 @@ public class SigninFirstRunFragmentTest {
         when(mChildAccountStatusListenerMock.get()).thenReturn(false);
         verify(mChildAccountStatusListenerMock, atLeastOnce())
                 .onAvailable(mCallbackCaptor.capture());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (Callback<Boolean> callback : mCallbackCaptor.getAllValues()) {
                         callback.onResult(false);
@@ -1337,7 +1337,7 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testShowsTitleAndSubtitleWhenNativeInitializationFinished() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNativeInitializationPromise = new Promise<>();
                 });
@@ -1347,7 +1347,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.title)).check(matches(not(isDisplayed())));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
 
         @StringRes
         int titleStrId =
@@ -1395,7 +1395,7 @@ public class SigninFirstRunFragmentTest {
 
         // Detach the current fragment. Needs to be done before the PolicyLoadListener callback
         // otherwise this test is racy.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((BlankUiTestActivity) mActivityTestRule.getActivity())
                             .getSupportFragmentManager()
@@ -1412,7 +1412,7 @@ public class SigninFirstRunFragmentTest {
         verify(mPolicyLoadListenerMock, atLeastOnce()).onAvailable(mCallbackCaptor.capture());
 
         // Wait for the delayed task to run. Although this test setup reduces delay to 0 seconds.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCallbackCaptor.getValue().onResult(true);
                 });
@@ -1621,7 +1621,7 @@ public class SigninFirstRunFragmentTest {
     }
 
     private void launchActivityWithFragment() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((BlankUiTestActivity) mActivityTestRule.getActivity())
                             .getSupportFragmentManager()
@@ -1632,7 +1632,7 @@ public class SigninFirstRunFragmentTest {
         // Wait for fragment to be added to the activity.
         CriteriaHelper.pollUiThread(() -> mFragment.isResumed());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Replace all the progress bars with dummies. Currently the progress bar cannot
                     // be stopped otherwise due to some espresso issues (crbug/1115067).

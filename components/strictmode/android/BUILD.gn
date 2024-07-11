@@ -27,6 +27,7 @@ android_library("unit_device_javatests") {
   ]
   deps = [
     ":java",
+    "//base:tasks_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

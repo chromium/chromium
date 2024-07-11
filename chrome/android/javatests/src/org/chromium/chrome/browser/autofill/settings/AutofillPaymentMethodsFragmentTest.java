@@ -39,6 +39,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -66,7 +67,6 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.Arrays;
@@ -508,7 +508,7 @@ public class AutofillPaymentMethodsFragmentTest {
     public void testMandatoryReauthToggle_displayToggle() throws Exception {
         // Simulate the pref was enabled previously, to ensure the toggle value is set
         // correspondingly.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
@@ -564,7 +564,7 @@ public class AutofillPaymentMethodsFragmentTest {
     public void testMandatoryReauthToggle_disabledWithCorrespondingPrefValue() throws Exception {
         // Simulate the pref was enabled previously, to ensure the toggle value is set
         // correspondingly.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
@@ -593,7 +593,7 @@ public class AutofillPaymentMethodsFragmentTest {
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED)
                         .build();
         // Initial state, Reauth pref is disabled by default.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
@@ -610,7 +610,7 @@ public class AutofillPaymentMethodsFragmentTest {
         setUpBiometricAuthenticationResult(/* success= */ true);
         // Simulate click on the Reauth toggle, trying to toggle on. Now Chrome is waiting for OS
         // authentication which should succeed.
-        TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
 
         verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the Reauth toggle is now checked.
@@ -630,7 +630,7 @@ public class AutofillPaymentMethodsFragmentTest {
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED)
                         .build();
         // Simulate Reauth pref is enabled previously.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
@@ -647,7 +647,7 @@ public class AutofillPaymentMethodsFragmentTest {
         setUpBiometricAuthenticationResult(/* success= */ false);
         // Simulate click on the Reauth toggle, trying to toggle off. Now Chrome is waiting for OS
         // authentication which should fail.
-        TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
 
         verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the Reauth toggle is still checked since authentication failed.
@@ -671,7 +671,7 @@ public class AutofillPaymentMethodsFragmentTest {
     public void testLocalCardEditWithReauth_reauthOnClicked() throws Exception {
         mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
         // Simulate Reauth pref is enabled.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
@@ -701,7 +701,7 @@ public class AutofillPaymentMethodsFragmentTest {
         // Simulate the biometric authentication will success.
         setUpBiometricAuthenticationResult(/* success= */ true);
         // Simulate click on the local card widget. Now Chrome is waiting for OS authentication.
-        TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
+        ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Now mReauthenticatorMock simulate success auth, which will open local card dialog
         // afterwards. Wait for the new dialog to be rendered.
         rule.waitForFragmentToBeShown();
@@ -717,7 +717,7 @@ public class AutofillPaymentMethodsFragmentTest {
     public void testLocalCardEditWithReauth_reauthOnClickedButFails() throws Exception {
         mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
         // Simulate Reauth pref is enabled.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
@@ -748,7 +748,7 @@ public class AutofillPaymentMethodsFragmentTest {
         setUpBiometricAuthenticationResult(/* success= */ false);
         // Simulate click on the local card widget. Now Chrome is waiting for OS authentication
         // which should fail and hence the payment methods page should still be open.
-        TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
+        ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
 
         verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the local card edit dialog was NOT shown.
@@ -762,7 +762,7 @@ public class AutofillPaymentMethodsFragmentTest {
     public void testLocalCardEditWithReauth_reauthOnClickedOnAuto() throws Exception {
         mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
         // Simulate Reauth pref is enabled.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
@@ -787,7 +787,7 @@ public class AutofillPaymentMethodsFragmentTest {
         // Simulate the biometric authentication will success.
         setUpBiometricAuthenticationResult(/* success= */ true);
         // Simulate click on the local card widget. Now Chrome is waiting for OS authentication.
-        TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
+        ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Now mReauthenticatorMock simulate success auth, which will open local card dialog
         // afterwards. Wait for the new dialog to be rendered.
         rule.waitForFragmentToBeShown();
@@ -804,7 +804,7 @@ public class AutofillPaymentMethodsFragmentTest {
     public void testLocalCardEditWithReauth_noReauthWhenReauthIsDisabled() throws Exception {
         mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
         // Simulate Reauth pref is disabled.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
@@ -822,7 +822,7 @@ public class AutofillPaymentMethodsFragmentTest {
         assertThat(title).contains("1111");
 
         // Simulate click on the local card widget.
-        TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
+        ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Since reauth pref is disabled, we will directly open local card dialog. Wait for the new
         // dialog to be rendered.
         rule.waitForFragmentToBeShown();
@@ -839,7 +839,7 @@ public class AutofillPaymentMethodsFragmentTest {
         mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
 
         // Initial state, Reauth pref is disabled by default.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
@@ -853,7 +853,7 @@ public class AutofillPaymentMethodsFragmentTest {
         setUpBiometricAuthenticationResult(/* success= */ true);
         // Simulate click on the Reauth toggle, trying to toggle on. Now Chrome is waiting for OS
         // authentication which should succeed.
-        TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
 
         // Get the local card's widget.
         Preference cardPreference = getFirstPaymentMethodPreference(activity);
@@ -862,7 +862,7 @@ public class AutofillPaymentMethodsFragmentTest {
         assertThat(title).contains("1111");
 
         // Simulate click on the local card widget. Now Chrome is waiting for OS authentication.
-        TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
+        ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Now mReauthenticatorMock simulate success auth, which will open local card dialog
         // afterwards. Wait for the new dialog to be rendered.
         rule.waitForFragmentToBeShown();
@@ -882,7 +882,7 @@ public class AutofillPaymentMethodsFragmentTest {
         mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
 
         // Simulate Reauth pref is enabled.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
@@ -896,7 +896,7 @@ public class AutofillPaymentMethodsFragmentTest {
         setUpBiometricAuthenticationResult(/* success= */ true);
         // Simulate click on the Reauth toggle, trying to toggle off. Now Chrome is waiting for OS
         // authentication which should succeed.
-        TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
 
         // Get the local card's widget.
         Preference cardPreference = getFirstPaymentMethodPreference(activity);
@@ -905,7 +905,7 @@ public class AutofillPaymentMethodsFragmentTest {
         assertThat(title).contains("1111");
 
         // Simulate click on the local card widget.
-        TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
+        ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Since reauth pref is disabled, we will directly open local card dialog. Wait for the new
         // dialog to be rendered.
         rule.waitForFragmentToBeShown();
@@ -924,7 +924,7 @@ public class AutofillPaymentMethodsFragmentTest {
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
     public void testSaveCvcToggle_shown() throws Exception {
         // Initial state, Save Cvc pref is enabled previously.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE, true);
                 });
@@ -966,7 +966,7 @@ public class AutofillPaymentMethodsFragmentTest {
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "false")})
     public void testSaveCvcToggle_disabledAndOffWhenAutofillDisabled() throws Exception {
         // Initial state, Save Cvc pref is enabled previously.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE, true);
                 });
@@ -1033,7 +1033,7 @@ public class AutofillPaymentMethodsFragmentTest {
         Preference deleteSavedCvcsToggle =
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     deleteSavedCvcsToggle.performClick();
                 });
@@ -1069,7 +1069,7 @@ public class AutofillPaymentMethodsFragmentTest {
         Preference deleteSavedCvcsPreference =
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     deleteSavedCvcsPreference.performClick();
                 });
@@ -1136,7 +1136,7 @@ public class AutofillPaymentMethodsFragmentTest {
                         .findPreference(AutofillPaymentMethodsFragment.PREF_ADD_IBAN);
 
         // Simulate click on the Add Iban button.
-        TestThreadUtils.runOnUiThreadBlocking(addIbanPreference::performClick);
+        ThreadUtils.runOnUiThreadBlocking(addIbanPreference::performClick);
         rule.waitForFragmentToBeShown();
 
         // Verify that the local IBAN editor was opened.
@@ -1261,7 +1261,7 @@ public class AutofillPaymentMethodsFragmentTest {
                                 AutofillPaymentMethodsFragment.PREF_FINANCIAL_ACCOUNTS_MANAGEMENT);
 
         // Simulate click on the preference/.
-        TestThreadUtils.runOnUiThreadBlocking(otherFinancialAccountsPref::performClick);
+        ThreadUtils.runOnUiThreadBlocking(otherFinancialAccountsPref::performClick);
         rule.waitForFragmentToBeShown();
 
         // Verify that the financial accounts management fragment is opened.

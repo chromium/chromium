@@ -41,6 +41,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -59,7 +60,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -101,7 +101,7 @@ public final class FledgeFragmentTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
@@ -145,14 +145,14 @@ public final class FledgeFragmentTest {
     }
 
     private void setFledgePrefEnabled(boolean isEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FledgeFragment.setFledgePrefEnabled(
                                 ProfileManager.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isFledgePrefEnabled() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         FledgeFragment.isFledgePrefEnabled(
                                 ProfileManager.getLastUsedRegularProfile()));

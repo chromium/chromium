@@ -37,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -55,7 +56,6 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetT
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -73,7 +73,7 @@ public class PasswordAccessorySheetViewTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = new AccessorySheetTabItemsModel();
 
@@ -138,7 +138,7 @@ public class PasswordAccessorySheetViewTest {
     public void testAddingCaptionsToTheModelRendersThem() {
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -173,7 +173,7 @@ public class PasswordAccessorySheetViewTest {
                         "",
                         true,
                         item -> clicked.set(true)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -189,10 +189,10 @@ public class PasswordAccessorySheetViewTest {
                 getPasswordSuggestion().getPrimaryTextView().getTransformationMethod(),
                 instanceOf(PasswordTransformationMethod.class));
 
-        TestThreadUtils.runOnUiThreadBlocking(getNameSuggestion()::performClick);
+        ThreadUtils.runOnUiThreadBlocking(getNameSuggestion()::performClick);
         assertThat(clicked.get(), is(true));
         clicked.set(false);
-        TestThreadUtils.runOnUiThreadBlocking(getPasswordSuggestion()::performClick);
+        ThreadUtils.runOnUiThreadBlocking(getPasswordSuggestion()::performClick);
         assertThat(clicked.get(), is(true));
     }
 
@@ -205,7 +205,7 @@ public class PasswordAccessorySheetViewTest {
 
         final PasskeySection kTestPasskey =
                 new PasskeySection("Passkey User", () -> clicked.set(true));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -221,7 +221,7 @@ public class PasswordAccessorySheetViewTest {
                 getPasskeyChipAt(0).getSecondaryTextView().getText(),
                 is(getString(R.string.password_accessory_passkey_label)));
 
-        TestThreadUtils.runOnUiThreadBlocking(getPasskeyChipAt(0)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(getPasskeyChipAt(0)::performClick);
         assertThat(clicked.get(), is(true));
     }
 
@@ -238,7 +238,7 @@ public class PasswordAccessorySheetViewTest {
         usernameEnabled.addField(
                 new UserInfoField("pa55w0rd", "Password for username1", "", true, null));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -253,9 +253,9 @@ public class PasswordAccessorySheetViewTest {
                 getPasswordSuggestion().getPrimaryTextView().getTransformationMethod(),
                 instanceOf(PasswordTransformationMethod.class));
 
-        TestThreadUtils.runOnUiThreadBlocking(getNameSuggestion()::performClick);
+        ThreadUtils.runOnUiThreadBlocking(getNameSuggestion()::performClick);
         assertThat(clicked.get(), is(true));
-        TestThreadUtils.runOnUiThreadBlocking(getPasswordSuggestion()::performClick);
+        ThreadUtils.runOnUiThreadBlocking(getPasswordSuggestion()::performClick);
         assertInsecureFillingDialog();
     }
 
@@ -266,7 +266,7 @@ public class PasswordAccessorySheetViewTest {
         final UserInfoField kUnusedInfoField =
                 new UserInfoField("Unused Name", "Unused Password", "", false, cb -> {});
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserInfo sameOriginInfo = new UserInfo("", true);
                     sameOriginInfo.addField(kUnusedInfoField);
@@ -294,7 +294,7 @@ public class PasswordAccessorySheetViewTest {
     @MediumTest
     public void testOptionToggleRenderedIfNotEmpty() throws ExecutionException {
         assertThat(mView.get().getChildCount(), is(0));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OptionToggle toggle =
                             new OptionToggle(
@@ -328,7 +328,7 @@ public class PasswordAccessorySheetViewTest {
     @MediumTest
     public void testClickingDisabledToggleInvokesCallbackToEnable() throws ExecutionException {
         AtomicReference<Boolean> toggleEnabled = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OptionToggle toggle =
                             new OptionToggle(
@@ -342,7 +342,7 @@ public class PasswordAccessorySheetViewTest {
                 });
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 mView.get().findViewById(R.id.option_toggle)::performClick);
         assertTrue(toggleEnabled.get());
     }
@@ -351,7 +351,7 @@ public class PasswordAccessorySheetViewTest {
     @MediumTest
     public void testClickingEnabledToggleInvokesCallbackToDisable() throws ExecutionException {
         AtomicReference<Boolean> toggleEnabled = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OptionToggle toggle =
                             new OptionToggle(
@@ -365,7 +365,7 @@ public class PasswordAccessorySheetViewTest {
                 });
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 mView.get().findViewById(R.id.option_toggle)::performClick);
 
         assertFalse(toggleEnabled.get());

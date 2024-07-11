@@ -6,11 +6,11 @@ package org.chromium.chrome.test.transit;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /* Helper class for extended multi-stage Trips. */
 public class Journeys {
@@ -30,7 +30,7 @@ public class Journeys {
         assert numTabs >= 1;
         assert url != null;
         TabModelSelector tabModelSelector =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> startingStation.getActivity().getTabModelSelector());
         int currentTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
         int currentIncognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();

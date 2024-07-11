@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -52,7 +53,6 @@ import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -212,7 +212,7 @@ public class PageInfoDiscoverabilityTest {
         mResources = mContext.getResources();
         mPermissionDialogController = PermissionDialogController.getInstance();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = new PropertyModel(StatusProperties.ALL_KEYS);
                     mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
@@ -241,7 +241,7 @@ public class PageInfoDiscoverabilityTest {
 
         // Reset content settings.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
@@ -337,7 +337,7 @@ public class PageInfoDiscoverabilityTest {
         }
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
         @ContentSettingsType.EnumType int[] permissions = {contentSettingsType};
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMediator.onDialogResult(
                             sPermissionTestRule.getActivity().getWindowAndroid(),

@@ -106,6 +106,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
@@ -149,7 +150,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -215,7 +215,7 @@ public class TabGridDialogTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
                 });
@@ -237,10 +237,10 @@ public class TabGridDialogTest {
         CriteriaHelper.pollUiThread(
                 sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
         mModalDialogManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         sActivityTestRule.getActivity()::getModalDialogManager);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
                             sActivityTestRule
@@ -267,7 +267,7 @@ public class TabGridDialogTest {
         if (cta == null) return;
 
         boolean isDestroyed =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return sMonitor.getLifecycleStageOf(cta) == Stage.DESTROYED;
                         });
@@ -405,7 +405,7 @@ public class TabGridDialogTest {
 
         // Add a tab to hide the group. Any foreground launch type will also hide the tab switcher
         // so use a background one to make testing easier.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab parentTab = cta.getTabModelSelector().getModel(false).getTabAt(0);
                     cta.getCurrentTabCreator()
@@ -436,7 +436,7 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
 
         // Add a tab to hide the group.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModelSelector selector = cta.getTabModelSelector();
                     Tab destinationTab = selector.getModel(false).getTabAt(0);
@@ -498,7 +498,7 @@ public class TabGridDialogTest {
         ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams) recyclerView.getLayoutParams();
         params.topMargin += deltaTopMargin;
-        TestThreadUtils.runOnUiThreadBlocking(() -> recyclerView.setLayoutParams(params));
+        ThreadUtils.runOnUiThreadBlocking(() -> recyclerView.setLayoutParams(params));
         CriteriaHelper.pollUiThread(() -> !recyclerView.isComputingLayout());
 
         // Calculate expected values of animation source rect.
@@ -585,17 +585,17 @@ public class TabGridDialogTest {
                     model.closeTab(model.getTabAt(index));
                 };
         // Close two tabs in the current group
-        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(0));
+        ThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(0));
         verifyShowingDialog(cta, 2, null);
-        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(0));
+        ThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(0));
         verifyShowingDialog(cta, 1, null);
 
         // Close two tabs in the GTS background group, dialog should still show.
-        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(1));
+        ThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(1));
         verifyShowingDialog(cta, 1, null);
-        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(1));
+        ThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(1));
         verifyShowingDialog(cta, 1, null);
-        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(1));
+        ThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(1));
         verifyShowingDialog(cta, 1, null);
     }
 
@@ -875,7 +875,7 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+        ThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open the selection editor.
@@ -920,7 +920,7 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+        ThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open the selection editor.
@@ -1261,7 +1261,7 @@ public class TabGridDialogTest {
         CriteriaHelper.pollUiThread(() -> parentView.getHeight() > parentView.getWidth());
         View rootView = cta.findViewById(R.id.coordinator);
         int rootViewHeight = rootView.getHeight();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup.LayoutParams params = rootView.getLayoutParams();
                     params.height = rootViewHeight / 2;
@@ -1271,7 +1271,7 @@ public class TabGridDialogTest {
         openSelectionEditorAndVerify(cta, 3);
         checkPosition(cta, false, true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup.LayoutParams params = rootView.getLayoutParams();
                     params.height = rootViewHeight;
@@ -2218,7 +2218,7 @@ public class TabGridDialogTest {
     }
 
     private void dismissAllModalDialogs() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
                 });
@@ -2309,7 +2309,7 @@ public class TabGridDialogTest {
 
     private void clickScrimToExitDialog(ChromeTabbedActivity cta) throws ExecutionException {
         CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View scrimView;
                     if (isTablet(cta)) {

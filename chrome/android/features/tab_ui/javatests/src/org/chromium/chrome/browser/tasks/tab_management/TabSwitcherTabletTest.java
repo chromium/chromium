@@ -36,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -67,7 +68,6 @@ import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.ExecutionException;
@@ -110,7 +110,7 @@ public class TabSwitcherTabletTest {
                 && !layoutManager.isLayoutStartingToHide(LayoutType.TAB_SWITCHER)) {
             TabModelSelector selector = cta.getTabModelSelectorSupplier().get();
             if (selector.getModel(false).getCount() == 0) {
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             TabCreator tabCreator = cta.getTabCreator(/* incognito= */ false);
                             return tabCreator.createNewTab(
@@ -270,7 +270,7 @@ public class TabSwitcherTabletTest {
         prepareTabs(1, 1);
 
         // Close all the regular tabs.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     regularModel.closeTab(regularModel.getTabAt(0));
                 });
@@ -297,7 +297,7 @@ public class TabSwitcherTabletTest {
         prepareTabs(2, 0);
         // Verifies that the dialog visibility supplier doesn't crash when closing a Tab without the
         // grid tab switcher is inflated.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getCurrentTabModel().closeTab(cta.getActivityTab());
                 });
@@ -344,7 +344,7 @@ public class TabSwitcherTabletTest {
         TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
 
         // Close the last normal tab.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel model = cta.getTabModelSelector().getModel(false);
                     model.closeTab(model.getTabAt(0));
@@ -359,7 +359,7 @@ public class TabSwitcherTabletTest {
                 .check(doesNotExist());
 
         // Close the last incognito tab.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel model = cta.getTabModelSelector().getModel(true);
                     model.closeTab(model.getTabAt(0));
@@ -383,7 +383,7 @@ public class TabSwitcherTabletTest {
                         tabModelSelectedCallback.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         sActivityTestRule
                                 .getActivity()
@@ -401,7 +401,7 @@ public class TabSwitcherTabletTest {
         } catch (TimeoutException e) {
             Assert.fail("Tab model selected event never occurred.");
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
                 });
@@ -437,7 +437,7 @@ public class TabSwitcherTabletTest {
         LayoutManagerChrome layoutManager = sActivityTestRule.getActivity().getLayoutManager();
         Layout tabSwitcherLayout = layoutManager.getHubLayoutForTesting();
         if (tabSwitcherLayout == null) {
-            TestThreadUtils.runOnUiThreadBlocking(layoutManager::initHubLayoutForTesting);
+            ThreadUtils.runOnUiThreadBlocking(layoutManager::initHubLayoutForTesting);
             tabSwitcherLayout = layoutManager.getHubLayoutForTesting();
         }
         assertNotNull(tabSwitcherLayout);

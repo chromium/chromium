@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -66,7 +67,6 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
@@ -142,7 +142,7 @@ public class TabbedAppMenuTest {
 
         CompositorAnimationHandler.setTestingMode(false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setCategoryEnabled(
                             ProfileManager.getLastUsedRegularProfile(),
@@ -267,7 +267,7 @@ public class TabbedAppMenuTest {
                         .getLayoutManager()
                         .isLayoutVisible(LayoutType.TAB_SWITCHER));
         Assert.assertFalse("App menu shouldn't be showing.", mAppMenuHandler.isAppMenuShowing());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "App menu should be allowed to show.",
@@ -305,7 +305,7 @@ public class TabbedAppMenuTest {
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.TITLE_CONDENSED));
         mRenderTestRule.render(getListView().getChildAt(0), "rounded_corner_icon_row");
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(true);
         showAppMenuAndAssertMenuShown();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -359,8 +359,8 @@ public class TabbedAppMenuTest {
                             && requestDesktopSiteIndex <= visibleEnd;
                 };
         CriteriaHelper.pollUiThread(() -> getListView().getChildAt(0) != null);
-        if (!TestThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
-            TestThreadUtils.runOnUiThreadBlocking(
+        if (!ThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> getListView().smoothScrollToPosition(requestDesktopSiteIndex));
             CriteriaHelper.pollUiThread(isVisible);
         }
@@ -370,7 +370,7 @@ public class TabbedAppMenuTest {
                                 requestDesktopSiteIndex - getListView().getFirstVisiblePosition()),
                 "request_desktop_site_uncheck");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setCategoryEnabled(
                             ProfileManager.getLastUsedRegularProfile(),
@@ -383,13 +383,13 @@ public class TabbedAppMenuTest {
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
         Assert.assertTrue("Should request desktop site.", isRequestDesktopSite);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         showAppMenuAndAssertMenuShown();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         CriteriaHelper.pollUiThread(() -> getListView().getChildAt(0) != null);
-        if (!TestThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
-            TestThreadUtils.runOnUiThreadBlocking(
+        if (!ThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> getListView().smoothScrollToPosition(requestDesktopSiteIndex));
             CriteriaHelper.pollUiThread(isVisible);
         }
@@ -472,10 +472,10 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main", "RenderTest"})
     public void testSettingsMenuItem_BadgeShownForSignedInUsersOnIdentityError()
             throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
 
         FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -499,7 +499,7 @@ public class TabbedAppMenuTest {
     @LargeTest
     @Feature({"Browser", "Main", "RenderTest"})
     public void testSettingsMenuItem_NoBadgeShownForSignedInUsersIfNoError() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         // Sign in and wait for sync machinery to be active.
         mSigninTestRule.addTestAccountThenSignin();
 
@@ -513,9 +513,9 @@ public class TabbedAppMenuTest {
     @LargeTest
     @Feature({"Browser", "Main", "RenderTest"})
     public void testSettingsMenuItem_BadgeShownForSyncingUsersOnSyncError() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -540,7 +540,7 @@ public class TabbedAppMenuTest {
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
     @Feature({"Browser", "Main", "RenderTest"})
     public void testSettingsMenuItem_NoBadgeShownForSyncingUsersIfNoError() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         // Sign in and wait for sync machinery to be active.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
@@ -551,7 +551,7 @@ public class TabbedAppMenuTest {
     }
 
     private void showAppMenuAndAssertMenuShown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -632,13 +632,13 @@ public class TabbedAppMenuTest {
                     return position >= visibleStart && position <= visibleEnd;
                 };
 
-        if (!TestThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> getListView().setSelection(position));
+        if (!ThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+            ThreadUtils.runOnUiThreadBlocking(() -> getListView().setSelection(position));
             CriteriaHelper.pollUiThread(isVisible);
         }
 
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return getListView()
                                     .getChildAt(position - getListView().getFirstVisiblePosition());

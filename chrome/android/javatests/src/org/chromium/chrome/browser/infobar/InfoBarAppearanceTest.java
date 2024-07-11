@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -24,7 +25,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.components.infobars.InfoBar;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -51,7 +51,7 @@ public class InfoBarAppearanceTest {
     public void setUp() throws InterruptedException {
         mListener = new InfoBarTestAnimationListener();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTab = sActivityTestRule.getActivity().getActivityTab();
                     sActivityTestRule.getInfoBarContainer().addAnimationListener(mListener);
@@ -62,7 +62,7 @@ public class InfoBarAppearanceTest {
     public void tearDown() {
         InfoBarContainer container = sActivityTestRule.getInfoBarContainer();
         if (container != null) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         container.removeAnimationListener(mListener);
                         InfoBarContainer.removeInfoBarContainerForTesting(
@@ -75,19 +75,19 @@ public class InfoBarAppearanceTest {
     @MediumTest
     @Feature({"InfoBars", "UiCatalogue"})
     public void testOomInfoBar() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> InfoBarContainer.get(mTab).addInfoBarForTesting(new NearOomInfoBar()));
         mListener.addInfoBarAnimationFinished("InfoBar was not added.");
         sScreenShooter.shoot("oom_infobar");
     }
 
     private void captureMiniAndRegularInfobar(InfoBar infobar) throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> InfoBarContainer.get(mTab).addInfoBarForTesting(infobar));
         mListener.addInfoBarAnimationFinished("InfoBar was not added.");
         sScreenShooter.shoot("compact");
 
-        TestThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
+        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
         mListener.swapInfoBarAnimationFinished("InfoBar did not expand.");
         sScreenShooter.shoot("expanded");
     }

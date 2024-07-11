@@ -26,13 +26,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for {@link PriceInsightsBottomSheetCoordinator}. */
@@ -55,7 +55,7 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
     @Before
     public void setUp() {
         mActivity = getActivity();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceInsightsCoordinator =
                             new PriceInsightsBottomSheetCoordinator(
@@ -66,7 +66,7 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceInsightsCoordinator.closeContent();
                 });
@@ -75,7 +75,7 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
     @Test
     @SmallTest
     public void testRequestShowContent() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceInsightsCoordinator.requestShowContent();
                 });
@@ -92,7 +92,7 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
     @Test
     @SmallTest
     public void testCloseContent() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceInsightsCoordinator.requestShowContent();
                 });

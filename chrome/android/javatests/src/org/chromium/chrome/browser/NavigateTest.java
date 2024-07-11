@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -64,7 +65,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -265,7 +265,7 @@ public class NavigateTest {
         ChromeTabUtils.waitForTabPageLoaded(tab, url1);
 
         navigateAndObserve(url2);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TabUtils.switchUserAgent(
                                 tab, /* switchToDesktop= */ true, UseDesktopUserAgentCaller.OTHER));
@@ -292,7 +292,7 @@ public class NavigateTest {
         String url = mTestServer.getURL("/echocriticalheader");
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         navigateAndObserve(url);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TabUtils.switchUserAgent(
                                 tab, /* switchToDesktop= */ true, UseDesktopUserAgentCaller.OTHER));
@@ -329,7 +329,7 @@ public class NavigateTest {
                     }
                 };
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
         DOMUtils.clickNode(tab.getWebContents(), "aboutLink");
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);
         Assert.assertEquals(
@@ -464,7 +464,7 @@ public class NavigateTest {
                     toolbarManager.getHandleBackPressChangedSupplier().get());
             Assert.assertTrue(
                     "Tab has been navigated back",
-                    TestThreadUtils.runOnUiThreadBlocking(toolbarManager::back));
+                    ThreadUtils.runOnUiThreadBlocking(toolbarManager::back));
             UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         }
         Assert.assertEquals(
@@ -601,7 +601,7 @@ public class NavigateTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabUiTestHelper.enterTabSwitcher(cta);
         Assert.assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
@@ -631,7 +631,7 @@ public class NavigateTest {
     @DisabledTest(message = "https://crbug.com/1410635")
     public void testNavigateBackWithTabSwitcher_BackPressRefactor() throws Exception {
         // Disable iph
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackPressManager backPressManager =
                             mActivityTestRule.getActivity().getBackPressManagerForTesting();
@@ -782,14 +782,14 @@ public class NavigateTest {
                     }
                 };
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
         DOMUtils.clickNode(tab.getWebContents(), "rendererInitiated");
         ChromeTabUtils.waitForTabPageLoaded(tab, finalUrl);
     }
 
     private String getTabUrlOnUIThread(final Tab tab) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> ChromeTabUtils.getUrlStringOnUiThread(tab));
         } catch (ExecutionException ex) {
             assert false : "Unexpected ExecutionException";

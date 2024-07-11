@@ -20,6 +20,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -29,7 +30,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -73,7 +73,7 @@ public class SnackbarTest {
     public static void setupSuite() {
         BlankUiTestActivity.setTestLayout(R.layout.test_snackbar_manager_activity_layout);
         activityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = activityTestRule.getActivity();
                     sMainParent = sActivity.findViewById(android.R.id.content);
@@ -84,7 +84,7 @@ public class SnackbarTest {
 
     @AfterClass
     public static void teardownSuite() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SnackbarManager.resetDurationForTesting();
                     sActivity = null;

@@ -14,7 +14,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class FakeServerHelper {
      * returning null.
      */
     public static @Nullable FakeServerHelper createInstanceAndGet() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     if (sFakeServerHelper == null) {
                         sFakeServerHelper = new FakeServerHelper();
@@ -56,7 +55,7 @@ public class FakeServerHelper {
 
     /** Deletes the existing FakeServer if any. */
     public static void destroyInstance() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (sFakeServerHelper == null) return;
 
@@ -82,7 +81,7 @@ public class FakeServerHelper {
      */
     public boolean verifyEntityCountByTypeAndName(
             final int count, final int modelType, final String name) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         FakeServerHelperJni.get()
                                 .verifyEntityCountByTypeAndName(
@@ -96,7 +95,7 @@ public class FakeServerHelper {
      * @return whether the sessions on the server match the given urls.
      */
     public boolean verifySessions(final String[] urls) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> FakeServerHelperJni.get().verifySessions(mNativeFakeServer, urls));
     }
 
@@ -109,7 +108,7 @@ public class FakeServerHelper {
     public List<SyncEntity> getSyncEntitiesByModelType(final int modelType)
             throws InvalidProtocolBufferException {
         byte[][] serializedEntities =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 FakeServerHelperJni.get()
                                         .getSyncEntitiesByModelType(mNativeFakeServer, modelType));
@@ -136,7 +135,7 @@ public class FakeServerHelper {
             final EntitySpecifics entitySpecifics) {
         // The protocol buffer is serialized as a byte array because it can be easily
         // deserialized from this format in native code.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .injectUniqueClientEntity(
@@ -156,7 +155,7 @@ public class FakeServerHelper {
     public void setWalletData(final SyncEntity entity) {
         // The protocol buffer is serialized as a byte array because it can be easily
         // deserialized from this format in native code.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .setWalletData(mNativeFakeServer, entity.toByteArray()));
@@ -171,7 +170,7 @@ public class FakeServerHelper {
     public void modifyEntitySpecifics(final String id, final EntitySpecifics entitySpecifics) {
         // The protocol buffer is serialized as a byte array because it can be easily
         // deserialized from this format in native code.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .modifyEntitySpecifics(
@@ -191,7 +190,7 @@ public class FakeServerHelper {
             String clientName,
             long creationTimestamp,
             long lastUpdatedTimestamp) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FakeServerHelperJni.get()
                             .injectDeviceInfoEntity(
@@ -214,7 +213,7 @@ public class FakeServerHelper {
      */
     public void injectBookmarkEntity(
             final String title, final GURL url, final String parentId, final String parentGuid) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .injectBookmarkEntity(
@@ -230,7 +229,7 @@ public class FakeServerHelper {
      */
     public void injectBookmarkFolderEntity(
             final String title, final String parentId, final String parentGuid) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .injectBookmarkFolderEntity(
@@ -255,7 +254,7 @@ public class FakeServerHelper {
             final GURL url,
             final String parentId,
             final String parentGuid) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .modifyBookmarkEntity(
@@ -283,7 +282,7 @@ public class FakeServerHelper {
             final String title,
             final String parentId,
             final String parentGuid) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .modifyBookmarkFolderEntity(
@@ -309,7 +308,7 @@ public class FakeServerHelper {
     }
 
     public void deleteEntity(final String id, final String clientTagHash) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> FakeServerHelperJni.get().deleteEntity(mNativeFakeServer, id, clientTagHash));
     }
 
@@ -320,7 +319,7 @@ public class FakeServerHelper {
      * @return the opaque ID of the bookmark bar entity stored in the server
      */
     public String getBookmarkBarFolderId() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> FakeServerHelperJni.get().getBookmarkBarFolderId(mNativeFakeServer));
     }
 
@@ -330,7 +329,7 @@ public class FakeServerHelper {
      * @param passphrase the plaintext custom passphrase to set.
      */
     public void setCustomPassphraseNigori(String passphrase) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FakeServerHelperJni.get()
                             .setCustomPassphraseNigori(mNativeFakeServer, passphrase);
@@ -339,7 +338,7 @@ public class FakeServerHelper {
 
     /** Sets trusted vault nigori with keys derived from trustedVaultKey on the server. */
     public void setTrustedVaultNigori(byte[] trustedVaultKey) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .setTrustedVaultNigori(mNativeFakeServer, trustedVaultKey));
@@ -347,7 +346,7 @@ public class FakeServerHelper {
 
     /** Clear the server data (perform dashboard stop and clear). */
     public void clearServerData() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> FakeServerHelperJni.get().clearServerData(mNativeFakeServer));
     }
 

@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -23,7 +24,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -129,7 +129,7 @@ public class PaymentRequestNoShippingTest {
 
         // Quickly dismiss and then press on "Continue"
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -171,7 +171,7 @@ public class PaymentRequestNoShippingTest {
 
         // Quickly dismiss and then press on [X].
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -205,7 +205,7 @@ public class PaymentRequestNoShippingTest {
 
         // Quickly press on [X] and then dismiss.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()

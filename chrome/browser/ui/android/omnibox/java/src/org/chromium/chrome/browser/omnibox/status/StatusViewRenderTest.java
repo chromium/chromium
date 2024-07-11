@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.omnibox.status;
 
 import static org.mockito.Mockito.doReturn;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;

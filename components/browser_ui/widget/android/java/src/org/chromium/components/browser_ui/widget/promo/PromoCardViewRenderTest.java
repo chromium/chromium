@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -30,7 +31,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.LayoutStyle;
 import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -85,7 +85,7 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
 
         mPromoCardCoordinator = new PromoCardCoordinator(activity, mModel, "render-test", variance);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Set the content and add the promo card into the window
                     LinearLayout content = new LinearLayout(activity);

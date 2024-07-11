@@ -7,6 +7,7 @@ package org.chromium.chrome.test.util.browser;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
@@ -17,7 +18,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.Coordinates;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -38,7 +38,7 @@ public class TabLoadObserver extends EmptyTabObserver {
 
     public TabLoadObserver(Tab tab, String expectedTitle, Float expectedScale) {
         mTab = tab;
-        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(this));
+        ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(this));
         mExpectedTitle = expectedTitle;
         mExpectedScale = expectedScale;
     }

@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
@@ -63,7 +63,7 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
         // By default, the homepage is <b>enabled</b> and with customized URL.
         mHomepageTestRule.useCustomizedHomepageForTest("https://www.chromium.org/");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout content = new FrameLayout(getActivity());
                     getActivity().setContentView(content);

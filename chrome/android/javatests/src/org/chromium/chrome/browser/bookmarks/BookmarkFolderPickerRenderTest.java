@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.content.res.Resources;
@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -53,7 +54,6 @@ import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync.SyncFeatureMap;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.url.GURL;
@@ -151,7 +151,7 @@ public class BookmarkFolderPickerRenderTest {
                 .when(mBookmarkUiPrefs)
                 .getBookmarkRowDisplayPref();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContentView = new FrameLayout(mActivity);
 
@@ -255,7 +255,7 @@ public class BookmarkFolderPickerRenderTest {
                                         new GURL("https://test.com")));
         createCoordinatorToMoveBookmarkIds(bookmarkId);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mCoordinator.openFolderForTesting(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
         mRenderTestRule.render(mContentView, "move_bookmark_from_root");
@@ -276,7 +276,7 @@ public class BookmarkFolderPickerRenderTest {
                                         new GURL("https://test.com")));
         createCoordinatorToMoveBookmarkIds(bookmarkId);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mCoordinator.openFolderForTesting(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
         mRenderTestRule.render(mContentView, "move_bookmark_from_root_with_account");

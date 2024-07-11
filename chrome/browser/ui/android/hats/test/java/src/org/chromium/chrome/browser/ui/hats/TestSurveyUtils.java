@@ -16,13 +16,13 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -68,7 +68,7 @@ public class TestSurveyUtils {
     }
 
     static TestSurveyFactory setUpTestSurveyFactory() throws ExecutionException {
-        TestSurveyFactory factory = TestThreadUtils.runOnUiThreadBlocking(TestSurveyFactory::new);
+        TestSurveyFactory factory = ThreadUtils.runOnUiThreadBlocking(TestSurveyFactory::new);
         SurveyClientFactory.setInstanceForTesting(factory);
         return factory;
     }

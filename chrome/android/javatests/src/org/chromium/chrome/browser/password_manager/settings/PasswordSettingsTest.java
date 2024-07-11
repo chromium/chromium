@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -48,7 +49,6 @@ import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for the "Passwords" settings screen. These tests are not batchable (without significant
@@ -87,7 +87,7 @@ public class PasswordSettingsTest {
 
         // By default sync is off. Tests can override this later.
         setSyncServiceState(false, false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> SyncServiceFactory.setInstanceForTesting(mMockSyncService));
 
         // This initializes the browser, so some tests can do setup before PasswordSettings is
@@ -112,7 +112,7 @@ public class PasswordSettingsTest {
         mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
         onViewWaiting(withText(R.string.password_manager_settings_title));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PasswordSettings savePasswordPreferences =
                             mPasswordSettingsActivityTestRule.getFragment();
@@ -129,7 +129,7 @@ public class PasswordSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testSavePasswordsSwitch() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, true);
                 });
@@ -139,7 +139,7 @@ public class PasswordSettingsTest {
                         mPasswordSettingsActivityTestRule);
         onViewWaiting(withText(R.string.password_manager_settings_title));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PasswordSettings savedPasswordPrefs =
                             mPasswordSettingsActivityTestRule.getFragment();
@@ -170,7 +170,7 @@ public class PasswordSettingsTest {
 
         mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
         onViewWaiting(withText(R.string.password_manager_settings_title));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PasswordSettings savedPasswordPrefs =
                             mPasswordSettingsActivityTestRule.getFragment();
@@ -272,7 +272,7 @@ public class PasswordSettingsTest {
     @Feature({"Preferences"})
     public void testAutoSignInCheckbox() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, true);
                 });
@@ -281,7 +281,7 @@ public class PasswordSettingsTest {
                 mTestHelper.startPasswordSettingsFromMainSettings(
                         mPasswordSettingsActivityTestRule);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PasswordSettings passwordPrefs =
                             mPasswordSettingsActivityTestRule.getFragment();
@@ -311,7 +311,7 @@ public class PasswordSettingsTest {
                 });
 
         mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PasswordSettings passwordPrefs =
                             mPasswordSettingsActivityTestRule.getFragment();
@@ -337,7 +337,7 @@ public class PasswordSettingsTest {
                 mTestHelper.startPasswordSettingsFromMainSettings(
                         mPasswordSettingsActivityTestRule);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PasswordSettings passwordPrefs =
                             mPasswordSettingsActivityTestRule.getFragment();
@@ -356,7 +356,7 @@ public class PasswordSettingsTest {
     @Feature({"Preferences"})
     public void testCheckPasswordsEnabled() {
         mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PasswordSettings passwordPrefs =
                             mPasswordSettingsActivityTestRule.getFragment();
@@ -408,7 +408,7 @@ public class PasswordSettingsTest {
 
     private void setSyncServiceState(
             final boolean usingCustomPassphrase, final boolean syncingPasswords) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(mMockSyncService.hasSyncConsent()).thenReturn(syncingPasswords);
                     when(mMockSyncService.isEngineInitialized()).thenReturn(true);

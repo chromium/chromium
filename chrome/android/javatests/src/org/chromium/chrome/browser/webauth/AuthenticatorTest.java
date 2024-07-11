@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -27,7 +28,6 @@ import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.MockFido2CredentialRequest;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -88,7 +88,7 @@ public class AuthenticatorTest {
         mUrl = mTestServer.getURLWithHostName("subdomain.example.test", TEST_FILE);
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new AuthenticatorUpdateWaiter();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
         WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
         mMockCredentialRequest = new MockFido2CredentialRequest();
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mMockCredentialRequest);
@@ -96,7 +96,7 @@ public class AuthenticatorTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
     }
 
     /**

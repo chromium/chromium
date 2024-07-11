@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -79,7 +80,6 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -247,7 +247,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                         tabCreatedHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> sActivityTestRule.getActivity().getTabModelSelector().addObserver(observer));
         // Track User Actions
         mActionTester = new UserActionTester();
@@ -280,7 +280,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         assertUserActionRecorded("ContextualSearch.TabPromotion");
 
         // -------- CLEAN UP ---------
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
                 });
@@ -514,7 +514,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertFalse(imageControl.getThumbnailVisible());
         Assert.assertTrue(TextUtils.isEmpty(imageControl.getThumbnailUrl()));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     imageControl.setThumbnailUrl("http://someimageurl.com/image.png");
                     imageControl.onThumbnailFetched(true);
@@ -523,7 +523,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertTrue(imageControl.getThumbnailVisible());
         Assert.assertEquals(imageControl.getThumbnailUrl(), "http://someimageurl.com/image.png");
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> imageControl.hideCustomImage(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> imageControl.hideCustomImage(false));
 
         Assert.assertFalse(imageControl.getThumbnailVisible());
         Assert.assertTrue(TextUtils.isEmpty(imageControl.getThumbnailUrl()));
@@ -544,7 +544,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
         simulateResolveSearch("search");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPanel.onSearchTermResolved(
                                 "search",
@@ -570,7 +570,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertEquals(1.f, imageControl.getCustomImageVisibilityPercentage(), 0);
 
         // Expand the bar.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mPanel.simulateTapOnEndButton());
+        ThreadUtils.runOnUiThreadBlocking(() -> mPanel.simulateTapOnEndButton());
         waitForPanelToExpand();
 
         // Check that the expanded bar is showing the correct image.
@@ -616,7 +616,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
         simulateResolveSearch("search");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPanel.onSearchTermResolved(
                                 "search",
@@ -652,7 +652,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
         simulateResolveSearch("search");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPanel.onSearchTermResolved(
                                 "search",
@@ -679,7 +679,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     private void runDictionaryCardTest(@CardTag int cardTag) throws Exception {
         // Simulate a resolving search to show the Bar, then set the quick action data.
         simulateResolveSearch("search");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPanel.onSearchTermResolved(
                                 "obscure · əbˈskyo͝or",
@@ -937,7 +937,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                     .getSelectedText();
                     Criteria.checkThat(selection, Matchers.is("Search"));
                 });
-        TestThreadUtils.runOnUiThreadBlocking(() -> activity2.getCurrentTabModel().closeAllTabs());
+        ThreadUtils.runOnUiThreadBlocking(() -> activity2.getCurrentTabModel().closeAllTabs());
         ApplicationTestUtils.finishActivity(activity2);
     }
 
@@ -1053,7 +1053,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 0.001f);
 
         // Increase the selected TextView height to be taller than the default height.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPanel.getSearchBarControl().setCaption("Increase Height");
                     TextView textView = mPanel.getSearchBarControl().getCaptionTextView();

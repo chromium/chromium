@@ -27,6 +27,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -45,7 +46,6 @@ import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -303,7 +303,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * Enables the Sync data type in USER_SELECTABLE_TYPES.
      */
     public void enableDataType(final int userSelectableType) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Set<Integer> chosenTypes = mSyncService.getSelectedTypes();
                     chosenTypes.add(userSelectableType);
@@ -315,7 +315,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * Enables the |selectedTypes| in USER_SELECTABLE_TYPES.
      */
     public void setSelectedTypes(boolean syncEverything, Set<Integer> selectedTypes) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSyncService.setSelectedTypes(syncEverything, selectedTypes);
                 });
@@ -325,7 +325,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * Disables the Sync data type in USER_SELECTABLE_TYPES.
      */
     public void disableDataType(final int userSelectableType) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Set<Integer> chosenTypes = mSyncService.getSelectedTypes();
                     chosenTypes.remove(userSelectableType);
@@ -357,7 +357,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
         startMainActivityForSyncTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncService syncService = createSyncServiceImpl();
                     if (syncService != null) {
@@ -371,7 +371,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     @Override
     protected void after() {
         super.after();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSyncService = null;
                     mFakeServerHelper = null;
@@ -415,7 +415,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * Checks if server has any credit card information to autofill.
      */
     public boolean hasServerAutofillCreditCards() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     List<CreditCard> cards =
                             AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
@@ -441,7 +441,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     private static void enableUKM() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Outside of tests, URL-keyed anonymized data collection is enabled by sign-in
                     // UI.

@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.InputHintChecker;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -27,7 +28,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Integration tests for InputHintChecker. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -43,7 +43,7 @@ public final class InputHintCheckerTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setView(null);
                     InputHintChecker.setAllowSetViewForTesting(false);
@@ -66,7 +66,7 @@ public final class InputHintCheckerTest {
     }
 
     private static void checkHasInputOnUi(TestTextView view, boolean withThrottling) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view.mCallCount = 0;
                     // Do not check the return value because the view can be changed concurrently.
@@ -86,7 +86,7 @@ public final class InputHintCheckerTest {
         // Start InputHintChecker asynchronous initialization by calling setView().
         TestTextView view =
                 new TestTextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setAllowSetViewForTesting(true);
                     InputHintChecker.setView(view);
@@ -102,7 +102,7 @@ public final class InputHintCheckerTest {
         // Start InputHintChecker asynchronous initialization by calling setView().
         TextView view =
                 new TextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setAllowSetViewForTesting(true);
                     InputHintChecker.setView(view);
@@ -112,7 +112,7 @@ public final class InputHintCheckerTest {
         CriteriaHelper.pollUiThread(InputHintChecker::failedToInitializeForTesting);
 
         // Verify.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(InputHintChecker.hasInputForTesting());
                 });
@@ -128,7 +128,7 @@ public final class InputHintCheckerTest {
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.InputHintChecker.InitializationResult", 1)) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         InputHintChecker.setAllowSetViewForTesting(true);
                         InputHintChecker.setView(view);
@@ -144,7 +144,7 @@ public final class InputHintCheckerTest {
         // Start InputHintChecker asynchronous initialization by calling setView().
         TestTextView view =
                 new TestTextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setAllowSetViewForTesting(true);
                     InputHintChecker.setView(view);
@@ -160,13 +160,13 @@ public final class InputHintCheckerTest {
         // Start InputHintChecker asynchronous initialization by calling setView().
         TestTextView view =
                 new TestTextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setAllowSetViewForTesting(true);
                     InputHintChecker.setView(view);
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // The initialization is likely not finished, hence do not verify that the call
                     // to probablyHasInput() happened. Verify that there is no crash.
@@ -180,7 +180,7 @@ public final class InputHintCheckerTest {
         // Start InputHintChecker asynchronous initialization by calling setView().
         TestTextView view =
                 new TestTextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setAllowSetViewForTesting(true);
                     InputHintChecker.setView(view);
@@ -191,7 +191,7 @@ public final class InputHintCheckerTest {
 
         // Verify that InputHintChecker.probablyHasInput() can return |true|.
         view.mReturnValue = true;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setView(view);
                     view.mCallCount = 0;
@@ -201,7 +201,7 @@ public final class InputHintCheckerTest {
 
         // Verify that InputHintChecker.probablyHasInput() can return |false|.
         view.mReturnValue = false;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setView(view);
                     view.mCallCount = 0;
@@ -211,7 +211,7 @@ public final class InputHintCheckerTest {
 
         // Verify that the input hint can go back to |true|.
         view.mReturnValue = true;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setView(view);
                     Assert.assertTrue(InputHintChecker.hasInputForTesting());

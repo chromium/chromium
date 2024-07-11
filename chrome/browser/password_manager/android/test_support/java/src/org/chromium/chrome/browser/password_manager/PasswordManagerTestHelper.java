@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Helper class which simulates the GMS Core backend password storage. Should be used for
@@ -44,7 +44,7 @@ public class PasswordManagerTestHelper {
      * @param email The email of the syncing account used for testing
      */
     public static void setAccountForPasswordStore(String email) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((FakePasswordStoreAndroidBackend)
                                     PasswordStoreAndroidBackendFactory.getInstance()

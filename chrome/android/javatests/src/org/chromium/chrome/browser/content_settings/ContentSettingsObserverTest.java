@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -29,7 +30,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsObserver;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ContentSettingsTypeSet;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -50,7 +50,7 @@ public class ContentSettingsObserverTest {
     public void tearDown() throws TimeoutException {
         // Clean up content settings.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(

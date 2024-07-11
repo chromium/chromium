@@ -26,13 +26,13 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
@@ -98,7 +98,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.addWebMessageListener(
                             "myObject", new String[] {"*"}, mIFrameLoadedListener);

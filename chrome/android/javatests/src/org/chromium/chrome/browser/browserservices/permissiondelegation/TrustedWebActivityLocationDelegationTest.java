@@ -21,6 +21,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -37,7 +38,6 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
@@ -94,7 +94,7 @@ public class TrustedWebActivityLocationDelegationTest {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter("Count:", mCustomTabActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(updateWaiter);
                 });
@@ -151,7 +151,7 @@ public class TrustedWebActivityLocationDelegationTest {
                         /* isEmbargoed= */ false,
                         SessionModel.DURABLE);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
+        ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -167,7 +167,7 @@ public class TrustedWebActivityLocationDelegationTest {
         setAllowChromeSiteLocation(tab.getUrl(), false);
         PermissionUpdateWaiter errorWaiter =
                 new PermissionUpdateWaiter("deny", mCustomTabActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(errorWaiter);
                 });
@@ -177,7 +177,7 @@ public class TrustedWebActivityLocationDelegationTest {
         setAllowChromeSiteLocation(tab.getUrl(), true);
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter("Count:", mCustomTabActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(updateWaiter);
                 });

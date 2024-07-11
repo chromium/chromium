@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -60,7 +61,6 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -137,7 +137,7 @@ public class RecentTabsPageTest {
                 .openRecentlyClosedTab(mTabModel, tab, WindowOpenDisposition.NEW_BACKGROUND_TAB);
 
         final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPage.onChildClick(null, null, groupIdx, 0, 0);
                 });
@@ -180,7 +180,7 @@ public class RecentTabsPageTest {
         setRecentlyClosedEntries(Collections.singletonList(group));
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String groupString =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return mActivity
                                     .getResources()
@@ -193,7 +193,7 @@ public class RecentTabsPageTest {
         mRenderTestRule.render(mPage.getView(), "recently_closed_group_with_title");
 
         final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPage.onChildClick(null, null, groupIdx, 0, 0);
                 });
@@ -236,7 +236,7 @@ public class RecentTabsPageTest {
         setRecentlyClosedEntries(Collections.singletonList(group));
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String groupString =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return mActivity
                                     .getResources()
@@ -249,7 +249,7 @@ public class RecentTabsPageTest {
         mRenderTestRule.render(mPage.getView(), "recently_closed_group_without_title");
 
         final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPage.onChildClick(null, null, groupIdx, 0, 0);
                 });
@@ -302,7 +302,7 @@ public class RecentTabsPageTest {
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final int size = event.getTabs().size();
         final String eventString =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return mActivity
                                     .getResources()
@@ -313,7 +313,7 @@ public class RecentTabsPageTest {
         mRenderTestRule.render(mPage.getView(), "recently_closed_bulk_event");
 
         final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPage.onChildClick(null, null, groupIdx, 0, 0);
                 });
@@ -382,7 +382,7 @@ public class RecentTabsPageTest {
         mPage = loadRecentTabsPage();
         var tabStripHeightChangeCallback = mPage.getTabStripHeightChangeCallbackForTesting();
         int newTabStripHeight = 40;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> tabStripHeightChangeCallback.onResult(newTabStripHeight));
         assertEquals(
                 "Top padding of page view should be updated when tab strip height changes.",
@@ -395,7 +395,7 @@ public class RecentTabsPageTest {
      * manager.
      */
     private void setRecentlyClosedEntries(List<RecentlyClosedEntry> entries) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.setRecentlyClosedEntries(entries);
                 });
@@ -452,7 +452,7 @@ public class RecentTabsPageTest {
             final Activity activity, final View view, final int itemId) {
         // IMPLEMENTATION NOTE: Instrumentation.invokeContextMenuAction would've been much simpler,
         // but it requires the View to be focused which is hard to achieve in touch mode.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view.performLongClick();
                     activity.getWindow().performContextMenuIdentifierAction(itemId, 0);

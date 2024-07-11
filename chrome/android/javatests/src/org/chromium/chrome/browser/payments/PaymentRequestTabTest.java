@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -26,7 +27,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -89,7 +89,7 @@ public class PaymentRequestTabTest {
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable)
                         () ->
                                 mPaymentRequestTestRule
@@ -116,7 +116,7 @@ public class PaymentRequestTabTest {
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel currentModel =
                             mPaymentRequestTestRule.getActivity().getCurrentTabModel();
@@ -139,7 +139,7 @@ public class PaymentRequestTabTest {
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel currentModel =
                             mPaymentRequestTestRule.getActivity().getCurrentTabModel();

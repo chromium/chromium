@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -39,7 +40,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
@@ -77,7 +77,7 @@ public class VirtualKeyboardResizeTest {
     @After
     public void tearDown() {
         // Some tests set this pref. Clear it to ensure that state does not leak between tests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().clearPref(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT);
                 });
@@ -96,7 +96,7 @@ public class VirtualKeyboardResizeTest {
     private void waitForVisualStateCallback() throws Throwable {
         final CallbackHelper ch = new CallbackHelper();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getWebContents()
                             .getMainFrame()
@@ -248,7 +248,7 @@ public class VirtualKeyboardResizeTest {
     @MediumTest
     public void testVirtualKeyboardDefaultResizeModeWithPref() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/about.html");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT, true);
@@ -355,7 +355,7 @@ public class VirtualKeyboardResizeTest {
 
         // Setting the pref should have no effect on the result, since the <meta> tag explicitly
         // sets a *non-default* OSK resize behavior.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT, true);
@@ -530,7 +530,7 @@ public class VirtualKeyboardResizeTest {
                         .getVirtualKeyboardModeForTesting(),
                 VirtualKeyboardMode.RESIZES_VISUAL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT, true);

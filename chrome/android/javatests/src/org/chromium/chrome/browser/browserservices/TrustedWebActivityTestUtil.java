@@ -11,6 +11,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -73,7 +73,7 @@ public class TrustedWebActivityTestUtil {
 
     /** Caches a successful verification for the given |packageName| and |url|. */
     public static void spoofVerification(String packageName, String url) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(
                                 packageName,
@@ -94,7 +94,7 @@ public class TrustedWebActivityTestUtil {
         // A key part of the Trusted Web Activity UI is the lack of browser controls.
         @BrowserControlsState
         int constraints =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return TabBrowserControlsConstraintsHelper.getConstraints(
                                     activity.getActivityTab());

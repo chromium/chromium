@@ -52,6 +52,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -69,7 +70,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.LegalMessageLine;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -306,7 +306,7 @@ public class AutofillServerCardEditorTest {
                 VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         virtualCardEnrollmentFieldsCallback.onResult(
                                 fakeVirtualCardEnrollmentFields));
@@ -355,7 +355,7 @@ public class AutofillServerCardEditorTest {
         // Return enrollment update status "successful" via the callback.
         Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback =
                 booleanCallbackArgumentCaptor.getValue();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> virtualCardEnrollmentUpdateResponseCallback.onResult(true));
 
         // Verify that the Virtual Card enrollment button now allows unenrollment.
@@ -421,7 +421,7 @@ public class AutofillServerCardEditorTest {
                 VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         virtualCardEnrollmentFieldsCallback.onResult(
                                 fakeVirtualCardEnrollmentFields));
@@ -443,7 +443,7 @@ public class AutofillServerCardEditorTest {
         // Return enrollment update status "failure" via the callback.
         Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback =
                 booleanCallbackArgumentCaptor.getValue();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> virtualCardEnrollmentUpdateResponseCallback.onResult(false));
 
         // Verify that the Virtual Card enrollment button again allows enrollment.
@@ -508,7 +508,7 @@ public class AutofillServerCardEditorTest {
                 VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         virtualCardEnrollmentFieldsCallback.onResult(
                                 fakeVirtualCardEnrollmentFields));
@@ -584,7 +584,7 @@ public class AutofillServerCardEditorTest {
                 VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         virtualCardEnrollmentFieldsCallback.onResult(
                                 fakeVirtualCardEnrollmentFields));
@@ -612,7 +612,7 @@ public class AutofillServerCardEditorTest {
         // Return enrollment update status "successful" via the callback.
         Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback =
                 booleanCallbackArgumentCaptor.getValue();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> virtualCardEnrollmentUpdateResponseCallback.onResult(true));
 
         // Ensure that the callback is run after receiving the server response and that the native
@@ -767,7 +767,7 @@ public class AutofillServerCardEditorTest {
         // Return enrollment update status "successful" via the callback.
         Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback =
                 booleanCallbackArgumentCaptor.getValue();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> virtualCardEnrollmentUpdateResponseCallback.onResult(true));
 
         // Verify that the Virtual Card enrollment button now allows enrollment.
@@ -833,7 +833,7 @@ public class AutofillServerCardEditorTest {
         // Return enrollment update status "failure" via the callback.
         Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback =
                 booleanCallbackArgumentCaptor.getValue();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> virtualCardEnrollmentUpdateResponseCallback.onResult(false));
 
         // Verify that the Virtual Card enrollment button still allows unenrollment.
@@ -904,7 +904,7 @@ public class AutofillServerCardEditorTest {
         // Return enrollment update status "successful" via the callback.
         Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback =
                 booleanCallbackArgumentCaptor.getValue();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> virtualCardEnrollmentUpdateResponseCallback.onResult(true));
 
         // Ensure that the callback is run after receiving the server response and that the native

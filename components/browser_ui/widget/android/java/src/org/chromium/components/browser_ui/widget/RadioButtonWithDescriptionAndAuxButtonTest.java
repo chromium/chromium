@@ -21,12 +21,12 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for {@link RadioButtonWithDescriptionAndAuxButton}. */
@@ -68,7 +68,7 @@ public class RadioButtonWithDescriptionAndAuxButtonTest {
     @BeforeClass
     public static void setupSuite() {
         activityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = activityTestRule.getActivity();
                     sContentView = new FrameLayout(sActivity);
@@ -79,7 +79,7 @@ public class RadioButtonWithDescriptionAndAuxButtonTest {
     @Before
     public void setupTest() {
         mListener = new AuxButtonClickedListener();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sContentView.removeAllViews();
                     View layout =
@@ -100,7 +100,7 @@ public class RadioButtonWithDescriptionAndAuxButtonTest {
     @SmallTest
     public void testOnAuxButtonClicked() {
         mRadioButton.setAuxButtonClickedListener(mListener);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButton.getAuxButtonForTests().performClick();
                 });
@@ -114,7 +114,7 @@ public class RadioButtonWithDescriptionAndAuxButtonTest {
     @Test
     @SmallTest
     public void testAuxButtonEnabled() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButton.setEnabled(false);
                 });
@@ -130,7 +130,7 @@ public class RadioButtonWithDescriptionAndAuxButtonTest {
         Assert.assertFalse(
                 "Aux Button should be set to disabled.",
                 mRadioButton.getAuxButtonForTests().isEnabled());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButton.setAuxButtonEnabled(true);
                 });

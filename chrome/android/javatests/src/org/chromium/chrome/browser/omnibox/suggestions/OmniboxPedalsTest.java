@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -75,7 +76,6 @@ import org.chromium.components.omnibox.action.OmniboxActionJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.UiDisableIf;
@@ -113,14 +113,14 @@ public class OmniboxPedalsTest {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     IncognitoTabHostUtils.closeAllIncognitoTabs();
                 });
         if (mTargetActivity != null) {
             ApplicationTestUtils.finishActivity(mTargetActivity);
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         sActivityTestRule
                                 .getActivity()
@@ -215,7 +215,7 @@ public class OmniboxPedalsTest {
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976917
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
     public void testManagePasswordsNoUpmFlow() throws InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefService = UserPrefs.get(sActivityTestRule.getProfile(false));
                     prefService.setInteger(

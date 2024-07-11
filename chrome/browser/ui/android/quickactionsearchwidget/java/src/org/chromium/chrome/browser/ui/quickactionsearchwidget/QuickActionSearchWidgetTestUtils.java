@@ -12,6 +12,7 @@ import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Util class for testing the Quick Action Search Widget. */
 class QuickActionSearchWidgetTestUtils {
@@ -77,7 +77,7 @@ class QuickActionSearchWidgetTestUtils {
      * @param clickTarget the id of the view to click on.
      */
     static void clickOnView(final View view, final int clickTarget) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view.findViewById(clickTarget).performClick();
                 });

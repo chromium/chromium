@@ -104,7 +104,6 @@ import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -194,7 +193,7 @@ public class SyncConsentFragmentTest {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
 
         OneshotSupplier<ProfileProvider> profileProviderSupplier =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             OneshotSupplierImpl<ProfileProvider> supplierImpl =
                                     new OneshotSupplierImpl<>();
@@ -614,7 +613,7 @@ public class SyncConsentFragmentTest {
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
                     assertTrue(syncService.hasSyncConsent());
@@ -661,7 +660,7 @@ public class SyncConsentFragmentTest {
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
                     assertTrue(syncService.hasSyncConsent());
@@ -720,7 +719,7 @@ public class SyncConsentFragmentTest {
         settingsHistogram.assertExpected();
         // As there is no account on the device, the set of selected types will be empty. Sync Setup
         // UI in this case does not link to the types list.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
                     assertEquals(Set.of(), syncService.getSelectedTypes());
@@ -1068,7 +1067,7 @@ public class SyncConsentFragmentTest {
         // Check that the user is not consented to sync and the activity has finished.
         onView(withId(R.id.device_lock_title)).check(doesNotExist());
         ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             IdentityServicesProvider.get()
@@ -1116,7 +1115,7 @@ public class SyncConsentFragmentTest {
         // Check that the user is not consented to sync and the activity has finished.
         onView(withId(R.id.device_lock_title)).check(doesNotExist());
         ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             IdentityServicesProvider.get()
@@ -1167,7 +1166,7 @@ public class SyncConsentFragmentTest {
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
                     assertTrue(
@@ -1627,7 +1626,7 @@ public class SyncConsentFragmentTest {
         CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
 
         SigninManager signinManager =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
@@ -1661,8 +1660,7 @@ public class SyncConsentFragmentTest {
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
         assertTrue(
-                TestThreadUtils.runOnUiThreadBlocking(
-                        signinManager::getUserAcceptedAccountManagement));
+                ThreadUtils.runOnUiThreadBlocking(signinManager::getUserAcceptedAccountManagement));
     }
 
     @Test
@@ -1674,7 +1672,7 @@ public class SyncConsentFragmentTest {
         CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
 
         SigninManager signinManager =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
@@ -1708,8 +1706,7 @@ public class SyncConsentFragmentTest {
         onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
         onViewWaiting(withId(R.id.positive_button)).perform(click());
         assertFalse(
-                TestThreadUtils.runOnUiThreadBlocking(
-                        signinManager::getUserAcceptedAccountManagement));
+                ThreadUtils.runOnUiThreadBlocking(signinManager::getUserAcceptedAccountManagement));
     }
 
     private void simulateDeviceLockReadyOnAutomotive() {
@@ -1723,7 +1720,7 @@ public class SyncConsentFragmentTest {
         assertNotNull(
                 "The SyncConsentActivity should contain the SyncConsentFragment!",
                 syncConsentFragment);
-        TestThreadUtils.runOnUiThreadBlocking(syncConsentFragment::onDeviceLockReady);
+        ThreadUtils.runOnUiThreadBlocking(syncConsentFragment::onDeviceLockReady);
     }
 
     private void simulateDeviceLockRefused() {
@@ -1735,7 +1732,7 @@ public class SyncConsentFragmentTest {
         assertNotNull(
                 "The SyncConsentActivity should contain the SyncConsentFragment!",
                 syncConsentFragment);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     syncConsentFragment.onDeviceLockRefused();
                     assertFalse(syncConsentFragment.getDeviceLockReadyForTesting());
@@ -1744,7 +1741,7 @@ public class SyncConsentFragmentTest {
 
     private void launchActivityWithFragment(Fragment fragment) {
         mActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()

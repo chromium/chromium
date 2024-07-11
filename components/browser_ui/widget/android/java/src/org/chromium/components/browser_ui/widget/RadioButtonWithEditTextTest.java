@@ -30,6 +30,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -37,7 +38,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -95,7 +95,7 @@ public class RadioButtonWithEditTextTest {
     public static void setupSuite() {
         InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
         activityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = activityTestRule.getActivity();
                     sContentView = new FrameLayout(sActivity);
@@ -106,7 +106,7 @@ public class RadioButtonWithEditTextTest {
     @Before
     public void setupTest() {
         mListener = new TestListener();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sContentView.removeAllViews();
                     View layout =
@@ -160,7 +160,7 @@ public class RadioButtonWithEditTextTest {
     public void testSetHint() {
         final CharSequence hintMsg = "Text hint";
         final String resourceString = sActivity.getResources().getString(R.string.test_string);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButtonWithEditText.setHint(hintMsg);
                     Assert.assertEquals(
@@ -209,7 +209,7 @@ public class RadioButtonWithEditTextTest {
         int timesCalled = mListener.getTimesCalled();
 
         // Test changes for edit text
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButtonWithEditText.setPrimaryText(str1);
                 });
@@ -229,7 +229,7 @@ public class RadioButtonWithEditTextTest {
 
         // change to another text from View
         timesCalled = mListener.getTimesCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mEditText.setText(str2);
                 });
@@ -250,7 +250,7 @@ public class RadioButtonWithEditTextTest {
         // change to another text from View
         mRadioButtonWithEditText.removeTextChangeListener(mListener);
         timesCalled = mListener.getTimesCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButtonWithEditText.setPrimaryText(str1);
                 });
@@ -274,7 +274,7 @@ public class RadioButtonWithEditTextTest {
     @DisabledTest(message = "Test is flaky: https://crbug.com/1344713")
     public void testFocusChange() {
         Assert.assertFalse(mRadioButtonWithEditText.hasFocus());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButtonWithEditText.setChecked(true);
                 });
@@ -284,14 +284,14 @@ public class RadioButtonWithEditTextTest {
         waitForCursorVisibility(false);
 
         // Test requesting focus on the EditText.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mEditText.requestFocus();
                 });
         waitForCursorVisibility(true);
 
         // Requesting focus elsewhere.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDummyButton.requestFocus();
                 });
@@ -300,7 +300,7 @@ public class RadioButtonWithEditTextTest {
 
         // Uncheck the radio button, then click EditText to show keyboard and checked the radio
         // button.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButtonWithEditText.setChecked(false);
 
@@ -324,7 +324,7 @@ public class RadioButtonWithEditTextTest {
     @Test
     @SmallTest
     public void testSetEnabled() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButtonWithEditText.setEnabled(false);
                 });
@@ -338,7 +338,7 @@ public class RadioButtonWithEditTextTest {
                 "RadioButton should be set to disabled.",
                 mRadioButtonWithEditText.getRadioButtonView().isEnabled());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRadioButtonWithEditText.setEnabled(true);
                 });

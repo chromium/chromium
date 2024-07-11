@@ -69,6 +69,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -101,7 +102,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.PageTransition;
@@ -163,14 +163,14 @@ public class TabSwitcherLayoutTest {
 
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
         mModalDialogManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(cta::getModalDialogManager);
+                ThreadUtils.runOnUiThreadBlockingNoException(cta::getModalDialogManager);
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null));
         dismissAllModalDialogs();
     }
@@ -196,7 +196,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
 
         Tab tab = cta.getTabModelSelector().getCurrentTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getTabModelSelector().getCurrentModel().closeTab(tab, false, true);
                 });
@@ -441,9 +441,9 @@ public class TabSwitcherLayoutTest {
 
         // Create a tab group.
         TabCreator tabCreator =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> cta.getTabCreator(false));
+                ThreadUtils.runOnUiThreadBlockingNoException(() -> cta.getTabCreator(false));
         LoadUrlParams loadUrlParams = new LoadUrlParams(mUrl);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabCreator.createNewTab(
                                 loadUrlParams,
@@ -457,10 +457,10 @@ public class TabSwitcherLayoutTest {
                         cta.getTabModelSelector()
                                 .getTabModelFilterProvider()
                                 .getCurrentTabModelFilter();
-        TestThreadUtils.runOnUiThreadBlocking(() -> filter.moveTabOutOfGroup(childTab.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> filter.moveTabOutOfGroup(childTab.getId()));
         verifyTabSwitcherCardCount(cta, 2);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeNightModeTestUtils.setUpNightModeForChromeActivity(true));
         final ChromeTabbedActivity ctaNightMode =
                 ActivityTestUtils.waitForActivity(
@@ -474,7 +474,7 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     public void testUndoClosure_AccessibilityMode() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1292,7 +1292,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> filter.setTabGroupTitle(normalTabModel.getTabAt(0).getRootId(), "Foo"));
         verifyTabSwitcherCardCount(cta, 2);
 
@@ -1317,7 +1317,7 @@ public class TabSwitcherLayoutTest {
         assertEquals("3", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 2);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             "Foo", filter.getTabGroupTitle(normalTabModel.getTabAt(1).getRootId()));
@@ -1409,7 +1409,7 @@ public class TabSwitcherLayoutTest {
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup2);
         verifyTabSwitcherCardCount(cta, 3);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     filter.setTabGroupTitle(normalTabModel.getTabAt(3).getRootId(), "Foo");
                     filter.setTabGroupTitle(normalTabModel.getTabAt(1).getRootId(), "Bar");
@@ -1439,7 +1439,7 @@ public class TabSwitcherLayoutTest {
         assertEquals("4", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 3);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             "Foo", filter.getTabGroupTitle(normalTabModel.getTabAt(4).getRootId()));
@@ -1480,7 +1480,7 @@ public class TabSwitcherLayoutTest {
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
         int[] ungroupedRootId = new int[1];
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     filter.setTabGroupTitle(normalTabModel.getTabAt(0).getRootId(), "Foo");
                     ungroupedRootId[0] = normalTabModel.getTabAt(2).getRootId();
@@ -1506,8 +1506,8 @@ public class TabSwitcherLayoutTest {
 
         // Check that the old group title was handed over when the group merge is committed
         // and no longer exists.
-        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertNull(filter.getTabGroupTitle(ungroupedRootId[0]));
                     assertEquals(
@@ -1554,7 +1554,7 @@ public class TabSwitcherLayoutTest {
         assertEquals(
                 nextSuggestedColorId,
                 filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+        ThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
         // Temporarily save the tab to get the rootId later.
         Tab tab2 = normalTabModel.getTabAt(1);
@@ -1611,7 +1611,7 @@ public class TabSwitcherLayoutTest {
         assertEquals(
                 nextSuggestedColorId,
                 filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+        ThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
         // Temporarily save the rootID to check during closure.
         Tab tab2 = normalTabModel.getTabAt(1);
@@ -1626,10 +1626,10 @@ public class TabSwitcherLayoutTest {
         // Default color should still persist, though the root id might change.
         assertEquals(nextSuggestedColorId, filter.getTabGroupColor(tab2.getRootId()));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+        ThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
         // Assert default color is cleared.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             TabGroupColorUtils.INVALID_COLOR_ID,
@@ -1776,7 +1776,7 @@ public class TabSwitcherLayoutTest {
     }
 
     private void dismissAllModalDialogs() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
                 });

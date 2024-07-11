@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -55,7 +56,6 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -113,7 +113,7 @@ public class TabSuspensionTest {
         doReturn(123456L).when(mUsageStatsNativeMock).init(any(), any());
         // TokenTracker and EventTracker hold a promise, and Promises can only be used on a single
         // thread, so we have to initialize them on the thread where they will be used.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTokenTracker = new TokenTracker(mUsageStatsBridge);
                     mEventTracker = new EventTracker(mUsageStatsBridge);
@@ -127,7 +127,7 @@ public class TabSuspensionTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mTab = mActivity.getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageViewObserver =
                             new PageViewObserver(
@@ -188,7 +188,7 @@ public class TabSuspensionTest {
         Tab tab2 = mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity
                             .getTabModelSelector()
@@ -278,7 +278,7 @@ public class TabSuspensionTest {
         // Each PageViewObserver is associated with a single ChromeTabbedActivity, so we need to
         // create a new one for the other window. This needs to be done on the UI thread since it
         // can trigger view manipulation.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageViewObserver2 =
                             new PageViewObserver(
@@ -296,7 +296,7 @@ public class TabSuspensionTest {
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         suspendDomain(STARTING_FQDN);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageViewObserver2.notifySiteSuspensionChanged(DIFFERENT_FQDN, false);
                 });
@@ -330,7 +330,7 @@ public class TabSuspensionTest {
     @MediumTest
     public void testTabAddedInBackground() throws ExecutionException {
         Tab bgTab =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mActivity
                                     .getCurrentTabCreator()
@@ -354,7 +354,7 @@ public class TabSuspensionTest {
         final int originalTabIndex =
                 mActivity.getTabModelSelector().getCurrentModel().indexOf(mTab);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageViewObserver.notifySiteSuspensionChanged(STARTING_FQDN, false);
                     doReturn(false).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
@@ -389,7 +389,7 @@ public class TabSuspensionTest {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         startLoadingUrl(mTab, mStartingUrl);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabTestUtils.simulateCrash(mTab, true);
                     assertSuspendedTabHidden(mTab);
@@ -421,14 +421,14 @@ public class TabSuspensionTest {
     @MediumTest
     public void testSuspendUninitializedCurrentTab() {
         mActivityTestRule.loadUrl(mStartingUrl);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.destroy());
+        ThreadUtils.runOnUiThreadBlocking(() -> mTab.destroy());
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         suspendDomain(STARTING_FQDN);
     }
 
     private void startLoadingUrl(Tab tab, String url) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.loadUrl(new LoadUrlParams(url, PageTransition.TYPED));
                 });
@@ -443,7 +443,7 @@ public class TabSuspensionTest {
     }
 
     private void assertSuspendedTabState(Tab tab, boolean showing, String fqdn) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SuspendedTab suspendedTab =
                             SuspendedTab.from(tab, mActivity.getTabContentManagerSupplier());
@@ -456,14 +456,14 @@ public class TabSuspensionTest {
     }
 
     private void suspendDomain(String domain) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageViewObserver.notifySiteSuspensionChanged(domain, true);
                 });
     }
 
     private void unsuspendDomain(String domain) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageViewObserver.notifySiteSuspensionChanged(domain, false);
                 });

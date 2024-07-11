@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -32,7 +33,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -71,7 +71,7 @@ public class ChromeTabCreatorTest {
     public void testCreateNewTabInBackgroundLowEnd() throws ExecutionException {
         final Tab fgTab = sActivityTestRule.getActivity().getActivityTab();
         final Tab bgTab =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Tab>() {
                             @Override
                             public Tab call() {
@@ -95,7 +95,7 @@ public class ChromeTabCreatorTest {
                 new Runnable() {
                     @Override
                     public void run() {
-                        TestThreadUtils.runOnUiThreadBlocking(
+                        ThreadUtils.runOnUiThreadBlocking(
                                 () -> {
                                     TabModelUtils.setIndex(
                                             sActivityTestRule.getActivity().getCurrentTabModel(),
@@ -114,7 +114,7 @@ public class ChromeTabCreatorTest {
     public void testCreateNewTabInBackground() throws ExecutionException {
         final Tab fgTab = sActivityTestRule.getActivity().getActivityTab();
         Tab bgTab =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Tab>() {
                             @Override
                             public Tab call() {
@@ -214,7 +214,7 @@ public class ChromeTabCreatorTest {
         final String url = mTestServer.getURL(TEST_PATH);
         final String title = "BAR";
         final Tab bgTab =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             Tab tab =
                                     sActivityTestRule
@@ -236,7 +236,7 @@ public class ChromeTabCreatorTest {
         // Switch tabs and verify that the tab is loaded as it gets foregrounded.
         Runnable loadPage =
                 () -> {
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 TabModelUtils.setIndex(
                                         sActivityTestRule.getActivity().getCurrentTabModel(),

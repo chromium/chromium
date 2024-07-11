@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.CREDIT_CARD_SCREEN;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.view.View;

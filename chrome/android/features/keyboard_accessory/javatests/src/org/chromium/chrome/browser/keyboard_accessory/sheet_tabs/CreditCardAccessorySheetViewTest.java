@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -57,7 +58,6 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetT
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.Optional;
@@ -88,7 +88,7 @@ public class CreditCardAccessorySheetViewTest {
 
         mActivityTestRule.startMainActivityOnBlankPage();
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = new AccessorySheetTabItemsModel();
                     AccessorySheetCoordinator accessorySheet =
@@ -145,7 +145,7 @@ public class CreditCardAccessorySheetViewTest {
     public void testAddingCaptionsToTheModelRendersThem() {
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -165,7 +165,7 @@ public class CreditCardAccessorySheetViewTest {
         final AtomicBoolean clicked = new AtomicBoolean();
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -202,10 +202,10 @@ public class CreditCardAccessorySheetViewTest {
                         : mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
         assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
         // Chips are clickable:
-        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.cc_number)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.cc_number)::performClick);
         assertThat(clicked.get(), is(true));
         clicked.set(false);
-        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.exp_month)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.exp_month)::performClick);
         assertThat(clicked.get(), is(true));
     }
 
@@ -223,7 +223,7 @@ public class CreditCardAccessorySheetViewTest {
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
                 .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -271,7 +271,7 @@ public class CreditCardAccessorySheetViewTest {
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
                 .thenReturn(Optional.empty());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -313,7 +313,7 @@ public class CreditCardAccessorySheetViewTest {
     public void testAddingUnselectableFieldsRendersUnclickabeChips() {
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserInfo infoWithUnclickableField = new UserInfo("", false);
                     infoWithUnclickableField.addField(
@@ -351,7 +351,7 @@ public class CreditCardAccessorySheetViewTest {
         final AtomicBoolean clicked = new AtomicBoolean();
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -385,7 +385,7 @@ public class CreditCardAccessorySheetViewTest {
         final String kWarning = "Insecure, so filling is no.";
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -416,7 +416,7 @@ public class CreditCardAccessorySheetViewTest {
         final AtomicBoolean clicked = new AtomicBoolean();
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PromoCodeInfo info = new PromoCodeInfo();
                     info.setPromoCode(
@@ -461,7 +461,7 @@ public class CreditCardAccessorySheetViewTest {
                         .getDrawable(R.drawable.ic_logo_googleg_24dp);
         assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
         // Chips are clickable:
-        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.promo_code)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.promo_code)::performClick);
         assertThat(clicked.get(), is(true));
     }
 

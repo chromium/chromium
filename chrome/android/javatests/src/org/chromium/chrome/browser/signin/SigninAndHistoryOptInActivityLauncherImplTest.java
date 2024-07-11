@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
@@ -48,7 +49,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Tests {@link SigninAndHistoryOptInActivityLauncherImpl}. */
@@ -88,7 +88,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
     public void testLaunchActivityIfAllowedWhenSigninIsAllowed() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
@@ -114,7 +114,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
@@ -137,7 +137,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
     public void testLaunchActivityForHistorySyncDedicatedFlowWhenSigninIsAllowed() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchActivityForHistorySyncDedicatedFlow(
@@ -162,7 +162,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
@@ -188,7 +188,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
@@ -215,7 +215,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
@@ -241,7 +241,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchActivityForHistorySyncDedicatedFlow(
@@ -270,7 +270,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                         "Signin.SigninDisabledNotificationShown",
                         SigninAccessPoint.NTP_SIGNED_OUT_ICON);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
@@ -305,7 +305,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SigninDisabledNotificationShown", SigninAccessPoint.RECENT_TABS);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchActivityForHistorySyncDedicatedFlow(
@@ -332,7 +332,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
     public void testLaunchUpgradePromoActivityIfAllowed() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
@@ -349,7 +349,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(false);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
@@ -368,7 +368,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
@@ -386,7 +386,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
@@ -404,7 +404,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistoryOptInActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);

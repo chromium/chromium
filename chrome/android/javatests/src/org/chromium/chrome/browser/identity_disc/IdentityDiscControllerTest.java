@@ -42,6 +42,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
@@ -82,7 +83,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
@@ -230,7 +230,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     public void testIdentityDiscSignedOut_signinDisabledByPolicy() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(mIdentityServicesProviderMock.getSigninManager(Mockito.any()))
                             .thenReturn(mSigninManagerMock);
@@ -262,7 +262,7 @@ public class IdentityDiscControllerTest {
         mSigninTestRule.addAccountThenSignin(EMAIL, NAME);
         // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
         //  is implemented.
-        TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
+        ThreadUtils.runOnUiThreadBlocking(mTab::reload);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()
@@ -293,7 +293,7 @@ public class IdentityDiscControllerTest {
         SigninTestUtil.signin(accountInfo);
         // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
         //  is implemented.
-        TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
+        ThreadUtils.runOnUiThreadBlocking(mTab::reload);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()

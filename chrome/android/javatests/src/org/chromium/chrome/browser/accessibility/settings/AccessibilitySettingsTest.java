@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -51,7 +52,6 @@ import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.ViewUtils;
@@ -82,7 +82,7 @@ public class AccessibilitySettingsTest {
     @Before
     public void setUp() {
         // Enable screen reader to display all settings options.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsScreenReaderEnabledForTesting(true));
 
         mSettingsActivityTestRule.startSettingsActivity();
@@ -91,7 +91,7 @@ public class AccessibilitySettingsTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsScreenReaderEnabledForTesting(false));
     }
 
@@ -170,7 +170,7 @@ public class AccessibilitySettingsTest {
                         FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM));
 
         // Simulate activity stopping.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
 
         Assert.assertEquals(
                 "Histogram should have been recorded once.",
@@ -190,7 +190,7 @@ public class AccessibilitySettingsTest {
     @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
     public void testUnchangedFontPrefNotSavedOnStop() {
         // Simulate activity stopping.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
         Assert.assertEquals(
                 "Histogram should not have been recorded.",
                 0,
@@ -293,7 +293,7 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     public void testPageZoomPreference_decreaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setZoomValueForTesting(0);
                 });
@@ -316,7 +316,7 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     public void testPageZoomPreference_increaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setZoomValueForTesting(
                             PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
@@ -426,7 +426,7 @@ public class AccessibilitySettingsTest {
     public void testPageZoomPreference_smartZoom_decreaseButtonUpdatesValue() {
         getPageZoomPref();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setTextContrastValueForTesting(20);
                 });
@@ -442,7 +442,7 @@ public class AccessibilitySettingsTest {
     @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_decreaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setTextContrastValueForTesting(0);
                 });
@@ -468,7 +468,7 @@ public class AccessibilitySettingsTest {
     @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_increaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setTextContrastValueForTesting(
                             PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
@@ -515,7 +515,7 @@ public class AccessibilitySettingsTest {
 
     private void assertFontSizePrefs(
             final boolean expectedForceEnableZoom, final float expectedFontScale) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FontSizePrefs fontSizePrefs =
                             FontSizePrefs.getInstance(ProfileManager.getLastUsedRegularProfile());

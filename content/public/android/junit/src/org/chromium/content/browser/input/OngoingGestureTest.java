@@ -12,14 +12,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.HandwritingGestureResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Tests for the OngoingGesture helper class which is used in association with StylusGestureConverter
- * to process and apply stylus gestures in Chrome and WebView.
+ * Tests for the OngoingGesture helper class which is used in association with
+ * StylusGestureConverter to process and apply stylus gestures in Chrome and WebView.
  */
 @RunWith(RobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -30,7 +30,7 @@ public class OngoingGestureTest {
     @Test
     @SmallTest
     public void testGestureRequestsHaveIncreasingIDs() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OngoingGesture baseline = new OngoingGesture(null, null, null);
                     OngoingGesture request1 = new OngoingGesture(null, null, null);
@@ -43,7 +43,7 @@ public class OngoingGestureTest {
     @Test
     @SmallTest
     public void testGestureRequestLogsUnknownWithNullExecutor() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var histogram =
                             HistogramWatcher.newSingleRecordWatcher(
@@ -61,7 +61,7 @@ public class OngoingGestureTest {
     @Test
     @SmallTest
     public void testGestureRequestLogsUnknownWithNullIntConsumer() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var histogram =
                             HistogramWatcher.newSingleRecordWatcher(
@@ -79,7 +79,7 @@ public class OngoingGestureTest {
     @Test
     @SmallTest
     public void testGestureRequestLogsCorrectResult() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OngoingGesture request =
                             new OngoingGesture(

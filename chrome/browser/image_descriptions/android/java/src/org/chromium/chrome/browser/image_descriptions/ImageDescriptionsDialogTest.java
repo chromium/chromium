@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -53,7 +54,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -92,7 +92,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAppModalPresenter = new AppModalPresenter(getActivity());
                     mModalDialogManager =
@@ -107,14 +107,14 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> DeviceConditions.sForceConnectionTypeForTesting = false);
     }
 
     // Helper methods for driving dialog control
 
     private void showDialog() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                             .thenReturn(false);
@@ -127,7 +127,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
     }
 
     private void showDialogWithDontAskAgainVisible() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                             .thenReturn(false);
@@ -474,7 +474,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
                 .perform(click());
 
         // Setup wifi condition.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DeviceConditions.sForceConnectionTypeForTesting = true;
                     DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_WIFI;
@@ -505,7 +505,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
                 .perform(click());
 
         // Setup no wifi condition.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DeviceConditions.sForceConnectionTypeForTesting = true;
                     DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_NONE;

@@ -56,6 +56,7 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -98,7 +99,6 @@ import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -252,7 +252,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
 
@@ -291,7 +291,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         int mSelectedTabBackgroundDrawableId = R.drawable.selected_tab_background;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mGridModel =
                             new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
@@ -431,7 +431,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     public void testAnimationRestored() {
         View backgroundView = mTabGridView.findViewById(R.id.background_view);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mGridModel.set(TabProperties.IS_SELECTED, true);
                     mGridModel.set(
@@ -443,7 +443,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
         Assert.assertTrue(TabUiTestHelper.isTabViewSelected(mTabGridView));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mGridModel.set(TabProperties.IS_SELECTED, false);
                     mGridModel.set(
@@ -1025,7 +1025,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStripMCP.destroy();
                     mGridMCP.destroy();

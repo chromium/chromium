@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask;
@@ -31,7 +32,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.BackgroundSyncNetworkUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -100,7 +100,7 @@ public final class PeriodicBackgroundSyncTest {
 
     @After
     public void tearDown() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackgroundSyncBackgroundTaskScheduler.getInstance()
                             .removeObserver(mSchedulerObserver);
@@ -216,14 +216,14 @@ public final class PeriodicBackgroundSyncTest {
     }
 
     private void forceConnectionType(int connectionType) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackgroundSyncNetworkUtils.setConnectionTypeForTesting(connectionType);
                 });
     }
 
     private void disableGooglePlayServicesVersionCheck() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackgroundSyncBackgroundTaskSchedulerJni.get()
                             .setPlayServicesVersionCheckDisabledForTests(/* disabled= */ true);
@@ -231,7 +231,7 @@ public final class PeriodicBackgroundSyncTest {
     }
 
     private void resetEngagementForUrl(final String url, final double engagement) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                     SiteEngagementService.getForBrowserContext(
@@ -263,7 +263,7 @@ public final class PeriodicBackgroundSyncTest {
                     }
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackgroundSyncBackgroundTaskScheduler.getInstance()
                             .addObserver(mSchedulerObserver);

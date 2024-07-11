@@ -10,6 +10,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.RenderCoordinates;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.concurrent.TimeUnit;
@@ -114,7 +114,7 @@ public class FullscreenManagerTestUtils {
         final float initialVisibleContentOffset =
                 browserControlsStateProvider.getTopVisibleContentOffset();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     browserControlsStateProvider.addObserver(
                             new BrowserControlsStateProvider.Observer() {
@@ -160,7 +160,7 @@ public class FullscreenManagerTestUtils {
 
     /** Disable any browser visibility overrides for testing. */
     public static void disableBrowserOverrides() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> BrowserStateBrowserControlsVisibilityDelegate.disableForTesting());
     }
 

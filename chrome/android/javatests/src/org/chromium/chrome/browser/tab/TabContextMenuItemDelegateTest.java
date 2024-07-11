@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -35,7 +36,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -71,7 +71,7 @@ public class TabContextMenuItemDelegateTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModalDialogManager.dismissAllDialogs(DialogDismissalCause.ACTIVITY_DESTROYED);
                 });
@@ -90,7 +90,7 @@ public class TabContextMenuItemDelegateTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testOpenInNewTabInGroup_ExistingGroup_ParityEnabled() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeTabbedActivity cta = sActivityTestRule.getActivity();
                     var tabModelSelector = cta.getTabModelSelectorSupplier().get();
@@ -118,7 +118,7 @@ public class TabContextMenuItemDelegateTest {
     }
 
     private void createContextMenuForCurrentTab() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeTabbedActivity cta = sActivityTestRule.getActivity();
                     var rootUiCoordinator = cta.getRootUiCoordinatorForTesting();
@@ -146,7 +146,7 @@ public class TabContextMenuItemDelegateTest {
 
     private void openNewTabUsingContextMenu() {
         createContextMenuForCurrentTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContextMenuDelegate.onOpenInNewTabInGroup(
                             new GURL("about:blank"), new Referrer("about:blank", 0));

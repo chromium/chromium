@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
@@ -30,7 +31,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -48,7 +48,7 @@ public class ActivityTabProviderTest {
 
         public TestActivityTabTabObserver(ActivityTabProvider provider) {
             super(provider);
-            TestThreadUtils.runOnUiThreadBlockingNoException(() -> mObservedTab = provider.get());
+            ThreadUtils.runOnUiThreadBlockingNoException(() -> mObservedTab = provider.get());
         }
 
         @Override
@@ -58,22 +58,22 @@ public class ActivityTabProviderTest {
 
         @Override
         protected void updateObservedTabToCurrent() {
-            TestThreadUtils.runOnUiThreadBlocking(super::updateObservedTabToCurrent);
+            ThreadUtils.runOnUiThreadBlocking(super::updateObservedTabToCurrent);
         }
 
         @Override
         protected void addObserverToTabSupplier() {
-            TestThreadUtils.runOnUiThreadBlocking(super::addObserverToTabSupplier);
+            ThreadUtils.runOnUiThreadBlocking(super::addObserverToTabSupplier);
         }
 
         @Override
         protected void removeObserverFromTabSupplier() {
-            TestThreadUtils.runOnUiThreadBlocking(super::removeObserverFromTabSupplier);
+            ThreadUtils.runOnUiThreadBlocking(super::removeObserverFromTabSupplier);
         }
 
         @Override
         public void destroy() {
-            TestThreadUtils.runOnUiThreadBlocking(super::destroy);
+            ThreadUtils.runOnUiThreadBlocking(super::destroy);
         }
     }
 
@@ -88,7 +88,7 @@ public class ActivityTabProviderTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity = mActivityTestRule.getActivity();
                     mProvider = mActivity.getActivityTabProvider();
@@ -121,7 +121,7 @@ public class ActivityTabProviderTest {
     @Feature({"ActivityTabObserver"})
     public void testTriggerOnAddObserver() throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProvider.addObserver(tab -> helper.notifyCalled());
                 });
@@ -148,7 +148,7 @@ public class ActivityTabProviderTest {
                 getModelSelectedTab(),
                 mActivityTab);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false));
         mActivityTabChangedHelper.waitForCallback(1);
         assertEquals(
@@ -159,7 +159,7 @@ public class ActivityTabProviderTest {
 
         LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.TAB_SWITCHER);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getLayoutManager().showLayout(LayoutType.BROWSING, false));
         mActivityTabChangedHelper.waitForCallback(2);
         assertEquals(
@@ -198,7 +198,7 @@ public class ActivityTabProviderTest {
                 mActivityTab);
 
         int callCount = mActivityTabChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Select the original tab without switching layouts.
                     mActivity
@@ -222,16 +222,16 @@ public class ActivityTabProviderTest {
         // Have a tab open in incognito model. This should not be in the way getting the event
         // triggered when closing the last tab in normal mode.
         TabModelSelector selector = mActivity.getTabModelSelector();
-        TestThreadUtils.runOnUiThreadBlocking(() -> selector.selectModel(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> selector.selectModel(true));
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(),
                 mActivity,
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
                 true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> selector.selectModel(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> selector.selectModel(false));
 
         int callCount = mActivityTabChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     selector.closeTab(getModelSelectedTab());
                 });
@@ -270,7 +270,7 @@ public class ActivityTabProviderTest {
                 mActivityTab);
         Tab activityTabBefore = mActivityTab;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity.getTabModelSelector().closeTab(startingTab);
                 });

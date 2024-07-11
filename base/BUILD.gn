@@ -5010,7 +5010,10 @@ if (is_android) {
       "//third_party/junit",
     ]
 
-    public_deps = [ ":base_java_url_utils_for_test" ]
+    public_deps = [
+      ":base_java_url_utils_for_test",
+      ":tasks_java",
+    ]
 
     sources = [
       "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",

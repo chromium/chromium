@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -48,7 +49,6 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.payments.CurrencyFormatter;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -114,7 +114,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                 new BitmapDrawable(
                         mActivityTestRule.getActivity().getResources(), mSecondaryBitmap);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContentView = new LinearLayout(mActivityTestRule.getActivity());
                     mContentView.setBackgroundColor(Color.WHITE);
@@ -144,7 +144,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNoImage() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
                             LazyOneshotSupplier.fromSupplier(() -> new Pair<>(null, null));
@@ -176,7 +176,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testNoImage_bookmarksBar() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BookmarkId bookmarksBarId = new BookmarkId(1, BookmarkType.NORMAL);
                     doReturn(bookmarksBarId).when(mBookmarkModel).getDesktopFolderId();
@@ -211,7 +211,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNoImage_readingList() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
@@ -243,7 +243,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testOneImage() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
                             LazyOneshotSupplier.fromSupplier(
@@ -259,7 +259,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testTwoImages() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
                             LazyOneshotSupplier.fromSupplier(
@@ -275,7 +275,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testTwoImages_99Children() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
                             LazyOneshotSupplier.fromSupplier(
@@ -292,7 +292,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testTwoImages_999Children() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
                             LazyOneshotSupplier.fromSupplier(

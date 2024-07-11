@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -44,7 +45,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /**
@@ -100,7 +100,7 @@ public class StatusIndicatorTest {
     @Test
     @MediumTest
     public void testShowAndHide() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mStatusIndicatorCoordinator.show(
                                 "Status", null, Color.BLACK, Color.WHITE, Color.WHITE));
@@ -120,7 +120,7 @@ public class StatusIndicatorTest {
                 Color.BLACK,
                 ((ColorDrawable) getStatusIndicator().getBackground()).getColor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mStatusIndicatorCoordinator.updateContent(
                                 "Exit status",
@@ -141,7 +141,7 @@ public class StatusIndicatorTest {
                 Color.WHITE,
                 ((ColorDrawable) getStatusIndicator().getBackground()).getColor());
 
-        TestThreadUtils.runOnUiThreadBlocking(mStatusIndicatorCoordinator::hide);
+        ThreadUtils.runOnUiThreadBlocking(mStatusIndicatorCoordinator::hide);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Wait until the status indicator finishes animating, or becomes fully hidden.
@@ -162,7 +162,7 @@ public class StatusIndicatorTest {
     @Test
     @MediumTest
     public void testShowAfterHide() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mStatusIndicatorCoordinator.show(
                                 "Status", null, Color.BLACK, Color.WHITE, Color.WHITE));
@@ -177,7 +177,7 @@ public class StatusIndicatorTest {
                             getStatusIndicator().getVisibility(), Matchers.is(View.VISIBLE));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(mStatusIndicatorCoordinator::hide);
+        ThreadUtils.runOnUiThreadBlocking(mStatusIndicatorCoordinator::hide);
 
         // Wait until the status indicator finishes animating, or becomes fully hidden.
         CriteriaHelper.pollUiThread(
@@ -193,7 +193,7 @@ public class StatusIndicatorTest {
                 "Composited view shouldn't be visible.",
                 mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mStatusIndicatorCoordinator.show(
                                 "Status", null, Color.BLACK, Color.WHITE, Color.WHITE));
@@ -228,7 +228,7 @@ public class StatusIndicatorTest {
                 "Wrong initial composited view visibility.",
                 mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.show(
                             "Status", null, Color.BLACK, Color.WHITE, Color.WHITE);
@@ -251,7 +251,7 @@ public class StatusIndicatorTest {
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
         onView(withId(viewId)).check(matches(withTopMargin(getStatusIndicator().getHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.updateContent(
                             "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
@@ -266,7 +266,7 @@ public class StatusIndicatorTest {
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
         onView(withId(viewId)).check(matches(withTopMargin(getStatusIndicator().getHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.hide();
                     mStatusIndicatorCoordinator
@@ -304,7 +304,7 @@ public class StatusIndicatorTest {
                                 withTopMargin(
                                         mBrowserControlsStateProvider.getTopControlsHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.show(
                             "Status", null, Color.BLACK, Color.WHITE, Color.WHITE);
@@ -330,7 +330,7 @@ public class StatusIndicatorTest {
                                 withTopMargin(
                                         mBrowserControlsStateProvider.getTopControlsHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.updateContent(
                             "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
@@ -349,7 +349,7 @@ public class StatusIndicatorTest {
                                 withTopMargin(
                                         mBrowserControlsStateProvider.getTopControlsHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.hide();
                     mStatusIndicatorCoordinator

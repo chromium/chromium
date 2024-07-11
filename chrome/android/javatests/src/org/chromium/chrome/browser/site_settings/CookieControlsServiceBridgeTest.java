@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -30,7 +31,6 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Integration tests for CookieControlsServiceBridge. */
@@ -79,7 +79,7 @@ public class CookieControlsServiceBridgeTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
@@ -88,7 +88,7 @@ public class CookieControlsServiceBridgeTest {
     }
 
     private void setCookieControlsMode(@CookieControlsMode int mode) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
@@ -107,7 +107,7 @@ public class CookieControlsServiceBridgeTest {
 
         int currentCallCount = mCallbackHelper.getCallCount();
         // Create cookie settings bridge and wait for desired callbacks.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsServiceBridge =
                             new CookieControlsServiceBridge(tab.getProfile(), mCallbackHandler);
@@ -157,7 +157,7 @@ public class CookieControlsServiceBridgeTest {
         mChecked = false;
         int currentCallCount = mCallbackHelper.getCallCount();
         // Create cookie controls service bridge and wait for desired callbacks.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsServiceBridge =
                             new CookieControlsServiceBridge(tab.getProfile(), mCallbackHandler);

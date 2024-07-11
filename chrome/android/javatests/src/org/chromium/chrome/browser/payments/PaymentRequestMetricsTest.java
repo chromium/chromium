@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -28,7 +29,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
 import org.chromium.components.payments.PaymentFeatureList;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -128,7 +128,7 @@ public class PaymentRequestMetricsTest {
 
         // Cancel the Payment Request.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable)
                         () -> {
                             // Click "Edit" to expand the UI.
@@ -220,7 +220,7 @@ public class PaymentRequestMetricsTest {
 
         // Press the back button.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPaymentRequestTestRule
                                 .getPaymentRequestUI()

@@ -48,6 +48,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -77,7 +78,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.concurrent.ExecutionException;
@@ -122,7 +122,7 @@ public class FirstRunActivitySigninAndSyncTest {
     public void setUp() {
         when(mLocalManagerDelegateMock.getSearchEnginePromoShowType())
                 .thenReturn(SearchEnginePromoType.DONT_SHOW);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LocaleManager.getInstance().setDelegateForTest(mLocalManagerDelegateMock);
                 });
@@ -274,7 +274,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         onView((withId(R.id.signin_fre_continue_button))).perform(scrollTo(), click());
         completeAutoDeviceLockIfNeeded();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mFirstRunActivity.handleBackPress());
+        ThreadUtils.runOnUiThreadBlocking(() -> mFirstRunActivity.handleBackPress());
 
         onView((withId(R.id.signin_fre_dismiss_button))).check(matches(not(isDisplayed())));
     }
@@ -584,7 +584,7 @@ public class FirstRunActivitySigninAndSyncTest {
                 .check(matches(isEnabled()));
         // This helps to reduce flakiness on some marshmallow bots in comparison with
         // espresso click.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mFirstRunActivity.findViewById(buttonId).performClick();
                 });

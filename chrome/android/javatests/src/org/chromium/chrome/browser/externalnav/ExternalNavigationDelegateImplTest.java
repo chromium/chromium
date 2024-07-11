@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
@@ -26,7 +27,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -74,10 +74,10 @@ public class ExternalNavigationDelegateImplTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         doReturn(mMockWindowAndroid).when(mMockTab).getWindowAndroid();
         mExternalNavigationDelegateImpl =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> new ExternalNavigationDelegateImpl(mMockTab));
         mExternalNavigationDelegateImplForTesting =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> new ExternalNavigationDelegateImplForTesting(mMockTab));
     }
 

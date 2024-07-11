@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -35,7 +36,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /** Tests for the {@link TabContentManager}. */
@@ -100,7 +100,7 @@ public class TabContentManagerTest {
                     helper.notifyCalled();
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final TabContentManager tabContentManager =
                             sActivityTestRule.getActivity().getTabContentManagerSupplier().get();
@@ -139,7 +139,7 @@ public class TabContentManagerTest {
         // Put the compositor view in a mode that supports readback (this is used by the magnifier
         // normally). Note that this might fail if surface control isn't supported by the GPU under
         // test.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     compositorView.onSelectionHandlesStateChanged(true);
                 });
@@ -147,7 +147,7 @@ public class TabContentManagerTest {
         // contain anything and there is no signal to listen to.
         Thread.sleep(1000);
         // Capture the surface using PixelCopy repeating until it works.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SurfaceView surfaceView = (SurfaceView) compositorView.getActiveSurfaceView();
                     Assert.assertNotNull(surfaceView);
@@ -161,7 +161,7 @@ public class TabContentManagerTest {
                 });
         helper.waitForOnly();
         Assert.assertNotNull(bitmapHolder[0]);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     compositorView.onSelectionHandlesStateChanged(false);
                 });

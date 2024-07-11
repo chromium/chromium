@@ -30,6 +30,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
@@ -47,7 +48,6 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.content_public.browser.test.util.KeyUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -158,7 +158,7 @@ public class OmniboxTestUtils {
 
     /** Disables any live autocompletion, making Omnibox behave like a standard text field. */
     public void disableLiveAutocompletion() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setTextChangeListener(null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setTextChangeListener(null));
     }
 
     /**
@@ -200,10 +200,11 @@ public class OmniboxTestUtils {
 
     /**
      * Determines whether the UrlBar currently has focus.
+     *
      * @return Whether the UrlBar has focus.
      */
     public boolean getFocus() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.hasFocus());
+        return ThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.hasFocus());
     }
 
     /** Request the Omnibox focus and wait for soft keyboard to show. */
@@ -226,7 +227,7 @@ public class OmniboxTestUtils {
      * Omnibox is already unfocused.
      */
     public void clearFocus() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mUrlBar.hasFocus()) {
                         ((ComponentActivity) mActivity)
@@ -247,7 +248,7 @@ public class OmniboxTestUtils {
      */
     public void setSuggestions(AutocompleteResult autocompleteResult) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OnSuggestionsReceivedListener listener =
                             mAutocomplete.getSuggestionsReceivedListenerForTest();
@@ -371,16 +372,16 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Retrieve the Suggestion View for specific suggestion index.
-     * Traverses the Suggestions list and skips over the Headers.
+     * Retrieve the Suggestion View for specific suggestion index. Traverses the Suggestions list
+     * and skips over the Headers.
      *
      * @param <T> The type of the expected view. Inferred from call.
      * @param indexOfSuggestion The index of the suggestion view (not including the headers).
      * @return The View corresponding to suggestion with specific index, or null if there's no such
-     *         suggestion.
+     *     suggestion.
      */
     private @Nullable <T extends View> T getSuggestionViewForIndex(int indexOfSuggestion) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     OmniboxSuggestionsDropdown dropdown =
                             mLocationBar
@@ -402,16 +403,15 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Type text in the Omnibox.
-     * Requires that the Omnibox is focused ahead of call.
+     * Type text in the Omnibox. Requires that the Omnibox is focused ahead of call.
      *
      * @param text Text to be "typed" in the Omnibox.
      * @param execute Whether to perform the default action after typing text (ie. press the "go"
-     *         button/enter key).
+     *     button/enter key).
      */
     public void typeText(String text, boolean execute) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> KeyUtils.typeTextIntoView(mInstrumentation, mUrlBar, text));
 
         if (execute) sendKey(KeyEvent.KEYCODE_ENTER);
@@ -434,7 +434,7 @@ public class OmniboxTestUtils {
      */
     public void sendKey(int keyCode, int modifiers) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var currentTime = SystemClock.uptimeMillis();
                     var event =
@@ -468,7 +468,7 @@ public class OmniboxTestUtils {
      */
     public void setText(String userText) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setText(userText);
                     // Push this to the model as well.
@@ -483,12 +483,12 @@ public class OmniboxTestUtils {
      *
      * @param textToCommit The text to supply as if it was supplied by Soft Keyboard.
      * @param commitAsAutocomplete Whether the text should be applied as autocompletion (true) or
-     *         autocorrection (false). Note that autocorrection works only if the Omnibox is
-     *         currently composing text.
+     *     autocorrection (false). Note that autocorrection works only if the Omnibox is currently
+     *     composing text.
      */
     public void commitText(@NonNull String textToCommit, boolean commitAsAutocomplete) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputConnection conn = mUrlBar.getInputConnection();
                     if (commitAsAutocomplete) conn.finishComposingText();
@@ -508,7 +508,7 @@ public class OmniboxTestUtils {
         checkFocus(true);
 
         AtomicReference<String> userText = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     userText.set(mUrlBar.getTextWithoutAutocomplete());
                     mUrlBar.setAutocompleteText(userText.get(), autocompleteText, additionalText);
@@ -636,7 +636,7 @@ public class OmniboxTestUtils {
      * @return The text contents of the omnibox (without the Autocomplete part).
      */
     public String getText() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mUrlBar.getTextWithoutAutocomplete());
     }
 
@@ -682,7 +682,7 @@ public class OmniboxTestUtils {
     /**
      * Set the Composing text in the Omnibox.
      *
-     * Assumes that the supplied composingRegionStart is a valid text position (does not verify
+     * <p>Assumes that the supplied composingRegionStart is a valid text position (does not verify
      * test's sanity).
      *
      * @param composingText The composing text to apply.
@@ -692,7 +692,7 @@ public class OmniboxTestUtils {
     public void setComposingText(
             @NonNull String composingText, int composingRegionStart, int composingRegionEnd) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputConnection conn = mUrlBar.getInputConnection();
                     conn.setComposingRegion(composingRegionStart, composingRegionEnd);

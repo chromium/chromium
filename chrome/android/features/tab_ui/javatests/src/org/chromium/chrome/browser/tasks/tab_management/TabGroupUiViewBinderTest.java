@@ -28,9 +28,9 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -52,7 +52,7 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup parentView = new FrameLayout(getActivity());
                     TabGroupUiToolbarView toolbarView =
@@ -91,7 +91,7 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 

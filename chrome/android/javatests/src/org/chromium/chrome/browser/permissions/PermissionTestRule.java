@@ -17,6 +17,7 @@ import androidx.annotation.IntDef;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -31,7 +32,6 @@ import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.permissions.PermissionDialogController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -137,7 +137,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     public void setUpActivity() throws InterruptedException {
         startMainActivityOnBlankPage();
         mListener = new InfoBarTestAnimationListener();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> getInfoBarContainer().addAnimationListener(mListener));
     }
 
@@ -366,7 +366,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     /** Wait for the permission dialog to be in the expected shown state. */
     public static void waitForDialogShownState(ChromeActivity activity, boolean expectedShowState) {
         ModalDialogManager dialogManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(activity::getModalDialogManager);
+                ThreadUtils.runOnUiThreadBlockingNoException(activity::getModalDialogManager);
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean isDialogShownForTest =

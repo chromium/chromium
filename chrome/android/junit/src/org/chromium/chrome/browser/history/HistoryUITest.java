@@ -57,6 +57,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -91,7 +92,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -611,7 +611,7 @@ public class HistoryUITest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.SecondaryActivity", SecondaryActivity.HISTORY);
         Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
-        TestThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
+        ThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
         Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
@@ -622,7 +622,7 @@ public class HistoryUITest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.SecondaryActivity", SecondaryActivity.HISTORY);
         Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
-        TestThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
+        ThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
         backPressRecorder2.assertExpected();

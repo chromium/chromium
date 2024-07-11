@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -45,7 +46,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -81,7 +81,7 @@ public class LauncherShortcutTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModelSelectorObserver tabModelSelectorObserver =
                             new TabModelSelectorObserver() {
@@ -115,7 +115,7 @@ public class LauncherShortcutTest {
         // Verify NTP was created.
 
         Tab activityTab =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getActivity().getActivityTab());
         Assert.assertEquals(
                 "Incorrect tab launch type.",
@@ -175,7 +175,7 @@ public class LauncherShortcutTest {
 
         // Verify NTP was created in the new activity.
         CriteriaHelper.pollUiThread(() -> newWindowActivity.getActivityTab() != null);
-        Tab activityTab = TestThreadUtils.runOnUiThreadBlocking(newWindowActivity::getActivityTab);
+        Tab activityTab = ThreadUtils.runOnUiThreadBlocking(newWindowActivity::getActivityTab);
         Assert.assertEquals(
                 "Incorrect tab launch type.",
                 TabLaunchType.FROM_LAUNCHER_SHORTCUT,

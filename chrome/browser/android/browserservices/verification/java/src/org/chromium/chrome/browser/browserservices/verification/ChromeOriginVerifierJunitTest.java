@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
@@ -34,7 +35,6 @@ import org.chromium.components.content_relationship_verification.OriginVerifierJ
 import org.chromium.components.content_relationship_verification.OriginVerifierUnitTestSupport;
 import org.chromium.components.content_relationship_verification.RelationshipCheckResult;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -136,7 +136,7 @@ public class ChromeOriginVerifierJunitTest {
                         ChromeVerificationResultStore.getInstance());
         TestOriginVerificationListener resultListener =
                 new TestOriginVerificationListener(mVerificationResultLatch);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mChromeVerifier.start(resultListener, mHttpsOrigin));
         mVerificationResultLatch.await();
         Assert.assertTrue(resultListener.isVerified());
@@ -157,7 +157,7 @@ public class ChromeOriginVerifierJunitTest {
                         ChromeVerificationResultStore.getInstance());
         TestOriginVerificationListener resultListener =
                 new TestOriginVerificationListener(mVerificationResultLatch);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mChromeVerifier.start(resultListener, mHttpsOrigin));
         mVerificationResultLatch.await();
         Assert.assertFalse(resultListener.isVerified());

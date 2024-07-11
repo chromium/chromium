@@ -18,9 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -59,7 +59,7 @@ public class ScreenshotShareSheetViewTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup view = new LinearLayout(getActivity());
                     FrameLayout.LayoutParams params =
@@ -141,7 +141,7 @@ public class ScreenshotShareSheetViewTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mScreenshotMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mScreenshotMCP::destroy);
         super.tearDownTest();
     }
 }

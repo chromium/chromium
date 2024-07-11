@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
@@ -82,13 +81,13 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         Mockito.when(mTab.getUserDataHost()).thenReturn(userDataHost);
         ThreadUtils.runOnUiThreadBlocking(() -> TabAssociatedApp.from(mTab));
         Mockito.when(mTab.getLaunchType()).thenReturn(TabLaunchType.FROM_EXTERNAL_APP);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTabSupplier.set(mTab));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTabSupplier.set(mTab));
         Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mHandler.handleOnBackStarted(
                                 new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT)));
-        TestThreadUtils.runOnUiThreadBlocking(mHandler::handleBackPress);
+        ThreadUtils.runOnUiThreadBlocking(mHandler::handleBackPress);
         verify(
                         mSendToBackground,
                         Mockito.description("App should be minimized with tab being closed"))
@@ -113,17 +112,17 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                         MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
                         MinimizeAppAndCloseTabType.CLOSE_TAB);
         Mockito.when(mShouldCloseTab.test(mTab)).thenReturn(true);
-        UserDataHost userDataHost = TestThreadUtils.runOnUiThreadBlocking(() -> new UserDataHost());
+        UserDataHost userDataHost = ThreadUtils.runOnUiThreadBlocking(() -> new UserDataHost());
         Mockito.when(mTab.getUserDataHost()).thenReturn(userDataHost);
-        TestThreadUtils.runOnUiThreadBlocking(() -> TabAssociatedApp.from(mTab));
+        ThreadUtils.runOnUiThreadBlocking(() -> TabAssociatedApp.from(mTab));
         Mockito.when(mTab.getLaunchType()).thenReturn(TabLaunchType.FROM_LONGPRESS_FOREGROUND);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTabSupplier.set(mTab));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTabSupplier.set(mTab));
         Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mHandler.handleOnBackStarted(
                                 new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT)));
-        TestThreadUtils.runOnUiThreadBlocking(mHandler::handleBackPress);
+        ThreadUtils.runOnUiThreadBlocking(mHandler::handleBackPress);
 
         verify(
                         mSendToBackground,
@@ -150,7 +149,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
                         MinimizeAppAndCloseTabType.MINIMIZE_APP);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTabSupplier.set(mTab);
                 });
@@ -176,7 +175,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM)
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTabSupplier.set(mTab);
                 });
@@ -197,12 +196,12 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
                         MinimizeAppAndCloseTabType.MINIMIZE_APP);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTabSupplier.set(null);
                 });
         Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHandler.handleBackPress();
                 });
@@ -225,7 +224,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM)
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTabSupplier.set(null);
                 });
@@ -252,12 +251,12 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         if (systemBack) {
             MinimizeAppAndCloseTabBackPressHandler.setVersionForTesting(VERSION_CODES.TIRAMISU);
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTabSupplier = new ObservableSupplierImpl<>();
                 });
         mHandler =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 new MinimizeAppAndCloseTabBackPressHandler(
                                         mActivityTabSupplier,

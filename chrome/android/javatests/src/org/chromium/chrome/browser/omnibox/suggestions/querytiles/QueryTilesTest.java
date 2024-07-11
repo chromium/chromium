@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
@@ -44,7 +45,6 @@ import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 
@@ -119,8 +119,7 @@ public class QueryTilesTest {
 
         mOmnibox.requestFocus();
         verify(mController).startZeroSuggest(anyString(), any(), anyInt(), anyString());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mListener.onSuggestionsReceived(acResult, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mListener.onSuggestionsReceived(acResult, true));
         mOmnibox.checkSuggestionsShown();
     }
 

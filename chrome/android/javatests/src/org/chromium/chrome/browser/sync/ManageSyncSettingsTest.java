@@ -63,6 +63,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -110,7 +111,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
@@ -194,7 +194,7 @@ public class ManageSyncSettingsTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(
                 UnifiedConsentServiceBridgeJni.TEST_HOOKS, mUnifiedConsentServiceBridgeMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Mockito.when(
                                     mUnifiedConsentServiceBridgeMock
@@ -498,7 +498,7 @@ public class ManageSyncSettingsTest {
         Assert.assertTrue(
                 "Sign out and turn off sync button should be shown",
                 turnOffSyncPreference.isVisible());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC)::performClick);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         onView(withText(R.string.turn_off_sync_and_signout_title))
@@ -523,7 +523,7 @@ public class ManageSyncSettingsTest {
                 fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC);
         Assert.assertTrue(
                 "Turn off sync button should be shown", turnOffSyncPreference.isVisible());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC)::performClick);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         onView(withText(R.string.turn_off_sync_title))
@@ -693,7 +693,7 @@ public class ManageSyncSettingsTest {
 
         // Mimic the user clicking on the explicit passphrase checkbox immediately after signing
         // out.
-        TestThreadUtils.runOnUiThreadBlocking(fragment::onChooseCustomPassphraseRequested);
+        ThreadUtils.runOnUiThreadBlocking(fragment::onChooseCustomPassphraseRequested);
 
         // No crash means we passed.
     }
@@ -706,7 +706,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
         mSyncTestRule.signOut();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> fragment.onPassphraseEntered("passphrase"));
         // No crash means we passed.
     }
@@ -718,7 +718,7 @@ public class ManageSyncSettingsTest {
     public void testPassphraseCreation() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(fragment::onChooseCustomPassphraseRequested);
+        ThreadUtils.runOnUiThreadBlocking(fragment::onChooseCustomPassphraseRequested);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         PassphraseCreationDialogFragment pcdf = getPassphraseCreationDialogFragment();
         AlertDialog dialog = (AlertDialog) pcdf.getDialog();
@@ -867,7 +867,7 @@ public class ManageSyncSettingsTest {
         // changed. Right before FakeRecoverabilityDegradedFixActivity completion
         // FakeTrustedVaultClientBackend will exit the recoverability degraded state.
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     fragment.onSyncErrorCardPrimaryButtonClicked();
                 });
@@ -902,7 +902,7 @@ public class ManageSyncSettingsTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return fragment.getActivity().findViewById(R.id.central_account_card);
                         });
@@ -921,7 +921,7 @@ public class ManageSyncSettingsTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return fragment.getActivity().findViewById(R.id.central_account_card);
                         });
@@ -940,7 +940,7 @@ public class ManageSyncSettingsTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return fragment.getActivity().findViewById(R.id.central_account_card);
                         });
@@ -960,7 +960,7 @@ public class ManageSyncSettingsTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return fragment.getActivity().findViewById(R.id.central_account_card);
                         });
@@ -983,7 +983,7 @@ public class ManageSyncSettingsTest {
     public void testAdvancedSyncFlowBottomView() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     // Sometimes the rendered image may not contain the scrollbar and cause
@@ -1002,7 +1002,7 @@ public class ManageSyncSettingsTest {
     public void testAdvancedSyncFlowBottomViewWithWebApks() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     // Sometimes the rendered image may not contain the scrollbar and cause
@@ -1029,7 +1029,7 @@ public class ManageSyncSettingsTest {
     public void testAdvancedSyncFlowFromSyncConsentBottomView() throws Exception {
         mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     // Sometimes the rendered image may not contain the scrollbar and cause
@@ -1056,7 +1056,7 @@ public class ManageSyncSettingsTest {
     public void testAdvancedSyncFlowBottomViewForChildUser() throws Exception {
         mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     // Sometimes the rendered image may not contain the scrollbar and cause
@@ -1083,7 +1083,7 @@ public class ManageSyncSettingsTest {
     public void testAdvancedSyncFlowFromSyncConsentBottomViewForChildUser() throws Exception {
         mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     // Sometimes the rendered image may not contain the scrollbar and cause
@@ -1127,7 +1127,7 @@ public class ManageSyncSettingsTest {
     public void testSyncSettingsBottomViewWithSyncTypesManagedByPolicy() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -1141,7 +1141,7 @@ public class ManageSyncSettingsTest {
     public void testGoogleActivityControls() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -1156,7 +1156,7 @@ public class ManageSyncSettingsTest {
     public void testLinkedServicesSetting() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -1172,7 +1172,7 @@ public class ManageSyncSettingsTest {
         when(mTemplateUrlService.isEeaChoiceCountry()).thenReturn(true);
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -1187,7 +1187,7 @@ public class ManageSyncSettingsTest {
     public void testClickGoogleActivityControls() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -1205,7 +1205,7 @@ public class ManageSyncSettingsTest {
     public void testClickGoogleActivityControlsWhenSyncPromosShouldBeReplacedWithSigninPromos() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -1222,7 +1222,7 @@ public class ManageSyncSettingsTest {
     public void testClickPersonalizeGoogleServicesNonEEA() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -1240,7 +1240,7 @@ public class ManageSyncSettingsTest {
         when(mTemplateUrlService.isEeaChoiceCountry()).thenReturn(true);
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -1268,7 +1268,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testAdvancedSyncFlowFromSyncConsentForSupervisedUserWithUKMEnabled()
             throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Mockito.when(
                                     mUnifiedConsentServiceBridgeMock
@@ -1294,7 +1294,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testAdvancedSyncFlowFromSyncConsentForSupervisedUserWithUKMDisabled()
             throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Mockito.when(
                                     mUnifiedConsentServiceBridgeMock
@@ -1353,7 +1353,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PopupMenu p = new PopupMenu(mSettingsActivity, null);
                     Menu menu = p.getMenu();
@@ -1438,7 +1438,7 @@ public class ManageSyncSettingsTest {
         // The error card exists.
         Assert.assertTrue(preference.isShown());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
                             .thenReturn(false);
@@ -1483,9 +1483,8 @@ public class ManageSyncSettingsTest {
         // Simulate OnPassphraseAccepted from external event by setting the passphrase
         // and triggering syncStateChanged().
         // PassphraseDialogFragment should be dismissed.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> syncService.setDecryptionPassphrase("passphrase"));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(() -> syncService.setDecryptionPassphrase("passphrase"));
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     fragment.getFragmentManager().executePendingTransactions();
                     Assert.assertNull(
@@ -1545,7 +1544,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         SyncService syncService = mSyncTestRule.getSyncService();
         // Mark sync disabled by policy.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
@@ -1676,7 +1675,7 @@ public class ManageSyncSettingsTest {
     private void assertSelectedTypesAre(final Set<Integer> enabledDataTypes) {
         final Set<Integer> disabledDataTypes = new HashSet<>(mUiDataTypes.keySet());
         disabledDataTypes.removeAll(enabledDataTypes);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Set<Integer> actualDataTypes =
                             mSyncTestRule.getSyncService().getSelectedTypes();
@@ -1686,7 +1685,7 @@ public class ManageSyncSettingsTest {
     }
 
     private void assertPaymentsIntegrationEnabled(final boolean enabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Set<Integer> actualDataTypes =
                             mSyncTestRule.getSyncService().getSelectedTypes();
@@ -1699,7 +1698,7 @@ public class ManageSyncSettingsTest {
     }
 
     private void verifyUrlKeyedAnonymizedDataCollectionSet() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     verify(mUnifiedConsentServiceBridgeMock, Mockito.atLeastOnce())
@@ -1708,7 +1707,7 @@ public class ManageSyncSettingsTest {
     }
 
     private void verifyUrlKeyedAnonymizedDataCollectionNotSet() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     verify(mUnifiedConsentServiceBridgeMock, Mockito.never())
@@ -1717,23 +1716,23 @@ public class ManageSyncSettingsTest {
     }
 
     private void clickPreference(final Preference pref) {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> pref.getOnPreferenceClickListener().onPreferenceClick(pref));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private void clickButton(final Button button) {
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) button::performClick);
+        ThreadUtils.runOnUiThreadBlocking((Runnable) button::performClick);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private void setText(final TextView textView, final String text) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> textView.setText(text));
+        ThreadUtils.runOnUiThreadBlocking(() -> textView.setText(text));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private void clearError(final TextView textView) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> textView.setError(null));
+        ThreadUtils.runOnUiThreadBlocking(() -> textView.setError(null));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 

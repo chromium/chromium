@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -28,7 +29,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 
@@ -57,7 +57,7 @@ public class AssistViewStructureTest {
 
         TestViewStructure testViewStructure = new TestViewStructure();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> wcax.onProvideVirtualStructure(testViewStructure, false));
 
         CriteriaHelper.pollUiThread(

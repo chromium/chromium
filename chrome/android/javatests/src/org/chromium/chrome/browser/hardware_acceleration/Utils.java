@@ -11,11 +11,11 @@ import android.view.ViewTreeObserver.OnPreDrawListener;
 import org.junit.Assert;
 
 import org.chromium.base.SysUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -54,7 +54,7 @@ public class Utils {
         final AtomicBoolean accelerated = new AtomicBoolean();
         final CallbackHelper listenerCalled = new CallbackHelper();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final View view = activity.getWindow().getDecorView();
                     view.getViewTreeObserver()

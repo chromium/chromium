@@ -48,13 +48,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.KeyUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -101,7 +101,7 @@ public class BookmarkSearchBoxRowTest {
     public void setUp() throws Exception {
         mActivityTestRule.launchActivity(null);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     LinearLayout contentView = new LinearLayout(activity);
@@ -155,11 +155,11 @@ public class BookmarkSearchBoxRowTest {
     }
 
     private <T> void setProperty(WritableObjectPropertyKey<T> property, T value) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mPropertyModel.set(property, value));
+        ThreadUtils.runOnUiThreadBlocking(() -> mPropertyModel.set(property, value));
     }
 
     private void setProperty(WritableBooleanPropertyKey property, boolean value) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mPropertyModel.set(property, value));
+        ThreadUtils.runOnUiThreadBlocking(() -> mPropertyModel.set(property, value));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class BookmarkSearchBoxRowTest {
         onView(withId(R.id.row_search_text)).perform(click());
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(true)));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     KeyUtils.singleKeyEventView(
                             InstrumentationRegistry.getInstrumentation(),
@@ -187,7 +187,7 @@ public class BookmarkSearchBoxRowTest {
         verifyNoInteractions(mSearchTextChangeCallback);
 
         String fooText = "foo";
-        TestThreadUtils.runOnUiThreadBlocking(() -> mEditText.setText(fooText));
+        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.setText(fooText));
         verify(mSearchTextChangeCallback).onResult(eq(fooText));
     }
 
@@ -202,10 +202,10 @@ public class BookmarkSearchBoxRowTest {
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(false)));
         verifyNoInteractions(mFocusChangeCallback);
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
         verify(mFocusChangeCallback).onResult(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mEditText.clearFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.clearFocus());
         verify(mFocusChangeCallback).onResult(false);
     }
 
@@ -233,7 +233,7 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testTapSearchRowLayoutClearsSearchFocus() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
         verify(mFocusChangeCallback).onResult(true);
 
         onView(withId(R.id.bookmark_toolbar)).perform(click());
@@ -243,7 +243,7 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testTogglingChipDoesNotClearSearchFocus() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
         verify(mFocusChangeCallback).onResult(true);
 
         onView(withId(R.id.shopping_filter_chip)).perform(click());
@@ -256,7 +256,7 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testTapFilterLayoutClearsSearchFocus() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
         verify(mFocusChangeCallback).onResult(true);
 
         onView(withChild(withId(R.id.shopping_filter_chip))).perform(click());
@@ -278,7 +278,7 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testRebindSingleSearchTextChangeCallback() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModelChangeProcessor.create(
                             mPropertyModel,

@@ -22,6 +22,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -30,7 +31,6 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests basic functionality of WebappLaunchCauseMetrics. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -43,7 +43,7 @@ public final class WebappLaunchCauseMetricsTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
                 });
@@ -51,7 +51,7 @@ public final class WebappLaunchCauseMetricsTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.resetActivitiesForInstrumentationTests();
                     LaunchCauseMetrics.resetForTests();

@@ -9,11 +9,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Static methods for use in tests to manipulate the PWA App list for restoring. */
 @JNINamespace("webapps")
@@ -21,7 +21,7 @@ public class PwaRestoreBottomSheetTestUtils {
     private static CallbackHelper sCallbackHelper = new CallbackHelper();
 
     public static void waitForWebApkDatabaseInitialization() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     PwaRestoreBottomSheetTestUtilsJni.get()
@@ -34,7 +34,7 @@ public class PwaRestoreBottomSheetTestUtils {
     /** Set the app list to use for testing. */
     public static void setAppListForRestoring(String[][] appList, int[] lastUsedInDays)
             throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PwaRestoreBottomSheetTestUtilsJni.get()
                             .setAppListForRestoring(

@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -38,7 +39,6 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
@@ -114,7 +114,7 @@ public class SearchEngineSettingsRenderTest {
         TestLargeIconBridge largeIconBridge = new TestLargeIconBridge(mProfile);
 
         View view =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             FragmentManager fragmentManager =
                                     mActivityTestRule.getActivity().getSupportFragmentManager();
@@ -150,7 +150,7 @@ public class SearchEngineSettingsRenderTest {
             // Wait for icons to be requested.
             CriteriaHelper.pollUiThread(() -> largeIconBridge.getCallbackCount() == 2);
 
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         Bitmap bitmap1 = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
                         bitmap1.eraseColor(Color.GREEN);

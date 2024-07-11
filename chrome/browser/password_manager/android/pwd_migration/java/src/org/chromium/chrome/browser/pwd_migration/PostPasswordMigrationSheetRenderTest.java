@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetProperties.VISIBLE;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.view.View;

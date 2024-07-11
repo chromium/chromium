@@ -43,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Promise;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -68,7 +69,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test for ManageSyncSettings with FakeSyncServiceImpl. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -133,7 +133,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         // and triggering syncStateChanged().
         // PassphraseDialogFragment should be dismissed.
         fakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     fragment.getFragmentManager().executePendingTransactions();
                     Assert.assertNull(
@@ -384,7 +384,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     }
 
     private void clickPreference(final Preference pref) {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> pref.getOnPreferenceClickListener().onPreferenceClick(pref));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }

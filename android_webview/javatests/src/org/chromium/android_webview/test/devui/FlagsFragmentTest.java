@@ -69,6 +69,7 @@ import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.services.DeveloperUiService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -76,7 +77,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
@@ -123,7 +123,7 @@ public class FlagsFragmentTest {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, MainActivity.class);
         MainActivity.markPopupPermissionRequestedInPrefsForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FlagsFragment.setFlagListForTesting(sMockFlagList);
                     DeveloperUiService.setFlagListForTesting(sMockFlagList);
@@ -158,7 +158,7 @@ public class FlagsFragmentTest {
         // gap between calls to update UI thread. To fix this, we should just hide the edit text
         // cursor. It does not change the test functionality, but will eliminate one source of
         // flakiness.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     EditText searchBar = mRule.getActivity().findViewById(R.id.flag_search_bar);
                     searchBar.setCursorVisible(false);
@@ -263,7 +263,7 @@ public class FlagsFragmentTest {
     // is in that position, it just sends a touch event for those coordinates.
     private static void tapCompoundDrawableOnUiThread(
             TextView view, @CompoundDrawable int position) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     long downTime = SystemClock.uptimeMillis();
                     long eventTime = downTime + 50;

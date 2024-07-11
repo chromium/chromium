@@ -135,7 +135,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.sync.SyncService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -480,7 +479,7 @@ public class MainSettingsFragmentTest {
     @SmallTest
     public void testSigninRowShowsNoAlertForIdentityErrorsForSyncingUsers() {
         FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -502,7 +501,7 @@ public class MainSettingsFragmentTest {
     @SmallTest
     public void testSigninRowShowsAlertForIdentityErrors() {
         FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -530,7 +529,7 @@ public class MainSettingsFragmentTest {
     public void testRenderOnIdentityErrorForSignedInUsers_withoutReplaceSyncPromos()
             throws IOException {
         FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -559,7 +558,7 @@ public class MainSettingsFragmentTest {
     public void testRenderOnIdentityErrorForSignedInUsers_withReplaceSyncPromos()
             throws IOException {
         FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -598,7 +597,7 @@ public class MainSettingsFragmentTest {
         CoreAccountInfo account = mSyncTestRule.addTestAccount();
         final SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
         SigninTestUtil.signinAndEnableSync(account, syncService);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     syncService.setSelectedTypes(false, new HashSet<>());
                 });
@@ -772,7 +771,7 @@ public class MainSettingsFragmentTest {
                             .getProfileDataOrDefault(accountInfo.getEmail())
                             .hasDisplayableEmailAddress();
                 });
-        TestThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
+        ThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
 
         mSettingsActivityTestRule.startSettingsActivity();
         onView(allOf(withText(accountInfo.getFullName()), isDisplayed()))
@@ -804,7 +803,7 @@ public class MainSettingsFragmentTest {
                                             .getEmail())
                             .hasDisplayableEmailAddress();
                 });
-        TestThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
+        ThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
 
         mSettingsActivityTestRule.startSettingsActivity();
 

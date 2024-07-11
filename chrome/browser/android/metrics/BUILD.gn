@@ -90,6 +90,7 @@ if (is_android) {
     deps = [
       ":ukm_java_test_support",
       "//base:base_java_test_support",
+      "//base:tasks_java",
       "//chrome/android:chrome_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",

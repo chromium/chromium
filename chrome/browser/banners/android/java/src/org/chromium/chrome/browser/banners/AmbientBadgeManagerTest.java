@@ -70,7 +70,6 @@ import org.chromium.components.webapps.AppData;
 import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.components.webapps.WebappInstallSource;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.WindowAndroid;
@@ -231,7 +230,7 @@ public class AmbientBadgeManagerTest {
 
     private void assertAppBannerPipelineStatus(int expectedValue) {
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             expectedValue,
@@ -275,7 +274,7 @@ public class AmbientBadgeManagerTest {
     private void checkAmbientBadgePromptNotExist(
             ChromeActivityTestRule<? extends ChromeActivity> rule) {
         WindowAndroid windowAndroid = rule.getActivity().getWindowAndroid();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(0, MessagesTestHelper.getMessageCount(windowAndroid)));
     }
 
@@ -349,7 +348,7 @@ public class AmbientBadgeManagerTest {
     }
 
     private void clickButton(final ChromeActivity activity, @ButtonType final int buttonType) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model =
                             activity.getModalDialogManager().getCurrentDialogForTest();
@@ -363,17 +362,17 @@ public class AmbientBadgeManagerTest {
         WindowAndroid windowAndroid = rule.getActivity().getWindowAndroid();
 
         MessageDispatcher dispatcher =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> MessageDispatcherProvider.from(windowAndroid));
         PropertyModel model =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 MessagesTestHelper.getCurrentMessage(
                                         MessagesTestHelper.getEnqueuedMessages(
                                                         dispatcher,
                                                         MessageIdentifier.INSTALLABLE_AMBIENT_BADGE)
                                                 .get(0)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (accept) {
                         model.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
@@ -495,17 +494,17 @@ public class AmbientBadgeManagerTest {
                                 MessagesTestHelper.getMessageCount(windowAndroid), Matchers.is(1)));
 
         MessageDispatcher dispatcher =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> MessageDispatcherProvider.from(windowAndroid));
         PropertyModel model =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 MessagesTestHelper.getCurrentMessage(
                                         MessagesTestHelper.getEnqueuedMessages(
                                                         dispatcher,
                                                         MessageIdentifier.INSTALLABLE_AMBIENT_BADGE)
                                                 .get(0)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     dispatcher.dismissMessage(model, DismissReason.GESTURE);
                 });

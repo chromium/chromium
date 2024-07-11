@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.Criteria.checkThat;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.base.test.util.Matchers.containsString;
@@ -13,7 +14,6 @@ import static org.chromium.chrome.test.R.id.card_name;
 import static org.chromium.chrome.test.R.id.card_number;
 import static org.chromium.chrome.test.R.id.description_line_2;
 import static org.chromium.chrome.test.R.id.sheet_item_list;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.view.View;
 import android.widget.TextView;

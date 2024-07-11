@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -30,7 +31,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.List;
@@ -155,7 +155,7 @@ public class UndoBarControllerTest {
     public void testDeleteTabGroup_Undo_SyncDisabled() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
@@ -167,7 +167,7 @@ public class UndoBarControllerTest {
         Assert.assertEquals(2, mTabModel.getCount());
         Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.closeMultipleTabs(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
@@ -193,7 +193,7 @@ public class UndoBarControllerTest {
     public void testDeleteTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
@@ -205,7 +205,7 @@ public class UndoBarControllerTest {
         Assert.assertEquals(2, mTabModel.getCount());
         Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.closeMultipleTabs(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
@@ -229,7 +229,7 @@ public class UndoBarControllerTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testDeleteSingleTabGroup_Undo() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.createSingleTabGroup(
                             mTabModel.getTabAt(0), /* notify= */ false);
@@ -239,7 +239,7 @@ public class UndoBarControllerTest {
         Assert.assertEquals(1, mTabModel.getCount());
         Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.closeMultipleTabs(
                             List.of(mTabModel.getTabAt(0)),
@@ -267,7 +267,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
@@ -279,7 +279,7 @@ public class UndoBarControllerTest {
         Assert.assertEquals(3, mTabModel.getCount());
         Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.closeMultipleTabs(
                             List.of(
@@ -310,7 +310,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
                             List.of(
@@ -325,7 +325,7 @@ public class UndoBarControllerTest {
         Assert.assertEquals(3, mTabModel.getCount());
         Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.closeMultipleTabs(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
@@ -351,7 +351,7 @@ public class UndoBarControllerTest {
     public void testHideTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
@@ -363,7 +363,7 @@ public class UndoBarControllerTest {
         Assert.assertEquals(2, mTabModel.getCount());
         Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.closeMultipleTabs(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
@@ -386,7 +386,7 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     public void testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -405,7 +405,7 @@ public class UndoBarControllerTest {
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testUndoSnackbarEnabled_AccessibilityEnabled() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
 
         Assert.assertNull("Snack bar should be null initially", getCurrentSnackbar());
@@ -424,7 +424,7 @@ public class UndoBarControllerTest {
     }
 
     private void clickSnackbar() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSnackbarManager.onClick(
                                 mActivityTestRule
@@ -433,7 +433,7 @@ public class UndoBarControllerTest {
     }
 
     private void dismissSnackbars() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSnackbarManager.dismissSnackbars(
                                 mSnackbarManager.getCurrentSnackbarForTesting().getController()));
@@ -446,7 +446,7 @@ public class UndoBarControllerTest {
     }
 
     private Snackbar getCurrentSnackbar() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Snackbar>() {
                     @Override
                     public Snackbar call() {

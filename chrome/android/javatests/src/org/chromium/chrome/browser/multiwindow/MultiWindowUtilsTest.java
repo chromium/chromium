@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -45,7 +46,6 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.concurrent.TimeoutException;
@@ -116,7 +116,7 @@ public class MultiWindowUtilsTest {
         CriteriaHelper.pollUiThread(() -> activity2.getCurrentTabModel().getProfile() != null);
 
         // Open settings and wait for ChromeTabbedActivity2 to pause.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity2.onMenuOrKeyboardAction(R.id.preferences_id, true);
                 });
@@ -247,7 +247,7 @@ public class MultiWindowUtilsTest {
                         }
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.registerStateListenerForActivity(
                             activity1StateListener, activity1);
@@ -273,7 +273,7 @@ public class MultiWindowUtilsTest {
                         }
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.registerStateListenerForActivity(
                             activity2StateListener, activity2);
@@ -339,7 +339,7 @@ public class MultiWindowUtilsTest {
                         }
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.registerStateListenerForActivity(
                             activity1StateListener, activity1);
@@ -366,7 +366,7 @@ public class MultiWindowUtilsTest {
                         }
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.registerStateListenerForActivity(
                             activity2StateListener, activity2);

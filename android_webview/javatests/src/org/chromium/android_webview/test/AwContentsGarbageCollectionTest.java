@@ -33,6 +33,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.gfx.AwGLFunctor;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.BaseFeatures;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
@@ -41,7 +42,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContentsAccessibility;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -165,7 +165,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
                     // Instead, we simply emulate Android's behavior by keeping strong references.
                     // See crbug.com/595613 for details.
                     ResultReceiver resultReceiver =
-                            TestThreadUtils.runOnUiThreadBlocking(
+                            ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             ImeAdapter.fromWebContents(
                                                             containerView.getWebContents())
@@ -188,7 +188,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
                     mActivityTestRule.loadUrlAsync(
                             containerView.getAwContents(),
                             ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 // Enable a11y for testing.
                                 AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(
@@ -361,7 +361,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
 
             mActivityTestRule.recreateActivity();
             boolean destroyed =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(() -> activity.isDestroyed());
+                    ThreadUtils.runOnUiThreadBlockingNoException(() -> activity.isDestroyed());
             Assert.assertTrue(destroyed);
         }
 
@@ -390,7 +390,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
             removeAllViews();
 
             // This clears a reference that InputMethodManager holds onto focused view.
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         Window window = mActivityTestRule.getActivity().getWindow();
                         window.addFlags(WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE);
@@ -419,7 +419,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
                     Pair<Integer, Integer> nativeCounts = null;
                     try {
                         nativeCounts =
-                                TestThreadUtils.runOnUiThreadBlocking(
+                                ThreadUtils.runOnUiThreadBlocking(
                                         () -> {
                                             return Pair.create(
                                                     AwContents.getNativeInstanceCount(),

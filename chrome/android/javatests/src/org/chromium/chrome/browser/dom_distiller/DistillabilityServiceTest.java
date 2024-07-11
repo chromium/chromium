@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -29,7 +30,6 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
@@ -67,7 +67,7 @@ public class DistillabilityServiceTest {
         final CallbackHelper readerShownCallbackHelper = new CallbackHelper();
 
         TestWebContentsObserver observer =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> new TestWebContentsObserver(mActivityTestRule.getWebContents()));
         OnPageFinishedHelper finishHelper = observer.getOnPageFinishedHelper();
 
@@ -89,7 +89,7 @@ public class DistillabilityServiceTest {
     private void verifyReaderModeMessageShown(CallbackHelper readerShownCallbackHelper)
             throws ExecutionException {
         MessageDispatcher messageDispatcher =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 MessageDispatcherProvider.from(
                                         mActivityTestRule.getActivity().getWindowAndroid()));

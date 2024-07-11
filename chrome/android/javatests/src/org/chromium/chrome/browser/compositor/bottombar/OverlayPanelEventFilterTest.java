@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEv
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -269,7 +269,7 @@ public class OverlayPanelEventFilterTest {
         mDpToPx = context.getResources().getDisplayMetrics().density;
         mTouchSlopDp = ViewConfiguration.get(context).getScaledTouchSlop() / mDpToPx;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity = activityTestRule.getActivity();
                     mWindowAndroid =
@@ -312,7 +312,7 @@ public class OverlayPanelEventFilterTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWindowAndroid.destroy();
                 });

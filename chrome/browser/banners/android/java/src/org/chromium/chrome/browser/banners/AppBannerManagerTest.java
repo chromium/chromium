@@ -68,7 +68,6 @@ import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.components.webapps.bottomsheet.PwaInstallBottomSheetView;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -239,7 +238,7 @@ public class AppBannerManagerTest {
 
     private void assertAppBannerPipelineStatus(int expectedValue) {
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             expectedValue,
@@ -390,7 +389,7 @@ public class AppBannerManagerTest {
     }
 
     private void clickButton(final ChromeActivity activity, @ButtonType final int buttonType) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model =
                             activity.getModalDialogManager().getCurrentDialogForTest();
@@ -680,7 +679,7 @@ public class AppBannerManagerTest {
         View content = mBottomSheetController.getCurrentSheetContent().getContentView();
 
         // Expand the bottom sheet via drag handle.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ImageView dragHandle = content.findViewById(R.id.drag_handlebar);
                     TouchCommon.singleClickView(dragHandle);
@@ -703,7 +702,7 @@ public class AppBannerManagerTest {
                 description.getText());
 
         // Collapse the bottom sheet.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ImageView dragHandle = content.findViewById(R.id.drag_handlebar);
                     TouchCommon.singleClickView(dragHandle);
@@ -712,7 +711,7 @@ public class AppBannerManagerTest {
         waitUntilBottomSheetStatus(mTabbedActivityTestRule, BottomSheetController.SheetState.PEEK);
 
         // Dismiss the bottom sheet.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetController.hideContent(
                             mBottomSheetController.getCurrentSheetContent(), false);
@@ -740,7 +739,7 @@ public class AppBannerManagerTest {
         View content = mBottomSheetController.getCurrentSheetContent().getContentView();
 
         // Install app from the bottom sheet.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ButtonCompat buttonInstall =
                             content.findViewById(
@@ -784,7 +783,7 @@ public class AppBannerManagerTest {
                 /* click= */ true);
 
         // Dismiss the bottom sheet.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetController.hideContent(
                             mBottomSheetController.getCurrentSheetContent(), false);
@@ -815,7 +814,7 @@ public class AppBannerManagerTest {
         triggerBottomSheet(mTabbedActivityTestRule, url, /* click= */ true);
 
         // Dismiss the bottom sheet after expanding it.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetController.hideContent(
                             mBottomSheetController.getCurrentSheetContent(), false);
@@ -863,7 +862,7 @@ public class AppBannerManagerTest {
         Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);
         Assert.assertTrue(backgroundTab != null);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     backgroundTab.loadUrl(new LoadUrlParams(url));
                 });

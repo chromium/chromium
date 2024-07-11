@@ -10,6 +10,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import org.chromium.base.ThreadUtils;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -493,7 +495,7 @@ public class TouchCommon {
     private static View getRootViewForActivity(final Activity activity) {
         try {
             View view =
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             new Callable<View>() {
                                 @Override
                                 public View call() {
@@ -516,7 +518,7 @@ public class TouchCommon {
      */
     public static boolean dispatchTouchEvent(final View view, final MotionEvent event) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     new Callable<Boolean>() {
                         @Override
                         public Boolean call() {

@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -52,7 +53,6 @@ import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
@@ -323,7 +323,7 @@ public class DownloadTest {
         final TabModel model = sDownloadTestRule.getActivity().getCurrentTabModel();
         final int count = model.getCount();
         final Tab newTab =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(url, PageTransition.LINK),
@@ -369,7 +369,7 @@ public class DownloadTest {
         try {
             final DownloadManagerRequestInterceptorForTest interceptor =
                     new DownloadManagerRequestInterceptorForTest();
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () ->
                             DownloadManagerService.getDownloadManagerService()
                                     .setDownloadManagerRequestInterceptor(interceptor));

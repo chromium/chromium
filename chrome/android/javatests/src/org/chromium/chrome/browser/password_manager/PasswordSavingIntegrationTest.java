@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.Matchers.is;
 import static org.chromium.content_public.browser.test.util.DOMUtils.enterInputIntoTextField;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.widget.TextView;
 

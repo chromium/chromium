@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -29,7 +30,6 @@ import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemTy
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -71,7 +71,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mListItems = new ModelList();
                     mAdapter = new ModelListAdapter(mListItems);
@@ -104,7 +104,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
                     mListItems.clear();
@@ -144,7 +144,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     }
 
     private void doTestContextMenuViewWithLink(String id) throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mListItems.add(
                             new ListItem(
@@ -172,7 +172,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     }
 
     private void doTestContextMenuViewWithImageLink(String id) throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mListItems.add(
                             new ListItem(

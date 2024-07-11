@@ -18,13 +18,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.androidoverlay.DialogOverlayImplTestRule.Client;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.Callable;
 
@@ -237,7 +237,7 @@ public class DialogOverlayImplPixelTest {
         Assert.assertNotNull(overlay);
         final Client.Event event = mActivityTestRule.getClient().nextEvent();
         Assert.assertTrue(event.surfaceKey > 0);
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Surface>() {
                     @Override
                     public Surface call() {
@@ -273,7 +273,7 @@ public class DialogOverlayImplPixelTest {
         rect.width = mDivWidthPx;
         rect.height = mDivHeightPx;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     overlay.scheduleLayout(rect);
                 });

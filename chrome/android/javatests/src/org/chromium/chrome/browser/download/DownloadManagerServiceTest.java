@@ -19,6 +19,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -30,7 +31,6 @@ import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 import org.chromium.components.offline_items_collection.PendingState;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -227,7 +227,7 @@ public class DownloadManagerServiceTest {
 
         @Override
         protected void scheduleUpdateIfNeeded() {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> DownloadManagerServiceForTest.super.scheduleUpdateIfNeeded());
         }
     }
@@ -258,7 +258,7 @@ public class DownloadManagerServiceTest {
     }
 
     private void createDownloadManagerService(MockDownloadNotifier notifier, int delayForTest) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mService = new DownloadManagerServiceForTest(notifier, delayForTest);
                 });
@@ -340,7 +340,7 @@ public class DownloadManagerServiceTest {
     public void testDownloadFailedIsCalled() {
         MockDownloadNotifier notifier = new MockDownloadNotifier();
         createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> DownloadManagerService.setDownloadManagerService(mService));
         // Check that if an interrupted download cannot be resumed, it will trigger a download
         // failure.

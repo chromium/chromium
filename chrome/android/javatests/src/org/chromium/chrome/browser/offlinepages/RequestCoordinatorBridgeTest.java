@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -26,7 +27,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.background.UpdateRequestResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class RequestCoordinatorBridgeTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Ensure we start in an offline state.
                     NetworkChangeNotifier.forceConnectivityState(false);
@@ -76,7 +76,7 @@ public class RequestCoordinatorBridgeTest {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = ProfileManager.getLastUsedRegularProfile();
                 });
@@ -126,7 +126,7 @@ public class RequestCoordinatorBridgeTest {
     @Test
     @MediumTest
     public void testRequestCoordinatorBridgeDisabledInIncognitoTabbedActivity() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
@@ -140,7 +140,7 @@ public class RequestCoordinatorBridgeTest {
     @MediumTest
     public void testRequestCoordinatorBridgeDisabledInIncognitoCCT() throws Exception {
         OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()

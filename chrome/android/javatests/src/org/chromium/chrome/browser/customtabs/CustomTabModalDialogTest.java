@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
@@ -39,7 +40,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -63,7 +63,7 @@ public class CustomTabModalDialogTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         Context appContext = getInstrumentation().getTargetContext().getApplicationContext();
         mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
         mTestPage = mTestServer.getURL(TEST_PAGE);
@@ -73,11 +73,11 @@ public class CustomTabModalDialogTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
         // finish() is called on a non-UI thread by the testing harness. Must hide the menu
         // first, otherwise the UI is manipulated on a non-UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (getActivity() == null) return;
                     AppMenuCoordinator coordinator =
@@ -109,7 +109,7 @@ public class CustomTabModalDialogTest {
 
         ModalDialogManager dialogManager =
                 mCustomTabActivityTestRule.getActivity().getModalDialogManagerSupplier().get();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel dialog =
                             new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -144,7 +144,7 @@ public class CustomTabModalDialogTest {
                 BrowserControlsState.SHOWN,
                 (int) visibilityDelegate.get());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> dialogManager.dismissAllDialogs(DialogDismissalCause.DISMISSED_BY_NATIVE));
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
@@ -164,7 +164,7 @@ public class CustomTabModalDialogTest {
 
         ModalDialogManager dialogManager =
                 mCustomTabActivityTestRule.getActivity().getModalDialogManagerSupplier().get();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel dialog =
                             new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -195,7 +195,7 @@ public class CustomTabModalDialogTest {
 
         CriteriaHelper.pollUiThread(() -> dialogManager.isShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
         ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
 
@@ -217,11 +217,11 @@ public class CustomTabModalDialogTest {
         ModalDialogManager dialogManager =
                 mCustomTabActivityTestRule.getActivity().getModalDialogManagerSupplier().get();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
         ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel dialog =
                             new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -257,7 +257,7 @@ public class CustomTabModalDialogTest {
                         BackPressManager.getHistogramValue(
                                 BackPressHandler.Type.TAB_MODAL_HANDLER));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCustomTabActivityTestRule
                             .getActivity()

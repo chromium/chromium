@@ -23,7 +23,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ByteBufferTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,7 +63,7 @@ public class LevelDBPersistedTabDataStorageTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPersistedTabDataStorage =
                             new LevelDBPersistedTabDataStorage(
@@ -74,7 +73,7 @@ public class LevelDBPersistedTabDataStorageTest {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPersistedTabDataStorage.destroy();
                 });
@@ -195,7 +194,7 @@ public class LevelDBPersistedTabDataStorageTest {
     private void save(int tabId, String dataId, byte[] data) throws TimeoutException {
         CallbackHelper ch = new CallbackHelper();
         int chCount = ch.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPersistedTabDataStorage.saveForTesting(
                             tabId,

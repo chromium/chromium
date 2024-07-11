@@ -48,6 +48,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Promise;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -91,7 +92,6 @@ import org.chromium.components.signin.AccountManagerFacadeImpl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -141,7 +141,7 @@ public class FirstRunIntegrationTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccountManagerFacadeProvider.setInstanceForTests(
                             new AccountManagerFacadeImpl(new FakeAccountManagerDelegate()));
@@ -172,10 +172,10 @@ public class FirstRunIntegrationTest {
         // policy pref, might trigger an assert in activity initialization because of the statics
         // we reset below. Run it on UI so there are no threading issues.
         if (mLastActivity != null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> mLastActivity.finish());
+            ThreadUtils.runOnUiThreadBlocking(() -> mLastActivity.finish());
         }
         // Finish the rest of the running activities.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
                         runningActivity.finish();
@@ -330,7 +330,7 @@ public class FirstRunIntegrationTest {
     }
 
     private void blockOnFlowIsKnown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNull("mAccountsPromise is already initialized!", mAccountsPromise);
                     mAccountsPromise = new Promise<>();
@@ -346,8 +346,7 @@ public class FirstRunIntegrationTest {
 
     private void unblockOnFlowIsKnown() {
         Mockito.verify(mAccountManagerFacade, atLeastOnce()).getCoreAccountInfos();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mAccountsPromise.fulfill(Collections.emptyList()));
+        ThreadUtils.runOnUiThreadBlocking(() -> mAccountsPromise.fulfill(Collections.emptyList()));
     }
 
     @Test
@@ -394,7 +393,7 @@ public class FirstRunIntegrationTest {
         // startup flow where they were interrupted.
         ScopedObserverData scopedObserverData = getObserverData(firstRunActivity);
         Assert.assertEquals(0, scopedObserverData.abortFirstRunExperienceCallback.getCallCount());
-        TestThreadUtils.runOnUiThreadBlocking(mLastActivity::onBackPressed);
+        ThreadUtils.runOnUiThreadBlocking(mLastActivity::onBackPressed);
         scopedObserverData.abortFirstRunExperienceCallback.waitForCallback(
                 "FirstRunActivity didn't abort", 0);
 
@@ -781,7 +780,7 @@ public class FirstRunIntegrationTest {
         Assert.assertTrue(
                 "FirstRunActivity should intercept back press",
                 secondFreActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 secondFreActivity.getOnBackPressedDispatcher()::onBackPressed);
         secondFreData.abortFirstRunExperienceCallback.waitForCallback(
                 "Second FirstRunActivity didn't abort", 0);
@@ -821,7 +820,7 @@ public class FirstRunIntegrationTest {
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
         new FirstRunNavigationHelper(firstRunActivity).ensureTermsOfServiceIsCurrentPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ProgressBar progressBar =
                             ((SigninFirstRunFragment)
@@ -908,7 +907,7 @@ public class FirstRunIntegrationTest {
                                 .getTemplateUrls();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> LocaleManager.getInstance().setDelegateForTest(mockDelegate));
     }
 
@@ -1289,7 +1288,7 @@ public class FirstRunIntegrationTest {
 
         protected FirstRunNavigationHelper goBackToPreviousPage() throws Exception {
             int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     mFirstRunActivity.getOnBackPressedDispatcher()::onBackPressed);
             mScopedObserverData.jumpToPageCallback.waitForCallback(
                     "Failed go back to previous page", jumpCallCount);

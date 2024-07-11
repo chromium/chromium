@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContentUriUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -34,7 +35,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.SavePageResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -92,7 +92,7 @@ public class OfflinePageArchivePublisherBridgeTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Ensure we start in an offline state.
                     NetworkChangeNotifier.forceConnectivityState(false);
@@ -101,7 +101,7 @@ public class OfflinePageArchivePublisherBridgeTest {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = ProfileManager.getLastUsedRegularProfile();
                 });
@@ -232,7 +232,7 @@ public class OfflinePageArchivePublisherBridgeTest {
     private void savePage(final ClientId clientId) throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         final AtomicInteger result = new AtomicInteger(SavePageResult.MAX_VALUE);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mOfflinePageBridge.savePage(
                             sActivityTestRule.getWebContents(),

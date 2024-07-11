@@ -20,13 +20,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for PassphraseActivity. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -53,7 +53,7 @@ public class PassphraseActivityTest {
         // Create the activity.
         final PassphraseActivity activity = launchPassphraseActivity();
         Assert.assertNotNull(activity);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Fake backgrounding the activity.
                     Bundle bundle = new Bundle();
@@ -82,7 +82,7 @@ public class PassphraseActivityTest {
         final PassphraseActivity activity = launchPassphraseActivity();
         Assert.assertNotNull(activity);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> fakeSyncService.setEngineInitialized(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> fakeSyncService.setEngineInitialized(true));
         final PassphraseDialogFragment fragment =
                 ActivityTestUtils.waitForFragment(activity, PassphraseActivity.FRAGMENT_PASSPHRASE);
         Assert.assertTrue(fragment.isAdded());
@@ -100,7 +100,7 @@ public class PassphraseActivityTest {
         final PassphraseActivity activity = launchPassphraseActivity();
         Assert.assertNotNull(activity);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> fakeSyncService.setEngineInitialized(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> fakeSyncService.setEngineInitialized(true));
         final PassphraseDialogFragment fragment =
                 ActivityTestUtils.waitForFragment(activity, PassphraseActivity.FRAGMENT_PASSPHRASE);
         Assert.assertTrue(fragment.isAdded());
@@ -120,7 +120,7 @@ public class PassphraseActivityTest {
     }
 
     private FakeSyncServiceImpl overrideSyncService() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     // PSS has to be constructed on the UI thread.
                     FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();

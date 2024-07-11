@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
@@ -36,7 +37,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -80,7 +80,7 @@ public class PageInfoViewDarkModeTest {
     private void openPageInfo() {
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new ChromePageInfo(
                                     activity.getModalDialogManagerSupplier(),
@@ -111,7 +111,7 @@ public class PageInfoViewDarkModeTest {
         mTestServerRule.setServerPort(424242);
         mTestServerRule.setServerUsesHttps(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
                             /* nightModeEnabled= */ true);
@@ -121,7 +121,7 @@ public class PageInfoViewDarkModeTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
                             /* nightModeEnabled= */ false);

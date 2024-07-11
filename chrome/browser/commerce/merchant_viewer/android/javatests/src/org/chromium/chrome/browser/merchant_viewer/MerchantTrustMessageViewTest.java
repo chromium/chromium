@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterSet;
@@ -31,7 +32,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.messages.MessageBannerView;
 import org.chromium.components.messages.MessageBannerViewBinder;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -99,7 +99,7 @@ public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
                         mActivity, merchantInfo, "fake_url", mMockActionHandler);
         PropertyModelChangeProcessor.create(
                 propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity.setContentView(mMessageBannerView, mParams);
                 });

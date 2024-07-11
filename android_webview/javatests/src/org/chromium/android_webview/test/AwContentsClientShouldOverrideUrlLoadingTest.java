@@ -32,6 +32,7 @@ import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -46,7 +47,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
@@ -1302,7 +1302,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         AbstractAppRestrictionsProvider.setTestRestrictions(
                 PolicyData.asBundle(Arrays.asList(policies)));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> testProvider.refresh());
+        ThreadUtils.runOnUiThreadBlocking(() -> testProvider.refresh());
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
@@ -1319,7 +1319,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
 
             final AwPolicyProvider testProvider =
                     new AwPolicyProvider(mActivityTestRule.getActivity().getApplicationContext());
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> CombinedPolicyProvider.get().registerProvider(testProvider));
 
             final String authenticationUrl =
@@ -1354,7 +1354,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
             AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
             final AwPolicyProvider testProvider =
                     new AwPolicyProvider(mActivityTestRule.getActivity().getApplicationContext());
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> CombinedPolicyProvider.get().registerProvider(testProvider));
             final String authenticationUrl =
                     addPageToTestServer(

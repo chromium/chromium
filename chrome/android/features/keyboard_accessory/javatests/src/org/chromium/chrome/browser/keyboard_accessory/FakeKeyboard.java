@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
 import android.content.Context;

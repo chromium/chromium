@@ -45,7 +45,6 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -93,7 +92,7 @@ public class ShoppingPersistedTabDataTest {
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
                 OptimizationGuideDecision.TRUE,
                 null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.onDeferredStartup();
                     PersistedTabDataConfiguration.setUseTestConfig(true);
@@ -197,7 +196,7 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                         ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.setTimestampMillis(
                             System.currentTimeMillis() - TimeUnit.DAYS.toMillis(100));
@@ -222,7 +221,7 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                         ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.setTimestampMillis(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(2));
                     ShoppingPersistedTabData.from(
@@ -256,7 +255,7 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                         ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.setTimestampMillis(
                             System.currentTimeMillis() - TimeUnit.HOURS.toMillis(12));
@@ -524,7 +523,7 @@ public class ShoppingPersistedTabDataTest {
                 HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,
@@ -548,7 +547,7 @@ public class ShoppingPersistedTabDataTest {
                 mOptimizationGuideBridgeMock,
                 HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse.BUYABLE_PRODUCT_EMPTY);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,
@@ -571,7 +570,7 @@ public class ShoppingPersistedTabDataTest {
                 mOptimizationGuideBridgeMock,
                 HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse.NONE);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,
@@ -757,7 +756,7 @@ public class ShoppingPersistedTabDataTest {
         Tab tab = mock(Tab.class);
         doReturn(true).when(tab).isIncognito();
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,
@@ -775,7 +774,7 @@ public class ShoppingPersistedTabDataTest {
         Tab tab = mock(Tab.class);
         doReturn(true).when(tab).isCustomTab();
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,
@@ -801,7 +800,7 @@ public class ShoppingPersistedTabDataTest {
                 OptimizationGuideDecision.TRUE,
                 null);
         MockTab tab =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             MockTab mockTab =
                                     MockTab.createAndInitialize(
@@ -812,7 +811,7 @@ public class ShoppingPersistedTabDataTest {
                         });
         for (boolean isDestroyed : new boolean[] {false, true}) {
             Semaphore semaphore = new Semaphore(0);
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         if (isDestroyed) tab.destroy();
                         ShoppingPersistedTabData.from(
@@ -836,7 +835,7 @@ public class ShoppingPersistedTabDataTest {
         final Semaphore semaphore = new Semaphore(0);
         MockTab tab = getDefaultTab();
         mockOptimizationGuideDefaults();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // There is ShoppingPersistedTabData associated with the Tab, however, it is 1
                     // day old (the threshold for a refetch is 1 hour) so a refetch will be
@@ -867,7 +866,7 @@ public class ShoppingPersistedTabDataTest {
         mockOptimizationGuideDefaults();
         // There is no ShoppingPersistedTabData associated with the Tab, so it will be
         // acquired from OptimizationGuide.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Tab being destroyed should result in the public API from returning null
                     tab.destroy();
@@ -887,7 +886,7 @@ public class ShoppingPersistedTabDataTest {
         final Semaphore semaphore0 = new Semaphore(0);
         MockTab tab = getDefaultTab();
         mockOptimizationGuideDefaults();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData shoppingPersistedTabData =
                             new ShoppingPersistedTabData(tab);
@@ -906,7 +905,7 @@ public class ShoppingPersistedTabDataTest {
                 });
         final Semaphore semaphore1 = new Semaphore(0);
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Remove UserData to force acquisition from storage.
                     tab.getUserDataHost().removeUserData(ShoppingPersistedTabData.class);
@@ -928,7 +927,7 @@ public class ShoppingPersistedTabDataTest {
         final Semaphore semaphore0 = new Semaphore(0);
         MockTab tab = getDefaultTab();
         tab.setGurlOverrideForTesting(ShoppingPersistedTabDataTestUtils.DEFAULT_GURL);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData shoppingPersistedTabData =
                             new ShoppingPersistedTabData(tab);
@@ -948,7 +947,7 @@ public class ShoppingPersistedTabDataTest {
                 });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore0);
         final Semaphore semaphore1 = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Remove UserData to force acquisition from storage.
                     tab.getUserDataHost().removeUserData(ShoppingPersistedTabData.class);
@@ -970,7 +969,7 @@ public class ShoppingPersistedTabDataTest {
         final Semaphore semaphore = new Semaphore(0);
         MockTab tab = getDefaultTab();
         mockOptimizationGuideEmptyResponse();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,
@@ -1065,7 +1064,7 @@ public class ShoppingPersistedTabDataTest {
         doReturn(true).when(tab).isDestroyed();
         CallbackHelper helper = new CallbackHelper();
         int count = helper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,
@@ -1082,7 +1081,7 @@ public class ShoppingPersistedTabDataTest {
     public void testNullTab() throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
         int count = helper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             null,
@@ -1142,7 +1141,7 @@ public class ShoppingPersistedTabDataTest {
 
         CallbackHelper callbackHelper = new CallbackHelper();
         int count = callbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     shoppingPersistedTabData.setIsCurrentPriceDropSeen(true);
                     shoppingPersistedTabData.setPriceMicros(
@@ -1183,7 +1182,7 @@ public class ShoppingPersistedTabDataTest {
 
         CallbackHelper callbackHelper = new CallbackHelper();
         int count = callbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     shoppingPersistedTabData.setIsCurrentPriceDropSeen(true);
                     shoppingPersistedTabData.setCurrencyCode(
@@ -1224,7 +1223,7 @@ public class ShoppingPersistedTabDataTest {
 
         CallbackHelper callbackHelper = new CallbackHelper();
         int count = callbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     shoppingPersistedTabData.setIsCurrentPriceDropSeen(true);
                     tab.getUserDataHost()

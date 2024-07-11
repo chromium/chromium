@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -36,7 +37,6 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.media.MediaSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -107,7 +107,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
 
         // Exit Picture in Picture.
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> InstrumentationRegistry.getInstrumentation().callActivityOnStop(mActivity));
         CriteriaHelper.pollUiThread(
                 AsyncInitializationActivity::wasMoveTaskToBackInterceptedForTesting);
@@ -190,7 +190,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
         // Add a TabObserver so we know when the iFrame navigation has occurred before we check that
         // we are still in PiP.
         final NavigationObserver navigationObserver = new NavigationObserver();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getActivityTab().addObserver(navigationObserver));
 
         enterFullscreen();
@@ -205,8 +205,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
         // Wait for isInPictureInPictureMode rather than getLast...ForTesting, since the latter
         // isn't synchronous with navigation occurring.  It has to wait for some back-and-forth with
         // the framework.
-        Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlocking(mActivity::isInPictureInPictureMode));
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(mActivity::isInPictureInPictureMode));
     }
 
     /** Tests that we can resume PiP after it has been cancelled. */
@@ -230,7 +229,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     }
 
     private void triggerAutoPiPAndWait() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         InstrumentationRegistry.getInstrumentation()
                                 .callActivityOnUserLeaving(mActivity));
@@ -299,11 +298,10 @@ public class FullscreenVideoPictureInPictureControllerTest {
         triggerAutoPiPAndWait();
 
         // Ensure that we entered Picture in Picture.
-        Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlocking(mActivity::isInPictureInPictureMode));
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(mActivity::isInPictureInPictureMode));
 
         // Call activity OnStop. This simulates user locking the device.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> InstrumentationRegistry.getInstrumentation().callActivityOnStop(mActivity));
 
         CriteriaHelper.pollUiThread(

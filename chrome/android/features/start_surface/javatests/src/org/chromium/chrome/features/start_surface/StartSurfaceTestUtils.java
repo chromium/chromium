@@ -22,6 +22,7 @@ import org.junit.Assert;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -223,7 +223,7 @@ public class StartSurfaceTestUtils {
      */
     public static Tab getCurrentTabFromUIThread(ChromeTabbedActivity cta) {
         AtomicReference<Tab> tab = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> tab.set(TabModelUtils.getCurrentTab(cta.getCurrentTabModel())));
         return tab.get();
     }

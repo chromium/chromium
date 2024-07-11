@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -26,7 +27,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.util.List;
@@ -67,7 +67,7 @@ public class DecoderServiceHostTest
         mContext = InstrumentationRegistry.getTargetContext();
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DecoderServiceHost.setIntentSupplier(
                             () -> {
@@ -133,12 +133,12 @@ public class DecoderServiceHostTest
             int width,
             boolean fullWidth,
             DecoderServiceHost.ImagesDecodedCallback callback) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> host.decodeImage(uri, fileType, width, fullWidth, callback));
     }
 
     private void cancelDecodeImage(DecoderServiceHost host, String filePath) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> host.cancelDecodeImage(filePath));
+        ThreadUtils.runOnUiThreadBlocking(() -> host.cancelDecodeImage(filePath));
     }
 
     @Test

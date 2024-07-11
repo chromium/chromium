@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.test.transit;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Collections;
 
@@ -40,7 +40,7 @@ public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitche
         if (!mIsIncognito) {
             // Regular Hub Tab Switcher
             int tabCount =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlockingNoException(
                             () ->
                                     mHostStation
                                             .getActivity()

@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -37,7 +38,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -73,7 +73,7 @@ public class LocaleManagerTest {
     @Test
     public void testShowSearchEnginePromoDseDisabled() throws Exception {
         final CallbackHelper getShowTypeCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         LocaleManager.getInstance()
                                 .setDelegateForTest(
@@ -86,7 +86,7 @@ public class LocaleManagerTest {
                                         }));
 
         final CallbackHelper searchEnginesFinalizedCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         LocaleManager.getInstance()
                                 .showSearchEnginePromoIfNeeded(
@@ -108,7 +108,7 @@ public class LocaleManagerTest {
 
         // Override the LocaleManagerDelegate to bypass the logic determining which type of promo
         // to show.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         LocaleManager.getInstance()
                                 .setDelegateForTest(
@@ -130,7 +130,7 @@ public class LocaleManagerTest {
 
         // Trigger the dialog.
         DefaultSearchEnginePromoDialog dialog =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             LocaleManager.getInstance()
                                     .showSearchEnginePromoIfNeeded(
@@ -145,7 +145,7 @@ public class LocaleManagerTest {
         assertEquals(0, searchEnginesFinalizedCallback.getCallCount());
 
         // Act on the dialog and verify that it propagates to searchEnginesFinalizedCallback.
-        TestThreadUtils.runOnUiThreadBlocking(dialog::dismiss);
+        ThreadUtils.runOnUiThreadBlocking(dialog::dismiss);
 
         // We are waiting for the dialog to close and for the closure to propagate to the helper,
         // hence checking for when the currentDialog becomes null instead of just dialog dismissal.
@@ -165,7 +165,7 @@ public class LocaleManagerTest {
 
         // Override the LocaleManagerDelegate to bypass the logic determining which type of promo
         // to show.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         LocaleManager.getInstance()
                                 .setDelegateForTest(
@@ -187,11 +187,11 @@ public class LocaleManagerTest {
 
         // Trigger the dialog.
         ModalDialogManager modalDialogManager =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> sActivityTestRule.getActivity().getModalDialogManager());
         assertNotNull(modalDialogManager);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         LocaleManager.getInstance()
                                 .showSearchEnginePromoIfNeeded(
@@ -204,7 +204,7 @@ public class LocaleManagerTest {
 
         // Act on the dialog and verify that it propagates to searchEnginesFinalizedCallback.
         // TODO(b/280753530): Update with the actual UI and use espresso to click the buttons.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         modalDialogManager.dismissAllDialogs(
                                 DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE));

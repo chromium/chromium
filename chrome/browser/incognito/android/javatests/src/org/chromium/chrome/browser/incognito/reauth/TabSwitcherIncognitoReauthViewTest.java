@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -47,7 +48,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
 
@@ -79,7 +79,7 @@ public class TabSwitcherIncognitoReauthViewTest {
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
@@ -88,7 +88,7 @@ public class TabSwitcherIncognitoReauthViewTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
@@ -96,7 +96,7 @@ public class TabSwitcherIncognitoReauthViewTest {
     }
 
     private void triggerIncognitoReauthCustomView(ChromeTabbedActivity cta) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     IncognitoReauthController incognitoReauthController =
                             cta.getRootUiCoordinatorForTesting()

@@ -63,6 +63,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -91,7 +92,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.feature_engagement.TriggerState;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
@@ -213,7 +213,7 @@ public class KeyboardAccessoryViewTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel =
                             KeyboardAccessoryProperties.defaultModelBuilder()
@@ -263,7 +263,7 @@ public class KeyboardAccessoryViewTest {
         assertNull(mKeyboardAccessoryView.poll());
 
         // After setting the visibility to true, the view should exist and be visible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                 });
@@ -271,7 +271,7 @@ public class KeyboardAccessoryViewTest {
         assertEquals(view.getVisibility(), View.VISIBLE);
 
         // After hiding the view, the view should still exist but be invisible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, false);
                 });
@@ -285,7 +285,7 @@ public class KeyboardAccessoryViewTest {
         assertNull(mKeyboardAccessoryView.poll());
 
         // After setting the visibility to true, the view should exist and be visible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                 });
@@ -296,7 +296,7 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     public void testAddsClickableAutofillSuggestions() {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS)
@@ -314,7 +314,7 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     public void testAddsLongClickableAutofillSuggestions() {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS)
@@ -356,7 +356,7 @@ public class KeyboardAccessoryViewTest {
                         BarItem.Type.ACTION_CHIP,
                         new Action(CREDMAN_CONDITIONAL_UI_REENTRY, unused -> {}),
                         R.string.more_passkeys);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS)
@@ -386,7 +386,7 @@ public class KeyboardAccessoryViewTest {
                         BarItem.Type.ACTION_CHIP,
                         new Action(CREDMAN_CONDITIONAL_UI_REENTRY, unused -> {}),
                         R.string.more_passkeys);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS)
@@ -401,7 +401,7 @@ public class KeyboardAccessoryViewTest {
                 .check(matches(isDisplayed()));
         onView(withText(R.string.more_passkeys)).check(matches(isDisplayed()));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.get(BAR_ITEMS).remove(mModel.get(BAR_ITEMS).get(1)));
 
         ViewUtils.waitForViewCheckingState(
@@ -414,7 +414,7 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     public void testUpdatesKeyPaddingAfterRotation() throws InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
@@ -456,7 +456,7 @@ public class KeyboardAccessoryViewTest {
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
@@ -494,7 +494,7 @@ public class KeyboardAccessoryViewTest {
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
@@ -532,7 +532,7 @@ public class KeyboardAccessoryViewTest {
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
@@ -568,7 +568,7 @@ public class KeyboardAccessoryViewTest {
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
@@ -603,7 +603,7 @@ public class KeyboardAccessoryViewTest {
         TrackerFactory.setTrackerForTests(tracker);
 
         // Render a keyboard accessory bar and wait for completion.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("Johnathan", null));
@@ -611,7 +611,7 @@ public class KeyboardAccessoryViewTest {
         onViewWaiting(withText("Johnathan"));
 
         // Pretend an item is offscreen, so swiping is possible and an IPH could be shown.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(SHOW_SWIPING_IPH, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(SHOW_SWIPING_IPH, true));
 
         // Wait until the bubble appears, then dismiss is by tapping it.
         waitForHelpBubble(withText(R.string.iph_keyboard_accessory_swipe_for_more));
@@ -642,7 +642,7 @@ public class KeyboardAccessoryViewTest {
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
@@ -664,7 +664,7 @@ public class KeyboardAccessoryViewTest {
     public void testNotifiesAboutPartiallyVisibleSuggestions() throws InterruptedException {
         // Ensure that the callback isn't triggered while all items are visible:
         AtomicInteger obfuscatedChildAt = new AtomicInteger(-1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, obfuscatedChildAt::set);
                     mModel.set(VISIBLE, true);
@@ -675,7 +675,7 @@ public class KeyboardAccessoryViewTest {
         assertThat(obfuscatedChildAt.get(), is(-1));
 
         // As soon as at least one item can't be displayed in full, trigger the swiping callback.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(BAR_ITEMS)
                             .set(
@@ -714,7 +714,7 @@ public class KeyboardAccessoryViewTest {
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
@@ -750,7 +750,7 @@ public class KeyboardAccessoryViewTest {
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
@@ -777,7 +777,7 @@ public class KeyboardAccessoryViewTest {
                         getDefaultAutofillSuggestionBuilder().build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS)
@@ -800,7 +800,7 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     public void testClickDisabledForNonAcceptableAutofillSuggestions() throws InterruptedException {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>(false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS)

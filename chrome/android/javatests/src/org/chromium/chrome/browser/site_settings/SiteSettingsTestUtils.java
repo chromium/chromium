@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
@@ -33,7 +34,6 @@ import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.components.content_settings.CookieControlsMode;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -57,7 +57,7 @@ public class SiteSettingsTestUtils {
         fragmentArgs.putString(
                 SingleCategorySettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
         String title =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             Context context =
                                     InstrumentationRegistry.getInstrumentation().getContext();
@@ -155,7 +155,7 @@ public class SiteSettingsTestUtils {
 
     public static void cleanUpCookiesAndPermissions() throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(

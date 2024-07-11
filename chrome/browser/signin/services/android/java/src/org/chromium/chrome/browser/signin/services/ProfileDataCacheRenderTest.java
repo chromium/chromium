@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -56,7 +57,6 @@ import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -127,7 +127,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
                 .when(mAccountTrackerServiceMock)
                 .legacySeedAccountsIfNeeded(any(Runnable.class));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIdentityManager =
                             IdentityManager.create(
@@ -155,7 +155,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataPopulatedFromIdentityManagerObserver() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
                     checkImageIsScaled(mAccountInfoWithAvatar.getEmail());
@@ -176,7 +176,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
                 mAccountInfoWithAvatar.getGivenName(),
                 mAccountInfoWithAvatar.getAccountImage());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache =
                             new ProfileDataCache(
@@ -194,7 +194,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
                 mProfileDataCache.getProfileDataOrDefault(mAccountInfoWithAvatar.getEmail());
         Assert.assertEquals(mAccountInfoWithAvatar.getFullName(), profileData.getFullName());
         Assert.assertEquals(mAccountInfoWithAvatar.getGivenName(), profileData.getGivenName());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     checkImageIsScaled(mAccountInfoWithAvatar.getEmail());
                 });
@@ -205,7 +205,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature("RenderTest")
     public void testNoProfileDataRemovedWithEmptyAccountInfo() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
                     final AccountInfo emptyAccountInfo =
@@ -229,7 +229,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     public void testPlaceholderIsScaled() throws IOException {
         final String email = "no.data.for.this.account@example.com";
         mAccountManagerTestRule.addAccount(email);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     checkImageIsScaled(email);
                 });
@@ -244,7 +244,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
                         anyLong(), eq(ACCOUNT_EMAIL)))
                 .thenReturn(mAccountInfoWithAvatar);
         mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     checkImageIsScaled(ACCOUNT_EMAIL);
                 });

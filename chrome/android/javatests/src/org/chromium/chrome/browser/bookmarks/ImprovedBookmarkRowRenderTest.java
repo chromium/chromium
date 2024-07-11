@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -47,7 +48,6 @@ import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.power_bookmarks.ProductPrice;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -129,7 +129,7 @@ public class ImprovedBookmarkRowRenderTest {
         mBitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.GREEN);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContentView = new LinearLayout(mActivityTestRule.getActivity());
                     mContentView.setBackgroundColor(Color.WHITE);
@@ -203,7 +203,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testDisabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkRowProperties.ENABLED, false);
                 });
@@ -214,7 +214,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testEndImageVisibility() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(
                             ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
@@ -230,7 +230,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testLocalBookmarkItem() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
                 });
@@ -241,7 +241,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testLocalBookmarkItemWithChevron() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
                     mModel.set(
@@ -258,7 +258,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testSelected() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
                     mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
@@ -270,7 +270,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNormal_withPriceTrackingEnabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingSpecifics specifics =
                             ShoppingSpecifics.newBuilder()
@@ -303,7 +303,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNormal_withPriceTrackingDisabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingSpecifics specifics =
                             ShoppingSpecifics.newBuilder()

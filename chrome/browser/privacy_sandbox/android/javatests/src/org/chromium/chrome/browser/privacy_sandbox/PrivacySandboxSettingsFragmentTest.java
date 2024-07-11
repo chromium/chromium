@@ -12,11 +12,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.hasItems;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment.setAdMeasurementPrefEnabled;
 import static org.chromium.chrome.browser.privacy_sandbox.FledgeFragment.setFledgePrefEnabled;
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
 import static org.chromium.chrome.browser.privacy_sandbox.TopicsFragment.setTopicsPrefEnabled;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.Bundle;

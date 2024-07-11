@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.ChromeFeedbackCollector.InitParams;
@@ -23,7 +24,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class ChromeFeedbackCollectorTest {
     @SmallTest
     @Feature({"Feedback"})
     public void testRegularProfile() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     InitParams params = new InitParams(profile, FEEDBACK_URL, FEEDBACK_CONSTANT);
@@ -64,7 +64,7 @@ public class ChromeFeedbackCollectorTest {
     @SmallTest
     @Feature({"Feedback"})
     public void testIncognitoProfile() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
                             ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true);

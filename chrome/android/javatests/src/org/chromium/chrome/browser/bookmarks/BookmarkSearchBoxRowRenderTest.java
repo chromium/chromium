@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -27,7 +28,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -68,7 +68,7 @@ public class BookmarkSearchBoxRowRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContentView = new LinearLayout(mActivityTestRule.getActivity());
                     mContentView.setBackgroundColor(Color.WHITE);
@@ -116,7 +116,7 @@ public class BookmarkSearchBoxRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testWithChip() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPropertyModel.set(
                                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true));
@@ -127,7 +127,7 @@ public class BookmarkSearchBoxRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testWithSearchText() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPropertyModel.set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, "foo");
                     mPropertyModel.set(

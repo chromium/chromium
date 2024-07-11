@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.autofill;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 
 import android.os.SystemClock;
 import android.view.InputDevice;

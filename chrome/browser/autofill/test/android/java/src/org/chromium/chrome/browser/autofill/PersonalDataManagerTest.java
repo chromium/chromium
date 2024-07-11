@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -44,7 +45,6 @@ import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.image_fetcher.test.TestImageFetcher;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -66,7 +66,7 @@ public class PersonalDataManagerTest {
     @Before
     public void setUp() {
         mHelper = new AutofillTestHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
                                 .setImageFetcherForTesting(
@@ -277,7 +277,7 @@ public class PersonalDataManagerTest {
         mHelper.addServerCreditCard(cardWithCardArtUrl);
 
         // Verify card art images are fetched in both small and large sizes.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(
                             AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
@@ -1053,7 +1053,7 @@ public class PersonalDataManagerTest {
         // Adding a server card triggers card art image fetching for all server credit cards.
         mHelper.addServerCreditCard(cardWithCardArtUrl);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // The custom icon is already cached, and gets returned.
                     assertTrue(
@@ -1102,7 +1102,7 @@ public class PersonalDataManagerTest {
         // Adding a server card triggers card art image fetching for all server credit cards.
         mHelper.addServerCreditCard(cardWithoutCardArtUrl);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // In the absence of custom icon URL, the default icon is returned.
                     assertTrue(
@@ -1149,7 +1149,7 @@ public class PersonalDataManagerTest {
         // Adding a server card triggers card art image fetching for all server credit cards.
         mHelper.addServerCreditCard(cardWithoutDefaultIconIdAndCardArtUrl);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // If neither the custom icon nor the default icon is available, null is
                     // returned.
@@ -1179,7 +1179,7 @@ public class PersonalDataManagerTest {
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newSingleRecordWatcher("Autofill.ImageFetcher.Result", true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
                             .getCustomImageForAutofillSuggestionIfAvailable(
@@ -1202,7 +1202,7 @@ public class PersonalDataManagerTest {
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newSingleRecordWatcher("Autofill.ImageFetcher.Result", false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
                             .setImageFetcherForTesting(new TestImageFetcher(null));
@@ -1372,7 +1372,7 @@ public class PersonalDataManagerTest {
         AutofillTestHelper.addMaskedBankAccount(bankAccount1);
         AutofillTestHelper.addMaskedBankAccount(bankAccount2);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         assertThat(new BankAccount[] {bankAccount1, bankAccount2})
                                 .isEqualTo(

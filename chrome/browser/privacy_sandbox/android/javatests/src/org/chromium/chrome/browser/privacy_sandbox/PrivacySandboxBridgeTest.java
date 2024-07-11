@@ -18,6 +18,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -26,7 +27,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class PrivacySandboxBridgeTest {
     @Before
     public void setUp() {
         mPrivacySandboxBridge =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> new PrivacySandboxBridge(ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -57,7 +57,7 @@ public class PrivacySandboxBridgeTest {
         // Check that when ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE is present, the bridge
         // returns that no dialog is shown. This is important to prevent tests that rely on using
         // that flag to get a blank activity with no dialogs from breaking.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         assertEquals(
                                 "Returned dialog type",
@@ -70,7 +70,7 @@ public class PrivacySandboxBridgeTest {
     public void testGetCurrentTopics() {
         // Check that this function returns a valid list. We currently can't control from the Java
         // side what they actually return, so just check that it is not null and there is no crash.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> assertNotNull(mPrivacySandboxBridge.getCurrentTopTopics()));
     }
 
@@ -79,7 +79,7 @@ public class PrivacySandboxBridgeTest {
     public void testBlockedTopics() {
         // Check that this function returns a valid list. We currently can't control from the Java
         // side what they actually return, so just check that it is not null and there is no crash.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> assertNotNull(mPrivacySandboxBridge.getBlockedTopics()));
     }
 
@@ -91,7 +91,7 @@ public class PrivacySandboxBridgeTest {
         Topic topic3 = new Topic(3, 1, "Comics");
         Topic topic4 = new Topic(4, 1, "Concerts & music festivals");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPrivacySandboxBridge.setAllPrivacySandboxAllowedForTesting();
                     assertThat(
@@ -112,7 +112,7 @@ public class PrivacySandboxBridgeTest {
     @Nullable
     private List<String> getFledgeJoiningEtlds() {
         PayloadCallbackHelper<List<String>> callbackHelper = new PayloadCallbackHelper<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(
                                 callbackHelper::notifyCalled));
@@ -132,7 +132,7 @@ public class PrivacySandboxBridgeTest {
     public void testGetBlockedFledgeJoiningTopFramesForDisplay() {
         // Check that this function returns a valid list. We currently can't control from the Java
         // side what they actually return, so just check that it is not null and there is no crash.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         assertNotNull(
                                 mPrivacySandboxBridge
@@ -146,7 +146,7 @@ public class PrivacySandboxBridgeTest {
         String site2 = "b.com";
         String site3 = "c.com";
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPrivacySandboxBridge.setFledgeJoiningAllowed(site1, false);
                     assertThat(
@@ -171,7 +171,7 @@ public class PrivacySandboxBridgeTest {
     public void testPromptActionOccuredRecordsUserAction() {
         mUserActionTester = new UserActionTester();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
                     assertTrue(

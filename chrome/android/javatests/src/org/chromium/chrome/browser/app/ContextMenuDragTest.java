@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -41,7 +42,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -84,7 +84,7 @@ public class ContextMenuDragTest {
 
     @BeforeClass
     public static void setupBeforeClass() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
         // Stop the real call to android View#startDragAndDrop. Test file do not have real touches
         // over the screen so there's no way to end the drag event properly. Doing this in
@@ -109,7 +109,7 @@ public class ContextMenuDragTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mContextMenu != null) mContextMenu.dismiss();
                 });
@@ -118,7 +118,7 @@ public class ContextMenuDragTest {
 
     @AfterClass
     public static void tearDownAfterClass() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ContextMenuDragTest {
                         location.centerX() + jitterRange,
                         location.centerY() + jitterRange,
                         DragEvent.ACTION_DRAG_LOCATION);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTab.getContentView().onDragEvent(event1);
                     mTab.getContentView().onDragEvent(event2);
@@ -173,7 +173,7 @@ public class ContextMenuDragTest {
                         location.centerX() + minDragThresholdPx,
                         location.centerY() + minDragThresholdPx,
                         DragEvent.ACTION_DRAG_LOCATION);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTab.getContentView().onDragEvent(event3);
                 });

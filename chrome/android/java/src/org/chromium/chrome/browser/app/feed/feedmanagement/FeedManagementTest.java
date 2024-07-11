@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.LocaleUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.UserActionTester;
@@ -35,7 +36,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.io.IOException;
@@ -64,7 +64,7 @@ public final class FeedManagementTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NetworkChangeNotifier.forceConnectivityState(true);
                     FirstRunUtils.setEulaAccepted();

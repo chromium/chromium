@@ -21,6 +21,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
@@ -31,7 +32,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -81,14 +81,13 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
 
         mModelBuilder = new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS);
         mView = new AutofillVcnEnrollBottomSheetView(getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> getActivity().setContentView(mView.mContentView));
+        ThreadUtils.runOnUiThreadBlocking(() -> getActivity().setContentView(mView.mContentView));
         bind(mModelBuilder);
     }
 
     // Builds the model from the given builder and binds it to the view.
     private void bind(PropertyModel.Builder modelBuilder) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = modelBuilder.build();
                     PropertyModelChangeProcessor.create(
@@ -355,7 +354,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
 
         int onShowLoadingUICompleteCount =
                 observer.getOnShowLoadingUICompleteHelper().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true));
         observer.getOnShowLoadingUICompleteHelper().waitForCallback(onShowLoadingUICompleteCount);
         assertEquals(View.VISIBLE, mView.mLoadingView.getVisibility());
@@ -364,7 +363,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
 
         int onHideLoadingUICompleteCount =
                 observer.getOnHideLoadingUICompleteHelper().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false));
         observer.getOnHideLoadingUICompleteHelper().waitForCallback(onHideLoadingUICompleteCount);
         assertEquals(View.GONE, mView.mLoadingView.getVisibility());

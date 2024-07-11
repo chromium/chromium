@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -32,7 +33,6 @@ import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelpe
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.search_engines.FakeTemplateUrl;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -78,7 +78,7 @@ public class ChoiceScreenRenderTest {
 
     private View showChoiceScreenDialog() throws Exception {
         assertNull(mChoiceDialogCoordinator);
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mChoiceDialogCoordinator =
                             new ChoiceDialogCoordinator(

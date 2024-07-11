@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -35,7 +36,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -184,7 +184,7 @@ public class TabsOpenedFromExternalAppTest {
         }
 
         final Tab originalTab = testRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> testRule.getActivity().onNewIntent(intent));
+        ThreadUtils.runOnUiThreadBlocking(() -> testRule.getActivity().onNewIntent(intent));
         // NoTouchMode changes external app launch behaviour depending on whether Chrome is
         // foregrounded - which it is for these tests.
         if (createNewTab) {
@@ -210,7 +210,7 @@ public class TabsOpenedFromExternalAppTest {
     }
 
     private void assertBackPressSendsChromeToBackground() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Window does not have focus before pressing back.",

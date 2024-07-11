@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -56,7 +57,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -129,7 +129,7 @@ public class TouchToFillRenderTest {
                         .getRootUiCoordinatorForTesting()
                         .getBottomSheetController();
         mResourceProvider = PasswordManagerResourceProviderFactory.create();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = TouchToFillProperties.createDefaultModel(mDismissHandler);
                     mTouchToFillView =
@@ -147,7 +147,7 @@ public class TouchToFillRenderTest {
         } catch (Exception e) {
             // Activity was already closed (e.g. due to last test tearing down the suite).
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
                 });
@@ -157,7 +157,7 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsOneCredentialModern() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     addHeader(
                             mActivityTestRule
@@ -179,7 +179,7 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsOneCredentialModernHalfState() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     addHeader(
                             mActivityTestRule
@@ -204,7 +204,7 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsTwoCredentialsModern() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     addHeader(
                             mActivityTestRule
@@ -227,7 +227,7 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsTwoCredentialsModernHalfState() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     addHeader(
                             mActivityTestRule
@@ -253,7 +253,7 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsThreeCredentialsModern() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     addHeader(
                             mActivityTestRule
@@ -279,7 +279,7 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsThreeCredentialsModernHalfState() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     addHeader(
                             mActivityTestRule
@@ -308,7 +308,7 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsThreeCredentialsWhenThereAreFiveModernHalfState() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     addHeader(
                             mActivityTestRule

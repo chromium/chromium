@@ -19,13 +19,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.GURL;
@@ -45,7 +45,7 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
     public void setUp() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAppModalPresenter = new AppModalPresenter(getActivity());
                     mModalDialogManager =
@@ -77,7 +77,7 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> moveCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TargetSelectorCoordinator.showDialog(
                             getActivity(),

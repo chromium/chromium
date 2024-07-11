@@ -22,11 +22,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -53,7 +53,7 @@ public class SaveBitmapDelegateTest {
         mActivityTestRule.launchActivity(null);
         Activity activity = mActivityTestRule.getActivity();
         mPermissionDelegate =
-                TestThreadUtils.runOnUiThreadBlocking(() -> new TestWindowAndroid(activity));
+                ThreadUtils.runOnUiThreadBlocking(() -> new TestWindowAndroid(activity));
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8);
         mSaveBitmapDelegate =
                 new SaveBitmapDelegate(
@@ -71,7 +71,7 @@ public class SaveBitmapDelegateTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mPermissionDelegate.destroy());
+        ThreadUtils.runOnUiThreadBlocking(() -> mPermissionDelegate.destroy());
     }
 
     @Test

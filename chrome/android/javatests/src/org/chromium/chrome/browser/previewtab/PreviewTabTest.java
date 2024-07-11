@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -36,7 +37,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.url.GURL;
 
@@ -92,7 +92,7 @@ public class PreviewTabTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getServer().getURL(BASE_PAGE));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabbedRootUiCoordinator tabbedRootUiCoordinator =
                             ((TabbedRootUiCoordinator)
@@ -116,11 +116,11 @@ public class PreviewTabTest {
      * the next command.
      */
     private void endAnimations() {
-        TestThreadUtils.runOnUiThreadBlocking(mSheetTestSupport::endAllAnimations);
+        ThreadUtils.runOnUiThreadBlocking(mSheetTestSupport::endAllAnimations);
     }
 
     private void closePreviewTab() {
-        TestThreadUtils.runOnUiThreadBlocking(mEphemeralTabCoordinator::close);
+        ThreadUtils.runOnUiThreadBlocking(mEphemeralTabCoordinator::close);
         endAnimations();
         Assert.assertFalse(
                 "The Preview Tab should have closed but did not indicate closed",
@@ -190,7 +190,7 @@ public class PreviewTabTest {
         endAnimations();
         BottomSheetController bottomSheet =
                 activity.getRootUiCoordinatorForTesting().getBottomSheetController();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheet.expandSheet();
                     endAnimations();
@@ -209,7 +209,7 @@ public class PreviewTabTest {
         ContextualSearchManager csManager = activity.getContextualSearchManagerForTesting();
         Assert.assertFalse("Contextual Search should be active", csManager.isSuppressed());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mEphemeralTabCoordinator.requestOpenSheet(
                                 new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)),
@@ -229,11 +229,11 @@ public class PreviewTabTest {
     @Feature({"PreviewTab"})
     @DisabledTest(message = "https://crbug.com/1412050")
     public void testObserverMethods() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mEphemeralTabCoordinator.addObserver(mEphemeralTabObserver));
 
         // Open Preview Tab.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
                                 new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)),

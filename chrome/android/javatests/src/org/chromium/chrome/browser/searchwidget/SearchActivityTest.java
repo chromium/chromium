@@ -37,6 +37,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -83,7 +84,6 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
@@ -135,7 +135,7 @@ public class SearchActivityTest {
             showSearchEngineDialogIfNeededCallback.notifyCalled();
 
             if (shouldShowRealSearchDialog) {
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             LocaleManager.getInstance()
                                     .setDelegateForTest(
@@ -259,7 +259,7 @@ public class SearchActivityTest {
                         eq(PageClassification.ANDROID_SEARCH_WIDGET_VALUE),
                         eq(""));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mOnSuggestionsReceivedListener.onSuggestionsReceived(
                                 buildDummyAutocompleteResult(), true));
@@ -328,7 +328,7 @@ public class SearchActivityTest {
         Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
 
         // Start loading native, then let the activity finish initialization.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> searchActivity.startDelayedNativeInitializationForTests());
 
         Assert.assertEquals(
@@ -363,7 +363,7 @@ public class SearchActivityTest {
         verifyNoMoreInteractions(mAutocompleteController);
 
         // Start loading native, then let the activity finish initialization.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> searchActivity.startDelayedNativeInitializationForTests());
 
         verifyNoMoreInteractions(mAutocompleteController);
@@ -406,7 +406,7 @@ public class SearchActivityTest {
                 () -> {
                     // Finish initialization.  It should notice the URL is queued up and start the
                     // browser.
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 searchActivity.startDelayedNativeInitializationForTests();
                             });
@@ -424,7 +424,7 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     public void testZeroSuggestBeforeNativeIsLoaded() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LocaleManager.getInstance()
                             .setDelegateForTest(
@@ -471,8 +471,7 @@ public class SearchActivityTest {
         // - no typed suggestions fetches.
         verifyNoMoreInteractions(mAutocompleteController);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                mTestDelegate.onSearchEngineFinalizedCallback.bind(true));
+        ThreadUtils.runOnUiThreadBlocking(mTestDelegate.onSearchEngineFinalizedCallback.bind(true));
 
         // Let the initialization finish completely.
         Assert.assertEquals(
@@ -503,7 +502,7 @@ public class SearchActivityTest {
         Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
 
         // Dismiss the dialog without acting on it.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mTestDelegate.shownPromoDialog.dismiss());
+        ThreadUtils.runOnUiThreadBlocking(() -> mTestDelegate.shownPromoDialog.dismiss());
 
         // SearchActivity should realize the failure case and prevent the user from using it.
         CriteriaHelper.pollUiThread(
@@ -532,13 +531,13 @@ public class SearchActivityTest {
         LocationBarCoordinator locationBarCoordinator =
                 searchActivity.getLocationBarCoordinatorForTesting();
         UrlBar urlBar = (UrlBar) searchActivity.findViewById(R.id.url_bar);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarCoordinator.onUrlChangedForTesting();
                     Assert.assertTrue(urlBar.getText().toString().isEmpty());
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarCoordinator.clearOmniboxFocus();
                     locationBarCoordinator.onUrlChangedForTesting();
@@ -641,7 +640,7 @@ public class SearchActivityTest {
                         throw ex;
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UrlBar urlBar = (UrlBar) activity.findViewById(R.id.url_bar);
                     urlBar.setText(url);

@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -42,7 +43,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for startup timing histograms. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -118,13 +118,13 @@ public class StartupLoadingMetricsTest {
     private void runAndWaitForPageLoadMetricsRecorded(Runnable runnable) throws Exception {
         PageLoadMetricsTest.PageLoadMetricsTestObserver testObserver =
                 new PageLoadMetricsTest.PageLoadMetricsTestObserver();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.addObserver(testObserver, false));
         runnable.run();
         // First Contentful Paint may be recorded asynchronously after a page load is finished, we
         // have to wait the event to occur.
         testObserver.waitForFirstContentfulPaintEvent();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.removeObserver(testObserver));
     }
 
@@ -397,7 +397,7 @@ public class StartupLoadingMetricsTest {
                         FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 1));
 
         // Trigger the come-to-foreground event. This time it should not be skipped.
-        TestThreadUtils.runOnUiThreadBlocking(UmaUtils::recordForegroundStartTimeWithNative);
+        ThreadUtils.runOnUiThreadBlocking(UmaUtils::recordForegroundStartTimeWithNative);
 
         // Startup metrics should still not have been recorded...
         Assert.assertEquals(

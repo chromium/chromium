@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -39,7 +40,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
@@ -88,7 +88,7 @@ public class RequestDesktopSiteTest {
     public void tearDown() throws TimeoutException {
         // Clean up content settings.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
@@ -108,7 +108,7 @@ public class RequestDesktopSiteTest {
         assertUsingDesktopUserAgent(
                 tab, false, "User agent should be mobile according to global site settings.");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -144,7 +144,7 @@ public class RequestDesktopSiteTest {
                 "Tab layout should be <Mobile>, while global settings is <Mobile> and tab level"
                         + " settings is <Default>.");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -197,7 +197,7 @@ public class RequestDesktopSiteTest {
                 "Tab layout should be <Desktop>, while global settings is <Desktop> and tab level"
                         + " settings is <Default>.");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -235,7 +235,7 @@ public class RequestDesktopSiteTest {
     }
 
     private void updateGlobalSetting(Tab tab, boolean setting) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setContentSettingEnabled(
                             tab.getProfile(), ContentSettingsType.REQUEST_DESKTOP_SITE, setting);
@@ -245,7 +245,7 @@ public class RequestDesktopSiteTest {
     }
 
     private void toggleFromAppMenu(Tab tab) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.callOnItemClick(
                             mActivityTestRule.getAppMenuCoordinator(),

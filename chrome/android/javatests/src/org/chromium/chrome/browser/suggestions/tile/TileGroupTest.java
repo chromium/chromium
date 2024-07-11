@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,7 +44,6 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
@@ -132,7 +132,7 @@ public class TileGroupTest {
 
         // Ensure that the removal is reflected in the ui.
         Assert.assertEquals(3, getTileLayout().getChildCount());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMostVisitedSites.setTileSuggestions(
                             mSiteSuggestionUrls[1], mSiteSuggestionUrls[2]);
@@ -169,7 +169,7 @@ public class TileGroupTest {
         invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.REMOVE);
 
         // Ensure that the removal update goes through.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMostVisitedSites.setTileSuggestions(
                             mSiteSuggestionUrls[1], mSiteSuggestionUrls[2]);
@@ -179,7 +179,7 @@ public class TileGroupTest {
         final View snackbarButton = waitForSnackbar(sActivityTestRule.getActivity());
 
         Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(url0));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     snackbarButton.callOnClick();
                 });
@@ -187,7 +187,7 @@ public class TileGroupTest {
         Assert.assertFalse(mMostVisitedSites.isUrlBlocklisted(url0));
 
         // Ensure that the removal of the update goes through.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMostVisitedSites.setTileSuggestions(mSiteSuggestionUrls);
                 });

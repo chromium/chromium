@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.autofill.mojom.FocusedFieldType;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -50,7 +51,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.lang.ref.WeakReference;
@@ -123,7 +123,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         // Scroll to the second position and check it actually happened.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHelper.getAccessoryBarView().scrollToPosition(2);
                 });
@@ -251,13 +251,13 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
         assertTrue(
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mHelper.getManualFillingCoordinator()
                                         .getHandleBackPressChangedSupplier()
                                         .get()));
         assertTrue(
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mHelper.getManualFillingCoordinator().onBackPressed()));
 
         waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet_frame)));

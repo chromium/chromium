@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
@@ -32,7 +33,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.ui_metrics.CanonicalURLResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 
@@ -119,7 +119,7 @@ public class ShareDelegateImplIntegrationTest {
     private ShareParams triggerShare() throws TimeoutException {
         final CallbackHelper helper = new CallbackHelper();
         final AtomicReference<ShareParams> paramsRef = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShareSheetDelegate delegate =
                             new ShareSheetDelegate() {

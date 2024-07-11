@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -51,7 +52,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -284,7 +284,7 @@ public class EdgeToEdgeInstrumentationTest {
         goToNormal();
         var snackbarManager = mActivity.getSnackbarManager();
         snackbarManager.setEdgeToEdgeSupplier(mEdgeToEdgeController);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     snackbarManager.showSnackbar(
                             Snackbar.make(

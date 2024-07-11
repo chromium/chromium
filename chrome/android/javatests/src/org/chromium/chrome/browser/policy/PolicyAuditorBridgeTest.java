@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
@@ -30,7 +31,6 @@ import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -153,7 +153,7 @@ public class PolicyAuditorBridgeTest {
                         loadFinishCallback.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.getWebContents().addObserver(observer);
                     tab.loadUrl(new LoadUrlParams(invalidUrl));
@@ -162,7 +162,7 @@ public class PolicyAuditorBridgeTest {
         try {
             loadFinishCallback.waitForCallback(0);
         } finally {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         tab.getWebContents().removeObserver(observer);
                     });

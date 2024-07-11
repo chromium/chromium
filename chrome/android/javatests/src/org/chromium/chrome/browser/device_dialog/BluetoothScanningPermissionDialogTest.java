@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -36,7 +37,6 @@ import org.chromium.components.permissions.BluetoothScanningPermissionDialogJni;
 import org.chromium.components.permissions.DeviceItemAdapter;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.bluetooth_scanning.Event;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
@@ -80,7 +80,7 @@ public class BluetoothScanningPermissionDialogTest {
     }
 
     private BluetoothScanningPermissionDialog createDialog() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
                     BluetoothScanningPermissionDialog dialog =
@@ -113,7 +113,7 @@ public class BluetoothScanningPermissionDialogTest {
         // The list view should be hidden since there is no item in the list.
         Assert.assertEquals(View.GONE, items.getVisibility());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPermissionDialog.addOrUpdateDevice("device_id_0", "device_name_0");
                     mPermissionDialog.addOrUpdateDevice("device_id_1", "device_name_1");

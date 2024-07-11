@@ -22,7 +22,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /** Test utilities for various privacy_sandbox tests. */
@@ -67,7 +67,7 @@ public final class PrivacySandboxTestUtils {
     public static View getRootViewSanitized(@StringRes int text) {
         View[] view = {null};
         onView(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
+        ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
         return view[0];
     }
 }

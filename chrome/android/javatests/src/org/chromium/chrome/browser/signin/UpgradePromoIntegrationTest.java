@@ -51,6 +51,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -75,7 +76,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -387,7 +387,7 @@ public class UpgradePromoIntegrationTest {
                 .check(matches(isEnabled()));
         // This helps to reduce flakiness on some marshmallow bots in comparison with
         // espresso click.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity.findViewById(buttonId).performClick();
                 });
@@ -406,7 +406,7 @@ public class UpgradePromoIntegrationTest {
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.RESUMED);
 
         if (shouldReplaceProgressBars) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         // Replace all the progress bars with placeholders. Currently the progress
                         // bar cannot be stopped otherwise due to some espresso issues (see

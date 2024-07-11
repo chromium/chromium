@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -51,7 +52,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -93,7 +93,7 @@ public class ChromeTabbedActivityTest {
         // Create two tabs - tab[0] in the foreground and tab[1] in the background.
         final Tab[] tabs = new Tab[2];
         sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Foreground tab.
                     ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
@@ -117,17 +117,17 @@ public class ChromeTabbedActivityTest {
         Assert.assertTrue(tabs[1].isHidden());
 
         // Fake sending the activity to background.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivity.onPause());
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivity.onStop());
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivity.onWindowFocusChanged(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onPause());
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onStop());
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onWindowFocusChanged(false));
         // Verify that both Tabs are hidden.
         Assert.assertTrue(tabs[0].isHidden());
         Assert.assertTrue(tabs[1].isHidden());
 
         // Fake bringing the activity back to foreground.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivity.onWindowFocusChanged(true));
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivity.onStart());
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivity.onResume());
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onWindowFocusChanged(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onStart());
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onResume());
         // Verify that the front tab is in the 'visible' state.
         Assert.assertFalse(tabs[0].isHidden());
         Assert.assertTrue(tabs[1].isHidden());
@@ -137,7 +137,7 @@ public class ChromeTabbedActivityTest {
     @SmallTest
     public void testTabAnimationsCorrectlyEnabled() {
         boolean animationsEnabled =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> mActivity.getLayoutManager().animationsEnabled());
         Assert.assertEquals(animationsEnabled, DeviceClassManager.enableAnimations());
     }
@@ -156,7 +156,7 @@ public class ChromeTabbedActivityTest {
         mActivity.getMultiInstanceMangerForTesting().setTabModelObserverForTesting(null);
 
         var tabModelSelectorObserver = mActivity.getTabModelSelectorObserverForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(tabModelSelectorObserver::onTabStateInitialized);
+        ThreadUtils.runOnUiThreadBlocking(tabModelSelectorObserver::onTabStateInitialized);
         Assert.assertTrue(
                 "Regular tab count should be written to SharedPreferences after tab state"
                         + " initialization.",
@@ -211,8 +211,7 @@ public class ChromeTabbedActivityTest {
                             tabModel.getTabAt(3).getUrl().getSpec(), Matchers.endsWith("third"));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getCurrentTabModel().closeAllTabs(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getCurrentTabModel().closeAllTabs(false));
 
         viewIntent.putExtra(IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
         mActivity.getApplicationContext().startActivity(viewIntent);
@@ -309,7 +308,7 @@ public class ChromeTabbedActivityTest {
 
         // Trigger mismatched indices handling, this should destroy activity1's tab persistent store
         // instance.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         activity2.handleMismatchedIndices(
                                 activity1,
@@ -343,7 +342,7 @@ public class ChromeTabbedActivityTest {
 
         // Trigger mismatched indices handling assuming that activity1 and activity2 are in the same
         // task, this should destroy activity1's tab persistent store instance.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         activity2.handleMismatchedIndices(
                                 activity1,
@@ -382,7 +381,7 @@ public class ChromeTabbedActivityTest {
 
         // Trigger mismatched indices handling assuming that activity1 is not in AppTasks, this
         // should destroy activity1's tab persistent store instance.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         activity2.handleMismatchedIndices(
                                 activity1,

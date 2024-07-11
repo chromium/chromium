@@ -31,6 +31,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.settings.SettingsActivityUnitTest.ShadowProfileManagerUtils;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -101,7 +101,7 @@ public class SettingsActivityUnitTest {
                 mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
 
         // Simulate back press.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 mSettingsActivity.getOnBackPressedDispatcher()::onBackPressed);
         mainFragment.getBackPressCallback().waitForOnly();
 

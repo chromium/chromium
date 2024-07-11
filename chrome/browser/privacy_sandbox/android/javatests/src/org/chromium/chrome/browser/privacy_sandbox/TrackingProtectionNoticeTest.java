@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -53,7 +54,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
@@ -322,8 +322,7 @@ public final class TrackingProtectionNoticeTest {
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
                             try {
-                                TestThreadUtils.runOnUiThreadBlocking(
-                                        () -> RenderTestRule.sanitize(v));
+                                ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(v));
                                 mRenderTestRule.render(v, renderId);
                             } catch (IOException e) {
                                 assert false : "Render test failed due to " + e;

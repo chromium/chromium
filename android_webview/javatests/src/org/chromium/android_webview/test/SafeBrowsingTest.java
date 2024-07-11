@@ -62,7 +62,6 @@ import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
 import org.chromium.components.safe_browsing.SafeBrowsingResult;
 import org.chromium.components.safe_browsing.SafetyNetApiHandler;
 import org.chromium.components.safe_browsing.VerifyAppsResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
@@ -741,7 +740,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     private void verifyAllowlistRule(final String rule, boolean expected) throws Throwable {
         final AllowlistHelper helper = new AllowlistHelper();
         final int count = helper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ArrayList<String> s = new ArrayList<String>();
                     s.add(rule);
@@ -1167,7 +1166,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     }
 
     private String getSafeBrowsingLocaleOnUiThreadForTesting() throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> AwContents.getSafeBrowsingLocaleForTesting());
     }
 
@@ -1292,7 +1291,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                         .appendQueryParameter("hl", getSafeBrowsingLocaleOnUiThreadForTesting())
                         .fragment("safe-browsing-policies")
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPrivacyPolicyUrl = AwContentsStatics.getSafeBrowsingPrivacyPolicyUrl();
                 });
@@ -1318,7 +1317,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                 () -> {
                     try {
                         int awContentsCount =
-                                TestThreadUtils.runOnUiThreadBlocking(
+                                ThreadUtils.runOnUiThreadBlocking(
                                         () -> AwContents.getNativeInstanceCount());
                         Criteria.checkThat(awContentsCount, Matchers.is(0));
                     } catch (Exception e) {

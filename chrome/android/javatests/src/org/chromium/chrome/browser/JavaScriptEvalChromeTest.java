@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
@@ -23,7 +24,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -75,7 +75,7 @@ public class JavaScriptEvalChromeTest {
         for (int i = 1; i <= 30; ++i) {
             for (int j = 0; j < 5; ++j) {
                 // Start evaluation of a JavaScript script -- we don't need a result.
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
                             tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);
@@ -89,7 +89,7 @@ public class JavaScriptEvalChromeTest {
                                     tab1.getWebContents(), "add2()")));
             for (int j = 0; j < 5; ++j) {
                 // Start evaluation of a JavaScript script -- we don't need a result.
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
                             tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);

@@ -62,6 +62,7 @@ robolectric_library("junit") {
     ":java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:tasks_java",
     "//components/minidump_uploader:minidump_uploader_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",

@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.RequiresRestart;
@@ -21,7 +22,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.profile_metrics.BrowserProfileType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** This test class checks if incognito and non-incognito OTR profiles can be distinctly created. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -40,7 +40,7 @@ public class ProfileTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRegularProfile =
                             sActivityTestRule
@@ -60,7 +60,7 @@ public class ProfileTest {
         sActivityTestRule.loadUrlInNewTab("about:blank", true);
 
         Profile incognitoProfile1 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true));
         Assert.assertTrue(
                 "isOffTheRecord should be true for Incognito profiles",
@@ -79,7 +79,7 @@ public class ProfileTest {
                 mRegularProfile.hasPrimaryOTRProfile());
 
         Profile incognitoProfile2 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true));
         Assert.assertSame(
                 "Two calls to get incognito profile should return the same object.",
@@ -93,7 +93,7 @@ public class ProfileTest {
     public void testNonPrimaryProfileConsistency() throws Exception {
         OTRProfileID profileID = new OTRProfileID("test::OTRProfile");
         Profile nonPrimaryOtrProfile1 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         profileID, /* createIfNeeded= */ true));
@@ -123,7 +123,7 @@ public class ProfileTest {
                 profileID);
 
         Profile nonPrimaryOtrProfile2 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         new OTRProfileID("test::OTRProfile"),
@@ -142,14 +142,14 @@ public class ProfileTest {
     public void testCreatingTwoNonPrimaryProfiles() throws Exception {
         OTRProfileID profileID1 = new OTRProfileID("test::OTRProfile-1");
         Profile nonPrimaryOtrProfile1 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         profileID1, /* createIfNeeded= */ true));
 
         OTRProfileID profileID2 = new OTRProfileID("test::OTRProfile-2");
         Profile nonPrimaryOtrProfile2 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         profileID2, /* createIfNeeded= */ true));
@@ -197,7 +197,7 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testCreatingUniqueOTRProfileIDs() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID profileID1 = OTRProfileID.createUnique("test::OTRProfile");
                     OTRProfileID profileID2 = OTRProfileID.createUnique("test::OTRProfile");
@@ -214,7 +214,7 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testCreatingUniqueIncognitoCCTOTRProfileIDs() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID incognitoCCTId1 = OTRProfileID.createUniqueIncognitoCCTId();
                     OTRProfileID incognitoCCTId2 = OTRProfileID.createUniqueIncognitoCCTId();
@@ -235,7 +235,7 @@ public class ProfileTest {
     public void testIncognitoCCTProfileCreation() throws Exception {
         OTRProfileID incognitoCCTId = OTRProfileID.createUniqueIncognitoCCTId();
         Profile incognitoCCTProfile =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         incognitoCCTId, /* createIfNeeded= */ true));
@@ -261,7 +261,7 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testBrowserProfileTypeFromRegularProfile() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             BrowserProfileType.REGULAR,
@@ -275,7 +275,7 @@ public class ProfileTest {
         // Open an new Incognito Tab page to create a new primary OTR profile.
         sActivityTestRule.loadUrlInNewTab("about:blank", true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile primaryOTRProfile =
                             mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true);
@@ -288,7 +288,7 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testBrowserProfileTypeFromNonPrimaryOTRProfile() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileID = new OTRProfileID("test::OTRProfile");
                     Profile nonPrimaryOtrProfile =
@@ -310,7 +310,7 @@ public class ProfileTest {
 
         // Ask for a non-existing profile with createIfNeeded set to false, and exepct null.
         Profile profile1 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         profileID, /* createIfNeeded= */ false));
@@ -319,7 +319,7 @@ public class ProfileTest {
 
         // Ask for a non-existing profile with createIfNeeded set to true and expect creation.
         Profile profile2 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         profileID, /* createIfNeeded= */ true));
@@ -329,7 +329,7 @@ public class ProfileTest {
         // Ask for an existing profile with createIfNeeded set to false and expect getting the
         // existing profile.
         Profile profile3 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         profileID, /* createIfNeeded= */ false));
@@ -339,7 +339,7 @@ public class ProfileTest {
         // Ask for an existing profile with createIfNeeded set to true and expect getting the
         // existing profile.
         Profile profile4 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         profileID, /* createIfNeeded= */ true));
@@ -353,14 +353,14 @@ public class ProfileTest {
     public void testGetPrimaryOTRProfile() throws Exception {
         // Ask for a non-existing profile with createIfNeeded set to false, and exepct null.
         Profile profile1 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ false));
         Assert.assertNull(profile1);
         Assert.assertFalse(mRegularProfile.hasPrimaryOTRProfile());
 
         // Ask for a non-existing profile with createIfNeeded set to true and expect creation.
         Profile profile2 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true));
         Assert.assertNotNull(profile2);
         Assert.assertTrue(mRegularProfile.hasPrimaryOTRProfile());
@@ -368,7 +368,7 @@ public class ProfileTest {
         // Ask for an existing profile with createIfNeeded set to false and expect getting the
         // existing profile.
         Profile profile3 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ false));
         Assert.assertNotNull(profile3);
         Assert.assertSame(profile2, profile3);
@@ -376,7 +376,7 @@ public class ProfileTest {
         // Ask for an existing profile with createIfNeeded set to true and expect getting the
         // existing profile.
         Profile profile4 =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true));
         Assert.assertNotNull(profile4);
         Assert.assertSame(profile2, profile4);

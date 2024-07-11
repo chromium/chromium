@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -26,7 +27,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -53,7 +53,7 @@ public class RecentTabsTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Ensure we start in an offline state.
                     NetworkChangeNotifier.forceConnectivityState(false);
@@ -124,7 +124,7 @@ public class RecentTabsTest {
 
         // Requests closing of the tab allowing for closure undo and checks it's actually closing.
         boolean closeTabReturnValue =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() {
@@ -140,7 +140,7 @@ public class RecentTabsTest {
         Assert.assertNull(OfflineTestUtil.getPageByClientId(firstTabClientId));
 
         // Undo the closure and make sure the tab is again the current one on foreground.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tabModel.cancelTabClosure(tab.getId());
                     int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());

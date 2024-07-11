@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -46,7 +47,6 @@ import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -136,7 +136,7 @@ public class ContactsPickerDialogTest
     @Before
     public void setupTest() throws Exception {
         mWindowAndroid =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             mActivity = activityTestRule.getActivity();
                             return new ActivityWindowAndroid(
@@ -163,7 +163,7 @@ public class ContactsPickerDialogTest
     @After
     public void tearDown() throws Exception {
         if (!mClosing && mDialog != null) dismissDialog();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWindowAndroid.destroy();
                 });
@@ -222,7 +222,7 @@ public class ContactsPickerDialogTest
             throws Exception {
         mClosing = false;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContactsPicker.setContactsPickerDelegate(
                             (WebContents webContents,
@@ -381,7 +381,7 @@ public class ContactsPickerDialogTest
         RecyclerView recyclerView = getRecyclerView();
         RecyclerViewTestUtils.waitForView(recyclerView, 0);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> notifyChipToggled(filter));
+        ThreadUtils.runOnUiThreadBlocking(() -> notifyChipToggled(filter));
     }
 
     private void clickSearchButton() {
@@ -392,7 +392,7 @@ public class ContactsPickerDialogTest
     }
 
     private void setSearchString(String query, int expectedMatches) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mDialog.getCategoryViewForTesting().onSearchTextChanged(query));
         Assert.assertEquals(expectedMatches, getRecyclerView().getAdapter().getItemCount());
     }
@@ -402,7 +402,7 @@ public class ContactsPickerDialogTest
         mClosing = true;
 
         int callCount = onActionCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mDialog.cancel());
+        ThreadUtils.runOnUiThreadBlocking(() -> mDialog.cancel());
         onActionCallback.waitForCallback(callCount, 1);
     }
 
@@ -1010,7 +1010,7 @@ public class ContactsPickerDialogTest
 
         // The test disables animations, which can cause the tickmark not to show after the checkbox
         // is checked, unless this is called directly thereafter.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialog.getCategoryViewForTesting().jumpDrawablesToCurrentState();
                 });

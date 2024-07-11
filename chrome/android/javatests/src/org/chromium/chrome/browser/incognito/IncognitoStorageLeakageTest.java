@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -34,7 +35,6 @@ import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.Arrays;
@@ -81,7 +81,7 @@ public class IncognitoStorageLeakageTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
     }
 
@@ -155,8 +155,7 @@ public class IncognitoStorageLeakageTest {
             // Due to which tab1 could potentially be marked as frozen and invoking
             // getWebContents on it may return null. Please see the javadoc for
             // TabImpl#getWebContents.
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> tab1.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
+            ThreadUtils.runOnUiThreadBlocking(() -> tab1.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
             CriteriaHelper.pollUiThread(
                     () -> Criteria.checkThat(tab1.getWebContents(), Matchers.notNullValue()));
             // Set the storage in tab1
@@ -170,8 +169,7 @@ public class IncognitoStorageLeakageTest {
                     JavaScriptUtils.runJavascriptWithAsyncResult(
                             tab1.getWebContents(), "has" + type + "Async()"));
 
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> tab2.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
+            ThreadUtils.runOnUiThreadBlocking(() -> tab2.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
             CriteriaHelper.pollUiThread(
                     () -> Criteria.checkThat(tab2.getWebContents(), Matchers.notNullValue()));
             // Access the storage from tab2

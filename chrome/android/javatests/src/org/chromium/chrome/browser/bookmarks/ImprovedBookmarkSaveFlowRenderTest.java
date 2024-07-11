@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.sync.SyncFeatureMap;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -95,7 +95,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
         mBitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.GREEN);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContentView = new LinearLayout(mActivity);
                     mContentView.setBackgroundColor(Color.WHITE);
@@ -144,7 +144,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @Feature({"RenderTest"})
     public void testLongText() throws IOException {
         String folderText = "in really really long, I mean an extremely long folder";
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(
                             ImprovedBookmarkSaveFlowProperties.SUBTITLE,
@@ -161,7 +161,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
         int bitmapSize = BookmarkUtils.getFaviconDisplaySize(mActivity.getResources());
         Bitmap bitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(Color.GREEN);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(
                             ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON,
@@ -174,7 +174,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceTracking() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
                     mModel.set(
@@ -187,7 +187,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceTracking_switchUnchecked() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
                     mModel.set(
@@ -201,7 +201,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceTracking_visibleNotEnabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
                     mModel.set(
@@ -219,7 +219,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
         SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE
     })
     public void testTitleAndSubtitle() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(
                             ImprovedBookmarkSaveFlowProperties.TITLE,

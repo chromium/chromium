@@ -36,13 +36,13 @@ import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.UnsupportedEncodingException;
@@ -351,7 +351,7 @@ public class LoadUrlTest extends AwParameterizedTest {
     private void loadWithInvalidHeaders(AwContents awContents, Map<String, String> extraHeaders)
             throws Exception {
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             try {
                                 awContents.loadUrl("about:blank", extraHeaders);

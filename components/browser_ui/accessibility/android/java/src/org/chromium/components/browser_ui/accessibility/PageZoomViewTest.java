@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -48,7 +49,6 @@ import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for the PageZoom view and view binder. */
@@ -82,7 +82,7 @@ public class PageZoomViewTest {
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = sActivityTestRule.getActivity();
                     sContentView = new FrameLayout(sActivity);
@@ -118,7 +118,7 @@ public class PageZoomViewTest {
                     }
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sContentView.removeAllViews();
                     mPageZoomView =
@@ -205,7 +205,7 @@ public class PageZoomViewTest {
                 40, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("90", true, true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.hide();
                 });
@@ -235,7 +235,7 @@ public class PageZoomViewTest {
                 60, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("110", true, true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.hide();
                 });

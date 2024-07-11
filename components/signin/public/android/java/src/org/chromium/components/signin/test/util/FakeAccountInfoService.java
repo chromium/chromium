@@ -17,7 +17,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ public class FakeAccountInfoService implements IdentityManager.Observer, Account
     protected final ObserverList<Observer> mObservers;
 
     public FakeAccountInfoService() {
-        mObservers = TestThreadUtils.runOnUiThreadBlockingNoException(ObserverList::new);
+        mObservers = ThreadUtils.runOnUiThreadBlockingNoException(ObserverList::new);
     }
 
     @Override

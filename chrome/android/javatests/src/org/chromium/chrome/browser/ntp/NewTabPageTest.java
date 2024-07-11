@@ -50,6 +50,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.MemoryPressureListener;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -97,7 +98,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -179,7 +179,7 @@ public class NewTabPageTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityWithURL("about:blank");
         TemplateUrlService originalService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -381,7 +381,7 @@ public class NewTabPageTest {
                 new Runnable() {
                     @Override
                     public void run() {
-                        TestThreadUtils.runOnUiThreadBlocking(
+                        ThreadUtils.runOnUiThreadBlocking(
                                 () -> {
                                     int pageTransition =
                                             PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
@@ -428,7 +428,7 @@ public class NewTabPageTest {
             mOmnibox.checkSuggestionsShown();
 
             final CallbackHelper loadedCallback = new CallbackHelper();
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTab.addObserver(
                                 new EmptyTabObserver() {
@@ -444,7 +444,7 @@ public class NewTabPageTest {
             waitForUrlFocusAnimationsDisabledState(true);
             waitForTabLoading();
 
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTab.stopLoading();
                     });
@@ -515,7 +515,7 @@ public class NewTabPageTest {
 
         // When the search provider has no logo and there are no tile suggestions, the placeholder
         // is shown.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
                     when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
@@ -549,7 +549,7 @@ public class NewTabPageTest {
 
         // Once the search provider has a logo again, the logo and search box are shown again and
         // the placeholder is hidden.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
                     when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
@@ -583,7 +583,7 @@ public class NewTabPageTest {
         // performed.
         CallbackHelper callback = new CallbackHelper();
         MemoryPressureCallback pressureCallback = pressure -> callback.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MemoryPressureListener.addCallback(pressureCallback);
                     mActivityTestRule
@@ -593,7 +593,7 @@ public class NewTabPageTest {
                 });
 
         callback.waitForCallback(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> MemoryPressureListener.removeCallback(pressureCallback));
     }
 
@@ -623,7 +623,7 @@ public class NewTabPageTest {
         when(mOmniboxStub.getVoiceRecognitionHandler()).thenReturn(mVoiceRecognitionHandler);
         when(mVoiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNtp.setOmniboxStub(mOmniboxStub);
                     verify(mVoiceRecognitionHandler).addObserver(eq(mNtp));
@@ -642,7 +642,7 @@ public class NewTabPageTest {
     public void testSettingOmniboxStubAddsUrlFocusChangeListener() throws IOException {
         mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNtp.setOmniboxStub(mOmniboxStub);
                     verify(mOmniboxStub).addUrlFocusChangeListener(eq(mFeedReliabilityLogger));
@@ -655,7 +655,7 @@ public class NewTabPageTest {
     public void testFeedReliabilityLoggingFocusOmnibox() throws IOException {
         mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNtp.getNewTabPageManagerForTesting()
                             .focusSearchBox(/* beginVoiceSearch= */ false, /* pastedText= */ "");
@@ -669,7 +669,7 @@ public class NewTabPageTest {
     public void testFeedReliabilityLoggingVoiceSearch() throws IOException {
         mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNtp.getNewTabPageManagerForTesting()
                             .focusSearchBox(/* beginVoiceSearch= */ true, /* pastedText= */ "");
@@ -683,7 +683,7 @@ public class NewTabPageTest {
     public void testFeedReliabilityLoggingHideWithBack() throws IOException {
         mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeTabbedActivity activity =
                             (ChromeTabbedActivity) mActivityTestRule.getActivity();
@@ -701,7 +701,7 @@ public class NewTabPageTest {
     @DisabledTest(message = "https://crbug.com/1434807")
     public void testRecordHistogramMostVisitedItemClick_Ntp() {
         Tile tileForTest = new Tile(mSiteSuggestions.get(0), 0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TileGroup.Delegate tileGroupDelegate = mNtp.getTileGroupDelegateForTesting();
 
@@ -768,7 +768,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     public void testRecordHistogramFeedClick_Ntp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FeedActionDelegate feedActionDelegate = mNtp.getFeedActionDelegateForTesting();
 
@@ -892,7 +892,7 @@ public class NewTabPageTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.DOODLE);
-        TestThreadUtils.runOnUiThreadBlocking(() -> logoCoordinator.onLogoClickedForTesting(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> logoCoordinator.onLogoClickedForTesting(true));
         histogramWatcher.assertExpected(
                 HISTOGRAM_NTP_MODULE_CLICK
                         + " is not recorded correctly when click on Logo with doodle enabled.");
@@ -992,7 +992,7 @@ public class NewTabPageTest {
     }
 
     private boolean getUrlFocusAnimationsDisabled() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
@@ -1035,7 +1035,7 @@ public class NewTabPageTest {
      * @return The position of the top of the fakebox relative to the window.
      */
     private int getFakeboxTop(final NewTabPage ntp) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {
@@ -1082,6 +1082,6 @@ public class NewTabPageTest {
                 AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
         // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
         //  is implemented.
-        TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
+        ThreadUtils.runOnUiThreadBlocking(mTab::reload);
     }
 }

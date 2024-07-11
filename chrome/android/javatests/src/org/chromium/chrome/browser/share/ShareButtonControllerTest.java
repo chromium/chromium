@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -33,7 +34,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -140,13 +140,13 @@ public final class ShareButtonControllerTest {
                 };
 
         PropertyModel dialogModel =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                                         .with(ModalDialogProperties.CONTROLLER, controller)
                                         .build());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -166,7 +166,7 @@ public final class ShareButtonControllerTest {
             assertTrue(shareString.equals(experimentalButton.getContentDescription()));
             assertFalse(experimentalButton.isEnabled());
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()

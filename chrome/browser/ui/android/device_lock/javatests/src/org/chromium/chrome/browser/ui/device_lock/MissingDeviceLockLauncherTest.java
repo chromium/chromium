@@ -32,6 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -48,7 +49,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager.DataWipeOption;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -205,7 +205,7 @@ public class MissingDeviceLockLauncherTest {
                 .when(mSigninManager)
                 .signOut(anyInt(), any(), anyBoolean());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
                             () -> mWipeDataCallbackCalled.set(true), /* wipeAllData= */ true);
@@ -240,7 +240,7 @@ public class MissingDeviceLockLauncherTest {
                 .when(mSigninManager)
                 .signOut(anyInt(), any(), anyBoolean());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
                             () -> mWipeDataCallbackCalled.set(true), /* wipeAllData= */ false);
@@ -275,7 +275,7 @@ public class MissingDeviceLockLauncherTest {
                 .when(mSigninManager)
                 .wipeSyncUserData(any(), anyInt());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
                             () -> mWipeDataCallbackCalled.set(true), /* wipeAllData= */ true);
@@ -303,7 +303,7 @@ public class MissingDeviceLockLauncherTest {
 
         doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
                             () -> mWipeDataCallbackCalled.set(true), /* wipeAllData= */ false);

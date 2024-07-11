@@ -11,10 +11,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.minidump_uploader.CrashTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -134,7 +134,7 @@ public class PureJavaExceptionReporterTest {
     @Test
     @SmallTest
     public void verifyCrashKeys() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     CrashKeys.getInstance().set(CrashKeyIndex.LOADED_DYNAMIC_MODULE, "foo");
                 });

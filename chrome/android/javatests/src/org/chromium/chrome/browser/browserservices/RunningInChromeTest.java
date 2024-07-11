@@ -31,6 +31,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -47,7 +48,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -263,7 +263,7 @@ public class RunningInChromeTest {
         // On the trybots a Downloads Snackbar is shown over the one we want to test.
         SnackbarManager manager = mCustomTabActivityTestRule.getActivity().getSnackbarManager();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     while (true) {
                         Snackbar snackbar = manager.getCurrentSnackbarForTesting();

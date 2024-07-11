@@ -21,11 +21,11 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -48,7 +48,7 @@ public class BottomSheetToolbarViewBinderTest extends BlankUiTestActivityTestCas
 
         ViewGroup view = new FrameLayout(getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view);
 
@@ -192,7 +192,7 @@ public class BottomSheetToolbarViewBinderTest extends BlankUiTestActivityTestCas
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
         super.tearDownTest();
     }
 }

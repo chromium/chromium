@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
@@ -41,7 +42,6 @@ import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.GURL;
 
@@ -63,7 +63,7 @@ public class OMADownloadHandlerTest {
 
     @Before
     public void before() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestInfoBarController = new TestInfoBarController();
                     DownloadManagerService.getDownloadManagerService()
@@ -423,7 +423,7 @@ public class OMADownloadHandlerTest {
 
         DownloadInfo info = new DownloadInfo.Builder().build();
         final OMADownloadHandlerForTest omaHandler =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return new OMADownloadHandlerForTest(context) {
                                 @Override

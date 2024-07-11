@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -46,7 +47,6 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -147,7 +147,7 @@ public class TabbedNavigationBarColorControllerTest {
         mActivityTestRule.loadUrl(url);
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         FullscreenToggleObserver observer = new FullscreenToggleObserver();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> activity.getFullscreenManager().addObserver(observer));
 
         enterFullscreen(observer, activity.getCurrentWebContents());
@@ -175,7 +175,7 @@ public class TabbedNavigationBarColorControllerTest {
         ScrimCoordinator scrimCoordinator =
                 activity.getRootUiCoordinatorForTesting().getScrimCoordinatorForTesting();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
@@ -191,7 +191,7 @@ public class TabbedNavigationBarColorControllerTest {
         assertNotEquals(mRegularNavigationColor, withScrim);
         assertTrue(regularBrightness > ColorUtils.calculateLuminance(withScrim));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> scrimCoordinator.hideScrim(false, 0));
+        ThreadUtils.runOnUiThreadBlocking(() -> scrimCoordinator.hideScrim(false, 0));
         assertEquals(mRegularNavigationColor, mWindow.getNavigationBarColor());
     }
 

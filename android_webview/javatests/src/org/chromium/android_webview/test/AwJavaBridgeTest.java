@@ -18,8 +18,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test suite for the WebView specific JavaBridge features. */
 @RunWith(Parameterized.class)
@@ -82,7 +82,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         awContents, mContentsClient, "typeof test.destroy"));
         int currentCallCount = client2.getOnPageFinishedHelper().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.evaluateJavaScriptForTests("test.destroy()", null));
 
         client2.getOnPageFinishedHelper().waitForCallback(currentCallCount);

@@ -25,6 +25,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
@@ -33,7 +34,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -67,7 +67,7 @@ public class CustomTabsTestUtils {
     }
 
     public static void cleanupSessions(final CustomTabsConnection connection) {
-        TestThreadUtils.runOnUiThreadBlocking(connection::cleanupAllForTesting);
+        ThreadUtils.runOnUiThreadBlocking(connection::cleanupAllForTesting);
     }
 
     public static ClientAndSession bindWithCallback(final CustomTabsCallback callback)

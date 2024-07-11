@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -32,7 +33,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Verifies the main user journeys for supervised users. */
@@ -62,7 +62,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @Test
     @LargeTest
     public void sitesThatAreOnBlocklistAreBlockedByInterstitialPage() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SupervisedUserSettingsTestUtils.addUrlToBlocklist(
                             mActivityTestRule.getProfile(/* incognito= */ false), BLOCKED_SITE_URL);
@@ -83,7 +83,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @Test
     @LargeTest
     public void incognitoModeIsUnavailableFromAppMenu() throws InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -104,7 +104,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @LargeTest
     public void matureSitesAreBlockedBySafeSites() throws Exception {
         SupervisedUserSettingsTestUtils.setUpTestUrlLoaderFactoryHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SupervisedUserSettingsTestUtils.setKidsManagementResponseForTesting(
                             mActivityTestRule.getProfile(/* incognito= */ false),

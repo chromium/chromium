@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.is;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -22,7 +23,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.SyncService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * This test rule mocks AccountManagerFacade and manages sign-in/sign-out.
@@ -204,7 +204,7 @@ public class SigninTestRule extends AccountManagerTestRule {
 
         // The auto sign-in should leave the user in signed-in, non-syncing state - check this and
         // enable sync.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assert IdentityServicesProvider.get()
                                             .getIdentityManager(

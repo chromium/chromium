@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -31,7 +32,6 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.webxr.CardboardUtils;
 import org.chromium.components.webxr.XrSessionCoordinator;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -67,7 +67,7 @@ public class WebXrVrCardboardInputTest {
 
     private long sendScreenTouchDownToView(final View view, final int x, final int y) {
         long downTime = SystemClock.uptimeMillis();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view.dispatchTouchEvent(
                             MotionEvent.obtain(
@@ -78,7 +78,7 @@ public class WebXrVrCardboardInputTest {
 
     private void sendScreenTouchUpToView(
             final View view, final int x, final int y, final long downTime) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     long now = SystemClock.uptimeMillis();
                     view.dispatchTouchEvent(
@@ -113,7 +113,7 @@ public class WebXrVrCardboardInputTest {
 
     private void sendScreenTouchDownToXrSession(
             final XrSessionCoordinator xrSession, final int x, final int y) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     xrSession.onDrawingSurfaceTouch(true, true, 0, x, y);
                 });
@@ -121,7 +121,7 @@ public class WebXrVrCardboardInputTest {
 
     private void sendScreenTouchUpToXrSession(
             final XrSessionCoordinator xrSession, final int x, final int y) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     xrSession.onDrawingSurfaceTouch(true, false, 0, x, y);
                 });

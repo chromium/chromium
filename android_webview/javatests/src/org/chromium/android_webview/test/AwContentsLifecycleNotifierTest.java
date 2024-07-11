@@ -15,10 +15,10 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AppState;
 import org.chromium.android_webview.AwContentsLifecycleNotifier;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** AwContentsLifecycleNotifier tests. */
 @RunWith(Parameterized.class)
@@ -52,7 +52,7 @@ public class AwContentsLifecycleNotifierTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testNotifierCreate() throws Throwable {
         LifecycleObserver observer = new LifecycleObserver();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContentsLifecycleNotifier.getInstance().addObserver(observer);
                     Assert.assertFalse(
@@ -63,7 +63,7 @@ public class AwContentsLifecycleNotifierTest extends AwParameterizedTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         observer.mFirstWebViewCreatedCallback.waitForCallback(0, 1);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());
@@ -71,7 +71,7 @@ public class AwContentsLifecycleNotifierTest extends AwParameterizedTest {
                 });
         mActivityTestRule.destroyAwContentsOnMainSync(awTestContainerView.getAwContents());
         observer.mLastWebViewDestroyedCallback.waitForCallback(0, 1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());
@@ -82,7 +82,7 @@ public class AwContentsLifecycleNotifierTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testAppState() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());
@@ -100,13 +100,13 @@ public class AwContentsLifecycleNotifierTest extends AwParameterizedTest {
                             == AppState.FOREGROUND;
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().removeAllViews();
                 });
         mActivityTestRule.destroyAwContentsOnMainSync(awTestContainerView.getAwContents());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());

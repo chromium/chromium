@@ -13,6 +13,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserverTestRule.TabModelSelectorTestTabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -49,7 +49,7 @@ public class TabModelSelectorTabModelObserverTest {
     public void testAlreadyInitializedSelector() throws TimeoutException {
         final CallbackHelper registrationCompleteCallback = new CallbackHelper();
         TabModelSelectorTabModelObserver observer =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 new TabModelSelectorTabModelObserver(mSelector) {
                                     @Override

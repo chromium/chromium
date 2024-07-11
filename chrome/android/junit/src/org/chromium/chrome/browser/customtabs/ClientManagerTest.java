@@ -352,7 +352,7 @@ public class ClientManagerTest {
         cm.verifyAndInitializeWithPostMessageOriginForSession(
                 mSession, origin, null, CustomTabsService.RELATION_HANDLE_ALL_URLS);
 
-        //        TestThreadUtils.runOnUiThreadBlocking(() -> {
+        //        ThreadUtils.runOnUiThreadBlocking(() -> {
         Uri verifiedOrigin = cm.getPostMessageOriginForSessionForTesting(mSession);
         Assert.assertEquals(IntentUtils.ANDROID_APP_REFERRER_SCHEME, verifiedOrigin.getScheme());
         // initializeWithPostMessageOriginForSession should override without checking

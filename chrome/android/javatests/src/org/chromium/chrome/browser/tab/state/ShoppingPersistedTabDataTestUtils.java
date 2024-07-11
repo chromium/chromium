@@ -18,6 +18,7 @@ import com.google.protobuf.ByteString;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
@@ -31,7 +32,6 @@ import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -197,7 +197,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
 
     static ShoppingPersistedTabData createSavedShoppingPersistedTabDataOnUiThread(Tab tab) {
         AtomicReference<ShoppingPersistedTabData> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData shoppingPersistedTabData =
                             new ShoppingPersistedTabData(tab);
@@ -217,7 +217,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
 
     static ShoppingPersistedTabData createShoppingPersistedTabDataWithPriceDropOnUiThread(Tab tab) {
         AtomicReference<ShoppingPersistedTabData> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData shoppingPersistedTabData =
                             new ShoppingPersistedTabData(tab);
@@ -246,7 +246,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
 
     static MockTab createTabOnUiThread(int tabId, Profile profile) {
         AtomicReference<MockTab> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MockTab tab = MockTab.createAndInitialize(tabId, profile);
                     tab.setIsInitialized(true);

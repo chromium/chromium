@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -35,7 +36,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Optional;
@@ -99,7 +99,7 @@ public class SendTabToSelfCoordinatorTest {
         // Check the promo is displayed, in particular the sign-in button.
         waitForViewShown(R.id.account_picker_continue_as_button);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBottomSheetView()
                             .findViewById(R.id.account_picker_continue_as_button)
@@ -112,7 +112,7 @@ public class SendTabToSelfCoordinatorTest {
     private void buildAndShowCoordinator() {
         ChromeTabbedActivity activity = mSyncTestRule.getActivity();
         WindowAndroid windowAndroid = activity.getWindowAndroid();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SendTabToSelfCoordinator coordinator =
                             new SendTabToSelfCoordinator(
@@ -129,7 +129,7 @@ public class SendTabToSelfCoordinatorTest {
 
     private View getBottomSheetView() {
         WindowAndroid windowAndroid = mSyncTestRule.getActivity().getWindowAndroid();
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return BottomSheetControllerProvider.from(windowAndroid)
                             .getCurrentSheetContent()

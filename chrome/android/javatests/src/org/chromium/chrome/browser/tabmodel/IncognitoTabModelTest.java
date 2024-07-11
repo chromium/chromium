@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -39,7 +40,6 @@ import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -75,7 +75,7 @@ public class IncognitoTabModelTest {
     }
 
     private void createTabOnUiThread() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -90,7 +90,7 @@ public class IncognitoTabModelTest {
     private void removeTabOnUiThread() {
         Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
         assertTrue(tab.isIncognito());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIncognitoTabModel.removeTab(tab);
                     tab.destroy();
@@ -109,7 +109,7 @@ public class IncognitoTabModelTest {
     public void testCloseAllDuringAddTabDoesNotCrash() {
         createTabOnUiThread();
         Assert.assertEquals(1, mIncognitoTabModel.getCount());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mIncognitoTabModel.addObserver(new CloseAllDuringAddTabTabModelObserver()));
 
         createTabOnUiThread();
@@ -139,7 +139,7 @@ public class IncognitoTabModelTest {
         CallbackHelper didAddTabCallbackHelper = new CallbackHelper();
         CallbackHelper tabRemovedCallbackHelper = new CallbackHelper();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIncognitoTabModel.addObserver(
                             new TabModelObserver() {
@@ -178,7 +178,7 @@ public class IncognitoTabModelTest {
     @Test
     @SmallTest
     public void testHideLastRegularTab_OnModelChange() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assert mRegularTabModel == mActivityTestRule.getActivity().getCurrentTabModel();
                     // In setup we create a blank tab.
@@ -199,7 +199,7 @@ public class IncognitoTabModelTest {
     @Test
     @SmallTest
     public void testCurrentTabSupplierAddedBefore() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIncognitoTabModel.getCurrentTabSupplier().addObserver(mTabSupplierObserver);
                 });
@@ -216,7 +216,7 @@ public class IncognitoTabModelTest {
     @SmallTest
     public void testCurrentTabSupplierAddedAfter() {
         createTabOnUiThread();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIncognitoTabModel.getCurrentTabSupplier().addObserver(mTabSupplierObserver);
                 });
@@ -230,7 +230,7 @@ public class IncognitoTabModelTest {
     @Test
     @SmallTest
     public void testTabCountSupplierAddedBefore() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIncognitoTabModel.getTabCountSupplier().addObserver(mTabCountSupplierObserver);
                 });
@@ -248,7 +248,7 @@ public class IncognitoTabModelTest {
     @SmallTest
     public void testTabCountSupplierAddedAfter() {
         createTabOnUiThread();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIncognitoTabModel.getTabCountSupplier().addObserver(mTabCountSupplierObserver);
                 });

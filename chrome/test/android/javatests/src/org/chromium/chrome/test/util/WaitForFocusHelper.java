@@ -8,8 +8,8 @@ import android.view.View;
 
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.text.MessageFormat;
 
@@ -31,7 +31,7 @@ public class WaitForFocusHelper implements View.OnFocusChangeListener {
             WaitForFocusHelper listener = new WaitForFocusHelper(view.getOnFocusChangeListener());
             view.setOnFocusChangeListener(listener);
             int callCount = listener.getOnFocusCallbackHelper().getCallCount();
-            TestThreadUtils.runOnUiThreadBlocking(() -> view.requestFocus());
+            ThreadUtils.runOnUiThreadBlocking(() -> view.requestFocus());
             if (!view.hasFocus()) {
                 listener.getOnFocusCallbackHelper()
                         .waitForCallback(

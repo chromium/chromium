@@ -48,6 +48,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -78,7 +79,6 @@ import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.GURL;
@@ -216,7 +216,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testLaunchingActivity() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -239,7 +239,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testTabsAreShown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -262,7 +262,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testChipsAreShown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -303,7 +303,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testPrefetchTabEmptyText() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -327,7 +327,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testAddRemoveItems() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -348,12 +348,12 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                         100000,
                         OfflineItemFilter.OTHER);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mStubbedOfflineContentProvider.addItem(item5));
+        ThreadUtils.runOnUiThreadBlocking(() -> mStubbedOfflineContentProvider.addItem(item5));
         onView(withText("page 5")).check(matches(isDisplayed()));
         onView(withText(containsString("Using 2.10 KB of"))).check(matches(isDisplayed()));
 
         // Delete an item. The item should be gone and the storage text should be updated.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mStubbedOfflineContentProvider.removeItem(item5.id));
         onView(withText("page 5")).check(doesNotExist());
         onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
@@ -362,7 +362,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testShowListItemMenuWithRename() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -385,7 +385,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testShowListItemMenuWithoutRename() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -412,7 +412,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testShowToolbarMenu() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -466,7 +466,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testDeleteItem() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -506,7 +506,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1338140")
     public void testRenameItem() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -539,7 +539,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testShareItem() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -561,7 +561,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testSearchView() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -569,7 +569,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         final DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> toolbar.getMenu().performIdentifierAction(R.id.search_menu_id, 0));
 
         // The selection should be cleared when a search is started.
@@ -591,7 +591,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testDismissSearchViewByBackPress() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
@@ -599,7 +599,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         final DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> toolbar.getMenu().performIdentifierAction(R.id.search_menu_id, 0));
 
         // The selection should be cleared when a search is started.
@@ -613,7 +613,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         var backPressRecorder =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 getActivity().getOnBackPressedDispatcher()::onBackPressed);
         backPressRecorder.assertExpected();
         onView(withId(R.id.search_text)).check(matches(isDisplayed()));
@@ -622,7 +622,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         var backPressRecorder2 =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 getActivity().getOnBackPressedDispatcher()::onBackPressed);
         backPressRecorder2.assertExpected();
         CriteriaHelper.pollInstrumentationThread(

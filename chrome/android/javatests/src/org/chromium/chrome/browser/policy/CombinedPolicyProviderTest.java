@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -20,7 +21,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.PolicyProvider;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Instrumentation tests for {@link CombinedPolicyProvider} */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -53,7 +53,7 @@ public class CombinedPolicyProviderTest {
         Assert.assertEquals(2, incognitoTabModel.getCount());
 
         final CombinedPolicyProvider provider = CombinedPolicyProvider.get();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         provider.registerProvider(
                                 new PolicyProvider() {

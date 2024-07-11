@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.PackageManagerWrapper;
@@ -43,7 +44,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
@@ -149,7 +149,7 @@ public class ShareSheetTest {
 
         MockitoAnnotations.initMocks(this);
         sActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = ProfileManager.getLastUsedRegularProfile();
                 });
@@ -175,7 +175,7 @@ public class ShareSheetTest {
 
     // Replace the recent share history with the supplied map of usage counts.
     private void replaceRecentShareHistory(Map<String, Integer> recent) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShareHistoryBridge.clear(mProfile);
                     for (Map.Entry<String, Integer> e : recent.entrySet()) {

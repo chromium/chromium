@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -38,7 +39,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
@@ -92,7 +92,7 @@ public class ViewTransitionPixelTest {
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);
         FullscreenManagerTestUtils.disableBrowserOverrides();
     }
@@ -182,7 +182,7 @@ public class ViewTransitionPixelTest {
 
     private void showAndWaitForKeyboard() throws Throwable {
         DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mActivityTestRule
                                 .getActivity()
@@ -203,7 +203,7 @@ public class ViewTransitionPixelTest {
     }
 
     private void hideKeyboard() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getManualFillingComponent().hide());
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(), "document.activeElement.blur()");
@@ -327,7 +327,7 @@ public class ViewTransitionPixelTest {
         final CallbackHelper ch = new CallbackHelper();
         final AtomicReference<String> screenshotOutputPath = new AtomicReference<>();
         String cacheDirPath = context.getCacheDir().getAbsolutePath();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getWebContents()
                             .getRenderWidgetHostView()
@@ -393,7 +393,7 @@ public class ViewTransitionPixelTest {
     private void waitForFramePresented() throws Throwable {
         final CallbackHelper ch = new CallbackHelper();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getWebContents()
                             .getMainFrame()
@@ -406,7 +406,7 @@ public class ViewTransitionPixelTest {
         // to wait until the Viz process has received the new CompositorFrame so that the new frame
         // is available to a CopySurfaceRequest. Waiting for a second frame to be submitted
         // guarantees this since it cannot be sent until the first frame was ACKed by Viz.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getWebContents()
                             .getMainFrame()

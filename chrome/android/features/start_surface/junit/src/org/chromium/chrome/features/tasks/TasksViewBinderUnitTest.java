@@ -46,6 +46,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -61,7 +62,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -127,7 +127,7 @@ public class TasksViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetFakeboxVisibilityClickListenerAndTextWatcher() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true));
         assertTrue(isViewVisible(R.id.search_box));
 
@@ -143,7 +143,7 @@ public class TasksViewBinderUnitTest {
         mViewClicked.set(false);
         mTasksView.findViewById(R.id.search_box_text).performClick();
         assertFalse(mViewClicked.get());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTasksViewPropertyModel.set(
                             FAKE_SEARCH_BOX_CLICK_LISTENER, mViewOnClickListener);
@@ -156,13 +156,13 @@ public class TasksViewBinderUnitTest {
         searchBoxText.setText("test");
         searchBoxText.performClick();
         assertFalse(textChanged.get());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mTasksViewPropertyModel.set(FAKE_SEARCH_BOX_TEXT_WATCHER, textWatcher));
         searchBoxText.setText("test2");
         searchBoxText.performClick();
         assertTrue(textChanged.get());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, false));
         assertFalse(isViewVisible(R.id.search_box));
     }
@@ -170,7 +170,7 @@ public class TasksViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetVoiceSearchButtonVisibilityAndClickListener() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
                     mTasksViewPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, true);
@@ -180,7 +180,7 @@ public class TasksViewBinderUnitTest {
         mViewClicked.set(false);
         mTasksView.findViewById(R.id.voice_search_button).performClick();
         assertFalse(mViewClicked.get());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTasksViewPropertyModel.set(
                             VOICE_SEARCH_BUTTON_CLICK_LISTENER, mViewOnClickListener);
@@ -188,7 +188,7 @@ public class TasksViewBinderUnitTest {
         mTasksView.findViewById(R.id.voice_search_button).performClick();
         assertTrue(mViewClicked.get());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mTasksViewPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false));
         assertFalse(isViewVisible(R.id.voice_search_button));
     }
@@ -196,7 +196,7 @@ public class TasksViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetLensButtonVisibilityAndClickListener() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
                     mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, true);
@@ -206,14 +206,14 @@ public class TasksViewBinderUnitTest {
         mViewClicked.set(false);
         mTasksView.findViewById(R.id.lens_camera_button).performClick();
         assertFalse(mViewClicked.get());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTasksViewPropertyModel.set(LENS_BUTTON_CLICK_LISTENER, mViewOnClickListener);
                 });
         mTasksView.findViewById(R.id.lens_camera_button).performClick();
         assertTrue(mViewClicked.get());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, false));
         assertFalse(isViewVisible(R.id.lens_camera_button));
     }
@@ -245,14 +245,14 @@ public class TasksViewBinderUnitTest {
         when(mPrefService.getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)).thenReturn(false);
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTasksViewPropertyModel.set(
                             INCOGNITO_LEARN_MORE_CLICK_LISTENER, mViewOnClickListener);
                 });
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTasksViewPropertyModel.set(
                             INCOGNITO_COOKIE_CONTROLS_MANAGER, mCookieControlsManager);
@@ -270,14 +270,14 @@ public class TasksViewBinderUnitTest {
         when(mPrefService.getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)).thenReturn(true);
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTasksViewPropertyModel.set(
                             INCOGNITO_LEARN_MORE_CLICK_LISTENER, mViewOnClickListener);
                 });
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTasksViewPropertyModel.set(
                             INCOGNITO_COOKIE_CONTROLS_MANAGER, mCookieControlsManager);

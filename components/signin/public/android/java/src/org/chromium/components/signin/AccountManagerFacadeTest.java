@@ -18,11 +18,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -59,7 +59,7 @@ public class AccountManagerFacadeTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccountManagerFacadeProvider.setInstanceForTests(
                             new AccountManagerFacadeImpl(mDelegate));
@@ -75,7 +75,7 @@ public class AccountManagerFacadeTest {
     @SmallTest
     public void testIsCachePopulated() throws InterruptedException {
         // Cache shouldn't be populated until getAccountsSync is unblocked.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertFalse(
                             AccountManagerFacadeProvider.getInstance()
@@ -85,7 +85,7 @@ public class AccountManagerFacadeTest {
 
         mDelegate.unblockGetAccounts();
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccountManagerFacadeProvider.getInstance()
                             .getCoreAccountInfos()
@@ -96,7 +96,7 @@ public class AccountManagerFacadeTest {
                 });
         // Wait for cache population to finish.
         countDownLatch.await();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(
                             AccountManagerFacadeProvider.getInstance()
@@ -109,7 +109,7 @@ public class AccountManagerFacadeTest {
     @SmallTest
     public void testRunAfterCacheIsPopulated() throws InterruptedException {
         CountDownLatch firstCounter = new CountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Add callback. This should be done on the main thread.
                     AccountManagerFacadeProvider.getInstance()
@@ -129,7 +129,7 @@ public class AccountManagerFacadeTest {
         firstCounter.await();
 
         CountDownLatch secondCounter = new CountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccountManagerFacadeProvider.getInstance()
                             .getCoreAccountInfos()

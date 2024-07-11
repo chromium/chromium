@@ -57,6 +57,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -73,7 +74,6 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -243,7 +243,7 @@ public class PasswordSettingsExportTest {
         ReauthenticationManager.resetLastReauth();
 
         // Now call onResume to nudge Chrome into continuing the export flow.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     settingsActivity.getMainFragment().onResume();
                 });
@@ -372,7 +372,7 @@ public class PasswordSettingsExportTest {
                 .perform(click());
         // The reauthentication dialog is skipped and the last reauthentication timestamp is not
         // reset. This looks like a failed reauthentication to PasswordSettings' onResume.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     settingsActivity.getMainFragment().onResume();
                 });
@@ -587,7 +587,7 @@ public class PasswordSettingsExportTest {
 
         // Call onResume to simulate that the user put Chrome into background by opening "recent
         // apps" and then restored Chrome by choosing it from the list.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     settingsActivity.getMainFragment().onResume();
                 });
@@ -684,7 +684,7 @@ public class PasswordSettingsExportTest {
 
         // Call onResume to simulate that the user put Chrome into background by opening "recent
         // apps" and then restored Chrome by choosing it from the list.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     settingsActivity.getMainFragment().onResume();
                 });
@@ -737,7 +737,7 @@ public class PasswordSettingsExportTest {
 
         // Call onResume to simulate that the user put Chrome into background by opening "recent
         // apps" and then restored Chrome by choosing it from the list.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     settingsActivity.getMainFragment().onResume();
                 });
@@ -1160,7 +1160,7 @@ public class PasswordSettingsExportTest {
                 mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
 
         PasswordSettings fragment = mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ExportFlow exportFlow = fragment.getExportFlowForTesting();
                     exportFlow.startExporting();
@@ -1196,7 +1196,7 @@ public class PasswordSettingsExportTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Disable the timer for progress bar.
                     PasswordSettings fragment = mSettingsActivityTestRule.getFragment();
@@ -1228,7 +1228,7 @@ public class PasswordSettingsExportTest {
 
     /** Requests showing an arbitrary password export error. */
     private void requestShowingExportError() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 mTestHelper.getHandler().getExportErrorCallback().bind("Arbitrary error"));
     }
 
@@ -1239,7 +1239,7 @@ public class PasswordSettingsExportTest {
      * @param positiveButtonLabelId controls which label the positive button ends up having.
      */
     private void requestShowingExportErrorWithButton(int positiveButtonLabelId) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PasswordSettings fragment = mSettingsActivityTestRule.getFragment();
                     // To show an error, the error type for UMA needs to be specified. Because it is
@@ -1259,7 +1259,7 @@ public class PasswordSettingsExportTest {
      * has passed. This results in the progress bar getting hidden as soon as requested.
      */
     private void allowProgressBarToBeHidden() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestHelper.getManualDelayer().runCallbacksSynchronously();
                 });

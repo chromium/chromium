@@ -23,8 +23,8 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
@@ -178,14 +178,14 @@ public class GeolocationTest extends AwParameterizedTest {
                 "https://google.com/",
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAwContents.evaluateJavaScriptForTests(
                                 "initiate_getCurrentPosition();", null));
 
         AwActivityTestRule.pollInstrumentationThread(() -> getPositionCountFromJS() == 1);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAwContents.evaluateJavaScriptForTests(
                                 "initiate_getCurrentPosition();", null));
@@ -207,7 +207,7 @@ public class GeolocationTest extends AwParameterizedTest {
                 "https://google.com/",
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.evaluateJavaScriptForTests("initiate_watchPosition();", null));
 
         AwActivityTestRule.pollInstrumentationThread(() -> getPositionCountFromJS() > 1);
@@ -228,7 +228,7 @@ public class GeolocationTest extends AwParameterizedTest {
                 "https://google.com/",
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.evaluateJavaScriptForTests("initiate_watchPosition();", null));
 
         AwActivityTestRule.pollInstrumentationThread(() -> getPositionCountFromJS() > 1);
@@ -271,7 +271,7 @@ public class GeolocationTest extends AwParameterizedTest {
                 "https://google.com/",
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.evaluateJavaScriptForTests("initiate_watchPosition();", null));
 
         Assert.assertEquals(0, getPositionCountFromJS());
@@ -320,7 +320,7 @@ public class GeolocationTest extends AwParameterizedTest {
                 "https://google.com/",
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAwContents.evaluateJavaScriptForTests(
                                 "initiate_getCurrentPosition();", null));
@@ -350,7 +350,7 @@ public class GeolocationTest extends AwParameterizedTest {
                 "http://google.com/",
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAwContents.evaluateJavaScriptForTests(
                                 "initiate_getCurrentPosition();", null));
@@ -379,7 +379,7 @@ public class GeolocationTest extends AwParameterizedTest {
                 "http://google.com/",
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAwContents.evaluateJavaScriptForTests(
                                 "initiate_getCurrentPosition();", null));

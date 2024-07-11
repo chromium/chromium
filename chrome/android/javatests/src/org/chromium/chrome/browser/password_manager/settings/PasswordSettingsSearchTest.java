@@ -64,6 +64,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -79,7 +80,6 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Date;
@@ -127,7 +127,7 @@ public class PasswordSettingsSearchTest {
         PasswordSettings f = mSettingsActivityTestRule.getFragment();
 
         // Force the search option into the action bar.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     f.getMenuForTesting()
                             .findItem(R.id.menu_id_search)
@@ -149,7 +149,7 @@ public class PasswordSettingsSearchTest {
         PasswordSettings f = mSettingsActivityTestRule.getFragment();
 
         // Force the search option into the overflow menu.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     f.getMenuForTesting()
                             .findItem(R.id.menu_id_search)
@@ -311,7 +311,7 @@ public class PasswordSettingsSearchTest {
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
         final PasswordSettings prefs = mSettingsActivityTestRule.getFragment();
         final AtomicReference<Boolean> menuInitiallyVisible = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         menuInitiallyVisible.set(
                                 prefs.getToolbarForTesting().isOverflowMenuShowing()));
@@ -398,7 +398,7 @@ public class PasswordSettingsSearchTest {
         final PasswordSettings f = mSettingsActivityTestRule.getFragment();
         onView(withId(R.id.search_button)).check(matches(isDisplayed()));
         final AtomicReference<ColorFilter> passwordSearchFilter = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Drawable drawable =
                             f.getMenuForTesting().findItem(R.id.menu_id_search).getIcon();
@@ -430,7 +430,7 @@ public class PasswordSettingsSearchTest {
 
         // Close the activity and check that the icon in the password preferences has not changed.
         mHistoryActivityTestRule.getActivity().finish();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ColorFilter colorFilter =
                             DrawableCompat.getColorFilter(

@@ -31,13 +31,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -69,7 +69,7 @@ public class TabGroupRowViewRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        TestThreadUtils.runOnUiThreadBlocking(this::setUpOnUi);
+        ThreadUtils.runOnUiThreadBlocking(this::setUpOnUi);
     }
 
     private void setUpOnUi() {
@@ -92,7 +92,7 @@ public class TabGroupRowViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderWithVeryLongTitle() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
                     builder.with(
@@ -115,7 +115,7 @@ public class TabGroupRowViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderWithVariousFaviconCounts() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
                     builder.with(
@@ -137,7 +137,7 @@ public class TabGroupRowViewRenderTest {
                 });
         mRenderTestRule.render(mTabGroupRowView, "five");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPropertyModel.set(
                             ASYNC_FAVICON_BOTTOM_RIGHT,
@@ -146,16 +146,15 @@ public class TabGroupRowViewRenderTest {
                 });
         mRenderTestRule.render(mTabGroupRowView, "four");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mPropertyModel.set(ASYNC_FAVICON_BOTTOM_RIGHT, null));
         mRenderTestRule.render(mTabGroupRowView, "three");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mPropertyModel.set(ASYNC_FAVICON_BOTTOM_LEFT, null));
         mRenderTestRule.render(mTabGroupRowView, "two");
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mPropertyModel.set(ASYNC_FAVICON_TOP_RIGHT, null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mPropertyModel.set(ASYNC_FAVICON_TOP_RIGHT, null));
         mRenderTestRule.render(mTabGroupRowView, "one");
     }
 }

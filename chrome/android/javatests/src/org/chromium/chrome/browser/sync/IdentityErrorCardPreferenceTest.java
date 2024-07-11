@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -42,7 +43,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 /** Test suite for IdentityErrorCardPreference */
@@ -88,7 +88,7 @@ public class IdentityErrorCardPreferenceTest {
 
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mFakeSyncServiceImpl = new FakeSyncServiceImpl();
                     SyncServiceFactory.setInstanceForTesting(mFakeSyncServiceImpl);
@@ -263,7 +263,7 @@ public class IdentityErrorCardPreferenceTest {
     private View getIdentityErrorCardView() {
         ViewUtils.waitForVisibleView(withId(R.id.identity_error_card));
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return mSettingsActivityTestRule
                                     .getActivity()

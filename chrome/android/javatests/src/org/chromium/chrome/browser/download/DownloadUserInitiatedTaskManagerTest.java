@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -25,7 +26,6 @@ import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFacto
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test for {@link DownloadUserInitiatedTaskManager}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -67,7 +67,7 @@ public final class DownloadUserInitiatedTaskManagerTest {
     public void setUp() {
         // MockitoAnnotations.initMocks(this);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContext = new AdvancedMockContext(ApplicationProvider.getApplicationContext());
                     mDownloadUITaskManager = new MockDownloadUserInitiatedTaskManager();

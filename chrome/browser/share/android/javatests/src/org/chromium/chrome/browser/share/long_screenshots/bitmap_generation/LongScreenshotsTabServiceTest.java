@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -24,7 +25,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for the Paint Preview Tab Manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -72,7 +72,7 @@ public class LongScreenshotsTabServiceTest {
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mProcessor = new TestCaptureProcessor();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLongScreenshotsTabService =
                             LongScreenshotsTabServiceFactory.getServiceInstance();
@@ -85,7 +85,7 @@ public class LongScreenshotsTabServiceTest {
     @MediumTest
     @Feature({"LongScreenshots"})
     public void testCapturedFilesystem() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLongScreenshotsTabService.captureTab(
                             mTab, new Rect(0, 0, 100, 100), /* inMemory= */ false);
@@ -111,7 +111,7 @@ public class LongScreenshotsTabServiceTest {
     @MediumTest
     @Feature({"LongScreenshots"})
     public void testCapturedMemory() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLongScreenshotsTabService.captureTab(
                             mTab, new Rect(0, 0, 100, 100), /* inMemory= */ true);

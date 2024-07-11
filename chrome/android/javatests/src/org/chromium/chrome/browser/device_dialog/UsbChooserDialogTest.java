@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -36,7 +37,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -88,7 +88,7 @@ public class UsbChooserDialogTest {
     }
 
     private UsbChooserDialog createDialog() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     UsbChooserDialog dialog =
                             new UsbChooserDialog(
@@ -170,7 +170,7 @@ public class UsbChooserDialogTest {
         final Button button = (Button) dialog.findViewById(R.id.positive);
         final int position = 1;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mChooserDialog.addDevice("device_id_0", "device_name_0");
                     mChooserDialog.addDevice("device_id_1", "device_name_1");
@@ -213,7 +213,7 @@ public class UsbChooserDialogTest {
 
         UsbChooserDialog dialog;
         dialog =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return UsbChooserDialog.create(
                                     mockWindowAndroid,

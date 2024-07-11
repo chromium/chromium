@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -18,7 +19,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test suite for MIDI permissions requests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -42,8 +42,8 @@ public class MIDITest {
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter("pass", mPermissionRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
         mPermissionRule.runAllowTest(updateWaiter, TEST_FILE, "", 0, false, true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 }

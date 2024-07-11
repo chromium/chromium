@@ -12,12 +12,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Map;
 
@@ -54,7 +54,7 @@ public class AndroidLanguageMetricsBridgeTest {
     @Test
     @SmallTest
     public void testReportingAppOverrideLangauge() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (Map.Entry<String, Integer> entry : NAME_HASHES.entrySet()) {
                         int initialCount =

@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -49,7 +50,6 @@ import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
@@ -95,7 +95,7 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
 
         mAppModalPresenter = new AppModalPresenter(getActivity());
         mModalDialogManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return new ModalDialogManager(
                                     mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
@@ -105,7 +105,7 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
         FeatureList.setTestFeatures(features);
 
         setDownloadPromptStatus(DownloadPromptStatus.SHOW_INITIAL);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Create fake directory options.
                     ArrayList<DirectoryOption> dirs = new ArrayList<>();
@@ -144,7 +144,7 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
             @DownloadLocationDialogType int dialogType,
             String suggestedPath,
             Profile profile) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialogCoordinator.showDialog(
                             getActivity(),

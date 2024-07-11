@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -67,7 +67,7 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(R.layout.incognito_reauth_view);
                     mView = getActivity().findViewById(android.R.id.content);
@@ -143,7 +143,7 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
     }
 
     private void buildPropertyModelAndBindProcessor(boolean isFullScreen) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPropertyModel =
                             IncognitoReauthProperties.createPropertyModel(

@@ -24,6 +24,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -31,7 +32,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.components.policy.PolicySwitches;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Unit test for {@link FirstRunAppRestrictionInfo}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -84,7 +84,7 @@ public class FirstRunAppRestrictionInfoTest {
         final PayloadCallbackHelper<Boolean> appResCallbackHelper = new PayloadCallbackHelper<>();
         final CallbackHelper completionCallbackHelper = new CallbackHelper();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FirstRunAppRestrictionInfo info =
                             FirstRunAppRestrictionInfo.takeMaybeInitialized();
@@ -110,7 +110,7 @@ public class FirstRunAppRestrictionInfoTest {
         final CallbackHelper completionCallbackHelper3 = new CallbackHelper();
 
         mPauseDuringPostTask = true;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FirstRunAppRestrictionInfo info =
                             FirstRunAppRestrictionInfo.takeMaybeInitialized();
@@ -152,7 +152,7 @@ public class FirstRunAppRestrictionInfoTest {
 
         mPauseDuringPostTask = false;
         // Initialized the AppRestrictionInfo and wait until initialized.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mPendingPostTask.run());
+        ThreadUtils.runOnUiThreadBlocking(() -> mPendingPostTask.run());
 
         Assert.assertTrue(appResCallbackHelper1.getOnlyPayloadBlocking());
         Assert.assertTrue(appResCallbackHelper2.getOnlyPayloadBlocking());
@@ -169,7 +169,7 @@ public class FirstRunAppRestrictionInfoTest {
         final CallbackHelper completionCallbackHelper = new CallbackHelper();
         mPauseDuringPostTask = true;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FirstRunAppRestrictionInfo info =
                             FirstRunAppRestrictionInfo.takeMaybeInitialized();
@@ -196,7 +196,7 @@ public class FirstRunAppRestrictionInfoTest {
     @CommandLineFlags.Add({PolicySwitches.CHROME_POLICY})
     public void testCommandLine() {
         final PayloadCallbackHelper<Boolean> appResCallbackHelper = new PayloadCallbackHelper<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FirstRunAppRestrictionInfo.takeMaybeInitialized()
                                 .getHasAppRestriction(appResCallbackHelper::notifyCalled));

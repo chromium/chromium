@@ -47,6 +47,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -59,7 +60,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -98,7 +98,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Before
     public void setUp() throws Exception {
         mBindingToken = 5;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout parentView = new FrameLayout(getActivity());
                     getActivity().setContentView(parentView);
@@ -292,13 +292,13 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
 
         // Setup basic dialog animation and a fake scrim view click runnable. These are always
         // initialized before the visibility of dialog is set.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGridDialogView.setupDialogAnimation(null);
                     mTabGridDialogView.setScrimClickRunnable(() -> {});
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true));
 
         if (areAnimatorsEnabled()) {
@@ -311,7 +311,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                                 mTabGridDialogView.getCurrentDialogAnimatorForTesting(),
                                 Matchers.nullValue()));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false));
 
         if (areAnimatorsEnabled()) {
@@ -548,7 +548,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetInitialScrollIndex_Linear() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLinearLayoutManager = spy(new LinearLayoutManager(getActivity()));
                     mContentView.setLayoutManager(mLinearLayoutManager);
@@ -614,6 +614,6 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
     }
 }

@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -23,7 +24,6 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.Arrays;
@@ -84,7 +84,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         CallbackHelper dataClearedExcludingDomainHelper = new CallbackHelper();
         // Clear cookies and site data excluding the registrable domain "google.com".
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingDataExcludingDomains(
@@ -110,7 +110,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         CallbackHelper dataClearedNoUrlFilterHelper = new CallbackHelper();
         // Clear cookies and site data with no url filter.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingData(
@@ -145,7 +145,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         Assert.assertTrue(mStore.getRelationships().contains(relationship));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingData(
@@ -169,7 +169,7 @@ public class BrowsingDataRemoverIntegrationTest {
         mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ false);
         mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingData(

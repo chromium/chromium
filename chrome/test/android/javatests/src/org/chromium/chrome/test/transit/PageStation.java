@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
@@ -361,7 +360,7 @@ public class PageStation extends Station {
         @Override
         public void onStartMonitoring() {
             super.onStartMonitoring();
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTabModel =
                                 mActivitySupplier
@@ -374,7 +373,7 @@ public class PageStation extends Station {
 
         @Override
         public void onStopMonitoring() {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTabModel.removeObserver(this);
                     });
@@ -407,7 +406,7 @@ public class PageStation extends Station {
         @Override
         public void onStartMonitoring() {
             super.onStartMonitoring();
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTabModel =
                                 mActivitySupplier
@@ -421,7 +420,7 @@ public class PageStation extends Station {
         @Override
         public void onStopMonitoring() {
             super.onStopMonitoring();
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTabModel.removeObserver(this);
                     });

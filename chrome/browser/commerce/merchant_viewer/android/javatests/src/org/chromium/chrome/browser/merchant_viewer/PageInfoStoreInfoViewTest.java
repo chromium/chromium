@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -55,7 +56,6 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfoCallback;
 import org.chromium.components.page_info.PageInfoController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -102,7 +102,7 @@ public class PageInfoStoreInfoViewTest {
     private void openPageInfoFromStoreIcon(boolean fromStoreIcon, boolean dialogCheck) {
         ChromeActivity activity = sActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new ChromePageInfo(
                                     activity.getModalDialogManagerSupplier(),

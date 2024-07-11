@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -57,7 +58,6 @@ import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.net.URL;
@@ -116,7 +116,7 @@ public class NotificationPlatformBridgeTest {
 
     private double getEngagementScoreBlocking() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     new Callable<Double>() {
                         @Override
                         public Double call() {
@@ -149,7 +149,7 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "denied: ", mNotificationTestRule.getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
                 });
@@ -194,7 +194,7 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "granted: ", mNotificationTestRule.getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
                 });
@@ -496,7 +496,7 @@ public class NotificationPlatformBridgeTest {
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
 
         // Disable notification vibration in preferences.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setBoolean(NOTIFICATIONS_VIBRATE_ENABLED, false));
@@ -553,7 +553,7 @@ public class NotificationPlatformBridgeTest {
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
 
         // By default, vibration is enabled in notifications.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertTrue(
                                 UserPrefs.get(ProfileManager.getLastUsedRegularProfile())

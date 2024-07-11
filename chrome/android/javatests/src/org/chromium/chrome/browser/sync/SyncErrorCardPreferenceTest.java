@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -46,7 +47,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -104,7 +104,7 @@ public class SyncErrorCardPreferenceTest {
         // SyncService.
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mFakeSyncServiceImpl = new FakeSyncServiceImpl();
                     SyncServiceFactory.setInstanceForTesting(mFakeSyncServiceImpl);
@@ -119,7 +119,7 @@ public class SyncErrorCardPreferenceTest {
     private void assertSyncError(@SyncSettingsUtils.SyncError int expectedSyncError) {
         @SyncSettingsUtils.SyncError
         int currentSyncError =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 SyncSettingsUtils.getSyncError(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -355,7 +355,7 @@ public class SyncErrorCardPreferenceTest {
         // Ensure that AccountInfoServiceProvider populated ProfileDataCache before checking the
         // view.
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccountInfoServiceProvider.getPromise()
                             .then(
@@ -371,7 +371,7 @@ public class SyncErrorCardPreferenceTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.signin_promo_view_wrapper));
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return mSettingsActivityTestRule
                                     .getActivity()

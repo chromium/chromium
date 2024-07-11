@@ -23,6 +23,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.COMPROMISED_CREDENTIAL;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.CREDENTIAL_HANDLER;
@@ -49,7 +50,6 @@ import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.E
 import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.IDLE;
 import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.RUNNING;
 import static org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.VALID_REAUTHENTICATION_TIME_INTERVAL_MILLIS;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.content.ClipboardManager;
 import android.content.Context;

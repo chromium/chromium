@@ -9,11 +9,11 @@ import android.view.View;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.components.infobars.InfoBar;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class InfoBarUtil {
         final View button = infoBar.getView().findViewById(buttonId);
         if (button == null) return false;
         if (click) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         button.performClick();
                     });

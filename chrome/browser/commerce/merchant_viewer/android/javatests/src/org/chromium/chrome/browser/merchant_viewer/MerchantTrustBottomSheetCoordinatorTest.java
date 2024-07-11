@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
@@ -40,7 +41,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.thinwebview.ThinWebView;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -84,7 +84,7 @@ public class MerchantTrustBottomSheetCoordinatorTest extends BlankUiTestActivity
     @Before
     public void setUp() {
         mActivity = getActivity();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWindowAndroid = new WindowAndroid(mActivity);
                     mDetailsTabCoordinator =
@@ -104,7 +104,7 @@ public class MerchantTrustBottomSheetCoordinatorTest extends BlankUiTestActivity
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDetailsTabCoordinator.destroySheet();
                     mWindowAndroid.destroy();
@@ -112,7 +112,7 @@ public class MerchantTrustBottomSheetCoordinatorTest extends BlankUiTestActivity
     }
 
     private void requestOpenSheetAndVerify() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDetailsTabCoordinator.requestOpenSheet(
                             mMockGurl, DUMMY_SHEET_TITLE, mMockOnBottomSheetDismissed);
@@ -140,7 +140,7 @@ public class MerchantTrustBottomSheetCoordinatorTest extends BlankUiTestActivity
     @SmallTest
     public void testBottomSheetObserverOnSheetContentChanged() {
         mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.BACK_PRESS);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetObserverCaptor.getValue().onSheetContentChanged(null);
                 });

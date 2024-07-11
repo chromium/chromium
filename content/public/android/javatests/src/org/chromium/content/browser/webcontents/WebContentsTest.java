@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -28,7 +29,6 @@ import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell.Shell;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
@@ -386,7 +386,7 @@ public class WebContentsTest {
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         final WebContentsImpl webContents = ((WebContentsImpl) activity.getActiveWebContents());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
                     Assert.assertEquals(3, frames.size());
@@ -421,7 +421,7 @@ public class WebContentsTest {
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         final WebContents webContents = activity.getActiveWebContents();
         // Make sure visibility do not affect bindings.
-        TestThreadUtils.runOnUiThreadBlocking(() -> webContents.onHide());
+        ThreadUtils.runOnUiThreadBlocking(() -> webContents.onHide());
 
         final ChildProcessConnection connection = getSandboxedChildProcessConnection();
         // Need to poll here because there is an intentional delay for removing binding.
@@ -432,7 +432,7 @@ public class WebContentsTest {
                 },
                 "Failed to remove moderate binding");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> webContents.setImportance(ChildProcessImportance.MODERATE));
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
                 () -> Assert.assertTrue(connection.isVisibleBindingBound()));
@@ -454,20 +454,20 @@ public class WebContentsTest {
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
                 () -> Assert.assertTrue(connection.isStrongBindingBound()));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> webContents.onHide());
+        ThreadUtils.runOnUiThreadBlocking(() -> webContents.onHide());
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                                 () -> !connection.isStrongBindingBound()),
                 "Failed to remove strong binding");
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> webContents.onShow());
+        ThreadUtils.runOnUiThreadBlocking(() -> webContents.onShow());
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
                 () -> Assert.assertTrue(connection.isStrongBindingBound()));
     }
 
     private boolean isWebContentsDestroyed(final WebContents webContents) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 new Callable<Boolean>() {
                     @Override
                     public Boolean call() {

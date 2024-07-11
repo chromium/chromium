@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -36,7 +37,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Unit tests for IntentHandler. These tests require use of the native library. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -183,7 +183,7 @@ public class IntentHandlerNativeTest {
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
         connection.newSession(token);
         connection.overridePackageNameForSessionForTesting(token, "app1");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(
                                 "app1",
@@ -193,7 +193,7 @@ public class IntentHandlerNativeTest {
         String extraHeaders = IntentHandler.getExtraHeadersFromIntent(headersIntent);
         assertTrue(extraHeaders.contains("bearer-token: Some token"));
         assertTrue(extraHeaders.contains("redirect-url: https://www.google.com"));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeOriginVerifier.clearCachedVerificationsForTesting());
     }
 
@@ -217,7 +217,7 @@ public class IntentHandlerNativeTest {
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
         connection.newSession(token);
         connection.overridePackageNameForSessionForTesting(token, "app1");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(
                                 "app2",
@@ -226,7 +226,7 @@ public class IntentHandlerNativeTest {
 
         String extraHeaders = IntentHandler.getExtraHeadersFromIntent(headersIntent);
         assertNull(extraHeaders);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeOriginVerifier.clearCachedVerificationsForTesting());
     }
 

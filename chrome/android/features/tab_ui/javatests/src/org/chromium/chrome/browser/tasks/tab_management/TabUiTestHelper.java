@@ -58,6 +58,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -82,7 +83,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.io.File;
@@ -112,13 +112,14 @@ public class TabUiTestHelper {
     /**
      * Open additional tabs for the provided activity. The added tabs will be opened to
      * "about:blank" and will not wait for the page to finish loading.
+     *
      * @param cta The activity to add the tabs to.
      * @param incognito Whether the tabs should be incognito.
      * @param count The number of tabs to create.
      */
     public static void addBlankTabs(ChromeTabbedActivity cta, boolean incognito, int count) {
         for (int i = 0; i < count; i++) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         cta.getTabCreator(incognito)
                                 .createNewTab(
@@ -138,7 +139,7 @@ public class TabUiTestHelper {
     public static void enterTabSwitcher(ChromeTabbedActivity cta) {
         assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         // TODO(crbug.com/40155797): Replace this with clicking tab switcher button via espresso.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.findViewById(R.id.tab_switcher_button).performClick();
                 });
@@ -164,7 +165,7 @@ public class TabUiTestHelper {
                         finishedHidingCallbackHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     layoutManager.addObserver(observer);
                     cta.onBackPressed();
@@ -175,7 +176,7 @@ public class TabUiTestHelper {
         } catch (TimeoutException e) {
             fail("LayoutType.TAB_SWITCHER never finished hiding.");
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     layoutManager.removeObserver(observer);
                 });
@@ -489,7 +490,7 @@ public class TabUiTestHelper {
         for (int i = 1; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
             assertEquals(isIncognito, tab.isIncognito());
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> filter.mergeTabsToGroup(tab.getId(), rootTab.getId()));
         }
     }
@@ -592,7 +593,7 @@ public class TabUiTestHelper {
             int currentTabIndex = currentTabModel.index();
 
             boolean fixPendingReadbacks =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlockingNoException(
                             () -> {
                                 return cta.getTabContentManager().getInFlightCapturesForTesting()
                                         != 0;
@@ -601,7 +602,7 @@ public class TabUiTestHelper {
             // When there are pending readbacks due to detached Tabs, try to fix it by switching
             // back to that tab.
             if (fixPendingReadbacks && previousTabIndex != TabModel.INVALID_TAB_INDEX) {
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 previousTabModel.setIndex(
                                         previousTabIndex, TabSelectionType.FROM_USER));
@@ -610,7 +611,7 @@ public class TabUiTestHelper {
             checkThumbnailsExist(previousTab);
 
             if (fixPendingReadbacks) {
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 currentTabModel.setIndex(
                                         currentTabIndex, TabSelectionType.FROM_USER));
@@ -881,7 +882,7 @@ public class TabUiTestHelper {
         final LayoutManagerChrome layoutManager = cta.getLayoutManager();
         Layout layout = layoutManager.getHubLayoutForTesting();
         if (layout == null) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         layoutManager.initHubLayoutForTesting();
                     });

@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -29,7 +30,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.metrics.MetricsSwitches;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Android UKM tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -58,7 +58,7 @@ public class UkmTest {
         ChromeTabUtils.closeAllTabs(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
@@ -67,7 +67,7 @@ public class UkmTest {
                 });
 
         long originalClientId =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                                 () -> {
                                     return UkmUtilsForTest.getClientId();
                                 })
@@ -77,7 +77,7 @@ public class UkmTest {
         // Record some placeholder UKM data (adding a Source).
         final long sourceId = 0x54321;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Write data under a placeholder sourceId and verify it is there.
                     UkmUtilsForTest.recordSourceWithId(sourceId);
@@ -86,7 +86,7 @@ public class UkmTest {
         CallbackHelper callbackHelper = new CallbackHelper();
 
         // Clear all browsing history.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
@@ -101,7 +101,7 @@ public class UkmTest {
                 });
         callbackHelper.waitForCallback(0);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Verify that UKM is still running.
                     Assert.assertTrue(UkmUtilsForTest.isEnabled());

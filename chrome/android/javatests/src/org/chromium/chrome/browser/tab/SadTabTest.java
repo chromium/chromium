@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -29,7 +30,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.ExecutionException;
@@ -53,7 +53,7 @@ public class SadTabTest {
     private static boolean isShowingSadTab(Tab tab) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(tab));
+            return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(tab));
         } catch (ExecutionException e) {
             return false;
         }
@@ -61,7 +61,7 @@ public class SadTabTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab = sActivityTestRule.getActivity().getActivityTab();
                     tab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER);
@@ -186,7 +186,7 @@ public class SadTabTest {
     @Feature({"SadTab"})
     @DisabledTest(message = "https://crbug.com/1447840")
     public void testSadTabBrowserControlsVisibility() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);
         FullscreenManagerTestUtils.disableBrowserOverrides();
         sActivityTestRule.loadUrl(LONG_HTML_TEST_PAGE);
@@ -199,7 +199,7 @@ public class SadTabTest {
 
     /** Helper method that kills the renderer on a UI thread. */
     private static void simulateRendererKilled(final Tab tab, final boolean visible) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (!visible) tab.hide(TabHidingType.CHANGED_TABS);
                     ChromeTabUtils.simulateRendererKilledForTesting(tab);
@@ -208,7 +208,7 @@ public class SadTabTest {
 
     /** Helper method that reloads a tab with a SadTabView currently displayed. */
     private static void reloadSadTab(final Tab tab) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SadTab sadTab = SadTab.from(tab);
                     sadTab.removeIfPresent();
@@ -218,8 +218,7 @@ public class SadTabTest {
 
     private static boolean showSendFeedbackView(final Tab tab) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> SadTab.from(tab).showSendFeedbackView());
+            return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.from(tab).showSendFeedbackView());
         } catch (ExecutionException e) {
             return false; // Make tests fail when an exception is thrown.
         }
@@ -234,7 +233,7 @@ public class SadTabTest {
     private static Button getSadTabButton(Tab tab) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> tab.getView().findViewById(R.id.sad_tab_button));
         } catch (ExecutionException e) {
             return null;

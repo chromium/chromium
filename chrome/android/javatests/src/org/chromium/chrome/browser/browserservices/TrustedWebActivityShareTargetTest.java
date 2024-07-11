@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -34,7 +35,6 @@ import org.chromium.chrome.browser.webapps.WebApkPostShareTargetNavigatorJni;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
 import java.util.Collections;
@@ -171,7 +171,7 @@ public class TrustedWebActivityShareTargetTest {
     private void deliverNewIntent(Intent intent) {
         // Delivering intents to existing CustomTabActivity in tests is error-prone and out of scope
         // of these tests. Thus calling onNewIntent directly.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mCustomTabActivityTestRule.getActivity().onNewIntent(intent));
     }
 

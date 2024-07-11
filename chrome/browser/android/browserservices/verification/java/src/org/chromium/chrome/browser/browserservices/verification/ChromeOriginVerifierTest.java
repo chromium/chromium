@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -27,7 +28,6 @@ import org.chromium.components.content_relationship_verification.OriginVerifier.
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,18 +142,18 @@ public class ChromeOriginVerifierTest {
                 mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertTrue(mLastVerified);
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 ChromeOriginVerifier.wasPreviouslyVerified(
                                         PACKAGE_NAME,
                                         mHttpsOrigin,
                                         CustomTabsService.RELATION_USE_AS_ORIGIN)));
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mUseAsOriginVerifier.wasPreviouslyVerified(mHttpsOrigin)));
 
         Assert.assertFalse(
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 ChromeOriginVerifier.wasPreviouslyVerified(
                                         PACKAGE_NAME,

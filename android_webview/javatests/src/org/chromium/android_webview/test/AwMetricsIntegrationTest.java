@@ -31,6 +31,7 @@ import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
@@ -48,7 +49,6 @@ import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.ChromeComponent;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -96,7 +96,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         // to be granted.
         mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Explicitly send the data to PlatformServiceBridge and avoid sending the data
                     // via MetricsUploadService to avoid unexpected failures due to service
@@ -549,7 +549,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         final CallbackHelper helper = new CallbackHelper();
         int finalMetricsCollectedCount = helper.getCallCount();
         // Load a page and wait for final metrics collection.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwMetricsServiceClient.setOnFinalMetricsCollectedListenerForTesting(
                             () -> {
@@ -616,7 +616,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                 "There should be at least one sample in a non-zero bucket",
                 zeroBucketSamples,
                 totalSamples);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());

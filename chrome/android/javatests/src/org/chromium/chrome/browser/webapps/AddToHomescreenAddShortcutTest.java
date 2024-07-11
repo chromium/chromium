@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -52,7 +53,6 @@ import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppType;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.WindowAndroid;
@@ -450,7 +450,7 @@ public class AddToHomescreenAddShortcutTest {
     private void addShortcutToTab(
             Tab tab, String title, boolean expectAdded, @AppType int expectedDialogType) {
         // Add the shortcut.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean started =
                             new TestAddToHomescreenCoordinator(
@@ -480,7 +480,7 @@ public class AddToHomescreenAddShortcutTest {
 
     /** Spawns popup via window.open() at {@link url}. */
     private Tab spawnPopupInBackground(final String url) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTab.getWebContents()
                             .evaluateJavaScriptForTests(

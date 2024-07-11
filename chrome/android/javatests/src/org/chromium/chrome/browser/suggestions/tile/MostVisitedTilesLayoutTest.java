@@ -71,7 +71,6 @@ import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -198,7 +197,7 @@ public class MostVisitedTilesLayoutTest {
                     "This test is flaky not only on the Nougat emulator but also on Ubuntu-22.04"
                             + " when building android-x86-rel., see crbug.com/1450693")
     public void testModernTilesLayoutAppearance_Two() throws IOException, InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
                                 /* nightModeEnabled= */ false));
@@ -303,7 +302,7 @@ public class MostVisitedTilesLayoutTest {
 
         ViewGroup contentView = new FrameLayout(activity);
 
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     setOfflinePageBridge(offlineUrls);
                     activity.setContentView(contentView);

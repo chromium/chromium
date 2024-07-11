@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
@@ -33,7 +34,6 @@ import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.protocol.BookmarkSpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class BookmarksTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel =
                             BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
@@ -401,7 +401,7 @@ public class BookmarksTest {
 
     private BookmarkId addClientBookmark(final String title, final GURL url) {
         BookmarkId id =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             BookmarkId parentId = mBookmarkModel.getMobileFolderId();
                             return mBookmarkModel.addBookmark(parentId, 0, title, url);
@@ -412,7 +412,7 @@ public class BookmarksTest {
 
     private BookmarkId addClientBookmarkFolder(final String title) {
         BookmarkId id =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             BookmarkId parentId = mBookmarkModel.getMobileFolderId();
                             return mBookmarkModel.addFolder(parentId, 0, title);
@@ -422,7 +422,7 @@ public class BookmarksTest {
     }
 
     private String getBookmarkBarGuid() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return mBookmarkModel.getBookmarkGuidByIdForTesting(
                             mBookmarkModel.getDesktopFolderId());
@@ -473,21 +473,21 @@ public class BookmarksTest {
     }
 
     private void deleteClientBookmark(final BookmarkId id) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel.deleteBookmark(id);
                 });
     }
 
     private void setClientBookmarkTitle(final BookmarkId id, final String title) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel.setBookmarkTitle(id, title);
                 });
     }
 
     private void moveClientBookmark(final BookmarkId id, final BookmarkId newParentId) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel.moveBookmark(id, newParentId, 0 /* new index */);
                 });

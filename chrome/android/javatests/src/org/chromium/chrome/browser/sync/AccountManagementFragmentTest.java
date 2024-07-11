@@ -46,6 +46,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -84,7 +85,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.SyncService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -199,7 +199,7 @@ public class AccountManagementFragmentTest {
                             .getProfileDataOrDefault(accountInfo.getEmail())
                             .hasDisplayableEmailAddress();
                 });
-        TestThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
+        ThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         onView(
@@ -228,7 +228,7 @@ public class AccountManagementFragmentTest {
                             .getProfileDataOrDefault(accountInfo.getEmail())
                             .hasDisplayableEmailAddress();
                 });
-        TestThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
+        ThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         onView(withText(accountInfo.getEmail())).check(doesNotExist());
@@ -311,7 +311,7 @@ public class AccountManagementFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.sign_out)).perform(click());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertFalse(
                                 "Account should be signed out!",
@@ -545,9 +545,8 @@ public class AccountManagementFragmentTest {
         // Simulate OnPassphraseAccepted from external event by setting the passphrase
         // and triggering syncStateChanged().
         // PassphraseDialogFragment should be dismissed.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> syncService.setDecryptionPassphrase("passphrase"));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(() -> syncService.setDecryptionPassphrase("passphrase"));
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     fragment.getFragmentManager().executePendingTransactions();
                     Assert.assertNull(
@@ -589,7 +588,7 @@ public class AccountManagementFragmentTest {
     }
 
     private FakeSyncServiceImpl overrideSyncService() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
                     SyncServiceFactory.setInstanceForTesting(fakeSyncService);

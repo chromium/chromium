@@ -20,6 +20,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.variations.StudyOuterClass.Study;
@@ -28,7 +29,6 @@ import org.chromium.components.variations.StudyOuterClass.Study.Experiment.Featu
 import org.chromium.components.variations.VariationsSeedOuterClass.VariationsSeed;
 import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -79,7 +79,7 @@ public class VariationsTest extends AwParameterizedTest {
         VariationsUtils.writeSeed(out, seedInfo);
 
         // Because our tests bypass WebView's glue layer, we need to load the seed manually.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     VariationsSeedLoader loader = new VariationsSeedLoader();
                     loader.startVariationsInit();
@@ -104,7 +104,7 @@ public class VariationsTest extends AwParameterizedTest {
             // The seed should be loaded during browser process startup.
             mActivityTestRule.startBrowserProcess();
 
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         Assert.assertTrue(
                                 "TEST_FEATURE_NAME should be enabled",

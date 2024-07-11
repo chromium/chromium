@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
@@ -38,7 +39,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestHelperService;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
@@ -233,7 +233,7 @@ public class ChildProcessLauncherHelperTest {
     }
 
     private static void warmUpOnUiThreadBlocking(final Context context, boolean sandboxed) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context, sandboxed);
                 });
@@ -413,7 +413,7 @@ public class ChildProcessLauncherHelperTest {
                 ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                         () -> connection.isStrongBindingBound()));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STOPPED));
         Assert.assertFalse(ApplicationStatus.hasVisibleActivities());
         Assert.assertFalse(
@@ -430,7 +430,7 @@ public class ChildProcessLauncherHelperTest {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl("about:blank");
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STOPPED));
         Assert.assertFalse(ApplicationStatus.hasVisibleActivities());
 

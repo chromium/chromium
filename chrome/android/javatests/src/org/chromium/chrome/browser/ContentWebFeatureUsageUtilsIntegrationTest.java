@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -19,7 +20,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.ContentWebFeatureUsageUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Integration tests for {@link ContentWebFeatureUsageUtils}. */
@@ -43,7 +43,7 @@ public class ContentWebFeatureUsageUtilsIntegrationTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Blink.UseCounter.Features", WebFeature.IDENTITY_DIGITAL_CREDENTIALS);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContentWebFeatureUsageUtils.logWebFeatureForCurrentPage(
                             mActivityTestRule.getWebContents(),

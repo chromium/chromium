@@ -9,6 +9,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -16,7 +17,6 @@ import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -78,7 +78,7 @@ public class ReducedModeNativeTestRule implements TestRule {
     }
 
     public void assertMinimalBrowserStarted() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Native has not been started.",

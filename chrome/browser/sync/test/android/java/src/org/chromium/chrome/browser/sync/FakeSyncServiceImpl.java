@@ -17,7 +17,6 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncServiceImpl;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Set;
 
@@ -50,7 +49,7 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setEngineInitialized(boolean engineInitialized) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mEngineInitialized = engineInitialized;
                     notifySyncStateChanged();
@@ -65,7 +64,7 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setAuthError(@GoogleServiceAuthError.State int authError) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAuthError = authError;
                     notifySyncStateChanged();
@@ -87,7 +86,7 @@ public class FakeSyncServiceImpl implements SyncService {
     @AnyThread
     public void setPassphraseRequiredForPreferredDataTypes(
             boolean passphraseRequiredForPreferredDataTypes) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPassphraseRequiredForPreferredDataTypes =
                             passphraseRequiredForPreferredDataTypes;
@@ -103,7 +102,7 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setTrustedVaultKeyRequired(boolean trustedVaultKeyRequired) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTrustedVaultKeyRequired = trustedVaultKeyRequired;
                     notifySyncStateChanged();
@@ -119,7 +118,7 @@ public class FakeSyncServiceImpl implements SyncService {
     @AnyThread
     public void setTrustedVaultKeyRequiredForPreferredDataTypes(
             boolean trustedVaultKeyRequiredForPreferredDataTypes) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTrustedVaultKeyRequiredForPreferredDataTypes =
                             trustedVaultKeyRequiredForPreferredDataTypes;
@@ -135,7 +134,7 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setTrustedVaultRecoverabilityDegraded(boolean recoverabilityDegraded) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTrustedVaultRecoverabilityDegraded = recoverabilityDegraded;
                     notifySyncStateChanged();
@@ -156,7 +155,7 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setRequiresClientUpgrade(boolean requiresClientUpgrade) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRequiresClientUpgrade = requiresClientUpgrade;
                     notifySyncStateChanged();
@@ -165,7 +164,7 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setEncryptEverythingEnabled(boolean encryptEverythingEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mEncryptEverythingEnabled = encryptEverythingEnabled;
                 });

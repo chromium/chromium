@@ -34,6 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
@@ -52,7 +53,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 
@@ -377,7 +377,7 @@ public final class ShareSheetBottomSheetContentTest {
         when(mShareSheetLinkToggleCoordinator.shouldShowToggle()).thenReturn(true);
         when(mShareSheetLinkToggleCoordinator.shouldEnableToggleByDefault()).thenReturn(false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         shareSheetBottomSheetContent.createRecyclerViews(
                                 ImmutableList.of(),

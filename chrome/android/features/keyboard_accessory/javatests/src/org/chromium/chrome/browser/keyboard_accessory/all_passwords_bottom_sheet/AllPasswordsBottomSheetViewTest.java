@@ -41,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -53,7 +54,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -92,7 +92,7 @@ public class AllPasswordsBottomSheetViewTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel =
                             AllPasswordsBottomSheetProperties.createDefaultModel(
@@ -119,12 +119,12 @@ public class AllPasswordsBottomSheetViewTest {
     @MediumTest
     public void testVisibilityChangedByModel() {
         // After setting the visibility to true, the view should exist and be visible.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
         assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
 
         // After hiding the view, the view should still exist but be invisible.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
         assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(false));
     }
@@ -132,7 +132,7 @@ public class AllPasswordsBottomSheetViewTest {
     @Test
     @MediumTest
     public void testShowsWarningWithOriginByDefaultWithUpmEnabled() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
         assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
         assertEquals(
@@ -230,7 +230,7 @@ public class AllPasswordsBottomSheetViewTest {
     @MediumTest
     public void testFillingPasswordInNonPasswordFieldShowsWarningDialog()
             throws ExecutionException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAllPasswordsBottomSheetView.setVisible(true);
                     mListModel.add(
@@ -259,9 +259,9 @@ public class AllPasswordsBottomSheetViewTest {
     public void testDismissesWhenHidden() {
         addDefaultCredentialsToTheModel();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
         verify(mDismissHandler).onResult(BottomSheetController.StateChangeReason.NONE);
     }
@@ -276,7 +276,7 @@ public class AllPasswordsBottomSheetViewTest {
 
     // Adds three credential items to the model.
     private void addDefaultCredentialsToTheModel() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAllPasswordsBottomSheetView.setVisible(true);
                     mListModel.add(

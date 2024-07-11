@@ -46,7 +46,6 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 
@@ -70,7 +69,7 @@ public class OmniboxTest {
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         Assert.assertNotNull(urlBar);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     urlBar.setText("");
                 });
@@ -123,7 +122,7 @@ public class OmniboxTest {
         // Type something in the omnibox.
         // Note that the TextView does not provide a way to test if the hint is showing, the API
         // documentation simply says it shows when the text is empty.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     urlBar.requestFocus();
                     urlBar.setText("G");
@@ -229,7 +228,7 @@ public class OmniboxTest {
                         onSSLStateUpdatedCallbackHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
         final String testHttpsUrl =
@@ -285,7 +284,7 @@ public class OmniboxTest {
                         onSSLStateUpdatedCallbackHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
         try {
@@ -308,11 +307,11 @@ public class OmniboxTest {
             final int firstIcon = statusCoordinator.getSecurityIconResourceIdForTesting();
 
             UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-            TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.requestFocus());
+            ThreadUtils.runOnUiThreadBlocking(() -> urlBar.requestFocus());
             CriteriaHelper.pollUiThread(
                     () -> statusCoordinator.getSecurityIconResourceIdForTesting() != firstIcon);
             final int secondIcon = statusCoordinator.getSecurityIconResourceIdForTesting();
-            TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.clearFocus());
+            ThreadUtils.runOnUiThreadBlocking(() -> urlBar.clearFocus());
             CriteriaHelper.pollUiThread(
                     () -> statusCoordinator.getSecurityIconResourceIdForTesting() != secondIcon);
 
@@ -337,14 +336,14 @@ public class OmniboxTest {
 
     private void setNonDefaultSearchEngine() {
         TemplateUrlService templateUrlService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> templateUrlService.load());
+        ThreadUtils.runOnUiThreadBlocking(() -> templateUrlService.load());
         CriteriaHelper.pollUiThread(() -> templateUrlService.isLoaded());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     List<TemplateUrl> searchEngines = templateUrlService.getTemplateUrls();
                     TemplateUrl defaultEngine =
@@ -365,7 +364,7 @@ public class OmniboxTest {
     }
 
     private void restoreDefaultSearchEngine() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TemplateUrlService service =
                             TemplateUrlServiceFactory.getForProfile(

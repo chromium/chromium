@@ -19,12 +19,12 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.blink.mojom.WebFeature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.Callable;
@@ -158,13 +158,13 @@ public class AwPageLoadMetricsTest extends AwParameterizedTest {
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("PageLoad.PageTiming.ForegroundDuration")
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwMetricsServiceClient.setConsentSetting(true);
                 });
         loadUrlSync(url);
         // Remove the WebView from the container, to simulate app going to background.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRule.getActivity().removeAllViews();
                 });
@@ -194,7 +194,7 @@ public class AwPageLoadMetricsTest extends AwParameterizedTest {
     }
 
     private boolean dispatchKeyEvent(final KeyEvent event) throws Throwable {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Boolean>() {
                     @Override
                     public Boolean call() {

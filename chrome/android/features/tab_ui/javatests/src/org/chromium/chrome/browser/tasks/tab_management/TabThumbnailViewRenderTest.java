@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -85,7 +85,7 @@ public class TabThumbnailViewRenderTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContentView = new FrameLayout(mActivityTestRule.getActivity());
                     mContentView.setBackgroundColor(Color.WHITE);
@@ -111,7 +111,7 @@ public class TabThumbnailViewRenderTest {
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                     mActivityTestRule.getActivity().setContentView(mContentView, params);
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final int cardWidthPx = mContentView.getMeasuredWidth() / 2;
                     final int cardHeightPx =
@@ -125,7 +125,7 @@ public class TabThumbnailViewRenderTest {
                     mTabCard.getLayoutParams().height = cardHeightPx;
                     mTabCard.setLayoutParams(mTabCard.getLayoutParams());
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBitmap = createBitmapFourColor();
                 });
@@ -133,7 +133,7 @@ public class TabThumbnailViewRenderTest {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
                 });
@@ -174,42 +174,42 @@ public class TabThumbnailViewRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testPlaceholderDrawable() throws IOException, InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     updateColor(/* isIncognito= */ true, /* isSelected= */ false);
                     mTabThumbnailView.setImageDrawable(null);
                 });
         mRenderTestRule.render(mTabCard, "placeholder_incognito_without_thumbnail_deselected");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     updateColor(/* isIncognito= */ false, /* isSelected= */ false);
                     mTabThumbnailView.setImageDrawable(null);
                 });
         mRenderTestRule.render(mTabCard, "placeholder_without_thumbnail_deselected");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabThumbnailView.setImageBitmap(mBitmap);
                     mTabThumbnailView.setImageMatrix(new Matrix());
                 });
         mRenderTestRule.render(mTabCard, "placeholder_with_thumbnail_deselected");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     updateColor(/* isIncognito= */ false, /* isSelected= */ true);
                     mTabThumbnailView.setImageDrawable(null);
                 });
         mRenderTestRule.render(mTabCard, "placeholder_without_thumbnail_selected");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabThumbnailView.setImageBitmap(mBitmap);
                     mTabThumbnailView.setImageMatrix(new Matrix());
                 });
         mRenderTestRule.render(mTabCard, "placeholder_with_thumbnail_selected");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     updateColor(/* isIncognito= */ true, /* isSelected= */ true);
                     mTabThumbnailView.setImageDrawable(null);

@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -47,7 +48,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
 
@@ -89,7 +89,7 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
     public void setUp() {
         mJniMocker.mock(AccountStorageNoticeCoordinatorJni.TEST_HOOKS, mJniMock);
         mActivityRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Tests are batched, so reset the pref, otherwise the notice only shows once.
                     // Additionally, if ReplaceSyncPromosWithSigninPromos is enabled,
@@ -169,7 +169,7 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
                 .expectIntRecord(CLOSE_REASON_METRIC, CloseReason.EMBEDDER_REQUESTED)
                 .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.hideImmediatelyIfShowing());
+        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.hideImmediatelyIfShowing());
 
         waitSheetVisible(false);
         verify(mJniMock).onClosed(NATIVE_OBSERVER_PTR);
@@ -185,15 +185,15 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
                 .expectIntRecord(CLOSE_REASON_METRIC, CloseReason.EMBEDDER_REQUESTED)
                 .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.setObserver(0));
-        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.hideImmediatelyIfShowing());
+        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.setObserver(0));
+        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.hideImmediatelyIfShowing());
 
         waitSheetVisible(false);
         verify(mJniMock, never()).onClosed(NATIVE_OBSERVER_PTR);
     }
 
     private AccountStorageNoticeCoordinator createCoordinator() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     // The logic for when to show the coordinator is tested in the UnitTest.java.

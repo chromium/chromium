@@ -7,8 +7,8 @@ package org.chromium.content.browser.androidoverlay;
 import org.junit.Assert;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.media.mojom.AndroidOverlayClient;
 import org.chromium.media.mojom.AndroidOverlayConfig;
@@ -183,7 +183,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
 
         // Fetch the routing token.
         mRoutingToken =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             RenderFrameHostImpl host =
                                     (RenderFrameHostImpl) getWebContents().getMainFrame();
@@ -206,7 +206,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
 
     // Create an overlay with the given parameters and return it.
     DialogOverlayImpl createOverlay(final int x, final int y, final int width, final int height) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     AndroidOverlayConfig config = new AndroidOverlayConfig();
                     config.routingToken = mRoutingToken;

@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
@@ -39,12 +39,12 @@ public class ShoppingPersistedTabDataNativeTest {
     @SmallTest
     @Test
     public void testMaintenance() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.onDeferredStartup();
                 });
         Profile profile =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         ProfileManager::getLastUsedRegularProfile);
         final Tab tab0 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, profile);
         final Tab tab1 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(1, profile);
@@ -60,7 +60,7 @@ public class ShoppingPersistedTabDataNativeTest {
                         tab2);
         // Treat Tabs 0 and 2 as being live, assume Tab 1 was destroyed but its stored
         // ShoppingPersistedTabData was not removed.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PersistedTabData.performStorageMaintenance(Arrays.asList(0, 2)));
         verifySPTD(tab0, true);
         verifySPTD(tab1, false);
@@ -69,7 +69,7 @@ public class ShoppingPersistedTabDataNativeTest {
 
     private static void verifySPTD(final Tab tab, final boolean expectedExists) {
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,

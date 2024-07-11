@@ -27,10 +27,10 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightOff;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightPulse;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.os.Build;
@@ -64,6 +64,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -123,7 +124,6 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -1858,7 +1858,7 @@ public class BookmarkTest {
     }
 
     private boolean isItemPresentInBookmarkList(final String expectedTitle) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
@@ -1913,12 +1913,12 @@ public class BookmarkTest {
     }
 
     private boolean isViewHolderPassivelyDraggable(ViewHolder viewHolder) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mAdapter.isPassivelyDraggable(viewHolder));
     }
 
     private boolean isViewHoldersActivelyDraggable(ViewHolder viewHolder) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mAdapter.isActivelyDraggable(viewHolder));
     }
 
@@ -1965,7 +1965,7 @@ public class BookmarkTest {
      * @return The unique view, if one exists. Throws an exception if one doesn't exist.
      */
     private static View getViewWithText(final ViewGroup viewGroup, final String expectedText) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 new Callable<View>() {
                     @Override
                     public View call() {

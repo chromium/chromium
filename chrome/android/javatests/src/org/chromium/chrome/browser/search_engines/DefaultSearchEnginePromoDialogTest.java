@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -30,7 +31,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ import java.util.concurrent.ExecutionException;
 public class DefaultSearchEnginePromoDialogTest {
     @Before
     public void setUp() throws ExecutionException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Void>() {
                     @Override
                     public Void call() {
@@ -71,7 +71,7 @@ public class DefaultSearchEnginePromoDialogTest {
     @LargeTest
     public void testOnlyOneLiveDialog() throws Exception {
         final CallbackHelper templateUrlServiceInit = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         getTemplateUrlService()
                                 .registerLoadListener(
@@ -100,7 +100,7 @@ public class DefaultSearchEnginePromoDialogTest {
         CriteriaHelper.pollUiThread(() -> !searchDialog.isShowing());
         CriteriaHelper.pollUiThread(() -> searchActivity.isFinishing());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> tabbedDialog.dismiss());
+        ThreadUtils.runOnUiThreadBlocking(() -> tabbedDialog.dismiss());
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -125,7 +125,7 @@ public class DefaultSearchEnginePromoDialogTest {
                             List<String> keywords,
                             String keyword) {}
                 };
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DefaultSearchEnginePromoDialog dialog =
                             new DefaultSearchEnginePromoDialog(

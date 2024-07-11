@@ -38,7 +38,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -161,7 +160,7 @@ public class NavigationTransitionsTest {
                     /* dispatchIntervalMs= */ 60,
                     /* preventFling= */ true);
         } else {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         BackPressManager manager =
                                 mActivityTestRule.getActivity().getBackPressManagerForTesting();

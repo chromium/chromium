@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -40,7 +41,6 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Unit tests for {@link ImageDescriptionsSettings} */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -192,7 +192,7 @@ public class ImageDescriptionsSettingsTest {
     @SmallTest
     public void testInitialState_RadioGroupDisabled() {
         // When Switch is disabled, then the radio button group should also be disabled.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
@@ -213,7 +213,7 @@ public class ImageDescriptionsSettingsTest {
     @SmallTest
     public void testInitialState_RadioGroupEnabled() {
         // When Switch is enabled, then the radio button group should also be enabled.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
@@ -235,7 +235,7 @@ public class ImageDescriptionsSettingsTest {
     @SmallTest
     public void testUserTogglesSwitch_On() {
         // When we toggle switch to On, it should enable radio buttons and descriptions
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
@@ -265,7 +265,7 @@ public class ImageDescriptionsSettingsTest {
     @SmallTest
     public void testUserTogglesSwitch_Off() {
         // When we toggle switch to Off, it should disable radio buttons and descriptions
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
@@ -295,7 +295,7 @@ public class ImageDescriptionsSettingsTest {
     @Test
     @SmallTest
     public void testUserSelectsRadioButton_onlyOnWifi() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
@@ -330,7 +330,7 @@ public class ImageDescriptionsSettingsTest {
     @Test
     @SmallTest
     public void testUserSelectsRadioButton_useMobileData() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);

@@ -17,6 +17,7 @@ import org.jni_zero.NativeMethods;
 import org.junit.Assert;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
@@ -659,7 +660,7 @@ public class DOMUtils {
 
     private static int getMaybeTopControlsHeight(final WebContents webContents) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> DOMUtilsJni.get().getTopControlsShrinkBlinkHeight(webContents));
         } catch (ExecutionException e) {
             return 0;

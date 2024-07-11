@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -24,7 +25,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -186,7 +186,7 @@ public class PaymentRequestContactDetailsTest {
 
         // Quickly press on "add contact info" and then [X].
         int callCount = mPaymentRequestTestRule.getReadyToEdit().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -220,7 +220,7 @@ public class PaymentRequestContactDetailsTest {
 
         // Quickly press on [X] and then "add contact info."
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -290,7 +290,7 @@ public class PaymentRequestContactDetailsTest {
 
         // Quickly press on "add contact info" and then "cancel."
         int callCount = mPaymentRequestTestRule.getReadyToEdit().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -325,7 +325,7 @@ public class PaymentRequestContactDetailsTest {
 
         // Quickly press on "cancel" and then "add contact info."
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()

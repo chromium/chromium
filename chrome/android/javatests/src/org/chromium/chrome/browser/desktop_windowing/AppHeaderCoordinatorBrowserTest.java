@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -61,7 +62,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.test.util.UiRestriction;
@@ -156,7 +156,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
         // A very large strip width threshold should hide the strip by adding the scrim.
         TabStripTransitionCoordinator.setFadeTransitionThresholdForTesting(10000);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabStripCallback.onConfigurationChanged(
                                 activity.getResources().getConfiguration()));
@@ -171,7 +171,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
         // A very small strip width threshold value should show the strip by removing the scrim.
         TabStripTransitionCoordinator.setFadeTransitionThresholdForTesting(1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabStripCallback.onConfigurationChanged(
                                 activity.getResources().getConfiguration()));
@@ -362,7 +362,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
         // Assume that the current activity lost focus in desktop windowing mode.
         triggerDesktopWindowingModeChange(activity, true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> activity.onTopResumedActivityChanged(isActivityFocused));
 
         // Verify the toolbar icon tints.
@@ -415,7 +415,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
     private void triggerDesktopWindowingModeChange(
             ChromeTabbedActivity activity, boolean isInDesktopWindow) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var appHeaderStateProvider =
                             activity.getRootUiCoordinatorForTesting()

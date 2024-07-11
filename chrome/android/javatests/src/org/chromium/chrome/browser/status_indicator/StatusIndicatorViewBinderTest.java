@@ -26,13 +26,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -54,7 +54,7 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(R.layout.status_indicator_container);
                     mContainer = getActivity().findViewById(R.id.status_indicator);
@@ -81,7 +81,7 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 
@@ -100,7 +100,7 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
                         R.drawable.ic_error_white_24dp_filled,
                         getActivity().getTheme());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(StatusIndicatorProperties.STATUS_TEXT, STATUS_TEXT);
                     mModel.set(StatusIndicatorProperties.STATUS_ICON, drawable);
@@ -123,7 +123,7 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
                 "Wrong initial composited view visibility.",
                 mSceneLayer.isSceneOverlayTreeShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.VISIBLE);
                     mModel.set(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, true);
@@ -132,7 +132,7 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
         assertEquals("Android view is not visible.", View.VISIBLE, mContainer.getVisibility());
         assertTrue("Composited view is not visible.", mSceneLayer.isSceneOverlayTreeShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.GONE);
                     mModel.set(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false);
@@ -160,7 +160,7 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
                         R.drawable.ic_error_white_24dp_filled,
                         getActivity().getTheme());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(StatusIndicatorProperties.STATUS_ICON, drawable);
                     mModel.set(StatusIndicatorProperties.BACKGROUND_COLOR, Color.BLUE);
@@ -186,17 +186,17 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
         assertEquals(
                 "Wrong initial text alpha.", 1.f, mStatusTextView.getAlpha(), MathUtils.EPSILON);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(StatusIndicatorProperties.TEXT_ALPHA, .5f));
 
         assertEquals("Wrong text alpha.", .5f, mStatusTextView.getAlpha(), MathUtils.EPSILON);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(StatusIndicatorProperties.TEXT_ALPHA, .0f));
 
         assertEquals("Wrong text alpha.", 0.f, mStatusTextView.getAlpha(), MathUtils.EPSILON);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(StatusIndicatorProperties.TEXT_ALPHA, 1.f));
 
         assertEquals("Wrong text alpha.", 1.f, mStatusTextView.getAlpha(), MathUtils.EPSILON);

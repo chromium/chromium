@@ -10,12 +10,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public class ChainedTasksTest {
             tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, message));
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tasks.start(true);
                     Assert.assertEquals(expectedMessages, messages);
@@ -124,7 +124,7 @@ public class ChainedTasksTest {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tasks.start(false);
                     Assert.assertTrue("No task should run synchronously", messages.isEmpty());

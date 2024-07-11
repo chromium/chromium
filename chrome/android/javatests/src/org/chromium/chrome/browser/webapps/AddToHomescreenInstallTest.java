@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -35,7 +36,6 @@ import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppType;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -132,7 +132,7 @@ public class AddToHomescreenInstallTest {
     private void installApp(
             Tab tab, String title, boolean expectAdded, @AppType int expectedDialogType) {
         // Install the webapp.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean started =
                             new TestAddToHomescreenCoordinator(

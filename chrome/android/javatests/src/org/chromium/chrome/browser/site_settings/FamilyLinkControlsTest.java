@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
@@ -46,7 +47,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJ
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests family link controls are reflected in UI */
 @DoNotBatch(
@@ -72,7 +72,7 @@ public class FamilyLinkControlsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mSettingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile()));
         mAccountInfo = mSigninTestRule.addChildTestAccountThenWaitForSignin();
 

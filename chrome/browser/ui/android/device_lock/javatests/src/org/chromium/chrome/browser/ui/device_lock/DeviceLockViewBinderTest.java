@@ -28,12 +28,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -59,7 +59,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
 
         ViewGroup view = new LinearLayout(getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view);
 
@@ -92,7 +92,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mModelChangeProcessor::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mModelChangeProcessor::destroy);
         super.tearDownTest();
     }
 

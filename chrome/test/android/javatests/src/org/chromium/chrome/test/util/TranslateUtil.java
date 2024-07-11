@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -17,7 +18,6 @@ import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarCompactLayout;
 import org.chromium.components.translate.TranslateMenu;
 import org.chromium.components.translate.TranslateTabLayout;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
@@ -97,7 +97,7 @@ public class TranslateUtil {
      */
     public static void clickTargetMenuItem(
             final TranslateCompactInfoBar infoBar, final String code) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     infoBar.onTargetMenuItemClicked(code);
                 });

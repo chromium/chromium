@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -48,7 +49,6 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
@@ -86,7 +86,7 @@ public class BookmarkEditTest {
     @Before
     public void setUp() throws TimeoutException {
         if (sBookmarkEditActivity == null) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         sBookmarkModel =
                                 BookmarkModel.getForProfile(
@@ -95,7 +95,7 @@ public class BookmarkEditTest {
                     });
 
             BookmarkTestUtil.waitForBookmarkModelLoaded();
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         sMobileNode = sBookmarkModel.getMobileFolderId();
                         sOtherNode = sBookmarkModel.getOtherFolderId();
@@ -111,11 +111,11 @@ public class BookmarkEditTest {
                             mModelChangedCallback.notifyCalled();
                         }
                     };
-            TestThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.addObserver(sModelObserver));
+            ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.addObserver(sModelObserver));
 
             startEditActivity(sBookmarkId);
 
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         ApplicationStatus.registerStateListenerForActivity(
                                 sActivityStateListener, sBookmarkEditActivity);
@@ -126,7 +126,7 @@ public class BookmarkEditTest {
     @After
     public void resetBookmark() throws ExecutionException {
         if (getBookmarkItem(sBookmarkId) != null) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         sBookmarkModel.setBookmarkTitle(sBookmarkId, TITLE_A);
                         sBookmarkModel.setBookmarkUrl(sBookmarkId, new GURL(URL_A));
@@ -134,7 +134,7 @@ public class BookmarkEditTest {
                     });
         }
         if (sBookmarkEditActivity != null) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         sBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_A);
                         sBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_A);
@@ -144,7 +144,7 @@ public class BookmarkEditTest {
 
     @AfterClass
     public static void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sBookmarkModel.removeObserver(sModelObserver);
                     sBookmarkModel.removeAllUserBookmarks();
@@ -165,7 +165,7 @@ public class BookmarkEditTest {
                 URL_A,
                 sBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_B);
                     sBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_B);
@@ -190,7 +190,7 @@ public class BookmarkEditTest {
                 URL_A,
                 sBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sBookmarkEditActivity.getTitleEditText().getEditText().setText("");
                     sBookmarkEditActivity.getUrlEditText().getEditText().setText("");
@@ -211,7 +211,7 @@ public class BookmarkEditTest {
                 URL_A,
                 sBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sBookmarkEditActivity
                             .getUrlEditText()
@@ -229,7 +229,7 @@ public class BookmarkEditTest {
     @Feature({"Bookmark"})
     @RequiresRestart("tests destruction of BookmarkEditActivity")
     public void testEditActivityDeleteButton() throws ExecutionException, TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sBookmarkEditActivity.onOptionsItemSelected(
                             sBookmarkEditActivity.getDeleteButton());
@@ -247,8 +247,7 @@ public class BookmarkEditTest {
     public void testEditActivityHomeButton() throws ExecutionException, TimeoutException {
         MenuItem item = Mockito.mock(MenuItem.class);
         Mockito.when(item.getItemId()).thenReturn(android.R.id.home);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> sBookmarkEditActivity.onOptionsItemSelected(item));
+        ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkEditActivity.onOptionsItemSelected(item));
 
         Assert.assertTrue(
                 "BookmarkActivity should be finishing or destroyed.",
@@ -271,7 +270,7 @@ public class BookmarkEditTest {
                         .get(ImprovedBookmarkRowProperties.TITLE));
 
         int currentModelChangedCount = mModelChangedCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sBookmarkModel.setBookmarkTitle(sBookmarkId, TITLE_B);
                     sBookmarkModel.moveBookmark(sBookmarkId, sOtherNode, 0);
@@ -296,7 +295,7 @@ public class BookmarkEditTest {
     @RequiresRestart("tests destruction of BookmarkEditActivity")
     public void testEditActivityFinishesWhenBookmarkDeleted() throws TimeoutException {
         int currentModelChangedCount = mModelChangedCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.deleteBookmark(sBookmarkId));
+        ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.deleteBookmark(sBookmarkId));
         mModelChangedCallback.waitForCallback(currentModelChangedCount);
 
         Assert.assertTrue(
@@ -310,7 +309,7 @@ public class BookmarkEditTest {
     public void testEditFolderLocation()
             throws ExecutionException, TimeoutException, InterruptedException {
         addFolder(sMobileNode, 0, FOLDER_A);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> sBookmarkEditActivity.getFolderSelectRowForTesting().performClick());
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -339,7 +338,7 @@ public class BookmarkEditTest {
     @Feature({"Bookmark"})
     @RequiresRestart("tests destruction of BookmarkEditActivity")
     public void testChangeFolderWhenBookmarkRemoved() throws ExecutionException, TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> sBookmarkEditActivity.getFolderSelectRowForTesting().performClick());
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -348,7 +347,7 @@ public class BookmarkEditTest {
                             IsInstanceOf.instanceOf(BookmarkFolderPickerActivity.class));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.deleteBookmark(sBookmarkId));
+        ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.deleteBookmark(sBookmarkId));
         CriteriaHelper.pollUiThread(
                 () ->
                         !(ApplicationStatus.getLastTrackedFocusedActivity()
@@ -357,8 +356,7 @@ public class BookmarkEditTest {
     }
 
     private BookmarkItem getBookmarkItem(BookmarkId bookmarkId) throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
-                () -> sBookmarkModel.getBookmarkById(bookmarkId));
+        return ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.getBookmarkById(bookmarkId));
     }
 
     private static void startEditActivity(BookmarkId bookmarkId) {
@@ -373,7 +371,7 @@ public class BookmarkEditTest {
 
     private BookmarkId addFolder(BookmarkId parent, int index, String title)
             throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> sBookmarkModel.addFolder(parent, index, title));
     }
 

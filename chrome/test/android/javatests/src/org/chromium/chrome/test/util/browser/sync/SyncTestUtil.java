@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -19,7 +20,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,7 +41,7 @@ public final class SyncTestUtil {
      * Return the {@link SyncService} for the {@link ProfileManager#getLastUsedRegularProfile()}.
      */
     public static SyncService getSyncServiceForLastUsedProfile() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return SyncServiceFactory.getForProfile(
                             ProfileManager.getLastUsedRegularProfile());
@@ -55,19 +55,19 @@ public final class SyncTestUtil {
      * codebase. See ConsentLevel::kSync documentation for details.
      */
     public static boolean hasSyncConsent() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> getSyncServiceForLastUsedProfile().hasSyncConsent());
     }
 
     /** Returns whether sync-the-feature is enabled. */
     public static boolean isSyncFeatureEnabled() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> getSyncServiceForLastUsedProfile().isSyncFeatureEnabled());
     }
 
     /** Returns whether sync-the-feature is active. */
     public static boolean isSyncFeatureActive() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> getSyncServiceForLastUsedProfile().isSyncFeatureActive());
     }
 
@@ -154,7 +154,7 @@ public final class SyncTestUtil {
 
     /** Returns whether history sync is active. */
     public static boolean isHistorySyncEnabled() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         getSyncServiceForLastUsedProfile()
                                 .getSelectedTypes()
@@ -178,7 +178,7 @@ public final class SyncTestUtil {
 
     /** Triggers a sync cycle. */
     public static void triggerSync() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getSyncServiceForLastUsedProfile().triggerRefresh();
                 });
@@ -203,7 +203,7 @@ public final class SyncTestUtil {
     }
 
     private static long getCurrentSyncTime() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> getSyncServiceForLastUsedProfile().getLastSyncedTimeForDebugging());
     }
 
@@ -217,7 +217,7 @@ public final class SyncTestUtil {
             public JSONArray nodes;
         }
         NodesCallbackHelper callbackHelper = new NodesCallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getSyncServiceForLastUsedProfile()
                             .getAllNodes(
@@ -333,11 +333,11 @@ public final class SyncTestUtil {
     }
 
     /**
-     * Encrypts the profile with the input |passphrase|. It will then block until the sync server
-     * is successfully using the passphrase.
+     * Encrypts the profile with the input |passphrase|. It will then block until the sync server is
+     * successfully using the passphrase.
      */
     public static void encryptWithPassphrase(final String passphrase) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> getSyncServiceForLastUsedProfile().setEncryptionPassphrase(passphrase));
         // Make sure the new encryption settings make it to the server.
         SyncTestUtil.triggerSyncAndWaitForCompletion();
@@ -345,7 +345,7 @@ public final class SyncTestUtil {
 
     /** Decrypts the profile using the input |passphrase|. */
     public static void decryptWithPassphrase(final String passphrase) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getSyncServiceForLastUsedProfile().setDecryptionPassphrase(passphrase);
                 });

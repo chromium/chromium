@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -22,7 +23,6 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test for the Site Engagement Service Java binding. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -38,7 +38,7 @@ public class SiteEngagementServiceTest {
     @SmallTest
     @Feature({"Engagement"})
     public void testSettingAndRetrievingScore() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowserContextHandle handle = ProfileManager.getLastUsedRegularProfile();
                     SiteEngagementService service =
@@ -58,7 +58,7 @@ public class SiteEngagementServiceTest {
     @SmallTest
     @Feature({"Engagement"})
     public void testRepeatedlyGettingService() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
 
@@ -84,7 +84,7 @@ public class SiteEngagementServiceTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowserContextHandle handle = ProfileManager.getLastUsedRegularProfile();
                     SiteEngagementService service =

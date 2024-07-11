@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -42,7 +43,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -139,7 +139,7 @@ public class OfflinePageBridgeTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Ensure we start in an offline state.
                     NetworkChangeNotifier.forceConnectivityState(false);
@@ -148,7 +148,7 @@ public class OfflinePageBridgeTest {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = ProfileManager.getLastUsedRegularProfile();
                 });
@@ -227,7 +227,7 @@ public class OfflinePageBridgeTest {
     @Test
     @MediumTest
     public void testOfflinePageBridgeDisabled_InIncognitoTabbedActivity() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
@@ -241,7 +241,7 @@ public class OfflinePageBridgeTest {
     @MediumTest
     public void testOfflinePageBridgeForProfileKeyDisabled_InIncognitoTabbedActivity()
             throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
@@ -254,7 +254,7 @@ public class OfflinePageBridgeTest {
     @Test
     @MediumTest
     public void testOfflinePageBridgeDisabled_InIncognitoCCT() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
                     mProfile =
@@ -271,7 +271,7 @@ public class OfflinePageBridgeTest {
     @Test
     @MediumTest
     public void testOfflinePageBridgeForProfileKeyDisabled_InIncognitoCCT() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
                     mProfile =
@@ -383,7 +383,7 @@ public class OfflinePageBridgeTest {
         sActivityTestRule.loadUrl(mTestPage);
         final String originString = origin.encodeAsJsonString();
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNotNull(
                             "Tab is null", sActivityTestRule.getActivity().getActivityTab());
@@ -421,7 +421,7 @@ public class OfflinePageBridgeTest {
         sActivityTestRule.loadUrl(mTestPage);
         final String originString = origin.encodeAsJsonString();
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mOfflinePageBridge.addObserver(
                             new OfflinePageModelObserver() {
@@ -579,7 +579,7 @@ public class OfflinePageBridgeTest {
             throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         final AtomicLong result = new AtomicLong(-1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNotNull(
                             "Tab is null", sActivityTestRule.getActivity().getActivityTab());
@@ -634,7 +634,7 @@ public class OfflinePageBridgeTest {
             throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         final AtomicInteger deletePageResultRef = new AtomicInteger();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mOfflinePageBridge.deletePage(
                             bookmarkId,
@@ -672,7 +672,7 @@ public class OfflinePageBridgeTest {
     }
 
     private void forceConnectivityStateOnUiThread(final boolean state) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NetworkChangeNotifier.forceConnectivityState(state);
                 });

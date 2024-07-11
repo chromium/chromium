@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -49,7 +50,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -103,7 +103,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefService);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         mDelegate =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return new ConfirmSyncDataStateMachineDelegate(
                                     getActivity(),
@@ -191,7 +191,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
     }
 
     private void startConfirmSyncFlow(String oldAccountName, String newAccountName) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ConfirmSyncDataStateMachine stateMachine =
                             new ConfirmSyncDataStateMachine(

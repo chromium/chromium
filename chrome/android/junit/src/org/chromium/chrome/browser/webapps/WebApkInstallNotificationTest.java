@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
@@ -33,7 +34,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.webapps.WebApkInstallResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests WebAPKs install notifications from {@link WebApkInstallService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -64,7 +64,7 @@ public class WebApkInstallNotificationTest {
 
     @Test
     public void testInProgressNotification() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebApkInstallService.showInstallInProgressNotification(
                             MANIFEST_URL, SHORT_NAME, URL, mIcon, /* isIconMaskable= */ false);

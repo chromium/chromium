@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -46,7 +47,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -78,7 +78,7 @@ public final class AdMeasurementFragmentTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
@@ -110,19 +110,19 @@ public final class AdMeasurementFragmentTest {
     private View getRootView(@StringRes int text) {
         View[] view = {null};
         onView(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
+        ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
         return view[0];
     }
 
     private void setAdMeasurementPrefEnabled(boolean isEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AdMeasurementFragment.setAdMeasurementPrefEnabled(
                                 ProfileManager.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isAdMeasurementPrefEnabled() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         AdMeasurementFragment.isAdMeasurementPrefEnabled(
                                 ProfileManager.getLastUsedRegularProfile()));

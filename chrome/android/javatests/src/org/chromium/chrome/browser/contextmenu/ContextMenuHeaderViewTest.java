@@ -21,10 +21,10 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -50,7 +50,7 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(R.layout.context_menu_header);
                     mHeaderView = getActivity().findViewById(android.R.id.content);
@@ -80,7 +80,7 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 
@@ -90,7 +90,7 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
         assertThat(
                 "Incorrect initial title visibility.", mTitle.getVisibility(), equalTo(View.GONE));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ContextMenuHeaderProperties.TITLE, TITLE_STRING);
                     mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 2);
@@ -110,7 +110,7 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
     public void testUrl() {
         assertThat("Incorrect initial URL visibility.", mUrl.getVisibility(), equalTo(View.GONE));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ContextMenuHeaderProperties.URL, URL_STRING);
                     mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, 1);
@@ -124,7 +124,7 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
                 mUrl.getEllipsize(),
                 equalTo(TextUtils.TruncateAt.END));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE));
 
         assertThat(
@@ -142,7 +142,7 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
                 "Title and URL have onClickListeners when it shouldn't, yet, have.",
                 mTitleAndUrl.hasOnClickListeners());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ContextMenuHeaderProperties.TITLE, TITLE_STRING);
                     mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1);
@@ -178,7 +178,7 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
                 equalTo(Integer.MAX_VALUE));
         assertNull("URL is ellipsized when it shouldn't be.", mUrl.getEllipsize());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTitleAndUrl.callOnClick();
                 });
@@ -202,7 +202,7 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
                 "Incorrect initial circle background visibility.",
                 mCircleBg.getVisibility(),
                 equalTo(View.INVISIBLE));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, true));
         assertThat(
                 "Incorrect circle background visibility.",
@@ -213,7 +213,7 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
                 "Thumbnail drawable should use fallback color initially.",
                 mImage.getDrawable() instanceof BitmapDrawable);
         final Bitmap bitmap = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(ContextMenuHeaderProperties.IMAGE, bitmap));
         assertThat(
                 "Incorrect thumbnail bitmap.",

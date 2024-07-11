@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -51,7 +52,6 @@ import org.chromium.components.webapk.proto.WebApkProto;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.components.webapps.WebApkUpdateReason;
 import org.chromium.components.webapps.WebappsIconUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -336,7 +336,7 @@ public class WebApkUpdateManagerTest {
             throws Exception {
         CallbackHelper waiter = new CallbackHelper();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TestWebApkUpdateManager updateManager =
                             new TestWebApkUpdateManager(

@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -26,7 +27,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.permissions.DismissalType;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /** Test suite for interaction between permissions requests and navigation. */
@@ -78,12 +78,12 @@ public class PermissionNavigationTest {
                         callbackHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(navigationWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(navigationWaiter));
 
         mPermissionRule.runJavaScriptCodeInCurrentTab("navigate()");
 
         callbackHelper.waitForCallback(0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(navigationWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(navigationWaiter));
 
         mPermissionRule.waitForDialogShownState(false);
     }
@@ -104,7 +104,7 @@ public class PermissionNavigationTest {
                         .build();
 
         PermissionTestRule.waitForDialog(mPermissionRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPermissionRule.getActivity().onBackPressed();
                 });
@@ -130,7 +130,7 @@ public class PermissionNavigationTest {
                                 .getPresenterForTest(ModalDialogType.TAB);
 
         View dialogContainerForTest = mTabModalPresenter.getDialogContainerForTest();
-        TestThreadUtils.runOnUiThreadBlocking(dialogContainerForTest::performClick);
+        ThreadUtils.runOnUiThreadBlocking(dialogContainerForTest::performClick);
         histogramExpectation.assertExpected(
                 "Should record tapping outside the scrim to dismiss permission prompt in UMA");
     }

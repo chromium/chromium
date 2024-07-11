@@ -17,6 +17,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -34,7 +35,6 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell.Shell;
 import org.chromium.content_shell.ShellViewAndroidDelegate.OnCursorUpdateHelper;
 
@@ -75,12 +75,12 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     }
 
     public void runOnUiThread(Runnable r) {
-        TestThreadUtils.runOnUiThreadBlocking(r);
+        ThreadUtils.runOnUiThreadBlocking(r);
     }
 
     /**
-     * Starts the ContentShell activity and loads the given URL.
-     * The URL can be null, in which case will default to ContentShellActivity.DEFAULT_SHELL_URL.
+     * Starts the ContentShell activity and loads the given URL. The URL can be null, in which case
+     * will default to ContentShellActivity.DEFAULT_SHELL_URL.
      */
     public ContentShellActivity launchContentShellWithUrl(String url) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -111,7 +111,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
 
     /** Returns the OnCursorUpdateHelper. */
     public OnCursorUpdateHelper getOnCursorUpdateHelper() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<OnCursorUpdateHelper>() {
                     @Override
                     public OnCursorUpdateHelper call() {
@@ -126,7 +126,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     /** Returns the current {@link ViewEventSink} or null if there is none; */
     public ViewEventSink getViewEventSink() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         return ViewEventSink.from(getActivity().getActiveShell().getWebContents());
                     });
@@ -138,7 +138,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     /** Returns the WebContents of this Shell. */
     public WebContents getWebContents() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         return getActivity().getActiveShell().getWebContents();
                     });
@@ -150,7 +150,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     /** Returns the {@link SelectionPopupControllerImpl} of the WebContents. */
     public SelectionPopupControllerImpl getSelectionPopupController() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         return SelectionPopupControllerImpl.fromWebContents(
                                 getActivity().getActiveShell().getWebContents());
@@ -163,7 +163,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     /** Returns the {@link ImeAdapterImpl} of the WebContents. */
     public ImeAdapterImpl getImeAdapter() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> ImeAdapterImpl.fromWebContents(getWebContents()));
         } catch (ExecutionException e) {
             return null;
@@ -173,7 +173,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     /** Returns the {@link SelectPopup} of the WebContents. */
     public SelectPopup getSelectPopup() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> SelectPopup.fromWebContents(getWebContents()));
         } catch (ExecutionException e) {
             return null;
@@ -182,7 +182,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
 
     public WebContentsAccessibilityImpl getWebContentsAccessibility() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> WebContentsAccessibilityImpl.fromWebContents(getWebContents()));
         } catch (ExecutionException e) {
             return null;
@@ -192,7 +192,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     /** Returns the RenderCoordinates of the WebContents. */
     public RenderCoordinatesImpl getRenderCoordinates() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> ((WebContentsImpl) getWebContents()).getRenderCoordinates());
         } catch (ExecutionException e) {
             return null;
@@ -203,7 +203,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     public View getContainerView() {
         final WebContents webContents = getWebContents();
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         return webContents != null
                                 ? webContents.getViewAndroidDelegate().getContainerView()
@@ -244,13 +244,14 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
 
     /**
      * Creates a new {@link Shell} and waits for it to finish loading.
+     *
      * @param url The URL to create the new {@link Shell} with.
      * @return A new instance of a {@link Shell}.
      * @throws ExecutionException
      */
     public Shell loadNewShell(String url) throws ExecutionException {
         Shell shell =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Shell>() {
                             @Override
                             public Shell call() {
@@ -287,8 +288,8 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     }
 
     /**
-     * Handles performing an action on the UI thread that will return when the specified callback
-     * is incremented.
+     * Handles performing an action on the UI thread that will return when the specified callback is
+     * incremented.
      *
      * @param callbackHelper The callback helper that will be blocked on.
      * @param uiThreadAction The action to be performed on the UI thread.
@@ -296,7 +297,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     public void handleBlockingCallbackAction(CallbackHelper callbackHelper, Runnable uiThreadAction)
             throws Throwable {
         int currentCallCount = callbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(uiThreadAction);
+        ThreadUtils.runOnUiThreadBlocking(uiThreadAction);
         callbackHelper.waitForCallback(
                 currentCallCount, 1, WAIT_PAGE_LOADING_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }

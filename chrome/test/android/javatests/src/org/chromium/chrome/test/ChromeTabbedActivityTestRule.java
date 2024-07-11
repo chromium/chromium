@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -36,7 +37,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.WaitForFocusHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -161,7 +161,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
                         selectedCallback.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.addObserver(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.addObserver(observer));
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
@@ -178,7 +178,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         } catch (TimeoutException ex) {
             Assert.fail("Never received tab selected event");
         }
-        TestThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.removeObserver(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.removeObserver(observer));
 
         Tab tab = getActivity().getActivityTab();
 
@@ -215,7 +215,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
 
         WaitForFocusHelper.acquireFocusForView(urlBar);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (!oneCharAtATime) {
                         urlBar.setText(text);

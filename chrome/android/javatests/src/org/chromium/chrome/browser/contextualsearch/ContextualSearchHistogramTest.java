@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -26,7 +27,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests the Contextual Search histograms. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
@@ -239,7 +239,7 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
     @Feature({"ContextualSearch"})
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testRelatedSearchesItemNotSelectedUKMEnabled() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                                 ProfileManager.getLastUsedRegularProfile(), true));
@@ -269,7 +269,7 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
         RelatedSearchesControl relatedSearchesControl = mPanel.getRelatedSearchesInBarControl();
         final int chipToSelect = 3;
         createHistogramWatcherForPeekAndExpandForRSearches(chipToSelect, /* isUKMEnabled= */ false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> relatedSearchesControl.selectChipForTest(chipToSelect));
         Assert.assertEquals(
                 "The Related Searches query was not shown in the Bar!",

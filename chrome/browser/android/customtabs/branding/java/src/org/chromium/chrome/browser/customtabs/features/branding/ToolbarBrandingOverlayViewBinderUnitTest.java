@@ -20,12 +20,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -41,7 +41,7 @@ public class ToolbarBrandingOverlayViewBinderUnitTest extends BlankUiTestActivit
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(R.layout.custom_tabs_toolbar_branding_layout);
                     mView = getActivity().findViewById(android.R.id.content);
@@ -62,7 +62,7 @@ public class ToolbarBrandingOverlayViewBinderUnitTest extends BlankUiTestActivit
         var colorData =
                 new ToolbarBrandingOverlayProperties.ColorData(
                         Color.WHITE, BrandedColorScheme.APP_DEFAULT);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(COLOR_DATA, colorData));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(COLOR_DATA, colorData));
 
         assertEquals(Color.WHITE, ((ColorDrawable) mView.getBackground()).getColor());
         assertEquals(
@@ -80,7 +80,7 @@ public class ToolbarBrandingOverlayViewBinderUnitTest extends BlankUiTestActivit
         var colorData =
                 new ToolbarBrandingOverlayProperties.ColorData(
                         Color.BLACK, BrandedColorScheme.DARK_BRANDED_THEME);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(COLOR_DATA, colorData));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(COLOR_DATA, colorData));
 
         assertEquals(Color.BLACK, ((ColorDrawable) mView.getBackground()).getColor());
         assertEquals(
@@ -99,7 +99,7 @@ public class ToolbarBrandingOverlayViewBinderUnitTest extends BlankUiTestActivit
         var colorData =
                 new ToolbarBrandingOverlayProperties.ColorData(
                         Color.WHITE, BrandedColorScheme.LIGHT_BRANDED_THEME);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(COLOR_DATA, colorData));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(COLOR_DATA, colorData));
 
         assertEquals(Color.WHITE, ((ColorDrawable) mView.getBackground()).getColor());
         assertEquals(
@@ -118,7 +118,7 @@ public class ToolbarBrandingOverlayViewBinderUnitTest extends BlankUiTestActivit
         var colorData =
                 new ToolbarBrandingOverlayProperties.ColorData(
                         Color.DKGRAY, BrandedColorScheme.INCOGNITO);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(COLOR_DATA, colorData));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(COLOR_DATA, colorData));
 
         assertEquals(Color.DKGRAY, ((ColorDrawable) mView.getBackground()).getColor());
         assertEquals(

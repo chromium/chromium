@@ -62,7 +62,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.ViewUtils;
@@ -522,7 +521,7 @@ public class HistorySyncTest {
     public void testOnClickListenersAttachedWithMinorModeAccount() {
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHistorySyncCoordinator =
                             new HistorySyncCoordinator(
@@ -538,7 +537,7 @@ public class HistorySyncTest {
         // Wait for MinorModeHelper to resolve
         new FakeTimeTestRule().sleepMillis(MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -573,7 +572,7 @@ public class HistorySyncTest {
     public void testOnClickListenersAttachedWithNonMinorModeAccount() {
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHistorySyncCoordinator =
                             new HistorySyncCoordinator(
@@ -589,7 +588,7 @@ public class HistorySyncTest {
         // Wait for MinorModeHelper to resolve
         new FakeTimeTestRule().sleepMillis(MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -630,7 +629,7 @@ public class HistorySyncTest {
         ActivityTestUtils.rotateActivityToOrientation(
                 mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHistorySyncCoordinator.maybeRecreateView();
                     mActivityTestRule
@@ -649,7 +648,7 @@ public class HistorySyncTest {
 
     private void buildHistorySyncCoordinator(
             boolean showEmailInFooter, boolean shouldSignOutOnDecline) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHistorySyncCoordinator =
                             new HistorySyncCoordinator(

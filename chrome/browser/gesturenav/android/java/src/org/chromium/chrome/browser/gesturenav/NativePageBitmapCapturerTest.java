@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -40,7 +40,7 @@ public class NativePageBitmapCapturerTest {
     public void testWithNativePage() throws TimeoutException {
         mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             NativePageBitmapCapturer.maybeCaptureNativeView(
@@ -58,7 +58,7 @@ public class NativePageBitmapCapturerTest {
     public void testWithNonNativePage() {
         mTabbedActivityTestRule.startMainActivityOnBlankPage();
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             NativePageBitmapCapturer.maybeCaptureNativeView(

@@ -16,10 +16,10 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -79,7 +79,7 @@ public class ListMenuButtonTest {
                         },
                 true);
         // Expect no crash when calling showMenu twice.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     button.showMenu();
                     button.showMenu();

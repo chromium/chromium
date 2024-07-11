@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -42,7 +43,6 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
@@ -87,7 +87,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     }
 
     private void setSyncable(boolean syncable) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(mMockSyncService.isSyncFeatureEnabled()).thenReturn(syncable);
                     when(mMockSyncService.getActiveDataTypes())

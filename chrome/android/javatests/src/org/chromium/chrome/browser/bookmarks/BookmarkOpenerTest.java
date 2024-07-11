@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -41,7 +42,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.sync.SyncFeatureMap;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.url.GURL;
 
@@ -80,7 +80,7 @@ public class BookmarkOpenerTest {
         mActionTester = new UserActionTester();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
                 });
@@ -124,7 +124,7 @@ public class BookmarkOpenerTest {
             mBookmarkManagerCoordinator = mBookmarkActivity.getManagerForTesting();
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
                     mBookmarkOpener = mBookmarkManagerCoordinator.getBookmarkOpenerForTesting();
@@ -132,7 +132,7 @@ public class BookmarkOpenerTest {
     }
 
     void openRootFolder() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> getBookmarkDelegate().openFolder(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
@@ -164,7 +164,7 @@ public class BookmarkOpenerTest {
         openBookmarkManager();
         openMobileBookmarks();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mBookmarkOpener.openBookmarkInCurrentTab(id, /* incognito= */ false));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -187,7 +187,7 @@ public class BookmarkOpenerTest {
         openBookmarkManager();
         openReadingList();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mBookmarkOpener.openBookmarkInCurrentTab(id, /* incognito= */ false));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -216,7 +216,7 @@ public class BookmarkOpenerTest {
         openBookmarkManager();
         openMobileBookmarks();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mBookmarkOpener.openBookmarkInCurrentTab(id, /* incognito= */ true));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -235,7 +235,7 @@ public class BookmarkOpenerTest {
         openBookmarkManager();
         openMobileBookmarks();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mBookmarkOpener.openBookmarksInNewTabs(ids, /* incognito= */ false));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -268,7 +268,7 @@ public class BookmarkOpenerTest {
         openBookmarkManager();
         openMobileBookmarks();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mBookmarkOpener.openBookmarksInNewTabs(ids, /* incognito= */ true));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -278,7 +278,7 @@ public class BookmarkOpenerTest {
     private BookmarkId addMobileBookmark(final String title, GURL url) {
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         mBookmarkModel.addBookmark(
                                 mBookmarkModel.getMobileFolderId(), 0, title, url));
@@ -288,7 +288,7 @@ public class BookmarkOpenerTest {
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         BookmarkId bookmarkId =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> mBookmarkModel.addToDefaultReadingList(title, url));
         return bookmarkId;
     }

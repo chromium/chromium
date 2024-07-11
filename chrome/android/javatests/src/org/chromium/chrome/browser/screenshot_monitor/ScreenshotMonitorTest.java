@@ -35,7 +35,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -97,7 +96,7 @@ public class ScreenshotMonitorTest {
         MockitoAnnotations.initMocks(this);
         mTestScreenshotMonitorDelegate = new TestScreenshotMonitorDelegate();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestScreenshotMonitor =
                             new ScreenshotMonitorImpl(

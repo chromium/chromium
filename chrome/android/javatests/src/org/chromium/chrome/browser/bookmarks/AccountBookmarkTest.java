@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.matches;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;

@@ -20,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -31,7 +32,6 @@ import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,7 +84,7 @@ public class MultiInstanceMigrationTest {
     }
 
     private void buildPersistentStoreAndWaitForMigration() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MockTabModelSelector selector =
                             new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
@@ -355,7 +355,7 @@ public class MultiInstanceMigrationTest {
     public void testNewMetataFileExists() throws Exception {
         // Set up two old metadata files.
         int maxCount =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TabWindowManagerSingleton.getInstance()
                                         .getMaxSimultaneousSelectors());

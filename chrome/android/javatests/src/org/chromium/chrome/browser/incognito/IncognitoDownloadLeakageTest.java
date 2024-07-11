@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -51,7 +52,6 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -149,14 +149,14 @@ public class IncognitoDownloadLeakageTest {
         IncognitoDataTestUtils.fireAndWaitForCctWarmup();
 
         // Download related setUp steps.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DownloadManagerService.getDownloadManagerService()
                             .addDownloadObserver(mTestDownloadManagerServiceObserver);
                     OfflineContentAggregatorFactory.get().addObserver(mTestDownloadBackendObserver);
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // This skips the download prompt dialog for tests.
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
@@ -171,11 +171,11 @@ public class IncognitoDownloadLeakageTest {
     @After
     public void tearDown() {
         deleteFilesInDownloadDirectory(mDownloadedFileName);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         DownloadManagerService.getDownloadManagerService()
                                 .removeDownloadObserver(mTestDownloadManagerServiceObserver));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
     }
 
@@ -233,7 +233,7 @@ public class IncognitoDownloadLeakageTest {
         assertTrue(hasFileDownloaded(mDownloadedFileName));
 
         // Retrieve downloads from the incognito DownloadService.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = incognitoTab.getProfile();
                     DownloadManagerService.getDownloadManagerService()
@@ -249,7 +249,7 @@ public class IncognitoDownloadLeakageTest {
                 mChromeActivityTestRule, mCustomTabActivityTestRule, "about:blank");
 
         // Retrieve downloads for regular Profile.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> DownloadManagerService.getDownloadManagerService().getAllDownloads(null));
         mRetrieveDownloadsCallback.waitForCallback(1);
 
@@ -279,7 +279,7 @@ public class IncognitoDownloadLeakageTest {
         assertTrue(hasFileDownloaded(mDownloadedFileName));
 
         // Retrieve downloads from the incognito DownloadService.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = incognitoTab1.getProfile();
                     DownloadManagerService.getDownloadManagerService()
@@ -296,7 +296,7 @@ public class IncognitoDownloadLeakageTest {
                         mChromeActivityTestRule, mCustomTabActivityTestRule, "about:blank");
 
         // Retrieve downloads for the second incognito profile.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = incognitoTab2.getProfile();
                     DownloadManagerService.getDownloadManagerService()

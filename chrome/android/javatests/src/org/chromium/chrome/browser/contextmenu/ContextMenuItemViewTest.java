@@ -21,10 +21,10 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -51,7 +51,7 @@ public class ContextMenuItemViewTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(R.layout.context_menu_share_row);
                     mShareItemView = getActivity().findViewById(android.R.id.content);
@@ -83,7 +83,7 @@ public class ContextMenuItemViewTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 
@@ -91,7 +91,7 @@ public class ContextMenuItemViewTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testText() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(ContextMenuItemWithIconButtonProperties.TEXT, TEXT));
         assertThat("Incorrect item text.", mText.getText(), equalTo(TEXT));
     }
@@ -103,7 +103,7 @@ public class ContextMenuItemViewTest extends BlankUiTestActivityTestCase {
         assertThat("Incorrect initial icon visibility.", mIcon.getVisibility(), equalTo(View.GONE));
         final Bitmap bitmap = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
         final BitmapDrawable drawable = new BitmapDrawable(mIcon.getResources(), bitmap);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable);
                     mModel.set(ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC, APP);
@@ -126,7 +126,7 @@ public class ContextMenuItemViewTest extends BlankUiTestActivityTestCase {
         assertFalse(
                 "Icon has onClickListeners when it shouldn't, yet, have.",
                 mIcon.hasOnClickListeners());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(
                             ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER,

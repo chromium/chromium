@@ -43,7 +43,6 @@ import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -133,7 +132,7 @@ public class ChromeTabUtils {
 
     public static String getTitleOnUiThread(Tab tab) {
         AtomicReference<String> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     res.set(tab.getTitle());
                 });
@@ -142,7 +141,7 @@ public class ChromeTabUtils {
 
     public static String getUrlStringOnUiThread(Tab tab) {
         AtomicReference<String> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     res.set(tab.getUrl().getSpec());
                 });
@@ -151,7 +150,7 @@ public class ChromeTabUtils {
 
     public static GURL getUrlOnUiThread(Tab tab) {
         AtomicReference<GURL> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     res.set(tab.getUrl());
                 });
@@ -219,7 +218,7 @@ public class ChromeTabUtils {
 
         final CountDownLatch loadStoppedLatch = new CountDownLatch(1);
         final CallbackHelper loadedCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Don't check for the load being already complete if there is a trigger to run.
                     if (loadTrigger == null && loadComplete(tab, url)) {
@@ -255,7 +254,7 @@ public class ChromeTabUtils {
         }
 
         boolean complete =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> loadComplete(tab, url));
+                ThreadUtils.runOnUiThreadBlockingNoException(() -> loadComplete(tab, url));
 
         if (complete) return;
 
@@ -271,7 +270,7 @@ public class ChromeTabUtils {
         boolean shouldShowLoadingUI = false;
         if (webContents != null) {
             shouldShowLoadingUI =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlockingNoException(
                             () -> webContents.shouldShowLoadingUI());
         }
         return String.format(
@@ -305,10 +304,10 @@ public class ChromeTabUtils {
      * Waits for the given tab to start loading its current page.
      *
      * @param tab The tab to wait for the page loading to be started.
-     * @param expectedUrl The expected url of the started page load.  Pass in null if starting
-     *                    any load is sufficient.
-     * @param loadTrigger The trigger action that will result in a page load started event
-     *                    to be fired (not run on the UI thread by default).
+     * @param expectedUrl The expected url of the started page load. Pass in null if starting any
+     *     load is sufficient.
+     * @param loadTrigger The trigger action that will result in a page load started event to be
+     *     fired (not run on the UI thread by default).
      * @param secondsToWait The number of seconds to wait for the page to be load to be started.
      */
     public static void waitForTabPageLoadStart(
@@ -317,7 +316,7 @@ public class ChromeTabUtils {
             Runnable loadTrigger,
             long secondsToWait) {
         final CallbackHelper startedCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(
                             new EmptyTabObserver() {
@@ -397,7 +396,7 @@ public class ChromeTabUtils {
         Assert.assertFalse(ThreadUtils.runningOnUiThread());
 
         final CallbackHelper interactableCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // If a tab is hidden, don't wait for interactivity. See note in
                     // TabPageInteractableObserver.
@@ -417,11 +416,12 @@ public class ChromeTabUtils {
 
     /**
      * Switch to the given TabIndex in the current tabModel.
+     *
      * @param tabIndex
      */
     public static void switchTabInCurrentTabModel(
             final ChromeActivity activity, final int tabIndex) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModelUtils.setIndex(activity.getCurrentTabModel(), tabIndex);
                 });
@@ -436,7 +436,7 @@ public class ChromeTabUtils {
             Instrumentation instrumentation, ChromeTabbedActivity activity) {
         final TabModel normalTabModel = activity.getTabModelSelector().getModel(false);
         final CallbackHelper createdCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     normalTabModel.addObserver(
                             new TabModelObserver() {
@@ -510,7 +510,7 @@ public class ChromeTabUtils {
                         selectedCallback.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.addObserver(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> tabModel.addObserver(observer));
 
         MenuUtils.invokeCustomMenuActionSync(
                 instrumentation,
@@ -527,7 +527,7 @@ public class ChromeTabUtils {
         } catch (TimeoutException ex) {
             Assert.fail("Never received tab selected event");
         }
-        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
 
         Tab tab = activity.getActivityTab();
         waitForTabPageLoaded(tab, (String) null);
@@ -577,7 +577,7 @@ public class ChromeTabUtils {
     }
 
     public static void loadUrlOnUiThread(final Tab tab, final String url) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.loadUrl(new LoadUrlParams(url));
                 });
@@ -594,7 +594,7 @@ public class ChromeTabUtils {
 
     /** Fetch the number of tabs open in the current model. */
     public static int getNumOpenTabs(final ChromeActivity activity) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {
@@ -694,7 +694,7 @@ public class ChromeTabUtils {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tabModelSelectorSupplier.get().closeAllTabs();
                 });
@@ -836,7 +836,7 @@ public class ChromeTabUtils {
         final CallbackHelper createdCallback = new CallbackHelper();
         final TabModel tabModel =
                 testRule.getActivity().getTabModelSelector().getModel(expectIncognito);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tabModel.addObserver(
                             new TabModelObserver() {
@@ -898,7 +898,7 @@ public class ChromeTabUtils {
         final CallbackHelper createdCallback = new CallbackHelper();
         final TabModel tabModel =
                 backgroundActivity.getTabModelSelector().getModel(expectIncognito);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tabModel.addObserver(
                             new TabModelObserver() {

@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -29,7 +30,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -76,7 +76,7 @@ public class TemplateUrlServiceTest {
     @Before
     public void setUp() {
         mTemplateUrlService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -89,7 +89,7 @@ public class TemplateUrlServiceTest {
         waitForTemplateUrlServiceToLoad();
 
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() {
@@ -111,7 +111,7 @@ public class TemplateUrlServiceTest {
             final String protocolVersion)
             throws ExecutionException {
         GURL result =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<GURL>() {
                             @Override
                             public GURL call() {
@@ -137,7 +137,7 @@ public class TemplateUrlServiceTest {
             final Map<String, String> expectedParams)
             throws ExecutionException {
         String result =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<String>() {
                             @Override
                             public String call() {
@@ -162,7 +162,7 @@ public class TemplateUrlServiceTest {
         waitForTemplateUrlServiceToLoad();
 
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() {
@@ -173,7 +173,7 @@ public class TemplateUrlServiceTest {
         // Add another load listener and ensure that is notified without needing to call load()
         // again.
         final AtomicBoolean observerNotified = new AtomicBoolean(false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTemplateUrlService.registerLoadListener(
                             new LoadListener() {
@@ -211,7 +211,7 @@ public class TemplateUrlServiceTest {
         Assert.assertEquals(searchEngines.get(0), defaultSearchEngine);
 
         // Set search engine index and verify it stuck.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "There must be more than one search engine to change searchEngines",
@@ -301,7 +301,7 @@ public class TemplateUrlServiceTest {
         waitForTemplateUrlServiceToLoad();
 
         // Add regular search engine. It will be used to test conflict with Play API search engine.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTemplateUrlService.addSearchEngineForTesting("keyword1", 0);
                 });
@@ -357,7 +357,7 @@ public class TemplateUrlServiceTest {
         waitForTemplateUrlServiceToLoad();
 
         // Add regular search engine. It will be used to test conflict with Play API search engine.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTemplateUrlService.addSearchEngineForTesting("keyword1", 0);
                 });
@@ -420,7 +420,7 @@ public class TemplateUrlServiceTest {
         waitForTemplateUrlServiceToLoad();
 
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() {
@@ -450,7 +450,7 @@ public class TemplateUrlServiceTest {
             String imageTranslateSourceLanguageParamKey,
             String imageTranslateTargetLanguageParamKey,
             boolean setAsDefault) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return templateUrlService.setPlayAPISearchEngine(
                             name,
@@ -469,13 +469,12 @@ public class TemplateUrlServiceTest {
     }
 
     private TemplateUrl getDefaultSearchEngine(TemplateUrlService templateUrlService) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 templateUrlService::getDefaultSearchEngineTemplateUrl);
     }
 
     private List<TemplateUrl> getSearchEngines(TemplateUrlService templateUrlService) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                templateUrlService::getTemplateUrls);
+        return ThreadUtils.runOnUiThreadBlockingNoException(templateUrlService::getTemplateUrls);
     }
 
     private int getSearchEngineCount(TemplateUrlService templateUrlService) {
@@ -492,7 +491,7 @@ public class TemplateUrlServiceTest {
                     }
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTemplateUrlService.registerLoadListener(listener);
                     mTemplateUrlService.load();

@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser.test.util;
 
+import org.chromium.base.ThreadUtils;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -13,7 +15,7 @@ public class RenderProcessHostUtils {
     private RenderProcessHostUtils() {}
 
     public static int getCurrentRenderProcessCount() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return RenderProcessHostUtilsJni.get().getCurrentRenderProcessCount();
                 });

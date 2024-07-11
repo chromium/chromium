@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -25,7 +26,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.PromoDialog.DialogParams;
 import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -58,7 +58,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
     private View getDialogLayout(DialogParams dialogParams) throws Exception {
         Activity activity = getActivity();
         PromoDialog dialog =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PromoDialog testDialog =
                                     new PromoDialog(activity) {
@@ -74,7 +74,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
                             return testDialog;
                         });
         View dialogLayout =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 dialog.getWindow()
                                         .getDecorView()
@@ -94,7 +94,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         params.secondaryButtonStringResource = R.string.promo_dialog_test_secondary_button;
         params.footerStringResource = R.string.promo_dialog_test_footer;
         View layout = getDialogLayout(params);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((ViewGroup) (layout.getParent())).removeView(layout);
                     getActivity().setContentView(layout);
@@ -116,7 +116,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         params.secondaryButtonStringResource = R.string.promo_dialog_test_secondary_button;
         params.footerStringResource = R.string.promo_dialog_test_footer;
         View layout = getDialogLayout(params);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((ViewGroup) (layout.getParent())).removeView(layout);
                     getActivity().setContentView(layout);
@@ -136,7 +136,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         params.secondaryButtonStringResource = R.string.promo_dialog_test_secondary_button;
         params.footerStringResource = R.string.promo_dialog_test_footer;
         View layout = getDialogLayout(params);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((ViewGroup) (layout.getParent())).removeView(layout);
                     getActivity().setContentView(layout, new LayoutParams(1600, 1000));
@@ -157,7 +157,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         params.secondaryButtonStringResource = R.string.promo_dialog_test_secondary_button;
         params.footerStringResource = R.string.promo_dialog_test_footer;
         View layout = getDialogLayout(params);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((ViewGroup) (layout.getParent())).removeView(layout);
                     getActivity().setContentView(layout, new LayoutParams(1600, 1000));

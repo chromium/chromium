@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -38,7 +39,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.GURL;
@@ -58,7 +58,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
     public void setUp() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAppModalPresenter = new AppModalPresenter(getActivity());
                     mModalDialogManager =
@@ -96,7 +96,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -124,7 +124,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -154,7 +154,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> closeCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -200,7 +200,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                     new InstanceInfo(4, 61, InstanceInfo.Type.OTHER, "url4", "title4", 1, 1, false)
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -235,7 +235,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         int itemClickCount = closeCallbackHelper.getCallCount();
         Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -280,7 +280,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                     new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
                     new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),

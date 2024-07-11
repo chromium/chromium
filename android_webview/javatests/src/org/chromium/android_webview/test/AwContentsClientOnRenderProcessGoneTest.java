@@ -23,12 +23,12 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -83,7 +83,7 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
         helper.setResponse(true); // Don't automatically kill the browser process.
 
         final AwRenderProcess renderProcess =
-                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+                ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
 
         // Ensure that the renderer has started.
         mActivityTestRule.loadUrlSync(
@@ -168,7 +168,7 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     @OnlyRunIn(MULTI_PROCESS)
     public void testRenderProcessCanNotTerminateBeforeStart() throws Throwable {
         Assert.assertFalse(
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mAwContents.getRenderProcess().terminate()));
     }
 
@@ -178,7 +178,7 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     @OnlyRunIn(MULTI_PROCESS)
     public void testRenderProcessSameBeforeAndAfterStart() throws Throwable {
         AwRenderProcess renderProcessBeforeStart =
-                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+                ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
 
         // Ensure that the renderer has started.
         mActivityTestRule.loadUrlSync(
@@ -187,7 +187,7 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         AwRenderProcess renderProcessAfterStart =
-                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+                ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
 
         Assert.assertEquals(renderProcessBeforeStart, renderProcessAfterStart);
     }
@@ -239,16 +239,16 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     @CommandLineFlags.Add({"enable-features=CreateSpareRendererOnBrowserContextCreation"})
     public void testTerminateBeforeRenderProcessCreated() throws Throwable {
         AwRenderProcess process =
-                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+                ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
         mActivityTestRule.pollUiThread(() -> process.isReadyForTesting());
-        TestThreadUtils.runOnUiThreadBlocking(() -> Assert.assertFalse(process.terminate()));
+        ThreadUtils.runOnUiThreadBlocking(() -> Assert.assertFalse(process.terminate()));
 
         mActivityTestRule.loadUrlSync(
                 mAwContents,
                 mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertSame(process, mAwContents.getRenderProcess()));
 
         // Terminating future renderers works as expected.
@@ -267,9 +267,9 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     @CommandLineFlags.Add({"enable-features=CreateSpareRendererOnBrowserContextCreation"})
     public void testSetNetworkAvailableAfterSpareRenderTerminate() throws Throwable {
         AwRenderProcess process =
-                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+                ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
         mActivityTestRule.pollUiThread(() -> process.isReadyForTesting());
-        TestThreadUtils.runOnUiThreadBlocking(() -> Assert.assertFalse(process.terminate()));
+        ThreadUtils.runOnUiThreadBlocking(() -> Assert.assertFalse(process.terminate()));
 
         mActivityTestRule.loadUrlSync(
                 mAwContents,

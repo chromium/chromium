@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -32,7 +33,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
@@ -74,7 +74,7 @@ public class CloseAllTabsDialogTest {
         navigateToCloseAllTabsDialog(selector);
         onViewWaiting(withId(org.chromium.chrome.test.R.id.positive_button), true).perform(click());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(0, selector.getModel(mIsIncognito).getCount());
                 });
@@ -92,7 +92,7 @@ public class CloseAllTabsDialogTest {
 
         onViewWaiting(withId(org.chromium.chrome.test.R.id.negative_button), true).perform(click());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(1, selector.getModel(mIsIncognito).getCount());
                 });
@@ -106,7 +106,7 @@ public class CloseAllTabsDialogTest {
 
         // Open the AppMenu in the Tab Switcher and ensure it shows.
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -116,7 +116,7 @@ public class CloseAllTabsDialogTest {
 
         // Click close all tabs.
         if (mIsIncognito) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         AppMenuTestSupport.callOnItemClick(
                                 mActivityTestRule.getAppMenuCoordinator(),
@@ -124,7 +124,7 @@ public class CloseAllTabsDialogTest {
                     });
             return;
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.callOnItemClick(
                             mActivityTestRule.getAppMenuCoordinator(),

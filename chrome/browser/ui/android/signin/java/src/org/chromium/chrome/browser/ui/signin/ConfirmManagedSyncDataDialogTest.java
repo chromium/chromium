@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -41,7 +42,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Test for {@link ConfirmManagedSyncDataDialogCoordinator} */
@@ -121,7 +121,7 @@ public class ConfirmManagedSyncDataDialogTest {
     }
 
     private void showManagedSyncDataDialog() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new ConfirmManagedSyncDataDialogCoordinator(
                             mActivityTestRule.getActivity(),

@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -50,7 +51,6 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -91,7 +91,7 @@ public class CustomTabPrivacySandboxDialogTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         mAutomotiveRule.setIsAutomotive(false);
         Context appContext = getInstrumentation().getTargetContext().getApplicationContext();
         mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
@@ -101,7 +101,7 @@ public class CustomTabPrivacySandboxDialogTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
         SharedPreferencesManager pref = ChromeSharedPreferences.getInstance();
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_TASK_ID);
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_URL);
@@ -114,7 +114,7 @@ public class CustomTabPrivacySandboxDialogTest {
 
         // finish() is called on a non-UI thread by the testing harness. Must hide the menu
         // first, otherwise the UI is manipulated on a non-UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (getActivity() == null) return;
                     AppMenuCoordinator coordinator =

@@ -13,13 +13,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -67,8 +67,8 @@ public class BackPressManagerTest {
 
         BackPressManager manager = new BackPressManager();
         EmptyBackPressHandler h1 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
-        TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(h1, BackPressHandler.Type.FIND_TOOLBAR);
                 });
@@ -81,7 +81,7 @@ public class BackPressManagerTest {
         histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BackPressManager.HISTOGRAM, 16); // 16 is FIND_TOOLBAR
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     h1.getHandleBackPressChangedSupplier().set(true);
                     manager.getCallback().handleOnBackPressed();
@@ -90,7 +90,7 @@ public class BackPressManagerTest {
 
         histogramWatcher =
                 HistogramWatcher.newBuilder().expectNoRecords(BackPressManager.HISTOGRAM).build();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     h1.getHandleBackPressChangedSupplier().set(false);
                 });
@@ -107,10 +107,10 @@ public class BackPressManagerTest {
                         BackPressManager.HISTOGRAM, 18); // 18 is XR_DELEGATE
         BackPressManager manager = new BackPressManager();
         EmptyBackPressHandler h1 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
         EmptyBackPressHandler h2 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
-        TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(h1, BackPressHandler.Type.TEXT_BUBBLE);
                     manager.addHandler(h2, BackPressHandler.Type.XR_DELEGATE);
@@ -126,7 +126,7 @@ public class BackPressManagerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         BackPressManager.HISTOGRAM,
                         BackPressManager.getHistogramValue(BackPressHandler.Type.TEXT_BUBBLE));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     h1.getHandleBackPressChangedSupplier().set(true);
                     manager.getCallback().handleOnBackPressed();
@@ -140,10 +140,10 @@ public class BackPressManagerTest {
     public void testFailedHandlers() {
         BackPressManager manager = new BackPressManager();
         var textBubbleFailedHandler =
-                TestThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
+                ThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
         var arSuccessHandler =
-                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
-        TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(textBubbleFailedHandler, BackPressHandler.Type.TEXT_BUBBLE);
                     manager.addHandler(arSuccessHandler, BackPressHandler.Type.XR_DELEGATE);
@@ -173,8 +173,8 @@ public class BackPressManagerTest {
         BackPressManager manager = new BackPressManager();
         manager.setFallbackOnBackPressed(callbackHelper::notifyCalled);
         var textBubbleFailedHandler =
-                TestThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
-        TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(textBubbleFailedHandler, BackPressHandler.Type.TEXT_BUBBLE);
                     textBubbleFailedHandler.getHandleBackPressChangedSupplier().set(true);
@@ -198,7 +198,7 @@ public class BackPressManagerTest {
         BackPressManager manager = new BackPressManager();
 
         EmptyBackPressHandler h1 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
 
         var record =
                 HistogramWatcher.newBuilder()
@@ -208,7 +208,7 @@ public class BackPressManagerTest {
                         .expectNoRecords("Android.BackPress.Intercept.RightEdge")
                         .expectNoRecords("Android.BackPress.SwipeEdge.TabHistoryNavigation")
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(h1, BackPressHandler.Type.TAB_HISTORY);
                     h1.getHandleBackPressChangedSupplier().set(true);
@@ -231,9 +231,9 @@ public class BackPressManagerTest {
         manager.setIsGestureNavEnabledSupplier(() -> true);
 
         EmptyBackPressHandler h1 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
         EmptyBackPressHandler h2 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
 
         var edgeRecords =
                 HistogramWatcher.newBuilder()
@@ -246,7 +246,7 @@ public class BackPressManagerTest {
                         .expectNoRecords("Android.BackPress.SwipeEdge.TabHistoryNavigation")
                         .build();
         // Trigger XR delegate back press handler from left side.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(h1, BackPressHandler.Type.TEXT_BUBBLE);
                     manager.addHandler(h2, BackPressHandler.Type.XR_DELEGATE);
@@ -275,7 +275,7 @@ public class BackPressManagerTest {
                         .expectNoRecords("Android.BackPress.SwipeEdge.TabHistoryNavigation")
                         .build();
         // Trigger Text bubble delegate back press handler from right side.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     h1.getHandleBackPressChangedSupplier().set(true);
                     h2.getHandleBackPressChangedSupplier().set(true);
@@ -298,7 +298,7 @@ public class BackPressManagerTest {
         manager.setIsGestureNavEnabledSupplier(() -> true);
 
         EmptyBackPressHandler h1 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
 
         var edgeRecords =
                 HistogramWatcher.newBuilder()
@@ -311,7 +311,7 @@ public class BackPressManagerTest {
                         .expectNoRecords("Android.BackPress.Intercept.RightEdge")
                         .build();
         // Trigger tab history navigation from left side.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(h1, BackPressHandler.Type.TAB_HISTORY);
                     h1.getHandleBackPressChangedSupplier().set(true);
@@ -337,7 +337,7 @@ public class BackPressManagerTest {
                         .expectNoRecords("Android.BackPress.Intercept.LeftEdge")
                         .build();
         // Trigger tab history navigation from right side.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_RIGHT);
                     manager.getCallback().handleOnBackStarted(backEvent);
@@ -352,7 +352,7 @@ public class BackPressManagerTest {
 
     // Trigger back press ignoring built-in assertion errors.
     private void triggerBackPressWithoutAssertionError(BackPressManager manager) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         manager.getCallback().handleOnBackPressed();

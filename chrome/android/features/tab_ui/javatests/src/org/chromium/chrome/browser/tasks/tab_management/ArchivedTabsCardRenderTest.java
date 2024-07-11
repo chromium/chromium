@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -33,7 +34,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -79,7 +79,7 @@ public class ArchivedTabsCardRenderTest {
     public void setUp() {
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContentView = new FrameLayout(mActivityTestRule.getActivity());
                     mContentView.setBackgroundColor(Color.WHITE);
@@ -115,7 +115,7 @@ public class ArchivedTabsCardRenderTest {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 NightModeTestUtils::tearDownNightModeForBlankUiTestActivity);
     }
 
@@ -130,7 +130,7 @@ public class ArchivedTabsCardRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testPlural_VeryLargeNumbers() throws IOException, InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(NUMBER_OF_ARCHIVED_TABS, 99999999);
                     mModel.set(ARCHIVE_TIME_DELTA_DAYS, 99999999);
@@ -142,7 +142,7 @@ public class ArchivedTabsCardRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testSingular() throws IOException, InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(NUMBER_OF_ARCHIVED_TABS, 1);
                     mModel.set(ARCHIVE_TIME_DELTA_DAYS, 1);

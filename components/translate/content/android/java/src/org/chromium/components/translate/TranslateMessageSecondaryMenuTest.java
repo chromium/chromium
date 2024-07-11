@@ -42,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -51,7 +52,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.translate.TranslateMessage.MenuItem;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -112,7 +112,7 @@ public final class TranslateMessageSecondaryMenuTest {
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = sActivityTestRule.getActivity();
                     sContentView = new FrameLayout(sActivity);
@@ -124,7 +124,7 @@ public final class TranslateMessageSecondaryMenuTest {
     public void setupTest() throws Exception {
         mJniMocker.mock(TranslateMessageJni.TEST_HOOKS, mMockJni);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sContentView.removeAllViews();
                 });
@@ -133,7 +133,7 @@ public final class TranslateMessageSecondaryMenuTest {
     @Test
     @MediumTest
     public void testShowMultipleMenuItems() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     prepareListMenuButtonForTranslateMessageOnUiThread();
                 });
@@ -214,7 +214,7 @@ public final class TranslateMessageSecondaryMenuTest {
     @Test
     @MediumTest
     public void testMenuItemViewReUse() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     prepareListMenuButtonForTranslateMessageOnUiThread();
                 });
@@ -288,7 +288,7 @@ public final class TranslateMessageSecondaryMenuTest {
     @Test
     @MediumTest
     public void testClickMenuItem() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     prepareListMenuButtonForTranslateMessageOnUiThread();
                 });
@@ -319,7 +319,7 @@ public final class TranslateMessageSecondaryMenuTest {
     @Test
     @MediumTest
     public void testClickMenuItemWithNestedMenu() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     prepareListMenuButtonForTranslateMessageOnUiThread();
                 });
@@ -367,7 +367,7 @@ public final class TranslateMessageSecondaryMenuTest {
     @Test
     @MediumTest
     public void testOpenMenuAfterClearNativePointer() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Immediately clear the native object pointer from the TranslateMessage.
                     prepareListMenuButtonForTranslateMessageOnUiThread().clearNativePointer();

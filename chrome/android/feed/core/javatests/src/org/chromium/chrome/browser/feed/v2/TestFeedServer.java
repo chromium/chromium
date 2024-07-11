@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.feed.v2;
 import com.google.protobuf.CodedOutputStream;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.WebServer;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class TestFeedServer implements WebServer.RequestHandler {
     public TestFeedServer() {
         try {
             mServer = new WebServer(0, false);
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setString(Pref.HOST_OVERRIDE_HOST, getBaseUrl());

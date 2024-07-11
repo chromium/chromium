@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -51,7 +52,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.overlay_window.PlaybackState;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -179,13 +179,12 @@ public class PictureInPictureActivityTest {
         // Resize to some reasonable size, and verify that native is told about it.
         final int reasonableSize = 10;
         View view = activity.getViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> view.layout(0, 0, reasonableSize, reasonableSize));
+        ThreadUtils.runOnUiThreadBlocking(() -> view.layout(0, 0, reasonableSize, reasonableSize));
         verify(mNativeMock, times(1))
                 .onViewSizeChanged(NATIVE_OVERLAY, reasonableSize, reasonableSize);
         // An unreasonably large size should not generate a resize event.
         final int unreasonableSize = activity.getWindowAndroid().getDisplay().getDisplayWidth();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> view.layout(0, 0, unreasonableSize, unreasonableSize));
         verify(mNativeMock, times(0)).onViewSizeChanged(anyInt(), anyInt(), anyInt());
         testExitOn(activity, () -> activity.close());
@@ -323,7 +322,7 @@ public class PictureInPictureActivityTest {
     }
 
     private void testExitOn(Activity activity, Runnable runnable) throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> runnable.run());
+        ThreadUtils.runOnUiThreadBlocking(() -> runnable.run());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -342,7 +341,7 @@ public class PictureInPictureActivityTest {
                         new Callable<Void>() {
                             @Override
                             public Void call() throws TimeoutException {
-                                TestThreadUtils.runOnUiThreadBlocking(
+                                ThreadUtils.runOnUiThreadBlocking(
                                         () ->
                                                 PictureInPictureActivity.createActivity(
                                                         NATIVE_OVERLAY,

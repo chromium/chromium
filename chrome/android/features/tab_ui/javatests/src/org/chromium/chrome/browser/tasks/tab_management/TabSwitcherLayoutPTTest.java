@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -54,7 +55,6 @@ import org.chromium.chrome.test.transit.hub.HubNewTabGroupDialogFacility;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.IOException;
@@ -366,7 +366,7 @@ public class TabSwitcherLayoutPTTest {
 
         // TODO(crbug.com/324919909): Migrate this to a HubTabSwitcherCardFacility with a tab
         // thumbnail as a view element.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ImageView view =
                             (ImageView)
@@ -380,7 +380,7 @@ public class TabSwitcherLayoutPTTest {
 
         page = tabSwitcher.leaveHubToPreviousTabViaBack();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     resetHTSStateOnUiThread.run();
                 });

@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -31,7 +32,6 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -160,7 +160,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_CARD_BENEFITS);
 
-        TestThreadUtils.runOnUiThreadBlocking(cardBenefitsPref::performClick);
+        ThreadUtils.runOnUiThreadBlocking(cardBenefitsPref::performClick);
         mRule.waitForFragmentToBeShown();
 
         Assert.assertTrue(mRule.getLastestShownFragment() instanceof AutofillCardBenefitsFragment);

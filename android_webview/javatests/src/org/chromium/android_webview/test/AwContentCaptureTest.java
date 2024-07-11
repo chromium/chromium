@@ -23,6 +23,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -34,7 +35,6 @@ import org.chromium.components.content_capture.ContentCaptureTestSupport;
 import org.chromium.components.content_capture.FrameSession;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.content_capture.UrlAllowlist;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
@@ -259,7 +259,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
         mContainerView = mRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mConsumer = new TestAwContentCaptureConsumer();
                     mOnscreenContentProvider =
@@ -313,14 +313,14 @@ public class AwContentCaptureTest extends AwParameterizedTest {
     }
 
     private void destroyAwContents() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.destroy();
                 });
     }
 
     private void scrollToBottom() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContainerView.scrollTo(0, mContainerView.getHeight());
                 });
@@ -338,7 +338,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
     }
 
     private void scrollToTop() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContainerView.scrollTo(0, 0);
                 });
@@ -932,7 +932,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testMultipleConsumers() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSecondConsumer = new TestAwContentCaptureConsumer();
                     mOnscreenContentProvider.addConsumer(mSecondConsumer);
@@ -962,7 +962,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=ContentCaptureTriggeringForExperiment"})
     public void testHostNotAllowed() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSecondConsumer = new TestAwContentCaptureConsumer();
                 });
@@ -1043,13 +1043,13 @@ public class AwContentCaptureTest extends AwParameterizedTest {
         // Hides and shows the WebContent and verifies the content is captured again.
         runAndVerifyCallbacks(
                 () -> {
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 mContainerView.onWindowVisibilityChanged(View.INVISIBLE);
                             });
                     AwActivityTestRule.pollInstrumentationThread(
                             () -> !mAwContents.isPageVisible());
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 mContainerView.onWindowVisibilityChanged(View.VISIBLE);
                             });
@@ -1171,7 +1171,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
         // Direct ContentCaptureReveiver and OnscreenContentProvider not to get the favicon
         // from Webontents, because there is no way to control the time of favicon update.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContentCaptureTestSupport.disableGetFaviconFromWebContents();
                 });
@@ -1198,7 +1198,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
         // Simulates favicon update by calling OnscreenContentProvider's test method.
         runAndVerifyCallbacks(
                 () -> {
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 ContentCaptureTestSupport.simulateDidUpdateFaviconURL(
                                         mAwContents.getWebContents(), expectedJson);

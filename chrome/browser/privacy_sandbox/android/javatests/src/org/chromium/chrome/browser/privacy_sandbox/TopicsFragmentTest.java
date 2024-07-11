@@ -41,6 +41,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -59,7 +60,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -100,7 +100,7 @@ public final class TopicsFragmentTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
@@ -143,14 +143,14 @@ public final class TopicsFragmentTest {
     }
 
     private void setTopicsPrefEnabled(boolean isEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TopicsFragment.setTopicsPrefEnabled(
                                 ProfileManager.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isTopicsPrefEnabled() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         TopicsFragment.isTopicsPrefEnabled(
                                 ProfileManager.getLastUsedRegularProfile()));
@@ -237,7 +237,7 @@ public final class TopicsFragmentTest {
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
         TopicsFragment fragment = mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -656,7 +656,7 @@ public final class TopicsFragmentTest {
     public void testLearnMoreLink() {
         startTopicsSettings();
         TopicsFragment fragment = mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -680,7 +680,7 @@ public final class TopicsFragmentTest {
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
         TopicsFragment fragment = mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -700,7 +700,7 @@ public final class TopicsFragmentTest {
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
         TopicsFragment fragment = mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -718,7 +718,7 @@ public final class TopicsFragmentTest {
     public void testTopicsIconsExist() {
         var activity = mSettingsActivityTestRule.startSettingsActivity();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, new PrivacySandboxBridgeJni());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrivacySandboxBridge privacySandboxBridge =
                             new PrivacySandboxBridge(ProfileManager.getLastUsedRegularProfile());

@@ -28,6 +28,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -53,7 +54,6 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -99,7 +99,7 @@ public class TabReparentingTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
         Context appContext =
                 InstrumentationRegistry.getInstrumentation()
@@ -112,7 +112,7 @@ public class TabReparentingTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
     }
 
     private CustomTabActivity getActivity() {
@@ -141,7 +141,7 @@ public class TabReparentingTest {
                         tabHiddenHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(() -> tabToBeReparented.addObserver(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> tabToBeReparented.addObserver(observer));
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
@@ -178,7 +178,7 @@ public class TabReparentingTest {
                 0,
                 tabHiddenHelper.getCallCount());
         Assert.assertFalse(TabTestUtils.isCustomTab(tabToBeReparented));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tabToBeReparented.removeObserver(observer);
                     ObserverList.RewindableIterator<TabObserver> observers =

@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.BoundedMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,7 +61,7 @@ class PasswordSettingsTestHelper {
         } catch (Exception e) {
             // Activity was already finished by test framework. Any exception is not test-related.
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (!ProfileManager.isInitialized()) return;
                     PasswordManagerHandlerProvider.getForProfile(
@@ -98,7 +98,7 @@ class PasswordSettingsTestHelper {
      * @param initialEntries All entries to be added to saved passwords. Can not be null.
      */
     void setPasswordSourceWithMultipleEntries(SavedPasswordEntry[] initialEntries) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) {
                         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
@@ -106,7 +106,7 @@ class PasswordSettingsTestHelper {
                 });
 
         PasswordManagerHandlerProvider handlerProvider =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 PasswordManagerHandlerProvider.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -115,7 +115,7 @@ class PasswordSettingsTestHelper {
         }
         ArrayList<SavedPasswordEntry> entries = new ArrayList<>(Arrays.asList(initialEntries));
         mHandler.setSavedPasswords(entries);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> handlerProvider.setPasswordManagerHandlerForTest(mHandler));
     }
 
@@ -125,7 +125,7 @@ class PasswordSettingsTestHelper {
      * @param exceptions All exceptions to be added to saved exceptions. Can not be null.
      */
     void setPasswordExceptions(String[] exceptions) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) {
                         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
@@ -133,7 +133,7 @@ class PasswordSettingsTestHelper {
                 });
 
         PasswordManagerHandlerProvider handlerProvider =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 PasswordManagerHandlerProvider.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -141,7 +141,7 @@ class PasswordSettingsTestHelper {
             mHandler = new FakePasswordManagerHandler(handlerProvider);
         }
         mHandler.setSavedPasswordExceptions(new ArrayList<>(Arrays.asList(exceptions)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> handlerProvider.setPasswordManagerHandlerForTest(mHandler));
     }
 

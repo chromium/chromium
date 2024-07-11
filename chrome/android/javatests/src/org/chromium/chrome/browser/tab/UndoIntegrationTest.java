@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -36,7 +37,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -94,7 +94,7 @@ public class UndoIntegrationTest {
         DOMUtils.clickNode(tab.getWebContents(), "link");
 
         // Attempt to close the tab, which will delay closing until the undo timeout goes away.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals("Model should have two tabs", 2, model.getCount());
                     TabModelUtils.closeTabById(model, tab.getId(), true);
@@ -111,7 +111,7 @@ public class UndoIntegrationTest {
                 });
 
         // Validate that the model doesn't contain the original tab or any newly opened tabs.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             "Model is still waiting to close the tab",
@@ -134,7 +134,7 @@ public class UndoIntegrationTest {
                 TabStripUtils.getStripLayoutHelperManager(cta).getStripLayoutHelper(false));
 
         TabModel model = cta.getTabModelSelector().getModel(/* isIncognito= */ false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     closeTabViaButton(cta, model.getTabAt(1).getId());
                     closeTabViaButton(cta, model.getTabAt(0).getId());

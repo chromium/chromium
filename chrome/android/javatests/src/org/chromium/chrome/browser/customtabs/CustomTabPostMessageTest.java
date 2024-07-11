@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.TerminationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -49,7 +50,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -165,7 +165,7 @@ public class CustomTabPostMessageTest {
                 });
         Assert.assertTrue(
                 connection.postMessage(token, "Message", null) == CustomTabsService.RESULT_SUCCESS);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable)
                         () ->
                                 mCustomTabActivityTestRule
@@ -209,7 +209,7 @@ public class CustomTabPostMessageTest {
                 connection.postMessage(token, "Message", null) == CustomTabsService.RESULT_SUCCESS);
 
         final CallbackHelper renderProcessCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new WebContentsObserver(mCustomTabActivityTestRule.getWebContents()) {
                         @Override

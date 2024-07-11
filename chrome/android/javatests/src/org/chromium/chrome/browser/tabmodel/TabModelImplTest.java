@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -34,7 +35,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -159,7 +159,7 @@ public class TabModelImplTest {
     public void isTabInTabGroup_detectMergedTabs() throws Exception {
         createTabs(3, false, mTestUrl);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel tabModel =
                             sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
@@ -190,7 +190,7 @@ public class TabModelImplTest {
     public void isTabInTabGroup_detectMergedTabs_Size1() throws Exception {
         createTabs(3, false, mTestUrl);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel tabModel =
                             sActivityTestRule.getActivity().getTabModelSelector().getModel(false);

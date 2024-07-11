@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -40,7 +41,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests that WebappActivities are launched correctly.
@@ -72,8 +72,8 @@ public class WebappModeTest {
 
     private static final String WEBAPP_ICON =
             "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXB"
-                    + "IWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3wQIFB4cxOfiSQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdG"
-                    + "ggR0lNUFeBDhcAAAAMSURBVAjXY2AUawEAALcAnI/TkI8AAAAASUVORK5CYII=";
+                + "IWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3wQIFB4cxOfiSQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdG"
+                + "ggR0lNUFeBDhcAAAAMSURBVAjXY2AUawEAALcAnI/TkI8AAAAASUVORK5CYII=";
 
     private Intent createIntent(String id, String url, String title, String icon, boolean addMac) {
         Intent intent = WebappTestHelper.createMinimalWebappIntent(id, url);
@@ -103,7 +103,7 @@ public class WebappModeTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(this::setUpOnUiThread);
+        ThreadUtils.runOnUiThreadBlocking(this::setUpOnUiThread);
     }
 
     private void setUpOnUiThread() {

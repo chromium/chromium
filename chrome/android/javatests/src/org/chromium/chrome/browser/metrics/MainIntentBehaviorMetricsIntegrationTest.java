@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -46,7 +47,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
 /** Tests the metrics recording for main intent behaviours. */
@@ -214,7 +214,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
     private void assertBackgroundDurationLogged(long duration, String expectedMetric) {
         startActivity(false);
         mActionTester = new UserActionTester();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -224,7 +224,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
 
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().onNewIntent(intent);
                 });

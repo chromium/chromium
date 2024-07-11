@@ -41,6 +41,7 @@ import org.chromium.android_webview.test.util.VideoTestUtil;
 import org.chromium.android_webview.test.util.VideoTestWebServer;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -53,7 +54,6 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -1627,7 +1627,7 @@ public class AwSettingsTest {
             final WebContents webContents = mAwContents.getWebContents();
             final CallbackHelper onTitleUpdatedHelper = new CallbackHelper();
             final WebContentsObserver observer =
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () ->
                                     new WebContentsObserver(webContents) {
                                         @Override
@@ -1668,7 +1668,7 @@ public class AwSettingsTest {
                         getTitleOnUiThread());
             }
 
-            TestThreadUtils.runOnUiThreadBlocking(() -> webContents.removeObserver(observer));
+            ThreadUtils.runOnUiThreadBlocking(() -> webContents.removeObserver(observer));
         }
 
         private String getData() {
@@ -1679,7 +1679,7 @@ public class AwSettingsTest {
     }
 
     public static int calcDisplayWidthDp(Context context) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
                     return DisplayUtil.pxToDp(displayAndroid, displayAndroid.getDisplayWidth());

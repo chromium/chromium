@@ -39,6 +39,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CloseableOnMainThread;
@@ -77,7 +78,6 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -153,7 +153,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         setupLensChipDelegate();
     }
 
@@ -170,7 +170,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
         deleteTestFiles();
     }
 
@@ -232,7 +232,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         final CallbackHelper newTabCallback = new CallbackHelper();
         final AtomicReference<Tab> newTab = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDownloadTestRule
                             .getActivity()
@@ -314,7 +314,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNull(
                             "Chip popoup was initialized.",
@@ -335,7 +335,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     menuCoordinator.simulateTranslateImageClassificationForTesting();
                     Assert.assertTrue(
@@ -369,7 +369,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
                 tab.getView().getWidth() - 5,
                 tab.getView().getHeight() - 5);
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChipRenderParams chipRenderParams =
                             menuCoordinator.simulateImageClassificationForTesting();
@@ -396,7 +396,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> menuCoordinator.simulateTranslateImageClassificationForTesting());
         Assert.assertNotNull("Context menu was not properly created", menuCoordinator);
         CriteriaHelper.pollUiThread(
@@ -431,7 +431,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     menuCoordinator.simulateShoppyImageClassificationForTesting();
                     Assert.assertTrue(
@@ -457,7 +457,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> menuCoordinator.simulateShoppyImageClassificationForTesting());
         Assert.assertNotNull("Context menu was not properly created", menuCoordinator);
         CriteriaHelper.pollUiThread(
@@ -888,7 +888,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
             R.id.contextmenu_remove_highlight,
             R.id.contextmenu_learn_more
         };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContextMenuHelper.setMenuShownCallbackForTests(
                             (coordinator) -> {
@@ -914,7 +914,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         // Set share delegate before triggering context menu, so the mocked share delegate is used.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var supplier =
                             (ShareDelegateSupplier)
@@ -960,7 +960,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
 
         // Set share delegate before triggering context menu, so the mocked share delegate is used.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var supplier =
                             (ShareDelegateSupplier)

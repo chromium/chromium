@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 import static org.chromium.base.test.util.Matchers.is;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationTestHelper.acceptPasswordInGenerationBottomSheet;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationTestHelper.rejectPasswordInGenerationBottomSheet;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
 
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -48,7 +49,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.WindowAndroid;
@@ -313,7 +313,7 @@ public class PasswordGenerationIntegrationTest {
     }
 
     private void assertNoInfobarsAreShown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             InfoBarContainer.from(mSyncTestRule.getActivity().getActivityTab())
@@ -334,7 +334,7 @@ public class PasswordGenerationIntegrationTest {
 
     private void dismissBottomSheet() {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mBottomSheetController.hideContent(
                                 mBottomSheetController.getCurrentSheetContent(),

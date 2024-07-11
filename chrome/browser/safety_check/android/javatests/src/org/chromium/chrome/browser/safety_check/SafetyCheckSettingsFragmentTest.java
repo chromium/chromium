@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -45,7 +46,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
@@ -132,7 +132,7 @@ public class SafetyCheckSettingsFragmentTest {
     private void createFragmentAndModel() {
         mSettingsActivityTestRule.startSettingsActivity();
         mFragment = (SafetyCheckSettingsFragment) mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSafetyCheckModel =
                             SafetyCheckCoordinator.createSafetyCheckModelAndBind(mFragment);
@@ -149,7 +149,7 @@ public class SafetyCheckSettingsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity(
                 SafetyCheckSettingsFragment.createBundle(safetyCheckImmediateRun));
         mFragment = (SafetyCheckSettingsFragment) mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSafetyCheckModel =
                             SafetyCheckCoordinator.createSafetyCheckModelAndBind(mFragment);
@@ -186,7 +186,7 @@ public class SafetyCheckSettingsFragmentTest {
         configurePasswordManagerUtilBridge(usesSplitStores);
         createFragmentAndModel();
         // Binds the account model.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SafetyCheckCoordinator.createPasswordCheckPreferenceModelAndBind(
                             mFragment,
@@ -263,7 +263,7 @@ public class SafetyCheckSettingsFragmentTest {
         Preference passwordsLocal = mFragment.findPreference(PASSWORDS_LOCAL);
         Preference safeBrowsing = mFragment.findPreference(SAFE_BROWSING);
         Preference updates = mFragment.findPreference(UPDATES);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Passwords state remains unchanged.
                     // Safe browsing is in "checking".
@@ -293,7 +293,7 @@ public class SafetyCheckSettingsFragmentTest {
         CallbackHelper safeBrowsingClicked = new CallbackHelper();
         CallbackHelper updatesClicked = new CallbackHelper();
         // Set the listeners
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPasswordCheckPreferenceLocalModel.set(
                             PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER,
@@ -320,7 +320,7 @@ public class SafetyCheckSettingsFragmentTest {
         Preference passwordsLocal = mFragment.findPreference(PASSWORDS_LOCAL);
         Preference safeBrowsing = mFragment.findPreference(SAFE_BROWSING);
         Preference updates = mFragment.findPreference(UPDATES);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // If local password storage is available, should be clickable.
                     passwordsLocal.performClick();

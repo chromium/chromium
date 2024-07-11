@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -33,7 +34,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.url.GURL;
@@ -72,7 +72,7 @@ public class BrowsingDataTest {
 
     private void clearBrowsingData(int dataType, int timePeriod) throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
@@ -91,7 +91,7 @@ public class BrowsingDataTest {
                     out[0] = result;
                     helper.notifyCalled();
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     counter[0] =
                             new BrowsingDataCounterBridge(
@@ -176,7 +176,7 @@ public class BrowsingDataTest {
         // TODO(roagarwal) : Crashes on BrowsingDataType.SITE_SETTINGS, BrowsingDataType.BOOKMARKS
         // data types.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingDataIncognitoForTesting(
@@ -205,9 +205,9 @@ public class BrowsingDataTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
         PasswordStoreBridge bridge =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> new PasswordStoreBridge(sActivityTestRule.getProfile(false)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bridge.insertPasswordCredentialInProfileStore(
                             new PasswordStoreCredential(

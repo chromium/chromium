@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -43,7 +44,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ime.TextInputType;
 
 import java.util.ArrayList;
@@ -840,7 +840,7 @@ public class ImeTest {
     @SmallTest
     @Feature({"TextInput"})
     public void testImePaste() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ClipboardManager clipboardManager =
                             (ClipboardManager)
@@ -1802,7 +1802,7 @@ public class ImeTest {
     @Feature({"TextInput"})
     public void testUiThreadAccess() throws Exception {
         final ChromiumBaseInputConnection connection = mRule.getConnection();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // We allow UI thread access for most functions, except for
                     // beginBatchEdit(), endBatchEdit(), and get* methods().

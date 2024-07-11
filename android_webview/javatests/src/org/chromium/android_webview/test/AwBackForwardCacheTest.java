@@ -28,6 +28,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.client_hints.AwUserAgentMetadata;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -36,7 +37,6 @@ import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageCommitVisibleHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
@@ -252,7 +252,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         histogramWatcher =
                 getNotRestoredReasonsHistogramWatcher(/*kWebViewJavaScriptObjectChanged*/ 65);
         navigateForward();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.removeJavascriptInterface("testInjectedObject"));
         navigateBack();
         notRestoredReasons = getNotRestoredReasons();
@@ -369,7 +369,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         HistogramWatcher histogramWatcher =
                 getNotRestoredReasonsHistogramWatcher(/*kCacheFlushed*/ 21);
         navigateForward();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.flushBackForwardCache());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.flushBackForwardCache());
         navigateBack();
         String notRestoredReasons = getNotRestoredReasons();
         Assert.assertTrue(notRestoredReasons.indexOf("reasons") >= 0);
@@ -615,7 +615,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         ArrayList<String> allowlist = new ArrayList<>();
         allowlist.add("google.com");
         SettableFuture<Boolean> allowlistSetFuture = SettableFuture.create();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AwContentsStatics.setSafeBrowsingAllowlist(
                                 allowlist,
@@ -645,7 +645,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
                 getNotRestoredReasonsHistogramWatcher(
                         /*kWebViewDocumentStartJavascriptChanged */ 68);
         navigateForward();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAwContents.addDocumentStartJavaScript(
                                 "console.log(\"hello world\");", new String[] {"*"}));

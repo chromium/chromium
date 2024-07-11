@@ -28,10 +28,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -66,7 +66,7 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
         MockitoAnnotations.initMocks(this);
         // TODO(meiliang): Replace with TabSwitcher instead when ready to integrate with
         // TabSwitcher.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModelList = new TabListModel();
                     ViewGroup view = new FrameLayout(getActivity());
@@ -128,7 +128,7 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     public void testPriceMessage() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceService.sendAvailabilityNotification(mPriceMessageData);
                     addMessageCards();
@@ -143,7 +143,7 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
         AtomicBoolean reviewed = new AtomicBoolean();
         when(mPriceMessageData.getReviewActionProvider()).thenReturn(() -> reviewed.set(true));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceService.sendAvailabilityNotification(mPriceMessageData);
                     addMessageCards();
@@ -163,7 +163,7 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
         when(mPriceMessageData.getDismissActionProvider())
                 .thenReturn((type) -> dismissed.set(true));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceService.sendAvailabilityNotification(mPriceMessageData);
                     addMessageCards();

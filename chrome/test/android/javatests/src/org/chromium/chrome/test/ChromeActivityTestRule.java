@@ -55,7 +55,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -124,7 +123,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     protected void after() {
         Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
         super.after();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WarmupManager.getInstance().destroySpareTab();
                 });
@@ -205,8 +204,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         CriteriaHelper.pollUiThread(
                 () -> getActivity().getActivityTab() != null, "Tab never selected/initialized.");
         Tab tab =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> getActivity().getActivityTab());
+                ThreadUtils.runOnUiThreadBlockingNoException(() -> getActivity().getActivityTab());
 
         ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
 
@@ -313,7 +311,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                 new Runnable() {
                     @Override
                     public void run() {
-                        TestThreadUtils.runOnUiThreadBlocking(
+                        ThreadUtils.runOnUiThreadBlocking(
                                 () -> {
                                     result.set(tab.loadUrl(new LoadUrlParams(url, pageTransition)));
                                 });
@@ -364,7 +362,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         Tab tab;
         try {
             tab =
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             new Callable<Tab>() {
                                 @Override
                                 public Tab call() {
@@ -403,7 +401,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     public Profile getProfile(boolean incognito) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return ProfileProvider.getOrCreateProfile(
                             getActivity().getProfileProviderSupplier().get(), incognito);
@@ -414,7 +412,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * @return The number of tabs currently open.
      */
     public int tabsCount(boolean incognito) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {
@@ -425,7 +423,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
     /** Returns the infobars being displayed by the current tab, or null if they don't exist. */
     public List<InfoBar> getInfoBars() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 new Callable<List<InfoBar>>() {
                     @Override
                     public List<InfoBar> call() {
@@ -481,7 +479,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      *     no tab for the activity or infobar is available.
      */
     public InfoBarContainer getInfoBarContainer() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         getActivity().getActivityTab() != null
                                 ? InfoBarContainer.get(getActivity().getActivityTab())
@@ -500,7 +498,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
     /** Returns the {@link WebContents} of the active tab of the activity. */
     public WebContents getWebContents() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> getActivity().getActivityTab().getWebContents());
     }
 

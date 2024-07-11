@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -26,7 +27,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -65,7 +65,7 @@ public class QuickDeleteBridgeTest {
     @Before
     public void setUp() throws ExecutionException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
                             mActivityTestRule.getActivity().getCurrentTabModel().getProfile();
@@ -78,7 +78,7 @@ public class QuickDeleteBridgeTest {
         CallbackHelper callbackHelper = new CallbackHelper();
 
         // Clear history.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
@@ -98,7 +98,7 @@ public class QuickDeleteBridgeTest {
     @MediumTest
     public void testLastVisitedDomainAndUniqueDomains_WhenNoVisits() throws TimeoutException {
         DomainVisitsCallback callback = new DomainVisitsCallback();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
                                 TimePeriod.LAST_15_MINUTES, callback));
@@ -117,7 +117,7 @@ public class QuickDeleteBridgeTest {
         visitUrls();
 
         DomainVisitsCallback callback = new DomainVisitsCallback();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
                                 TimePeriod.LAST_15_MINUTES, callback));

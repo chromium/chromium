@@ -183,6 +183,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//base:tasks_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/recent_tabs:java",
     "//chrome/browser/tabmodel:java",

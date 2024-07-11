@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -37,7 +38,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browsing_data.content.BrowsingDataInfo;
 import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -80,7 +80,7 @@ public class ChromeSiteSettingsDelegateTest {
     @Test
     @SmallTest
     public void testFallbackFaviconLoads() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSiteSettingsDelegate =
                             new ChromeSiteSettingsDelegate(
@@ -150,7 +150,7 @@ public class ChromeSiteSettingsDelegateTest {
         CallbackHelper helper = new CallbackHelper();
 
         // Remove browsing-data.com host data.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     browsingDataModel[0].removeBrowsingData(
                             /* host= */ BROWSING_DATA_HOST, helper::notifyCalled);
@@ -191,7 +191,7 @@ public class ChromeSiteSettingsDelegateTest {
 
     private void clearBrowsingData(int dataType, int timePeriod) throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
@@ -206,7 +206,7 @@ public class ChromeSiteSettingsDelegateTest {
         CallbackHelper helper = new CallbackHelper();
 
         // Run browsing data methods require running on UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSiteSettingsDelegate =
                             new ChromeSiteSettingsDelegate(

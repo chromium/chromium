@@ -57,6 +57,7 @@ android_library("test_support_java") {
   deps = [
     ":java",
     ":java_test_resources",
+    "//base:tasks_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

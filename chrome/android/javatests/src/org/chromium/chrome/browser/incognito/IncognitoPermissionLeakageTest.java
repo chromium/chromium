@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -50,7 +51,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -99,13 +99,13 @@ public class IncognitoPermissionLeakageTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
     }
 
     private void requestLocationPermission(Tab tab) throws TimeoutException, ExecutionException {
         // If tab is frozen then getWebContents may return null
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(tab.getWebContents(), Matchers.notNullValue()));
         JavaScriptUtils.executeJavaScriptAndWaitForResult(

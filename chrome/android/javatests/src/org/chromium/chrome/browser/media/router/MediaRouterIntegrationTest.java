@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -39,7 +40,6 @@ import org.chromium.components.media_router.RouterTestUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
@@ -349,7 +349,7 @@ public class MediaRouterIntegrationTest {
                 RouterTestUtils.waitForDialog(
                         mActivityTestRule.getActivity().getSupportFragmentManager());
         Assert.assertNotNull(routeSelectionDialog);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     routeSelectionDialog.cancel();
                 });

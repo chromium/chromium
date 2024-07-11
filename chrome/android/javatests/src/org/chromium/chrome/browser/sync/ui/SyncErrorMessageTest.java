@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -64,7 +65,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.io.IOException;
@@ -139,7 +139,7 @@ public class SyncErrorMessageTest {
         verifyHasShownMessage();
 
         // Resolving the error should dismiss the current message.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
                             SyncFirstSetupCompleteSource.BASIC_FLOW);
@@ -210,7 +210,7 @@ public class SyncErrorMessageTest {
 
         @SyncError
         int syncError =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return SyncSettingsUtils.getSyncError(
                                     mSyncTestRule.getProfile(/* incognito= */ false));
@@ -230,7 +230,7 @@ public class SyncErrorMessageTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         @SyncError
         int syncError =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return SyncSettingsUtils.getSyncError(
                                     mSyncTestRule.getProfile(/* incognito= */ false));
@@ -521,7 +521,7 @@ public class SyncErrorMessageTest {
     }
 
     private @Nullable SyncErrorMessage getSyncErrorMessage() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         SyncErrorMessage.getKeyForTesting()
                                 .retrieveDataFromHost(

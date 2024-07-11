@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -36,7 +37,6 @@ import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.TranslateUtil;
 import org.chromium.components.infobars.InfoBar;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -64,7 +64,7 @@ public class TranslateCompactInfoBarTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TranslateBridge.setIgnoreMissingKeyForTesting(true);
                     mInfoBarContainer = sActivityTestRule.getInfoBarContainer();
@@ -75,7 +75,7 @@ public class TranslateCompactInfoBarTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mInfoBarContainer.removeAnimationListener(mListener));
     }
 

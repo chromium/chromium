@@ -23,11 +23,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for the ScreenshotBoundsManager */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -43,7 +43,7 @@ public class ScrollCaptureManagerTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabSupplier = new ObservableSupplierImpl<>();
                     mScrollCaptureManager =

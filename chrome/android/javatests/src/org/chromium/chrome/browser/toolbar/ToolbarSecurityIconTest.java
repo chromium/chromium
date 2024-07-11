@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -47,7 +48,6 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -122,7 +122,7 @@ public final class ToolbarSecurityIconTest {
                                 (url) -> url.getSpec(),
                                 ToolbarUnitTestUtils.OFFLINE_STATUS));
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLocationBarModel.initializeWithNative();
                     UserDataHost userDataHost = new UserDataHost();

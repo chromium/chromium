@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -29,7 +30,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 /** Tests for startup timing histograms. */
@@ -58,7 +58,7 @@ public class StartupPermissionsMetricsTest {
                         .getTargetContext()
                         .getApplicationContext();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUmaSessionStats = new UmaSessionStats(appContext);
                 });
@@ -78,7 +78,7 @@ public class StartupPermissionsMetricsTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "VoiceInteraction.AudioPermissionEvent.SessionStart",
                         VoiceRecognitionHandler.AudioPermissionState.GRANTED);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mUmaSessionStats.startNewSession(null, mPermissionDelegate));
         histogramWatcher.assertExpected();
     }
@@ -97,7 +97,7 @@ public class StartupPermissionsMetricsTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "VoiceInteraction.AudioPermissionEvent.SessionStart",
                         VoiceRecognitionHandler.AudioPermissionState.DENIED_CAN_ASK_AGAIN);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mUmaSessionStats.startNewSession(null, mPermissionDelegate));
         histogramWatcher.assertExpected();
     }
@@ -116,7 +116,7 @@ public class StartupPermissionsMetricsTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "VoiceInteraction.AudioPermissionEvent.SessionStart",
                         VoiceRecognitionHandler.AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mUmaSessionStats.startNewSession(null, mPermissionDelegate));
         histogramWatcher.assertExpected();
     }

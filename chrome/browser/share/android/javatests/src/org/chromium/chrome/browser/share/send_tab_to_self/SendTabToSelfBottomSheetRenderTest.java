@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -38,7 +39,6 @@ import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync_device_info.FormFactor;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.JUnitTestGURLs;
@@ -81,7 +81,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                                 FormFactor.DESKTOP,
                                 todayTimestamp - TimeUnit.DAYS.toMillis(1)));
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             DevicePickerBottomSheetContent sheetContent =
                                     new DevicePickerBottomSheetContent(
@@ -111,7 +111,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                                 "guid2",
                                 FormFactor.DESKTOP,
                                 todayTimestamp - TimeUnit.DAYS.toMillis(1)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DevicePickerBottomSheetContent sheetContent =
                             new DevicePickerBottomSheetContent(
@@ -132,7 +132,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     public void testNoTargetDeviceBottomSheet() throws Throwable {
         setUpAccountData(createFakeAccount());
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             NoTargetDeviceBottomSheetContent sheetContent =
                                     new NoTargetDeviceBottomSheetContent(getActivity(), mProfile);
@@ -147,7 +147,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     public void testNoTargetDeviceBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
         AccountInfo account = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NoTargetDeviceBottomSheetContent sheetContent =
                             new NoTargetDeviceBottomSheetContent(getActivity(), mProfile);

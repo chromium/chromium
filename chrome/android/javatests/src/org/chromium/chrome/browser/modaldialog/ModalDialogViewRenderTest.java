@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -37,7 +38,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
@@ -93,7 +93,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     }
 
     private void setUpViews(int style, boolean forceWrapContentHeight) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = getActivity();
                     mResources = activity.getResources();
@@ -223,7 +223,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
             sb.append(i).append("\n");
         }
         sb.append(100);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCustomTextView1.setText(sb.toString());
                     mCustomScrollView.addView(mCustomTextView1);
@@ -248,7 +248,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
             sb.append(i).append("\n");
         }
         sb.append(100);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCustomTextView1.setText(sb.toString());
                     mCustomScrollView.addView(mCustomTextView1);
@@ -283,7 +283,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
             sb.append(i).append("\n");
         }
         sb.append(100);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCustomTextView1.setText(sb.toString());
                     mCustomFrameLayout.addView(mCustomTextView1);

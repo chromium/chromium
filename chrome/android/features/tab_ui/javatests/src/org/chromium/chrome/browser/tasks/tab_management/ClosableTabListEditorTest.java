@@ -22,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -35,7 +36,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class ClosableTabListEditorTest {
         mTabModelSelector = sActivityTestRule.getActivity().getTabModelSelector();
         mParentView = (ViewGroup) sActivityTestRule.getActivity().findViewById(R.id.coordinator);
         mSnackbarManager = sActivityTestRule.getActivity().getSnackbarManager();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var currentTabModelFilterSupplier =
                             mTabModelSelector
@@ -110,7 +110,7 @@ public class ClosableTabListEditorTest {
                 Espresso.pressBack();
             }
 
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         if (mTabListEditorController.isVisible()) {
                             mTabListEditorController.hide();
@@ -125,7 +125,7 @@ public class ClosableTabListEditorTest {
                 TabUiTestHelper.leaveTabSwitcher(sActivityTestRule.getActivity());
             }
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSnackbarManager.dismissAllSnackbars();
                 });
@@ -181,7 +181,7 @@ public class ClosableTabListEditorTest {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabListEditorController.show(tabs, 0, /* recyclerViewPosition= */ null);
                     mTabListEditorController.setToolbarTitle("testing");
@@ -196,7 +196,7 @@ public class ClosableTabListEditorTest {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabListEditorController.show(tabs, 0, /* recyclerViewPosition= */ null);
                     mTabListEditorController.setNavigationProvider(mNavigationProvider);
@@ -219,7 +219,7 @@ public class ClosableTabListEditorTest {
     }
 
     private void showTabListEditor(List<Tab> tabs) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabListEditorController.show(
                             tabs, /* preSelectedTabCount= */ 0, /* recyclerViewPosition= */ null);

@@ -32,7 +32,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -43,7 +42,7 @@ public final class SigninTestUtil {
      * @return The primary account of the requested {@link ConsentLevel}.
      */
     static CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return IdentityServicesProvider.get()
                             .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
@@ -64,7 +63,7 @@ public final class SigninTestUtil {
     private static void signin(CoreAccountInfo coreAccountInfo, boolean waitForPrefsCommit) {
         CallbackHelper completionCallbackHelper = new CallbackHelper();
         CallbackHelper prefsCommitCallbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
@@ -97,7 +96,7 @@ public final class SigninTestUtil {
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
@@ -112,7 +111,7 @@ public final class SigninTestUtil {
     public static void signinAndEnableSync(
             CoreAccountInfo coreAccountInfo, @Nullable SyncService syncService) {
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
@@ -141,7 +140,7 @@ public final class SigninTestUtil {
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SYNC));
                 });
@@ -155,7 +154,7 @@ public final class SigninTestUtil {
     @WorkerThread
     public static void signinAndEnableHistorySync(CoreAccountInfo coreAccountInfo) {
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
@@ -186,7 +185,7 @@ public final class SigninTestUtil {
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
@@ -201,7 +200,7 @@ public final class SigninTestUtil {
                     "This method should never be called when SeedAccountsRevamp is enabled");
         }
         CallbackHelper ch = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     IdentityServicesProvider.get()
                             .getAccountTrackerService(ProfileManager.getLastUsedRegularProfile())
@@ -226,7 +225,7 @@ public final class SigninTestUtil {
     private static void signOut(@SignoutReason int signoutReason) {
         ThreadUtils.assertOnBackgroundThread();
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final SigninManager signinManager =
                             IdentityServicesProvider.get()
@@ -255,7 +254,7 @@ public final class SigninTestUtil {
 
         onView(withId(R.id.device_lock_view)).check(matches(isDisplayed()));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> fragment.onDeviceLockReady());
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onDeviceLockReady());
     }
 
     private SigninTestUtil() {}

@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -64,7 +65,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
@@ -148,7 +148,7 @@ public class AccessorySheetRenderTest {
         // Calling #setTheme() explicitly because the test rule doesn't have the @Rule annotation
         // and won't apply the theme.
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AsyncViewStub sheetStub = initializeContentViewWithSheetStub();
 
@@ -203,7 +203,7 @@ public class AccessorySheetRenderTest {
                 .add(new KeyboardAccessoryData.FooterCommand("Manage Passwords", cb -> {}));
 
         PasswordAccessorySheetCoordinator coordinator =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new PasswordAccessorySheetCoordinator(
                                         mActivityTestRule.getActivity(), mProfile, null));
@@ -253,7 +253,7 @@ public class AccessorySheetRenderTest {
                 .add(new KeyboardAccessoryData.FooterCommand("Manage payment methods", cb -> {}));
 
         CreditCardAccessorySheetCoordinator coordinator =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new CreditCardAccessorySheetCoordinator(
                                         mActivityTestRule.getActivity(), mProfile, null));
@@ -285,7 +285,7 @@ public class AccessorySheetRenderTest {
                 .add(new KeyboardAccessoryData.FooterCommand("Manage payment methods", cb -> {}));
 
         CreditCardAccessorySheetCoordinator coordinator =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new CreditCardAccessorySheetCoordinator(
                                         mActivityTestRule.getActivity(), mProfile, null));
@@ -352,7 +352,7 @@ public class AccessorySheetRenderTest {
                 .add(new KeyboardAccessoryData.FooterCommand("Manage addresses", cb -> {}));
 
         AddressAccessorySheetCoordinator coordinator =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new AddressAccessorySheetCoordinator(
                                         mActivityTestRule.getActivity(), null));
@@ -381,7 +381,7 @@ public class AccessorySheetRenderTest {
                 .add(new KeyboardAccessoryData.FooterCommand("Manage addresses", cb -> {}));
 
         AddressAccessorySheetCoordinator coordinator =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new AddressAccessorySheetCoordinator(
                                         mActivityTestRule.getActivity(), null));
@@ -426,7 +426,7 @@ public class AccessorySheetRenderTest {
     private void showSheetTab(
             AccessorySheetTabCoordinator sheetComponent,
             KeyboardAccessoryData.AccessorySheetData sheetData) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetModel.get(TABS).add(sheetComponent.getTab());
                     Provider<KeyboardAccessoryData.AccessorySheetData> provider =

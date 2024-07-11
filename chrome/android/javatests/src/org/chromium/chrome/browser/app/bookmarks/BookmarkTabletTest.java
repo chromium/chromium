@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
@@ -41,7 +42,6 @@ import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -62,7 +62,7 @@ public class BookmarkTabletTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
                     mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
@@ -80,7 +80,7 @@ public class BookmarkTabletTest {
                 ((BookmarkPage) mActivityTestRule.getActivity().getActivityTab().getNativePage())
                         .getManagerForTesting();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false));
     }
 
@@ -139,7 +139,7 @@ public class BookmarkTabletTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab = mActivityTestRule.getActivity().getActivityTab();
                     tab.addObserver(

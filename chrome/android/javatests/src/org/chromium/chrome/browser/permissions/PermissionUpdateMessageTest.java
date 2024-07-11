@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -37,7 +38,6 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -153,7 +153,7 @@ public class PermissionUpdateMessageTest {
     public static PropertyModel getPermissionUpdateMessage(WindowAndroid windowAndroid)
             throws ExecutionException {
         MessageDispatcher messageDispatcher =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> MessageDispatcherProvider.from(windowAndroid));
         List<MessageStateHandler> messages =
                 MessagesTestHelper.getEnqueuedMessages(
@@ -174,7 +174,7 @@ public class PermissionUpdateMessageTest {
             @ContentSettingsType.EnumType int type,
             final String origin,
             @ContentSettingValues int value) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridgeJni.get()
                             .setPermissionSettingForOrigin(
@@ -223,7 +223,7 @@ public class PermissionUpdateMessageTest {
 
             expectMessagesCount(windowAndroid, 1);
             final WebContents webContents =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlockingNoException(
                             () ->
                                     mActivityTestRule
                                             .getActivity()
@@ -344,7 +344,7 @@ public class PermissionUpdateMessageTest {
         final var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         final String locationUrl = mTestServer.getURL(GEOLOCATION_PAGE);
         final PermissionInfo geolocationSettings =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         new Callable<PermissionInfo>() {
                             @Override
                             public PermissionInfo call() {
@@ -368,7 +368,7 @@ public class PermissionUpdateMessageTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
 
         try {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () ->
                             geolocationSettings.setContentSetting(
                                     ProfileManager.getLastUsedRegularProfile(),
@@ -380,13 +380,13 @@ public class PermissionUpdateMessageTest {
                         return MessagesTestHelper.getMessageIdentifier(windowAndroid, 0)
                                 == MessageIdentifier.PERMISSION_UPDATE;
                     });
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         Assert.assertEquals(1, MessagesTestHelper.getMessageCount(windowAndroid));
                     });
 
             final WebContents webContents =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlockingNoException(
                             new Callable<WebContents>() {
                                 @Override
                                 public WebContents call() {
@@ -413,7 +413,7 @@ public class PermissionUpdateMessageTest {
                                 Matchers.is(1));
                     });
         } finally {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () ->
                             geolocationSettings.setContentSetting(
                                     ProfileManager.getLastUsedRegularProfile(),

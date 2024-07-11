@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -31,7 +32,6 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.webxr.CardboardUtils;
 import org.chromium.components.webxr.XrSessionCoordinator;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -182,7 +182,7 @@ public class WebXrVrCardboardTransitionTest {
 
     /** Forces Chrome out of VR mode. */
     private static void forceExitVr() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     XrSessionCoordinator.endActiveSession();
                 });

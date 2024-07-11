@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -32,7 +33,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
@@ -83,21 +83,19 @@ public class SelectionPopupBackPressTest {
         Assert.assertNotNull(
                 "Back press handler should be initialized and registered.", selectionPopupHandler);
         Tab tab1 = activity.getActivityTab();
-        var observers =
-                TestThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(tab1));
+        var observers = ThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(tab1));
         boolean found = find(observers, selectionPopupHandler);
         Assert.assertTrue("Tab should be observed.", found);
 
         mActivityTestRule.loadUrlInNewTab(TEST_PAGE);
 
-        observers = TestThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(tab1));
+        observers = ThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(tab1));
         found = find(observers, selectionPopupHandler);
         Assert.assertFalse("Observer should be removed.", found);
 
         Tab currentTab = activity.getActivityTab();
         observers =
-                TestThreadUtils.runOnUiThreadBlocking(
-                        () -> TabTestUtils.getTabObservers(currentTab));
+                ThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(currentTab));
         found = find(observers, selectionPopupHandler);
         Assert.assertTrue("Tab should be observed.", found);
     }
@@ -116,18 +114,17 @@ public class SelectionPopupBackPressTest {
         Assert.assertNotNull(
                 "Back press handler should be initialized and registered.", selectionPopupHandler);
         Tab tab1 = activity.getActivityTab();
-        var observers =
-                TestThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(tab1));
+        var observers = ThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(tab1));
         boolean found = find(observers, selectionPopupHandler);
         Assert.assertTrue("Tab should be observed.", found);
 
         // Create a new tab such that back press handler is observing a new web content.
         mActivityTestRule.loadUrlInNewTab(TEST_PAGE);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> selectionPopupHandler.onContentChanged(tab1));
+        ThreadUtils.runOnUiThreadBlocking(() -> selectionPopupHandler.onContentChanged(tab1));
 
         var controller =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> SelectionPopupController.fromWebContents(tab1.getWebContents()));
         Assert.assertEquals(controller, selectionPopupHandler.getPopupControllerForTesting());
     }
@@ -138,7 +135,7 @@ public class SelectionPopupBackPressTest {
                 mActivityTestRule.getWebContents(),
                 "document.getElementById('selection_popup_text')");
         SelectionPopupController controller =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return SelectionPopupController.fromWebContents(
                                     mActivityTestRule.getWebContents());
@@ -158,7 +155,7 @@ public class SelectionPopupBackPressTest {
                 "Selection popup should be triggered after long press.",
                 controller.isSelectActionBarShowingSupplier().get());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackPressManager backPressManager =
                             mActivityTestRule.getActivity().getBackPressManagerForTesting();
@@ -170,7 +167,7 @@ public class SelectionPopupBackPressTest {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
@@ -190,7 +187,7 @@ public class SelectionPopupBackPressTest {
     }
 
     private boolean find(Iterator<TabObserver> observers, BackPressHandler handler) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     while (observers.hasNext()) {
                         if (observers.next() == handler) {

@@ -210,6 +210,7 @@ robolectric_library("junit") {
     ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:tasks_java",
     "//base/test:test_support_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
@@ -238,6 +239,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//base:tasks_java",
     "//chrome/android:chrome_java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",

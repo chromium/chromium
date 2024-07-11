@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.settings.MainSettings;
@@ -26,7 +27,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.sync.SyncService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for verifying whether users are presented with the correct option of viewing passwords
@@ -58,7 +58,7 @@ public class PasswordViewingTypeTest {
         MainSettings mainSettings = mSettingsActivityTestRule.getFragment();
         mPasswordsPref =
                 (ChromeBasePreference) mainSettings.findPreference(MainSettings.PREF_PASSWORDS);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> SyncServiceFactory.setInstanceForTesting(mSyncService));
     }
 

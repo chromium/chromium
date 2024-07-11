@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -32,7 +33,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -210,7 +210,7 @@ public class AppMenuItemViewBinderTest {
         MockitoAnnotations.initMocks(this);
         mClickHandler = new TestClickHandler();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity = sActivityTestRule.getActivity();
                     mMenuList = new ModelListAdapter.ModelList();

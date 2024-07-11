@@ -43,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -73,7 +74,6 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -154,42 +154,42 @@ public class PrivacySettingsFragmentTest {
     }
 
     private void setPrivacyGuideViewed(boolean isViewed) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setBoolean(Pref.PRIVACY_GUIDE_VIEWED, isViewed));
     }
 
     private boolean isPrivacyGuideViewed() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .getBoolean(Pref.PRIVACY_GUIDE_VIEWED));
     }
 
     private void setShowTrackingProtection(boolean show) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, show));
     }
 
     private void setIpProtection(boolean ipProtectionEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setBoolean(Pref.IP_PROTECTION_ENABLED, ipProtectionEnabled));
     }
 
     private boolean isIpProtectionEnabled() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .getBoolean(Pref.IP_PROTECTION_ENABLED));
     }
 
     private void setFpProtection(boolean fpProtectionEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setBoolean(
@@ -198,7 +198,7 @@ public class PrivacySettingsFragmentTest {
     }
 
     private boolean isFpProtectionEnabled() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED));
@@ -238,7 +238,7 @@ public class PrivacySettingsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
@@ -352,7 +352,7 @@ public class PrivacySettingsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
         // Scroll down and verify that the Privacy Sandbox is not there.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
                     recyclerView.scrollToPosition(PRIVACY_SANDBOX_V4_POS_IDX);
@@ -537,7 +537,7 @@ public class PrivacySettingsFragmentTest {
     @DisabledTest(message = "crbug.com/1437093")
     public void testPrivacyGuideNotDisplayedWhenUserIsChild() {
         // TODO(crbug.com/40264499): Remove once SigninChecker is automatically created.
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile()));
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
         mSettingsActivityTestRule.startSettingsActivity();

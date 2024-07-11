@@ -16,10 +16,10 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -121,20 +121,21 @@ public final class RecyclerViewTestUtils {
     }
 
     /**
-     * Scrolls the {@link View} at the given adapter position into view and returns
-     * its {@link RecyclerView.ViewHolder}.
+     * Scrolls the {@link View} at the given adapter position into view and returns its {@link
+     * RecyclerView.ViewHolder}.
+     *
      * @param recyclerView the {@link RecyclerView} to scroll.
      * @param position the adapter position for which to return the {@link RecyclerView.ViewHolder}.
      * @return the ViewHolder for the given {@code position}.
      */
     public static RecyclerView.ViewHolder scrollToView(RecyclerView recyclerView, int position) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> recyclerView.scrollToPosition(position));
+        ThreadUtils.runOnUiThreadBlocking(() -> recyclerView.scrollToPosition(position));
         return waitForView(recyclerView, position);
     }
 
     /** Scrolls the {@link RecyclerView} to the bottom. */
     public static void scrollToBottom(RecyclerView recyclerView) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Scroll to bottom.
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);

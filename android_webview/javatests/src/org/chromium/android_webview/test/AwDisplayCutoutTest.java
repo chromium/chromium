@@ -24,9 +24,9 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwDisplayCutoutController.Insets;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 /** Tests for DisplayCutout. */
@@ -84,7 +84,7 @@ public class AwDisplayCutoutTest extends AwParameterizedTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
         // In pre-R, we need to explicitly set this to draw under notch.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     activity.getWindow().getAttributes().layoutInDisplayCutoutMode =
@@ -98,7 +98,7 @@ public class AwDisplayCutoutTest extends AwParameterizedTest {
     }
 
     private void setFullscreen(boolean fullscreen) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     View decor = activity.getWindow().getDecorView();
@@ -132,7 +132,7 @@ public class AwDisplayCutoutTest extends AwParameterizedTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), TEST_HTML);
         // Reset safe area just in case we have a notch.
         Insets insets = new Insets(0, 0, 0, 0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.getDisplayCutoutController().onApplyWindowInsetsInternal(insets);
                 });
@@ -152,7 +152,7 @@ public class AwDisplayCutoutTest extends AwParameterizedTest {
         mActivityTestRule.loadHtmlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), TEST_HTML);
         Insets insets = new Insets(0, 130, 0, 0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.getDisplayCutoutController().onApplyWindowInsetsInternal(insets);
                 });

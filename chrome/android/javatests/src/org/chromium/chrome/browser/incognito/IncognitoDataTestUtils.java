@@ -18,6 +18,7 @@ import androidx.test.core.app.ApplicationProvider;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.CallbackHelper;
@@ -31,7 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -217,7 +217,7 @@ public class IncognitoDataTestUtils {
     // Warming up CCT so that the native is initialized before we access feature flags.
     public static void fireAndWaitForCctWarmup() throws TimeoutException {
         CallbackHelper startUpCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowserStartupController.getInstance()
                             .addStartupCompletedObserver(

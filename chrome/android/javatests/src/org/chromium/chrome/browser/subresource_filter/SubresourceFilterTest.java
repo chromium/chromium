@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -48,7 +49,6 @@ import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.subresource_filter.AdsBlockedInfoBar;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -87,7 +87,7 @@ public final class SubresourceFilterTest {
 
     private void createAndPublishRulesetDisallowingSuffix(String suffix) {
         TestRulesetPublisher publisher = new TestRulesetPublisher();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> publisher.createAndPublishRulesetDisallowingSuffixForTesting(suffix));
 
         // This takes an average of 6 seconds but can range anywhere from 2-10 seconds on occasion.
@@ -143,13 +143,13 @@ public final class SubresourceFilterTest {
         AdsBlockedInfoBar infobar = (AdsBlockedInfoBar) infoBars.get(0);
 
         // Click the link once to expand it.
-        TestThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
+        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
 
         // Check the checkbox and press the button to reload.
-        TestThreadUtils.runOnUiThreadBlocking(() -> infobar.onCheckedChanged(null, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> infobar.onCheckedChanged(null, true));
 
         // Think better of it and just close the infobar.
-        TestThreadUtils.runOnUiThreadBlocking(infobar::onCloseButtonClicked);
+        ThreadUtils.runOnUiThreadBlocking(infobar::onCloseButtonClicked);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         CriteriaHelper.pollUiThread(() -> !InfoBarContainer.get(tab).hasInfoBars());
     }
@@ -165,7 +165,7 @@ public final class SubresourceFilterTest {
         Tab originalTab = mActivityTestRule.getActivity().getActivityTab();
         CallbackHelper tabCreatedCallback = new CallbackHelper();
         TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabModel.addObserver(
                                 new TabModelObserver() {
@@ -187,10 +187,10 @@ public final class SubresourceFilterTest {
         AdsBlockedInfoBar infobar = (AdsBlockedInfoBar) infoBars.get(0);
 
         // Click the link once to expand it.
-        TestThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
+        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
 
         // Click again to navigate, which should spawn a new tab.
-        TestThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
+        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
 
         // Wait for the tab to be added with the correct URL. Note, do not wait for this URL to be
         // loaded since it is not controlled by the test instrumentation. Just waiting for the
@@ -239,11 +239,11 @@ public final class SubresourceFilterTest {
         AdsBlockedInfoBar infobar = (AdsBlockedInfoBar) infoBars.get(0);
 
         // Click the link once to expand it.
-        TestThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
+        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
 
         // Check the checkbox and press the button to reload.
-        TestThreadUtils.runOnUiThreadBlocking(() -> infobar.onCheckedChanged(null, true));
-        TestThreadUtils.runOnUiThreadBlocking(() -> infobar.onButtonClicked(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> infobar.onCheckedChanged(null, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> infobar.onButtonClicked(true));
 
         Assert.assertTrue(verifyPageReloadedWithOriginalContent(url));
     }
@@ -265,7 +265,7 @@ public final class SubresourceFilterTest {
         PropertyModel adsBlockedDialog = createAdsBlockedDialog(message);
         ModalDialogProperties.Controller dialogController =
                 adsBlockedDialog.get(ModalDialogProperties.CONTROLLER);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         dialogController.onClick(
                                 adsBlockedDialog, ModalDialogProperties.ButtonType.POSITIVE));
@@ -304,7 +304,7 @@ public final class SubresourceFilterTest {
 
         CallbackHelper tabCreatedCallback = new CallbackHelper();
         TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabModel.addObserver(
                                 new TabModelObserver() {
@@ -340,7 +340,7 @@ public final class SubresourceFilterTest {
                 spannedMessage.getSpans(0, spannedMessage.length(), ClickableSpan.class);
         Assert.assertEquals(
                 "Ads Blocked dialog message text must have only 1 ClickableSpan.", 1, spans.length);
-        TestThreadUtils.runOnUiThreadBlocking(() -> spans[0].onClick(messageView));
+        ThreadUtils.runOnUiThreadBlocking(() -> spans[0].onClick(messageView));
 
         // Wait for the tab to be added with the correct URL. Note, do not wait for this URL to be
         // loaded since it is not controlled by the test instrumentation. Just waiting for the
@@ -383,7 +383,7 @@ public final class SubresourceFilterTest {
 
     private PropertyModel verifyAndGetAdsBlockedMessage() throws ExecutionException {
         MessageDispatcher messageDispatcher =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 MessageDispatcherProvider.from(
                                         mActivityTestRule.getActivity().getWindowAndroid()));
@@ -396,7 +396,7 @@ public final class SubresourceFilterTest {
     private PropertyModel createAdsBlockedDialog(PropertyModel message) {
         // Simulate the message secondary button click.
         Runnable secondaryActionCallback = message.get(MessageBannerProperties.ON_SECONDARY_ACTION);
-        TestThreadUtils.runOnUiThreadBlocking(secondaryActionCallback);
+        ThreadUtils.runOnUiThreadBlocking(secondaryActionCallback);
 
         // Retrieve the Ads Blocked dialog.
         ModalDialogManager modalDialogManager =

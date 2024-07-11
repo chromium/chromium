@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -36,7 +37,6 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.mock.MockNavigationController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
@@ -140,7 +140,7 @@ public class NavigationPopupTest {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> popup.dismiss());
+        ThreadUtils.runOnUiThreadBlocking(() -> popup.dismiss());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class NavigationPopupTest {
         final TestNavigationController controller = new TestNavigationController();
         final ListPopupWindow popup = showPopup(controller, false);
 
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> popup.performItemClick(1));
+        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> popup.performItemClick(1));
 
         Assert.assertFalse("Popup did not hide as expected.", popup.isShowing());
         Assert.assertEquals(
@@ -164,7 +164,7 @@ public class NavigationPopupTest {
         final TestNavigationController controller = new TestNavigationController();
         final ListPopupWindow popup = showPopup(controller, false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ListView list = popup.getListView();
                     View view =
@@ -184,7 +184,7 @@ public class NavigationPopupTest {
         final TestNavigationController controller = new TestNavigationController();
         final ListPopupWindow popup = showPopup(controller, true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ListView list = popup.getListView();
                     View view =
@@ -200,7 +200,7 @@ public class NavigationPopupTest {
 
     private ListPopupWindow showPopup(NavigationController controller, boolean isOffTheRecord)
             throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     if (isOffTheRecord) {

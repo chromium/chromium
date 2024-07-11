@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -60,7 +61,6 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -193,7 +193,7 @@ public class MostVisitedTilesTest {
         doReturn(true).when(autocompleteResult).verifyCoherency(anyInt(), anyInt());
 
         mOmnibox.requestFocus();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mListener.getValue().onSuggestionsReceived(autocompleteResult, true);
                 });
@@ -201,7 +201,7 @@ public class MostVisitedTilesTest {
     }
 
     private void clickTileAtPosition(int position) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LayoutManager manager = mCarousel.view.getLayoutManager();
                     Assert.assertTrue(position < manager.getItemCount());
@@ -213,7 +213,7 @@ public class MostVisitedTilesTest {
     }
 
     private void longClickTileAtPosition(int position) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LayoutManager manager = mCarousel.view.getLayoutManager();
                     Assert.assertTrue(position < manager.getItemCount());

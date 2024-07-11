@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -21,7 +22,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.page_info.ConnectionInfoView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for ConnectionInfoView. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -43,7 +43,7 @@ public class ConnectionInfoViewTest {
     @MediumTest
     @Feature({"ConnectionInfoView"})
     public void testShow() throws InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeActivity context = sActivityTestRule.getActivity();
                     WebContents webContents = context.getActivityTab().getWebContents();

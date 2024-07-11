@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -64,7 +65,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.content_public.browser.test.util.ClickUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -113,7 +113,7 @@ public class BookmarkSaveFlowTest {
         mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
         doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetController =
                             mActivity.getRootUiCoordinatorForTesting().getBottomSheetController();
@@ -158,7 +158,7 @@ public class BookmarkSaveFlowTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testBookmarkSaveFlow() throws IOException {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     mBookmarkSaveFlowCoordinator.show(id);
@@ -173,7 +173,7 @@ public class BookmarkSaveFlowTest {
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testBookmarkSaveFlow_improvedBookmarks() throws IOException {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     mBookmarkSaveFlowCoordinator.show(id);
@@ -194,7 +194,7 @@ public class BookmarkSaveFlowTest {
     public void testBookmarkSaveFlow_improvedBookmarks_accountBookmarksEnabled()
             throws IOException {
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     mBookmarkSaveFlowCoordinator.show(id);
@@ -208,7 +208,7 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     public void testBookmarkSaveFlow_DestroyAfterHidden() throws IOException {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     mBookmarkSaveFlowCoordinator.show(id);
@@ -224,7 +224,7 @@ public class BookmarkSaveFlowTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testBookmarkSaveFlow_BookmarkMoved() throws IOException {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     mBookmarkSaveFlowCoordinator.show(
@@ -243,7 +243,7 @@ public class BookmarkSaveFlowTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testBookmarkSaveFlow_WithShoppingListItem() throws IOException {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     PowerBookmarkMeta.Builder meta =
@@ -271,7 +271,7 @@ public class BookmarkSaveFlowTest {
     @Feature({"RenderTest"})
     public void testBookmarkSaveFlow_WithShoppingListItem_fromHeuristicEntryPoint()
             throws IOException {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     PowerBookmarkMeta.Builder meta =
@@ -318,7 +318,7 @@ public class BookmarkSaveFlowTest {
     @Feature({"RenderTest"})
     public void testBookmarkSaveFlow_WithShoppingListItem_fromHeuristicEntryPoint_saveFailed()
             throws IOException {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     PowerBookmarkMeta.Builder meta =
@@ -379,7 +379,7 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     public void testBookmarkSaveFlowEdit() throws IOException {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     mBookmarkSaveFlowCoordinator.show(
@@ -400,7 +400,7 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     public void testBookmarkSaveFlowChooseFolder() throws IOException {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     mBookmarkSaveFlowCoordinator.show(
@@ -420,12 +420,12 @@ public class BookmarkSaveFlowTest {
 
     private void loadBookmarkModel() {
         // Do not read partner bookmarks in setUp(), so that the lazy reading is covered.
-        TestThreadUtils.runOnUiThreadBlocking(() -> PartnerBookmarksShim.kickOffReading(mActivity));
+        ThreadUtils.runOnUiThreadBlocking(() -> PartnerBookmarksShim.kickOffReading(mActivity));
         BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
 
     private BookmarkId addBookmark(final String title, final GURL url) throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mBookmarkModel.addBookmark(
                                 mBookmarkModel.getDefaultBookmarkFolder(), 0, title, url));

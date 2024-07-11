@@ -55,6 +55,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Promise;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -97,7 +98,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -207,7 +207,7 @@ public class FeedV2NewTabPageTest {
 
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NetworkChangeNotifier.forceConnectivityState(true);
                     FirstRunUtils.setEulaAccepted();
@@ -478,7 +478,7 @@ public class FeedV2NewTabPageTest {
      * @return The position of the top of the fakebox relative to the window.
      */
     private int getFakeboxTop(final NewTabPage ntp) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {

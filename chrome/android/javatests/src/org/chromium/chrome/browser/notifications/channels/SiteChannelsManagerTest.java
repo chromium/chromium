@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -43,7 +44,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -212,7 +212,7 @@ public class SiteChannelsManagerTest {
                         null,
                         /* isEmbargo= */ true,
                         SessionModel.DURABLE);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     info.setContentSetting(
                             ProfileManager.getLastUsedRegularProfile()
@@ -233,7 +233,7 @@ public class SiteChannelsManagerTest {
                         null,
                         /* isEmbargo= */ true,
                         SessionModel.DURABLE);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
                     Profile nonPrimaryOTRProfile =

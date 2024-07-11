@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -29,7 +30,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -99,7 +99,7 @@ public class WebShareTest {
 
         mTab = sActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new WebShareUpdateWaiter();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
 
         mReceivedIntent = null;
     }
@@ -107,7 +107,7 @@ public class WebShareTest {
     @After
     public void tearDown() {
         if (mTab != null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
+            ThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
         }
     }
 

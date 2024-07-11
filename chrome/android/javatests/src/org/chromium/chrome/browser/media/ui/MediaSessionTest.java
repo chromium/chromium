@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -32,7 +33,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.media.MediaSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -95,7 +95,7 @@ public class MediaSessionTest {
         DOMUtils.waitForMediaPlay(tab.getWebContents(), VIDEO_ID);
         waitForNotificationReady();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MediaNotificationController controller =
                             MediaNotificationManager.getController(

@@ -77,13 +77,13 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.minidump_uploader.CrashFileManager;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -192,7 +192,7 @@ public class CrashesListFragmentTest {
     }
 
     private CallbackHelper getCrashListLoadedListener() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final CallbackHelper helper = new CallbackHelper();
                     CrashesListFragment.setCrashInfoLoadedListenerForTesting(helper::notifyCalled);

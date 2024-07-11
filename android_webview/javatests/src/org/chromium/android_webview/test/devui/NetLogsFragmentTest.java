@@ -45,10 +45,10 @@ import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.services.AwNetLogService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.File;
@@ -82,7 +82,7 @@ public class NetLogsFragmentTest {
     public void setUp() throws Exception {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, MainActivity.class);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sMockFileList = initalizeTestFiles();
                     NetLogsFragment.setFileListForTesting(sMockFileList);

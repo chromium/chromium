@@ -24,10 +24,10 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
@@ -44,7 +44,7 @@ public class MinimizedCardCoordinatorTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var layoutParams =
                             new FrameLayout.LayoutParams(
@@ -72,7 +72,7 @@ public class MinimizedCardCoordinatorTest extends BlankUiTestActivityTestCase {
     public void testConstructAndDestroy() {
         onView(withId(R.id.card)).check(matches(isDisplayed()));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS,
@@ -81,11 +81,11 @@ public class MinimizedCardCoordinatorTest extends BlankUiTestActivityTestCase {
                                     .getImportantForAccessibility());
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.dismiss());
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.dismiss());
 
         onView(withId(R.id.card)).check(doesNotExist());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             View.IMPORTANT_FOR_ACCESSIBILITY_YES,

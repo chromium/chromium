@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -46,7 +47,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -94,7 +94,7 @@ public class LocationBarModelTest {
     @Test
     @SmallTest
     public void testDisplayAndEditText() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TestLocationBarModel model =
                             new TestLocationBarModel(mActivityTestRule.getActivity());
@@ -165,7 +165,7 @@ public class LocationBarModelTest {
                 .when(observer)
                 .onIncognitoStateChanged();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -215,7 +215,7 @@ public class LocationBarModelTest {
                 .when(observer)
                 .onIncognitoStateChanged();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -241,7 +241,7 @@ public class LocationBarModelTest {
         LocationBarModel locationBarModel =
                 mActivityTestRule.getActivity().getToolbarManager().getLocationBarModelForTesting();
         LocationBarDataProvider.Observer observer = mock(LocationBarDataProvider.Observer.class);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarModel.addObserver(observer);
                 });
@@ -253,7 +253,7 @@ public class LocationBarModelTest {
 
     private void assertDisplayAndEditText(
             ToolbarDataProvider dataProvider, String displayText, String editText) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UrlBarData urlBarData = dataProvider.getUrlBarData();
                     assertEquals(

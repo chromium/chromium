@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -36,7 +37,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.time.Duration;
 import java.util.Set;
@@ -63,7 +63,7 @@ public class HistorySyncHelperTest {
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(any(Profile.class))).thenReturn(mPrefServiceMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHistorySyncHelper = HistorySyncHelper.getForProfile(mProfileMock);
                 });

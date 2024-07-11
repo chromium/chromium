@@ -25,11 +25,11 @@ import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.ThreadUtils;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
@@ -81,7 +81,7 @@ public class NavigationHistoryTest extends AwParameterizedTest {
     }
 
     private NavigationHistory getNavigationHistory(final AwContents awContents) throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.getNavigationController().getNavigationHistory());
     }
 

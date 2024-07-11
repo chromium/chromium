@@ -28,10 +28,10 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageCommitVisibleHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.TimeUnit;
@@ -160,7 +160,7 @@ public class WebKitHitTestTest extends AwParameterizedTest {
                             && stringEquals(expectedImageSrc, data.imgSrc);
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Handler placeholderHandler = new Handler();
                     Message focusNodeHrefMsg = placeholderHandler.obtainMessage();

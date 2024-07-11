@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -25,7 +26,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.payments.Event2;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 import java.util.concurrent.TimeoutException;
@@ -61,7 +61,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
 
         // Press the back button.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPaymentRequestTestRule
                                 .getPaymentRequestUI()
@@ -216,7 +216,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testCanMakePaymentDisabled_Complete() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefs =
                             UserPrefs.get(
@@ -273,7 +273,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
 
         // Press the back button.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPaymentRequestTestRule
                                 .getPaymentRequestUI()

@@ -16,11 +16,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -126,7 +126,7 @@ public class ThumbnailDiskStorageTest {
     @Before
     public void setUp() {
         mTestThumbnailGenerator = new TestThumbnailGenerator();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestThumbnailDiskStorage =
                             new TestThumbnailDiskStorage(mTestThumbnailGenerator);
@@ -264,7 +264,7 @@ public class ThumbnailDiskStorageTest {
 
     /** Retrieve thumbnail and assert that {@link ThumbnailStorageDelegate} has received it. */
     private void retrieveThumbnailAndAssertRetrieved(final TestThumbnailRequest request) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mTestThumbnailDiskStorage.retrieveThumbnail(request));
 
         try {
@@ -290,7 +290,7 @@ public class ThumbnailDiskStorageTest {
      * @param expectedRemoveCount The expected removeCount.
      */
     private void removeThumbnailAndExpectedCount(String contentId, int expectedRemoveCount) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mTestThumbnailDiskStorage.removeFromDisk(contentId));
         try {
             mTestThumbnailDiskStorage.mLastRemoveThumbnailTask.get();

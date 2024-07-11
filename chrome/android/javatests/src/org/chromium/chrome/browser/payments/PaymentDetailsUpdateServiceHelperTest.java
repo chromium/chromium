@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -39,7 +40,6 @@ import org.chromium.components.payments.intent.WebPaymentIntentHelperType.Paymen
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentHandlerMethodData;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentRequestDetailsUpdate;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentShippingOption;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.ArrayList;
@@ -161,14 +161,14 @@ public class PaymentDetailsUpdateServiceHelperTest {
                         /* error= */ "error message",
                         /* pstringifiedPaymentMethodErrors= */ "stringified payment method",
                         bundledShippingAddressErrors);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PaymentDetailsUpdateServiceHelper.getInstance().updateWith(response);
                 });
     }
 
     private void onPaymentDetailsNotUpdated() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PaymentDetailsUpdateServiceHelper.getInstance().onPaymentDetailsNotUpdated();
                 });
@@ -290,7 +290,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
     }
 
     private void verifyIsWaitingForPaymentDetailsUpdate(boolean expected) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             expected,

@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -54,7 +55,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
@@ -150,7 +150,7 @@ public class FullscreenManagerTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> TabStateBrowserControlsVisibilityDelegate.disablePageLoadDelayForTests());
     }
 
@@ -319,11 +319,11 @@ public class FullscreenManagerTest {
 
     private boolean getPersistentFullscreenMode() {
         boolean b1 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         mActivityTestRule.getActivity().getFullscreenManager()
                                 ::getPersistentFullscreenMode);
         Boolean b2 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         mActivityTestRule
                                         .getActivity()
                                         .getFullscreenManager()
@@ -1062,7 +1062,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Navigation bar not hidden.",
@@ -1085,7 +1085,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Navigation bar hidden.",
@@ -1125,7 +1125,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Navigation bar not hidden.",
@@ -1148,7 +1148,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Navigation bar hidden.",
@@ -1183,7 +1183,7 @@ public class FullscreenManagerTest {
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Sometimes text bubble is shown and consumes the back press event.
                     BackPressManager backPressManager =
@@ -1194,7 +1194,7 @@ public class FullscreenManagerTest {
                 });
 
         final SelectionPopupController controller =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return SelectionPopupController.fromWebContents(tab.getWebContents());
                         });
@@ -1204,7 +1204,7 @@ public class FullscreenManagerTest {
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
         Assert.assertTrue(controller.isSelectActionBarShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
@@ -1236,7 +1236,7 @@ public class FullscreenManagerTest {
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Sometimes text bubble is shown and consumes the back press event.
                     BackPressManager backPressManager =
@@ -1247,7 +1247,7 @@ public class FullscreenManagerTest {
                 });
 
         final SelectionPopupController controller =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return SelectionPopupController.fromWebContents(tab.getWebContents());
                         });
@@ -1257,7 +1257,7 @@ public class FullscreenManagerTest {
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
         Assert.assertTrue(controller.isSelectActionBarShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });

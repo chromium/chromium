@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -66,7 +67,6 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -375,7 +375,7 @@ public class WebsitePermissionsFetcherTest {
     public void tearDown() throws TimeoutException {
         // Clean up permissions.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
@@ -422,7 +422,7 @@ public class WebsitePermissionsFetcherTest {
     public void testFetcherDoesNotTimeOutWithManyUrls() throws Exception {
         final WebsitePermissionsWaiter waiter = new WebsitePermissionsWaiter();
         // Set lots of permissions values.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     for (String url : PERMISSION_URLS) {
@@ -1487,7 +1487,7 @@ public class WebsitePermissionsFetcherTest {
                             /* isEmbargoed= */ false));
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     fetcher.fetchPreferencesForCategoryAndPopulateFpsInfo(
                             SiteSettingsCategory.createFromType(

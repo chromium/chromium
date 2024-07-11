@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -36,7 +37,6 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.IbanRecordType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
@@ -83,7 +83,7 @@ public class AutofillLocalIbanEditorTest {
 
     private void setNicknameInEditor(
             AutofillLocalIbanEditor autofillLocalIbanEditorFragment, String nickname) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalIbanEditorFragment.mNickname.setText(nickname);
@@ -95,7 +95,7 @@ public class AutofillLocalIbanEditorTest {
 
     private void setValueInEditor(
             AutofillLocalIbanEditor autofillLocalIbanEditorFragment, String value) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalIbanEditorFragment.mValue.setText(value);
@@ -114,7 +114,7 @@ public class AutofillLocalIbanEditorTest {
 
         MenuItem deleteButton = mock(MenuItem.class);
         when(deleteButton.getItemId()).thenReturn(R.id.delete_menu_id);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     autofillLocalIbanEditorFragment.onOptionsItemSelected(deleteButton);
                 });
@@ -233,7 +233,7 @@ public class AutofillLocalIbanEditorTest {
 
         // Verify the dialog is open.
         Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
-        TestThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickNegativeButton());
+        ThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickNegativeButton());
         // Verify the dialog is closed.
         Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
         // Verify the IBAN entry is not deleted.
@@ -259,7 +259,7 @@ public class AutofillLocalIbanEditorTest {
 
         // Verify the dialog is open.
         Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
-        TestThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickPositiveButton());
+        ThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickPositiveButton());
         // Verify the dialog is closed.
         Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
         // Verify the IBAN entry is deleted.

@@ -23,11 +23,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesViewBinder.ViewHolder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.widget.tile.TileView;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -51,7 +51,7 @@ public final class MostVisitedTilesViewBinderUnitTest extends BlankUiTestActivit
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMvTilesLayout = new MostVisitedTilesLayout(getActivity(), null);
                     mMvTilesLayout.setId(R.id.mv_tiles_layout);

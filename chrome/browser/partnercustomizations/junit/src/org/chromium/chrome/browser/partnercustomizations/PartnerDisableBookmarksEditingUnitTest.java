@@ -21,12 +21,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsDelayedProvider;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Unit tests for the partner disabling bookmarks editing functionality. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -72,7 +72,7 @@ public class PartnerDisableBookmarksEditingUnitTest {
                 false);
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -92,7 +92,7 @@ public class PartnerDisableBookmarksEditingUnitTest {
     public void testNoProvider() throws InterruptedException {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_NO_PROVIDER);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -112,7 +112,7 @@ public class PartnerDisableBookmarksEditingUnitTest {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         setBookmarksEditingDisabled(false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -133,7 +133,7 @@ public class PartnerDisableBookmarksEditingUnitTest {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         setBookmarksEditingDisabled(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
@@ -157,7 +157,7 @@ public class PartnerDisableBookmarksEditingUnitTest {
         mTestRule.setDelayProviderUriPathForDelay(
                 PartnerBrowserCustomizations.PARTNER_DISABLE_BOOKMARKS_EDITING_PATH);
         setBookmarksEditingDisabled(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), 2000);

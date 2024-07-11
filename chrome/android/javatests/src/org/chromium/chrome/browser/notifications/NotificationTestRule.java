@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -21,7 +22,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -57,7 +57,7 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
      */
     public void setNotificationContentSettingForOrigin(
             final @ContentSettingValues int setting, String origin) throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // The notification content setting does not consider the embedder origin.
                     PermissionInfo notificationInfo =

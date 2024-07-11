@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -32,7 +33,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.concurrent.TimeoutException;
@@ -313,7 +313,7 @@ public class TextSuggestionMenuTest {
         DOMUtils.clickNode(webContents, "div");
         waitForMenuToShow(webContents);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getTextSuggestionHost(webContents)
                             .getTextSuggestionsPopupWindowForTesting()
@@ -513,7 +513,7 @@ public class TextSuggestionMenuTest {
     }
 
     private TextSuggestionHost getTextSuggestionHost(WebContents webContents) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> TextSuggestionHost.fromWebContents(webContents));
     }
 

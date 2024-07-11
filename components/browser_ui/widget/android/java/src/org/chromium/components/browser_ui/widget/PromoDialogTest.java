@@ -23,13 +23,13 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.widget.PromoDialog.DialogParams;
 import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.Callable;
@@ -58,7 +58,7 @@ public class PromoDialogTest {
                 throws Exception {
             mDialogParams = dialogParams;
             dialog =
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             new Callable<PromoDialog>() {
                                 @Override
                                 public PromoDialog call() {
@@ -87,7 +87,7 @@ public class PromoDialogTest {
                                 }
                             });
             dialogLayout =
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             new Callable<PromoDialogLayout>() {
                                 @Override
                                 public PromoDialogLayout call() {
@@ -105,7 +105,7 @@ public class PromoDialogTest {
 
         /** Trigger a {@link View#measure(int, int)} on the promo dialog layout. */
         public void triggerDialogLayoutMeasure(final int width, final int height) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         int widthMeasureSpec =
                                 MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
@@ -121,7 +121,7 @@ public class PromoDialogTest {
     @BeforeClass
     public static void setupSuite() {
         activityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = activityTestRule.getActivity();
                 });
@@ -240,7 +240,7 @@ public class PromoDialogTest {
                 (LinearLayout) promoDialogLayout.findViewById(R.id.full_promo_content);
 
         // Tall screen should keep the illustration above everything else.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int widthMeasureSpec = MeasureSpec.makeMeasureSpec(500, MeasureSpec.EXACTLY);
                     int heightMeasureSpec = MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY);
@@ -249,7 +249,7 @@ public class PromoDialogTest {
         Assert.assertEquals(LinearLayout.VERTICAL, flippableLayout.getOrientation());
 
         // Wide screen should move the image left.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int widthMeasureSpec = MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY);
                     int heightMeasureSpec = MeasureSpec.makeMeasureSpec(500, MeasureSpec.EXACTLY);
@@ -274,7 +274,7 @@ public class PromoDialogTest {
         Assert.assertEquals(0, wrapper.secondaryCallback.getCallCount());
 
         // Only the primary button should register a click.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     promoDialogLayout.findViewById(R.id.button_primary).performClick();
                 });
@@ -282,7 +282,7 @@ public class PromoDialogTest {
         Assert.assertEquals(0, wrapper.secondaryCallback.getCallCount());
 
         // Only the secondary button should register a click.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     promoDialogLayout.findViewById(R.id.button_secondary).performClick();
                 });

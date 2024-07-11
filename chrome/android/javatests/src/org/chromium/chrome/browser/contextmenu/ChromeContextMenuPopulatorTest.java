@@ -34,6 +34,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
@@ -56,7 +57,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.url.GURL;
@@ -114,7 +114,7 @@ public class ChromeContextMenuPopulatorTest {
         jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNatives);
         when(mProfileNatives.fromWebContents(eq(mWebContents))).thenReturn(mProfile);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
                 });
@@ -122,7 +122,7 @@ public class ChromeContextMenuPopulatorTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.resetActivitiesForInstrumentationTests();
                 });

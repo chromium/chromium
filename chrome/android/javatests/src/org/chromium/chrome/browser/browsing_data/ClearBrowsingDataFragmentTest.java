@@ -62,6 +62,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -93,7 +94,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -156,7 +156,7 @@ public class ClearBrowsingDataFragmentTest {
         // TODO(crbug.com/41452182): Find a general solution to avoid leaking channels between
         // tests.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         SiteChannelsManager manager = SiteChannelsManager.getInstance();
                         manager.deleteAllSiteChannels();
@@ -191,7 +191,7 @@ public class ClearBrowsingDataFragmentTest {
                                 mActivityTestRule.getActivity().getClass().getName(),
                                 /* isFetcherSuppliedFromOutside= */ false));
         ClearBrowsingDataFragment fragment = mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     fragment.getClearBrowsingDataFetcher()
                             .fetchImportantSites(fragment.getProfile());
@@ -213,7 +213,7 @@ public class ClearBrowsingDataFragmentTest {
                             != null;
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RecyclerView recyclerView =
                             preferences.getView().findViewById(R.id.recycler_view);
@@ -250,7 +250,7 @@ public class ClearBrowsingDataFragmentTest {
         // Verify tab preference is loaded.
         verify(mBrowsingDataBridgeMock).getLastClearBrowsingDataTab(any(), any());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewPager2 viewPager =
                             (ViewPager2)
@@ -298,7 +298,7 @@ public class ClearBrowsingDataFragmentTest {
                         "Privacy.DeleteBrowsingData.Action",
                         DeleteBrowsingDataAction.CLEAR_BROWSING_DATA_DIALOG);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PreferenceScreen screen = preferences.getPreferenceScreen();
 
@@ -355,7 +355,7 @@ public class ClearBrowsingDataFragmentTest {
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
         final Profile expectedProfile = preferences.getProfile();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     changeTimePeriodTo(preferences, TimePeriod.LAST_HOUR);
                     clickClearButton(preferences);
@@ -403,7 +403,7 @@ public class ClearBrowsingDataFragmentTest {
 
         fragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
         onView(withId(R.id.menu_id_targeted_help)).perform(click());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     verify(mHelpAndFeedbackLauncher)
                             .show(
@@ -485,7 +485,7 @@ public class ClearBrowsingDataFragmentTest {
         // "Clear" button won't be enabled.
         setDataTypesToClear(DialogOption.CLEAR_CACHE);
         final SettingsActivity settingsActivity1 = startPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 new OpenPreferencesEnableDialogAndClickClearRunnable(settingsActivity1));
         mCallbackHelper.waitForCallback(0);
 
@@ -497,7 +497,7 @@ public class ClearBrowsingDataFragmentTest {
         // Reopen Clear Browsing Data preferences, this time with history selected for clearing.
         setDataTypesToClear(DialogOption.CLEAR_HISTORY);
         final SettingsActivity settingsActivity2 = startPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 new OpenPreferencesEnableDialogAndClickClearRunnable(settingsActivity2));
 
         // The dialog about other forms of history should now be shown.
@@ -512,7 +512,7 @@ public class ClearBrowsingDataFragmentTest {
                 });
 
         // Close that dialog.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ClearBrowsingDataFragment fragment =
                             (ClearBrowsingDataFragment) settingsActivity2.getMainFragment();
@@ -531,7 +531,7 @@ public class ClearBrowsingDataFragmentTest {
         setDataTypesToClear(DialogOption.CLEAR_HISTORY);
         final SettingsActivity settingsActivity3 = startPreferences();
         final Profile expectedProfile = mSettingsActivityTestRule.getFragment().getProfile();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 new OpenPreferencesEnableDialogAndClickClearRunnable(settingsActivity3));
 
         // The dialog about other forms of browsing history is still enabled, and history has been
@@ -656,11 +656,11 @@ public class ClearBrowsingDataFragmentTest {
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
 
         // Clear in root preference.
-        TestThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(preferences));
+        ThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(preferences));
         // Check that the important sites dialog is shown, and the list is visible.
         waitForImportantDialogToShow(preferences, 2);
         // Clear in important dialog.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 getPressButtonInImportantDialogRunnable(preferences, AlertDialog.BUTTON_POSITIVE));
         waitForProgressToComplete(preferences);
         mCallbackHelper.waitForOnly();
@@ -690,11 +690,11 @@ public class ClearBrowsingDataFragmentTest {
         ClearBrowsingDataFragment fragment =
                 (ClearBrowsingDataFragment) settingsActivity.getMainFragment();
         Profile expectedProfile = fragment.getProfile();
-        TestThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
+        ThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
         // Check that the important sites dialog is shown, and the list is visible.
         waitForImportantDialogToShow(fragment, 2);
         // Press the cancel button.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 getPressButtonInImportantDialogRunnable(fragment, AlertDialog.BUTTON_NEGATIVE));
         settingsActivity.finish();
 
@@ -739,9 +739,9 @@ public class ClearBrowsingDataFragmentTest {
         final Profile expectedProfile = fragment.getProfile();
 
         // Uncheck the first item (our internal web server).
-        TestThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
+        ThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
         waitForImportantDialogToShow(fragment, 2);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ListView sitesList = fragment.getImportantSitesDialogFragment().getSitesList();
                     sitesList.performItemClick(
@@ -758,7 +758,7 @@ public class ClearBrowsingDataFragmentTest {
                 });
 
         // Click the clear button.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 getPressButtonInImportantDialogRunnable(fragment, AlertDialog.BUTTON_POSITIVE));
 
         waitForProgressToComplete(fragment);
@@ -856,7 +856,7 @@ public class ClearBrowsingDataFragmentTest {
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     clickClearButton(preferences);
                 });
@@ -882,7 +882,7 @@ public class ClearBrowsingDataFragmentTest {
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     changeTimePeriodTo(preferences, TimePeriod.LAST_HOUR);
                     clickClearButton(preferences);
@@ -935,7 +935,7 @@ public class ClearBrowsingDataFragmentTest {
 
     private void setDataTypesToClear(final Integer... typesToClear) {
         Set<Integer> typesToClearSet = new ArraySet<Integer>(Arrays.asList(typesToClear));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (@DialogOption Integer option : ClearBrowsingDataFragment.getAllOptions()) {
                         boolean enabled = typesToClearSet.contains(option);

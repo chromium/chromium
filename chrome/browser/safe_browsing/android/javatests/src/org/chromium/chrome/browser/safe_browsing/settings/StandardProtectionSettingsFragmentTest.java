@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -30,7 +31,6 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for {@link StandardProtectionSettingsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -78,7 +78,7 @@ public class StandardProtectionSettingsFragmentTest {
     }
 
     private void setSafeBrowsingState(@SafeBrowsingState int state) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
                             .setSafeBrowsingState(state);
@@ -86,7 +86,7 @@ public class StandardProtectionSettingsFragmentTest {
     }
 
     private boolean isSafeBrowsingExtendedReportingEnabled() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
                             .isSafeBrowsingExtendedReportingEnabled();
@@ -100,7 +100,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean is_extended_reporting_enabled =
                             isSafeBrowsingExtendedReportingEnabled();
@@ -137,7 +137,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean is_password_leak_detection_enabled =
                             getPrefService().getBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED);
@@ -178,7 +178,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     StandardProtectionSettingsFragment fragment = mTestRule.getFragment();
                     boolean is_password_leak_detection_enabled =
@@ -222,7 +222,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean is_password_leak_detection_enabled =
                             getPrefService().getBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED);
@@ -263,7 +263,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     StandardProtectionSettingsFragment fragment = mTestRule.getFragment();
                     boolean is_password_leak_detection_enabled =
@@ -307,7 +307,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             ASSERT_MESSAGE_PREFIX + LEAK_DETECTION + ENABLED_STATE,
@@ -332,7 +332,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             ASSERT_MESSAGE_PREFIX + LEAK_DETECTION + ENABLED_STATE,
@@ -355,14 +355,14 @@ public class StandardProtectionSettingsFragmentTest {
     @Policies.Add({@Policies.Item(key = "PasswordLeakDetectionEnabled", string = "true")})
     public void testPasswordLeakDetectionPolicyManaged() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
                 });
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             ASSERT_MESSAGE_PREFIX + LEAK_DETECTION + MANAGED_STATE + FROM_NATIVE,
@@ -383,14 +383,14 @@ public class StandardProtectionSettingsFragmentTest {
     @Policies.Add({@Policies.Item(key = "SafeBrowsingExtendedReportingEnabled", string = "true")})
     public void testExtendedReportingPolicyManaged() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
                 });
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             ASSERT_MESSAGE_PREFIX
@@ -416,7 +416,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Check that the bullet points have been removed
                     Assert.assertNull(mStandardProtectionBulletOne);
@@ -466,7 +466,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Check that the bullet points are still here
                     Assert.assertNotNull(mStandardProtectionBulletOne);
@@ -515,7 +515,7 @@ public class StandardProtectionSettingsFragmentTest {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     StandardProtectionSettingsFragment fragment = mTestRule.getFragment();
                     String bulletTwoSummary =

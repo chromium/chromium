@@ -17,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -24,7 +25,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Unit Tests for {@link TabUiFeatureUtilities}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -32,7 +32,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class TabUiFeatureUtilitiesUnitTest {
 
     private void setAccessibilityEnabledForTesting(Boolean value) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(value));
     }
 

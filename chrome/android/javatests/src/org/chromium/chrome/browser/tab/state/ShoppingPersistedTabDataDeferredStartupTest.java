@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -38,7 +39,6 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.Semaphore;
 
@@ -78,7 +78,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
                 OptimizationGuideDecision.TRUE,
                 null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PersistedTabDataConfiguration.setUseTestConfig(true);
                 });
@@ -102,7 +102,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
         Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.initialize(tab);
                     ShoppingPersistedTabData.from(
@@ -138,7 +138,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.initialize(tab);
                     ShoppingPersistedTabData.from(
@@ -151,12 +151,12 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                             });
                 });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.onDeferredStartup();
                 });
         final Semaphore newSemaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,
@@ -190,7 +190,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.initialize(tab);
                     ShoppingPersistedTabData.from(
@@ -219,7 +219,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
 
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.initialize(tab);
                     ShoppingPersistedTabData.from(
@@ -253,7 +253,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
 
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             null,
@@ -282,7 +282,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
         doReturn(true).when(tab).isDestroyed();
 
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,

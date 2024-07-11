@@ -90,6 +90,7 @@ android_library("unit_device_javatests") {
     ":java",
     ":java_resources",
     "//base:base_java_test_support",
+    "//base:tasks_java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/hub:java",

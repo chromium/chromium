@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -34,7 +35,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for {@link PriceTrackingFeatures}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -133,7 +133,7 @@ public class PriceTrackingFeaturesTest {
     }
 
     private void setMbbStatus(boolean isEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                                 ProfileManager.getLastUsedRegularProfile(), isEnabled));

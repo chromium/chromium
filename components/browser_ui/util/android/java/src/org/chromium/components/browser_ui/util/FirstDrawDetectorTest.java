@@ -13,9 +13,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.CountDownLatch;
@@ -32,7 +32,7 @@ public class FirstDrawDetectorTest {
     public void testFirstDraw() throws Exception {
         mActivityTestRule.launchActivity(null);
         final CountDownLatch firstDrawEvent = new CountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BlankUiTestActivity activity = mActivityTestRule.getActivity();
                     View view = new FrameLayout(activity);

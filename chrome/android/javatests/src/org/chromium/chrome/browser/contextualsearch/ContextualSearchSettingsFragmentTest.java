@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -21,7 +22,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for {@link ContextualSearchSettingsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -49,7 +49,7 @@ public class ContextualSearchSettingsFragmentTest {
                         mSettings.findPreference(
                                 ContextualSearchSettingsFragment.PREF_WAS_FULLY_ENABLED_SWITCH);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefService = UserPrefs.get(mProfile);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
@@ -59,7 +59,7 @@ public class ContextualSearchSettingsFragmentTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefService = UserPrefs.get(mProfile);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);

@@ -13,10 +13,10 @@ import org.mockito.Mockito;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
@@ -125,7 +125,7 @@ public class TabTestUtils {
                             return new View(context);
                         }
                     };
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         SadTab.initForTesting(tab, sadTab);
                         sadTab.show(

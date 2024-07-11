@@ -21,6 +21,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.core.IsInstanceOf;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -48,10 +48,9 @@ public class BookmarkTestUtil {
     /**
      * Loads an empty partner bookmarks folder for testing. The partner bookmarks folder will appear
      * in the mobile bookmarks folder.
-     *
      */
     public static void loadEmptyPartnerBookmarksForTesting(BookmarkModel bookmarkModel) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
                 });
@@ -64,7 +63,7 @@ public class BookmarkTestUtil {
             BookmarkDelegate bookmarkDelegate,
             BookmarkModel bookmarkModel) {
         waitForBookmarkModelLoaded();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> bookmarkDelegate.openFolder(bookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
     }
@@ -101,17 +100,16 @@ public class BookmarkTestUtil {
             BookmarkId parent)
             throws ExecutionException {
         BookmarkTestUtil.readPartnerBookmarks(activityTestRule);
-        return TestThreadUtils.runOnUiThreadBlocking(
-                () -> bookmarkModel.addFolder(parent, 0, title));
+        return ThreadUtils.runOnUiThreadBlocking(() -> bookmarkModel.addFolder(parent, 0, title));
     }
 
     /**
-     * Waits until the bookmark model is loaded, i.e. until
-     * {@link BookmarkModel#isBookmarkModelLoaded()} is true.
+     * Waits until the bookmark model is loaded, i.e. until {@link
+     * BookmarkModel#isBookmarkModelLoaded()} is true.
      */
     public static void waitForBookmarkModelLoaded() {
         final BookmarkModel bookmarkModel =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return BookmarkModel.getForProfile(
                                     ProfileManager.getLastUsedRegularProfile());
@@ -120,9 +118,9 @@ public class BookmarkTestUtil {
         CriteriaHelper.pollUiThread(bookmarkModel::isBookmarkModelLoaded);
     }
 
-    /**  Do not read partner bookmarks in setUp(), so that the lazy reading is covered. */
+    /** Do not read partner bookmarks in setUp(), so that the lazy reading is covered. */
     public static void readPartnerBookmarks(ChromeTabbedActivityTestRule activityTestRule) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PartnerBookmarksShim.kickOffReading(activityTestRule.getActivity()));
         BookmarkTestUtil.waitForBookmarkModelLoaded();
     }

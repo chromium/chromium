@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
@@ -37,7 +38,6 @@ import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.util.concurrent.Callable;
@@ -51,19 +51,19 @@ public class ContentTextSelectionTest {
     private static final String DATA_URL =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head><meta name=\"viewport\"content=\"width=device-width\""
-                            + " /></head><body><form action=\"about:blank\"><input"
-                            + " id=\"empty_input_text\" type=\"text\" /><input"
-                            + " id=\"whitespace_input_text\" type=\"text\" value=\" \" /><input"
-                            + " id=\"input_text\" type=\"text\" value=\"SampleInputText\" /><textarea"
-                            + " id=\"textarea\" rows=\"2\" cols=\"20\">SampleTextArea</textarea><input"
-                            + " id=\"password\" type=\"password\" value=\"SamplePassword\""
-                            + " size=\"10\"/><p><span id=\"smart_selection\">1600 Amphitheatre"
-                            + " Parkway</span></p><p><span"
-                            + " id=\"plain_text_1\">SamplePlainTextOne</span></p><p><span"
-                            + " id=\"plain_text_2\">SamplePlainTextTwo</span></p><input"
-                            + " id=\"disabled_text\" type=\"text\" disabled value=\"Sample Text\""
-                            + " /><div id=\"rich_div\" contentEditable=\"true\" >Rich Editor</div>"
-                            + "</form></body></html>");
+                        + " /></head><body><form action=\"about:blank\"><input"
+                        + " id=\"empty_input_text\" type=\"text\" /><input"
+                        + " id=\"whitespace_input_text\" type=\"text\" value=\" \" /><input"
+                        + " id=\"input_text\" type=\"text\" value=\"SampleInputText\" /><textarea"
+                        + " id=\"textarea\" rows=\"2\" cols=\"20\">SampleTextArea</textarea><input"
+                        + " id=\"password\" type=\"password\" value=\"SamplePassword\""
+                        + " size=\"10\"/><p><span id=\"smart_selection\">1600 Amphitheatre"
+                        + " Parkway</span></p><p><span"
+                        + " id=\"plain_text_1\">SamplePlainTextOne</span></p><p><span"
+                        + " id=\"plain_text_2\">SamplePlainTextTwo</span></p><input"
+                        + " id=\"disabled_text\" type=\"text\" disabled value=\"Sample Text\""
+                        + " /><div id=\"rich_div\" contentEditable=\"true\" >Rich Editor</div>"
+                        + "</form></body></html>");
     private WebContents mWebContents;
     private SelectionPopupControllerImpl mSelectionPopupController;
 
@@ -437,7 +437,7 @@ public class ContentTextSelectionTest {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "empty_input_text");
         waitForPastePopupStatus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWebContents.destroy();
                 });
@@ -811,49 +811,49 @@ public class ContentTextSelectionTest {
     }
 
     private void selectActionBarPaste() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSelectionPopupController.paste();
                 });
     }
 
     private void selectActionBarSelectAll() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSelectionPopupController.selectAll();
                 });
     }
 
     private void selectActionBarCut() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSelectionPopupController.cut();
                 });
     }
 
     private void selectActionBarCopy() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSelectionPopupController.copy();
                 });
     }
 
     private void selectActionBarSearch() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSelectionPopupController.search();
                 });
     }
 
     private void selectActionBarShare() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSelectionPopupController.share();
                 });
     }
 
     private void hideSelectActionMode() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSelectionPopupController.destroySelectActionMode();
                 });
@@ -883,7 +883,7 @@ public class ContentTextSelectionTest {
 
     private void setVisibileOnUiThread(final boolean show) {
         final WebContents webContents = mActivityTestRule.getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (show) {
                         webContents.onShow();
@@ -894,7 +894,7 @@ public class ContentTextSelectionTest {
     }
 
     private void setAttachedOnUiThread(final boolean attached) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewEventSinkImpl viewEventSink =
                             ViewEventSinkImpl.from(mActivityTestRule.getWebContents());
@@ -907,7 +907,7 @@ public class ContentTextSelectionTest {
     }
 
     private void requestFocusOnUiThread(final boolean gainFocus) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewEventSinkImpl viewEventSink =
                             ViewEventSinkImpl.from(mActivityTestRule.getWebContents());

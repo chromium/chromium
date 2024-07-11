@@ -61,7 +61,7 @@ public class KeyUtils {
 
     private static void dispatchKeyEventToView(
             final Instrumentation i, final View v, final KeyEvent event) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (!v.dispatchKeyEventPreIme(event)) {
                         v.dispatchKeyEvent(event);
@@ -72,7 +72,7 @@ public class KeyUtils {
 
     private static void dispatchKeyEventToActivity(
             final Instrumentation i, final Activity a, final KeyEvent event) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     a.dispatchKeyEvent(event);
                 });

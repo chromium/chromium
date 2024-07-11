@@ -7,13 +7,13 @@ package org.chromium.chrome.test.util.browser.signin;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Base class for defining methods for signing in an live account for testing. The correct version
@@ -60,7 +60,7 @@ public abstract class LiveSigninTestUtil {
                 MAX_TIME_TO_POLL_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         CoreAccountInfo coreAccountInfo =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> findAccountByEmailAddress(accountName));
         return coreAccountInfo;
     }

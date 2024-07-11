@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -28,7 +29,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for WebContentsAccessibilityImpl integration with accessibility services. */
@@ -204,7 +204,7 @@ public class WebContentsAccessibilityTreeTest {
         TestViewStructure testViewStructure = new TestViewStructure();
         testViewStructure.setShouldIncludeScreenSizeDependentAttributes(
                 sIncludeScreenSizeDependentAttributes);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.mWcax.onProvideVirtualStructure(testViewStructure, false));
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.mWcax::hasFinishedLatestAccessibilitySnapshotForTesting,
@@ -235,7 +235,7 @@ public class WebContentsAccessibilityTreeTest {
 
     // Helper method to create an AccessibilityNodeInfo object.
     private AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
     }
 

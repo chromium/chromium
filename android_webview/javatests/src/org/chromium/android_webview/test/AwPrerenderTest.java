@@ -30,6 +30,7 @@ import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.settings.SpeculativeLoadingAllowedFlags;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -38,7 +39,6 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
@@ -917,7 +917,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         // Remove the JavaScript object. This should cancel prerendering.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.removeJavascriptInterface("testInjectedObject"));
 
         // Wait until prerendering is canceled for the interface removal.
@@ -972,7 +972,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         // Add a document start javascript. This should cancel prerendering.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAwContents.addDocumentStartJavaScript(
                                 "console.log(\"hello world\");", new String[] {"*"}));
@@ -992,7 +992,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Add a document start javascript. This should cancel prerendering.
         ScriptHandler handler =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mAwContents.addDocumentStartJavaScript(
                                         "console.log(\"hello world\");", new String[] {"*"}));
@@ -1008,7 +1008,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         // Remove the document start javascript. This should cancel prerendering.
-        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
+        ThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
 
         // Wait until prerendering is canceled for the start script addition.
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
@@ -1033,7 +1033,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Start prerendering.
         injectSpeculationRulesAndWait(mPrerenderingUrl);
         // Manually cancel the prerendered pages.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.cancelAllPrerendering());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.cancelAllPrerendering());
 
         // Wait until prerendering is canceled.
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();

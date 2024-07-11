@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -29,7 +30,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class TabObserverRegistrarTest {
         TabObserverRegistrar tabObserverRegistrar =
                 customTabActivity.getComponent().resolveTabObserverRegistrar();
         LoadUrlTabObserver loadUrlTabObserver = new LoadUrlTabObserver();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> tabObserverRegistrar.registerActivityTabObserver(loadUrlTabObserver));
 
         final TabModelSelector tabSelector = customTabActivity.getTabModelSelector();
@@ -86,7 +86,7 @@ public class TabObserverRegistrarTest {
 
         // Open and wait for popup.
         final CallbackHelper openTabHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tabSelector
                             .getModel(false)
@@ -107,7 +107,7 @@ public class TabObserverRegistrarTest {
         assertEquals(2, tabSelector.getModel(false).getCount());
         final Tab activeTab = tabSelector.getCurrentTab();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     initialActiveTab.loadUrl(new LoadUrlParams(url1));
                     activeTab.loadUrl(new LoadUrlParams(url2));

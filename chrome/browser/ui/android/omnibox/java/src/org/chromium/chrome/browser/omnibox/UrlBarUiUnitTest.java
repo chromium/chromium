@@ -21,13 +21,13 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.Collections;
@@ -48,7 +48,7 @@ public class UrlBarUiUnitTest {
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = sActivityTestRule.getActivity();
                     sContentView = new FrameLayout(sActivity);
@@ -65,7 +65,7 @@ public class UrlBarUiUnitTest {
 
     @Before
     public void setupTest() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sContentView.removeAllViews();
                     sActivity.getLayoutInflater().inflate(R.layout.url_bar, sContentView);
@@ -87,7 +87,7 @@ public class UrlBarUiUnitTest {
 
     private void updateUrlBarText(
             CharSequence text, @UrlBar.ScrollType int scrollType, int scrollIndex) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setText(text);
                     mUrlBar.setScrollState(scrollType, scrollIndex);
@@ -96,11 +96,11 @@ public class UrlBarUiUnitTest {
     }
 
     private CharSequence getUrlText() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.getText());
+        return ThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.getText());
     }
 
     private CharSequence getVisibleTextPrefixHint() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mUrlBar.getVisibleTextPrefixHint());
     }
 
@@ -111,7 +111,7 @@ public class UrlBarUiUnitTest {
         String url = "www.test.com";
         updateUrlBarText(url, UrlBar.ScrollType.SCROLL_TO_TLD, url.length());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     float scrollXPosForEndOfUrlText =
                             mUrlBar.getLayout().getPrimaryHorizontal(mUrlBar.getText().length());
@@ -131,7 +131,7 @@ public class UrlBarUiUnitTest {
         final String path = "/" + TextUtils.join("", Collections.nCopies(500, "a"));
         updateUrlBarText(domain + path, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     float scrollXPosForEndOfUrlText =
                             mUrlBar.getLayout().getPrimaryHorizontal(mUrlBar.getText().length());
@@ -184,7 +184,7 @@ public class UrlBarUiUnitTest {
         final String path = "/aت" + TextUtils.join("", Collections.nCopies(500, "a"));
         updateUrlBarText(domain + path, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     float scrollXPosForEndOfUrlText =
                             mUrlBar.getLayout().getPrimaryHorizontal(mUrlBar.getText().length());

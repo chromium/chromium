@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser.test.util;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.WebContents;
@@ -22,7 +23,7 @@ public class TestCallbackHelperContainer {
         // TODO(yfriedman): Change callers to be executed on the UI thread. Unfortunately this is
         // super convenient as the caller is nearly always on the test thread which is fine to block
         // and it's cumbersome to keep bouncing to the UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestWebContentsObserver = new TestWebContentsObserver(webContents);
                 });
@@ -101,7 +102,7 @@ public class TestCallbackHelperContainer {
                         }
                     };
             mJsonResult = null;
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> webContents.evaluateJavaScriptForTests(code, callback));
         }
 

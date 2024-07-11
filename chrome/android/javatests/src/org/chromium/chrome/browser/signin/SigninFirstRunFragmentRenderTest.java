@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Promise;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -60,7 +61,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -140,7 +140,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeAndOrientationParameterProvider.class)
     public void setupNightModeAndDeviceOrientation(boolean nightModeEnabled, int orientation) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppCompatDelegate.setDefaultNightMode(
                             nightModeEnabled
@@ -156,7 +156,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         OneshotSupplierImpl<ProfileProvider> profileSupplier =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             OneshotSupplierImpl<ProfileProvider> supplier =
                                     new OneshotSupplierImpl<>();
@@ -170,7 +170,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get().getSigninManager(mProfileMock))
                             .thenReturn(mSigninManagerMock);
@@ -184,7 +184,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
         when(mFirstRunPageDelegateMock.canUseLandscapeLayout()).thenReturn(true);
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Promise<Void> nativeSideIsInitialized = new Promise<>();
                     nativeSideIsInitialized.fulfill(null);
@@ -809,7 +809,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
     private void launchActivityWithFragment(int orientation) {
         ActivityTestUtils.rotateActivityToOrientation(getActivity(), orientation);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity()
                             .getSupportFragmentManager()

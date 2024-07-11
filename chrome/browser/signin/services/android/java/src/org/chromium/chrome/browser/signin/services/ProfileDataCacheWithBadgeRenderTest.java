@@ -18,13 +18,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -56,7 +56,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     public void setUp() {
         mAccountManagerTestRule.addAccount(TEST_ACCOUNT_NAME);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = getActivity();
                     mContentView = new FrameLayout(activity);
@@ -124,7 +124,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     }
 
     private void setUpProfileDataCache(@DrawableRes int badgeResId) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache =
                             badgeResId != 0
@@ -140,7 +140,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
                                     .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
                                     .getFullName());
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
                             mProfileDataCache
@@ -150,7 +150,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     }
 
     private void setBadgeConfig(@DrawableRes int badgeResId) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache.setBadge(badgeResId);
                 });
@@ -161,7 +161,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
                                     .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
                                     .getFullName());
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
                             mProfileDataCache

@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -25,7 +26,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
@@ -55,7 +55,7 @@ public class SelectPopupOtherContentViewTest {
 
     private boolean isSelectPopupVisibleOnUiThread() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () ->
                             WebContentsUtils.isSelectPopupVisible(
                                     mActivityTestRule.getWebContents()));
@@ -81,7 +81,7 @@ public class SelectPopupOtherContentViewTest {
                 this::isSelectPopupVisibleOnUiThread, "The select popup did not show up on click.");
 
         // Now create and destroy a different WebContents.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebContents webContents =
                             WebContentsFactory.createWebContents(

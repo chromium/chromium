@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetT
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 import org.chromium.ui.widget.TextViewWithLeading;
@@ -64,7 +64,7 @@ public class AccessorySheetTabViewTest {
      */
     private void openLayoutInAccessorySheet(
             @LayoutRes int layout, KeyboardAccessoryData.Tab.Listener listener) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = new AccessorySheetTabItemsModel();
                     AccessorySheetCoordinator accessorySheet =
@@ -131,7 +131,7 @@ public class AccessorySheetTabViewTest {
     public void testAddingATitleToTheModelRendersIt() {
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(new AccessorySheetDataPiece("Passwords", Type.TITLE));
                 });
@@ -152,7 +152,7 @@ public class AccessorySheetTabViewTest {
         final AtomicReference<Boolean> clicked = new AtomicReference<>(false);
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -167,7 +167,7 @@ public class AccessorySheetTabViewTest {
 
         assertThat(btn.getText(), is("Manage passwords"));
 
-        TestThreadUtils.runOnUiThreadBlocking(btn::performClick);
+        ThreadUtils.runOnUiThreadBlocking(btn::performClick);
         assertThat(clicked.get(), is(true));
     }
 }

@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.gesturenav;
 import android.graphics.Point;
 import android.util.DisplayMetrics;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Utility class providing gesture actions for tests. */
 public final class GestureNavigationUtils {
@@ -87,7 +87,7 @@ public final class GestureNavigationUtils {
 
     private void swipe(boolean leftEdge, float startx, float endx, float y) {
         swipeAndHold(leftEdge, startx, endx, y);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNavigationHandler.release(true);
                 });
@@ -100,7 +100,7 @@ public final class GestureNavigationUtils {
         final float step = Math.signum(endx - startx) * distancePx;
         final int eventCounts = (int) ((endx - startx) / step);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNavigationHandler.onDown();
                     float nextx = startx + step;

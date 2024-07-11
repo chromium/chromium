@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -47,7 +48,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
@@ -100,7 +100,7 @@ public class AllSiteSettingsTest {
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
         onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
         View view =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PreferenceFragmentCompat preferenceFragment =
                                     (PreferenceFragmentCompat) settingsActivity.getMainFragment();
@@ -115,7 +115,7 @@ public class AllSiteSettingsTest {
     @SmallTest
     @Feature({"Preferences", "RenderTest"})
     public void testAllSitesViewSingleDomain() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
@@ -129,7 +129,7 @@ public class AllSiteSettingsTest {
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
         onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
         View view =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PreferenceFragmentCompat preferenceFragment =
                                     (PreferenceFragmentCompat) settingsActivity.getMainFragment();
@@ -144,7 +144,7 @@ public class AllSiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testAllSitesUsePublicSuffixList() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
@@ -173,7 +173,7 @@ public class AllSiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testAllSitesWithRelatedFilter() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
@@ -210,7 +210,7 @@ public class AllSiteSettingsTest {
                 new FakeRwsPrivacySandboxBridge(C_GITHUB_IO, Set.of(A_GITHUB_IO, B_GITHUB_IO));
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, fakeRwsPrivacySandboxBridge);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),

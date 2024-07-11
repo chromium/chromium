@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -54,7 +55,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
@@ -141,7 +141,7 @@ public class WarmupManagerTest {
                 InstrumentationRegistry.getInstrumentation()
                         .getTargetContext()
                         .getApplicationContext();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     mWarmupManager = WarmupManager.getInstance();
@@ -151,7 +151,7 @@ public class WarmupManagerTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWarmupManager.destroySpareWebContents();
                     mWarmupManager.destroySpareTab();
@@ -162,7 +162,7 @@ public class WarmupManagerTest {
 
     private void assertOrderValid(boolean expectedState) {
         boolean isOrderValid =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return mTabGroupModelFilter.isOrderValid();
                         });
@@ -184,7 +184,7 @@ public class WarmupManagerTest {
                                 /* incognito= */ false);
                 tabs.add(tab);
             }
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, tabs.get(0), false);
                     });
@@ -196,7 +196,7 @@ public class WarmupManagerTest {
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
 
         Tab tab =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             @TabLaunchType
                             int type =
@@ -216,7 +216,7 @@ public class WarmupManagerTest {
 
     private List<Tab> getCurrentTabs() {
         List<Tab> tabs = new ArrayList<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (int i = 0; i < mTabModel.getCount(); i++) {
                         tabs.add(mTabModel.getTabAt(i));
@@ -226,7 +226,7 @@ public class WarmupManagerTest {
     }
 
     private static Profile getNonPrimaryOTRProfile() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 (Callable<Profile>)
                         () -> {
                             OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
@@ -237,7 +237,7 @@ public class WarmupManagerTest {
     }
 
     private static Profile getPrimaryOTRProfile() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 (Callable<Profile>)
                         () ->
                                 ProfileManager.getLastUsedRegularProfile()
@@ -245,7 +245,7 @@ public class WarmupManagerTest {
     }
 
     private static Profile getRegularProfile() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 (Callable<Profile>) () -> ProfileManager.getLastUsedRegularProfile());
     }
 
@@ -384,7 +384,7 @@ public class WarmupManagerTest {
     @MediumTest
     @Feature({"SpareTab"})
     public void testCreateAndTakeSpareTabWithInitializeRenderer() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
                     mWarmupManager.createRegularSpareTab(profile);
@@ -484,7 +484,7 @@ public class WarmupManagerTest {
 
         Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
         // Create spare tab so that it can be used for navigation from TAB_GROUP_UI.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWarmupManager.createRegularSpareTab(profile);
                     Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
@@ -499,7 +499,7 @@ public class WarmupManagerTest {
         assertOrderValid(true);
         Assert.assertEquals(TabLaunchType.FROM_TAB_GROUP_UI, tab.getLaunchType());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
                 });
@@ -518,7 +518,7 @@ public class WarmupManagerTest {
 
         Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
         // Create spare tab so that it can be used for navigation from TAB_GROUP_UI.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWarmupManager.createRegularSpareTab(profile);
                     Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
@@ -539,7 +539,7 @@ public class WarmupManagerTest {
         Assert.assertEquals(TabLaunchType.FROM_TAB_GROUP_UI, tab.getLaunchType());
 
         // PageLoadMetrics should be recorded when SpareTab is used for navigation.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
                 });

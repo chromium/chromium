@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -38,7 +39,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferen
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +109,7 @@ public class SearchWidgetProviderTest {
      * @param voiceSearchAvailable Whether voice search is available.
      */
     private void performUpdate(String searchEngineName, boolean voiceSearchAvailable) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SearchWidgetProvider.performUpdate(
                             null,
@@ -127,7 +127,7 @@ public class SearchWidgetProviderTest {
      * that the default search engine is not yet selected.
      */
     private void setNeedToCheckForSearchEnginePromo() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LocaleManager.getInstance()
                             .setDelegateForTest(
@@ -176,7 +176,7 @@ public class SearchWidgetProviderTest {
     @CommandLineFlags.Remove(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testUpdateCachedEngineNameBeforeFirstRun() throws ExecutionException {
         Assert.assertFalse(
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> SearchWidgetProvider.shouldShowFullString()));
 
         // Without any idea of what the default search engine is, widgets should default to saying
@@ -211,7 +211,7 @@ public class SearchWidgetProviderTest {
             Assert.assertEquals(TestDelegate.ALL_IDS[i], mDelegate.mViews.get(i).first.intValue());
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Check the contents of the RemoteViews by inflating them.
                     for (int i = 0; i < mDelegate.mViews.size(); i++) {
@@ -273,7 +273,7 @@ public class SearchWidgetProviderTest {
         instrumentation.addMonitor(monitor);
 
         // Click on the widget.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout parentView = new FrameLayout(mContext);
                     View view = views.apply(mContext, parentView);

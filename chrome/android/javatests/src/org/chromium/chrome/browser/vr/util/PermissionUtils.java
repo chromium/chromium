@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.vr.util;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.components.permissions.PermissionDialogController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 /**
@@ -38,7 +38,7 @@ public class PermissionUtils {
 
     /** Accepts the currently displayed permission prompt. */
     public static void acceptPermissionPrompt() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PermissionDialogController.getInstance()
                             .clickButtonForTest(ModalDialogProperties.ButtonType.POSITIVE);
@@ -47,7 +47,7 @@ public class PermissionUtils {
 
     /** Denies the currently displayed permission prompt. */
     public static void denyPermissionPrompt() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PermissionDialogController.getInstance()
                             .clickButtonForTest(ModalDialogProperties.ButtonType.NEGATIVE);

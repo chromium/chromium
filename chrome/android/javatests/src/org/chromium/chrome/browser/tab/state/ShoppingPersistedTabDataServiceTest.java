@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -42,7 +43,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -86,7 +86,7 @@ public class ShoppingPersistedTabDataServiceTest {
                 OptimizationType.SHOPPING_PAGE_PREDICTOR,
                 OptimizationGuideDecision.TRUE,
                 null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PersistedTabDataConfiguration.setUseTestConfig(true);
                 });
@@ -254,7 +254,7 @@ public class ShoppingPersistedTabDataServiceTest {
         tab3.setTimestampMillis(currentTimeStamp - HALF_SECOND);
 
         CallbackHelper widened = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mService.initialize(new HashSet<>(Arrays.asList(tab1, tab2, tab3)));
                     ShoppingPersistedTabData.onDeferredStartup();

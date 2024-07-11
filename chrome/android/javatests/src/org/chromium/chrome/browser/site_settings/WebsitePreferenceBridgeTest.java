@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -34,7 +35,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -63,7 +63,7 @@ public class WebsitePreferenceBridgeTest {
     public void tearDown() throws TimeoutException {
         // Clean up content settings.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
@@ -77,7 +77,7 @@ public class WebsitePreferenceBridgeTest {
     @Test
     @SmallTest
     public void testModifyContentSettings() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowserContextHandle browserContext =
                             ProfileManager.getLastUsedRegularProfile();
@@ -104,7 +104,7 @@ public class WebsitePreferenceBridgeTest {
     @UseMethodParameter(EmbargoedParams.class)
     public void testModifyContentSettingsCustomScope(boolean isEmbargoed) {
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowserContextHandle browserContext =
                             ProfileManager.getLastUsedRegularProfile();

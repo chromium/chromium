@@ -33,7 +33,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
@@ -68,7 +67,7 @@ public class TabObserverTest {
     @Before
     public void setUp() throws Exception {
         sTabObserver = new TestTabObserver();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sTab = sActivityTestRule.getActivity().getActivityTab();
                     sTab.addObserver(sTabObserver);
@@ -78,7 +77,7 @@ public class TabObserverTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sTab.removeObserver(sTabObserver);
                 });

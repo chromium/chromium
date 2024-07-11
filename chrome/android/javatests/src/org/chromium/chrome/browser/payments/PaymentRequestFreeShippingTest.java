@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -28,7 +29,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -223,7 +223,7 @@ public class PaymentRequestFreeShippingTest {
 
         // Quickly press on "add address" and then [X].
         int callCount = mPaymentRequestTestRule.getReadyToEdit().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -259,7 +259,7 @@ public class PaymentRequestFreeShippingTest {
 
         // Quickly press on [X] and then "add address."
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -291,7 +291,7 @@ public class PaymentRequestFreeShippingTest {
 
         // Quickly press on "add address" and then "cancel."
         int callCount = mPaymentRequestTestRule.getReadyToEdit().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -327,7 +327,7 @@ public class PaymentRequestFreeShippingTest {
 
         // Quickly press on "cancel" and then "add address."
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()

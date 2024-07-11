@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -51,7 +52,6 @@ import org.chromium.chrome.browser.ui.signin.fullscreen_signin.UMADialogCoordina
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -84,7 +84,7 @@ public class UMADialogTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
                 });
@@ -108,7 +108,7 @@ public class UMADialogTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(mCoordinator::dismissDialogForTesting);
+        ThreadUtils.runOnUiThreadBlocking(mCoordinator::dismissDialogForTesting);
     }
 
     @Test
@@ -236,7 +236,7 @@ public class UMADialogTest {
     }
 
     private void showFreUMADialog(boolean allowMetricsAndCrashUploading) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final Activity activity = activityTestRule.getActivity();
                     mCoordinator =

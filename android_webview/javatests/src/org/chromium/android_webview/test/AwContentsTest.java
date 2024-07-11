@@ -54,6 +54,7 @@ import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -64,7 +65,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -733,8 +733,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
     private @RendererPriority int getRendererPriorityOnUiThread(final AwContents awContents)
             throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(
-                () -> awContents.getEffectivePriorityForTesting());
+        return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getEffectivePriorityForTesting());
     }
 
     private void setRendererPriorityOnUiThread(
@@ -883,7 +882,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
     private AwRenderProcess getRenderProcessOnUiThread(final AwContents awContents)
             throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
+        return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
     }
 
     @Test
@@ -1489,7 +1488,7 @@ public class AwContentsTest extends AwParameterizedTest {
         // Until AW gets site isolation, ordinary web content should not be
         // locked to origin.
         boolean isLocked =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> rendererProcess1.isProcessLockedToSiteForTesting());
         Assert.assertFalse("Initial renderer process should not be locked", isLocked);
         mActivityTestRule.loadUrlSync(
@@ -1499,7 +1498,7 @@ public class AwContentsTest extends AwParameterizedTest {
         Assert.assertNotEquals(rendererProcess1, webuiProcess);
         // WebUI pages should be locked to origin even on AW.
         isLocked =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> webuiProcess.isProcessLockedToSiteForTesting());
         Assert.assertTrue("WebUI process should be locked", isLocked);
         mActivityTestRule.loadUrlSync(
@@ -1508,7 +1507,7 @@ public class AwContentsTest extends AwParameterizedTest {
         Assert.assertEquals(HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
         Assert.assertNotEquals(rendererProcess2, webuiProcess);
         isLocked =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> rendererProcess2.isProcessLockedToSiteForTesting());
         Assert.assertFalse("Final renderer process should not be locked", isLocked);
     }
@@ -1606,7 +1605,7 @@ public class AwContentsTest extends AwParameterizedTest {
             assertThat(RenderProcessHostUtils.getCurrentRenderProcessCount(), greaterThan(1));
 
             // Click iframe to navigate. This exercises hit testing code paths.
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         int width = testView.getWidth();
                         int height = testView.getHeight();
@@ -1682,7 +1681,7 @@ public class AwContentsTest extends AwParameterizedTest {
         doHardwareRenderingSmokeTest(testView);
         Assert.assertTrue(awContents.hasDrawFunctor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
@@ -1713,7 +1712,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
         // Rendering still works.
         doHardwareRenderingSmokeTest(testView, 42, 42, 42);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(awContents.hasDrawFunctor());
                 });
@@ -1735,7 +1734,7 @@ public class AwContentsTest extends AwParameterizedTest {
         doHardwareRenderingSmokeTest(testView);
         Assert.assertTrue(awContents.hasDrawFunctor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
@@ -1795,7 +1794,7 @@ public class AwContentsTest extends AwParameterizedTest {
         doHardwareRenderingSmokeTest(testView);
         Assert.assertTrue(awContents.hasDrawFunctor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
@@ -1825,7 +1824,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
         // Rendering still works.
         doHardwareRenderingSmokeTest(testView, 42, 42, 42);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(awContents.hasDrawFunctor());
                 });
@@ -1847,7 +1846,7 @@ public class AwContentsTest extends AwParameterizedTest {
         doHardwareRenderingSmokeTest(testView);
         Assert.assertTrue(awContents.hasDrawFunctor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
@@ -1878,7 +1877,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
         // Rendering still works.
         doHardwareRenderingSmokeTest(testView, 42, 42, 42);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(awContents.hasDrawFunctor());
                 });
@@ -1900,7 +1899,7 @@ public class AwContentsTest extends AwParameterizedTest {
         doHardwareRenderingSmokeTest(testView);
         Assert.assertTrue(awContents.hasDrawFunctor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
@@ -1956,7 +1955,7 @@ public class AwContentsTest extends AwParameterizedTest {
         final AwContents awContents = testView.getAwContents();
 
         // Frame metrics listener is detached when AwContents becomes invisible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     awContents.onWindowVisibilityChanged(View.INVISIBLE);
                 });

@@ -45,7 +45,6 @@ import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -95,7 +94,7 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testNoCalls() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingData(mListener, new int[] {}, TimePeriod.ALL_TIME);
@@ -111,7 +110,7 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testCookiesDeleted() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingData(
@@ -147,7 +146,7 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testHistoryDeleted() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingData(
@@ -169,7 +168,7 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testClearingSiteSettingsAndCache() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingData(
@@ -195,7 +194,7 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testClearingSiteSettingsAndCacheWithImportantSites() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingDataExcludingDomains(
@@ -228,7 +227,7 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testClearingAll() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingData(
@@ -275,7 +274,7 @@ public class BrowsingDataBridgeTest {
         sActivityTestRule.loadUrl(url2);
         Tab[] frozen = new Tab[1];
         WebContents[] restored = new WebContents[1];
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState state = TabStateExtractor.from(tab);
                     sActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);
@@ -295,7 +294,7 @@ public class BrowsingDataBridgeTest {
         assertThat(getUrls(controller), Matchers.contains(url1, url2));
         assertNull(frozen[0].getWebContents());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingData(
@@ -309,7 +308,7 @@ public class BrowsingDataBridgeTest {
         mCallbackHelper.waitForCallback(0);
 
         // Check that frozen state was cleaned up.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     restored[0] =
                             WebContentsStateBridge.restoreContentsFromByteBuffer(
@@ -332,7 +331,7 @@ public class BrowsingDataBridgeTest {
         TestWebServer webServer = TestWebServer.start();
         final String noContentUrl = webServer.setResponseWithNoContentStatus("/nocontent.html");
         Tab tab = sActivityTestRule.loadUrlInNewTab(noContentUrl);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertNull(
                             WebContentsStateBridge.getContentsStateAsByteBuffer(
@@ -355,7 +354,7 @@ public class BrowsingDataBridgeTest {
         assertEquals(1, controller.getLastCommittedEntryIndex());
         assertThat(getUrls(controller), Matchers.contains(url1, url2));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingData(
@@ -384,7 +383,7 @@ public class BrowsingDataBridgeTest {
                 new HashSet<>(Arrays.asList("first")),
                 WebappRegistry.getRegisteredWebappIdsForTesting());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingData(
@@ -417,7 +416,7 @@ public class BrowsingDataBridgeTest {
                 new HashSet<>(Arrays.asList("first")),
                 WebappRegistry.getRegisteredWebappIdsForTesting());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBrowsingDataBridge()
                             .clearBrowsingData(

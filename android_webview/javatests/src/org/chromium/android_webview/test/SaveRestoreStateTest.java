@@ -20,15 +20,15 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHistory;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 /**
- * Tests for the {@link android.webkit.WebView#saveState} and
- * {@link android.webkit.WebView#restoreState} APIs.
+ * Tests for the {@link android.webkit.WebView#saveState} and {@link
+ * android.webkit.WebView#restoreState} APIs.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
@@ -98,7 +98,7 @@ public class SaveRestoreStateTest extends AwParameterizedTest {
     }
 
     private NavigationHistory getNavigationHistoryOnUiThread(final TestVars vars) throws Throwable {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> vars.navigationController.getNavigationHistory());
     }
 
@@ -159,7 +159,7 @@ public class SaveRestoreStateTest extends AwParameterizedTest {
         final Bundle invalidState = new Bundle();
         invalidState.putByteArray(AwContents.SAVE_RESTORE_STATE_KEY, "invalid state".getBytes());
         boolean result =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mVars.awContents.restoreState(invalidState));
         Assert.assertFalse(result);
     }
@@ -170,7 +170,7 @@ public class SaveRestoreStateTest extends AwParameterizedTest {
     public void testSaveStateForNoNavigationFails() throws Throwable {
         final Bundle state = new Bundle();
         boolean result =
-                TestThreadUtils.runOnUiThreadBlocking(() -> mVars.awContents.restoreState(state));
+                ThreadUtils.runOnUiThreadBlocking(() -> mVars.awContents.restoreState(state));
         Assert.assertFalse(result);
     }
 }

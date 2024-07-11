@@ -21,10 +21,10 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -62,7 +62,7 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
 
         ViewGroup view = new LinearLayout(getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view);
 
@@ -213,7 +213,7 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
         super.tearDownTest();
     }
 }
