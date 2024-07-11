@@ -1197,6 +1197,7 @@ class _Command:
     self._parser = None
     self._from_wrapper_script = from_wrapper_script
     self.args = None
+    self.incremental_apk_path = None
     self.apk_helper = None
     self.additional_apk_helpers = None
     self.install_dict = None
@@ -1385,16 +1386,16 @@ class _Command:
     args.__dict__.setdefault('apk_path', None)
     args.__dict__.setdefault('incremental_json', None)
 
-    incremental_apk_path = None
+    self.incremental_apk_path = None
     install_dict = None
     if args.incremental_json and not (self.supports_incremental and
                                       args.non_incremental):
       with open(args.incremental_json) as f:
         install_dict = json.load(f)
-        incremental_apk_path = os.path.join(args.output_directory,
-                                            install_dict['apk_path'])
-        if not os.path.exists(incremental_apk_path):
-          incremental_apk_path = None
+        self.incremental_apk_path = os.path.join(args.output_directory,
+                                                 install_dict['apk_path'])
+        if not os.path.exists(self.incremental_apk_path):
+          self.incremental_apk_path = None
 
     if self.supports_incremental:
       if args.incremental and args.non_incremental:
@@ -1404,11 +1405,11 @@ class _Command:
         if not args.apk_path:
           self._parser.error('Apk has not been built.')
       elif args.incremental:
-        if not incremental_apk_path:
+        if not self.incremental_apk_path:
           self._parser.error('Incremental apk has not been built.')
         args.apk_path = None
 
-      if args.apk_path and incremental_apk_path:
+      if args.apk_path and self.incremental_apk_path:
         self._parser.error('Both incremental and non-incremental apks exist. '
                            'Select using --incremental or --non-incremental')
 
@@ -1417,11 +1418,12 @@ class _Command:
     # a while to unpack the apks file from the aab file, so avoid this slowdown
     # for simple commands that don't need apk_helper.
     if self.needs_apk_helper:
-      if not self._CreateApkHelpers(args, incremental_apk_path, install_dict):
+      if not self._CreateApkHelpers(args, self.incremental_apk_path,
+                                    install_dict):
         self._parser.error('App is not built.')
 
     if self.needs_package_name and not args.package_name:
-      if self._CreateApkHelpers(args, incremental_apk_path, install_dict):
+      if self._CreateApkHelpers(args, self.incremental_apk_path, install_dict):
         args.package_name = self.apk_helper.GetPackageName()
       elif self._from_wrapper_script:
         self._parser.error('App is not built.')
@@ -1441,7 +1443,8 @@ class _Command:
       if not available_devices:
         raise Exception('Cannot find any available devices.')
 
-      if not self._CreateApkHelpers(args, incremental_apk_path, install_dict):
+      if not self._CreateApkHelpers(args, self.incremental_apk_path,
+                                    install_dict):
         self.devices = available_devices
       else:
         fully_supported, not_supported_reasons = self._FindSupportedDevices(
@@ -1756,10 +1759,10 @@ To disable filtering, (but keep coloring), use --verbose.
     deobfuscate = None
     if self.args.proguard_mapping_path and not self.args.no_deobfuscate:
       deobfuscate = deobfuscator.Deobfuscator(self.args.proguard_mapping_path)
-
-    if self.args.apk_path or self.bundle_generation_info:
+    apk_path = self.args.apk_path or self.incremental_apk_path
+    if apk_path or self.bundle_generation_info:
       stack_script_context = _StackScriptContext(self.args.output_directory,
-                                                 self.args.apk_path,
+                                                 apk_path,
                                                  self.bundle_generation_info,
                                                  quiet=True)
     else:
@@ -2135,8 +2138,8 @@ class _StackCommand(_Command):
         help='File to decode. If not specified, stdin is processed.')
 
   def Run(self):
-    context = _StackScriptContext(self.args.output_directory,
-                                  self.args.apk_path,
+    apk_path = self.args.apk_path or self.incremental_apk_path
+    context = _StackScriptContext(self.args.output_directory, apk_path,
                                   self.bundle_generation_info)
     try:
       proc = context.Popen(input_file=self.args.file)
