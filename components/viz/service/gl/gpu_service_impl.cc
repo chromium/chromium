@@ -1114,6 +1114,9 @@ void GpuServiceImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
   }
 
   std::string no_prefix_key = key;
+  const bool clear_shader_cache = base::FeatureList::IsEnabled(
+      features::kClearGrShaderDiskCacheOnInvalidPrefix);
+
   if (base::FeatureList::IsEnabled(
           features::kGenGpuDiskCacheKeyPrefixInGpuService) &&
       GetHandleType(handle) == gpu::GpuDiskCacheType::kGlShaders) {
@@ -1128,8 +1131,7 @@ void GpuServiceImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
       // cache will have prefix that does not matches. Clear the whole disk
       // cache in that case to remove all stale entries and make room for newer
       // entries.
-      if (base::FeatureList::IsEnabled(
-              features::kClearGrShaderDiskCacheOnInvalidPrefix)) {
+      if (clear_shader_cache) {
         gpu_host_->ClearGrShaderDiskCache();
       }
       return;
