@@ -143,7 +143,8 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         mCurrentState.setAutocompleteText(Optional.of("google.com"));
 
         confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        confirmAutocompletionApplied(KeyEvent.KEYCODE_ENTER);
+        // Enter is forwarded to the delegate for handling which is what "bypassed" checks.
+        confirmAutocompletionBypassed(KeyEvent.KEYCODE_ENTER);
         confirmAutocompletionApplied(KeyEvent.KEYCODE_TAB);
         confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_LEFT);
     }
@@ -154,7 +155,8 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         mCurrentState.setAutocompleteText(Optional.of("google.com"));
 
         confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_LEFT);
-        confirmAutocompletionApplied(KeyEvent.KEYCODE_ENTER);
+        // Enter is forwarded to the delegate for handling which is what "bypassed" checks.
+        confirmAutocompletionBypassed(KeyEvent.KEYCODE_ENTER);
         confirmAutocompletionApplied(KeyEvent.KEYCODE_TAB);
         confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_RIGHT);
     }

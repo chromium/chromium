@@ -301,12 +301,14 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
                 mInputConnection.commitAutocomplete();
                 mDelegate.setSelection(currentPos, totalLength);
                 retVal = mDelegate.super_dispatchKeyEvent(event);
-            } else if (((event.getKeyCode() == KeyEvent.KEYCODE_TAB)
-                            || (event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
-                    && event.getAction() == KeyEvent.ACTION_DOWN) {
+            } else if (event.getKeyCode() == KeyEvent.KEYCODE_TAB) {
                 mInputConnection.commitAutocomplete();
                 retVal = true;
             } else {
+                // It might make sense to commit the autocomplete text here but the
+                // AutocompleteMediator queries us via getTextWithAutocomplete() so it's included
+                // either way. Avoiding the extra commit eliminates a brief cursor flash at the end
+                // of the autocomplete suggestion.
                 retVal = mDelegate.super_dispatchKeyEvent(event);
             }
         } else {
