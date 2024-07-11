@@ -4854,7 +4854,7 @@ GLboolean GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
     return GL_FALSE;
   }
   memcpy(pixels, static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
-  return GL_FALSE;
+  return GL_TRUE;
 }
 
 void GLES2Implementation::ReadPixels(GLint xoffset,
