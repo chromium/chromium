@@ -182,6 +182,14 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   [self setOrUpdateTrackButton];
 }
 
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  for (UIView* view in _contentStackView.arrangedSubviews) {
+    [_contentStackView removeArrangedSubview:view];
+    [view removeFromSuperview];
+  }
+}
+
 #pragma mark - Private
 
 // Returns whether or not price range is available.
