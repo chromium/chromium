@@ -19,7 +19,7 @@ BASE_FEATURE(kAttributionAggregatableDebugReporting,
 
 BASE_FEATURE(kAttributionSourceDestinationLimit,
              "AttributionSourceDestinationLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAttributionReportingAggregatableFilteringIds,
              "AttributionReportingAggregatableFilteringIds",

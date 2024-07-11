@@ -1354,7 +1354,8 @@ TEST_F(AttributionResolverTest,
 
   const auto store_source = [&](const char* source_origin,
                                 const char* reporting_origin,
-                                const char* destination_origin) {
+                                const char* destination_origin,
+                                int64_t destination_limit_priority = 0) {
     return storage()
         ->StoreSource(
             SourceBuilder()
@@ -1364,6 +1365,7 @@ TEST_F(AttributionResolverTest,
                 .SetDestinationSites(
                     {net::SchemefulSite::Deserialize(destination_origin)})
                 .SetExpiry(base::Days(30))
+                .SetDestinationLimitPriority(destination_limit_priority)
                 .Build())
         .status();
   };
@@ -1379,9 +1381,9 @@ TEST_F(AttributionResolverTest,
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(4));
 
   // This should fail because there are already 3 distinct destinations.
-  EXPECT_EQ(
-      store_source("https://s1.test", "https://a.r.test", "https://d4.test"),
-      StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+  EXPECT_EQ(store_source("https://s1.test", "https://a.r.test",
+                         "https://d4.test", /*destination_limit_priority=*/-1),
+            StorableSource::Result::kInsufficientUniqueDestinationCapacity);
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(4));
 
   // This should succeed because the source site is different.
@@ -1389,7 +1391,8 @@ TEST_F(AttributionResolverTest,
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(5));
 
   // This should fail because the reporting site is already present.
-  store_source("https://s1.test", "https://b.r.test", "https://d5.test");
+  store_source("https://s1.test", "https://b.r.test", "https://d5.test",
+               /*destination_limit_priority=*/-1);
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(5));
 
   // This should succeed because the reporting site is different.
@@ -1405,7 +1408,8 @@ TEST_F(AttributionResolverTest, DestinationLimit_ApplyLimit) {
 
   const auto store_source = [&](const char* source_origin,
                                 const char* reporting_origin,
-                                const char* destination_origin) {
+                                const char* destination_origin,
+                                int64_t destination_limit_priority = 0) {
     return storage()
         ->StoreSource(
             SourceBuilder()
@@ -1415,19 +1419,18 @@ TEST_F(AttributionResolverTest, DestinationLimit_ApplyLimit) {
                 .SetDestinationSites(
                     {net::SchemefulSite::Deserialize(destination_origin)})
                 .SetExpiry(expiry)
+                .SetDestinationLimitPriority(destination_limit_priority)
                 .Build())
         .status();
   };
 
-  // Allowed by pending, allowed by unexpired.
   EXPECT_EQ(
       store_source("https://s.test", "https://a.r.test", "https://d1.test"),
       StorableSource::Result::kSuccess);
 
-  // Dropped by pending, dropped by unexpired.
-  EXPECT_EQ(
-      store_source("https://s.test", "https://a.r.test", "https://d2.test"),
-      StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+  EXPECT_EQ(store_source("https://s.test", "https://a.r.test",
+                         "https://d2.test", /*destination_limit_priority=*/-1),
+            StorableSource::Result::kInsufficientUniqueDestinationCapacity);
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
@@ -1438,18 +1441,16 @@ TEST_F(AttributionResolverTest, DestinationLimit_ApplyLimit) {
                         *SuitableOrigin::Deserialize("https://d1.test"))
                     .Build()));
 
-  // Allowed by pending, dropped by unexpired (therefore dropped and not
-  // stored).
-  EXPECT_EQ(
-      store_source("https://s.test", "https://a.r.test", "https://d2.test"),
-      StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+  // The first source is still counted after being attributed to.
+  EXPECT_EQ(store_source("https://s.test", "https://a.r.test",
+                         "https://d2.test", /*destination_limit_priority=*/-1),
+            StorableSource::Result::kInsufficientUniqueDestinationCapacity);
 
   task_environment_.FastForwardBy(expiry);
 
-  // Allowed by pending, allowed by unexpired.
-  EXPECT_EQ(
-      store_source("https://s.test", "https://a.r.test", "https://d3.test"),
-      StorableSource::Result::kSuccess);
+  EXPECT_EQ(store_source("https://s.test", "https://a.r.test",
+                         "https://d3.test", /*destination_limit_priority=*/-1),
+            StorableSource::Result::kSuccess);
 }
 
 TEST_F(AttributionResolverTest,
@@ -1483,6 +1484,7 @@ TEST_F(AttributionResolverTest,
           .SetDestinationSites(
               {net::SchemefulSite::Deserialize("https://b.example")})
           .SetSourceType(SourceType::kEvent)
+          .SetDestinationLimitPriority(-1)
           .Build());
 
   EXPECT_THAT(
@@ -1514,6 +1516,7 @@ TEST_F(AttributionResolverTest,
           .SetDestinationSites(
               {net::SchemefulSite::Deserialize("https://b.example")})
           .SetSourceType(SourceType::kEvent)
+          .SetDestinationLimitPriority(-1)
           .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));

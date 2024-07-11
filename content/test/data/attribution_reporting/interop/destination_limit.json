@@ -87,7 +87,8 @@
                 "debug_reporting": true,
                 "destination": "https://destination2.test",
                 "source_event_id": "222",
-                "debug_key": "12345"
+                "debug_key": "12345",
+                "destination_limit_priority": "-1"
               }
             }
           }
@@ -111,7 +112,8 @@
                 "debug_reporting": true,
                 "destination": "https://destination2.test",
                 "source_event_id": "123",
-                "debug_key": "54321"
+                "debug_key": "54321",
+                "destination_limit_priority": "-1"
               }
             }
           }

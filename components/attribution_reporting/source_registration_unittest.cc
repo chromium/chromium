@@ -382,7 +382,8 @@ TEST(SourceRegistrationTest, ToJson) {
             "aggregatable_debug_reporting": {
               "budget": 0,
               "key_piece": "0x0"
-            }
+            },
+            "destination_limit_priority": "0"
           })json",
       },
       {
@@ -412,6 +413,7 @@ TEST(SourceRegistrationTest, ToJson) {
                               *AggregatableDebugReportingContribution::Create(
                                   /*key_piece=*/10, /*value=*/12)}},
                             /*aggregation_coordinator_origin=*/std::nullopt));
+                r.destination_limit_priority = 6;
               }),
           R"json({
             "aggregatable_report_window": 1,
@@ -443,7 +445,8 @@ TEST(SourceRegistrationTest, ToJson) {
                   "value": 12
                 }
               ]
-            }
+            },
+            "destination_limit_priority": "6"
           })json",
       },
   };

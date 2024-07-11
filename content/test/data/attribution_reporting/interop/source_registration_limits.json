@@ -95,7 +95,8 @@
                   "https://destination5.test"
                 ],
                 "source_event_id": "334",
-                "debug_reporting": true
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
               }
             }
           }
@@ -123,7 +124,8 @@
                   "https://destination5.test"
                 ],
                 "source_event_id": "444",
-                "debug_reporting": true
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
               }
             }
           }
@@ -149,7 +151,8 @@
                   "https://destination5.test"
                 ],
                 "source_event_id": "555",
-                "debug_reporting": true
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
               }
             }
           }
@@ -176,7 +179,8 @@
                   "https://destination5.test"
                 ],
                 "source_event_id": "666",
-                "debug_reporting": true
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
               }
             }
           }
@@ -203,7 +207,8 @@
                   "https://destination5.test"
                 ],
                 "source_event_id": "777",
-                "debug_reporting": true
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
               }
             }
           }
