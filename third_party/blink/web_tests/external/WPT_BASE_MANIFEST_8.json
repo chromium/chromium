@@ -168769,6 +168769,19 @@
        ],
        {}
       ]
+     ],
+     "registered-property-computation-color-004.html": [
+      "66abd1b3c32db1361d6e030e8d1759d1da65f355",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-pseudo": {
@@ -350250,14 +350263,6 @@
       "4964b7f132c560a67dd3bb4974106d6803ff9e9a",
       []
      ],
-     "scrollIntoView-sideways-lr-writing-mode-expected.txt": [
-      "bb93e466aab5d3ffa4446a63ed9e704a4910843d",
-      []
-     ],
-     "scrollIntoView-sideways-rl-writing-mode-expected.txt": [
-      "cf33c5f4a3cae3c11c68bea933fa86144831d843",
-      []
-     ],
      "scrollTop-display-change-ref.html": [
       "9f1259787bbb33e8f8be6d8fc415738bffee6590",
       []
@@ -368536,12 +368541,6 @@
         "a06cb07904f9401332324d0f1cba5cc9a9eea29e",
         []
        ]
-      },
-      "tentative": {
-       "access-to-noopener-page-from-no-coop-ro.https-expected.txt": [
-        "2351967a30b022a6aff9b3b1fa15f681cb262c8d",
-        []
-       ]
       }
      },
      "resources": {
@@ -376555,7 +376554,7 @@
         []
        ],
        "grouping-li-reftest-list-owner-menu-ref.html": [
-        "2b1ea76656fdcacad2505c48d69f377a1a0e47d6",
+        "fce5538f5e01a2053edcde67fe48f24f48e1c7e3",
         []
        ],
        "grouping-li-reftest-list-owner-mixed-ref.html": [
@@ -479404,6 +479403,13 @@
           "timeout": "long"
          }
         ]
+       ],
+       "interpolate-size-interpolation.html": [
+        "ef2034ba4802b886dbac278ea0b6b5a616a68404",
+        [
+         null,
+         {}
+        ]
        ]
       },
       "calc-size-height.tentative.html": [
@@ -479429,6 +479435,20 @@
       ],
       "calc-size-width.tentative.html": [
        "96b2719c5d18fa6b0f96d9de196b77a045e8d8d5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "interpolate-size-computed.html": [
+       "ca7fd706cb96e3f79d967d07516cbc1230a5007f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "interpolate-size-parsing.html": [
+       "04c8cff8f360983e7897698556cbd08916fe1ae4",
        [
         null,
         {}
@@ -737437,7 +737457,7 @@
          ]
         ],
         "user_prompt_opened.py": [
-         "3a995b150388909587ee8ed834030574de1e4003",
+         "c24128004f73a8b09a61991837b1dad103f91789",
          [
           null,
           {}
