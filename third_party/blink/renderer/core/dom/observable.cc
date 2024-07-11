@@ -1576,7 +1576,7 @@ class OperatorTakeSubscribeDelegate final
   };
   // The `Observable` which `this` will mirror, when `this` is subscribed to.
   Member<Observable> source_observable_;
-  uint64_t number_to_take_;
+  const uint64_t number_to_take_;
 };
 
 class OperatorFilterSubscribeDelegate final
