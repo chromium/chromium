@@ -30,6 +30,7 @@
 
 using testing::_;
 using testing::Field;
+using testing::IsEmpty;
 using testing::Truly;
 using testing::UnorderedElementsAre;
 
@@ -226,7 +227,7 @@ TEST_F(IbanManagerTest,
   // The field contains value matches existing IBAN already, so check that we do
   // not return suggestions to the handler.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run).Times(0);
+  EXPECT_CALL(mock_callback, Run(autofill_field_->global_id(), IsEmpty()));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -291,7 +292,7 @@ TEST_F(IbanManagerTest,
 
   // Verify that the handler is not triggered because no IBAN suggestions match
   // the given prefix.
-  EXPECT_CALL(mock_callback, Run).Times(0);
+  EXPECT_CALL(mock_callback, Run(autofill_field_->global_id(), IsEmpty()));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -464,7 +465,7 @@ TEST_F(
   // Expect that no suggestions are returned because length of input field
   // exceeds `kFieldLengthLimitOnServerIbanSuggestion`.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run).Times(0);
+  EXPECT_CALL(mock_callback, Run(autofill_field_->global_id(), IsEmpty()));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -683,7 +684,7 @@ TEST_F(IbanManagerTest, Metrics_NoSuggestionShown) {
   autofill_field_->set_value(u"XY");
 
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run).Times(0);
+  EXPECT_CALL(mock_callback, Run(autofill_field_->global_id(), IsEmpty()));
 
   // The suggestion handler should be triggered as some IBANs are available.
   // However, no suggestions are returned due to the prefix match requirement.

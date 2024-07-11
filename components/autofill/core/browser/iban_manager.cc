@@ -67,9 +67,8 @@ bool IbanManager::OnGetSingleFieldSuggestions(
             kBlocklistIsNotAvailable);
   }
 
-  SendIbanSuggestions(std::move(ibans), field,
-                      std::move(on_suggestions_returned));
-
+  std::move(on_suggestions_returned)
+      .Run(field.global_id(), GetIbanSuggestions(std::move(ibans), field));
   return true;
 }
 
@@ -107,27 +106,24 @@ void IbanManager::UmaRecorder::OnIbanSuggestionSelected(
       most_recent_suggestions_shown_field_global_id_;
 }
 
-void IbanManager::SendIbanSuggestions(
+std::vector<Suggestion> IbanManager::GetIbanSuggestions(
     std::vector<Iban> ibans,
-    const FormFieldData& field,
-    OnSuggestionsReturnedCallback on_suggestions_returned) {
+    const FormFieldData& field) {
   // If the input box content equals any of the available IBANs, then
   // assume the IBAN has been filled, and don't show any suggestions.
   if (!field.value().empty() &&
       base::Contains(ibans, field.value(), &Iban::value)) {
-    return;
+    return {};
   }
 
   FilterIbansToSuggest(field.value(), ibans);
 
   if (ibans.empty()) {
-    return;
+    return {};
   }
 
-  std::move(on_suggestions_returned)
-      .Run(field.global_id(), GetSuggestionsForIbans(std::move(ibans)));
-
   uma_recorder_.OnIbanSuggestionsShown(field.global_id());
+  return GetSuggestionsForIbans(ibans);
 }
 
 void IbanManager::FilterIbansToSuggest(const std::u16string& field_value,

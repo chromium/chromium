@@ -69,11 +69,9 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   };
 
   // Filters the `ibans` based on the `field`'s value and returns the resulting
-  // suggestions via `on_suggestions_returned`.
-  void SendIbanSuggestions(
-      std::vector<Iban> ibans,
-      const FormFieldData& field,
-      OnSuggestionsReturnedCallback on_suggestions_returned);
+  // suggestions.
+  std::vector<Suggestion> GetIbanSuggestions(std::vector<Iban> ibans,
+                                             const FormFieldData& field);
 
   // Filter out IBAN-based suggestions based on the following criteria:
   // For local IBANs: Filter out the IBAN value which does not starts with the
