@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.common.hash.Hashing;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -83,11 +84,16 @@ public class ReadAloudController
         implements Player.Observer,
                 Player.Delegate,
                 PlaybackListener,
+                ApplicationStatus.ActivityStateListener,
                 ApplicationStatus.ApplicationStateListener,
                 InsetObserver.WindowInsetObserver,
                 OnUserLeaveHintObserver {
     private static final String TAG = "ReadAloudController";
     private static final Class<RestoreState> USER_DATA_KEY = RestoreState.class;
+    // There may be multiple ReadAloudController instances created by different Chrome activities
+    // (like CCT). They are kept here so they can signal each other to release playback.
+    private static final HashSet<ReadAloudController> sInstances = new HashSet<>();
+
     private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObserverList<Runnable> mReadabilityUpdateObserverList = new ObserverList<>();
@@ -468,6 +474,7 @@ public class ReadAloudController
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityWindowAndroid activityWindowAndroid,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+        sInstances.add(this);
         ReadAloudFeatures.init();
         mActivity = activity;
         mProfileSupplier = profileSupplier;
@@ -481,6 +488,7 @@ public class ReadAloudController
         mLayoutManagerSupplier = layoutManagerSupplier;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
         ApplicationStatus.registerApplicationStateListener(this);
+        ApplicationStatus.registerStateListenerForActivity(this, mActivity);
         mActivityWindowAndroid = activityWindowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -810,6 +818,18 @@ public class ReadAloudController
         if (mProfileSupplier.get() == null) {
             return;
         }
+
+        // There may be a saved playback state if another ReadAloudController instance interrupted
+        // this one. Restore it if the entrypoint is showing on the same tab, otherwise clear state.
+        if (mStateToRestoreOnBringingToForeground != null) {
+            if (mStateToRestoreOnBringingToForeground.getTab() == tab) {
+                restoreStateOnForeground();
+                return;
+            } else {
+                mStateToRestoreOnBringingToForeground = null;
+            }
+        }
+
         extractDateModified(tab)
                 .then(
                         timestamp -> {
@@ -866,7 +886,11 @@ public class ReadAloudController
             return promise;
         }
 
+        // If there is a background playback from another instance, stop it.
+        stopExternalBackgroundPlayback();
+        // Stop ongoing playback in this activity.
         resetCurrentPlayback(ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
+
         mCurrentlyPlayingTab = tab;
         mPlayingTabTranslationObserver.observeTab(mCurrentlyPlayingTab);
 
@@ -969,6 +993,7 @@ public class ReadAloudController
 
     /** Cleanup: unregister listeners. */
     public void destroy() {
+        sInstances.remove(this);
         mIsDestroyed = true;
         if (mVoicePreviewPlayback != null) {
             destroyVoicePreview();
@@ -987,6 +1012,7 @@ public class ReadAloudController
 
         mHighlightingEnabled.removeObserver(mHighlightingEnabledObserver);
         ApplicationStatus.unregisterApplicationStateListener(this);
+        ApplicationStatus.unregisterActivityStateListener(this);
         resetCurrentPlayback(ReasonForStoppingPlayback.APP_DESTROYED);
         mStateToRestoreOnBringingToForeground = null;
         ReadAloudFeatures.shutdown();
@@ -1053,7 +1079,8 @@ public class ReadAloudController
      *     any active playback will be stopped.
      * @param reason reason why the active playback is being stopped
      */
-    public void maybeStopPlayback(@Nullable Tab tab, int reasonPlaybackStopped) {
+    public void maybeStopPlayback(
+            @Nullable Tab tab, @ReasonForStoppingPlayback int reasonPlaybackStopped) {
         if (mCurrentlyPlayingTab == null && mPlayerCoordinator != null) {
             // in case there's an error and UI is drawn
             mPlayerCoordinator.dismissPlayers();
@@ -1219,6 +1246,11 @@ public class ReadAloudController
         if (mVoicePreviewPlayback != null) {
             destroyVoicePreview();
         }
+
+        // If there is a background playback from another instance, stop it. (The voice selection UI
+        // should not be visible in this case, so it should not be possible to preview a voice, but
+        // this ensures the preview still works anyway.)
+        stopExternalBackgroundPlayback();
 
         Log.d(
                 TAG,
@@ -1431,25 +1463,11 @@ public class ReadAloudController
         // on and unlocked
         if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
                 && (isScreenOnAndUnlocked || mOnUserLeaveHint)) {
-            if (mCurrentlyPlayingTab != null) {
-                assert !GURL.isEmptyOrInvalid(mCurrentlyPlayingTab.getUrl());
-                mStateToRestoreOnBringingToForeground =
-                        new RestoreState(
-                                mCurrentlyPlayingTab,
-                                mCurrentPlaybackData,
-                                /* useOffsetInParagraph= */ true,
-                                /* shouldPlayOverride= */ false,
-                                mDateModified);
-            }
+            saveStateToRestoreOnForeground();
             resetCurrentPlayback(ReasonForStoppingPlayback.APP_BACKGROUNDED);
             mOnUserLeaveHint = false;
-        } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
-                && mStateToRestoreOnBringingToForeground != null
-                && mProfileSupplier.get() != null) {
-            mStateToRestoreOnBringingToForeground.restore();
-            mStateToRestoreOnBringingToForeground = null;
-            mOnUserLeaveHint = false;
         }
+
         if (mPlayerCoordinator != null) {
             if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES && !isScreenOnAndUnlocked) {
                 mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ true);
@@ -1457,6 +1475,31 @@ public class ReadAloudController
                     && isScreenOnAndUnlocked) {
                 mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ false);
             }
+        }
+    }
+
+    @Override
+    public void onActivityStateChange(Activity activity, @ActivityState int newState) {
+        // Restore saved playback if resuming after app was backgrounded.
+        if (newState == ActivityState.RESUMED
+                && mStateToRestoreOnBringingToForeground != null
+                && mProfileSupplier.get() != null) {
+
+            boolean otherInstanceHasPlayback = false;
+            for (ReadAloudController controller : sInstances) {
+                if (controller != this && controller.mPlayback != null) {
+                    otherInstanceHasPlayback = true;
+                    break;
+                }
+            }
+
+            // Only resume if another instance doesn't already have a playback.
+            if (!otherInstanceHasPlayback) {
+                restoreStateOnForeground();
+                mOnUserLeaveHint = false;
+            }
+            // TODO(b/352563278): If another instance is playing, show the player in the "paused"
+            // state and then restore if the play button is clicked.
         }
     }
 
@@ -1500,6 +1543,33 @@ public class ReadAloudController
     private void removeTranslationObservers(Tab tab) {
         mPlayingTabTranslationObserver.stopObservingTab(tab);
         mCurrentTabTranslationObserver.stopObservingTab(tab);
+    }
+
+    private void saveStateToRestoreOnForeground() {
+        if (mCurrentlyPlayingTab == null) return;
+
+        mStateToRestoreOnBringingToForeground =
+                new RestoreState(
+                        mCurrentlyPlayingTab,
+                        mCurrentPlaybackData,
+                        /* useOffsetInParagraph= */ true,
+                        /* shouldPlayOverride= */ false,
+                        mDateModified);
+    }
+
+    private void restoreStateOnForeground() {
+        mStateToRestoreOnBringingToForeground.restore();
+        mStateToRestoreOnBringingToForeground = null;
+    }
+
+    private void stopExternalBackgroundPlayback() {
+        for (ReadAloudController controller : sInstances) {
+            if (controller != this && controller.mPlayback != null) {
+                controller.saveStateToRestoreOnForeground();
+                controller.maybeStopPlayback(
+                        null, ReasonForStoppingPlayback.EXTERNAL_PLAYBACK_REQUEST);
+            }
+        }
     }
 
     // Tests.

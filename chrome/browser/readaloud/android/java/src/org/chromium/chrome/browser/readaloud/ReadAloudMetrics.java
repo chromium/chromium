@@ -111,6 +111,7 @@ public class ReadAloudMetrics {
         ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST,
         ReasonForStoppingPlayback.TRANSLATION_STATE_CHANGE,
         ReasonForStoppingPlayback.ACTIVITY_ATTACHEMENT_CHANGED,
+        ReasonForStoppingPlayback.EXTERNAL_PLAYBACK_REQUEST,
         ReasonForStoppingPlayback.TAB_CLOSED,
     })
     public @interface ReasonForStoppingPlayback {
@@ -136,8 +137,11 @@ public class ReadAloudMetrics {
         int ACTIVITY_ATTACHEMENT_CHANGED = 9;
         // Playing tab was closed.
         int TAB_CLOSED = 10;
+        // Playback was requested from another activity (e.g. Chrome playback must stop because CCT
+        // is about to play).
+        int EXTERNAL_PLAYBACK_REQUEST = 11;
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 11;
+        int NUM_ENTRIES = 12;
     }
 
     public static void recordDurationMsListened(long durationMs) {
