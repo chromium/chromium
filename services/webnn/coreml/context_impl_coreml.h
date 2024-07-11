@@ -26,7 +26,8 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
       WebNNContextProviderImpl* context_provider,
-      mojom::CreateContextOptionsPtr options);
+      mojom::CreateContextOptionsPtr options,
+      base::UnguessableToken context_handle);
 
   ContextImplCoreml(const WebNNContextImpl&) = delete;
   ContextImplCoreml& operator=(const ContextImplCoreml&) = delete;

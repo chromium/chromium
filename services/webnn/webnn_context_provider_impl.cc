@@ -178,8 +178,7 @@ void WebNNContextProviderImpl::CreateForTesting(
 }
 
 void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
-  auto it =
-      base::ranges::find(impls_, impl, &std::unique_ptr<WebNNContextImpl>::get);
+  auto it = impls_.find(impl->handle());
   CHECK(it != impls_.end());
   impls_.erase(it);
 }
@@ -198,6 +197,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                                               std::move(callback));
     return;
   }
+
+  base::UnguessableToken context_handle = base::UnguessableToken::Create();
 
   WebNNContextImpl* context_impl = nullptr;
   mojo::PendingRemote<mojom::WebNNContext> remote;
@@ -254,7 +255,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
     context_impl = new dml::ContextImplDml(
         std::move(adapter), std::move(receiver), std::move(client_remote), this,
-        std::move(command_recorder), gpu_feature_info_);
+        std::move(command_recorder), gpu_feature_info_, context_handle);
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -262,9 +263,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // TODO: crbug.com/325612086 - Consider using supporting older Macs either
   // with TFLite or a more restrictive implementation on CoreML.
   if (__builtin_available(macOS 14, *)) {
-    context_impl = new coreml::ContextImplCoreml(std::move(receiver),
-                                                 std::move(client_remote), this,
-                                                 std::move(options));
+    context_impl = new coreml::ContextImplCoreml(
+        std::move(receiver), std::move(client_remote), this, std::move(options),
+        context_handle);
   }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -272,12 +273,12 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   if (!context_impl) {
 #if BUILDFLAG(IS_CHROMEOS)
     // TODO: crbug.com/41486052 - Create the TFLite context using `options`.
-    context_impl = new tflite::ContextImplCrOS(std::move(receiver),
-                                               std::move(client_remote), this);
+    context_impl = new tflite::ContextImplCrOS(
+        std::move(receiver), std::move(client_remote), this, context_handle);
 #else
-    context_impl = new tflite::ContextImplTflite(std::move(receiver),
-                                                 std::move(client_remote), this,
-                                                 std::move(options));
+    context_impl = new tflite::ContextImplTflite(
+        std::move(receiver), std::move(client_remote), this, std::move(options),
+        context_handle);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
@@ -292,11 +293,11 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   }
 
   ContextProperties context_properties = context_impl->properties();
-  impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
+  impls_.emplace(base::WrapUnique<WebNNContextImpl>(context_impl));
 
   auto success = mojom::CreateContextSuccess::New(
       std::move(remote), std::move(client_receiver),
-      std::move(context_properties));
+      std::move(context_properties), std::move(context_handle));
   std::move(callback).Run(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
 }

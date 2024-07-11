@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/webnn_object_impl.h"
 
 namespace webnn {
 
@@ -56,12 +57,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // is no longer safe to access |impl|.
   void OnConnectionError(WebNNContextImpl* impl);
 
+  using WebNNContextImplSet =
+      base::flat_set<std::unique_ptr<WebNNContextImpl>,
+                     WebNNObjectImpl::Comparator<WebNNContextImpl>>;
+
   // The test cases can override the context creating behavior by implementing
   // this class and setting its instance by SetBackendForTesting().
   class BackendForTesting {
    public:
     virtual void CreateWebNNContext(
-        std::vector<std::unique_ptr<WebNNContextImpl>>& context_impls,
+        WebNNContextImplSet& context_impls,
         WebNNContextProviderImpl* context_provider_impl,
         mojom::CreateContextOptionsPtr options,
         CreateWebNNContextCallback callback) = 0;
@@ -83,7 +88,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override;
 
-  std::vector<std::unique_ptr<WebNNContextImpl>> impls_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;
@@ -91,6 +95,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 #if !BUILDFLAG(IS_CHROMEOS)
   mojo::ReceiverSet<mojom::WebNNContextProvider> provider_receivers_;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  // Contexts created by this provider. When a context disconnects,
+  // it will destroy itself by removing itself from this set.
+  WebNNContextImplSet impls_;
 };
 
 }  // namespace webnn

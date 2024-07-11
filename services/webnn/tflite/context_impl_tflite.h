@@ -19,7 +19,8 @@ class ContextImplTflite final : public WebNNContextImpl {
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
       WebNNContextProviderImpl* context_provider,
-      mojom::CreateContextOptionsPtr options);
+      mojom::CreateContextOptionsPtr options,
+      base::UnguessableToken context_handle);
 
   ContextImplTflite(const WebNNContextImpl&) = delete;
   ContextImplTflite& operator=(const ContextImplTflite&) = delete;

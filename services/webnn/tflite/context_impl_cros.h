@@ -20,7 +20,8 @@ class ContextImplCrOS final : public WebNNContextImpl {
  public:
   ContextImplCrOS(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                   mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
-                  WebNNContextProviderImpl* context_provider);
+                  WebNNContextProviderImpl* context_provider,
+                  base::UnguessableToken context_handle);
 
   ContextImplCrOS(const ContextImplCrOS&) = delete;
   ContextImplCrOS& operator=(const ContextImplCrOS&) = delete;

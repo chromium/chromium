@@ -67,6 +67,8 @@ class MODULES_EXPORT MLContext
 
   void Trace(Visitor* visitor) const override;
 
+  const base::UnguessableToken& handle() const { return webnn_handle_; }
+
   // IDL interface:
   ScriptPromise<MLContextLostInfo> lost(ScriptState* script_state);
 
@@ -170,6 +172,9 @@ class MODULES_EXPORT MLContext
   HeapMojoReceiver<webnn::mojom::blink::WebNNContextClient, MLContext>
       context_client_receiver_;
   webnn::ContextProperties properties_;
+
+  // Identifies this `WebNNContext` mojo instance in the service process.
+  const base::UnguessableToken webnn_handle_;
 };
 
 }  // namespace blink

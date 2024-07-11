@@ -91,6 +91,11 @@ struct CreateContextSuccess {
   pending_remote<WebNNContext>? context_remote;
   pending_receiver<WebNNContextClient>? context_client_receiver;
   ContextProperties context_properties;
+  // context_handle is a generated token used as handle to identify the
+  // the context from the renderer. The token is only valid for the lifetime
+  // of the context and is used to resolve a buffer in the service using the
+  // context corresponding to this handle.
+  mojo_base.mojom.UnguessableToken context_handle;
 };
 
 // Represents the return value of `WebNNContext::CreateGraph()`. Let it be

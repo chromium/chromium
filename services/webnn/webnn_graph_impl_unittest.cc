@@ -122,11 +122,13 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   FakeWebNNContextImpl(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
-      WebNNContextProviderImpl* context_provider)
+      WebNNContextProviderImpl* context_provider,
+      base::UnguessableToken context_handle)
       : WebNNContextImpl(std::move(receiver),
                          std::move(client_remote),
                          context_provider,
-                         GetContextPropertiesForTesting()) {}
+                         GetContextPropertiesForTesting(),
+                         std::move(context_handle)) {}
   ~FakeWebNNContextImpl() override = default;
 
   // WebNNContextImpl:
@@ -178,22 +180,25 @@ class FakeWebNNContextClientImpl : public mojom::WebNNContextClient {
 class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
  public:
   void CreateWebNNContext(
-      std::vector<std::unique_ptr<WebNNContextImpl>>& context_impls,
+      WebNNContextProviderImpl::WebNNContextImplSet& context_impls,
       WebNNContextProviderImpl* context_provider_impl,
       mojom::CreateContextOptionsPtr options,
       mojom::WebNNContextProvider::CreateWebNNContextCallback callback)
       override {
     mojo::PendingRemote<mojom::WebNNContext> remote;
+    base::UnguessableToken context_handle = base::UnguessableToken::Create();
     mojo::PendingReceiver<mojom::WebNNContextClient> client_receiver;
     auto context_impl = std::make_unique<FakeWebNNContextImpl>(
         remote.InitWithNewPipeAndPassReceiver(),
-        client_receiver.InitWithNewPipeAndPassRemote(), context_provider_impl);
+        client_receiver.InitWithNewPipeAndPassRemote(), context_provider_impl,
+        context_handle);
     ContextProperties context_properties = context_impl->properties();
     // The receiver bound to FakeWebNNContext.
     context_impl_ = context_impl.get();
-    context_impls.push_back(std::move(context_impl));
+    context_impls.insert(std::move(context_impl));
     auto success = mojom::CreateContextSuccess::New(
-        std::move(remote), std::move(client_receiver), context_properties);
+        std::move(remote), std::move(client_receiver),
+        std::move(context_properties), std::move(context_handle));
     std::move(callback).Run(
         mojom::CreateContextResult::NewSuccess(std::move(success)));
   }

@@ -31,7 +31,8 @@ class WebNNBufferImpl;
 class WebNNContextProviderImpl;
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
-    : public mojom::WebNNContext {
+    : public mojom::WebNNContext,
+      public WebNNObjectImpl {
  public:
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
@@ -39,7 +40,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                    mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                    WebNNContextProviderImpl* context_provider,
-                   ContextProperties properties);
+                   ContextProperties properties,
+                   base::UnguessableToken context_handle);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;

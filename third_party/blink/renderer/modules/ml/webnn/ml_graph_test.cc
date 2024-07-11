@@ -581,7 +581,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         webnn::SupportedDataTypes::All()};
     auto success = blink_mojom::CreateContextSuccess::New(
         std::move(blink_remote), std::move(client_receiver),
-        std::move(context_properties));
+        std::move(context_properties), base::UnguessableToken::Create());
     std::move(callback).Run(
         blink_mojom::CreateContextResult::NewSuccess(std::move(success)));
   }

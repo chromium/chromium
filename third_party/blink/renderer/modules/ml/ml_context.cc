@@ -68,7 +68,8 @@ MLContext::MLContext(
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
       context_remote_(execution_context),
       context_client_receiver_(this, execution_context),
-      properties_(std::move(create_context_success->context_properties)) {
+      properties_(std::move(create_context_success->context_properties)),
+      webnn_handle_(std::move(create_context_success->context_handle)) {
   context_remote_.Bind(
       std::move(create_context_success->context_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));

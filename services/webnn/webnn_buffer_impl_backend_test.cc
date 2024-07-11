@@ -79,7 +79,8 @@ class WebNNBufferImplBackendTest : public dml::TestBase {
 
  protected:
   bool CreateWebNNContext(
-      mojo::Remote<mojom::WebNNContext>& webnn_context_remote);
+      mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
+      base::UnguessableToken& webnn_context_handle);
 
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<dml::Adapter> adapter_;
@@ -115,7 +116,8 @@ class WebNNBufferImplBackendTest : public testing::Test {
 
  protected:
   bool CreateWebNNContext(
-      mojo::Remote<mojom::WebNNContext>& webnn_context_remote);
+      mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
+      base::UnguessableToken& webnn_context_handle);
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -153,7 +155,8 @@ class WebNNBufferImplBackendTest : public testing::Test {
 
  protected:
   bool CreateWebNNContext(
-      mojo::Remote<mojom::WebNNContext>& webnn_context_remote);
+      mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
+      base::UnguessableToken& webnn_context_handle);
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -171,7 +174,8 @@ void WebNNBufferImplBackendTest::TearDown() {
 }
 
 bool WebNNBufferImplBackendTest::CreateWebNNContext(
-    mojo::Remote<mojom::WebNNContext>& webnn_context_remote) {
+    mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
+    base::UnguessableToken& webnn_context_handle) {
   bool is_platform_supported = true;
 
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
@@ -185,6 +189,7 @@ bool WebNNBufferImplBackendTest::CreateWebNNContext(
   if (create_context_result->is_success()) {
     webnn_context_remote.Bind(
         std::move(create_context_result->get_success()->context_remote));
+    webnn_context_handle = create_context_result->get_success()->context_handle;
   } else {
     is_platform_supported = create_context_result->get_error()->code !=
                             mojom::Error::Code::kNotSupportedError;
@@ -201,7 +206,8 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_context_remote)) {
+  base::UnguessableToken webnn_context_handle;
+  if (!CreateWebNNContext(webnn_context_remote, webnn_context_handle)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -228,7 +234,8 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_context_remote)) {
+  base::UnguessableToken webnn_context_handle;
+  if (!CreateWebNNContext(webnn_context_remote, webnn_context_handle)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -260,7 +267,8 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManySameTokenTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_context_remote)) {
+  base::UnguessableToken webnn_context_handle;
+  if (!CreateWebNNContext(webnn_context_remote, webnn_context_handle)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -293,7 +301,8 @@ TEST_F(WebNNBufferImplBackendTest,
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_context_remote)) {
+  base::UnguessableToken webnn_context_handle;
+  if (!CreateWebNNContext(webnn_context_remote, webnn_context_handle)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -335,7 +344,8 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_context_remote)) {
+  base::UnguessableToken webnn_context_handle;
+  if (!CreateWebNNContext(webnn_context_remote, webnn_context_handle)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -367,7 +377,8 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_context_remote)) {
+  base::UnguessableToken webnn_context_handle;
+  if (!CreateWebNNContext(webnn_context_remote, webnn_context_handle)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -385,6 +396,30 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
 
   webnn_context_remote.FlushForTesting();
   EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidBuffer);
+}
+
+// Creating two or more WebNNContexts(s) with separate tokens should always
+// succeed.
+TEST_F(WebNNBufferImplBackendTest, CreateContextImplManyTest) {
+  BadMessageTestHelper bad_message_helper;
+
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote_1;
+  base::UnguessableToken webnn_context_handle_1;
+  if (!CreateWebNNContext(webnn_context_remote_1, webnn_context_handle_1)) {
+    GTEST_SKIP() << "WebNN not supported on this platform.";
+  }
+
+  EXPECT_TRUE(webnn_context_remote_1.is_bound());
+
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote_2;
+  base::UnguessableToken webnn_context_handle_2;
+  ASSERT_TRUE(
+      CreateWebNNContext(webnn_context_remote_2, webnn_context_handle_2));
+
+  EXPECT_TRUE(webnn_context_remote_2.is_bound());
+
+  webnn_provider_remote_.FlushForTesting();
+  EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }
 
 }  // namespace

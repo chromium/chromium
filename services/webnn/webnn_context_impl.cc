@@ -23,8 +23,11 @@ WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
-    ContextProperties properties)
-    : receiver_(this, std::move(receiver)),
+    ContextProperties properties,
+    base::UnguessableToken context_handle)
+    // TODO(crbug.com/345352987): pass token by value to WebNNObjectImpl.
+    : WebNNObjectImpl(std::move(context_handle)),
+      receiver_(this, std::move(receiver)),
       client_remote_(std::move(client_remote)),
       context_provider_(context_provider),
       properties_(IntersectWithBaseProperties(std::move(properties))) {

@@ -29,7 +29,8 @@ class ContextImplDml final : public WebNNContextImpl {
                  mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                  WebNNContextProviderImpl* context_provider,
                  std::unique_ptr<CommandRecorder> command_recorder,
-                 const gpu::GpuFeatureInfo& gpu_feature_info);
+                 const gpu::GpuFeatureInfo& gpu_feature_info,
+                 base::UnguessableToken context_handle);
 
   ContextImplDml(const WebNNContextImpl&) = delete;
   ContextImplDml& operator=(const ContextImplDml&) = delete;

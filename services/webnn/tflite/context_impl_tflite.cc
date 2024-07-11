@@ -20,11 +20,13 @@ ContextImplTflite::ContextImplTflite(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
-    mojom::CreateContextOptionsPtr options)
+    mojom::CreateContextOptionsPtr options,
+    base::UnguessableToken context_handle)
     : WebNNContextImpl(std::move(receiver),
                        std::move(client_remote),
                        context_provider,
-                       GraphBuilderTflite::GetContextProperties()),
+                       GraphBuilderTflite::GetContextProperties(),
+                       std::move(context_handle)),
       options_(std::move(options)) {}
 
 ContextImplTflite::~ContextImplTflite() = default;

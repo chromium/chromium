@@ -93,11 +93,13 @@ ContextImplDml::ContextImplDml(
     mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
     std::unique_ptr<CommandRecorder> command_recorder,
-    const gpu::GpuFeatureInfo& gpu_feature_info)
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    base::UnguessableToken context_handle)
     : WebNNContextImpl(std::move(receiver),
                        std::move(client_remote),
                        context_provider,
-                       GetProperties(adapter->max_supported_feature_level())),
+                       GetProperties(adapter->max_supported_feature_level()),
+                       std::move(context_handle)),
       adapter_(std::move(adapter)),
       command_recorder_(std::move(command_recorder)),
       gpu_feature_info_(gpu_feature_info) {

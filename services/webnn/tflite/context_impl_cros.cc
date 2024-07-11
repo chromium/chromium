@@ -16,11 +16,13 @@ namespace webnn::tflite {
 ContextImplCrOS::ContextImplCrOS(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
-    WebNNContextProviderImpl* context_provider)
+    WebNNContextProviderImpl* context_provider,
+    base::UnguessableToken context_handle)
     : WebNNContextImpl(std::move(receiver),
                        std::move(client_remote),
                        context_provider,
-                       GraphBuilderTflite::GetContextProperties()) {}
+                       GraphBuilderTflite::GetContextProperties(),
+                       std::move(context_handle)) {}
 
 ContextImplCrOS::~ContextImplCrOS() = default;
 
