@@ -3546,6 +3546,73 @@ TEST_F(SnapGroupTest, ReSnapToOppositeSnapRatio) {
       w1->GetBoundsInScreen().width());
 }
 
+// Tests no dump without crash when one of the windows is minimized. Regression
+// test for http://b/352159258.
+TEST_F(SnapGroupTest, NoDumpWithoutCrashOnMinimize) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  auto* snap_group_controller = SnapGroupController::Get();
+  // Test with both primary and secondary display orientation.
+  for (const bool is_layout_primary : {true, false}) {
+    if (is_layout_primary) {
+      UpdateDisplay("800x600");
+    } else {
+      UpdateDisplay("800x600/u");
+    }
+    ASSERT_EQ(is_layout_primary, IsLayoutPrimary(w1.get()));
+    SnapOneTestWindow(w1.get(),
+                      is_layout_primary ? WindowStateType::kPrimarySnapped
+                                        : WindowStateType::kSecondarySnapped,
+                      chromeos::kDefaultSnapRatio);
+    SnapOneTestWindow(w2.get(),
+                      is_layout_primary ? WindowStateType::kSecondarySnapped
+                                        : WindowStateType::kPrimarySnapped,
+                      chromeos::kDefaultSnapRatio);
+    ASSERT_TRUE(
+        snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+    const gfx::Rect w1_bounds(w1->GetBoundsInScreen());
+    const gfx::Rect w2_bounds(w2->GetBoundsInScreen());
+
+    // Minimize `w1`.
+    auto* window_state1 = WindowState::Get(w1.get());
+    window_state1->Minimize();
+    ASSERT_FALSE(
+        snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+    // Verify `w2` is back at 1/2.
+    const gfx::Rect work_area(GetWorkAreaBounds());
+    gfx::Rect left_half, right_half;
+    work_area.SplitVertically(left_half, right_half);
+    // Verify `w2` is at the same position, aka approximately the same
+    // bounds it was at before.
+    EXPECT_TRUE(w2_bounds.ApproximatelyEqual(
+        w2->GetBoundsInScreen(),
+        /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+    EXPECT_EQ(right_half, w2->GetBoundsInScreen());
+    auto* window_state2 = WindowState::Get(w2.get());
+    EXPECT_EQ(chromeos::kDefaultSnapRatio, window_state2->snap_ratio());
+
+    // Unminimize `w1`. Test the windows are still at 1/2 with no divider.
+    window_state1->Unminimize();
+    ASSERT_FALSE(
+        snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+    // Verify `w1` is at the same position, aka approximately the same
+    // bounds it was at before.
+    EXPECT_TRUE(w1_bounds.ApproximatelyEqual(
+        w1->GetBoundsInScreen(),
+        /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+    EXPECT_EQ(left_half, w1->GetBoundsInScreen());
+    EXPECT_EQ(chromeos::kDefaultSnapRatio, window_state1->snap_ratio());
+    EXPECT_TRUE(w2_bounds.ApproximatelyEqual(
+        w2->GetBoundsInScreen(),
+        /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+    EXPECT_EQ(right_half, w2->GetBoundsInScreen());
+    EXPECT_EQ(chromeos::kDefaultSnapRatio, window_state2->snap_ratio());
+    MaximizeToClearTheSession(w1.get());
+    MaximizeToClearTheSession(w2.get());
+  }
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupPhantomBoundsTest:
 

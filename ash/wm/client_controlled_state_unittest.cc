@@ -659,6 +659,46 @@ TEST_F(ClientControlledStateTest, CycleSnapWindow) {
   EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
 }
 
+// Tests the snap group window bounds are correct after minimize then
+// unminimize.
+TEST_F(SnapGroupClientControlledStateTest, SnapThenMinimize) {
+  UpdateDisplay("800x600");
+
+  // Create a snap group with a client-controlled and normal state window.
+  widget_delegate()->EnableSnap();
+  auto non_client_controlled_window = CreateAppWindow();
+  SnapOneTestWindow(non_client_controlled_window.get(),
+                    WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  VerifySplitViewOverviewSession(non_client_controlled_window.get());
+  ClickOnOverviewItem(window());
+
+  // Apply pending requests. Test the bounds are at 1/2.
+  ApplyPendingRequestedBounds();
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(
+      window(), non_client_controlled_window.get()));
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+
+  // Minimize the client-controlled window.
+  window_state()->Minimize();
+  ApplyPendingRequestedBounds();
+  state()->EnterNextState(window_state(), delegate()->new_state());
+
+  // Test the group is broken.
+  ASSERT_FALSE(snap_group_controller->AreWindowsInSnapGroup(
+      window(), non_client_controlled_window.get()));
+
+  // Unminimize the client-controlled window. Test the bounds are back at 1/2.
+  window_state()->Unminimize();
+  ApplyPendingRequestedBounds();
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+}
+
 // Tests that a client-controlled window in a snap group, when snapped to the
 // opposite side, will set the correct bounds. Regression test for
 // http://b/349774996.

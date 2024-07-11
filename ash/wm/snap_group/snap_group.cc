@@ -483,9 +483,13 @@ gfx::Rect SnapGroup::GetSnappedWindowBoundsInScreen(
 SnapPosition SnapGroup::GetPositionOfSnappedWindow(
     const aura::Window* window) const {
   const auto state_type = WindowState::Get(window)->GetStateType();
+  // Reaching here; we may be updating bounds for a window that is about to be
+  // unsnapped. If this is the case use the original window position, since the
+  // snap position will not be changing at this point. Use extra caution since
+  // `SplitViewDivider::GetEndDragLocationInScreen()` may also call this.
   if (!chromeos::IsSnappedWindowStateType(state_type)) {
-    base::debug::DumpWithoutCrashing();
-    return SnapPosition::kPrimary;
+    return window == window1_ ? SnapPosition::kPrimary
+                              : SnapPosition::kSecondary;
   }
   return ToSnapPosition(state_type);
 }
@@ -563,7 +567,13 @@ void SnapGroup::UpdateGroupWindowsBounds(bool account_for_divider_width) {
   }
 
   for (aura::Window* window : {window1_, window2_}) {
-    UpdateSnappedWindowBounds(window, account_for_divider_width, std::nullopt);
+    // We only need to update the bounds to expand for the divider width if the
+    // window is still snapped; `SnapGroup` will no longer manage the bounds if
+    // the window is unsnapped.
+    if (IsSnapped(window)) {
+      UpdateSnappedWindowBounds(window, account_for_divider_width,
+                                std::nullopt);
+    }
   }
 }
 
