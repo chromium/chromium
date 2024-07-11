@@ -75,4 +75,19 @@ TEST_F(ChromeModelQualityLogsUploaderServiceTest,
   EXPECT_TRUE(metadata.is_likely_dogfood_client());
 }
 
+TEST_F(ChromeModelQualityLogsUploaderServiceTest,
+       SetSystemMetadata_ClientIdsAreStripped) {
+  TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+
+  ChromeModelQualityLogsUploaderService service = MakeUploaderService();
+  proto::LoggingMetadata metadata;
+  metadata.mutable_system_profile()->set_client_uuid("123");
+  metadata.mutable_system_profile()->mutable_cloned_install_info()
+      ->set_cloned_from_client_id(123);
+  service.SetSystemMetadata(&metadata);
+  EXPECT_FALSE(metadata.system_profile().has_client_uuid());
+  EXPECT_FALSE(metadata.system_profile().cloned_install_info().has_cloned_from_client_id());
+}
+
+
 }  // namespace optimization_guide
