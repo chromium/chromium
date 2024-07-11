@@ -35,6 +35,12 @@ enum SettingType {
   SETTING_TYPE_INTEGER = 4;
 }
 
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  ROLE_USER = 1;
+  ROLE_ASSISTANT = 2;
+}
+
 message BatteryData {
   optional int32 battery_health = 1;
   optional int32 cycle_count = 2;
@@ -95,8 +101,11 @@ message AppsData {
 }
 
 message Action {
+  reserved 3, 4;
+
   optional Setting update_setting = 1;
   optional string launch_app_id = 2;
+  optional bool all_done = 5;
 }
 
 message FinalResponse {
@@ -123,6 +132,12 @@ message SparkyResponse {
     ContextRequest context_request = 1;
     FinalResponse final_response = 2;
   }
+}
+
+message Turn {
+  optional string message = 1;
+  optional Role role = 2;
+  repeated Action action = 3;
 }
 
 message InputText {

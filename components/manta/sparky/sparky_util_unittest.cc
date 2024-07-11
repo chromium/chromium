@@ -74,6 +74,25 @@ class SparkyUtilTest : public testing::Test {
     }
     return false;
   }
+
+  bool ContainsAction(const proto::Action& action_proto,
+                      std::vector<Action>* actions) {
+    for (const Action& action : *actions) {
+      if (action.updated_setting && action_proto.has_update_setting()) {
+        if (IsSameSetting(action_proto.update_setting(),
+                          action.updated_setting.get())) {
+          return true;
+        }
+      } else if (action.launched_app.size() > 0 &&
+                 action_proto.has_launch_app_id()) {
+        if (action.launched_app == action_proto.launch_app_id() &&
+            action.all_done == action_proto.all_done()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 };
 
 TEST_F(SparkyUtilTest, AddSettingsProto) {
@@ -188,6 +207,51 @@ TEST_F(SparkyUtilTest, ObtainSettingFromProto) {
   std::unique_ptr<SettingsData> string_settings_data =
       ObtainSettingFromProto(string_setting_proto);
   ASSERT_TRUE(IsSameSetting(string_setting_proto, string_settings_data.get()));
+}
+
+TEST_F(SparkyUtilTest, ConvertDialogToStruct) {
+  proto::Turn simple_turn;
+  simple_turn.set_message("text question");
+  simple_turn.set_role(proto::ROLE_USER);
+  DialogTurn simple_dialog_reply = ConvertDialogToStruct(&simple_turn);
+  ASSERT_EQ(simple_dialog_reply.message, simple_turn.message());
+  ASSERT_EQ(GetRole(simple_dialog_reply.role), simple_turn.role());
+
+  proto::Turn turn_with_open_app;
+  turn_with_open_app.set_message("text answer");
+  turn_with_open_app.set_role(proto::ROLE_ASSISTANT);
+  auto* open_app_action_proto = turn_with_open_app.add_action();
+  open_app_action_proto->set_all_done(false);
+  open_app_action_proto->set_launch_app_id("my app");
+  DialogTurn open_app_dialog_turn = ConvertDialogToStruct(&turn_with_open_app);
+  std::vector<Action> open_app_actions;
+  open_app_actions.emplace_back("my app", false);
+  ASSERT_EQ(open_app_dialog_turn.message, turn_with_open_app.message());
+  ASSERT_EQ(GetRole(open_app_dialog_turn.role), turn_with_open_app.role());
+  ASSERT_TRUE(ContainsAction(*open_app_action_proto, &open_app_actions));
+
+  proto::Turn turn_with_settings;
+  turn_with_settings.set_message("Adaptive charging has been enabled");
+  turn_with_settings.set_role(proto::ROLE_ASSISTANT);
+  auto* settings_action_proto = turn_with_settings.add_action();
+  settings_action_proto->set_all_done(false);
+  auto* setting_data = settings_action_proto->mutable_update_setting();
+  setting_data->set_type(proto::SETTING_TYPE_BOOL);
+  setting_data->set_settings_id("power.adaptive_charging_enabled");
+  auto* settings_value = setting_data->mutable_value();
+  settings_value->set_bool_val(true);
+  DialogTurn dialog_reply_with_actions =
+      ConvertDialogToStruct(&turn_with_settings);
+  std::vector<Action> settings_actions;
+  settings_actions.emplace_back(
+      std::make_unique<SettingsData>("power.adaptive_charging_enabled",
+                                     PrefType::kBoolean,
+                                     std::make_optional<base::Value>(true)),
+      false);
+
+  ASSERT_EQ(dialog_reply_with_actions.message, turn_with_settings.message());
+  ASSERT_EQ(GetRole(dialog_reply_with_actions.role), turn_with_settings.role());
+  ASSERT_TRUE(ContainsAction(*settings_action_proto, &settings_actions));
 }
 
 }  // namespace manta

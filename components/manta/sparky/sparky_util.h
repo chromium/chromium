@@ -16,6 +16,12 @@
 
 namespace manta {
 
+enum class Role {
+  kUser = 0,
+  kAssistant = 1,
+  kMaxValue = kAssistant,
+};
+
 enum class ActionType {
   kSetting = 0,
   kLaunchApp = 1,
@@ -36,6 +42,26 @@ struct COMPONENT_EXPORT(MANTA) Action {
   ActionType type;
   bool all_done;
 };
+
+struct COMPONENT_EXPORT(MANTA) DialogTurn {
+  DialogTurn(const std::string& message,
+             Role role,
+             std::vector<Action> actions);
+  DialogTurn(const std::string& message, Role role);
+
+  ~DialogTurn();
+
+  DialogTurn(DialogTurn&& other);
+  DialogTurn& operator=(DialogTurn&& other);
+
+  void AppendAction(Action action);
+
+  std::string message;
+  Role role;
+  std::vector<Action> actions;
+};
+
+proto::Role COMPONENT_EXPORT(MANTA) GetRole(Role role);
 
 void COMPONENT_EXPORT(MANTA)
     AddSettingProto(const SettingsData& setting,
@@ -58,6 +84,9 @@ void COMPONENT_EXPORT(MANTA) AddAppsData(base::span<const AppsData> apps_data,
 
 std::unique_ptr<SettingsData> COMPONENT_EXPORT(MANTA)
     ObtainSettingFromProto(proto::Setting setting_proto);
+
+DialogTurn COMPONENT_EXPORT(MANTA)
+    ConvertDialogToStruct(proto::Turn* turn_proto);
 
 }  // namespace manta
 

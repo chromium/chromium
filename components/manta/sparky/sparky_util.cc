@@ -34,6 +34,12 @@ static constexpr auto setting_to_pref_map =
         {SettingType::SETTING_TYPE_INTEGER, PrefType::kInt},
     });
 
+static constexpr auto role_to_proto_map =
+    base::MakeFixedFlatMap<Role, proto::Role>({
+        {Role::kAssistant, proto::Role::ROLE_ASSISTANT},
+        {Role::kUser, proto::Role::ROLE_USER},
+    });
+
 static constexpr auto diagnostic_map =
     base::MakeFixedFlatMap<manta::proto::Diagnostics, Diagnostics>(
         {{manta::proto::Diagnostics::DIAGNOSTICS_BATTERY,
@@ -124,6 +130,29 @@ Action::~Action() = default;
 
 Action::Action(Action&& other) = default;
 Action& Action::operator=(Action&& other) = default;
+
+DialogTurn::DialogTurn(const std::string& message,
+                       Role role,
+                       std::vector<Action> actions)
+    : message(message), role(role), actions(std::move(actions)) {}
+
+DialogTurn::DialogTurn(const std::string& message, Role role)
+    : message(message), role(role) {}
+
+DialogTurn::~DialogTurn() = default;
+
+DialogTurn::DialogTurn(DialogTurn&& other) = default;
+DialogTurn& DialogTurn::operator=(DialogTurn&& other) = default;
+
+void DialogTurn::AppendAction(Action action) {
+  actions.emplace_back(std::move(action));
+}
+
+proto::Role GetRole(Role role) {
+  const auto iter = role_to_proto_map.find(role);
+  return iter != role_to_proto_map.end() ? iter->second
+                                         : proto::ROLE_UNSPECIFIED;
+}
 
 void AddSettingProto(SettingsData& setting,
                      ::manta::proto::Setting* setting_proto) {
@@ -233,6 +262,40 @@ std::unique_ptr<SettingsData> ObtainSettingFromProto(
   return std::make_unique<SettingsData>(
       setting_proto.settings_id(), *pref_type,
       GetSettingsValue(setting_proto.value(), *pref_type));
+}
+
+DialogTurn ConvertDialogToStruct(proto::Turn* turn_proto) {
+  DialogTurn dialog =
+      DialogTurn(turn_proto->message(),
+                 turn_proto->role() == proto::ROLE_ASSISTANT ? Role::kAssistant
+                                                             : Role::kUser);
+  if (turn_proto->action_size() == 0) {
+    return dialog;
+  }
+
+  for (int position = 0; position < turn_proto->action_size(); ++position) {
+    auto action_proto = turn_proto->action().at(position);
+    // The default all done value will be set to true if it is the last action
+    // to be returned in the list and set to false otherwise.
+    bool default_all_done =
+        position == turn_proto->action_size() - 1 ? true : false;
+    bool all_done = action_proto.has_all_done() ? action_proto.all_done()
+                                                : default_all_done;
+    if (action_proto.has_launch_app_id()) {
+      dialog.AppendAction(Action(action_proto.launch_app_id(), all_done));
+    }
+    if (action_proto.has_update_setting()) {
+      auto setting_proto = action_proto.update_setting();
+      std::unique_ptr<SettingsData> setting_data =
+          ObtainSettingFromProto(setting_proto);
+      if (!setting_data) {
+        DVLOG(1) << "Invalid setting type for" << setting_proto.settings_id();
+        continue;
+      }
+      dialog.AppendAction(Action(std::move(setting_data), all_done));
+    }
+  }
+  return dialog;
 }
 
 }  // namespace manta
