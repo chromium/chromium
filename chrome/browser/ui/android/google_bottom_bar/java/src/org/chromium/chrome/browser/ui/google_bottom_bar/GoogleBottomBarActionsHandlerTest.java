@@ -457,10 +457,12 @@ public class GoogleBottomBarActionsHandlerTest {
         assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
     }
 
-    @Test
-    public void testHomeAction_buttonConfigHasNoPendingIntent_logsError() {
+    @Test(expected = IllegalStateException.class)
+    public void
+            testHomeAction_buttonConfigHasNoPendingIntent_canNotBeResolved_throwsIllegalStateException() {
         mHistogramWatcher =
-                HistogramWatcher.newBuilder().expectNoRecords(BUTTON_CLICKED_HISTOGRAM).build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         Drawable icon = mock(Drawable.class);
@@ -476,7 +478,43 @@ public class GoogleBottomBarActionsHandlerTest {
         clickListener.onClick(buttonView);
 
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
-        assertEquals(logItem.msg, "Can't perform home action as pending intent is null.");
+        assertEquals(logItem.msg, "Can't resolve activity for action: openGoogleAppHome");
+    }
+
+    @Test
+    public void
+            testHomeAction_buttonConfigHasNoPendingIntent_canBeResolved_googleAppHomeIntentStarted() {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_CHROME);
+        Context context = mActivity.getApplicationContext();
+        View buttonView = new View(context);
+        Drawable icon = mock(Drawable.class);
+        BottomBarConfig.ButtonConfig buttonConfig =
+                new BottomBarConfig.ButtonConfig(
+                        ButtonId.HOME,
+                        icon,
+                        /* description= */ "Description",
+                        /* pendingIntent= */ null);
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_INFO);
+        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+        mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
+
+        View.OnClickListener clickListener =
+                mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
+        clickListener.onClick(buttonView);
+
+        Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
+        assertEquals(Intent.ACTION_MAIN, startedIntent.getAction());
+        assertEquals(1, startedIntent.getCategories().size());
+        assertTrue(startedIntent.getCategories().contains(Intent.CATEGORY_INFO));
+        assertEquals(PACKAGE_NAME, startedIntent.getComponent().getPackageName());
+        assertEquals(GOOGLE_APP_CLASS_NAME, startedIntent.getComponent().getShortClassName());
+        assertTrue(
+                startedIntent
+                        .getExtras()
+                        .containsKey(EXTRA_IS_LAUNCHED_FROM_CHROME_SEARCH_ENTRYPOINT));
     }
 
     @Test

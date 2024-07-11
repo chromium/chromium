@@ -97,11 +97,7 @@ class GoogleBottomBarActionsHandler {
 
     void onSearchboxHomeTap() {
         GoogleBottomBarLogger.logButtonClicked(SEARCHBOX_HOME);
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_INFO);
-        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
-
-        startGoogleAppActivityForResult(intent, "openGoogleAppHome");
+        openGoogleAppHome();
     }
 
     void onSearchboxHintTextTap() {
@@ -158,6 +154,14 @@ class GoogleBottomBarActionsHandler {
         startGoogleAppActivityForResult(intent, "openGoogleAppSearch");
     }
 
+    private void openGoogleAppHome() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_INFO);
+        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+
+        startGoogleAppActivityForResult(intent, "openGoogleAppHome");
+    }
+
     private void startGoogleAppActivityForResult(Intent intent, String actionName) {
         intent.putExtra(EXTRA_IS_LAUNCHED_FROM_CHROME_SEARCH_ENTRYPOINT, true);
 
@@ -201,7 +205,8 @@ class GoogleBottomBarActionsHandler {
             GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.HOME_EMBEDDER);
             sendPendingIntentWithUrl(pendingIntent);
         } else {
-            Log.e(TAG, "Can't perform home action as pending intent is null.");
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.HOME_CHROME);
+            openGoogleAppHome();
         }
     }
 

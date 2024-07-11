@@ -228,7 +228,10 @@ public class BottomBarConfigCreator {
         return null;
     }
 
-    /** Create default {@link ButtonConfig} for the given ID. */
+    /**
+     * Create default {@link ButtonConfig} for the given ID. Used for buttons that have
+     * implementation in Chrome.
+     */
     private @Nullable ButtonConfig createButtonConfigFromId(@ButtonId int id) {
         switch (id) {
             case ButtonId.PIH_BASIC, ButtonId.PIH_COLORED, ButtonId.PIH_EXPANDED:
@@ -243,8 +246,7 @@ public class BottomBarConfigCreator {
                         /* pendingIntent= */ null);
             case ButtonId.SAVE:
                 // If save button is not created from embedder-provided CustomButtonParams, provide
-                // disabled save
-                // button instead
+                // disabled save button instead
                 return new ButtonConfig(
                         id,
                         UiUtils.getTintedDrawable(
@@ -260,6 +262,29 @@ public class BottomBarConfigCreator {
                                 R.drawable.ic_share_white_24dp,
                                 R.color.default_icon_color_baseline),
                         mContext.getString(R.string.google_bottom_bar_share_button_description),
+                        /* pendingIntent= */ null);
+            case ButtonId.SEARCH:
+                return new ButtonConfig(
+                        id,
+                        UiUtils.getTintedDrawable(
+                                mContext,
+                                R.drawable.ic_search,
+                                R.color.default_icon_color_baseline),
+                        // TODO(b/351978684) Add new string
+                        // google_bottom_bar_search_button_description
+                        mContext.getString(R.string.bookmark_toolbar_search_title),
+                        /* pendingIntent= */ null);
+            case ButtonId.HOME:
+                return new ButtonConfig(
+                        id,
+                        UiUtils.getTintedDrawable(
+                                mContext,
+                                R.drawable.bottom_bar_home_icon,
+                                R.color.default_icon_color_baseline),
+                        // TODO(b/351978684) Add new string
+                        // google_bottom_bar_home_button_description
+                        mContext.getString(
+                                R.string.google_bottom_bar_searchbox_super_g_button_description),
                         /* pendingIntent= */ null);
             default:
                 {
