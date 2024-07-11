@@ -43,7 +43,7 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   // restarted.
   IpcDesktopEnvironment(
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control,
       base::WeakPtr<ClientSessionEvents> client_session_events,
@@ -89,10 +89,10 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
                                      public DesktopSessionConnector {
  public:
   // Passes a reference to the IPC channel connected to the daemon process and
-  // relevant task runners. |daemon_channel| must outlive this object.
+  // relevant task runners. |remote| must be released on |network_task_runner|.
   IpcDesktopEnvironmentFactory(
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       mojo::AssociatedRemote<mojom::DesktopSessionManager> remote);
 
@@ -128,9 +128,8 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   // Used to run the audio capturer.
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
-  // Task runner on which methods of DesktopEnvironmentFactory interface should
-  // be called.
-  scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
+  // Task runner on which DesktopEnvironmentFactory methods should be called.
+  scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
 
   // Task runner used for running background I/O.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

@@ -1001,10 +1001,11 @@ void HostProcess::StartOnUiThread() {
           context_->network_task_runner(), std::move(remote));
   desktop_session_connector_ = desktop_environment_factory;
 #else   // !defined(REMOTING_MULTI_PROCESS)
-  BasicDesktopEnvironmentFactory* desktop_environment_factory;
-  desktop_environment_factory = new Me2MeDesktopEnvironmentFactory(
-      context_->network_task_runner(), context_->video_capture_task_runner(),
-      context_->input_task_runner(), context_->ui_task_runner());
+  BasicDesktopEnvironmentFactory* desktop_environment_factory =
+      new Me2MeDesktopEnvironmentFactory(context_->network_task_runner(),
+                                         context_->video_capture_task_runner(),
+                                         context_->input_task_runner(),
+                                         context_->ui_task_runner());
 #endif  // !defined(REMOTING_MULTI_PROCESS)
 
   desktop_environment_factory_.reset(desktop_environment_factory);
