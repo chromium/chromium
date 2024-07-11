@@ -2334,11 +2334,19 @@ WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
   // is the furthest ancestor form element, if there is one.
   if (base::FeatureList::IsEnabled(
           blink::features::kAutofillIncludeFormElementsInShadowDom)) {
-    WebFormElement owner = form_control.Form();
+    WebFormElement owner;
+    // Look for ancestors of the associated form of `form_control` inside the
+    // same tree.
+    for (WebNode same_dom_ancestor = form_control.Form();  // nocheck
+         same_dom_ancestor;
+         same_dom_ancestor = same_dom_ancestor.ParentNode()) {
+      if (auto form = same_dom_ancestor.DynamicTo<WebFormElement>()) {
+        owner = form;
+      }
+    }
 
-    // Inside the DOM of `form_control`, the only candidate for the owning form
-    // is the associated form. Therefore continue the search in the DOM of the
-    // shadow host (if there is one).
+    // If `form_control` is inside Shadow DOM, also consider ancestors of
+    // `form_control`.
     for (WebNode ancestor = form_control.OwnerShadowHost(); ancestor;
          ancestor = ancestor.ParentOrShadowHostNode()) {
       if (auto form = ancestor.DynamicTo<WebFormElement>()) {

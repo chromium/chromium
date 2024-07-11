@@ -69,15 +69,20 @@ association in the following ways:
 A [connected] form control element `t` is *owned* by a top-most form
 element `f` iff
 
-- `t` is [associated] with `f` or
-- `t` is a [shadow-including] descendant of `f` and `t` and `f` are in the
+- `t` is [associated] with `f` or a descendant of `f`, or
+- `t` is a [shadow-including] descendant of `f` and `t` and `f` are not in the
   same [node tree].
+
+Note that allowing `t` to be [associated] with a descendant of `f` instead of
+`f` accommodates unconforming (but possible) scenarios in which there are
+nested forms within the same DOM tree. In that case, `t` may be associated with
+any form, but we want its *owning* form to always be a top-level form.
 
 A [connected] form control element `t` is *unowned* iff no top-most form
 element owns `t`. That is, to be explicit, `t` is unowned iff
 
 - `t` is not [associated] with any form element or
-- `t` has no shadow-including form element ancestor in another DOM.
+- `t` has no [shadow-including] form element ancestor in another [node tree].
 
 We refer to the collection of unowned form controls as the *unowned form* and, in
 a slight abuse of terminology, say that the unowned form *owns* the unowned form

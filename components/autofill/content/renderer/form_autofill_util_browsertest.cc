@@ -2416,5 +2416,34 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), IsEmpty());
 }
 
+// Tests that the owning form is computed correctly for nested forms.
+TEST_F(FormAutofillUtilsTest, GetOwningFormWithNestedFormsInLightDom) {
+  LoadHTML(R"(
+    <html>
+      <body>
+        <form id=f1>
+        </form>
+      </body>
+    </html>)");
+  // Specify the form using Javascript to avoid that the renderer flattens the
+  // forms.
+  ExecuteJavaScriptForTests(R"(
+    var f2 = document.createElement('form');
+    f2.id = 'f2';
+    f1.appendChild(f2);
+
+    var t1 = document.createElement('input');
+    t1.id = 't1';
+    f2.appendChild(t1);
+  )");
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebFormElement f1 = GetFormElementById(doc, "f1");
+  WebFormControlElement t1 = GetFormControlElementById(doc, "t1");
+
+  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1));
+  EXPECT_EQ(GetOwningForm(t1), f1);
+}
+
 }  // namespace
 }  // namespace autofill::form_util
