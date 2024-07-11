@@ -9,6 +9,7 @@ proto_library("proto") {
   sources = [
     "local_tab_group_data.proto",
     "saved_tab_group_data.proto",
+    "shared_tab_group_data.proto",
   ]
   link_deps = [ "//components/sync/protocol" ]
 }

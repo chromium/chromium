@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package tab_groups.proto;
+
+import "components/sync/protocol/shared_tab_group_data_specifics.proto";
+
+// Message to store shared tab groups in ModelTypeStore.
+message SharedTabGroupData {
+  // Data from sync, contains either a SavedTabGroup or SavedTabGroupTab
+  // (determined by the "entity" oneof field within). Contains only shared tab
+  // group data.
+  optional sync_pb.SharedTabGroupDataSpecifics specifics = 1;
+}

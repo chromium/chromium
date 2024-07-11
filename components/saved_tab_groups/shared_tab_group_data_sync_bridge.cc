@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/proto/shared_tab_group_data.pb.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -212,7 +213,7 @@ std::string ExtractCollaborationId(
 
 // Parses stored entries and populates the result to the `on_load_callback`.
 std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
-    std::vector<sync_pb::SharedTabGroupDataSpecifics> stored_entries,
+    const std::vector<proto::SharedTabGroupData>& stored_entries,
     SavedTabGroupModel* model,
     const syncer::EntityMetadataMap& sync_metadata,
     SharedTabGroupDataSyncBridge::SharedTabGroupLoadCallback on_load_callback) {
@@ -225,18 +226,19 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
   // `stored_entries` is not ordered such that groups are guaranteed to be
   // at the front of the vector. As such, we can run into the case where we
   // try to add a tab to a group that does not exist for us yet.
-  for (const sync_pb::SharedTabGroupDataSpecifics& proto : stored_entries) {
-    if (!proto.has_tab_group()) {
+  for (const proto::SharedTabGroupData& proto : stored_entries) {
+    const sync_pb::SharedTabGroupDataSpecifics& specifics = proto.specifics();
+    if (!specifics.has_tab_group()) {
       continue;
     }
-
     // Collaboration ID is stored as part of sync metadata.
-    const std::string& storage_key = proto.guid();
+    const std::string& storage_key = specifics.guid();
     std::string collaboration_id =
         ExtractCollaborationId(sync_metadata, storage_key);
     if (!collaboration_id.empty()) {
-      groups.emplace_back(SpecificsToSharedTabGroup(proto, collaboration_id));
-      group_guids.emplace(proto.guid());
+      groups.emplace_back(
+          SpecificsToSharedTabGroup(specifics, collaboration_id));
+      group_guids.emplace(specifics.guid());
     } else {
       DVLOG(2) << "Entry is missing collaboration ID: " << storage_key;
     }
@@ -245,27 +247,34 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
   // Parse tabs and find tabs missing groups.
   std::vector<sync_pb::SharedTabGroupDataSpecifics> tabs_missing_groups;
   std::vector<SavedTabGroupTab> tabs;
-  for (const sync_pb::SharedTabGroupDataSpecifics& proto : stored_entries) {
-    if (!proto.has_tab()) {
+  for (const proto::SharedTabGroupData& proto : stored_entries) {
+    const sync_pb::SharedTabGroupDataSpecifics& specifics = proto.specifics();
+    if (!specifics.has_tab()) {
       continue;
     }
-
-    const std::string& storage_key = proto.guid();
+    const std::string& storage_key = specifics.guid();
     if (ExtractCollaborationId(sync_metadata, storage_key).empty()) {
       // Collaboration ID is not strictly required (tabs rely on parent group's
       // collaboration IDs) but check it here for consistency anyway.
       DVLOG(2) << "Entry is missing collaboration ID: " << storage_key;
+    }
+    if (group_guids.contains(specifics.tab().shared_tab_group_guid())) {
+      tabs.emplace_back(SpecificsToSharedTabGroupTab(specifics));
       continue;
     }
-    if (group_guids.contains(proto.tab().shared_tab_group_guid())) {
-      tabs.emplace_back(SpecificsToSharedTabGroupTab(proto));
-      continue;
-    }
-    tabs_missing_groups.push_back(std::move(proto));
+    tabs_missing_groups.push_back(specifics);
   }
 
   std::move(on_load_callback).Run(std::move(groups), std::move(tabs));
   return tabs_missing_groups;
+}
+
+void StoreSpecifics(syncer::ModelTypeStore::WriteBatch* write_batch,
+                    sync_pb::SharedTabGroupDataSpecifics specifics) {
+  std::string storage_key = specifics.guid();
+  proto::SharedTabGroupData local_proto;
+  local_proto.mutable_specifics()->Swap(&specifics);
+  write_batch->WriteData(storage_key, local_proto.SerializeAsString());
 }
 
 }  // namespace
@@ -653,12 +662,11 @@ void SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata(
     return;
   }
 
-  std::vector<sync_pb::SharedTabGroupDataSpecifics> stored_entries;
+  std::vector<proto::SharedTabGroupData> stored_entries;
   stored_entries.reserve(entries->size());
 
   for (const syncer::ModelTypeStore::Record& r : *entries) {
-    // TODO(crbug.com/319521964): Use an additional proto layer.
-    sync_pb::SharedTabGroupDataSpecifics proto;
+    proto::SharedTabGroupData proto;
     if (!proto.ParseFromString(r.value)) {
       continue;
     }
@@ -695,7 +703,7 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
   if (!model_->Contains(group_guid)) {
     // This is a new remotely created group. Add the group from sync into local
     // storage.
-    write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
+    StoreSpecifics(write_batch, specifics);
     model_->AddedFromSync(
         SpecificsToSharedTabGroup(specifics, collaboration_id));
     return;
@@ -719,12 +727,7 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
   sync_pb::SharedTabGroupDataSpecifics updated_specifics =
       SharedTabGroupToSpecifics(*existing_group);
 
-  // Write result to the store.
-  // TODO(crbug.com/319521964): introduce an additional layer to store specifics
-  // with local-only data. Note that collaboration ID is stored as part of sync
-  // metadata.
-  write_batch->WriteData(updated_specifics.guid(),
-                         updated_specifics.SerializeAsString());
+  StoreSpecifics(write_batch, updated_specifics);
 }
 
 void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
@@ -749,9 +752,7 @@ void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
         SharedTabGroupTabToSpecifics(*merged_tab);
 
     // Write result to the store.
-    // TODO(crbug.com/319521964): use a different proto to store data locally.
-    write_batch->WriteData(merged_entry.guid(),
-                           merged_entry.SerializeAsString());
+    StoreSpecifics(write_batch, std::move(merged_entry));
     return;
   }
 
@@ -759,7 +760,7 @@ void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
   // group in order to recover the tabs in the event the group was not received
   // and a crash / restart occurred.
   // TODO(crbug.com/319521964): use a different proto to store data locally.
-  write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
+  StoreSpecifics(write_batch, specifics);
 
   if (existing_group) {
     // This is a new tab for the group.
@@ -822,8 +823,7 @@ void SharedTabGroupDataSyncBridge::UpsertEntitySpecifics(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
     const std::string& collaboration_id,
     syncer::ModelTypeStore::WriteBatch* write_batch) {
-  // TODO(crbug.com/319521964): use different proto to store data locally.
-  write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
+  StoreSpecifics(write_batch, specifics);
   SendToSync(specifics, collaboration_id, write_batch->GetMetadataChangeList());
 }
 
