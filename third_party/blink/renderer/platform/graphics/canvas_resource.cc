@@ -290,11 +290,6 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
 
 CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
   OnDestroy();
-
-  // Release `shared_mapping_` in case this instance is being destroyed on a
-  // thread other than that on which it was created, in which case TearDown()
-  // will not have been invoked.
-  shared_mapping_ = {};
 }
 
 bool CanvasResourceSharedBitmap::IsValid() const {
@@ -342,7 +337,6 @@ void CanvasResourceSharedBitmap::TearDown() {
       Provider() ? Provider()->ResourceDispatcher() : nullptr;
   if (resource_dispatcher && !shared_bitmap_id_.IsZero())
     resource_dispatcher->DidDeleteSharedBitmap(shared_bitmap_id_);
-  shared_mapping_ = {};
 }
 
 bool CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource(
