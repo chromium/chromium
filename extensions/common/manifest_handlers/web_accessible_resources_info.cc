@@ -252,7 +252,9 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
     const GURL& target_url) {
   CHECK(extension);
   CHECK(target_url.SchemeIs(kExtensionScheme));
-  CHECK(upstream_url.is_empty() || upstream_url.SchemeIs(kExtensionScheme));
+  if (!upstream_url.is_empty() && !upstream_url.SchemeIs(kExtensionScheme)) {
+    return false;
+  }
 
   return IsResourceWebAccessibleImpl(*extension, initiator_origin, upstream_url,
                                      target_url);
