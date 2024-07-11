@@ -520,7 +520,7 @@ class ReverseCallback(gdb.Command):
     bind_state_frame = find_nearest_frame_matching(
         gdb.selected_frame(), lambda frame: frame.function() and re.match(
             '^base::internal::Invoker<.*>' +
-            '::RunOnce\(base::internal::BindStateBase\*\)$',
+            r'::RunOnce\(base::internal::BindStateBase\*\)$',
             frame.function().name))
     if bind_state_frame is None:
       raise Exception(
