@@ -2,6 +2,7 @@ Name: OCHamcrest
 Short Name: OCHamcrest
 URL: https://github.com/hamcrest/OCHamcrest
 Version: 5.2.0
+Revision: 92d9c14d13bb864255e65c09383564653896916b
 License: BSD
 License File: LICENSE
 Security Critical: no
