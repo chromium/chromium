@@ -85,8 +85,14 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
   static constexpr size_t kMaxLength = 1023;
 
   void set_show_selected_state(bool show_selected_state) {
+    if (show_selected_state_ && !show_selected_state) {
+      // If transitioning from selected to unselected, remove the focus ring.
+      SetShowFocusRing(false);
+    }
     show_selected_state_ = show_selected_state;
   }
+
+  bool show_selected() const { return show_selected_state_; }
 
   std::u16string GetTooltipText() const { return tooltip_text_; }
 
@@ -119,11 +125,7 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
 
   void OnBlur() override {
     SystemTextfield::OnBlur();
-    // Remove the focus ring for the state that the textfield was focused but
-    // not active.
-    if (show_selected_state_) {
-      SetShowFocusRing(false);
-    }
+    SetShowFocusRing(false);
   }
 
   // views::View:
@@ -194,7 +196,7 @@ class FocusModeTaskView::TaskTextfieldController
 
   // views::ViewObserver:
   void OnViewBlurred(views::View* view) override {
-    owner_->AddOrUpdateTask(textfield_->GetText());
+    owner_->CommitTextfieldContents(textfield_->GetText());
   }
 
  private:
@@ -207,7 +209,8 @@ class FocusModeTaskView::TaskTextfieldController
 //---------------------------------------------------------------------
 // FocusModeTaskView:
 
-FocusModeTaskView::FocusModeTaskView(bool is_network_connected) {
+FocusModeTaskView::FocusModeTaskView(bool is_network_connected)
+    : is_network_connected_(is_network_connected) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
   textfield_container_ = AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -301,98 +304,149 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected) {
   views::FocusRing::Get(deselect_button_)
       ->SetColorId(cros_tokens::kCrosSysFocusRing);
 
-  chip_carousel_ =
-      AddChildView(std::make_unique<FocusModeChipCarousel>(base::BindRepeating(
-          &FocusModeTaskView::OnTaskSelected, base::Unretained(this))));
-  auto* controller = FocusModeController::Get();
-  const bool has_selected_task = controller->HasSelectedTask();
-  const std::string& selected_task_title = controller->selected_task_title();
-  if (has_selected_task) {
-    // There is a chance that we have a selected task but the title isn't
-    // updated yet, since we do not save that to user prefs.
-    if (!selected_task_title.empty()) {
-      task_title_ = base::UTF8ToUTF16(selected_task_title);
-    }
+  chip_carousel_ = AddChildView(std::make_unique<FocusModeChipCarousel>(
+      base::BindRepeating(&FocusModeTaskView::OnTaskSelectedFromCarousel,
+                          base::Unretained(this))));
 
-    if (is_network_connected) {
-      // Fetch the selected task to verify if it is still in the uncompleted
-      // state.
-      const std::string& list_id = controller->selected_task_list_id();
-      const std::string& task_id = controller->selected_task_id();
-      if (!list_id.empty() && !task_id.empty()) {
-        controller->tasks_provider().GetTask(
-            list_id, task_id,
-            base::BindOnce(&FocusModeTaskView::OnTaskFetched,
-                           weak_factory_.GetWeakPtr()));
-      }
-    }
-  } else if (is_network_connected) {
-    controller->tasks_provider().GetSortedTaskList(base::BindOnce(
-        &FocusModeTaskView::OnTasksFetched, weak_factory_.GetWeakPtr()));
-  }
-
-  UpdateStyle(/*show_selected_state=*/(has_selected_task &&
-                                       !selected_task_title.empty()),
-              /*is_network_connected=*/is_network_connected);
+  // Initialize styling as unselected.
+  UpdateStyle(/*show_selected_state=*/false, is_network_connected);
 
   textfield_controller_ =
       std::make_unique<TaskTextfieldController>(textfield_, this);
+
+  auto* controller = FocusModeController::Get();
+  tasks_observation_.Observe(&controller->tasks_model());
+
+  controller->tasks_model().RequestUpdate();
 }
 
 FocusModeTaskView::~FocusModeTaskView() = default;
 
-void FocusModeTaskView::AddOrUpdateTask(const std::u16string& task_title) {
-  if (task_title.empty()) {
-    OnClearTask();
+void FocusModeTaskView::OnSelectedTaskChanged(
+    const std::optional<FocusModeTask>& task) {
+  if (!task) {
+    task_id_.reset();
+
+    // Apply the UI updates if the completion animation is not running.
+    // Otherwise, it'll be updated by `OnClearTask()`.
+    if (!complete_animation_running_) {
+      textfield_->SetText(std::u16string());
+      UpdateStyle(/*show_selected_state=*/false, is_network_connected_);
+    }
     return;
   }
 
-  auto* controller = FocusModeController::Get();
-  if (controller->HasSelectedTask()) {
-    controller->tasks_provider().UpdateTask(
-        controller->selected_task_list_id(), controller->selected_task_id(),
-        base::UTF16ToUTF8(task_title), /*completed=*/false,
-        base::BindOnce(&FocusModeTaskView::OnTaskSelected,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    controller->tasks_provider().AddTask(
-        base::UTF16ToUTF8(task_title),
-        base::BindOnce(&FocusModeTaskView::OnTaskSelected,
-                       weak_factory_.GetWeakPtr()));
+  const bool show_selected_state = !task->title.empty();
+  if (show_selected_state) {
+    task_id_ = std::make_optional(task->task_id);
+    textfield_->SetText(base::UTF8ToUTF16(task->title));
   }
+
+  UpdateStyle(/*show_selected_state=*/show_selected_state,
+              /*is_network_connected=*/is_network_connected_);
 }
 
-void FocusModeTaskView::OnTaskSelected(const FocusModeTask& task_entry) {
+void FocusModeTaskView::OnTasksUpdated(
+    const std::vector<FocusModeTask>& tasks) {
+  chip_carousel_->SetTasks(tasks);
+  chip_carousel_->SetVisible(!textfield_->show_selected() && !tasks.empty());
+}
+
+void FocusModeTaskView::OnTaskCompleted(const FocusModeTask& task) {
+  // If there was no task selected, update to the default state.
+  if (!task_id_.has_value()) {
+    OnSelectedTaskChanged(std::nullopt);
+    return;
+  }
+
+  // Save that the complete animation is running so we can skip the selected
+  // task change event.
+  complete_animation_running_ = true;
+
+  // Implement completed task styling before removing the task with an
+  // animation.
+  radio_button_->SetEnabled(false);
+  radio_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(kDoneIcon, cros_tokens::kCrosSysPrimary,
+                                     kIconSize));
+  textfield_->SetFontList(
+      TypographyProvider::Get()
+          ->ResolveTypographyToken(TypographyToken::kCrosBody2)
+          .DeriveWithStyle(gfx::Font::FontStyle::STRIKE_THROUGH));
+  textfield_->SetTextColorId(cros_tokens::kCrosSysSecondary);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FocusModeTaskView::OnClearTask,
+                     weak_factory_.GetWeakPtr()),
+      kStartAnimationDelay);
+}
+
+void FocusModeTaskView::OnTaskSelectedFromCarousel(
+    const FocusModeTask& task_entry) {
   if (task_entry.task_id.empty() || task_entry.title.empty()) {
     OnClearTask();
     return;
   }
 
-  task_title_ = base::UTF8ToUTF16(task_entry.title);
-  textfield_->SetText(task_title_);
-  FocusModeController::Get()->SetSelectedTask(task_entry);
-  UpdateStyle(/*show_selected_state=*/true);
+  FocusModeController::Get()->tasks_model().SetSelectedTask(task_entry.task_id);
 }
 
 void FocusModeTaskView::OnClearTask() {
-  task_title_.clear();
-  textfield_->SetText(std::u16string());
-  auto* controller = FocusModeController::Get();
-  controller->SetSelectedTask({});
-  // Only update `chip_carousel_` when it's invisible to avoid the crash when
-  // moving focus to it by tabbing from an empty text of `textfield_` to the
-  // `chip_carousel_`.
-  if (!chip_carousel_->GetVisible()) {
-    controller->tasks_provider().GetSortedTaskList(base::BindOnce(
-        &FocusModeTaskView::OnTasksFetched, weak_factory_.GetWeakPtr()));
+  // Clear the complete animation.
+  complete_animation_running_ = false;
+  if (!task_id_.has_value()) {
+    // If a task is not already selected, there is no event for the change in
+    // selected task (because it was already cleared). Trigger the UI update
+    // manually.
+    OnSelectedTaskChanged(std::nullopt);
+    return;
   }
-  UpdateStyle(/*show_selected_state=*/false);
+  FocusModeController::Get()->tasks_model().ClearSelectedTask();
+}
+
+void FocusModeTaskView::CommitTextfieldContents(
+    const std::u16string& contents) {
+  // Textfield blur is triggered before we know if a chip has been clicked. If a
+  // chip was clicked, we ignore what was in the textfield. Post the update so
+  // it runs after the click would be processed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FocusModeTaskView::AddOrUpdateTask,
+                     weak_factory_.GetWeakPtr(), task_id_, contents));
+}
+
+void FocusModeTaskView::AddOrUpdateTask(const std::optional<TaskId>& task_id,
+                                        const std::u16string& task_title) {
+  if (task_id_ != task_id) {
+    // Since the event was queued, the selected task has changed. Discard this
+    // update in favor of the other event.
+    return;
+  }
+
+  if (task_title.empty()) {
+    OnClearTask();
+    return;
+  }
+
+  FocusModeTasksModel::TaskUpdate update;
+  if (task_id_ && !task_id_->empty()) {
+    update.task_id = std::make_optional(*task_id_);
+  }
+  update.title = base::UTF16ToUTF8(task_title);
+
+  // UI is updated via `OnSelectedTaskChanged()` once the update has been made
+  // to the model.
+  FocusModeController::Get()->tasks_model().UpdateTask(update);
 }
 
 void FocusModeTaskView::PaintFocusRingAndUpdateStyle() {
   const bool is_active = textfield_->IsActive();
   if (is_active) {
-    UpdateStyle(false);
+    // `task_id_` indicates if a task is new or existing. Use this to control
+    // the styling of the textfield.
+    UpdateStyle(task_id_.has_value(), is_network_connected_);
     // `SystemTextfield::SetActive` will show focus ring when `textfield_` is
     // active. But in our case, we don't want the textfield to show the focus
     // ring, but show its parent focus ring. Thus, we need to hide
@@ -411,33 +465,6 @@ void FocusModeTaskView::PaintFocusRingAndUpdateStyle() {
 
 void FocusModeTaskView::OnCompleteTask(bool update) {
   FocusModeController::Get()->CompleteTask(update);
-
-  // Not having a populated `task_title_` means that the UI is not in the
-  // selected state, so we don't need to update the styling and can immediately
-  // clear the task. This can only happen when we initialize the focus panel for
-  // the first time and we have a selected task without a title, since we do not
-  // save that to user prefs.
-  if (task_title_.empty()) {
-    OnClearTask();
-    return;
-  }
-
-  radio_button_->SetEnabled(false);
-  radio_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kDoneIcon, cros_tokens::kCrosSysPrimary,
-                                     kIconSize));
-  textfield_->SetFontList(
-      TypographyProvider::Get()
-          ->ResolveTypographyToken(TypographyToken::kCrosBody2)
-          .DeriveWithStyle(gfx::Font::FontStyle::STRIKE_THROUGH));
-  textfield_->SetTextColorId(cros_tokens::kCrosSysSecondary);
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&FocusModeTaskView::OnClearTask,
-                     weak_factory_.GetWeakPtr()),
-      kStartAnimationDelay);
 }
 
 void FocusModeTaskView::OnDeselectButtonPressed() {
@@ -464,28 +491,8 @@ void FocusModeTaskView::OnAddTaskButtonPressed() {
   }
 }
 
-void FocusModeTaskView::OnTasksFetched(
-    const std::vector<FocusModeTask>& tasks) {
-  chip_carousel_->SetTasks(tasks);
-  chip_carousel_->SetVisible(!tasks.empty());
-}
-
-void FocusModeTaskView::OnTaskFetched(const FocusModeTask& task_entry) {
-  // If the selected task could not be found, then an error has occurred.
-  if (task_entry.task_id.empty()) {
-    return;
-  }
-
-  if (task_entry.completed) {
-    OnCompleteTask(/*update=*/false);
-  } else {
-    OnTaskSelected(task_entry);
-  }
-}
-
 void FocusModeTaskView::UpdateStyle(bool show_selected_state,
                                     bool is_network_connected) {
-  textfield_->SetText(task_title_);
   // Unfocus the textfield if a task is selected.
   if (show_selected_state) {
     auto* focus_manager = textfield_->GetFocusManager();
@@ -497,10 +504,6 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
       // method again.
       return;
     }
-  } else {
-    // Clear `task_title_` if no task is selected so that if a list of tasks is
-    // returned while editing the textfield, the chip carousel is shown.
-    task_title_.clear();
   }
 
   textfield_container_->SetBorder(views::CreateEmptyBorder(
@@ -516,9 +519,9 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
   radio_button_->SetVisible(show_selected_state);
   deselect_button_->SetVisible(show_selected_state);
   add_task_button_->SetVisible(!show_selected_state);
+
   // Note: don't show the carousel if we are editing a previously selected task.
   chip_carousel_->SetVisible(!show_selected_state &&
-                             !FocusModeController::Get()->HasSelectedTask() &&
                              chip_carousel_->HasTasks());
 
   radio_button_->SetImageModel(
@@ -539,7 +542,7 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
       show_selected_state
           ? l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_SELECTED_ACCESSIBLE_NAME,
-                task_title_)
+                textfield_->GetText())
           : l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_UNSELECTED_ACCESSIBLE_NAME));
   textfield_->SetBorder(views::CreateEmptyBorder(

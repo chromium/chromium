@@ -687,7 +687,8 @@ TEST_F(FocusModeDetailedViewTest, ExpandOrShrinkTaskViewContainer) {
   const int old_height_before_shrink = task_container_view->bounds().height();
 
   // 1. Shrink the `task_container_view`.
-  task_view->AddOrUpdateTask(u"my task title");
+  task_view->CommitTextfieldContents(u"my task title");
+  AdvanceClock(base::Milliseconds(10));
   views::test::RunScheduledLayout(task_container_view);
   EXPECT_TRUE(radio_button->GetVisible());
   EXPECT_FALSE(chip_carousel->GetVisible());
