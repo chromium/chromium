@@ -10541,6 +10541,7 @@ experimental domain Storage
       array of AttributionReportingAggregationKeysEntry aggregationKeys
       optional UnsignedInt64AsBase10 debugKey
       AttributionReportingTriggerDataMatching triggerDataMatching
+      SignedInt64AsBase10 destinationLimitPriority
 
   experimental type AttributionReportingSourceRegistrationResult extends string
     enum
