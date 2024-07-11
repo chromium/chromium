@@ -520,7 +520,7 @@ std::vector<base::FilePath> GetUpdaterLogFilesInTmp() {
 }
 
 void PrintLog(UpdaterScope scope) {
-  PrintFile([&]() -> base::FilePath {
+  PrintFile([&] {
     std::optional<base::FilePath> path = GetInstallDirectory(scope);
     if (path && base::PathExists(path->AppendASCII("updater.log"))) {
       return path->AppendASCII("updater.log");
@@ -530,7 +530,7 @@ void PrintLog(UpdaterScope scope) {
       return files[0];
     } else {
       VLOG(0) << "updater.log file not found for " << GetTestName();
-      return {};
+      return base::FilePath();
     }
   }());
 }

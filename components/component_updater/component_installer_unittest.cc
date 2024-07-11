@@ -618,7 +618,7 @@ TEST_F(ComponentInstallerTest, Uninstall) {
   EXPECT_TRUE(base::CreateDirectory(base_dir));
 
   installer->Register(
-      component_updater(), base::BindLambdaForTesting([&]() {
+      component_updater(), base::BindLambdaForTesting([&] {
         installer->Install(
             unpack_path, update_client::jebg_public_key, nullptr,
             base::DoNothing(),

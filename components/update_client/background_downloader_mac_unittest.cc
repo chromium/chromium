@@ -310,7 +310,7 @@ TEST_F(BackgroundDownloaderTest, DISABLED_DuplicateDownload) {
   base::RunLoop second_download_run_loop;
   request_handler_ = base::BindLambdaForTesting([&](const HttpRequest&) {
     current_task_runner->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
+        FROM_HERE, base::BindLambdaForTesting([&] {
           DoStartDownload(
               GetURL(),
               base::BindLambdaForTesting(
@@ -413,7 +413,7 @@ TEST_F(BackgroundDownloaderTest, DISABLED_MaxDownloads) {
   // is an alternative to adding intrusive instrumentation to the
   // implementation.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
+      FROM_HERE, base::BindLambdaForTesting([&] {
         DoStartDownload(
             GetURL(),
             base::BindLambdaForTesting(

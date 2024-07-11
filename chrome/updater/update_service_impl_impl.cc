@@ -401,7 +401,7 @@ std::string GetInstallerText(UpdateService::ErrorCategory error_category,
     return {};
   }
   return base::WideToUTF8(base::StrCat(
-      {[&]() -> std::wstring {
+      {[&] {
          switch (error_category) {
            case UpdateService::ErrorCategory::kInstall:
              return GetTextForUpdateClientInstallError(error_code);
@@ -417,12 +417,12 @@ std::string GetInstallerText(UpdateService::ErrorCategory error_category,
              return GetTextForInstallerError(error_code);
            default:
              LOG(ERROR) << "Unknown error category: " << error_category;
-             return {};
+             return std::wstring();
          }
        }(),
-       [&]() -> std::wstring {
+       [&] {
          if (!extra_code) {
-           return {};
+           return std::wstring();
          }
          return base::StrCat(
              {L"\n", GetLocalizedStringF(IDS_EXTRA_CODE_BASE,

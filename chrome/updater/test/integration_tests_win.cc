@@ -567,7 +567,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   test::EventHolder event_holder(IsElevatedWithUACOn()
                                      ? CreateEveryoneWaitableEventForTest()
                                      : test::CreateWaitableEventForTest());
-  EXPECT_TRUE(base::WriteFile(batch_script_path, [&]() -> std::string {
+  EXPECT_TRUE(base::WriteFile(batch_script_path, [&] {
     const std::string reg_hive = IsSystemInstall(scope) ? "HKLM" : "HKCU";
     const std::string app_client_state_key_utf8 =
         base::WideToUTF8(app_client_state_key);
