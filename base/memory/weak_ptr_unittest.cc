@@ -64,9 +64,20 @@ struct Base {
 struct Derived : public Base {};
 
 struct TargetBase {};
+
+}  // namespace
+
+// TODO(crbug.com/40485134): Target needs to be visible to declare
+// it as a friend of SupportsWeakPtr.
+namespace weak_ptr_unittest {
 struct Target : public TargetBase, public SupportsWeakPtr<Target> {
   virtual ~Target() = default;
 };
+}  // namespace weak_ptr_unittest
+
+namespace {
+
+using weak_ptr_unittest::Target;
 
 struct DerivedTarget : public Target {};
 
