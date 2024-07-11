@@ -133,10 +133,10 @@
 - (void)exitFullscreen {
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
+  fullscreenController->ExitFullscreen();
+
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  fullscreenController->LogMimeTypeWhenExitFullscreen(webState);
-  fullscreenController->ExitFullscreen();
   ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(webState);
   if (sourceID != ukm::kInvalidSourceId) {
     ukm::builders::IOS_FullscreenActions(sourceID)

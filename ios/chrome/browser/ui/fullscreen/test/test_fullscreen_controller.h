@@ -43,7 +43,6 @@ class TestFullscreenController : public FullscreenController {
   void EnterForceFullscreenMode() override;
   void ExitForceFullscreenMode() override;
   void ResizeHorizontalViewport() override;
-  void LogMimeTypeWhenExitFullscreen(web::WebState* webState) override;
 
   // Calls FullscreenViewportInsetRangeChanged() on observers.
   void OnFullscreenViewportInsetRangeChanged(UIEdgeInsets min_viewport_insets,

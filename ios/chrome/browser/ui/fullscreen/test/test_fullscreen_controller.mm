@@ -144,8 +144,3 @@ void TestFullscreenController::ResizeHorizontalViewport() {
 const void* TestFullscreenController::UserDataKeyForTesting() {
   return FullscreenController::UserDataKey();
 }
-
-void TestFullscreenController::LogMimeTypeWhenExitFullscreen(
-    web::WebState* webState) {
-  // NOOP in tests.
-}

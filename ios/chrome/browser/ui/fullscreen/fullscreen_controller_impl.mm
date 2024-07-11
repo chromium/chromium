@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_impl.h"
 
 #import "base/memory/ptr_util.h"
-#import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -14,7 +12,6 @@
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_system_notification_observer.h"
 #import "ios/web/common/features.h"
-#import "ios/web/public/web_state.h"
 
 // static
 FullscreenController* FullscreenController::FromBrowser(Browser* browser) {
@@ -196,70 +193,4 @@ void FullscreenControllerImpl::ResizeHorizontalViewport() {
   // width insets to trigger a width recomputation of its content. It will cause
   // two relayouts.
   mediator_.ResizeHorizontalInsets();
-}
-
-void FullscreenControllerImpl::LogMimeTypeWhenExitFullscreen(
-    web::WebState* webState) {
-  const std::string& mimeType = webState->GetContentsMimeType();
-  FullscreenMimeType type = FullscreenMimeType::kOther;
-
-  if (mimeType == kAnimatedPortableNetworkGraphicsImageMimeType) {
-    type = FullscreenMimeType::kAnimatedPortableNetworkGraphics;
-  } else if (mimeType == kAVIFImageMimeType) {
-    type = FullscreenMimeType::kAVIFImage;
-  } else if (mimeType == kGenericBitmapMimeType) {
-    type = FullscreenMimeType::kBitmap;
-  } else if (mimeType == kCascadingStyleSheetMimeType) {
-    type = FullscreenMimeType::kCSS;
-  } else if (mimeType == kCommaSeparatedValuesMimeType) {
-    type = FullscreenMimeType::kCSV;
-  } else if (mimeType == kMicrosoftWordMimeType) {
-    type = FullscreenMimeType::kMicrosoftWord;
-  } else if (mimeType == kMicrosoftWordXMLMimeType) {
-    type = FullscreenMimeType::kMicrosoftWordXML;
-  } else if (mimeType == kGraphicsInterchangeFormatMimeType) {
-    type = FullscreenMimeType::kGIF;
-  } else if (mimeType == kHyperTextMarkupLanguageMimeType) {
-    type = FullscreenMimeType::kHTML;
-  } else if (mimeType == kIconFormatMimeType) {
-    type = FullscreenMimeType::kIcon;
-  } else if (mimeType == kJPEGImageMimeType) {
-    type = FullscreenMimeType::kJPEG;
-  } else if (mimeType == kJavaScriptMimeType) {
-    type = FullscreenMimeType::kJS;
-  } else if (mimeType == kJSONFormatMimeType) {
-    type = FullscreenMimeType::kJSON;
-  } else if (mimeType == kJSONLDFormatMimeType) {
-    type = FullscreenMimeType::kJSONLD;
-  } else if (mimeType == kPortableNetworkGraphicMimeType) {
-    type = FullscreenMimeType::kPNG;
-  } else if (mimeType == kAdobePortableDocumentFormatMimeType) {
-    type = FullscreenMimeType::kPDF;
-  } else if (mimeType == kHypertextPreprocessorMimeType) {
-    type = FullscreenMimeType::kPHP;
-  } else if (mimeType == kMicrosoftPowerPointMimeType) {
-    type = FullscreenMimeType::kPowerPoint;
-  } else if (mimeType == kMicrosoftPowerPointOpenXMLMimeType) {
-    type = FullscreenMimeType::kPowerPointXML;
-  } else if (mimeType == kRichTextFormatMimeType) {
-    type = FullscreenMimeType::kRichTextFormat;
-  } else if (mimeType == kScalableVectorGraphicMimeType) {
-    type = FullscreenMimeType::kSVG;
-  } else if (mimeType == kTaggedImageFileFormatMimeType) {
-    type = FullscreenMimeType::kTIFF;
-  } else if (mimeType == kTextMimeType) {
-    type = FullscreenMimeType::kPlainText;
-  } else if (mimeType == kWEBPImageMimeType) {
-    type = FullscreenMimeType::kWebp;
-  } else if (mimeType == kXHTMLMimeType) {
-    type = FullscreenMimeType::kXHTML;
-  } else if (mimeType == kMicrosoftExcelMimeType) {
-    type = FullscreenMimeType::kMicrosoftExcel;
-  } else if (mimeType == kMicrosoftExcelOpenXMLMimeType) {
-    type = FullscreenMimeType::kMicrosoftExcelXML;
-  } else if (mimeType == kXMLMimeType) {
-    type = FullscreenMimeType::kXML;
-  }
-
-  base::UmaHistogramEnumeration("IOS.Fullscreen.ExitedMimeType", type);
 }

@@ -14,48 +14,6 @@
 class Browser;
 @class ChromeBroadcastOberverBridge;
 @class FullscreenSystemNotificationObserver;
-namespace web {
-class WebState;
-}
-
-// Enum used to determine the MIME type of a previewed file. Entries should
-// always keep synced with the IOS.Fullscreen.MimeType UMA histogram.
-// Note: This enum is used to back an UMA histogram, and should be treated as
-// append-only.
-// LINT.IfChange
-enum class FullscreenMimeType {
-  kOther = 0,
-  kAnimatedPortableNetworkGraphics = 1,
-  kAVIFImage = 2,
-  kBitmap = 3,
-  kCSS = 4,
-  kCSV = 5,
-  kMicrosoftWord = 6,
-  kMicrosoftWordXML = 7,
-  kGIF = 8,
-  kHTML = 9,
-  kIcon = 10,
-  kJPEG = 11,
-  kJS = 12,
-  kJSON = 13,
-  kJSONLD = 14,
-  kPNG = 15,
-  kPDF = 16,
-  kPHP = 17,
-  kPowerPoint = 18,
-  kPowerPointXML = 19,
-  kRichTextFormat = 20,
-  kSVG = 21,
-  kTIFF = 22,
-  kPlainText = 23,
-  kWebp = 24,
-  kXHTML = 25,
-  kMicrosoftExcel = 26,
-  kMicrosoftExcelXML = 27,
-  kXML = 28,
-  kMaxValue = kXML,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Implementation of FullscreenController.
 class FullscreenControllerImpl : public FullscreenController {
@@ -91,7 +49,6 @@ class FullscreenControllerImpl : public FullscreenController {
   void EnterForceFullscreenMode() override;
   void ExitForceFullscreenMode() override;
   void ResizeHorizontalViewport() override;
-  void LogMimeTypeWhenExitFullscreen(web::WebState* webState) override;
 
  private:
 
