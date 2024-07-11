@@ -235,7 +235,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
         browser_, tab.navigations, tab_index, tab.normalized_navigation_index(),
         tab.extension_app_id, group_id, select, tab.pinned, base::TimeTicks(),
         storage_namespace, tab.user_agent_override, tab.extra_data,
-        /*from_session_restore=*/false);
+        /*from_session_restore=*/false, /*is_active_browser=*/std::nullopt);
 
     if (is_grouped_tab_unsaved || group_deleted_from_model) {
       browser_->live_tab_context()->SetVisualDataForGroup(
@@ -286,7 +286,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
           tab.normalized_navigation_index(), tab.extension_app_id, group_id,
           select, tab.pinned, base::TimeTicks(), storage_namespace,
           tab.user_agent_override, tab.extra_data,
-          /*from_session_restore=*/false);
+          /*from_session_restore=*/false, /*is_active_browser=*/std::nullopt);
     } else {
       // Do nothing if the tab wasn't added to the group.
       return nullptr;

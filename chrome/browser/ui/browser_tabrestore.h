@@ -27,7 +27,7 @@ struct SerializedUserAgentOverride;
 namespace chrome {
 
 // Add a tab with its session history restored from the SessionRestore and
-// TabRestoreService systems. If select is true, the tab is selected.
+// TabRestoreService systems. If `select` is true, the tab is selected.
 // |tab_index| gives the index to insert the tab at. |selected_navigation| is
 // the index of the SerializedNavigationEntry in |navigations| to select. If
 // |extension_app_id| is non-empty the tab is an app tab and |extension_app_id|
@@ -39,7 +39,9 @@ namespace chrome {
 // |from_session_restore| is true, the restored tab is created by session
 // restore. |last_active_time| is the value to use to indicate the last time the
 // WebContents was made active, if this is left default initialized then the
-// creation time will be used. Returns the WebContents of the restored tab.
+// creation time will be used. If `is_active_browser` is set, it indicates
+// whether `browser` is (or will be) the active browser.
+// Returns the WebContents of the restored tab.
 content::WebContents* AddRestoredTab(
     Browser* browser,
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
@@ -53,7 +55,8 @@ content::WebContents* AddRestoredTab(
     content::SessionStorageNamespace* storage_namespace,
     const sessions::SerializedUserAgentOverride& user_agent_override,
     const std::map<std::string, std::string>& extra_data,
-    bool from_session_restore);
+    bool from_session_restore,
+    std::optional<bool> is_active_browser);
 
 // Replaces the state of the currently selected tab with the session
 // history restored from the SessionRestore and TabRestoreService systems.
