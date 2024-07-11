@@ -50,7 +50,6 @@ if (optimize_webui) {
     "history_types.mojom-webui.js",
     "new_tab_page.mojom-webui.js",
     "photos.mojom-webui.js",
-    "recipes.mojom-webui.js",
     "tab_resumption.mojom-webui.js",
     "most_relevant_tab_resumption.mojom-webui.js",
   ]

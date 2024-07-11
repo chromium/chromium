@@ -593,7 +593,6 @@ after discussions on the right group.
       <annotation id="photos_service"/>
       <annotation id="popular_sites_fetch"/>
       <annotation id="promo_service"/>
-      <annotation id="recipes_service"/>
       <annotation id="chrome_cart_discounts_lookup"/>
       <annotation id="chrome_cart_get_discounted_link"/>
     </sender>

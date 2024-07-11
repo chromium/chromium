@@ -285,7 +285,6 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_service.h"
-#include "chrome/browser/new_tab_page/modules/recipes/recipes_service.h"
 #include "chrome/browser/new_tab_page/modules/safe_browsing/safe_browsing_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
@@ -1083,6 +1082,11 @@ constexpr char kDefaultSearchProviderChoicePending[] =
 inline constexpr char kFirstRunStudyGroup[] = "browser.first_run_study_group";
 #endif
 
+// Deprecated 07/2024
+#if !BUILDFLAG(IS_ANDROID)
+constexpr char kNtpRecipesDismissedTasks[] = "NewTabPage.DismissedRecipeTasks";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1507,6 +1511,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 06/2024.
   registry->RegisterBooleanPref(kDefaultSearchProviderChoicePending, false);
+
+  // Deprecated 07/2024
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterListPref(kNtpRecipesDismissedTasks);
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2022,7 +2031,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   PinnedTabCodec::RegisterProfilePrefs(registry);
   policy::DeveloperToolsPolicyHandler::RegisterProfilePrefs(registry);
   PromoService::RegisterProfilePrefs(registry);
-  RecipesService::RegisterProfilePrefs(registry);
   RegisterReadAnythingProfilePrefs(registry);
   settings::SettingsUI::RegisterProfilePrefs(registry);
   send_tab_to_self::RegisterProfilePrefs(registry);
@@ -2840,6 +2848,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 06/2024.
   profile_prefs->ClearPref(kDefaultSearchProviderChoicePending);
 
+  // Added 07/2024.
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kNtpRecipesDismissedTasks);
+#endif
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 
