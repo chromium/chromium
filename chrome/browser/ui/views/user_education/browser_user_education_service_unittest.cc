@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "base/test/metrics/action_suffix_reader.h"
 #include "base/test/metrics/histogram_variants_reader.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/feature_engagement/public/configuration.h"
@@ -42,6 +43,36 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoHistograms) {
          "corresponding variants were added to IPHFeature variants in "
          "//tools/metrics/histograms/metadata/feature_engagement/"
          "histograms.xml";
+}
+
+TEST(BrowserUserEducationServiceTest, CheckFeaturePromoActions) {
+  std::vector<base::ActionSuffixEntryMap> iph_suffixes;
+  std::vector<std::string> missing_features;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    iph_suffixes =
+        base::ReadActionSuffixesForAction("UserEducation.MessageShown.IPH");
+    ASSERT_EQ(1U, iph_suffixes.size());
+  }
+
+  user_education::FeaturePromoRegistry registry;
+  MaybeRegisterChromeFeaturePromos(registry);
+  const auto& iph_specifications = registry.feature_data();
+  for (const auto& [feature, spec] : iph_specifications) {
+    std::string feature_name = feature->name;
+    if (feature_name.starts_with("IPH_")) {
+      feature_name = feature_name.substr(4);
+    }
+    if (!base::Contains(iph_suffixes[0], feature_name)) {
+      missing_features.emplace_back(feature->name);
+    }
+  }
+  ASSERT_TRUE(missing_features.empty())
+      << "IPH Features:\n"
+      << base::JoinString(missing_features, ", ")
+      << "\nconfigured in browser_user_education_service.cc but no "
+         "corresponding action suffixes were added in "
+         "//tools/metrics/actions/actions.xml";
 }
 
 TEST(BrowserUserEducationServiceTest, CheckNewBadgeHistograms) {

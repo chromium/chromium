@@ -123,6 +123,9 @@ you can use
 to read and verify the expected values in a unit test. This prevents a mismatch
 between code and action data from slipping through CQ.
 
+For an example, see
+[BrowserUserEducationServiceTest.CheckFeaturePromoActions](https://cs.chromium.org/chromium/src/chrome/browser/ui/views/user_education/browser_user_education_service_unittest.cc).
+
 ## Interpreting the resulting data
 
 The top of [go/uma-guide](http://go/uma-guide) has good advice on how to go

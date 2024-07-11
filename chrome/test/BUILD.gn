@@ -6061,6 +6061,7 @@ test("unit_tests") {
     inputs += [
       # These files are analyzed by BrowserUserEducationServiceTest, so this
       # dependency is needed to re-run unit_tests on changes to that file.
+      "//tools/metrics/actions/actions.xml",
       "//tools/metrics/histograms/metadata/feature_engagement/histograms.xml",
       "//tools/metrics/histograms/metadata/user_education/histograms.xml",
     ]
@@ -6655,6 +6656,7 @@ test("unit_tests") {
   } else {
     data += [
       "data/",
+      "//tools/metrics/actions/actions.xml",
       "//tools/metrics/histograms/metadata/feature_engagement/histograms.xml",
       "//tools/metrics/histograms/metadata/user_education/histograms.xml",
     ]
