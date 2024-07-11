@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -19,7 +20,9 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -96,6 +99,20 @@ constexpr base::TimeDelta kDelayForUpdates = base::Minutes(60);
 // tiles.
 // TODO(sky): rename actual value to 'most_visited_blocked_urls.'
 const char kBlockedUrlsPrefsKey[] = "ntp.most_visited_blacklist";
+
+void LogMostVisitedScores(const MostVisitedURLList& sites) {
+  // This needs to be kept in sync with the variants list in histograms.xml.
+  constexpr int kMaxTileIndexCount = 10;
+  int size = std::min(static_cast<int>(sites.size()), kMaxTileIndexCount);
+
+  for (int tile_index = 0; tile_index < size; ++tile_index) {
+    const auto& site = sites[tile_index];
+    std::string name = "NewTabPage.MostVisited.DeciScore." +
+                       base::NumberToString(tile_index) + ".Local";
+    base::UmaHistogramCounts1M(name,
+                               base::saturated_cast<int>(site.score * 10));
+  }
+}
 
 }  // namespace
 
@@ -461,6 +478,8 @@ void TopSitesImpl::OnGotMostVisitedURLsFromHistory(
     scoped_refptr<SitesAndQueriesRequest> request,
     MostVisitedURLList sites) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  LogMostVisitedScores(sites);
 
   request->sites = std::move(sites);
   if (request->request_is_complete()) {

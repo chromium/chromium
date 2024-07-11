@@ -446,6 +446,12 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
                                       1);
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       0);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.0.Local", 1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.1.Local", 1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.2.Local", 0);
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -474,6 +480,12 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
                                       1);
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.0.Local", 1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.1.Local", 1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.2.Local", 0);
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -502,6 +514,12 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
                                       1);
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.0.Local", 1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.1.Local", 1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.2.Local", 0);
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -530,6 +548,12 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
                                       1);
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.0.Local", 1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.1.Local", 1);
+    histogram_tester.ExpectTotalCount(
+        "NewTabPage.MostVisited.DeciScore.2.Local", 0);
   }
 }
 

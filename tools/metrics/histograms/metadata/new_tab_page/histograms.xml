@@ -1455,6 +1455,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.MostVisited.DeciScore.{TileIndex}.Local"
+    units="deciscore" expires_after="2024-12-01">
+  <owner>fredmello@chromium.org</owner>
+  <owner>huangs@chromium.org</owner>
+  <summary>
+    Histogram for most visited raw scores multiplied by 10 (to capture one
+    decimal digit), grouped by tile index. This is logged whenever the NTP
+    scores and ranks most visited suggestions. The value is useful for algorithm
+    improvements to enhance the relevance of tiles.
+  </summary>
+  <token key="TileIndex">
+    <variant name="0"/>
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+    <variant name="5"/>
+    <variant name="6"/>
+    <variant name="7"/>
+    <variant name="8"/>
+    <variant name="9"/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.MostVisitedMigratedDefaultAppType"
     enum="TypeOfDeletedMostVisitedApp" expires_after="2024-06-02">
   <owner>dibyapal@chromium.org</owner>
