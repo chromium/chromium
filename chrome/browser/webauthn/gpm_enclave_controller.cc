@@ -869,6 +869,7 @@ void GPMEnclaveController::OnGPMSelected() {
 
     case AccountState::kRecoverable:
     case AccountState::kIrrecoverable:
+      device::enclave::RecordEvent(device::enclave::Event::kOnboarding);
       model_->SetStep(Step::kTrustThisComputerCreation);
       break;
 
@@ -929,6 +930,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
     case AccountState::kRecoverable:
     case AccountState::kIrrecoverable:
       if (model_->priority_phone_name.has_value()) {
+        device::enclave::RecordEvent(device::enclave::Event::kOnboarding);
         model_->SetStep(Step::kTrustThisComputerAssertion);
       } else {
         model_->SetStep(Step::kRecoverSecurityDomain);
@@ -999,6 +1001,7 @@ void GPMEnclaveController::OnGpmPinChanged(bool success) {
 void GPMEnclaveController::OnTrustThisComputer() {
   CHECK(model_->step() == Step::kTrustThisComputerAssertion ||
         model_->step() == Step::kTrustThisComputerCreation);
+  device::enclave::RecordEvent(device::enclave::Event::kOnboardingAccepted);
   // Clicking through the bootstrapping dialog resets the count even if it
   // doesn't end up being successful.
   ResetDeclinedBootstrappingCount(model_.get());

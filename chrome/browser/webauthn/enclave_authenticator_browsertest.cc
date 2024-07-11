@@ -2078,8 +2078,8 @@ class EnclaveAuthenticatorWithoutPinBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(enclave): re-enable these tests, probably by overriding webauthn.dll in
-// the test class.
+// Without a Windows-on-ARM device we've been unable to debug why these
+// tests fail in that that context.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_NotAvailableWithoutUV DISABLED_NotAvailableWithoutUV
 #else

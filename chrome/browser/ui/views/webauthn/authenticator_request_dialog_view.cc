@@ -57,22 +57,6 @@ AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
   if (model_) {
     model_->observers.RemoveObserver(this);
   }
-
-  // TODO(enclave): the below comment hasn't been true for some time. It can
-  // probably be removed, but we didn't want to remove it in a refactoring CL.
-
-  // AuthenticatorRequestDialogView is a WidgetDelegate, owned by views::Widget.
-  // It's only destroyed by Widget::OnNativeWidgetDestroyed() invoking
-  // DeleteDelegate(), and because WIDGET_OWNS_NATIVE_WIDGET, ~Widget() is
-  // invoked straight after, which destroys child views. views::View subclasses
-  // shouldn't be doing anything interesting in their destructors, so it should
-  // be okay to destroy the |sheet_| immediately after this line.
-  //
-  // However, as AuthenticatorRequestDialogModel is owned by |this|, and
-  // ObservableAuthenticatorList is owned by
-  // AuthenticatorRequestDialogModel, destroy all view components that
-  // might own models observing the list prior to destroying
-  // AuthenticatorRequestDialogModel.
   RemoveAllChildViews();
 }
 

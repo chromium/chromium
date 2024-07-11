@@ -691,6 +691,7 @@ void AuthenticatorRequestDialogController::StartFlow(
 void AuthenticatorRequestDialogController::StartOver() {
   if (model_->step() == Step::kTrustThisComputerCreation ||
       model_->step() == Step::kTrustThisComputerAssertion) {
+    device::enclave::RecordEvent(device::enclave::Event::kOnboardingRejected);
     auto* pref_service = Profile::FromBrowserContext(
                              model_->GetRenderFrameHost()->GetBrowserContext())
                              ->GetOriginalProfile()
@@ -2245,7 +2246,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   if (enclave_needs_reauth_ && !use_conditional_mediation_) {
     // Show a button that lets the user sign in again to restore sync. This
     // cancels the request, so we can't do it for conditional UI requests.
-    // TODO(enclave): add support for conditional UI.
+    // TODO(crbug.com/345413738): add support for conditional UI.
     const std::u16string name =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_SIGN_IN_AGAIN_TITLE);
     Mechanism enclave(

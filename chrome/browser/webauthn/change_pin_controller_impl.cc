@@ -73,7 +73,6 @@ void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {
     return;
   }
   notify_pin_change_callback_ = std::move(callback);
-  // TODO(enclave): use local UV instead of GPM reauth when available.
   model_->SetStep(Step::kGPMReauthForPinReset);
   RecordHistogram(ChangePinEvent::kFlowStartedFromSettings);
 }
