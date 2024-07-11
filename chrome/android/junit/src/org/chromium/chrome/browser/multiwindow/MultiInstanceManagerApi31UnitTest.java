@@ -292,7 +292,7 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         @Override
-        protected Set<Integer> getAllChromeTasks(List<AppTask> allTasks) {
+        protected Set<Integer> getAllAppTaskIds(List<AppTask> allTasks) {
             return mAppTasks;
         }
 

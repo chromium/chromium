@@ -511,15 +511,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         // Remove tasks that do not exist any more from the task map
         ActivityManager activityManager =
                 (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
-        List<AppTask> allTasks = activityManager.getAppTasks();
-        Set<Integer> validTasks = getAllChromeTasks(allTasks);
+        List<AppTask> appTasks = activityManager.getAppTasks();
+        Set<Integer> appTaskIds = getAllAppTaskIds(appTasks);
         Map<String, Integer> taskMap =
                 ChromeSharedPreferences.getInstance()
                         .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
         List<String> tasksRemoved = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : taskMap.entrySet()) {
-            if (!validTasks.contains(entry.getValue())) {
-                checkInvalidTaskNotInAllTasks(allTasks, entry.getValue());
+            if (!appTaskIds.contains(entry.getValue())) {
+                // TODO (crbug/327054706): Remove this check once we have verified that crash
+                // reports have reduced.
+                checkInvalidTaskNotInAllTasks(appTasks, entry.getValue());
                 tasksRemoved.add(entry.getKey() + " - " + entry.getValue());
                 ChromeSharedPreferences.getInstance().removeKey(entry.getKey());
                 if (ChromeFeatureList.sMultiInstanceApplicationStatusCleanup.isEnabled()
@@ -557,19 +559,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected static List<Activity> getAllRunningActivities() {
         return ApplicationStatus.getRunningActivities();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected Set<Integer> getAllChromeTasks(List<AppTask> allTasks) {
+    @VisibleForTesting
+    protected Set<Integer> getAllAppTaskIds(List<AppTask> allTasks) {
         Set<Integer> results = new HashSet<>();
         for (AppTask task : allTasks) {
-            String baseActivity = MultiWindowUtils.getActivityNameFromTask(task);
-            if (!TextUtils.equals(baseActivity, ChromeTabbedActivity.class.getName())) continue;
             ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
-            if (info != null) results.add(info.id);
+            if (info != null) results.add(info.taskId);
         }
         return results;
     }
