@@ -18,4 +18,6 @@ found in the LICENSE file.
     <dimen name="facilitated_payments_error_icon_bottom_margin">8dp</dimen>
     <dimen name="facilitated_payments_error_screen_title_top_margin">16dp</dimen>
     <dimen name="facilitated_payments_error_screen_description_top_margin">8dp</dimen>
+    <dimen name="facilitated_payments_error_screen_button_height">48dp</dimen>
+    <dimen name="facilitated_payments_error_screen_button_vertical_margin">18dp</dimen>
 </resources>

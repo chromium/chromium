@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import android.graphics.Bitmap;
+import android.view.View.OnClickListener;
 
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -150,6 +151,21 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         static final PropertyKey[] ALL_KEYS = {};
 
         private FooterProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the error screen shown in a bottom
+     * sheet.
+     */
+    static class ErrorScreenProperties {
+        /** Primary button callback. */
+        static final WritableObjectPropertyKey<OnClickListener> PRIMARY_BUTTON_CALLBACK =
+                new WritableObjectPropertyKey<>("primary_button_callback");
+
+        /** All the properties of error screen. */
+        static final PropertyKey[] ALL_KEYS = {PRIMARY_BUTTON_CALLBACK};
+
+        private ErrorScreenProperties() {}
     }
 
     private FacilitatedPaymentsPaymentMethodsProperties() {}

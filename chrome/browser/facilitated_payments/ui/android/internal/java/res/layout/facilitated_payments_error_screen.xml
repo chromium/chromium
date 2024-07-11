@@ -28,7 +28,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/facilitated_payments_error_screen_title_top_margin"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
+        android:text="@string/pix_payment_error_screen_title" />
 
     <TextView
         android:id="@+id/description"
@@ -36,5 +37,17 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/facilitated_payments_error_screen_description_top_margin"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:text="@string/pix_payment_error_screen_description" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/primary_button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/facilitated_payments_error_screen_button_height"
+        android:layout_marginVertical="@dimen/facilitated_payments_error_screen_button_vertical_margin"
+        android:gravity="center"
+        android:ellipsize="end"
+        android:singleLine="true"
+        style="@style/TextButton"
+        android:text="@string/facilitated_payments_ok" />
 </LinearLayout>

@@ -55,6 +55,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.ButtonCompat;
 
 /** Instrumentation tests for {@link FacilitatedPaymentsPaymentMethodsView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -255,7 +256,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    public void testProgressScreen() {
+    public void testProgressScreenShown() {
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, PROGRESS_SCREEN);
@@ -271,7 +272,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    public void testErrorScreen() {
+    public void testErrorScreenShown() {
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, ERROR_SCREEN);
@@ -283,6 +284,28 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(
                 containsViewWithId((ViewGroup) mView.getContentView(), R.id.error_screen),
                 is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testErrorScreenContents() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, ERROR_SCREEN);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView title = mView.getContentView().findViewById(R.id.title);
+        assertThat(title.getText(), is("Something went wrong"));
+        TextView description = mView.getContentView().findViewById(R.id.description);
+        assertThat(
+                description.getText(),
+                is(
+                        "Your transaction didn’t go through. No funds were withdrawn from your"
+                                + " account."));
+        ButtonCompat primaryButton = mView.getContentView().findViewById(R.id.primary_button);
+        assertThat(primaryButton.getText(), is("OK"));
     }
 
     @Test

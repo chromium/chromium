@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ErrorScreenProperties.PRIMARY_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
@@ -63,6 +66,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.test_support.FakeClock;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -289,13 +293,29 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(ERROR_SCREEN));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
-        // Error screen doesn't have any view properties.
-        assertEquals(
-                mFacilitatedPaymentsPaymentMethodsModel
-                        .get(SCREEN_VIEW_MODEL)
-                        .getAllProperties()
-                        .size(),
-                0);
+        // Verify error screen view properties.
+        List<PropertyKey> propertyKeys =
+                (List<PropertyKey>)
+                        mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .getAllProperties();
+        assertThat(propertyKeys, hasSize(1));
+        assertThat(propertyKeys, contains(PRIMARY_BUTTON_CALLBACK));
+    }
+
+    @Test
+    public void testClickingErrorScreenPrimaryButtonDismissesView() {
+        mCoordinator.showErrorScreen();
+
+        // Simulate clicking the primary button.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(PRIMARY_BUTTON_CALLBACK)
+                .onClick(null);
+
+        // Verify that the bottom sheet model reflects dismissed state.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(UNINITIALIZED));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(HIDDEN));
     }
 
     @Test
@@ -343,13 +363,14 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(ERROR_SCREEN));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
-        // Error screen doesn't have any view properties.
-        assertEquals(
-                mFacilitatedPaymentsPaymentMethodsModel
-                        .get(SCREEN_VIEW_MODEL)
-                        .getAllProperties()
-                        .size(),
-                0);
+        // Verify error screen view properties.
+        List<PropertyKey> propertyKeys =
+                (List<PropertyKey>)
+                        mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .getAllProperties();
+        assertThat(propertyKeys, hasSize(1));
+        assertThat(propertyKeys, contains(PRIMARY_BUTTON_CALLBACK));
     }
 
     @Test

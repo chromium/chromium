@@ -4,13 +4,18 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ErrorScreenProperties.PRIMARY_BUTTON_CALLBACK;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ErrorScreenProperties;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.ButtonCompat;
 
 // This class is used to show a error screen.
 public class FacilitatedPaymentsErrorScreen implements FacilitatedPaymentsSequenceView {
@@ -25,34 +30,37 @@ public class FacilitatedPaymentsErrorScreen implements FacilitatedPaymentsSequen
                                         R.layout.facilitated_payments_error_screen,
                                         viewContainer,
                                         false);
-
-        // TODO: b/351738890 - Enable features to set string resources so it can be reused.
-        TextView titleView = mView.findViewById(R.id.title);
-        titleView.setText(
-                mView.getContext()
-                        .getResources()
-                        .getString(R.string.pix_payment_error_screen_title));
-        TextView descriptionView = mView.findViewById(R.id.description);
-        descriptionView.setText(
-                mView.getContext()
-                        .getResources()
-                        .getString(R.string.pix_payment_error_screen_description));
     }
 
     @Override
     public View getView() {
+        // TODO: b/351738890 - Enable features to set string resources so it can be reused.
         return mView;
     }
 
-    // The error screen doesn't have any properties set by the feature. So its view model is empty.
+    /**
+     * The {@link PropertyModel} for the error screen has a single property:
+     *
+     * <p>PRIMARY_BUTTON_CALLBACK: Callback for the primary button.
+     */
     @Override
     public PropertyModel getModel() {
-        return new PropertyModel();
+        PropertyModel model = new PropertyModel.Builder(ErrorScreenProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(
+                model, mView, FacilitatedPaymentsErrorScreen::bindErrorScreen);
+        return model;
     }
 
     // The error screen isn't scrollable.
     @Override
     public int getVerticalScrollOffset() {
         return 0;
+    }
+
+    static void bindErrorScreen(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == PRIMARY_BUTTON_CALLBACK) {
+            ButtonCompat primaryButton = view.findViewById(R.id.primary_button);
+            primaryButton.setOnClickListener(model.get(PRIMARY_BUTTON_CALLBACK));
+        }
     }
 }

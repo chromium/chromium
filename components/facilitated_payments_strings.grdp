@@ -49,6 +49,9 @@
   <message name="IDS_PIX_PAYMENT_ERROR_SCREEN_DESCRIPTION" desc="Description for the PIX payment error screen. It is shown if PIX payment fails after the user has selected an account to pay from." formatter_data="android_java">
     Your transaction didn’t go through. No funds were withdrawn from your account.
   </message>
+  <message name="IDS_FACILITATED_PAYMENTS_OK" desc="Generic OK string to be used in any Facilitated Payments UI." formatter_data="android_java">
+    OK
+  </message>
 </if>
 
 </grit-part>
