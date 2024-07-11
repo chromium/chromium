@@ -403,41 +403,6 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
-// Test fixture with kEnableWebHidOnExtensionServiceWorker disabled.
-class WebHidExtensionFeatureDisabledBrowserTest
-    : public WebHidExtensionBrowserTest {
- public:
-  WebHidExtensionFeatureDisabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kEnableWebHidOnExtensionServiceWorker});
-  }
-};
-
-// TODO(crbug.com/41494522): Re-enable on linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
-#else
-#define MAYBE_FeatureDisabled FeatureDisabled
-#endif
-IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
-                       MAYBE_FeatureDisabled) {
-  extensions::TestExtensionDir test_dir;
-
-  constexpr char kBackgroundJs[] = R"(
-    chrome.test.sendMessage("ready", async () => {
-      try {
-        chrome.test.assertEq(navigator.hid, undefined);
-        chrome.test.notifyPass();
-
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )";
-
-  LoadExtensionAndRunTest(kBackgroundJs);
-}
-
 // TODO(crbug.com/41494522): Re-enable on ash-chrome.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_GetDevices DISABLED_GetDevices

@@ -1684,10 +1684,7 @@ void ChromeContentRendererClient::
       blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
     }
 #if !BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kEnableWebHidOnExtensionServiceWorker)) {
-      blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
-    }
+    blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

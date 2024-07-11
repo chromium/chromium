@@ -355,13 +355,6 @@ BASE_FEATURE(kDisruptiveNotificationPermissionRevocation,
              "DisruptiveNotificationPermissionRevocation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID)
-// Enable WebHID on extension service workers.
-BASE_FEATURE(kEnableWebHidOnExtensionServiceWorker,
-             "EnableWebHidOnExtensionServiceWorker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enable WebUSB on extension service workers.
 BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",
