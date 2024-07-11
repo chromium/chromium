@@ -105,7 +105,7 @@ std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
     METAINSTALLER_ERROR_SWITCH_ENTRY(UNABLE_TO_GET_EXE_PATH);
 
     case UNSUPPORTED_WINDOWS_VERSION:
-      return GetLocalizedString(IDS_INSTALL_OS_NOT_SUPPORTED_BASE);
+      return GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE);
     case FAILED_TO_ELEVATE_METAINSTALLER:
       return GetLocalizedStringF(IDS_FAILED_TO_ELEVATE_METAINSTALLER_BASE,
                                  GetTextForSystemError(windows_error));

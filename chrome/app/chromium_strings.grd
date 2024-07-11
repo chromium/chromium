@@ -1992,6 +1992,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_BUNDLE_INSTALLED_SUCCESSFULLY" desc="Installation complete message.">
           Installation complete.
         </message>
+        <message name="IDS_UPDATER_OS_NOT_SUPPORTED" desc="Error displayed if the OS is not supported">
+          Installation failed because your version of Windows is not supported.
+        </message>
 
         <!--extra code-->
         <message name="IDS_EXTRA_CODE"

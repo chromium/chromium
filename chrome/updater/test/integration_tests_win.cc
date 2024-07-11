@@ -2025,7 +2025,7 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
 </response>)";
   RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
                                 kManifestFormat,
-                                IDS_INSTALL_OS_NOT_SUPPORTED_BASE, false);
+                                IDS_UPDATER_OS_NOT_SUPPORTED_BASE, false);
 }
 
 base::CommandLine MakeElevated(base::CommandLine command_line) {

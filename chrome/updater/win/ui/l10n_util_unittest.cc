@@ -283,7 +283,7 @@ INSTANTIATE_TEST_SUITE_P(
              IDS_GENERIC_METAINSTALLER_ERROR_BASE,
              std::vector<std::wstring>{L"UNABLE_TO_GET_EXE_PATH", {}})},
         {UNSUPPORTED_WINDOWS_VERSION, 0,
-         GetLocalizedString(IDS_INSTALL_OS_NOT_SUPPORTED_BASE)},
+         GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE)},
         {FAILED_TO_ELEVATE_METAINSTALLER, ERROR_CANCELLED,
          GetLocalizedStringF(IDS_FAILED_TO_ELEVATE_METAINSTALLER_BASE,
                              GetTextForSystemError(ERROR_CANCELLED))},

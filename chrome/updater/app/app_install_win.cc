@@ -676,7 +676,7 @@ void AppInstallControllerImpl::HandleOsNotSupported() {
   update_state.error_category = UpdateService::ErrorCategory::kInstall;
   observer_completion_info_ = HandleInstallResult(update_state);
   observer_completion_info_->completion_text =
-      base::WideToUTF16(GetLocalizedString(IDS_INSTALL_OS_NOT_SUPPORTED_BASE));
+      base::WideToUTF16(GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE));
   InstallComplete(UpdateService::Result::kInstallFailed);
 }
 
