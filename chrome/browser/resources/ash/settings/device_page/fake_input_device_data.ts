@@ -520,7 +520,7 @@ export const fakeMice: Mouse[] = [
       appName: '',
       actionLink: '',
       iconUrl: '',
-      state: CompanionAppState.kAvailable,
+      state: CompanionAppState.kInstalled,
     },
   },
 ];

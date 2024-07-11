@@ -219,6 +219,11 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       bluetoothDevice: {
         type: Object,
       },
+
+      openAppLabel: {
+        type: String,
+        computed: 'computeOpenAppLabel(mouse.*)',
+      },
     };
   }
 
@@ -279,6 +284,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   isWelcomeExperienceEnabled: boolean;
   deviceImageDataUrl: string|null = null;
   bluetoothDevice: BluetoothDeviceProperties;
+  openAppLabel: string;
   private mouse: Mouse;
   protected mousePolicies: MousePolicies;
   private primaryRightPref: chrome.settingsPrivate.PrefObject;
@@ -441,6 +447,20 @@ export class SettingsPerDeviceMouseSubsectionElement extends
 
   getDefaultBatteryType(): BatteryType {
     return BatteryType.DEFAULT;
+  }
+
+  private isCompanionAppInstalled(): boolean {
+    return this.mouse.appInfo?.state === CompanionAppState.kInstalled;
+  }
+
+  // TODO(b/329686601): Implement this.
+  private onCompanionAppRowClick(): void {}
+
+  private computeOpenAppLabel(): string {
+    if (!this.mouse?.appInfo) {
+      return '';
+    }
+    return this.i18n('openAppLabel', this.mouse.appInfo?.appName);
   }
 }
 

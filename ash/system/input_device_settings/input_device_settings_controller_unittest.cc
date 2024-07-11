@@ -15,6 +15,7 @@
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/peripherals_app_delegate.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
+#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -294,6 +295,10 @@ mojom::KeyboardSettingsPtr CreateNewKeyboardSettings() {
   return settings;
 }
 
+std::string GetPackageIdForTesting(const std::string& device_key) {
+  return "web:https://example.com/" + device_key;
+}
+
 }  // namespace
 
 class TestPeripheralsAppDelegate : public PeripheralsAppDelegate {
@@ -308,7 +313,9 @@ class TestPeripheralsAppDelegate : public PeripheralsAppDelegate {
       std::move(callback).Run(std::nullopt);
       return;
     }
-    std::move(callback).Run(mojom::CompanionAppInfo());
+    auto info = mojom::CompanionAppInfo();
+    info.package_id = GetPackageIdForTesting(device_key);
+    std::move(callback).Run(std::move(info));
   }
 
  private:
@@ -683,6 +690,14 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     ON_CALL(*mock_device, GetProductID)
         .WillByDefault(testing::Return(product_id));
     return mock_device;
+  }
+
+  void SendAppUpdate(const std::string& package_id, apps::Readiness readiness) {
+    auto test_app = std::make_unique<apps::App>(apps::AppType::kWeb, "app_id");
+    test_app->installer_package_id = apps::PackageId::FromString(package_id);
+    test_app->readiness = readiness;
+    apps::AppUpdate test_update(nullptr, /*delta=*/test_app.get(), AccountId());
+    controller_->OnAppUpdate(test_update);
   }
 
  protected:
@@ -2071,6 +2086,17 @@ TEST_F(InputDeviceSettingsControllerTest, GetCompanionAppInfo) {
   fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
   mouse = controller_->GetMouse(kSampleMouseUsb.id);
   ASSERT_TRUE(mouse->app_info.is_null());
+}
+
+TEST_F(InputDeviceSettingsControllerTest, CompanionAppStateUpdated) {
+  fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
+  auto* mouse = controller_->GetMouse(kSampleMouseUsb.id);
+  auto expected_package_id = GetPackageIdForTesting(mouse->device_key);
+  ASSERT_FALSE(mouse->app_info.is_null());
+  ASSERT_EQ(mojom::CompanionAppState::kAvailable, mouse->app_info->state);
+  // Simulate installing the companion app.
+  SendAppUpdate(expected_package_id, apps::Readiness::kReady);
+  ASSERT_EQ(mojom::CompanionAppState::kInstalled, mouse->app_info->state);
 }
 
 }  // namespace ash

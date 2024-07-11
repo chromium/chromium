@@ -30,6 +30,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -46,7 +48,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       public input_method::InputMethodManager::Observer,
       public SessionObserver,
       public device::BluetoothAdapter::Observer,
-      public LoginDataDispatcher::Observer {
+      public LoginDataDispatcher::Observer,
+      public apps::AppRegistryCache::Observer {
  public:
   explicit InputDeviceSettingsControllerImpl(PrefService* local_state);
   InputDeviceSettingsControllerImpl(
@@ -142,6 +145,11 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   // LoginDataDispatcher::Observer:
   void OnOobeDialogStateChanged(OobeDialogState state) override;
+
+  // apps::AppRegistryCache::Observer overrides:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
 
   InputDeviceDuplicateIdFinder& duplicate_id_finder() {
     CHECK(duplicate_id_finder_);
@@ -331,6 +339,11 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   base::flat_map<DeviceId, mojom::MousePtr> mice_;
   base::flat_map<DeviceId, mojom::PointingStickPtr> pointing_sticks_;
   base::flat_map<DeviceId, mojom::GraphicsTabletPtr> graphics_tablets_;
+  // A map that stores associations between package IDs (e.g.,
+  // "com.example.app") and the corresponding device IDs where the package is
+  // installed or used. This map is used to track installations and removals for
+  // devies with companion apps.
+  base::flat_map<std::string, DeviceId> package_id_to_device_id_map_;
 
   // Notifiers must be declared after the `flat_map` objects as the notifiers
   // depend on these objects.
@@ -365,6 +378,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   bool settings_refresh_pending_ = false;
 
   OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 
   // Task runner where settings refreshes are scheduled to run.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

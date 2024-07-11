@@ -205,5 +205,12 @@
         label="$i18n{customizeMouseButtonsTitle}">
       </cr-link-row>
     </template>
+    <template is="dom-if" if="[[isCompanionAppInstalled(mouse.appInfo)]]">
+      <cr-link-row id="openApp"
+        class="hr bottom-divider" on-click="onCompanionAppRowClick"
+        aria-describedby="mouseName"
+        label="[[openAppLabel]]">
+      </cr-link-row>
+    </template>
   </div>
 </div>

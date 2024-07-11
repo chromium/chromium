@@ -417,4 +417,18 @@ suite('<settings-per-device-mouse-subsection>', function() {
                     '#batteryIcon');
         assertTrue(isVisible(batteryIcon));
       });
+
+  /**
+   * Test that the row to open a companion app is displayed when an app is
+   * installed.
+   */
+  test('Open app row displayed when app is installed', async () => {
+    await initializePerDeviceMouseSubsection(fakeMice);
+    let appRow = subsection.shadowRoot!.querySelector('#openApp');
+    assertFalse(isVisible(appRow));
+    subsection.set('mouse', {...fakeMice[1]});
+    await flushTasks();
+    appRow = subsection.shadowRoot!.querySelector('#openApp');
+    assertTrue(isVisible(appRow));
+  });
 });

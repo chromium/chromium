@@ -849,6 +849,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"perDeviceKeyboardKeyMeta", IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META},
       {"perDeviceKeyboardKeyFunction",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_FUNCTION},
+      {"openAppLabel", IDS_SETTINGS_PER_DEVICE_OPEN_APP_LABEL},
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 

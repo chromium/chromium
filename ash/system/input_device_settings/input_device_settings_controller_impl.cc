@@ -55,6 +55,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/known_user.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -1014,6 +1016,12 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   }
   active_pref_service_ = pref_service;
   active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
+  auto* cache = apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+      active_account_id_.value());
+  app_registry_cache_observer_.Reset();
+  if (cache) {
+    app_registry_cache_observer_.Observe(cache);
+  }
   InitializePolicyHandler();
 
   // Observe changes to synced prefs to ensure updates made on other devices are
@@ -2476,6 +2484,33 @@ void InputDeviceSettingsControllerImpl::OnOobeDialogStateChanged(
   oobe_state_ = state;
 }
 
+void InputDeviceSettingsControllerImpl::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observer_.Reset();
+}
+
+// TODO(b/329686601): Implement for other input device types.
+void InputDeviceSettingsControllerImpl::OnAppUpdate(
+    const apps::AppUpdate& update) {
+  auto package_id = update.InstallerPackageId().has_value()
+                        ? update.InstallerPackageId()->ToString()
+                        : "";
+  auto it = package_id_to_device_id_map_.find(package_id);
+  if (it == package_id_to_device_id_map_.end()) {
+    return;
+  }
+
+  if (auto* mouse = FindMouse(it->second); mouse != nullptr) {
+    auto updated_app_info = mojo::Clone(mouse->app_info);
+    updated_app_info->state = apps_util::IsInstalled(update.Readiness())
+                                  ? mojom::CompanionAppState::kInstalled
+                                  : mojom::CompanionAppState::kAvailable;
+    mouse->app_info = std::move(updated_app_info);
+    DispatchMouseCompanionAppInfoChanged(*mouse);
+    return;
+  }
+}
+
 void InputDeviceSettingsControllerImpl::RefreshInternalPointingStickSettings() {
   for (auto& [id, pointing_stick] : pointing_sticks_) {
     if (pointing_stick->is_external) {
@@ -2793,6 +2828,7 @@ void InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived(
 
   if (auto* mouse = FindMouse(id); mouse != nullptr) {
     mouse->app_info = info.value().Clone();
+    package_id_to_device_id_map_[mouse->app_info->package_id] = id;
     DispatchMouseCompanionAppInfoChanged(*mouse);
   }
 }
