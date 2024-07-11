@@ -23,7 +23,8 @@ class TestMediaRouterFactory : public MediaRouterFactory {
   TestMediaRouterFactory() = default;
   ~TestMediaRouterFactory() override = default;
 
-  void ResetTestingFactory(content::BrowserContext* context) {
+  void ShutdownForBrowserContext(content::BrowserContext* context) {
+    BrowserContextShutdown(context);
     BrowserContextDestroyed(context);
   }
 
@@ -77,7 +78,7 @@ class MirroringToFlingingSwitcherTest : public testing::Test {
   MirroringToFlingingSwitcherTest() = default;
 
   ~MirroringToFlingingSwitcherTest() override {
-    media_router_factory_.ResetTestingFactory(&browser_context_);
+    media_router_factory_.ShutdownForBrowserContext(&browser_context_);
   }
 
   void SetUp() override {
