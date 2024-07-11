@@ -74,11 +74,14 @@ void CanvasResource::OnDestroy() {
   if (is_cross_thread()) {
     // Destroyed on wrong thread. This can happen when the thread of origin was
     // torn down, in which case the GPU context owning any underlying resources
-    // no longer exists.
-    Abandon();
+    // no longer exists. This implies that no context associated cleanup can be
+    // done and any resources tied to the context may be leaked. As such, this
+    // case should arise only when the owning thread and its associated context
+    // were torn down before this resource could be deleted.
   } else {
-    if (provider_)
+    if (provider_) {
       provider_->OnDestroyResource();
+    }
     TearDown();
   }
 #if DCHECK_IS_ON()
@@ -287,6 +290,11 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
 
 CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
   OnDestroy();
+
+  // Release `shared_mapping_` in case this instance is being destroyed on a
+  // thread other than that on which it was created, in which case TearDown()
+  // will not have been invoked.
+  shared_mapping_ = {};
 }
 
 bool CanvasResourceSharedBitmap::IsValid() const {
@@ -358,10 +366,6 @@ bool CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource(
   out_resource->color_space = GetColorSpace();
 
   return true;
-}
-
-void CanvasResourceSharedBitmap::Abandon() {
-  shared_mapping_ = {};
 }
 
 void CanvasResourceSharedBitmap::NotifyResourceLost() {
@@ -572,11 +576,6 @@ void CanvasResourceSharedImage::TearDown() {
 
   owning_thread_data().texture_id_for_read_access = 0u;
   owning_thread_data().texture_id_for_write_access = 0u;
-}
-
-void CanvasResourceSharedImage::Abandon() {
-  // Called when the owning thread has been torn down which will destroy the
-  // context on which the shared image was created so no cleanup is necessary.
 }
 
 void CanvasResourceSharedImage::WillDraw() {
@@ -844,10 +843,6 @@ bool ExternalCanvasResource::IsValid() const {
   return (is_cross_thread() || context_provider_wrapper_) && HasGpuMailbox();
 }
 
-void ExternalCanvasResource::Abandon() {
-  // We don't need to destroy the shared image mailbox since we don't own it.
-}
-
 void ExternalCanvasResource::TakeSkImage(sk_sp<SkImage> image) {
   NOTREACHED_IN_MIGRATION();
 }
@@ -879,7 +874,6 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
 void ExternalCanvasResource::TearDown() {
   if (release_callback_)
     std::move(release_callback_).Run(GetSyncToken(), resource_is_lost_);
-  Abandon();
 }
 
 bool ExternalCanvasResource::HasGpuMailbox() const {
@@ -1000,11 +994,6 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
       /*is_overlay_candidate=*/true);
-}
-
-void CanvasResourceSwapChain::Abandon() {
-  // Called when the owning thread has been torn down which will destroy the
-  // context on which the shared image was created so no cleanup is necessary.
 }
 
 void CanvasResourceSwapChain::TearDown() {

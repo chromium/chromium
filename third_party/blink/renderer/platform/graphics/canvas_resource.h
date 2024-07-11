@@ -221,14 +221,6 @@ class PLATFORM_EXPORT CanvasResource
                  cc::PaintFlags::FilterQuality,
                  const SkColorInfo&);
 
-  // Called during resource destruction if the resource is destroyed on a thread
-  // other than where it was created. This implies that no context associated
-  // cleanup can be done and any resources tied to the context may be leaked. As
-  // such, a resource must be deleted on the owning thread and this should only
-  // be called when the owning thread and its associated context was torn down
-  // before this resource could be deleted.
-  virtual void Abandon() { TearDown(); }
-
   // Returns true if the resource is backed by memory such that it can be used
   // for direct scanout by the display.
   virtual bool IsOverlayCandidate() const { return false; }
@@ -306,7 +298,6 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool PrepareUnacceleratedTransferableResource(
       viz::TransferableResource* out_resource) final;
   bool NeedsReadLockFences() const final { return false; }
-  void Abandon() final;
   gfx::Size Size() const final;
   void TakeSkImage(sk_sp<SkImage> image) final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
@@ -418,7 +409,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       bool is_lost);
 
   void TearDown() override;
-  void Abandon() override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
   const gpu::SyncToken GetSyncToken() override;
@@ -498,7 +488,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool NeedsReadLockFences() const final { return false; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
-  void Abandon() final;
   gfx::Size Size() const final { return transferable_resource_.size; }
   bool IsOriginTopLeft() const final { return is_origin_top_left_; }
   void TakeSkImage(sk_sp<SkImage> image) final;
@@ -558,7 +547,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   bool NeedsReadLockFences() const final { return false; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
-  void Abandon() final;
   gfx::Size Size() const final { return size_; }
   void TakeSkImage(sk_sp<SkImage> image) final;
   void NotifyResourceLost() override {
