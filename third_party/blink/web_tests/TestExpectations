@@ -7489,6 +7489,10 @@ crbug.com/340651310 external/wpt/uievents/mouse/mouse_boundary_events_after_reap
 # Gardener 2024-05-15
 b/40270061 http/tests/inspector-protocol/tracing/runtime-stats.js [ Crash Failure Pass Timeout ]
 
+# Temporarily disabled to unblock https://crrev.com/c/5688760
+crbug.com/350443026 http/tests/inspector-protocol/cpu-profiler/console-profileEnd-parameterless-crash.js [ Failure Pass ]
+crbug.com/350443026 inspector-protocol/performance/perf-push-metrics.js [ Failure Pass ]
+
 #Loading bug triage 2024-05-16
 crbug.com/339833760 [ Win ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
 
