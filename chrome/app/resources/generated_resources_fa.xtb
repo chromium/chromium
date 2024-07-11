@@ -1005,7 +1005,7 @@
 <translation id="1709762881904163296">«تنظیمات شبکه»</translation>
 <translation id="1709916727352927457">حذف گذرکلید</translation>
 <translation id="1709972045049031556">هم‌رسانی نشد</translation>
-<translation id="1712143791363119140">درحال برگزاری</translation>
+<translation id="1712143791363119140">درجریان است</translation>
 <translation id="1714644264617423774">ویژگی‌های دسترس‌پذیری را برای استفاده آسان‌تر از دستگاهتان فعال کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">داده‌ها و اجازه‌های سایت <ph name="SITE_NAME" /> و برنامه‌های نصب‌شده‌اش حذف شود؟</translation>
 <translation id="171826447717908393">برنامه‌های وب مجزا (نسخه بتا)</translation>
@@ -3284,7 +3284,7 @@
 <translation id="3387023983419383865">،</translation>
 <translation id="3387261909427947069">روش‌های پرداخت</translation>
 <translation id="3387588771342841525">وقتی روشن باشد، گذرواژه‌ها در <ph name="EMAIL" /> ذخیره می‌شوند. وقتی خاموش باشد، گذرواژه‌ها فقط در این دستگاه ذخیره می‌شوند.</translation>
-<translation id="3387614642886316601">استفاده از غلط‌گیر املای بهبودیافته</translation>
+<translation id="3387614642886316601">استفاده از غلط‌یاب املایی بهبودیافته</translation>
 <translation id="3387829698079331264">اجازه ندارد وقتی شما به‌طور فعال از دستگاه استفاده می‌کنید مطلع شود</translation>
 <translation id="3388094447051599208">سینی خروجی تقریباً پر است</translation>
 <translation id="3388788256054548012">این فایل رمزگذاری شده است. از مالک بخواهید آن را رمزگشایی کند.</translation>
@@ -4261,7 +4261,7 @@
 <translation id="4077917118009885966">آگهی‌های این سایت مسدود شدند</translation>
 <translation id="4078738236287221428">قوی</translation>
 <translation id="4078903002989614318">گزینه‌های مرتب‌سازی و فهرست</translation>
-<translation id="4079140982534148664">استفاده از غلط‌گیر املای بهبودیافته</translation>
+<translation id="4079140982534148664">استفاده از غلط‌یاب املایی بهبودیافته</translation>
 <translation id="4084682180776658562">نشانک</translation>
 <translation id="4084835346725913160">بستن <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">جاوا اسکریپت در این صفحه مسدود شده است.</translation>
@@ -5226,7 +5226,7 @@
 <translation id="4825532258163983651">گذرکلید حذف نشد</translation>
 <translation id="4827283332383516812">حذف کارت</translation>
 <translation id="4827675678516992122">متصل نشد</translation>
-<translation id="4827784381479890589">‏غلط‌گیر املای پیشرفته در مرورگر Chrome (نوشتار برای پیشنهادهای املا به Google ارسال می‌شود)</translation>
+<translation id="4827784381479890589">‏غلط‌یاب املایی بهبودیافته در مرورگر Chrome (نوشتار برای پیشنهادهای املا به Google ارسال می‌شود)</translation>
 <translation id="4827904420700932487">ایجاد رمزینه پاسخ‌سریع برای این تصویر</translation>
 <translation id="4827970183019354123">بررسی‌کننده نشانی وب</translation>
 <translation id="4828567746430452681">«<ph name="EXTENSION_NAME" />» دیگر پشتیبانی نمی‌شود</translation>
@@ -8088,7 +8088,7 @@
 <translation id="6989274756151920076">ماندن در اینجا</translation>
 <translation id="6991665348624301627">انتخاب مقصد</translation>
 <translation id="6991926986715044139">‏میان‌بر «لنز Google» همیشه نشان داده شود</translation>
-<translation id="6992554835374084304">روشن کردن غلط‌گیر املای بهبودیافته</translation>
+<translation id="6992554835374084304">روشن کردن غلط‌یاب املایی بهبودیافته</translation>
 <translation id="6993000214273684335">برگه از گروه بی‌نام برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">‏به‌روزرسانی مرورگر Chrome</translation>
 <translation id="6995899638241819463">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لورفته باشند، به شما اطلاع داده شود</translation>
@@ -8735,7 +8735,7 @@
 <translation id="7484645889979462775">هرگز برای این سایت</translation>
 <translation id="7484943269191249363">‏می‌توانید از همه گذرکلیدهایی که در «مدیر گذرواژه Google» ذخیره کرده‌اید در این دستگاه استفاده کنید. کافی است فقط یک‌بار این کار را انجام دهید.</translation>
 <translation id="7486587904541741388">صرفه‌جویی‌های زیاد</translation>
-<translation id="7487141338393529395">روشن کردن غلط‌گیر املای بهبود‌یافته</translation>
+<translation id="7487141338393529395">روشن کردن غلط‌یاب املایی بهبودیافته</translation>
 <translation id="7487969577036436319">هیچ مؤلفه‌ای نصب نشده است</translation>
 <translation id="7488682689406685343">شاید این سایت تلاش می‌کند شما را برای مجاز کردن اعلان‌های مزاحم فریب دهد.</translation>
 <translation id="7489761397368794366">تماس از دستگاه</translation>

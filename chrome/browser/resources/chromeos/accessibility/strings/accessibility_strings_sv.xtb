@@ -8,7 +8,7 @@
 <translation id="1013742170491673792">sökfält</translation>
 <translation id="1014370462248694370">Svep åt höger med två fingrar</translation>
 <translation id="1022586497894531524">Är det första gången du använder talad feedback med ChromeVox? I dessa korta självstudier förklaras de grundläggande stegen för att komma igång med ChromeVox.</translation>
-<translation id="1025074108959230262">Låsta knappar har inaktiverats</translation>
+<translation id="1025074108959230262">Låstangentsläget har inaktiverats</translation>
 <translation id="1031961866430398710">sedan</translation>
 <translation id="1038643060055067718">Rader:</translation>
 <translation id="1038795173450935438">Flytta framåt mellan objekt på en sida genom att trycka på söktangenten + högerpil eller på söktangenten + vänsterpil för att gå tillbaka. Hoppa till nästa rad genom att trycka på söktangenten + nedåtpilen. Hoppa till föregående rad genom att trycka på söktangenten + uppåtpilen. Om du kommer till ett objekt som du vill klicka på trycker du på söktangenten + mellanslag.</translation>
@@ -633,7 +633,7 @@
 <translation id="5308380583665731573">Anslut</translation>
 <translation id="5310788376443009632">har tagits bort:</translation>
 <translation id="5316825363044614340">flytta till nästa rad</translation>
-<translation id="5320727453979144100">Låsta knappar har aktiverats</translation>
+<translation id="5320727453979144100">Låstangentsläget har aktiverats</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{komma}other{# komman}}</translation>
 <translation id="532485153932049746">Textformatering
     <ph name="FONT_SIZE_STRING" />
@@ -1174,7 +1174,7 @@
 <translation id="958854023026327378">Svep nedåt med ett finger</translation>
 <translation id="962913030769097253">Nästa rubrik på nivå 1</translation>
 <translation id="966588271015727539">Välj en punktskriftsskärm med Bluetooth</translation>
-<translation id="973955474346881951">Aktivera/inaktivera låsta knappar</translation>
+<translation id="973955474346881951">Aktivera/inaktivera låstangentsläget</translation>
 <translation id="985654871861528815">Flytta nedåt en rad</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

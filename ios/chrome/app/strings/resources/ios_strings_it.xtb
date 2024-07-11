@@ -111,7 +111,7 @@
 <translation id="1552525382687785070">Sincronizzazione disattivata dall'amministratore</translation>
 <translation id="1554477036522844996">Nuova finestra</translation>
 <translation id="1563071802032385236">Attiva l'opzione "Chiedi di aprire link da altre app in incognito".</translation>
-<translation id="1565371473877914088">Nuova scheda di navigazione in incognito</translation>
+<translation id="1565371473877914088">Nuova scheda in incognito</translation>
 <translation id="1565395699240341063">Destinazioni nascoste</translation>
 <translation id="1580715474678097352">Proteggiti dai siti web pericolosi</translation>
 <translation id="1580783302095112590">Messaggio inviato.</translation>
@@ -252,7 +252,7 @@
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Num. <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Cambia password sul sito web</translation>
 <translation id="230956208401264723">Visualizza tutti i tuoi pacchi tracciati qui in questo carosello</translation>
-<translation id="2310154074101836012">Mod. caro.</translation>
+<translation id="2310154074101836012">Modifica carosello</translation>
 <translation id="2316709634732130529">Utilizza la password suggerita</translation>
 <translation id="2320166752086256636">Nascondi tastiera</translation>
 <translation id="2326302612031521902">Selettore unità</translation>
@@ -654,7 +654,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4342946437867096381">Hai già salvato una password per questo sito nel tuo Account Google. Google può scegliere automaticamente la password più recente.</translation>
 <translation id="4343046787186034850">Accesso a fotocamera e microfono consentito</translation>
 <translation id="4371526908359194219">Notifiche email</translation>
-<translation id="4371591986692297148">non attivo</translation>
+<translation id="4371591986692297148">Non attivo</translation>
 <translation id="4375040482473363939">Ricerca di codici QR</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4389019817280890563">Tocca per modificare la lingua.</translation>
@@ -728,7 +728,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4744428388659507035">Per trovare i tuoi preferiti su tutti i dispositivi, attiva l'opzione "Preferiti" nelle impostazioni.</translation>
 <translation id="4746926359847517643">Puoi sempre ripristinarle nella cronologia.</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Solo su questo dispositivo, <ph name="URL" /></translation>
-<translation id="4751645464639803239">Nuova scheda di navigazione in incognito</translation>
+<translation id="4751645464639803239">Nuova scheda in incognito</translation>
 <translation id="4766112107778026136">Discover e Stai seguendo</translation>
 <translation id="47677902929517676">Per salvare le password nel tuo account, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="4775879719735953715">Browser predefinito</translation>
@@ -1243,7 +1243,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="721597782417389033">Nickname carta non valido</translation>
 <translation id="7221173315674413369">Esplora nuove funzionalità e suggerimenti nella sezione Novità</translation>
 <translation id="7223102419539744003">Chiudi scheda</translation>
-<translation id="722454870747268814">Nuova scheda di navigazione in incognito</translation>
+<translation id="722454870747268814">Nuova scheda in incognito</translation>
 <translation id="7233006041370588369">Seleziona una password da inserire.</translation>
 <translation id="7265758999917665941">Mai per questo sito</translation>
 <translation id="7272437679830969316">Impossibile verificare la tua identità. Password non copiata.</translation>
