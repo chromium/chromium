@@ -44,13 +44,11 @@ void InitLogging() {
   }
 
   logging::LoggingSettings settings{.logging_dest = logging::LOG_TO_STDERR};
-  std::optional<base::FilePath> log_file_path = GetInstallDirectory();
+  std::optional<base::FilePath> log_file_path = GetLogFilePath();
   if (!log_file_path) {
     LOG(ERROR) << "Error getting log file path.";
   } else {
-    base::CreateDirectory(*log_file_path);
-    log_file_path =
-        log_file_path->Append(FILE_PATH_LITERAL("enterprise_companion.log"));
+    base::CreateDirectory(log_file_path->DirName());
 
     // Rotate the log if needed.
     int64_t size = 0;
@@ -108,6 +106,11 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
   LOG_IF(ERROR, !status.ok())
       << "Application completed with error: " << status.description();
   return !status.ok();
+}
+
+std::optional<base::FilePath> GetLogFilePath() {
+  std::optional<base::FilePath> path = GetInstallDirectory();
+  return path ? path->AppendASCII("enterprise_companion.log") : path;
 }
 
 }  // namespace enterprise_companion

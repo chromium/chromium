@@ -5,6 +5,10 @@
 #ifndef CHROME_ENTERPRISE_COMPANION_ENTERPRISE_COMPANION_H_
 #define CHROME_ENTERPRISE_COMPANION_ENTERPRISE_COMPANION_H_
 
+#include <optional>
+
+#include "base/files/file_path.h"
+
 namespace enterprise_companion {
 
 // Specifies the logging module filter.
@@ -15,6 +19,8 @@ extern const char kCrashHandlerSwitch[];
 extern const char kCrashMeSwitch[];
 
 int EnterpriseCompanionMain(int argc, const char* const* argv);
+
+std::optional<base::FilePath> GetLogFilePath();
 
 }  // namespace enterprise_companion
 

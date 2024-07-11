@@ -192,7 +192,13 @@ class CrashClient {
     crashpad::CrashpadInfo::GetCrashpadInfo()
         ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
                                                   kIndirectMemoryLimit);
-    // TODO(crbug.com/c/344887294): Should log files be attached here?
+    std::vector<base::FilePath> attachments;
+#if !BUILDFLAG(IS_MAC)  // Crashpad does not support attachments on macOS.
+    std::optional<base::FilePath> log_file = GetLogFilePath();
+    if (log_file) {
+      attachments.push_back(*log_file);
+    }
+#endif
     if (!client->StartHandler(
             base::PathService::CheckedGet(base::FILE_EXE), database_path,
             /*metrics_dir=*/base::FilePath(), CRASH_UPLOAD_URL, annotations,
