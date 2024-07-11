@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -278,6 +279,9 @@ class EnclaveManager : public EnclaveManagerInterface {
   // Toggle invariant checks.
   static void EnableInvariantChecksForTesting(bool enable);
 
+  unsigned renewal_checks_for_testing() const;
+  unsigned renewal_attempts_for_testing() const;
+
   // Create a wrapped PIN, suitable for putting into a simulated security domain
   // member.
   static std::string MakeWrappedPINForTesting(
@@ -343,6 +347,10 @@ class EnclaveManager : public EnclaveManagerInterface {
   // Store the secret that `TakeSecret` will make available.
   void SetSecret(int32_t key_version, base::span<const uint8_t> secret);
 
+  // Check whether the GPM PIN Vault should be renewed.
+  void ConsiderPinRenewal();
+  void OnRenewalComplete(bool success);
+
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   device::NetworkContextFactory network_context_factory_;
@@ -368,6 +376,10 @@ class EnclaveManager : public EnclaveManagerInterface {
   std::unique_ptr<StateMachine> state_machine_;
   std::vector<base::OnceClosure> load_callbacks_;
   std::deque<std::unique_ptr<PendingAction>> pending_actions_;
+  base::RepeatingTimer renewal_timer_;
+  unsigned renewal_checks_ = 0;
+  unsigned renewal_attempts_ = 0;
+  bool is_renewing_ = false;
 
   // These fields store the security domain secret immediately after a
   // device has been added to the security domain.

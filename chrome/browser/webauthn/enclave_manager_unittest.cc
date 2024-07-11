@@ -31,6 +31,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -206,8 +207,13 @@ scoped_refptr<device::JSONRequest> JSONFromString(std::string_view json_str) {
 class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
  public:
   EnclaveManagerTest()
+      : EnclaveManagerTest(
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
+
+  explicit EnclaveManagerTest(
+      base::test::TaskEnvironment::TimeSource time_source)
       // `IdentityTestEnvironment` wants to run on an IO thread.
-      : task_env_(base::test::TaskEnvironment::MainThreadType::IO),
+      : task_env_(base::test::TaskEnvironment::MainThreadType::IO, time_source),
         temp_dir_(),
         process_and_port_(StartWebAuthnEnclave(temp_dir_.GetPath())),
         enclave_override_(
@@ -371,6 +377,20 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     device::GetAssertionStatus result = device::GetAssertionStatus::kSuccess;
     uint32_t size = 1;
   };
+
+  std::optional<base::Time> LastPINRenewalTime() {
+    std::optional<base::Time> ret;
+    webauthn_pb::EnclaveLocalState& state = manager_.local_state_for_testing();
+    if (state.users().size() == 0) {
+      return ret;
+    }
+    CHECK_EQ(state.users().size(), 1u);
+    if (!state.users().begin()->second.has_last_refreshed_pin_epoch_secs()) {
+      return ret;
+    }
+    return base::Time::FromSecondsSinceUnixEpoch(
+        state.users().begin()->second.last_refreshed_pin_epoch_secs());
+  }
 
   void DoAssertion(
       std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity,
@@ -737,6 +757,7 @@ TEST_F(EnclaveManagerTest, SetupWithPIN) {
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
   EXPECT_FALSE(manager_.wrapped_pin_is_arbitrary());
+  EXPECT_TRUE(LastPINRenewalTime().has_value());
 
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
@@ -990,6 +1011,9 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
 
+  const std::optional<base::Time> initial_time = LastPINRenewalTime();
+  ASSERT_TRUE(initial_time.has_value());
+
   BoolFuture renew_future;
   manager_.RenewPIN(renew_future.GetCallback());
   EXPECT_TRUE(renew_future.Wait());
@@ -1005,6 +1029,7 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
                                     *recovery_key_store_);
   CHECK(security_domain_secret.has_value());
   EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
+  EXPECT_TRUE(*LastPINRenewalTime() > *initial_time);
 }
 
 TEST_F(EnclaveManagerTest, EpochChanged) {
@@ -1304,6 +1329,65 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
                                               key_future_deleted.GetCallback());
   EXPECT_TRUE(key_future_deleted.Wait());
   EXPECT_FALSE(key_future_deleted.Get().has_value());
+}
+
+class EnclaveManagerMockTimeTest : public EnclaveManagerTest {
+ public:
+  EnclaveManagerMockTimeTest()
+      : EnclaveManagerTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  }
+};
+
+TEST_F(EnclaveManagerMockTimeTest, AutomaticRenewal) {
+  const std::string pin = "123456";
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+
+  // Because this test runs under MOCK_TIME, waiting for `setup_future` causes
+  // all events to run immediately, including the timeout timer for the
+  // WebSocket. Thus we have to step time forwards incrementally so that the
+  // enclave process (which isn't under MOCK_TIME) gets a chance to do
+  // something.
+  const base::TimeDelta time_step = base::Milliseconds(1);
+  while (!setup_future.IsReady()) {
+    base::PlatformThread::Sleep(time_step);
+    task_env_.FastForwardBy(time_step);
+  }
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+
+  // When using MOCK_TIME, requests to the enclave will likely timeout as noted
+  // just above. But to avoid flakes, this ensures that the requests will always
+  // fail.
+  device::enclave::ScopedEnclaveOverride override(
+      TestWebAuthnEnclaveIdentity(/*port=*/100));
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+  EXPECT_EQ(recovery_key_store_->vaults().size(), 1u);
+
+  // Renewal will have been checked as soon as the state was loaded.
+  EXPECT_EQ(manager_.renewal_checks_for_testing(), 1u);
+  EXPECT_EQ(manager_.renewal_attempts_for_testing(), 0u);
+
+  // After a day, another check should have been done.
+  task_env_.FastForwardBy(base::Hours(24));
+  EXPECT_EQ(manager_.renewal_checks_for_testing(), 2u);
+  EXPECT_EQ(manager_.renewal_attempts_for_testing(), 0u);
+
+  // After 30 days, there should be a renewal attempt.
+  task_env_.FastForwardBy(base::Days(30));
+  EXPECT_EQ(manager_.renewal_checks_for_testing(), 32u);
+  EXPECT_EQ(manager_.renewal_attempts_for_testing(), 1u);
+
+  // The renewal attempts will fail so an attempt should be made every day.
+  task_env_.FastForwardBy(base::Days(1));
+  EXPECT_EQ(manager_.renewal_checks_for_testing(), 33u);
+  EXPECT_EQ(manager_.renewal_attempts_for_testing(), 2u);
+
+  // Ensure that no operation is outstanding.
+  task_env_.FastForwardBy(base::Hours(1));
 }
 
 // UV keys are only supported on Windows and macOS at this time.

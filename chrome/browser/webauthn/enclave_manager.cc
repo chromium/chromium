@@ -147,6 +147,9 @@ static bool g_invariant_override_ = false;
 // The maximum number of bytes that will be downloaded from the above two URLs.
 constexpr size_t kMaxFetchBodyBytes = 128 * 1024;
 
+// The number of days between GPM PIN Vault refreshes.
+constexpr int kRefreshDays = 30;
+
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("recovery_key_store_fetch", R"(
         semantics {
@@ -2223,6 +2226,9 @@ class EnclaveManager::StateMachine {
       return;
     }
 
+    user_->set_last_refreshed_pin_epoch_secs(
+        base::Time::Now().InSecondsFSinceUnixEpoch());
+
     JoinSecurityDomain();
   }
 
@@ -2240,6 +2246,8 @@ class EnclaveManager::StateMachine {
         status == trusted_vault::TrustedVaultRegistrationStatus::kSuccess;
 
     if (success_) {
+      user_->set_last_refreshed_pin_epoch_secs(
+          base::Time::Now().InSecondsFSinceUnixEpoch());
       manager_->WriteState(&local_state_);
     } else {
       return;
@@ -2627,7 +2635,11 @@ EnclaveManager::EnclaveManager(
           std::make_unique<trusted_vault::TrustedVaultAccessTokenFetcherImpl>(
               trusted_vault_access_token_fetcher_frontend_->GetWeakPtr()))),
       identity_observer_(
-          std::make_unique<IdentityObserver>(identity_manager_, this)) {}
+          std::make_unique<IdentityObserver>(identity_manager_, this)) {
+  renewal_timer_.Start(FROM_HERE, base::Hours(24),
+                       base::BindRepeating(&EnclaveManager::ConsiderPinRenewal,
+                                           weak_ptr_factory_.GetWeakPtr()));
+}
 
 EnclaveManager::~EnclaveManager() = default;
 
@@ -3409,6 +3421,14 @@ void EnclaveManager::EnableInvariantChecksForTesting(bool enabled) {
   g_invariant_override_ = !enabled;
 }
 
+unsigned EnclaveManager::renewal_checks_for_testing() const {
+  return renewal_checks_;
+}
+
+unsigned EnclaveManager::renewal_attempts_for_testing() const {
+  return renewal_attempts_;
+}
+
 // static
 std::string EnclaveManager::MakeWrappedPINForTesting(
     base::span<const uint8_t> security_domain_secret,
@@ -3631,6 +3651,8 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     CancelAllActions();
     Stopped();
   }
+
+  ConsiderPinRenewal();
 }
 
 void EnclaveManager::Stopped() {
@@ -3771,6 +3793,31 @@ void EnclaveManager::SetSecret(int32_t key_version,
                                base::span<const uint8_t> secret) {
   secret_version_ = key_version;
   secret_ = std::vector<uint8_t>(secret.begin(), secret.end());
+}
+
+void EnclaveManager::ConsiderPinRenewal() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  renewal_checks_++;
+  if (!user_ || !user_->registered() || !user_->has_wrapped_pin() ||
+      is_renewing_) {
+    return;
+  }
+
+  const auto now = base::Time::Now();
+  const base::Time last_refreshed = base::Time::FromSecondsSinceUnixEpoch(
+      user_->last_refreshed_pin_epoch_secs());
+  if (last_refreshed > now || now - last_refreshed > base::Days(kRefreshDays)) {
+    FIDO_LOG(EVENT) << "Renewing GPM PIN based on time since last renewal";
+    renewal_attempts_++;
+    is_renewing_ = true;
+    RenewPIN(base::BindOnce(&EnclaveManager::OnRenewalComplete,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void EnclaveManager::OnRenewalComplete(bool success) {
+  is_renewing_ = false;
 }
 
 base::WeakPtr<EnclaveManager> EnclaveManager::GetWeakPtr() {

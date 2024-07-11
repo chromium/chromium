@@ -106,6 +106,9 @@ message EnclaveLocalState {
     // has not yet been created, and should be created at the time of the first
     // UV request.
     optional bool deferred_uv_key_creation = 13;
+
+    // The time at which the GPM PIN was last renewed.
+    optional double last_refreshed_pin_epoch_secs = 14;
   }
 
   map<string, User> users = 1;
