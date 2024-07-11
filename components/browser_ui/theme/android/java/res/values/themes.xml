@@ -110,11 +110,12 @@ found in the LICENSE file.
         <!-- This is for keeping the current TextInputLayout style.
              TODO(crbug.com/40764906): Remove or update once the design for the app is updated. -->
         <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
+
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>
 
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
-    <style name="Base.V35.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
-    <style name="Base.Theme.BrowserUI" parent="Base.V35.Theme.BrowserUI" />
+    <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
     <style name="Theme.BrowserUI" parent="Base.Theme.BrowserUI" />
     <!-- Overridden by night mode. -->
     <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI" />
@@ -182,10 +183,11 @@ found in the LICENSE file.
         <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
         <item name="android:spinnerItemStyle">@style/Widget.BrowserUI.SpinnerItem</item>
         <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
+
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>
-    <style name="Theme.BrowserUI.DialogWhenLarge.V35" parent="Theme.BrowserUI.DialogWhenLarge" />
     <!-- Overridden by night mode. -->
-    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge.V35"/>
+    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>
 
     <!-- Unlike |ThemeOverlay.BrowserUI.AlertDialog|, this is a complete theme that can be used as
          an activity theme on its own. In addition to mirroring |Base.V21.Theme.BrowserUI|, this
@@ -269,10 +271,11 @@ found in the LICENSE file.
         <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
         <item name="android:spinnerItemStyle">@style/Widget.BrowserUI.SpinnerItem</item>
         <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
+
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>
-    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.V35" parent="Theme.BrowserUI.AlertDialog.NoActionBar" />
     <!-- Overridden by night mode. -->
-    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar.V35"/>
+    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar"/>
 
     <!-- This theme is used instead of android:style/Theme.NoDisplay so that it has the required
         attributes in case the context ends up being used to inflate views. -->
