@@ -65,26 +65,25 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // Mirrors the APIs on `BackForwardTransitionAnimationManager`.
   // Some of them are virtual for testing purposes.
+  void OnGestureProgressed(const ui::BackGestureEvent& gesture);
+  void OnGestureCancelled();
+  void OnGestureInvoked();
+  void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
+  void OnContentForNavigationEntryShown();
+  BackForwardTransitionAnimationManager::AnimationStage
+  GetCurrentAnimationStage();
   virtual void OnAnimate(base::TimeTicks frame_begin_time);
+  void OnRenderWidgetHostDestroyed(RenderWidgetHost* widget_host);
   virtual void OnRenderFrameMetadataChangedAfterActivation(
       base::TimeTicks activation_time);
   virtual void DidStartNavigation(NavigationHandle* navigation_handle);
   virtual void ReadyToCommitNavigation(NavigationHandle* navigation_handle);
   virtual void DidFinishNavigation(NavigationHandle* navigation_handle);
-
-  void OnGestureProgressed(const ui::BackGestureEvent& gesture);
-  void OnGestureCancelled();
-  void OnGestureInvoked();
   void OnDidNavigatePrimaryMainFramePreCommit(
       NavigationRequest* navigation_request,
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
-  void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
-  void OnContentForNavigationEntryShown();
-  void OnRenderWidgetHostDestroyed(RenderWidgetHost* widget_host);
 
-  BackForwardTransitionAnimationManager::AnimationStage
-  GetCurrentAnimationStage();
   [[nodiscard]] bool IsTerminalState();
 
  protected:

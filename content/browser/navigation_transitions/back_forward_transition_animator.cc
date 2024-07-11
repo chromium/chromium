@@ -262,6 +262,287 @@ void BackForwardTransitionAnimator::OnGestureInvoked() {
   AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
 }
 
+void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
+    NavigationHandle* navigation_handle) {
+  if (!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value() ||
+      primary_main_frame_navigation_request_id_of_gesture_nav_.value() !=
+          navigation_handle->GetNavigationId()) {
+    return;
+  }
+
+  // For now only a BeforeUnload can defer the start of a navigation.
+  //
+  // NOTE: Even if the renderer acks the BeforeUnload message to proceed the
+  // navigation, the navigation can still fail (see the early out in
+  // BeginNavigationImpl()). However the animator's `navigation_state_` will
+  // remain `NavigationState::kBeforeUnloadDispatched` because we only advance
+  // from `NavigationState::kBeforeUnloadDispatched` to the next state at
+  // `DidStartNavigation()`. In other words, if for any reason the navigation
+  // fails after the renderer's ack, the below CHECK_EQ still holds.
+  CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
+  navigation_state_ = NavigationState::kCancelledBeforeStart;
+
+  if (state_ == State::kWaitingForBeforeUnloadResponse) {
+    // The cancel animation has already finished.
+    AdvanceAndProcessState(State::kAnimationFinished);
+  } else {
+    // Let the cancel animation finish playing. We will advance to
+    // `State::kAnimationFinished`.
+    CHECK_EQ(state_, State::kDisplayingCancelAnimation);
+  }
+}
+
+void BackForwardTransitionAnimator::OnContentForNavigationEntryShown() {
+  // Might be called multiple times if user swipes again before NTP fade
+  // has finished.
+  if (state_ != State::kWaitingForContentForNavigationEntryShown) {
+    return;
+  }
+  // The embedder has finished cross-fading from the screenshot to the new
+  // content. Unregister `this` from the `RenderWidgetHost` to stop the
+  // `OnRenderWidgetHostDestroyed()` notification.
+  CHECK(new_render_widget_host_);
+  new_render_widget_host_->RemoveObserver(animation_manager_);
+  new_render_widget_host_ = nullptr;
+  AdvanceAndProcessState(State::kAnimationFinished);
+}
+
+AnimationStage BackForwardTransitionAnimator::GetCurrentAnimationStage() {
+  switch (state_) {
+    case State::kDisplayingInvokeAnimation:
+      return AnimationStage::kInvokeAnimation;
+    case State::kAnimationFinished:
+    case State::kAnimationAborted:
+      return AnimationStage::kNone;
+    default:
+      return AnimationStage::kOther;
+  }
+}
+
+void BackForwardTransitionAnimator::OnAnimate(
+    base::TimeTicks frame_begin_time) {
+  bool animation_finished = false;
+
+  switch (state_) {
+    case State::kDisplayingCancelAnimation: {
+      PhysicsModel::Result result = physics_model_.OnAnimate(frame_begin_time);
+      std::ignore = SetLayerTransformationAndTickEffect(result);
+      animation_finished = result.done;
+      break;
+    }
+    case State::kDisplayingInvokeAnimation: {
+      PhysicsModel::Result result = physics_model_.OnAnimate(frame_begin_time);
+      animation_finished = SetLayerTransformationAndTickEffect(result);
+      break;
+    }
+    case State::kDisplayingCrossFadeAnimation: {
+      // One cross-fade and one scrim models.
+      CHECK_EQ(effect_.keyframe_models().size(), 2U);
+      effect_.Tick(frame_begin_time);
+      // `Tick()` has the side effect of removing all the finished models. At
+      // the last frame of `OnFloatAnimated()`, the model is still running, but
+      // is immediately removed after the `Tick()` WITHOUT advancing to the
+      // finished or pending deletion state.
+      animation_finished = effect_.keyframe_models().empty();
+      break;
+    }
+    case State::kStarted:
+    case State::kWaitingForBeforeUnloadResponse:
+    case State::kWaitingForNewRendererToDraw:
+    case State::kWaitingForContentForNavigationEntryShown:
+    case State::kAnimationFinished:
+    case State::kAnimationAborted:
+      return;
+  }
+
+  if (animation_finished) {
+    switch (state_) {
+      case State::kDisplayingInvokeAnimation: {
+        CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+        OnInvokeAnimationDisplayed();
+        break;
+      }
+      case State::kDisplayingCancelAnimation: {
+        OnCancelAnimationDisplayed();
+        break;
+      }
+      case State::kDisplayingCrossFadeAnimation: {
+        OnCrossFadeAnimationDisplayed();
+        break;
+      }
+      case State::kStarted:
+      case State::kWaitingForBeforeUnloadResponse:
+      case State::kWaitingForNewRendererToDraw:
+      case State::kWaitingForContentForNavigationEntryShown:
+      case State::kAnimationFinished:
+      case State::kAnimationAborted:
+        NOTREACHED_IN_MIGRATION();
+        break;
+    }
+  } else {
+    animation_manager_->web_contents_view_android()
+        ->GetTopLevelNativeWindow()
+        ->SetNeedsAnimate();
+  }
+}
+
+void BackForwardTransitionAnimator::OnRenderWidgetHostDestroyed(
+    RenderWidgetHost* widget_host) {
+  if (widget_host != new_render_widget_host_) {
+    return;
+  }
+  // The subscribed `RenderWidgetHost` is getting destroyed. We must cancel the
+  // transition and reset everything. This can happen for a client redirect,
+  // where Viz never activates a frame from the committed renderer.
+  CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
+  CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+  state_ = State::kAnimationAborted;
+}
+
+// This is only called after we subscribe to the new `RenderWidgetHost` when the
+// navigation is ready to commit, meaning this method won't be called for
+// 204/205/Download navigations, and won't be called if the navigation is
+// cancelled.
+void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
+    base::TimeTicks activation_time) {
+  // `new_render_widget_host_` and
+  // `primary_main_frame_navigation_entry_item_sequence_number_` are set when
+  // the navigation is ready to commit.
+  CHECK(new_render_widget_host_);
+  CHECK_NE(primary_main_frame_navigation_entry_item_sequence_number_,
+           cc::RenderFrameMetadata::kInvalidItemSequenceNumber);
+
+  // Viz can activate the frame before the DidCommit message arrives at the
+  // browser (kStarted), since we start to get this notification when the
+  // browser tells the renderer to commit the navigation.
+  CHECK(navigation_state_ == NavigationState::kCommitted ||
+        navigation_state_ == NavigationState::kStarted);
+
+  // Again this notification is only received after the browser tells the
+  // renderer to commit the navigation. So we must have started playing the
+  // invoke animation, or the invoke animation has finished.
+  CHECK(state_ == State::kDisplayingInvokeAnimation ||
+        state_ == State::kWaitingForNewRendererToDraw)
+      << ToString(state_);
+
+  CHECK(!viz_has_activated_first_frame_)
+      << "OnRenderFrameMetadataChangedAfterActivation can only be called once.";
+
+  if (new_render_widget_host_->render_frame_metadata_provider()
+          ->LastRenderFrameMetadata()
+          .primary_main_frame_item_sequence_number !=
+      primary_main_frame_navigation_entry_item_sequence_number_) {
+    // We shouldn't dismiss the screenshot if the activated frame isn't what we
+    // are expecting.
+    return;
+  }
+
+  viz_has_activated_first_frame_ = true;
+
+  // No longer interested in any other compositor frame submission
+  // notifications. We can safely dismiss the previewed screenshot now.
+  UnregisterNewFrameActivationObserver();
+
+  if (state_ == State::kWaitingForNewRendererToDraw) {
+    // Only display the crossfade animation if the old page is completely out of
+    // the viewport.
+    AdvanceAndProcessState(State::kDisplayingCrossFadeAnimation);
+  }
+}
+
+// We only use `DidStartNavigation()` for signalling that the renderer has acked
+// the BeforeUnload message to proceed (begin) the navigation.
+void BackForwardTransitionAnimator::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  if (!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value()) {
+    // We could reach here for an early-commit navigation:
+    // - The animator only tracks the request's ID after `GoToIndex()` returns.
+    // - In early commit, `DidStartNavigation()` is called during `GoToIndex()`.
+    //
+    // Early return here and let `StartNavigationAndTrackRequest()` to set the
+    // `navigation_state_`.
+    return;
+  }
+  int64_t tracked_request_id =
+      primary_main_frame_navigation_request_id_of_gesture_nav_.value();
+  if (tracked_request_id != navigation_handle->GetNavigationId()) {
+    return;
+  }
+
+  CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
+  navigation_state_ = NavigationState::kBeforeUnloadAckedProceed;
+
+  CHECK(state_ == State::kWaitingForBeforeUnloadResponse ||
+        state_ == State::kDisplayingCancelAnimation);
+
+  AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
+}
+
+void BackForwardTransitionAnimator::ReadyToCommitNavigation(
+    NavigationHandle* navigation_handle) {
+  CHECK(!navigation_handle->IsSameDocument());
+
+  if (navigation_handle->GetNavigationId() !=
+      primary_main_frame_navigation_request_id_of_gesture_nav_) {
+    // A unrelated navigation is ready to commit. This is possible with
+    // NavigationQueuing. We ignore the unrelated navigation request.
+    return;
+  }
+
+  SubscribeToNewRenderWidgetHost(
+      static_cast<NavigationRequest*>(navigation_handle));
+
+  // Clone the Surface of the outgoing page for same-RFH navigations. We need to
+  // this sooner for these navigations since the SurfaceID is updated when
+  // sending the commit message.
+  // For cross-RFH navigations, this is done as a part of processing the
+  // DidCommit ack from the renderer.
+  auto* navigation_request = NavigationRequest::From(navigation_handle);
+  auto* old_rfh = RenderFrameHostImpl::FromID(
+      navigation_request->GetPreviousRenderFrameHostId());
+  auto* new_rfh = navigation_request->GetRenderFrameHost();
+
+  // Ignore early swap cases for example crashed pages. They are same-RFH
+  // navigations but the current SurfaceID of this RFH doesn't refer to content
+  // from the old Document.
+  if (navigation_request->early_render_frame_host_swap_type() ==
+          NavigationRequest::EarlyRenderFrameHostSwapType::kNone &&
+      old_rfh == new_rfh) {
+    CloneOldSurfaceLayer(old_rfh->GetView());
+  }
+}
+
+// We only use `DidFinishNavigation()` for navigations that never commit
+// (204/205/downloads), or the cancelled / replaced navigations. For a committed
+// navigation, everything is set in `OnDidNavigatePrimaryMainFramePreCommit()`,
+// which is before the old `RenderViewHost` is swapped out.
+void BackForwardTransitionAnimator::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  // If we haven't started tracking a navigation, or if `navigation_handle`
+  // isn't what we tracked, or if this `navigation_handle` has committed, ignore
+  // it.
+  if (!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value() ||
+      primary_main_frame_navigation_request_id_of_gesture_nav_.value() !=
+          navigation_handle->GetNavigationId()) {
+    return;
+  }
+  if (navigation_handle->HasCommitted()) {
+    CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+    return;
+  }
+
+  CHECK_EQ(state_, State::kDisplayingInvokeAnimation);
+  CHECK_EQ(navigation_state_, NavigationState::kStarted);
+  navigation_state_ = NavigationState::kCancelled;
+  physics_model_.OnNavigationFinished(/*navigation_committed=*/false);
+  // 204/205/Download, or the ongoing navigation is cancelled. We need
+  // to animate the old page back.
+  //
+  // TODO(crbug.com/41482488): We might need a better UX than
+  // just display the cancel animation.
+  AdvanceAndProcessState(State::kDisplayingCancelAnimation);
+}
+
 void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
     NavigationRequest* navigation_request,
     RenderFrameHostImpl* old_host,
@@ -420,287 +701,6 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
   if (skip_all_animations) {
     state_ = State::kAnimationAborted;
   }
-}
-
-void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
-    NavigationHandle* navigation_handle) {
-  if (!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value() ||
-      primary_main_frame_navigation_request_id_of_gesture_nav_.value() !=
-          navigation_handle->GetNavigationId()) {
-    return;
-  }
-
-  // For now only a BeforeUnload can defer the start of a navigation.
-  //
-  // NOTE: Even if the renderer acks the BeforeUnload message to proceed the
-  // navigation, the navigation can still fail (see the early out in
-  // BeginNavigationImpl()). However the animator's `navigation_state_` will
-  // remain `NavigationState::kBeforeUnloadDispatched` because we only advance
-  // from `NavigationState::kBeforeUnloadDispatched` to the next state at
-  // `DidStartNavigation()`. In other words, if for any reason the navigation
-  // fails after the renderer's ack, the below CHECK_EQ still holds.
-  CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
-  navigation_state_ = NavigationState::kCancelledBeforeStart;
-
-  if (state_ == State::kWaitingForBeforeUnloadResponse) {
-    // The cancel animation has already finished.
-    AdvanceAndProcessState(State::kAnimationFinished);
-  } else {
-    // Let the cancel animation finish playing. We will advance to
-    // `State::kAnimationFinished`.
-    CHECK_EQ(state_, State::kDisplayingCancelAnimation);
-  }
-}
-
-void BackForwardTransitionAnimator::OnContentForNavigationEntryShown() {
-  // Might be called multiple times if user swipes again before NTP fade
-  // has finished.
-  if (state_ != State::kWaitingForContentForNavigationEntryShown) {
-    return;
-  }
-  // The embedder has finished cross-fading from the screenshot to the new
-  // content. Unregister `this` from the `RenderWidgetHost` to stop the
-  // `OnRenderWidgetHostDestroyed()` notification.
-  CHECK(new_render_widget_host_);
-  new_render_widget_host_->RemoveObserver(animation_manager_);
-  new_render_widget_host_ = nullptr;
-  AdvanceAndProcessState(State::kAnimationFinished);
-}
-
-void BackForwardTransitionAnimator::OnRenderWidgetHostDestroyed(
-    RenderWidgetHost* widget_host) {
-  if (widget_host != new_render_widget_host_) {
-    return;
-  }
-  // The subscribed `RenderWidgetHost` is getting destroyed. We must cancel the
-  // transition and reset everything. This can happen for a client redirect,
-  // where Viz never activates a frame from the committed renderer.
-  CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
-  CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-  state_ = State::kAnimationAborted;
-}
-
-AnimationStage BackForwardTransitionAnimator::GetCurrentAnimationStage() {
-  switch (state_) {
-    case State::kDisplayingInvokeAnimation:
-      return AnimationStage::kInvokeAnimation;
-    case State::kAnimationFinished:
-    case State::kAnimationAborted:
-      return AnimationStage::kNone;
-    default:
-      return AnimationStage::kOther;
-  }
-}
-
-// This is only called after we subscribe to the new `RenderWidgetHost` when the
-// navigation is ready to commit, meaning this method won't be called for
-// 204/205/Download navigations, and won't be called if the navigation is
-// cancelled.
-void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
-    base::TimeTicks activation_time) {
-  // `new_render_widget_host_` and
-  // `primary_main_frame_navigation_entry_item_sequence_number_` are set when
-  // the navigation is ready to commit.
-  CHECK(new_render_widget_host_);
-  CHECK_NE(primary_main_frame_navigation_entry_item_sequence_number_,
-           cc::RenderFrameMetadata::kInvalidItemSequenceNumber);
-
-  // Viz can activate the frame before the DidCommit message arrives at the
-  // browser (kStarted), since we start to get this notification when the
-  // browser tells the renderer to commit the navigation.
-  CHECK(navigation_state_ == NavigationState::kCommitted ||
-        navigation_state_ == NavigationState::kStarted);
-
-  // Again this notification is only received after the browser tells the
-  // renderer to commit the navigation. So we must have started playing the
-  // invoke animation, or the invoke animation has finished.
-  CHECK(state_ == State::kDisplayingInvokeAnimation ||
-        state_ == State::kWaitingForNewRendererToDraw)
-      << ToString(state_);
-
-  CHECK(!viz_has_activated_first_frame_)
-      << "OnRenderFrameMetadataChangedAfterActivation can only be called once.";
-
-  if (new_render_widget_host_->render_frame_metadata_provider()
-          ->LastRenderFrameMetadata()
-          .primary_main_frame_item_sequence_number !=
-      primary_main_frame_navigation_entry_item_sequence_number_) {
-    // We shouldn't dismiss the screenshot if the activated frame isn't what we
-    // are expecting.
-    return;
-  }
-
-  viz_has_activated_first_frame_ = true;
-
-  // No longer interested in any other compositor frame submission
-  // notifications. We can safely dismiss the previewed screenshot now.
-  UnregisterNewFrameActivationObserver();
-
-  if (state_ == State::kWaitingForNewRendererToDraw) {
-    // Only display the crossfade animation if the old page is completely out of
-    // the viewport.
-    AdvanceAndProcessState(State::kDisplayingCrossFadeAnimation);
-  }
-}
-
-void BackForwardTransitionAnimator::OnAnimate(
-    base::TimeTicks frame_begin_time) {
-  bool animation_finished = false;
-
-  switch (state_) {
-    case State::kDisplayingCancelAnimation: {
-      PhysicsModel::Result result = physics_model_.OnAnimate(frame_begin_time);
-      std::ignore = SetLayerTransformationAndTickEffect(result);
-      animation_finished = result.done;
-      break;
-    }
-    case State::kDisplayingInvokeAnimation: {
-      PhysicsModel::Result result = physics_model_.OnAnimate(frame_begin_time);
-      animation_finished = SetLayerTransformationAndTickEffect(result);
-      break;
-    }
-    case State::kDisplayingCrossFadeAnimation: {
-      // One cross-fade and one scrim models.
-      CHECK_EQ(effect_.keyframe_models().size(), 2U);
-      effect_.Tick(frame_begin_time);
-      // `Tick()` has the side effect of removing all the finished models. At
-      // the last frame of `OnFloatAnimated()`, the model is still running, but
-      // is immediately removed after the `Tick()` WITHOUT advancing to the
-      // finished or pending deletion state.
-      animation_finished = effect_.keyframe_models().empty();
-      break;
-    }
-    case State::kStarted:
-    case State::kWaitingForBeforeUnloadResponse:
-    case State::kWaitingForNewRendererToDraw:
-    case State::kWaitingForContentForNavigationEntryShown:
-    case State::kAnimationFinished:
-    case State::kAnimationAborted:
-      return;
-  }
-
-  if (animation_finished) {
-    switch (state_) {
-      case State::kDisplayingInvokeAnimation: {
-        CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-        OnInvokeAnimationDisplayed();
-        break;
-      }
-      case State::kDisplayingCancelAnimation: {
-        OnCancelAnimationDisplayed();
-        break;
-      }
-      case State::kDisplayingCrossFadeAnimation: {
-        OnCrossFadeAnimationDisplayed();
-        break;
-      }
-      case State::kStarted:
-      case State::kWaitingForBeforeUnloadResponse:
-      case State::kWaitingForNewRendererToDraw:
-      case State::kWaitingForContentForNavigationEntryShown:
-      case State::kAnimationFinished:
-      case State::kAnimationAborted:
-        NOTREACHED_IN_MIGRATION();
-        break;
-    }
-  } else {
-    animation_manager_->web_contents_view_android()
-        ->GetTopLevelNativeWindow()
-        ->SetNeedsAnimate();
-  }
-}
-
-// We only use `DidStartNavigation()` for signalling that the renderer has acked
-// the BeforeUnload message to proceed (begin) the navigation.
-void BackForwardTransitionAnimator::DidStartNavigation(
-    NavigationHandle* navigation_handle) {
-  if (!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value()) {
-    // We could reach here for an early-commit navigation:
-    // - The animator only tracks the request's ID after `GoToIndex()` returns.
-    // - In early commit, `DidStartNavigation()` is called during `GoToIndex()`.
-    //
-    // Early return here and let `StartNavigationAndTrackRequest()` to set the
-    // `navigation_state_`.
-    return;
-  }
-  int64_t tracked_request_id =
-      primary_main_frame_navigation_request_id_of_gesture_nav_.value();
-  if (tracked_request_id != navigation_handle->GetNavigationId()) {
-    return;
-  }
-
-  CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
-  navigation_state_ = NavigationState::kBeforeUnloadAckedProceed;
-
-  CHECK(state_ == State::kWaitingForBeforeUnloadResponse ||
-        state_ == State::kDisplayingCancelAnimation);
-
-  AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
-}
-
-void BackForwardTransitionAnimator::ReadyToCommitNavigation(
-    NavigationHandle* navigation_handle) {
-  CHECK(!navigation_handle->IsSameDocument());
-
-  if (navigation_handle->GetNavigationId() !=
-      primary_main_frame_navigation_request_id_of_gesture_nav_) {
-    // A unrelated navigation is ready to commit. This is possible with
-    // NavigationQueuing. We ignore the unrelated navigation request.
-    return;
-  }
-
-  SubscribeToNewRenderWidgetHost(
-      static_cast<NavigationRequest*>(navigation_handle));
-
-  // Clone the Surface of the outgoing page for same-RFH navigations. We need to
-  // this sooner for these navigations since the SurfaceID is updated when
-  // sending the commit message.
-  // For cross-RFH navigations, this is done as a part of processing the
-  // DidCommit ack from the renderer.
-  auto* navigation_request = NavigationRequest::From(navigation_handle);
-  auto* old_rfh = RenderFrameHostImpl::FromID(
-      navigation_request->GetPreviousRenderFrameHostId());
-  auto* new_rfh = navigation_request->GetRenderFrameHost();
-
-  // Ignore early swap cases for example crashed pages. They are same-RFH
-  // navigations but the current SurfaceID of this RFH doesn't refer to content
-  // from the old Document.
-  if (navigation_request->early_render_frame_host_swap_type() ==
-          NavigationRequest::EarlyRenderFrameHostSwapType::kNone &&
-      old_rfh == new_rfh) {
-    CloneOldSurfaceLayer(old_rfh->GetView());
-  }
-}
-
-// We only use `DidFinishNavigation()` for navigations that never commit
-// (204/205/downloads), or the cancelled / replaced navigations. For a committed
-// navigation, everything is set in `OnDidNavigatePrimaryMainFramePreCommit()`,
-// which is before the old `RenderViewHost` is swapped out.
-void BackForwardTransitionAnimator::DidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  // If we haven't started tracking a navigation, or if `navigation_handle`
-  // isn't what we tracked, or if this `navigation_handle` has committed, ignore
-  // it.
-  if (!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value() ||
-      primary_main_frame_navigation_request_id_of_gesture_nav_.value() !=
-          navigation_handle->GetNavigationId()) {
-    return;
-  }
-  if (navigation_handle->HasCommitted()) {
-    CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-    return;
-  }
-
-  CHECK_EQ(state_, State::kDisplayingInvokeAnimation);
-  CHECK_EQ(navigation_state_, NavigationState::kStarted);
-  navigation_state_ = NavigationState::kCancelled;
-  physics_model_.OnNavigationFinished(/*navigation_committed=*/false);
-  // 204/205/Download, or the ongoing navigation is cancelled. We need
-  // to animate the old page back.
-  //
-  // TODO(crbug.com/41482488): We might need a better UX than
-  // just display the cancel animation.
-  AdvanceAndProcessState(State::kDisplayingCancelAnimation);
 }
 
 void BackForwardTransitionAnimator::OnFloatAnimated(
