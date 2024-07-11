@@ -4,25 +4,13 @@
 
 #include "chrome/browser/enterprise/connectors/common.h"
 
-#include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/escape.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "components/download/public/common/download_danger_type.h"
-#include "components/download/public/common/download_item.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
-#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -39,16 +27,6 @@ using safe_browsing::BinaryUploadService;
 
 namespace enterprise_connectors {
 
-RequestHandlerResult::RequestHandlerResult() = default;
-RequestHandlerResult::~RequestHandlerResult() = default;
-RequestHandlerResult::RequestHandlerResult(RequestHandlerResult&&) = default;
-RequestHandlerResult& RequestHandlerResult::operator=(RequestHandlerResult&&) =
-    default;
-RequestHandlerResult::RequestHandlerResult(const RequestHandlerResult&) =
-    default;
-RequestHandlerResult& RequestHandlerResult::operator=(
-    const RequestHandlerResult&) = default;
-
 namespace {
 
 bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
@@ -59,20 +37,6 @@ bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
     case TriggeredRule::WARN:
     case TriggeredRule::BLOCK:
       return false;
-  }
-}
-
-ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
-    TriggeredRule::Action action) {
-  switch (action) {
-    case TriggeredRule::ACTION_UNSPECIFIED:
-      return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
-    case TriggeredRule::REPORT_ONLY:
-      return ContentAnalysisAcknowledgement::REPORT_ONLY;
-    case TriggeredRule::WARN:
-      return ContentAnalysisAcknowledgement::WARN;
-    case TriggeredRule::BLOCK:
-      return ContentAnalysisAcknowledgement::BLOCK;
   }
 }
 
@@ -173,38 +137,6 @@ RequestHandlerResult CalculateRequestHandlerResult(
   return result;
 }
 
-std::u16string GetCustomRuleString(
-    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
-        custom_rule_message) {
-  std::u16string custom_message;
-  for (const auto& custom_segment : custom_rule_message.message_segments()) {
-    base::StrAppend(
-        &custom_message,
-        {base::UnescapeForHTML(base::UTF8ToUTF16(custom_segment.text()))});
-  }
-  return custom_message;
-}
-
-std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
-    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
-        custom_rule_message,
-    size_t offset) {
-  std::vector<std::pair<gfx::Range, GURL>> linked_ranges;
-  for (const auto& custom_segment : custom_rule_message.message_segments()) {
-    std::u16string unescaped_segment =
-        base::UnescapeForHTML(base::UTF8ToUTF16(custom_segment.text()));
-    if (custom_segment.has_link()) {
-      GURL url(custom_segment.link());
-      if (url.is_valid()) {
-        linked_ranges.emplace_back(
-            gfx::Range(offset, offset + unescaped_segment.length()), url);
-      }
-    }
-    offset += unescaped_segment.length();
-  }
-  return linked_ranges;
-}
-
 safe_browsing::EventResult CalculateEventResult(
     const AnalysisSettings& settings,
     bool allowed_by_scan_result,
@@ -216,189 +148,6 @@ safe_browsing::EventResult CalculateEventResult(
              : (should_warn ? safe_browsing::EventResult::WARNED
                             : safe_browsing::EventResult::BLOCKED);
 }
-
-ContentAnalysisAcknowledgement::FinalAction GetAckFinalAction(
-    const ContentAnalysisResponse& response) {
-  auto final_action = ContentAnalysisAcknowledgement::ALLOW;
-  for (const auto& result : response.results()) {
-    if (!result.has_status() ||
-        result.status() != ContentAnalysisResponse::Result::SUCCESS) {
-      continue;
-    }
-
-    for (const auto& rule : result.triggered_rules()) {
-      final_action = GetHighestPrecedenceAction(
-          final_action, RuleActionToAckAction(rule.action()));
-    }
-  }
-
-  return final_action;
-}
-
-ReportingSettings::ReportingSettings() = default;
-ReportingSettings::ReportingSettings(GURL url,
-                                     const std::string& dm_token,
-                                     bool per_profile)
-    : reporting_url(url), dm_token(dm_token), per_profile(per_profile) {}
-ReportingSettings::ReportingSettings(ReportingSettings&&) = default;
-ReportingSettings::ReportingSettings(const ReportingSettings&) = default;
-ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;
-ReportingSettings::~ReportingSettings() = default;
-
-const char* ConnectorPref(AnalysisConnector connector) {
-  switch (connector) {
-    case AnalysisConnector::BULK_DATA_ENTRY:
-      return kOnBulkDataEntryPref;
-    case AnalysisConnector::FILE_DOWNLOADED:
-      return kOnFileDownloadedPref;
-    case AnalysisConnector::FILE_ATTACHED:
-      return kOnFileAttachedPref;
-    case AnalysisConnector::PRINT:
-      return kOnPrintPref;
-    case AnalysisConnector::FILE_TRANSFER:
-#if BUILDFLAG(IS_CHROMEOS)
-      return kOnFileTransferPref;
-#endif
-    case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION() << "Using unspecified analysis connector";
-      return "";
-  }
-}
-
-const char* ConnectorPref(ReportingConnector connector) {
-  switch (connector) {
-    case ReportingConnector::SECURITY_EVENT:
-      return kOnSecurityEventPref;
-  }
-}
-
-const char* ConnectorScopePref(AnalysisConnector connector) {
-  switch (connector) {
-    case AnalysisConnector::BULK_DATA_ENTRY:
-      return kOnBulkDataEntryScopePref;
-    case AnalysisConnector::FILE_DOWNLOADED:
-      return kOnFileDownloadedScopePref;
-    case AnalysisConnector::FILE_ATTACHED:
-      return kOnFileAttachedScopePref;
-    case AnalysisConnector::PRINT:
-      return kOnPrintScopePref;
-    case AnalysisConnector::FILE_TRANSFER:
-#if BUILDFLAG(IS_CHROMEOS)
-      return kOnFileTransferScopePref;
-#endif
-    case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION() << "Using unspecified analysis connector";
-      return "";
-  }
-}
-
-const char* ConnectorScopePref(ReportingConnector connector) {
-  switch (connector) {
-    case ReportingConnector::SECURITY_EVENT:
-      return kOnSecurityEventScopePref;
-  }
-}
-
-TriggeredRule::Action GetHighestPrecedenceAction(
-    const ContentAnalysisResponse& response,
-    std::string* tag) {
-  auto action = TriggeredRule::ACTION_UNSPECIFIED;
-
-  for (const auto& result : response.results()) {
-    if (!result.has_status() ||
-        result.status() != ContentAnalysisResponse::Result::SUCCESS) {
-      continue;
-    }
-
-    for (const auto& rule : result.triggered_rules()) {
-      auto higher_precedence_action =
-          GetHighestPrecedenceAction(action, rule.action());
-      if (higher_precedence_action != action && tag != nullptr) {
-        *tag = result.tag();
-      }
-      action = higher_precedence_action;
-    }
-  }
-  return action;
-}
-
-TriggeredRule::Action GetHighestPrecedenceAction(
-    const TriggeredRule::Action& action_1,
-    const TriggeredRule::Action& action_2) {
-  // Don't use the enum's int values to determine precedence since that
-  // may introduce bugs for new actions later.
-  //
-  // The current precedence is BLOCK > WARN > REPORT_ONLY > UNSPECIFIED
-  if (action_1 == TriggeredRule::BLOCK || action_2 == TriggeredRule::BLOCK) {
-    return TriggeredRule::BLOCK;
-  }
-  if (action_1 == TriggeredRule::WARN || action_2 == TriggeredRule::WARN) {
-    return TriggeredRule::WARN;
-  }
-  if (action_1 == TriggeredRule::REPORT_ONLY ||
-      action_2 == TriggeredRule::REPORT_ONLY) {
-    return TriggeredRule::REPORT_ONLY;
-  }
-  if (action_1 == TriggeredRule::ACTION_UNSPECIFIED ||
-      action_2 == TriggeredRule::ACTION_UNSPECIFIED) {
-    return TriggeredRule::ACTION_UNSPECIFIED;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return TriggeredRule::ACTION_UNSPECIFIED;
-}
-
-ContentAnalysisAcknowledgement::FinalAction GetHighestPrecedenceAction(
-    const ContentAnalysisAcknowledgement::FinalAction& action_1,
-    const ContentAnalysisAcknowledgement::FinalAction& action_2) {
-  // Don't use the enum's int values to determine precedence since that
-  // may introduce bugs for new actions later.
-  //
-  // The current precedence is BLOCK > WARN > REPORT_ONLY > ALLOW > UNSPECIFIED
-  if (action_1 == ContentAnalysisAcknowledgement::BLOCK ||
-      action_2 == ContentAnalysisAcknowledgement::BLOCK) {
-    return ContentAnalysisAcknowledgement::BLOCK;
-  }
-  if (action_1 == ContentAnalysisAcknowledgement::WARN ||
-      action_2 == ContentAnalysisAcknowledgement::WARN) {
-    return ContentAnalysisAcknowledgement::WARN;
-  }
-  if (action_1 == ContentAnalysisAcknowledgement::REPORT_ONLY ||
-      action_2 == ContentAnalysisAcknowledgement::REPORT_ONLY) {
-    return ContentAnalysisAcknowledgement::REPORT_ONLY;
-  }
-  if (action_1 == ContentAnalysisAcknowledgement::ALLOW ||
-      action_2 == ContentAnalysisAcknowledgement::ALLOW) {
-    return ContentAnalysisAcknowledgement::ALLOW;
-  }
-  if (action_1 == ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED ||
-      action_2 == ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED) {
-    return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
-}
-
-FileMetadata::FileMetadata(const std::string& filename,
-                           const std::string& sha256,
-                           const std::string& mime_type,
-                           int64_t size,
-                           const ContentAnalysisResponse& scan_response)
-    : filename(filename),
-      sha256(sha256),
-      mime_type(mime_type),
-      size(size),
-      scan_response(scan_response) {}
-FileMetadata::FileMetadata(FileMetadata&&) = default;
-FileMetadata::FileMetadata(const FileMetadata&) = default;
-FileMetadata& FileMetadata::operator=(const FileMetadata&) = default;
-FileMetadata::~FileMetadata() = default;
-
-const char ScanResult::kKey[] = "enterprise_connectors.scan_result_key";
-ScanResult::ScanResult() = default;
-ScanResult::ScanResult(FileMetadata metadata) {
-  file_metadata.push_back(std::move(metadata));
-}
-ScanResult::~ScanResult() = default;
 
 const char SavePackageScanningData::kKey[] =
     "enterprise_connectors.save_package_scanning_key";
@@ -415,12 +164,6 @@ void RunSavePackageScanningCallback(download::DownloadItem* item,
       item->GetUserData(SavePackageScanningData::kKey));
   if (data && !data->callback.is_null())
     std::move(data->callback).Run(allowed);
-}
-
-bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
-  return base::ranges::any_of(response.results(), [](const auto& result) {
-    return result.tag() == kMalwareTag && !result.triggered_rules().empty();
-  });
 }
 
 bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
@@ -445,54 +188,6 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
   // affiliated.
   return chrome::enterprise_util::IsProfileAffiliated(profile);
 #endif
-}
-
-ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
-CreateSampleCustomRuleMessage(const std::u16string& msg,
-                              const std::string& url) {
-  ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
-      custom_message;
-  auto* custom_segment = custom_message.add_message_segments();
-  custom_segment->set_text(base::UTF16ToUTF8(msg));
-  custom_segment->set_link(url);
-  return custom_message;
-}
-
-std::optional<ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage>
-GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
-                              download::DownloadDangerType danger_type) {
-  if (!download_item) {
-    return std::nullopt;
-  }
-
-  // Custom rule message is currently only present for either warning or block
-  // danger types.
-  TriggeredRule::Action current_action;
-  if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
-    current_action = TriggeredRule::WARN;
-  } else if (danger_type ==
-             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
-    current_action = TriggeredRule::BLOCK;
-  } else {
-    return std::nullopt;
-  }
-
-  enterprise_connectors::ScanResult* scan_result =
-      static_cast<enterprise_connectors::ScanResult*>(
-          download_item->GetUserData(enterprise_connectors::ScanResult::kKey));
-  if (!scan_result) {
-    return std::nullopt;
-  }
-  for (const auto& metadata : scan_result->file_metadata) {
-    for (const auto& result : metadata.scan_response.results()) {
-      for (const auto& rule : result.triggered_rules()) {
-        if (rule.action() == current_action && rule.has_custom_rule_message()) {
-          return rule.custom_rule_message();
-        }
-      }
-    }
-  }
-  return std::nullopt;
 }
 
 bool ShouldPromptReviewForDownload(

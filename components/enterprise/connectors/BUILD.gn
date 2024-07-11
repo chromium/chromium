@@ -10,6 +10,8 @@ source_set("connectors") {
   sources = [
     "analysis/analysis_settings.cc",
     "analysis/analysis_settings.h",
+    "common.cc",
+    "common.h",
     "connectors_prefs.cc",
     "connectors_prefs.h",
     "device_trust/prefs.cc",
@@ -22,6 +24,7 @@ source_set("connectors") {
 
   deps = [
     "//base",
+    "//components/download/public/common:public",
     "//components/enterprise/buildflags:buildflags",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/policy/core/browser",
@@ -29,6 +32,7 @@ source_set("connectors") {
     "//components/prefs",
     "//components/prefs",
     "//components/strings:components_strings_grit",
+    "//ui/gfx/range",
   ]
 
   if (enterprise_client_certificates) {
