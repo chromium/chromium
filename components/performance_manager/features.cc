@@ -81,9 +81,6 @@ bool ShouldUsePerformanceInterventionBackend() {
 const base::FeatureParam<int> kInterventionDialogStringVersion{
     &kPerformanceInterventionUI, "intervention_dialog_version", 1};
 
-const base::FeatureParam<bool> kInterventionShowMixedProfileSuggestions{
-    &kPerformanceInterventionUI, "intervention_show_mixed_profile", false};
-
 const base::FeatureParam<base::TimeDelta> kInterventionButtonTimeout{
     &kPerformanceInterventionUI, "intervention_button_timeout",
     base::Seconds(10)};
