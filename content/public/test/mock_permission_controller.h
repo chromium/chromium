@@ -86,17 +86,6 @@ class MockPermissionController : public PermissionController {
        bool should_include_device_status,
        const base::RepeatingCallback<void(blink::mojom::PermissionStatus)>&
            callback));
-
-  MOCK_METHOD(
-      SubscriptionId,
-      SubscribeToPermissionStatusChange,
-      (blink::PermissionType permission,
-       RenderProcessHost* render_process_host,
-       RenderFrameHost* render_frame_host,
-       const GURL& requesting_origin,
-       bool should_include_device_status,
-       const base::RepeatingCallback<void(PermissionStatus)>& callback));
-
   MOCK_METHOD(void,
               UnsubscribeFromPermissionStatusChange,
               (SubscriptionId subscription_id));

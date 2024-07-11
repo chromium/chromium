@@ -283,12 +283,25 @@ PermissionControllerImpl::PermissionControllerImpl(
     BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
+// TODO(crbug.com/40205763): Remove this method and use
+// `PermissionController` instead.
 // static
 PermissionControllerImpl* PermissionControllerImpl::FromBrowserContext(
     BrowserContext* browser_context) {
   return static_cast<PermissionControllerImpl*>(
       browser_context->GetPermissionController());
 }
+
+struct PermissionControllerImpl::Subscription {
+  PermissionType permission;
+  GURL requesting_origin;
+  GURL embedding_origin;
+  int render_frame_id = -1;
+  int render_process_id = -1;
+  base::RepeatingCallback<void(PermissionStatus)> callback;
+  // This is default-initialized to an invalid ID.
+  PermissionControllerDelegate::SubscriptionId delegate_subscription_id;
+};
 
 PermissionControllerImpl::~PermissionControllerImpl() {
   // Ideally we need to unsubscribe from delegate subscriptions here,
@@ -297,7 +310,7 @@ PermissionControllerImpl::~PermissionControllerImpl() {
 }
 
 PermissionStatus PermissionControllerImpl::GetSubscriptionCurrentValue(
-    const PermissionStatusSubscription& subscription) {
+    const Subscription& subscription) {
   // The RFH may be null if the request is for a worker.
   RenderFrameHost* rfh = RenderFrameHost::FromID(subscription.render_process_id,
                                                  subscription.render_frame_id);
@@ -324,7 +337,7 @@ PermissionControllerImpl::GetSubscriptionsStatuses(
   SubscriptionsStatusMap statuses;
   for (SubscriptionsMap::iterator iter(&subscriptions_); !iter.IsAtEnd();
        iter.Advance()) {
-    PermissionStatusSubscription* subscription = iter.GetCurrentValue();
+    Subscription* subscription = iter.GetCurrentValue();
     if (origin.has_value() && subscription->requesting_origin != *origin) {
       continue;
     }
@@ -338,18 +351,14 @@ void PermissionControllerImpl::NotifyChangedSubscriptions(
   std::vector<base::OnceClosure> callbacks;
   for (const auto& it : old_statuses) {
     auto key = it.first;
-    PermissionStatusSubscription* subscription = subscriptions_.Lookup(key);
+    Subscription* subscription = subscriptions_.Lookup(key);
     if (!subscription) {
       continue;
     }
     PermissionStatus old_status = it.second;
     PermissionStatus new_status = GetSubscriptionCurrentValue(*subscription);
     if (new_status != old_status) {
-      // This is a private method that is called internally if a permission
-      // status was set by DevTools. Suppress permission status override
-      // verification and always notify listeners.
-      callbacks.push_back(base::BindOnce(subscription->callback, new_status,
-                                         /*ignore_status_override=*/true));
+      callbacks.push_back(base::BindOnce(subscription->callback, new_status));
     }
   }
   for (auto& callback : callbacks)
@@ -701,24 +710,14 @@ void PermissionControllerImpl::ResetPermission(PermissionType permission,
   delegate->ResetPermission(permission, requesting_origin, embedding_origin);
 }
 
-void PermissionControllerImpl::PermissionStatusChange(
-    const base::RepeatingCallback<void(PermissionStatus)>& callback,
+void PermissionControllerImpl::OnDelegatePermissionStatusChange(
     SubscriptionId subscription_id,
-    PermissionStatus status,
-    bool ignore_status_override) {
-  // Check if the permission status override should be ignored. The verification
-  // is suppressed if a permission status change was initiated by DevTools. In
-  // all other cases permission status override is always checked.
-  if (ignore_status_override) {
-    callback.Run(status);
-    return;
-  }
-  PermissionStatusSubscription* subscription =
-      subscriptions_.Lookup(subscription_id);
+    PermissionStatus status) {
+  Subscription* subscription = subscriptions_.Lookup(subscription_id);
   DCHECK(subscription);
   // TODO(crbug.com/40056329) Adding this block to prevent crashes while we
   // investigate the root cause of the crash. This block will be removed as the
-  // DCHECK() above should be enough.
+  // CHECK() above should be enough.
   if (!subscription) {
     return;
   }
@@ -726,11 +725,11 @@ void PermissionControllerImpl::PermissionStatusChange(
       url::Origin::Create(subscription->requesting_origin),
       subscription->permission);
   if (!status_override.has_value()) {
-    callback.Run(status);
+    subscription->callback.Run(status);
   }
 }
 
-PermissionController::SubscriptionId
+PermissionControllerImpl::SubscriptionId
 PermissionControllerImpl::SubscribeToPermissionStatusChange(
     PermissionType permission,
     RenderProcessHost* render_process_host,
@@ -739,15 +738,10 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
     bool should_include_device_status,
     const base::RepeatingCallback<void(PermissionStatus)>& callback) {
   DCHECK(!render_process_host || !render_frame_host);
-
-  auto id = subscription_id_generator_.GenerateNextId();
-  auto subscription = std::make_unique<PermissionStatusSubscription>();
+  auto subscription = std::make_unique<Subscription>();
   subscription->permission = permission;
-  subscription->callback =
-      base::BindRepeating(&PermissionControllerImpl::PermissionStatusChange,
-                          base::Unretained(this), callback, id);
+  subscription->callback = callback;
   subscription->requesting_origin = requesting_origin;
-  subscription->should_include_device_status = should_include_device_status;
 
   // The RFH may be null if the request is for a worker.
   if (render_frame_host) {
@@ -762,18 +756,24 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
     subscription->render_process_id =
         render_process_host ? render_process_host->GetID() : -1;
   }
-  subscriptions_.AddWithID(std::move(subscription), id);
 
+  auto id = subscription_id_generator_.GenerateNextId();
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (delegate) {
-    delegate->SetSubscriptions(&subscriptions_);
-    delegate->OnPermissionStatusChangeSubscriptionAdded(id);
+    subscription->delegate_subscription_id =
+        delegate->SubscribeToPermissionStatusChange(
+            permission, render_process_host, render_frame_host,
+            requesting_origin, should_include_device_status,
+            base::BindRepeating(
+                &PermissionControllerImpl::OnDelegatePermissionStatusChange,
+                base::Unretained(this), id));
   }
+  subscriptions_.AddWithID(std::move(subscription), id);
   return id;
 }
 
-PermissionController::SubscriptionId
+PermissionControllerImpl::SubscriptionId
 PermissionControllerImpl::SubscribeToPermissionStatusChange(
     PermissionType permission,
     RenderProcessHost* render_process_host,
@@ -788,15 +788,15 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
 
 void PermissionControllerImpl::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {
-  PermissionStatusSubscription* subscription =
-      subscriptions_.Lookup(subscription_id);
+  Subscription* subscription = subscriptions_.Lookup(subscription_id);
   if (!subscription) {
     return;
   }
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (delegate) {
-    delegate->UnsubscribeFromPermissionStatusChange(subscription_id);
+    delegate->UnsubscribeFromPermissionStatusChange(
+        subscription->delegate_subscription_id);
   }
   subscriptions_.Remove(subscription_id);
 }

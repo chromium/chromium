@@ -6,7 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/test/mock_permission_controller.h"
+#include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -35,38 +35,35 @@ class NFCHostTest : public RenderViewHostImplTestHarness {
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-
-    auto mock_permission_controller =
-        std::make_unique<MockPermissionController>();
-    mock_permission_controller_ = mock_permission_controller.get();
+    auto mock_permission_manager = std::make_unique<MockPermissionManager>();
+    mock_permission_manager_ = mock_permission_manager.get();
     static_cast<TestBrowserContext*>(browser_context())
-        ->SetPermissionControllerForTesting(
-            std::move(mock_permission_controller));
+        ->SetPermissionControllerDelegate(std::move(mock_permission_manager));
   }
 
-  MockPermissionController& mock_permission_controller() {
-    return *mock_permission_controller_;
+  MockPermissionManager& mock_permission_manager() {
+    return *mock_permission_manager_;
   }
 
  private:
-  raw_ptr<MockPermissionController> mock_permission_controller_;
+  raw_ptr<MockPermissionManager> mock_permission_manager_;
 };
 
 TEST_F(NFCHostTest, GetNFCTwice) {
-  constexpr MockPermissionController::SubscriptionId kSubscriptionId(42);
+  constexpr MockPermissionManager::SubscriptionId kSubscriptionId(42);
 
   NavigateAndCommit(GURL(kTestUrl));
 
-  EXPECT_CALL(mock_permission_controller(),
-              GetPermissionStatusForCurrentDocument(blink::PermissionType::NFC,
-                                                    main_rfh()))
+  EXPECT_CALL(mock_permission_manager(),
+              GetPermissionStatusForCurrentDocument(
+                  blink::PermissionType::NFC, main_rfh(),
+                  /*should_include_device_status*/ false))
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED))
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED));
-  EXPECT_CALL(mock_permission_controller(),
+  EXPECT_CALL(mock_permission_manager(),
               SubscribeToPermissionStatusChange(
-                  blink::PermissionType::NFC, /*render_process_host=*/nullptr,
-                  main_rfh(),
-                  main_rfh()->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
+                  blink::PermissionType::NFC,
+                  /*render_process_host=*/nullptr, main_rfh(), GURL(kTestUrl),
                   /*should_include_device_status*/ false, _))
       .WillOnce(Return(kSubscriptionId));
 
@@ -79,7 +76,7 @@ TEST_F(NFCHostTest, GetNFCTwice) {
   EXPECT_TRUE(nfc1.is_bound());
   EXPECT_TRUE(nfc2.is_bound());
 
-  EXPECT_CALL(mock_permission_controller(),
+  EXPECT_CALL(mock_permission_manager(),
               UnsubscribeFromPermissionStatusChange(kSubscriptionId));
 
   DeleteContents();

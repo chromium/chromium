@@ -5,12 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 
-#include <memory>
 #include <optional>
 
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -33,7 +31,10 @@ struct PermissionRequestDescription;
 
 class CONTENT_EXPORT PermissionControllerDelegate {
  public:
-  virtual ~PermissionControllerDelegate();
+  // Identifier for an active subscription.
+  using SubscriptionId = base::IdType64<PermissionControllerDelegate>;
+
+  virtual ~PermissionControllerDelegate() = default;
 
   // Requests multiple permissions on behalf of a frame identified by
   // |render_frame_host|. When the permission request is handled, whether it
@@ -122,15 +123,26 @@ class CONTENT_EXPORT PermissionControllerDelegate {
                                const GURL& requesting_origin,
                                const GURL& embedding_origin) = 0;
 
-  // Set a pointer of subscriptions map from PermissionController.
-  virtual void OnPermissionStatusChangeSubscriptionAdded(
-      content::PermissionController::SubscriptionId subscription_id) {}
+  // Runs the given |callback| whenever the |permission| associated with the
+  // given |render_frame_host| changes. |render_process_host| should be passed
+  // instead if the request is from a worker. Returns the ID to be used to
+  // unsubscribe, which can be `is_null()` if the subscribe was not successful.
+  // Exactly one of |render_process_host| and |render_frame_host| should be
+  // set, RenderProcessHost will be inferred from |render_frame_host|.
+  virtual SubscriptionId SubscribeToPermissionStatusChange(
+      blink::PermissionType permission,
+      content::RenderProcessHost* render_process_host,
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool should_include_device_status,
+      base::RepeatingCallback<void(PermissionStatus)> callback) = 0;
 
-  // Unregisters from permission status change notifications. This function
-  // is only called by PermissionController. In any other cases, please call the
-  // `PermissionController::UnsubscribeFromPermissionStatusChange`.
+  // Unregisters from permission status change notifications. The
+  // |subscription_id| must match the value returned by the
+  // SubscribeToPermissionStatusChange call. Unsubscribing an already
+  // unsubscribed |subscription_id| or an `is_null()` ID is a no-op.
   virtual void UnsubscribeFromPermissionStatusChange(
-      content::PermissionController::SubscriptionId subscription_id) {}
+      SubscriptionId subscription_id) = 0;
 
   // If there's currently a permission UI presenting for the given WebContents,
   // returns bounds of the view as an exclusion area. We will use these bounds
@@ -144,15 +156,21 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual bool IsPermissionOverridable(
       blink::PermissionType permission,
       const std::optional<url::Origin>& origin);
-
-  void SetSubscriptions(
-      content::PermissionController::SubscriptionsMap* subscriptions);
-  content::PermissionController::SubscriptionsMap* subscriptions();
-
- private:
-  raw_ptr<content::PermissionController::SubscriptionsMap> subscriptions_;
 };
 
 }  // namespace content
+
+namespace std {
+
+template <>
+struct hash<content::PermissionControllerDelegate::SubscriptionId> {
+  std::size_t operator()(
+      const content::PermissionControllerDelegate::SubscriptionId& v) const {
+    content::PermissionControllerDelegate::SubscriptionId::Hasher hasher;
+    return hasher(v);
+  }
+};
+
+}  // namespace std
 
 #endif  // CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_

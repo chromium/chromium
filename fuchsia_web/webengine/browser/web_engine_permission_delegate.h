@@ -60,10 +60,16 @@ class WebEnginePermissionDelegate
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& overridden_origin) override;
-  void OnPermissionStatusChangeSubscriptionAdded(
-      content::PermissionController::SubscriptionId subscription_id) override;
+  SubscriptionId SubscribeToPermissionStatusChange(
+      blink::PermissionType permission,
+      content::RenderProcessHost* render_process_host,
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool should_include_device_status,
+      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
   void UnsubscribeFromPermissionStatusChange(
-      content::PermissionController::SubscriptionId subscription_id) override;
+      SubscriptionId subscription_id) override;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_BROWSER_WEB_ENGINE_PERMISSION_DELEGATE_H_

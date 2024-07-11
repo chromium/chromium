@@ -558,6 +558,20 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
           render_frame_host->GetMainFrame()));
 }
 
+AwPermissionManager::SubscriptionId
+AwPermissionManager::SubscribeToPermissionStatusChange(
+    PermissionType permission,
+    content::RenderProcessHost* render_process_host,
+    content::RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
+    bool should_include_device_status,
+    base::RepeatingCallback<void(PermissionStatus)> callback) {
+  return SubscriptionId();
+}
+
+void AwPermissionManager::UnsubscribeFromPermissionStatusChange(
+    SubscriptionId subscription_id) {}
+
 void AwPermissionManager::CancelPermissionRequest(int request_id) {
   PendingRequest* pending_request = pending_requests_.Lookup(request_id);
   if (!pending_request || pending_request->IsCancelled())
