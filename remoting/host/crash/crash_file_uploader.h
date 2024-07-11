@@ -28,8 +28,9 @@ namespace remoting {
 // separate IO thread which may block.
 class CrashFileUploader {
  public:
-  explicit CrashFileUploader(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  CrashFileUploader(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<base::SingleThreadTaskRunner> core_task_runner);
   CrashFileUploader(const CrashFileUploader&) = delete;
   CrashFileUploader& operator=(const CrashFileUploader&) = delete;
   ~CrashFileUploader();

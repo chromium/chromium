@@ -413,12 +413,11 @@ void CrashFileUploader::Core::OnUploadComplete(
 }
 
 CrashFileUploader::CrashFileUploader(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    scoped_refptr<base::SingleThreadTaskRunner> core_task_runner)
+    : core_(std::make_unique<CrashFileUploader::Core>(url_loader_factory)),
+      core_task_runner_(core_task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  core_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  core_ = std::make_unique<CrashFileUploader::Core>(url_loader_factory);
 }
 
 CrashFileUploader::~CrashFileUploader() {

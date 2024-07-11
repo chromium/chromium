@@ -12,6 +12,8 @@ source_set("crash_uploader") {
     "crash_directory_watcher.h",
     "crash_file_uploader.cc",
     "crash_file_uploader.h",
+    "minidump_handler.cc",
+    "minidump_handler.h",
   ]
   deps = [
     "//base",
@@ -19,6 +21,7 @@ source_set("crash_uploader") {
     "//remoting/base:breakpad",
     "//remoting/host:common_headers",
     "//remoting/host/base",
+    "//services/network:network_service",
     "//services/network/public/cpp",
   ]
 }
@@ -41,8 +44,6 @@ source_set("crash_uploader_main") {
     "//remoting/base:breakpad",
     "//remoting/host:common_headers",
     "//remoting/host/base",
-    "//services/network:network_service",
-    "//services/network/public/cpp",
   ]
 }
 

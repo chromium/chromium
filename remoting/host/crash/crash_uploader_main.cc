@@ -15,14 +15,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "mojo/core/embedder/embedder.h"
-#include "remoting/base/breakpad_utils.h"
 #include "remoting/base/logging.h"
-#include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/base/host_exit_codes.h"
-#include "remoting/host/crash/crash_directory_watcher.h"
-#include "remoting/host/crash/crash_file_uploader.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/transitional_url_loader_factory_owner.h"
+#include "remoting/host/crash/minidump_handler.h"
 
 namespace remoting {
 
@@ -57,21 +52,7 @@ int CrashUploaderMain(int argc, char** argv) {
 
   mojo::core::Init();
 
-  auto url_request_context_getter =
-      base::MakeRefCounted<URLRequestContextGetter>(task_runner);
-  std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
-      url_loader_factory_owner =
-          std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
-              url_request_context_getter);
-
-  CrashFileUploader crash_file_uploader{
-      url_loader_factory_owner->GetURLLoaderFactory()};
-
-  CrashDirectoryWatcher crash_directory_watcher;
-  crash_directory_watcher.Watch(
-      GetMinidumpDirectoryPath(),
-      base::BindRepeating(&CrashFileUploader::Upload,
-                          base::Unretained(&crash_file_uploader)));
+  MinidumpHandler minidump_handler;
 
   base::RunLoop run_loop;
 
