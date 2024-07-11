@@ -88,7 +88,8 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
-        if (mShouldShowDeleteGroup) {
+        // Delete does not make sense for incognito since the tab group is not saved to sync.
+        if (mShouldShowDeleteGroup && !isIncognito) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
                             R.string.delete_tab_group_menu_item,

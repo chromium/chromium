@@ -827,6 +827,48 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
+    public void testTabGroupOverflowMenuInTabSwitcher_noDeleteIncognito() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        prepareTabs(1, 2, "about:blank");
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        verifyFirstCardTitle("2 tabs");
+        // Ignore color because incognito's color state list is different.
+
+        // Click the delete action button to close the group
+        String deleteButtonText = cta.getString(R.string.delete_tab_group_menu_item);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(deleteButtonText), withId(R.id.menu_item_text)))
+                .check(doesNotExist());
+
+        String closeButtonText = cta.getString(R.string.close_tab_group_menu_item);
+        onView(allOf(withText(closeButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Closing the last incognito tabs will select the regular tab model.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !cta.getTabModelSelectorSupplier()
+                            .get()
+                            .isIncognitoBrandedModelSelected();
+                });
+
+        // Verify the regular tab model still has a tab.
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDecline() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
