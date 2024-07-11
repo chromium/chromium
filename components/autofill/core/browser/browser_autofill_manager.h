@@ -553,7 +553,6 @@ class BrowserAutofillManager : public AutofillManager {
   // `GenerateSuggestionsAndMaybeShowUI` and displays them if `show_suggestions`
   // is true (via the `external_delegate_`). It also logs whether there is a
   // suggestion for the user and whether the suggestion is shown.
-  // TODO(crbug.com/340494671): Move to the unnamed namespace.
   void OnGenerateSuggestionsComplete(
       const FormData& form,
       const FormFieldData& field,

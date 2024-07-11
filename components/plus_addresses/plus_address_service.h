@@ -209,6 +209,7 @@ class PlusAddressService : public KeyedService,
   // Called when PlusAddressService::OnGetAffiliatedPlusProfiles is resolved.
   // Builds a list of suggestions from the list of `affiliated_profiles` and
   // returns it via the `callback`.
+  // TODO(crbug.com/340494671): Move to the unnamed namespace.
   void OnGetAffiliatedPlusProfiles(
       autofill::AutofillClient::PasswordFormType focused_form_type,
       std::u16string_view focused_field_value,
