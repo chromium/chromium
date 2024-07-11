@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {$$, assertStyle} from './test_support.js';
+import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
 suite('ProductSpecificationsTableTest', () => {
   let tableElement: TableElement;
@@ -44,7 +44,13 @@ suite('ProductSpecificationsTableTest', () => {
           url: `https://${i}`,
           imageUrl: `https://${i}`,
         },
-        productDetails: [],
+        productDetails: [
+          {
+            title: 'foo',
+            description: 'bar',
+            summary: '',
+          },
+        ],
       });
     }
     tableElement.columns = columns;
@@ -91,6 +97,20 @@ suite('ProductSpecificationsTableTest', () => {
     tableElement.style.setProperty(
         '--color-product-specifications-summary-background-dragging', dragRgba);
     assertStyle(element, 'background-color', dragRgba);
+  }
+
+  function assertTitleVisible(element: HTMLElement) {
+    assertTrue(element.hasAttribute('is-first-column'));
+    const title = element.querySelector('.detail-title span');
+    assertTrue(!!title);
+    assertNotStyle(title!, 'visibility', 'hidden');
+  }
+
+  function assertTitleHidden(element: HTMLElement) {
+    assertFalse(element.hasAttribute('is-first-column'));
+    const title = element.querySelector('.detail-title span');
+    assertTrue(!!title);
+    assertStyle(title!, 'visibility', 'hidden');
   }
 
   test('drag first column to second position', async () => {
@@ -287,5 +307,37 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals(2, images.length);
     assertEquals('https://0', images[0]!.autoSrc);
     assertEquals('https://1', images[1]!.autoSrc);
+  });
+
+  test('titles always show in first column', async () => {
+    initializeColumns({numColumns: 3});
+    const columns = tableElement.$.table.querySelectorAll<HTMLElement>('.col');
+    assertEquals(3, columns.length);
+    const first = columns[0]!;
+    const second = columns[1]!;
+    const third = columns[2]!;
+    assertTitleVisible(first);
+    assertTitleHidden(second);
+    assertTitleHidden(third);
+
+    dispatchDragStart({origin: first});
+
+    assertTitleVisible(first);
+    assertTitleHidden(second);
+    assertTitleHidden(third);
+
+    dispatchDragOver({target: second});
+
+    assertTitleHidden(first);
+    assertTitleVisible(second);
+    assertTitleHidden(third);
+
+    dispatchDrop({origin: first});
+    await waitAfterNextRender(tableElement);
+
+    // Attribute should go back to the first column.
+    assertTitleVisible(first);
+    assertTitleHidden(second);
+    assertTitleHidden(third);
   });
 });

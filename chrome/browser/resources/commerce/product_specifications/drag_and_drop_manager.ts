@@ -105,6 +105,7 @@ export class DragAndDropManager {
     const columnElements = this.columnElements_;
     // Set initial column order for later visual reordering.
     columnElements.forEach((column, index) => {
+      column.toggleAttribute('is-first-column', index === 0);
       column.style.order = `${index}`;
     });
   }
@@ -133,6 +134,8 @@ export class DragAndDropManager {
       }
       dropTarget.style.order = `${fromIndex}`;
       dragElement.style.order = `${toIndex}`;
+      dropTarget.toggleAttribute('is-first-column', fromIndex === 0);
+      dragElement.toggleAttribute('is-first-column', toIndex === 0);
     }
   }
 

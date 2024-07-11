@@ -48,17 +48,17 @@ export class TableElement extends PolymerElement {
   draggingColumn: HTMLElement|null = null;
   private hoveredColumnIndex_: number|null = null;
 
-  private dragAndDropManager: DragAndDropManager = new DragAndDropManager();
+  private dragAndDropManager_: DragAndDropManager = new DragAndDropManager();
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.dragAndDropManager.init(this);
+    this.dragAndDropManager_.init(this);
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.dragAndDropManager.destroy();
+    this.dragAndDropManager_.destroy();
   }
 
   // Called by |dragAndDropManager|.
@@ -88,13 +88,22 @@ export class TableElement extends PolymerElement {
   }
 
   // |this.draggingColumn| is set by |dragAndDropManager|.
-  private isDragging_(columnIndex: number) {
-    return this.draggingColumn &&
+  private isDragging_(columnIndex: number): boolean {
+    return !!this.draggingColumn &&
         columnIndex ===
         (this.$.columnRepeat.modelForElement(this.draggingColumn) as unknown as
          {
            columnIndex: number,
          }).columnIndex;
+  }
+
+  private isFirstColumn_(columnIndex: number): boolean|undefined {
+    if (!this.draggingColumn) {
+      return columnIndex === 0;
+    }
+    // While dragging, |dragAndDropManager| toggles this attribute, as the first
+    // column shown in the table may have a non-zero `columnIndex`.
+    return undefined;
   }
 
   // Determines the number of rows needed in the grid layout.

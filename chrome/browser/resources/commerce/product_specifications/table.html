@@ -81,8 +81,7 @@
     width: var(--column-width);
   }
 
-   /* TODO(b/331955377): Stop visible span from moving with dragged column. */
-  .col:not(:first-child) .detail-title span {
+  .col:not([is-first-column]) .detail-title span {
     visibility: hidden;
   }
 
@@ -98,7 +97,8 @@
     <div class="col"
         style$="grid-row: span [[getRowCount_(column.productDetails.length)]]"
         on-pointerenter="onShowOpenTabButton_"
-        is-dragging$="[[isDragging_(columnIndex, draggingColumn)]]">
+        is-dragging$="[[isDragging_(columnIndex, draggingColumn)]]"
+        is-first-column$="[[isFirstColumn_(columnIndex, draggingColumn)]]">
       <product-selector
           draggable="true"
           selected-item="[[column.selectedItem]]"

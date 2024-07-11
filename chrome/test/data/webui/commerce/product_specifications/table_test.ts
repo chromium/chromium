@@ -343,38 +343,6 @@ suite('ProductSpecificationsTableTest', () => {
     assertFalse(isVisible(openTabButton2));
   });
 
-  test('hides open tab button when dragging', async () => {
-    // Arrange
-    tableElement.columns = [
-      {
-        selectedItem: {
-          title: 'title',
-          url: 'https://example.com',
-          imageUrl: 'https://example.com/image',
-        },
-        productDetails: [
-          {title: 'foo', description: 'fooDescription', summary: 'fooSummary'},
-          {title: 'bar', description: 'barDescription', summary: 'barSummary'},
-        ],
-      },
-    ];
-    await flushTasks();
-    const column = $$<HTMLElement>(tableElement, '.col');
-    assertTrue(!!column);
-    const openTabButton =
-        column!.querySelector<HTMLElement>('.open-tab-button');
-    assertTrue(!!openTabButton);
-    tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
-    assertFalse(isVisible(openTabButton));
-
-    // Act/Assert
-    column!.dispatchEvent(new PointerEvent('pointerenter'));
-    assertTrue(isVisible(openTabButton));
-
-    tableElement.draggingColumn = column!;
-    assertFalse(isVisible(openTabButton));
-  });
-
   test('descriptions hidden if empty or N/A', async () => {
     // Arrange
     tableElement.columns = [
@@ -484,5 +452,71 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals(2, columns.length);
     assertStyle(columns[0]!, 'grid-row', 'span 3');
     assertStyle(columns[1]!, 'grid-row', 'span 3');
+  });
+
+  suite('DragAndDrop', () => {
+    test('hides open tab button when dragging', async () => {
+      // Arrange
+      tableElement.columns = [
+        {
+          selectedItem: {
+            title: 'title',
+            url: 'https://example.com',
+            imageUrl: 'https://example.com/image',
+          },
+          productDetails: [
+            {title: 'foo', description: 'd1', summary: ''},
+          ],
+        },
+      ];
+      await flushTasks();
+      const column = $$<HTMLElement>(tableElement, '.col');
+      assertTrue(!!column);
+      const openTabButton =
+          column!.querySelector<HTMLElement>('.open-tab-button');
+      assertTrue(!!openTabButton);
+      tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
+      assertFalse(isVisible(openTabButton));
+
+      // Act/Assert
+      column!.dispatchEvent(new PointerEvent('pointerenter'));
+      assertTrue(isVisible(openTabButton));
+
+      tableElement.draggingColumn = column!;
+      assertFalse(isVisible(openTabButton));
+    });
+
+    test('sets `is-first-column` attribute correctly', async () => {
+      // Arrange / Act.
+      tableElement.columns = [
+        {
+          selectedItem:
+              {title: 'title', url: 'https://example.com/1', imageUrl: ''},
+          productDetails: [
+            {title: 'foo', description: 'd1', summary: ''},
+          ],
+        },
+        {
+          selectedItem:
+              {title: 'title2', url: 'https://example.com/2', imageUrl: ''},
+          productDetails: [
+            {title: 'foo', description: '', summary: ''},
+          ],
+        },
+      ];
+      await waitAfterNextRender(tableElement);
+
+      // Assert.
+      const columns =
+          tableElement.shadowRoot!.querySelectorAll<HTMLElement>('.col');
+      assertEquals(2, columns.length);
+      assertTrue(columns[0]!.hasAttribute('is-first-column'));
+      assertFalse(columns[1]!.hasAttribute('is-first-column'));
+
+      tableElement.draggingColumn = columns[0]!;
+      // Attribute toggling should be handled by drag and drop manager.
+      assertFalse(columns[0]!.hasAttribute('is-first-column'));
+      assertFalse(columns[1]!.hasAttribute('is-first-column'));
+    });
   });
 });
