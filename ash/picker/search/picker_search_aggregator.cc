@@ -157,8 +157,6 @@ void PickerSearchAggregator::PublishBurnInResults() {
   for (PickerSectionType type : {
            PickerSectionType::kSuggestions,
            PickerSectionType::kNone,
-           PickerSectionType::kEditorWrite,
-           PickerSectionType::kEditorRewrite,
        }) {
     if (auto it = results_.find(type);
         it != results_.end() && !it->second.results.empty()) {
@@ -186,6 +184,8 @@ void PickerSearchAggregator::PublishBurnInResults() {
            PickerSectionType::kLinks,
            PickerSectionType::kLocalFiles,
            PickerSectionType::kDriveFiles,
+           PickerSectionType::kEditorWrite,
+           PickerSectionType::kEditorRewrite,
        }) {
     if (published_types.contains(type)) {
       continue;

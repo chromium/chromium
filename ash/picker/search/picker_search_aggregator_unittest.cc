@@ -503,24 +503,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  &PickerSearchResult::TextData::primary_text,
                                  u"category")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kEditorWrite),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"write")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kEditorRewrite),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"rewrite")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLinks),
                 Property("results", &PickerSearchResultsSection::results,
                          ElementsAre(Property(
@@ -546,7 +528,25 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                              VariantWith<PickerSearchResult::TextData>(Field(
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
-                                 u"drive")))))))))
+                                 u"drive")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorWrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"write")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorRewrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"rewrite")))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -608,15 +608,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                &PickerSearchResult::ClipboardData::display_text,
                                u"clipboard")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kEditorWrite),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"write")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
                 Property(
                     "results", &PickerSearchResultsSection::results,
@@ -633,7 +624,16 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                              VariantWith<PickerSearchResult::TextData>(Field(
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
-                                 u"omnibox")))))))))
+                                 u"omnibox")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorWrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"write")))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -680,15 +680,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                &PickerSearchResult::ClipboardData::display_text,
                                u"clipboard")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kEditorWrite),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"write")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
                 Property(
                     "results", &PickerSearchResultsSection::results,
@@ -705,7 +696,16 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                              VariantWith<PickerSearchResult::TextData>(Field(
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
-                                 u"omnibox")))))))))
+                                 u"omnibox")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorWrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"write")))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(

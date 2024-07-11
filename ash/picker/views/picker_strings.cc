@@ -116,9 +116,21 @@ std::u16string GetSectionTitleForPickerSectionType(
   switch (section_type) {
     case PickerSectionType::kNone:
     case PickerSectionType::kSuggestions:
-    case PickerSectionType::kEditorWrite:
-    case PickerSectionType::kEditorRewrite:
       return u"";
+    case PickerSectionType::kEditorWrite:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_EDITOR_WRITE_CATEGORY_TYPE_SECTION_TITLE);
+#else
+      return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case PickerSectionType::kEditorRewrite:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_EDITOR_REWRITE_CATEGORY_TYPE_SECTION_TITLE);
+#else
+      return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case PickerSectionType::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
     case PickerSectionType::kLocalFiles:
