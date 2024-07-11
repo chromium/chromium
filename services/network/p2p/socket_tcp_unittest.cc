@@ -103,7 +103,7 @@ class P2PSocketTcpTestBase : public testing::Test {
 
   std::string IntToSize(int size) {
     return std::string(base::as_string_view(
-        base::numerics::U16ToBigEndian(base::checked_cast<uint16_t>(size))));
+        base::U16ToBigEndian(base::checked_cast<uint16_t>(size))));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -331,7 +331,7 @@ TEST_F(P2PSocketTcpTest, SendDataWithPacketOptions) {
   CreateRandomPacket(&packet);
   // Make it a RTP packet.
   base::span(packet).first<2>().copy_from(
-      base::numerics::U16ToBigEndian(uint16_t{0x8000}));
+      base::U16ToBigEndian(uint16_t{0x8000}));
   socket_impl_->Send(packet, P2PPacketInfo(dest_.ip_address, options, 0));
 
   std::string expected_data;

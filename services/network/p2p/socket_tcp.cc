@@ -443,7 +443,7 @@ bool P2PSocketTcp::ProcessInput(base::span<const uint8_t> input,
   if (input.size() < kPacketHeaderSize)
     return true;
 
-  uint32_t packet_size = base::numerics::U16FromBigEndian(input.first<2u>());
+  uint32_t packet_size = base::U16FromBigEndian(input.first<2u>());
   if (input.size() < packet_size + kPacketHeaderSize)
     return true;
 
@@ -570,10 +570,10 @@ int P2PSocketStunTcp::GetExpectedPacketSize(base::span<const uint8_t> data,
                                             int* pad_bytes) {
   DCHECK_LE(static_cast<size_t>(kTurnChannelDataHeaderSize), data.size());
   // Get packet type (STUN or TURN).
-  uint16_t msg_type = base::numerics::U16FromBigEndian(data.subspan<0u, 2u>());
+  uint16_t msg_type = base::U16FromBigEndian(data.subspan<0u, 2u>());
   // Both stun and turn had length at offset 2.
-  int packet_size = int{base::numerics::U16FromBigEndian(
-      data.subspan<kPacketLengthOffset, 2u>())};
+  int packet_size =
+      int{base::U16FromBigEndian(data.subspan<kPacketLengthOffset, 2u>())};
 
   *pad_bytes = 0;
   // Add heder length to packet length.
