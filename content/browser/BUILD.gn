@@ -968,8 +968,6 @@ source_set("browser") {
     "download/mhtml_extra_parts_impl.h",
     "download/mhtml_generation_manager.cc",
     "download/mhtml_generation_manager.h",
-    "download/network_download_pending_url_loader_factory.cc",
-    "download/network_download_pending_url_loader_factory.h",
     "download/save_file.cc",
     "download/save_file.h",
     "download/save_file_manager.cc",

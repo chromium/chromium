@@ -131,13 +131,6 @@ class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
 class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
     : public network::SharedURLLoaderFactory {
  public:
-  URLLoaderFactoryForIOThread(
-      scoped_refptr<URLLoaderFactoryGetter> factory_getter)
-      : factory_getter_(std::move(factory_getter)) {
-    DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO) ||
-           BrowserThread::CurrentlyOn(BrowserThread::IO));
-  }
-
   explicit URLLoaderFactoryForIOThread(
       std::unique_ptr<PendingURLLoaderFactoryForIOThread> info)
       : factory_getter_(std::move(info->url_loader_factory_getter())) {
@@ -221,13 +214,6 @@ void URLLoaderFactoryGetter::Initialize(StoragePartitionImpl* partition) {
 void URLLoaderFactoryGetter::OnStoragePartitionDestroyed() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   partition_ = nullptr;
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-URLLoaderFactoryGetter::GetNetworkFactory() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return base::MakeRefCounted<URLLoaderFactoryForIOThread>(
-      base::WrapRefCounted(this));
 }
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>

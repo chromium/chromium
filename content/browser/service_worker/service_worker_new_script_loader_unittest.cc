@@ -20,7 +20,6 @@
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -242,7 +241,7 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
     *out_client = std::make_unique<network::TestURLLoaderClient>();
     *out_loader = ServiceWorkerNewScriptLoader::CreateAndStart(
         request_id, options, request, (*out_client)->CreateRemote(), version_,
-        helper_->url_loader_factory_getter()->GetNetworkFactory(),
+        helper_->GetNetworkFactory(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         resource_id, /*is_throttle_needed=*/false,
         /*requesting_frame_id=*/GlobalRenderFrameHostId());

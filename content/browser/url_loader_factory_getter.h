@@ -105,15 +105,11 @@ class URLLoaderFactoryGetter
   // be called when the partition is going away.
   void OnStoragePartitionDestroyed();
 
-  // Called on the IO thread to get a shared wrapper to this
-  // URLLoaderFactoryGetter, which can be used to access the URLLoaderFactory
-  // to the network service and supports auto-reconnect after crash.
-  CONTENT_EXPORT scoped_refptr<network::SharedURLLoaderFactory>
-  GetNetworkFactory();
-
-  // Called on the UI thread to get an info that holds a reference to this
-  // URLLoaderFactoryGetter, which can be used to construct a similar
-  // SharedURLLoaderFactory as returned from |GetNetworkFactory()| on IO thread.
+  // Called on the UI thread to create a PendingSharedURLLoaderFactory that
+  // holds a reference to this URLLoaderFactoryGetter, which can be used on IO
+  // thread to construct a SharedURLLoaderFactory that can be used to access the
+  // URLLoaderFactory to the network service and supports auto-reconnect after
+  // crash.
   CONTENT_EXPORT std::unique_ptr<network::PendingSharedURLLoaderFactory>
   GetPendingNetworkFactory();
 

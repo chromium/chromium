@@ -56,7 +56,7 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
 
     factory_ = std::make_unique<ServiceWorkerScriptLoaderFactory>(
         helper_->context()->AsWeakPtr(), worker_host_->GetWeakPtr(),
-        helper_->url_loader_factory_getter()->GetNetworkFactory());
+        helper_->GetNetworkFactory());
   }
 
  protected:

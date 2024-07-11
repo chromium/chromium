@@ -127,13 +127,7 @@ class EmbeddedWorkerTestHelper {
   static std::unique_ptr<ServiceWorkerVersion::MainScriptResponse>
   CreateMainScriptResponse();
 
-  URLLoaderFactoryGetter* url_loader_factory_getter() {
-    return url_loader_factory_getter_.get();
-  }
-
-  // Overrides the network URLLoaderFactory for subsequent requests. Passing a
-  // null pointer will restore the default behavior.
-  void SetNetworkFactory(network::mojom::URLLoaderFactory* factory);
+  scoped_refptr<network::SharedURLLoaderFactory> GetNetworkFactory();
 
   // Adds the given client to the pending queue. The next time this helper
   // receives a

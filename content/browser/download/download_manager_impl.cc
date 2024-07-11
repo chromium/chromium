@@ -47,7 +47,6 @@
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/download/embedder_download_data.pb.h"
-#include "content/browser/download/network_download_pending_url_loader_factory.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -248,9 +247,9 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
         nullptr /* navigation_response_task_runner */);
   }
 
-  return std::make_unique<NetworkDownloadPendingURLLoaderFactory>(
-      storage_partition->url_loader_factory_getter(),
-      std::move(factory_builder));
+  return std::make_unique<network::PendingSharedURLLoaderFactoryWithBuilder>(
+      std::move(factory_builder),
+      storage_partition->GetURLLoaderFactoryForBrowserProcessIOThread());
 }
 
 void RecordDownloadOpenerType(RenderFrameHost* current,

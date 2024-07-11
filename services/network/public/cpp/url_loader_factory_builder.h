@@ -168,6 +168,25 @@ COMPONENT_EXPORT(NETWORK_CPP)
 mojo::PendingRemote<mojom::URLLoaderFactory> URLLoaderFactoryBuilder::WrapAs(
     scoped_refptr<SharedURLLoaderFactory> in);
 
+// Similar to PendingSharedURLLoaderFactory, but also goes through
+// `URLLoaderFactoryBuilder` when constructing the factory.
+class COMPONENT_EXPORT(NETWORK_CPP)
+    PendingSharedURLLoaderFactoryWithBuilder final
+    : public PendingSharedURLLoaderFactory {
+ public:
+  PendingSharedURLLoaderFactoryWithBuilder(
+      URLLoaderFactoryBuilder factory_builder,
+      std::unique_ptr<PendingSharedURLLoaderFactory> terminal_pending_factory);
+  ~PendingSharedURLLoaderFactoryWithBuilder() override;
+
+ private:
+  // PendingSharedURLLoaderFactory implementation.
+  scoped_refptr<SharedURLLoaderFactory> CreateFactory() override;
+
+  URLLoaderFactoryBuilder factory_builder_;
+  std::unique_ptr<PendingSharedURLLoaderFactory> terminal_pending_factory_;
+};
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_URL_LOADER_FACTORY_BUILDER_H_

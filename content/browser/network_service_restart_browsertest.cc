@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       partition->url_loader_factory_getter();
 
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
-      url_loader_factory_getter.get());
+      partition->GetURLLoaderFactoryForBrowserProcessIOThread());
   EXPECT_EQ(net::OK, factory_owner->LoadBasicRequestOnIOThread(GetTestURL()));
 
   // Crash the NetworkService process. Existing interfaces should receive error
@@ -435,10 +435,10 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   partition->FlushNetworkInterfaceForTesting();
   url_loader_factory_getter->FlushNetworkInterfaceOnIOThreadForTesting();
 
-  // |url_loader_factory_getter| should be able to get a valid new pointer after
-  // crash.
+  // |GetURLLoaderFactoryForBrowserProcessIOThread| should be able to get a
+  // valid new pointer after crash.
   factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
-      url_loader_factory_getter.get());
+      partition->GetURLLoaderFactoryForBrowserProcessIOThread());
   EXPECT_EQ(net::OK, factory_owner->LoadBasicRequestOnIOThread(GetTestURL()));
 }
 
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       browser_context()->GetDefaultStoragePartition());
 
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
-      partition->url_loader_factory_getter().get());
+      partition->GetURLLoaderFactoryForBrowserProcessIOThread());
 
   EXPECT_EQ(net::OK, factory_owner->LoadBasicRequestOnIOThread(GetTestURL()));
 
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   auto* partition = static_cast<StoragePartitionImpl*>(
       browser_context->GetDefaultStoragePartition());
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
-      partition->url_loader_factory_getter().get());
+      partition->GetURLLoaderFactoryForBrowserProcessIOThread());
 
   EXPECT_EQ(net::OK, factory_owner->LoadBasicRequestOnIOThread(GetTestURL()));
 

@@ -209,6 +209,12 @@ EmbeddedWorkerTestHelper::CreateMainScriptResponse() {
       response_head);
 }
 
+scoped_refptr<network::SharedURLLoaderFactory>
+EmbeddedWorkerTestHelper::GetNetworkFactory() {
+  return network::SharedURLLoaderFactory::Create(
+      url_loader_factory_getter_->GetPendingNetworkFactory());
+}
+
 void EmbeddedWorkerTestHelper::PopulateScriptCacheMap(
     int64_t version_id,
     base::OnceClosure callback) {
