@@ -370,6 +370,9 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
       << "We must have a valid context if copy requests were serviced";
   copy_output_images_.clear();
 
+  // |presenter_| is owned by |output_device_|, so release it first.
+  presenter_ = nullptr;
+
   // |scoped_output_device_paint_| needs |output_device_|, so release it first.
   scoped_output_device_paint_.reset();
 
@@ -1941,6 +1944,10 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
     context_state_->AddContextLostObserver(this);
   }
 
+  // We do not expect a GL surface and presenter to be set at the same time. We
+  // allow neither to be set in the offscreen case.
+  DCHECK(!(gl_surface_ != nullptr && presenter_ != nullptr));
+
   return true;
 }
 
@@ -1952,7 +1959,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-    presenter_ = dependency_->CreatePresenter();
+    scoped_refptr<gl::Presenter> presenter = dependency_->CreatePresenter();
+    presenter_ = presenter.get();
     if (!presenter_) {
       gl::GLSurfaceFormat format;
 #if BUILDFLAG(IS_ANDROID)
@@ -1980,7 +1988,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
 #if !BUILDFLAG(IS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
             std::make_unique<OutputPresenterGL>(
-                presenter_, dependency_, shared_image_factory_.get(),
+                std::move(presenter), dependency_, shared_image_factory_.get(),
                 shared_image_representation_factory_.get()),
             dependency_, shared_image_representation_factory_.get(),
             shared_gpu_deps_->memory_tracker(),
@@ -1990,7 +1998,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
             dependency_, shared_image_factory_.get(),
             shared_image_representation_factory_.get(), context_state_.get(),
-            presenter_, feature_info_, shared_gpu_deps_->memory_tracker(),
+            std::move(presenter), feature_info_,
+            shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback());
 #endif  // BUILDFLAG(IS_WIN)
       } else {
@@ -2058,10 +2067,11 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   output_presenter =
       OutputPresenterFuchsia::Create(window_surface_.get(), dependency_);
 #else
-  presenter_ = dependency_->CreatePresenter();
+  scoped_refptr<gl::Presenter> presenter = dependency_->CreatePresenter();
+  presenter_ = presenter.get();
   if (presenter_) {
     output_presenter = std::make_unique<OutputPresenterGL>(
-        presenter_, dependency_, shared_image_factory_.get(),
+        std::move(presenter), dependency_, shared_image_factory_.get(),
         shared_image_representation_factory_.get());
   }
 #endif
@@ -2140,13 +2150,14 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   NOTREACHED_NORETURN();
 
 #elif BUILDFLAG(IS_WIN)
-  presenter_ = dependency_->CreatePresenter();
+  scoped_refptr<gl::Presenter> presenter = dependency_->CreatePresenter();
+  presenter_ = presenter.get();
   if (presenter_) {
     AddChildWindowToBrowser(presenter_->GetWindow());
     output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
         dependency_, shared_image_factory_.get(),
         shared_image_representation_factory_.get(), context_state_.get(),
-        presenter_, feature_info_, shared_gpu_deps_->memory_tracker(),
+        std::move(presenter), feature_info_, shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
     auto output_device = SkiaOutputDeviceDawn::Create(
@@ -2165,7 +2176,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   return true;
 
 #elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  presenter_ = dependency_->CreatePresenter();
+  scoped_refptr<gl::Presenter> presenter = dependency_->CreatePresenter();
+  presenter_ = presenter.get();
 
 #if BUILDFLAG(IS_ANDROID)
   if (!presenter_) {
@@ -2185,7 +2197,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 
   output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
       std::make_unique<OutputPresenterGL>(
-          presenter_, dependency_, shared_image_factory_.get(),
+          std::move(presenter), dependency_, shared_image_factory_.get(),
           shared_image_representation_factory_.get()),
       dependency_, shared_image_representation_factory_.get(),
       shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback(),
@@ -2212,7 +2224,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-    presenter_ = dependency_->CreatePresenter();
+    scoped_refptr<gl::Presenter> presenter = dependency_->CreatePresenter();
+    presenter_ = presenter.get();
     CHECK(presenter_);
 
 #if BUILDFLAG(IS_MAC)
@@ -2220,7 +2233,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
 #endif  // BUILDFLAG(IS_MAC)
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(
-            presenter_, dependency_, shared_image_factory_.get(),
+            std::move(presenter), dependency_, shared_image_factory_.get(),
             shared_image_representation_factory_.get()),
         dependency_, shared_image_representation_factory_.get(),
         shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback(),

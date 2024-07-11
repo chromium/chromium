@@ -310,7 +310,9 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
       kRGBA_F16_SkColorType;
 }
 
-SkiaOutputDeviceDComp::~SkiaOutputDeviceDComp() = default;
+SkiaOutputDeviceDComp::~SkiaOutputDeviceDComp() {
+  DCHECK(presenter_->HasOneRef());
+}
 
 void SkiaOutputDeviceDComp::Present(const std::optional<gfx::Rect>& update_rect,
                                     BufferPresentedCallback feedback,

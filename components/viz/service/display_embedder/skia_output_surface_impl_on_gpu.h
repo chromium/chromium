@@ -535,11 +535,11 @@ class SkiaOutputSurfaceImplOnGpu
   std::unique_ptr<ui::PlatformWindowSurface> window_surface_;
 #endif
 
-  gpu::GpuPreferences gpu_preferences_;
+  const gpu::GpuPreferences gpu_preferences_;
   gfx::Size size_;
   // Only one of GLSurface of Presenter exists at the time.
   scoped_refptr<gl::GLSurface> gl_surface_;
-  scoped_refptr<gl::Presenter> presenter_;
+  raw_ptr<gl::Presenter> presenter_;
   scoped_refptr<gpu::SharedContextState> context_state_;
   size_t max_resource_cache_bytes_ = 0u;
 
