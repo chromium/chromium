@@ -2,7 +2,7 @@
 
 1. Blink's core rendering code hooks into a "detector" that implements the
    semantics of the metric.  Example:
-   [`PaintTimingDetector`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/paint_timing_detector.cc).
+   [`PaintTimingDetector`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/paint_timing_detector.cc).
    (This is more of a convention and not a specific shared interface.)
 
 2. The detector notifies the
@@ -12,7 +12,7 @@
    on this interface.
 
 3. The `LocalFrameClientImpl` notifies the
-   [`RenderFrame`](https://source.chromium.org/chromium/chromium/src/+/main:content/public/renderer/render_frame.h)
+   [`RenderFrameImpl`](https://source.chromium.org/chromium/chromium/src/+/main:content/renderer/render_frame_impl.h)
    that the metric's value has changed.
 
 4. The `RenderFrameImpl` notifies `PageLoadMetrics`'
@@ -24,14 +24,14 @@
    
    But for metrics that rely on `DidChangePerformanceTiming`,
    `MetricsRenderFrameObserver` has to go back to Blink to ask for the actual
-   data, by querying the [`WebPerformance`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/web/web_performance.h)
+   data, by querying the [`WebPerformanceMetricsForReporting`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/web/web_performance_metrics_for_reporting.h)
    object, which in turn queries the detector from step 1.
 
 6. `MetricsRenderFrameObserver` passes the new data into `PageLoadMetrics`'s
-   [`PageTimingMetricsSender`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/page_timing_metrics_sender.h.
+   [`PageTimingMetricsSender`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/page_timing_metrics_sender.h).
 
-7. `PageTimingMetricsSender` [buffers](http://go/plm-flushing) the data for up
-   to 1000 ms, then issues an IPC to the browser which is handled by
+7. `PageTimingMetricsSender` buffers the data for up
+   to 100 ms, then issues an IPC to the browser which is handled by
    [`MetricsWebContentsObserver`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/browser/metrics_web_contents_observer.h).
 
 8. `MetricsWebContentsObserver` passes the data to the
