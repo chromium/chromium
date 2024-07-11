@@ -621,12 +621,10 @@ void LayerTreeImpl::Draw(Layer& layer,
   // Compute new clip in layer space.
   gfx::RectF clip_in_layer;
   std::optional<base::AutoReset<viz::OffsetTag>> offset_tag_reset;
-  if (layer.offset_tag()) {
+  if (layer.offset_tag() &&
+      registered_offset_tags_.contains(layer.offset_tag())) {
     // A layer can't have a different offset tag than it's ancestor.
     CHECK(!data.offset_tag);
-    // The OffsetTag must be registered with a SurfaceLayer before tagging
-    // layers.
-    CHECK(registered_offset_tags_.contains(layer.offset_tag()));
 
     offset_tag_reset.emplace(&data.offset_tag, layer.offset_tag());
 
