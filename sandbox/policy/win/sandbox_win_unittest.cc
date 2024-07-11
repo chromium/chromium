@@ -101,16 +101,7 @@ class TestTargetConfig : public TargetConfig {
   ResultCode AddAppContainerProfile(
       const wchar_t* package_name,
       ACProfileRegistration registration) override {
-    switch (registration) {
-      case ACProfileRegistration::kDefault:
-        app_container_ = AppContainerBase::CreateProfile(
-            package_name, L"Sandbox", L"Sandbox");
-        break;
-      case ACProfileRegistration::kNoFirewall:
-        app_container_ =
-            AppContainerBase::CreateProfileNoFirewall(package_name, L"Sandbox");
-        break;
-    }
+    app_container_ = AppContainerBase::Open(package_name);
     if (!app_container_) {
       return SBOX_ERROR_CREATE_APPCONTAINER;
     }
@@ -131,20 +122,6 @@ class TestTargetConfig : public TargetConfig {
  private:
   std::vector<std::wstring> blocklisted_dlls_;
   std::unique_ptr<AppContainerBase> app_container_;
-};
-
-class TestTargetPolicy : public TargetPolicy {
- public:
-  ~TestTargetPolicy() override {}
-  // TargetPolicy:
-  TargetConfig* GetConfig() override { return &config_; }
-  ResultCode SetStdoutHandle(HANDLE handle) override { return SBOX_ALL_OK; }
-  ResultCode SetStderrHandle(HANDLE handle) override { return SBOX_ALL_OK; }
-  void AddHandleToShare(HANDLE handle) override {}
-  void AddDelegateData(base::span<const uint8_t> data) override {}
-
- private:
-  TestTargetConfig config_;
 };
 
 // Drops a temporary file granting RX access to a list of capabilities.
@@ -261,14 +238,13 @@ class SandboxWinTest : public ::testing::Test {
     appcontainer_id += ".";
     appcontainer_id +=
         testing::UnitTest::GetInstance()->current_test_info()->name();
-    TestTargetPolicy policy;
+    TestTargetConfig config;
     ResultCode result = SandboxWin::AddAppContainerProfileToConfig(
-        command_line, sandbox_type, appcontainer_id, policy.GetConfig());
+        command_line, sandbox_type, appcontainer_id, &config);
     if (result != SBOX_ALL_OK) {
       return base::unexpected(result);
     }
-    return static_cast<TestTargetConfig*>(policy.GetConfig())
-        ->TakeAppContainerBase();
+    return config.TakeAppContainerBase();
   }
 
   base::ScopedTempDir temp_dir_;
@@ -294,14 +270,7 @@ TEST_F(SandboxWinTest, IsGpuAppContainerEnabled) {
       command_line, sandbox::mojom::Sandbox::kNoSandbox));
 }
 
-// TODO(crbug/40223285): re-enable the tests once they are passing on
-// Windows ARM64.
-#ifdef ARCH_CPU_ARM64
-#define MAYBE_AppContainerAccessCheckFail DISABLED_AppContainerAccessCheckFail
-#else
-#define MAYBE_AppContainerAccessCheckFail AppContainerAccessCheckFail
-#endif
-TEST_F(SandboxWinTest, MAYBE_AppContainerAccessCheckFail) {
+TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     return;
   }
@@ -312,14 +281,7 @@ TEST_F(SandboxWinTest, MAYBE_AppContainerAccessCheckFail) {
   EXPECT_EQ(SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK, result.error());
 }
 
-// TODO(crbug/40223285): re-enable the tests once they are passing on
-// Windows ARM64.
-#ifdef ARCH_CPU_ARM64
-#define MAYBE_AppContainerCheckProfile DISABLED_AppContainerCheckProfile
-#else
-#define MAYBE_AppContainerCheckProfile AppContainerCheckProfile
-#endif
-TEST_F(SandboxWinTest, MAYBE_AppContainerCheckProfile) {
+TEST_F(SandboxWinTest, AppContainerCheckProfile) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     return;
   }
@@ -378,16 +340,7 @@ TEST_F(SandboxWinTest, MAYBE_AppContainerCheckProfile) {
   }
 }
 
-// TODO(crbug/40223285): re-enable the tests once they are passing on
-// Windows ARM64.
-#ifdef ARCH_CPU_ARM64
-#define MAYBE_AppContainerCheckProfileDisableLpac \
-  DISABLED_AppContainerCheckProfileDisableLpac
-#else
-#define MAYBE_AppContainerCheckProfileDisableLpac \
-  AppContainerCheckProfileDisableLpac
-#endif
-TEST_F(SandboxWinTest, MAYBE_AppContainerCheckProfileDisableLpac) {
+TEST_F(SandboxWinTest, AppContainerCheckProfileDisableLpac) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     return;
   }
@@ -401,16 +354,7 @@ TEST_F(SandboxWinTest, MAYBE_AppContainerCheckProfileDisableLpac) {
   EXPECT_FALSE(result.value()->GetEnableLowPrivilegeAppContainer());
 }
 
-// TODO(crbug/40223285): re-enable the tests once they are passing on
-// Windows ARM64.
-#ifdef ARCH_CPU_ARM64
-#define MAYBE_AppContainerCheckProfileAddCapabilities \
-  DISABLED_AppContainerCheckProfileAddCapabilities
-#else
-#define MAYBE_AppContainerCheckProfileAddCapabilities \
-  AppContainerCheckProfileAddCapabilities
-#endif
-TEST_F(SandboxWinTest, MAYBE_AppContainerCheckProfileAddCapabilities) {
+TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     return;
   }
@@ -431,20 +375,16 @@ TEST_F(SandboxWinTest, MAYBE_AppContainerCheckProfileAddCapabilities) {
 
 TEST_F(SandboxWinTest, BlocklistAddOneDllCheckInBrowser) {
   {  // Block loaded module.
-    TestTargetPolicy policy;
-    TestTargetConfig* config =
-        static_cast<TestTargetConfig*>(policy.GetConfig());
-    BlocklistAddOneDllForTesting(L"kernel32.dll", config);
-    EXPECT_EQ(config->blocklisted_dlls(),
+    TestTargetConfig config;
+    BlocklistAddOneDllForTesting(L"kernel32.dll", &config);
+    EXPECT_EQ(config.blocklisted_dlls(),
               std::vector<std::wstring>({L"kernel32.dll"}));
   }
 
   {  // Block module which is not loaded.
-    TestTargetPolicy policy;
-    TestTargetConfig* config =
-        static_cast<TestTargetConfig*>(policy.GetConfig());
-    BlocklistAddOneDllForTesting(L"notloaded.dll", config);
-    EXPECT_TRUE(config->blocklisted_dlls().empty());
+    TestTargetConfig config;
+    BlocklistAddOneDllForTesting(L"notloaded.dll", &config);
+    EXPECT_TRUE(config.blocklisted_dlls().empty());
   }
 
   {
@@ -466,11 +406,9 @@ TEST_F(SandboxWinTest, BlocklistAddOneDllCheckInBrowser) {
     base::ScopedNativeLibrary library(short_path);
     ASSERT_TRUE(library.is_valid());
 
-    TestTargetPolicy policy;
-    TestTargetConfig* config =
-        static_cast<TestTargetConfig*>(policy.GetConfig());
-    BlocklistAddOneDllForTesting(kFullDllName, config);
-    EXPECT_EQ(config->blocklisted_dlls(),
+    TestTargetConfig config;
+    BlocklistAddOneDllForTesting(kFullDllName, &config);
+    EXPECT_EQ(config.blocklisted_dlls(),
               std::vector<std::wstring>({short_name.value(), kFullDllName}));
   }
 }
