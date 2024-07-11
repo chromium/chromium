@@ -34,9 +34,8 @@ export class DirectoryTreePageObject {
    * the directory tree DOM element is ready.
    */
   static async create(appId: string): Promise<DirectoryTreePageObject> {
-    const useNewTree = true;
-    const directoryTree = new DirectoryTreePageObject(appId, useNewTree);
-    remoteCall.waitForElement(appId, directoryTree.rootSelector);
+    const directoryTree = new DirectoryTreePageObject(appId);
+    await remoteCall.waitForElement(appId, directoryTree.rootSelector);
     return directoryTree;
   }
 
@@ -47,12 +46,8 @@ export class DirectoryTreePageObject {
    * which will fetch the `useNewTree_` value and make sure the tree DOM element
    * is ready.
    */
-  constructor(private appId_: string, private useNewTree_: boolean) {
-    this.selectors_ = new DirectoryTreeSelectors(useNewTree_);
-  }
-
-  get isNewTree() {
-    return this.useNewTree_;
+  constructor(private appId_: string) {
+    this.selectors_ = new DirectoryTreeSelectors();
   }
 
   /**
@@ -118,14 +113,9 @@ export class DirectoryTreePageObject {
    * @param label Label of the tree item
    */
   async waitForFocusableItemByLabel(label: string): Promise<ElementObject> {
-    if (this.isNewTree) {
-      return remoteCall.waitForElement(
-          // Go inside shadow DOM to check tabindex.
-          this.appId_,
-          [this.selectors_.itemByLabel(label), 'li[tabindex="0"]']);
-    }
     return remoteCall.waitForElement(
-        this.appId_, this.selectors_.itemByLabel(label, {focused: true}));
+        // Go inside shadow DOM to check tabindex.
+        this.appId_, [this.selectors_.itemByLabel(label), 'li[tabindex="0"]']);
   }
 
   /**
@@ -216,8 +206,7 @@ export class DirectoryTreePageObject {
     if (!item) {
       chrome.test.fail('Item is not a valid tree item.');
     }
-    return this.useNewTree_ ? item.attributes['label']! :
-                              item.attributes['entry-label']!;
+    return item.attributes['label']!;
   }
 
   /** Gets the volume type of the tree item. */
@@ -394,7 +383,7 @@ export class DirectoryTreePageObject {
 
     const paths = breadcrumbsPath.split('/');
     // For "/My Drive", expand the "Google Drive" first.
-    if (this.useNewTree_ && paths[1] === 'My Drive') {
+    if (paths[1] === 'My Drive') {
       paths.unshift('', 'Google Drive');
     }
     const leaf = paths.pop()!;
@@ -1025,12 +1014,11 @@ export class DirectoryTreePageObject {
    */
   async blurItemByLabel(label: string): Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(label);
-    const iconSelector = this.useNewTree_ ?
-        [
-          itemSelector,
-          '.tree-item > .tree-row-wrapper > .tree-row > .tree-label-icon',
-        ] :
-        `${itemSelector} > .tree-row .item-icon`;
+    const iconSelector = [
+      itemSelector,
+      '.tree-item > .tree-row-wrapper > .tree-row > .tree-label-icon',
+    ];
+
     await remoteCall.callRemoteTestUtil(
         'fakeEvent', this.appId_, [iconSelector, 'blur']);
   }
@@ -1059,40 +1047,24 @@ export class DirectoryTreePageObject {
         [this.selectors_.attachModifier(itemSelector, {expanded: true})]);
     // If it's already expanded just set the focus on directory tree.
     if (elements.length > 0) {
-      if (!this.useNewTree_) {
-        return this.focusTree();
-      }
       return;
     }
 
-    let expandIcon;
-    let expandedSubtree;
-    if (this.useNewTree_) {
-      // Use array here because they are inside shadow DOM.
-      expandIcon = [
-        this.selectors_.attachModifier(itemSelector, {expanded: false}),
-        '.tree-item > .tree-row-wrapper > .tree-row > .expand-icon',
-      ];
-      expandedSubtree = [
-        this.selectors_.attachModifier(itemSelector, {expanded: true}),
-        '.tree-item[aria-expanded="true"]',
-      ];
-    } else {
-      expandIcon = `${this.selectors_.attachModifier(itemSelector, {
-        expanded: false,
-      })} > .tree-row:is([has-children=true], [may-have-children]) .expand-icon`;
-      expandedSubtree = this.selectors_.attachModifier(
-          `${itemSelector} > .tree-children`, {expanded: true});
-    }
+    // Use array here because they are inside shadow DOM.
+    const expandIcon = [
+      this.selectors_.attachModifier(itemSelector, {expanded: false}),
+      '.tree-item > .tree-row-wrapper > .tree-row > .expand-icon',
+    ];
+    const expandedSubtree = [
+      this.selectors_.attachModifier(itemSelector, {expanded: true}),
+      '.tree-item[aria-expanded="true"]',
+    ];
+
 
     await remoteCall.waitAndClickElement(this.appId_, expandIcon);
     if (!allowEmpty) {
       // Wait for the expansion to finish.
       await remoteCall.waitForElement(this.appId_, expandedSubtree);
-    }
-    if (!this.useNewTree_) {
-      // Force the focus on directory tree.
-      await this.focusTree();
     }
   }
 
@@ -1108,33 +1080,19 @@ export class DirectoryTreePageObject {
         [this.selectors_.attachModifier(itemSelector, {expanded: false})]);
     // If it's already collapsed just set the focus on directory tree.
     if (elements.length > 0) {
-      if (!this.useNewTree_) {
-        return this.focusTree();
-      }
       return;
     }
 
-    let expandIcon;
-    if (this.useNewTree_) {
-      // Use array here because they are inside shadow DOM.
-      expandIcon = [
-        this.selectors_.attachModifier(itemSelector, {expanded: true}),
-        '.tree-item > .tree-row-wrapper > .tree-row > .expand-icon',
-      ];
-    } else {
-      expandIcon = `${this.selectors_.attachModifier(itemSelector, {
-        expanded: true,
-      })} > .tree-row:is([has-children=true], [may-have-children]) .expand-icon`;
-    }
+    // Use array here because they are inside shadow DOM.
+    const expandIcon = [
+      this.selectors_.attachModifier(itemSelector, {expanded: true}),
+      '.tree-item > .tree-row-wrapper > .tree-row > .expand-icon',
+    ];
 
     await remoteCall.waitAndClickElement(this.appId_, expandIcon);
     await remoteCall.waitForElement(
         this.appId_,
         this.selectors_.attachModifier(itemSelector, {expanded: false}));
-    if (!this.useNewTree_) {
-      // Force the focus on directory tree.
-      await this.focusTree();
-    }
   }
 }
 
@@ -1143,8 +1101,6 @@ export class DirectoryTreePageObject {
  * selector string.
  */
 class DirectoryTreeSelectors {
-  constructor(public useNewTree: boolean) {}
-
   /** The root selector of the directory tree. */
   get root(): string {
     return '#directory-tree';
@@ -1157,7 +1113,7 @@ class DirectoryTreeSelectors {
 
   /** The tree item selector. */
   get item(): string {
-    return this.useNewTree ? 'xf-tree-item' : '.tree-item';
+    return 'xf-tree-item';
   }
 
   /** Get tree item by the label of the item. */
@@ -1194,9 +1150,7 @@ class DirectoryTreeSelectors {
 
   /** Get all the direct child items of the specific item. */
   childItems(parentSelector: string): string {
-    return this.useNewTree ?
-        `${parentSelector} > ${this.item}` :
-        `${parentSelector} > .tree-children > ${this.item}`;
+    return `${parentSelector} > ${this.item}`;
   }
 
   /**
@@ -1206,9 +1160,7 @@ class DirectoryTreeSelectors {
    * @param childSelector The child item selector.
    */
   childItem(parentSelector: string, childSelector: string): string {
-    return this.useNewTree ?
-        `${parentSelector} ${childSelector}` :
-        `${parentSelector} .tree-children ${childSelector}`;
+    return `${parentSelector} ${childSelector}`;
   }
 
   /**
@@ -1219,12 +1171,8 @@ class DirectoryTreeSelectors {
     // For new tree implementation, `hasChildren` will only be true when there's
     // actual tree item rendered inside, hence the use of `mayHaveChildren`
     // here instead of `hasChildren`.
-    return this.useNewTree ?
-        this.attachModifier(
-            `${itemSelector} > ${this.item}`, {mayHaveChildren: true}) :
-        this.attachModifier(
-            `${itemSelector} > .tree-children > ${this.item} > .tree-row`,
-            {hasChildren: true});
+    return this.attachModifier(
+        `${itemSelector} > ${this.item}`, {mayHaveChildren: true});
   }
 
   /** Get the eject button of the specific tree item. */
@@ -1235,14 +1183,12 @@ class DirectoryTreeSelectors {
   /** Get the expand icon of the specific tree item. */
   expandIcon(itemSelector: string): string|string[] {
     // Use array here because they are inside shadow DOM.
-    return this.useNewTree ? [itemSelector, '.expand-icon'] :
-                             `${itemSelector} > .tree-row .expand-icon`;
+    return [itemSelector, '.expand-icon'];
   }
 
   /** Get the rename input of the specific tree item. */
   renameInput(itemSelector: string): string {
-    return this.useNewTree ? `${itemSelector} > input` :
-                             `${itemSelector} > .tree-row input`;
+    return `${itemSelector} > input`;
   }
 
   /**
@@ -1251,24 +1197,19 @@ class DirectoryTreeSelectors {
    * @param isPlaceholder Is the tree item a placeholder or not.
    */
   itemItselfByType(type: string, isPlaceholder: boolean): string {
-    if (this.useNewTree) {
-      // volume type for "My files" is "downloads", but in the code when we
-      // query item by "downloads" type, what we want is the actual Downloads
-      // folder, hence the special handling here.
-      if (type === 'downloads') {
-        return `${this.item}[data-navigation-key^="${
-            REAL_ENTRY_PATH_PREFIX}"][icon="downloads"]`;
-      }
-
-      return isPlaceholder ?
-          `${this.item}[data-navigation-key^="${
-              FAKE_ENTRY_PATH_PREFIX}"][icon="${type}"]` :
-          `${this.item}[data-navigation-key^="${
-              REAL_ENTRY_PATH_PREFIX}"][volume-type-for-testing="${type}"]`;
+    // volume type for "My files" is "downloads", but in the code when we
+    // query item by "downloads" type, what we want is the actual Downloads
+    // folder, hence the special handling here.
+    if (type === 'downloads') {
+      return `${this.item}[data-navigation-key^="${
+          REAL_ENTRY_PATH_PREFIX}"][icon="downloads"]`;
     }
+
     return isPlaceholder ?
-        `${this.item}:has(> .tree-row [root-type-icon="${type}"])` :
-        `${this.item}:has(> .tree-row [volume-type-icon="${type}"])`;
+        `${this.item}[data-navigation-key^="${FAKE_ENTRY_PATH_PREFIX}"][icon="${
+            type}"]` :
+        `${this.item}[data-navigation-key^="${
+            REAL_ENTRY_PATH_PREFIX}"][volume-type-for-testing="${type}"]`;
   }
 
   /**
@@ -1282,13 +1223,11 @@ class DirectoryTreeSelectors {
       'drive': 'service_drive',
       'removable': 'usb',
     };
-    if (this.useNewTree && type in iconNameMap) {
+    if (type in iconNameMap) {
       type = iconNameMap[type]!;
     }
-    return this.useNewTree ?
-        `${this.item}[data-navigation-key^="${ENTRY_LIST_PATH_PREFIX}"][icon="${
-            type}"]` :
-        `${this.item}:has(> .tree-row [root-type-icon="${type}"])`;
+    return `${this.item}[data-navigation-key^="${
+        ENTRY_LIST_PATH_PREFIX}"][icon="${type}"]`;
   }
 
   /**
@@ -1297,8 +1236,7 @@ class DirectoryTreeSelectors {
    * @param label The label of the tree item.
    */
   itemItselfByLabel(label: string): string {
-    return this.useNewTree ? `${this.item}[label="${label}"]` :
-                             `${this.item}[entry-label="${label}"]`;
+    return `${this.item}[label="${label}"]`;
   }
 
   /**
@@ -1328,14 +1266,13 @@ class DirectoryTreeSelectors {
 
   /** Append the modifier selector to the item selector. */
   attachModifier(itemSelector: string, modifiers: ModifierOptions = {}) {
-    const appendedSelectors = [];
+    const appendedSelectors: string[] = [];
     if (typeof modifiers.expanded !== 'undefined') {
       appendedSelectors.push(
           modifiers.expanded ? '[expanded]' : ':not([expanded])');
     }
     if (modifiers.selected) {
-      appendedSelectors.push(
-          this.useNewTree ? '[selected]' : ':has(.tree-row[active])');
+      appendedSelectors.push('[selected]');
     }
     if (modifiers.renaming) {
       appendedSelectors.push('[renaming]');
@@ -1354,12 +1291,11 @@ class DirectoryTreeSelectors {
       appendedSelectors.push('[aria-description="Current directory"]');
     }
     if (modifiers.shortcut) {
-      appendedSelectors.push(
-          this.useNewTree ? '[icon="shortcut"]' : '[dir-type="ShortcutItem"]');
+      appendedSelectors.push('[icon="shortcut"]');
     }
     // ":focus" is a pseudo-class selector, should be put at the end.
     if (modifiers.focused) {
-      appendedSelectors.push(this.useNewTree ? ':focus' : '[selected]');
+      appendedSelectors.push(':focus');
     }
     return `${itemSelector}${appendedSelectors.join('')}`;
   }
