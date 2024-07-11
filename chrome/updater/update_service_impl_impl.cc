@@ -279,8 +279,11 @@ std::wstring GetTextForServiceError(int error) {
   switch (error) {
     SERVICE_SWITCH_ENTRY(update_client::ServiceError::SERVICE_WAIT_FAILED);
     SERVICE_SWITCH_ENTRY(update_client::ServiceError::UPDATE_DISABLED);
-    SERVICE_SWITCH_ENTRY(update_client::ServiceError::CANCELLED);
     SERVICE_SWITCH_ENTRY(update_client::ServiceError::CHECK_FOR_UPDATE_ONLY);
+
+    case static_cast<int>(update_client::ServiceError::CANCELLED):
+      return GetLocalizedString(IDS_SERVICE_ERROR_CANCELLED_BASE);
+
     default:
       return GetLocalizedStringF(IDS_GENERIC_SERVICE_ERROR_BASE,
                                  GetTextForSystemError(error));

@@ -254,8 +254,7 @@ INSTANTIATE_TEST_SUITE_P(
         {UpdateService::ErrorCategory::kService,
          static_cast<int>(update_client::ServiceError::CANCELLED),
          base::WideToUTF8(
-             GetLocalizedStringF(IDS_GENERIC_SERVICE_ERROR_BASE,
-                                 L"update_client::ServiceError::CANCELLED"))},
+             GetLocalizedString(IDS_SERVICE_ERROR_CANCELLED_BASE))},
         {UpdateService::ErrorCategory::kService,
          static_cast<int>(update_client::ServiceError::CHECK_FOR_UPDATE_ONLY),
          base::WideToUTF8(GetLocalizedStringF(
