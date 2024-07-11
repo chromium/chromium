@@ -42,7 +42,7 @@ namespace tabs {
 class TabModel;
 }
 class Browser;
-class KeyEventTracker;
+class EventTracker;
 class Tab;
 class TabDragControllerTest;
 class TabDragContext;
@@ -762,7 +762,7 @@ class TabDragController : public views::WidgetObserver,
   // Called when the loop in RunMoveLoop finishes. Only for tests.
   base::OnceClosure drag_loop_done_callback_;
 
-  std::unique_ptr<KeyEventTracker> key_event_tracker_;
+  std::unique_ptr<EventTracker> event_tracker_;
 
   std::unique_ptr<SourceTabStripEmptinessTracker>
       source_context_emptiness_tracker_;

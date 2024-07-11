@@ -230,31 +230,38 @@ void UpdateSystemDnDDragImage(TabDragContext* attached_context,
 
 }  // namespace
 
-// KeyEventTracker installs an event monitor and runs a callback to end the drag
-// when it receives any key event.
-class KeyEventTracker : public ui::EventObserver {
+// EventTracker installs an event monitor and ends the drag when it receives any
+// key event, or a mouse release event during a system DnD session.
+class EventTracker : public ui::EventObserver {
  public:
-  KeyEventTracker(base::OnceClosure end_drag_callback,
-                  base::OnceClosure revert_drag_callback,
-                  gfx::NativeWindow context)
+  EventTracker(base::OnceClosure end_drag_callback,
+               base::OnceClosure revert_drag_callback,
+               gfx::NativeWindow context)
       : end_drag_callback_(std::move(end_drag_callback)),
         revert_drag_callback_(std::move(revert_drag_callback)) {
     event_monitor_ = views::EventMonitor::CreateApplicationMonitor(
-        this, context, {ui::ET_KEY_PRESSED});
+        this, context, {ui::ET_KEY_PRESSED, ui::ET_MOUSE_RELEASED});
   }
-  KeyEventTracker(const KeyEventTracker&) = delete;
-  KeyEventTracker& operator=(const KeyEventTracker&) = delete;
-  ~KeyEventTracker() override = default;
+  EventTracker(const EventTracker&) = delete;
+  EventTracker& operator=(const EventTracker&) = delete;
+  ~EventTracker() override = default;
 
  private:
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override {
-    if (event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE &&
-        revert_drag_callback_) {
-      std::move(revert_drag_callback_).Run();
-    } else if (event.AsKeyEvent()->key_code() != ui::VKEY_ESCAPE &&
-               end_drag_callback_) {
-      std::move(end_drag_callback_).Run();
+    if (event.IsKeyEvent()) {
+      if (event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE &&
+          revert_drag_callback_) {
+        std::move(revert_drag_callback_).Run();
+      } else if (event.AsKeyEvent()->key_code() != ui::VKEY_ESCAPE &&
+                 end_drag_callback_) {
+        std::move(end_drag_callback_).Run();
+      }
+    } else {
+      CHECK(event.type() == ui::ET_MOUSE_RELEASED);
+      if (TabDragController::IsSystemDragAndDropSessionRunning()) {
+        TabDragController::OnSystemDragAndDropEnded();
+      }
     }
   }
 
@@ -467,8 +474,8 @@ TabDragController::Liveness TabDragController::Init(
   ref->source_view_index_ =
       base::ranges::find(dragging_views, source_view) - dragging_views.begin();
 
-  // Listen for Esc key presses.
-  ref->key_event_tracker_ = std::make_unique<KeyEventTracker>(
+  // Listen for Esc key presses and mouse releases.
+  ref->event_tracker_ = std::make_unique<EventTracker>(
       base::BindOnce(&TabDragController::EndDrag, base::Unretained(this),
                      END_DRAG_COMPLETE),
       base::BindOnce(&TabDragController::EndDrag, base::Unretained(this),
@@ -584,6 +591,11 @@ void TabDragController::OnSystemDragAndDropExited() {
 void TabDragController::OnSystemDragAndDropEnded() {
   CHECK(IsSystemDragAndDropSessionRunning());
   VLOG(1) << __func__;
+  // Set this to prevent us from cancelling the drag again. The platform might
+  // not have finished processing the drag end, and requesting to cancel the
+  // drag might put us in an infinite loop of being notified about the drag end,
+  // requesting to cancel the drag, being notified again, and so on.
+  g_tab_drag_controller->system_drag_and_drop_session_running_ = false;
   g_tab_drag_controller->EndDrag(END_DRAG_COMPLETE);
 }
 
@@ -747,6 +759,10 @@ void TabDragController::EndDrag(EndDragReason reason) {
   TRACE_EVENT0("views", "TabDragController::EndDrag");
   presentation_time_recorder_.reset();
 
+  if (!active()) {
+    return;
+  }
+
   if (tab_strip_scroll_session_)
     tab_strip_scroll_session_->Stop();
 
@@ -781,27 +797,6 @@ void TabDragController::EndDrag(EndDragReason reason) {
     VLOG(1) << "EndMoveLoop in EndDrag";
     GetAttachedBrowserWidget()->EndMoveLoop();
   }
-
-// `views::CancelShellDrag()` is only available on Aura, and on all non-Aura
-// platforms `IsMoveLoopSupported()` returns true anyways.
-#if defined(USE_AURA)
-  // Make sure the drag session ends.
-  if (current_state_ == DragState::kDraggingUsingSystemDragAndDrop) {
-    auto ref = weak_factory_.GetWeakPtr();
-    // We need to pass `allow_widget_mismatch=true` here, because without it
-    // we're not allowed to cancel drags initiated by a different widget; but
-    // the initiating widget (the one belonging to `source_context_`) might have
-    // been destroyed during the drag (for example when dragging all tabs of a
-    // window into another window).
-    gfx::NativeView view = GetAttachedBrowserWidget()->GetNativeView();
-    views::CancelShellDrag(view, /*allow_widget_mismatch=*/true);
-    // If the drag session hadn't ended before, cancelling it will result in
-    // another `EndDrag()` call that ends up deleting us.
-    if (!ref) {
-      return;
-    }
-  }
-#endif  // defined(USE_AURA)
 
   EndDragImpl(reason != END_DRAG_COMPLETE && source_context_ ? CANCELED
                                                              : NORMAL);
@@ -1898,6 +1893,21 @@ void TabDragController::EndDragImpl(EndDragType type) {
         RevertDrag();
       } else {
         if (previous_state == DragState::kDraggingUsingSystemDragAndDrop) {
+// `views::CancelShellDrag()` is only available on Aura, and on all non-Aura
+// platforms `IsMoveLoopSupported()` returns true anyways.
+#if defined(USE_AURA)
+          // Make sure the drag session ends.
+          if (system_drag_and_drop_session_running_) {
+            // We need to pass `allow_widget_mismatch=true` here, because
+            // without it we're not allowed to cancel drags initiated by a
+            // different widget; but the initiating widget (the one belonging to
+            // `source_context_`) might have been destroyed during the drag (for
+            // example when dragging all tabs of a window into another window).
+            gfx::NativeView view = GetAttachedBrowserWidget()->GetNativeView();
+            views::CancelShellDrag(view, /*allow_widget_mismatch=*/true);
+          }
+#endif  // defined(USE_AURA)
+
           // Make the hidden window containing the dragged tabs visible.
           GetAttachedBrowserWidget()->Show();
         }
