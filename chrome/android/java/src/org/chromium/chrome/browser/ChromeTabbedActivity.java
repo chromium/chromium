@@ -1015,7 +1015,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (!CommandLine.getInstance()
                     .hasSwitch(ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
                 IncognitoTabbedSnapshotController.createIncognitoTabSnapshotController(
-                        getWindow(), mLayoutManager, mTabModelSelector, getLifecycleDispatcher());
+                        this, mLayoutManager, mTabModelSelector, getLifecycleDispatcher());
             }
 
             mUIWithNativeInitialized = true;

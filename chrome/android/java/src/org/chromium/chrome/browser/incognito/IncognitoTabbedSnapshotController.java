@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import android.view.Window;
+import android.app.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -33,8 +33,7 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
     /**
      * Creates and registers a new {@link IncognitoTabbedSnapshotController}.
      *
-     * @param window The {@link Window} containing the flags to which the secure flag will be added
-     *     and cleared.
+     * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
      * @param layoutManager The {@link LayoutManagerChrome} where this controller will be added.
      * @param tabModelSelector The {@link TabModelSelector} from where tab information will be
      *     fetched.
@@ -42,7 +41,7 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
      *     to register as {@link DestroyObserver}.
      */
     public static void createIncognitoTabSnapshotController(
-            @NonNull Window window,
+            @NonNull Activity activity,
             @NonNull LayoutManagerChrome layoutManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
@@ -52,7 +51,7 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
                 getIsShowingIncognitoSupplier(tabModelSelector, isOverviewModeSupplier);
 
         new IncognitoTabbedSnapshotController(
-                window,
+                activity,
                 layoutManager,
                 tabModelSelector,
                 activityLifecycleDispatcher,
@@ -78,8 +77,7 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
     }
 
     /**
-     * @param window The {@link Window} containing the flags to which the secure flag will be added
-     *     and cleared.
+     * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
      * @param layoutManager The {@link LayoutManagerChrome} where this controller will be added.
      * @param tabModelSelector The {@link TabModelSelector} from where tab information will be
      *     fetched.
@@ -90,12 +88,12 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
      */
     @VisibleForTesting
     IncognitoTabbedSnapshotController(
-            @NonNull Window window,
+            @NonNull Activity activity,
             @NonNull LayoutManagerChrome layoutManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Boolean> isShowingIncognitoSupplier) {
-        super(window, isShowingIncognitoSupplier);
+        super(activity, isShowingIncognitoSupplier);
 
         mLayoutManager = layoutManager;
         mTabModelSelector = tabModelSelector;
