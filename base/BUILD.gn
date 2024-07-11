@@ -2997,6 +2997,7 @@ if (is_apple) {
   bundle_data("base_unittests_bundle_data") {
     testonly = true
     sources = [
+      "//tools/metrics/actions/actions.xml",
       "//tools/metrics/histograms/enums.xml",
       "//tools/metrics/histograms/test_data/histograms.xml",
       "test/data/file_util/binary_file.bin",
@@ -3461,6 +3462,7 @@ test("base_unittests") {
     "test/launcher/test_results_tracker_unittest.cc",
     "test/memory/dangling_ptr_instrumentation.cc",
     "test/memory/dangling_ptr_instrumentation.h",
+    "test/metrics/action_suffix_reader_unittest.cc",
     "test/metrics/histogram_enum_reader_unittest.cc",
     "test/metrics/histogram_tester_unittest.cc",
     "test/metrics/histogram_variants_reader_unittest.cc",
@@ -3625,6 +3627,7 @@ test("base_unittests") {
 
   data = [
     "test/data/",
+    "//tools/metrics/actions/actions.xml",
     "//tools/metrics/histograms/enums.xml",
     "//tools/metrics/histograms/test_data/histograms.xml",
   ]

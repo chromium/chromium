@@ -79,6 +79,8 @@ static_library("test_support") {
     "launcher/test_result.h",
     "launcher/test_results_tracker.h",
     "launcher/unit_test_launcher.h",
+    "metrics/action_suffix_reader.cc",
+    "metrics/action_suffix_reader.h",
     "metrics/histogram_enum_reader.cc",
     "metrics/histogram_enum_reader.h",
     "metrics/histogram_tester.cc",
