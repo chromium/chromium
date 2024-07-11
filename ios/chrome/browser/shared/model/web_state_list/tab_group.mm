@@ -63,13 +63,13 @@ UIColor* TabGroup::ColorForTabGroupColorId(
     case tab_groups::TabGroupColorId::kGreen:
       return [UIColor colorNamed:kGreen600Color];
     case tab_groups::TabGroupColorId::kPink:
-      return [UIColor colorNamed:kPink600Color];
+      return [UIColor colorNamed:kTabGroupPinkColor];
     case tab_groups::TabGroupColorId::kPurple:
       return [UIColor colorNamed:kPurple600Color];
     case tab_groups::TabGroupColorId::kCyan:
-      return [UIColor colorNamed:kCyan600Color];
+      return [UIColor colorNamed:kTabGroupCyanColor];
     case tab_groups::TabGroupColorId::kOrange:
-      return [UIColor colorNamed:kOrange600Color];
+      return [UIColor colorNamed:kTabGroupOrangeColor];
     case tab_groups::TabGroupColorId::kNumEntries:
       NOTREACHED_NORETURN() << "kNumEntries is not a supported color enum.";
   }

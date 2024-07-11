@@ -49,6 +49,9 @@ NSString* const kTabGroupFaviconBackgroundColor =
 NSString* const kOmniboxPopoutOverlayColor = @"omnibox_popout_overlay_color";
 NSString* const kTabStripBackgroundColor = @"tab_strip_background_color";
 NSString* const kTabStripNewTabButtonColor = @"tab_strip_new_tab_button_color";
+NSString* const kTabGroupPinkColor = @"tab_group_pink_color";
+NSString* const kTabGroupOrangeColor = @"tab_group_orange_color";
+NSString* const kTabGroupCyanColor = @"tab_group_cyan_color";
 
 #pragma mark - Standard Colors
 NSString* const kSolidBlackColor = @"solid_black_color";
