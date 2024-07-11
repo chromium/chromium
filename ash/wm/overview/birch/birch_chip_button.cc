@@ -118,6 +118,8 @@ BirchSuggestionType GetSuggestionTypeFromItemType(BirchItemType item_type) {
     case BirchItemType::kMostVisited:
     case BirchItemType::kSelfShare:
       return BirchSuggestionType::kChromeTab;
+    case BirchItemType::kLostMedia:
+      return BirchSuggestionType::kMedia;
     case BirchItemType::kReleaseNotes:
       return BirchSuggestionType::kExplore;
     default:
@@ -297,6 +299,10 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       birch_bar_controller->SetShowSuggestionType(
           BirchSuggestionType::kChromeTab,
           /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideMediaSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kMedia,
+                                                  /*show=*/false);
       break;
     case base::to_underlying(CommandId::kFeedback):
       Shell::Get()->shell_delegate()->OpenFeedbackDialog(

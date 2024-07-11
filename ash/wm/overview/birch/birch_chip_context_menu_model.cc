@@ -48,6 +48,12 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
                       u"Hide all Chrome suggestions",
                       CreateIconForMenuItem(kForbidIcon));
       break;
+    case BirchSuggestionType::kMedia:
+      add_hide_suggestion_item();
+      AddItemWithIcon(base::to_underlying(CommandId::kHideMediaSuggestions),
+                      u"Hide all media suggestions",
+                      CreateIconForMenuItem(kForbidIcon));
+      break;
     default:
       break;
   }

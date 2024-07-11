@@ -9,6 +9,7 @@
 #include "ash/style/checkbox.h"
 #include "ash/style/switch.h"
 #include "ash/style/typography.h"
+#include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "base/notreached.h"
@@ -65,6 +66,8 @@ BirchSuggestionType CommandIdToSuggestionType(int command_id) {
       return BirchSuggestionType::kDrive;
     case base::to_underlying(CommandId::kChromeTabSuggestions):
       return BirchSuggestionType::kChromeTab;
+    case base::to_underlying(CommandId::kMediaSuggestions):
+      return BirchSuggestionType::kMedia;
     default:
       break;
   }
@@ -145,7 +148,8 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
     case base::to_underlying(CommandId::kWeatherSuggestions):
     case base::to_underlying(CommandId::kCalendarSuggestions):
     case base::to_underlying(CommandId::kDriveSuggestions):
-    case base::to_underlying(CommandId::kChromeTabSuggestions): {
+    case base::to_underlying(CommandId::kChromeTabSuggestions):
+    case base::to_underlying(CommandId::kMediaSuggestions): {
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
       // Note that we cannot directly added a checkbox, since `MenuItemView`
       // will align the newly added children to the right side of its label. We

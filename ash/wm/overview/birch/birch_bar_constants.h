@@ -13,6 +13,7 @@ enum class BirchSuggestionType {
   kCalendar,
   kDrive,
   kChromeTab,
+  kMedia,
   kExplore,
   kUndefined,
 };

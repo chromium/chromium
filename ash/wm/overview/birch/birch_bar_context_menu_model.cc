@@ -53,6 +53,7 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
     AddItem(base::to_underlying(CommandId::kDriveSuggestions), u"Google Drive");
     AddItem(base::to_underlying(CommandId::kChromeTabSuggestions),
             u"Chrome browser");
+    AddItem(base::to_underlying(CommandId::kMediaSuggestions), u"Media");
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
     AddItemWithIcon(base::to_underlying(CommandId::kReset), u"Reset",
                     CreateIconForMenuItem(kResetIcon));

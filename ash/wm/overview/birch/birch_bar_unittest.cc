@@ -344,7 +344,8 @@ class BirchBarTestBase : public AshTestBase {
     for (const auto& pref_name :
          {prefs::kBirchShowSuggestions, prefs::kBirchUseCalendar,
           prefs::kBirchUseWeather, prefs::kBirchUseFileSuggest,
-          prefs::kBirchUseChromeTabs, prefs::kBirchUseReleaseNotes}) {
+          prefs::kBirchUseChromeTabs, prefs::kBirchUseLostMedia,
+          prefs::kBirchUseReleaseNotes}) {
       GetPrefService()->SetBoolean(pref_name, true);
     }
 
@@ -466,6 +467,18 @@ class BirchBarTestBase : public AshTestBase {
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetSelfShareItems(item_list);
+  }
+
+  // Adds `num` lost media items to data source.
+  void SetLostMediaItems(size_t num) {
+    std::vector<BirchLostMediaItem> item_list;
+    for (size_t i = 0; i < num; i++) {
+      item_list.emplace_back(GURL("https://www.source.com/"), u"media title",
+                             /*is_video_conference_tab=*/false,
+                             /*activation_callback=*/base::DoNothing());
+      item_list.back().set_ranking(1.0f);
+    }
+    birch_client_->SetLostMediaItems(item_list);
   }
 
   // Adds a number of `num` release notes birch items to data source.
@@ -916,6 +929,7 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestionsExtended) {
   SetLastActiveItems(/*num=*/1);
   SetMostVisitedItems(/*num=*/1);
   SetSelfShareItems(/*num=*/1);
+  SetLostMediaItems(/*num=*/1);
 
   // Set show suggestions initially.
   GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
@@ -930,7 +944,7 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestionsExtended) {
   // At the beginning, all types should be shown on the bar.
   EXPECT_TRUE(HasSuggestionTypes(
       {BirchItemType::kLastActive, BirchItemType::kMostVisited,
-       BirchItemType::kSelfShare},
+       BirchItemType::kSelfShare, BirchItemType::kLostMedia},
       bar_chips));
 
   auto* root_window_controller = RootWindowController::ForWindow(root_window);
@@ -952,14 +966,34 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestionsExtended) {
   // Deselect tab suggestions.
   LeftClickOn(tab_item);
 
-  // There is no suggestions showing on the bar.
+  // Only media is on the bar.
+  EXPECT_TRUE(HasSuggestionTypes({BirchItemType::kLostMedia}, bar_chips));
+  EXPECT_FALSE(HasSuggestionTypes(
+      {BirchItemType::kLastActive, BirchItemType::kMostVisited,
+       BirchItemType::kSelfShare},
+      bar_chips));
+
+  // Find the media suggestions menu item.
+  auto* media_item = sub_menu->GetMenuItemAt(5);
+  EXPECT_EQ(media_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kMediaSuggestions));
+
+  // Deselect media suggestions.
+  LeftClickOn(media_item);
+
+  // There are no suggestions showing on the bar.
   EXPECT_TRUE(bar_chips.empty());
+
+  // Re-select media suggestions.
+  LeftClickOn(media_item);
+  EXPECT_TRUE(HasSuggestionTypes({BirchItemType::kLostMedia}, bar_chips));
 
   // Re-select tab suggestions.
   LeftClickOn(tab_item);
   EXPECT_TRUE(HasSuggestionTypes(
       {BirchItemType::kLastActive, BirchItemType::kMostVisited,
-       BirchItemType::kSelfShare},
+       BirchItemType::kSelfShare, BirchItemType::kLostMedia},
       bar_chips));
 }
 
@@ -1017,7 +1051,7 @@ TEST_P(BirchBarMenuTest, ResetSuggestions) {
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* reset_item = sub_menu->GetMenuItemAt(5);
+  auto* reset_item = sub_menu->GetMenuItemAt(6);
   EXPECT_EQ(reset_item->GetCommand(),
             base::to_underlying(BirchBarContextMenuModel::CommandId::kReset));
 
@@ -1040,6 +1074,7 @@ TEST_P(BirchBarMenuTest, ResetSuggestions) {
 TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
   SetLastActiveItems(/*num=*/1);
   SetMostVisitedItems(/*num=*/1);
+  SetLostMediaItems(/*num=*/1);
 
   // Enter Overview and check a bar view is created.
   EnterOverview();
@@ -1048,9 +1083,10 @@ TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
   auto grid_test_api = OverviewGridTestApi(root_window);
   const auto& bar_chips = grid_test_api.GetBirchChips();
 
-  // Disable the Chrome Tabs suggestions such that nothing is shown.
+  // Disable the Chrome Tabs and media suggestions such that nothing is shown.
   auto* pref_service = GetPrefService();
   pref_service->SetBoolean(prefs::kBirchUseChromeTabs, false);
+  pref_service->SetBoolean(prefs::kBirchUseLostMedia, false);
 
   EXPECT_EQ(0u, bar_chips.size());
 
@@ -1066,7 +1102,7 @@ TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* reset_item = sub_menu->GetMenuItemAt(5);
+  auto* reset_item = sub_menu->GetMenuItemAt(6);
   EXPECT_EQ(reset_item->GetCommand(),
             base::to_underlying(BirchBarContextMenuModel::CommandId::kReset));
 
@@ -1074,10 +1110,13 @@ TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
   // of suggestion chips should be shown on the bar.
   LeftClickOn(reset_item);
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseChromeTabs));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseLostMedia));
 
-  EXPECT_EQ(2u, bar_chips.size());
+  EXPECT_EQ(3u, bar_chips.size());
   EXPECT_TRUE(HasSuggestionTypes(
-      {BirchItemType::kLastActive, BirchItemType::kMostVisited}, bar_chips));
+      {BirchItemType::kLastActive, BirchItemType::kMostVisited,
+       BirchItemType::kLostMedia},
+      bar_chips));
 }
 
 TEST_P(BirchBarMenuTest, ToggleFahrenheitCelsiusPref) {
@@ -1221,11 +1260,12 @@ TEST_P(BirchBarMenuTest, NoCrashCustomizeSuggestionsByChipSubmenu) {
 
 // Tests hiding certain types of suggestions from context menu.
 TEST_P(BirchBarMenuTest, HideSuggestionTypes) {
-  // Create 4 types of suggestions, one for each customizable suggestion type.
+  // Create suggestions, at least one for each customizable suggestion type.
   SetWeatherItems(/*num=*/1);
   SetCalendarItems(/*num=*/2);
   SetFileItems(/*num=*/2);
   SetTabItems(/*num=*/2);
+  SetLostMediaItems(/*num=*/2);
 
   // Set show suggestions initially.
   GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
@@ -1287,6 +1327,11 @@ TEST_P(BirchBarMenuTest, HideSuggestionTypes) {
         hide_suggestions_item_id = base::to_underlying(
             BirchChipContextMenuModel::CommandId::kHideChromeTabSuggestions);
         pref_name = prefs::kBirchUseChromeTabs;
+        break;
+      case BirchItemType::kLostMedia:
+        hide_suggestions_item_id = base::to_underlying(
+            BirchChipContextMenuModel::CommandId::kHideMediaSuggestions);
+        pref_name = prefs::kBirchUseLostMedia;
         break;
       default:
         break;
