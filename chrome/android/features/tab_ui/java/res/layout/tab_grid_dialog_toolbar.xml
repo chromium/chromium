@@ -26,7 +26,7 @@ found in the LICENSE file.
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/toolbar_left_button"
             style="@style/BottomToolbarButton"
-            android:src="@drawable/ic_expand_more_black_24dp"
+            android:src="@drawable/ic_arrow_back_24dp"
             app:tint="@color/default_icon_color_tint_list"
             android:contentDescription="@string/accessibility_bottom_tab_grid_close_tab_sheet" />
         <FrameLayout
@@ -50,13 +50,14 @@ found in the LICENSE file.
             android:layout_height="@dimen/bottom_sheet_peek_height"
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:layout_marginStart="@dimen/tab_group_toolbar_title_margin_start"
             android:singleLine="true"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:textAppearance="@style/TextAppearance.Headline.Primary"
             android:inputType="text|textNoSuggestions"
             android:imeOptions="actionDone"
             android:theme="@style/TabGridDialogTitleTheme"
-            android:gravity="center"
+            android:gravity="start|center_vertical"
             android:selectAllOnFocus="true"/>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/toolbar_right_button"

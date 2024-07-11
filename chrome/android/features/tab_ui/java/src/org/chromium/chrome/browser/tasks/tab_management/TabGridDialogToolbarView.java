@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -153,18 +152,6 @@ public class TabGridDialogToolbarView extends FrameLayout {
 
     void setBackgroundColorTint(int color) {
         DrawableCompat.setTint(getBackground(), color);
-    }
-
-    /** Setup the toolbar layout for TabGridDialog. */
-    void setupDialogToolbarLayout() {
-        Context context = getContext();
-        mLeftButton.setImageResource(R.drawable.ic_arrow_back_24dp);
-        int topicMargin =
-                (int) context.getResources().getDimension(R.dimen.tab_group_toolbar_topic_margin);
-        MarginLayoutParams params = (MarginLayoutParams) mTitleTextView.getLayoutParams();
-        params.setMarginStart(topicMargin);
-        mTitleTextView.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-        mTitleTextView.setTextAppearance(R.style.TextAppearance_Headline_Primary);
     }
 
     /** Setup the drawable in the left button. */
