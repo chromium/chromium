@@ -726,6 +726,7 @@ class CrossbenchTest(object):
 
   def _get_default_args(self):
     return [
+        '--no-symlinks',
         '--enable-field-trial-config',
         # Required until crbug/41491492 and crbug/346323630 are fixed.
         '--enable-features=DisablePrivacySandboxPrompts',
@@ -750,9 +751,8 @@ class CrossbenchTest(object):
     output_paths = OutputFilePaths(self.isolated_out_dir, display_name).SetUp()
     infra_failure = False
     try:
-      working_dir = tempfile.mkdtemp(suffix='crossbench')
       command = self._generate_command_list(benchmark, benchmark_args,
-                                            working_dir)
+                                            output_paths.benchmark_path)
       if self.options.xvfb:
         # When running with xvfb, we currently output both to stdout and to the
         # file. It would be better to only output to the file to keep the logs
@@ -768,7 +768,7 @@ class CrossbenchTest(object):
 
       if return_code == 0:
         crossbench_result_converter.convert(
-            pathlib.Path(working_dir) / 'output',
+            pathlib.Path(output_paths.benchmark_path) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,
             self.STORY_LABEL, self.options.results_label)
     except Exception:
@@ -776,15 +776,6 @@ class CrossbenchTest(object):
             'outputing structured test results and perf results output:')
       print(traceback.format_exc())
       infra_failure = True
-    finally:
-      # On swarming bots, don't remove output directory, since Result Sink might
-      # still be uploading files to Result DB. Also, swarming bots automatically
-      # clean up at the end of each task.
-      if 'SWARMING_TASK_ID' not in os.environ:
-        # Add ignore_errors=True because otherwise rmtree may fail due to leaky
-        # processes of tests are still holding opened handles to files under
-        # |tempfile_dir|. For example, see crbug.com/865896
-        shutil.rmtree(working_dir, ignore_errors=True)
 
     write_simple_test_results(return_code, output_paths.test_results,
                               display_name)
