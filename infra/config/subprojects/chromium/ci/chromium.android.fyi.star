@@ -106,7 +106,6 @@ ci.builder(
         short_name = "13-x64",
     ),
     contact_team_email = "chrome-blink-engprod@google.com",
-    experimental = True,
 )
 
 ci.builder(
@@ -147,7 +146,6 @@ ci.builder(
         short_name = "13-x64",
     ),
     contact_team_email = "chrome-blink-engprod@google.com",
-    experimental = True,
 )
 
 ci.builder(

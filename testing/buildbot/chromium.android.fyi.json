@@ -13150,6 +13150,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
         "description": "Run with android_33_google_apis_x64",
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -17683,6 +17684,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
         "description": "Run with android_33_google_apis_x64",
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
