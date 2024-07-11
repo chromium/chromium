@@ -315,6 +315,7 @@ public class ToolbarManager
     private final boolean mIsCustomTab;
 
     private final ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
+    private final Runnable mReadAloudReadabilityCallback = this::onReadAloudReadabilityUpdated;
 
     private boolean mBackGestureInProgress;
     private boolean mStartNavDuringOngoingGesture;
@@ -1236,7 +1237,7 @@ public class ToolbarManager
                 readAloudController -> {
                     if (readAloudController != null) {
                         readAloudController.addReadabilityUpdateListener(
-                                this::onReadAloudReadabilityUpdated);
+                                mReadAloudReadabilityCallback);
                     }
                 });
 
@@ -1848,7 +1849,7 @@ public class ToolbarManager
         if (mReadAloudControllerSupplier.get() != null) {
             mReadAloudControllerSupplier
                     .get()
-                    .removeReadabilityUpdateListener(this::onReadAloudReadabilityUpdated);
+                    .removeReadabilityUpdateListener(mReadAloudReadabilityCallback);
         }
 
         if (mDesktopWindowStateProvider != null) {
