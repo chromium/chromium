@@ -40,6 +40,12 @@ class TestMagicBoostStateObserver : public MagicBoostState::Observer {
     hmr_consent_status_ = status;
   }
 
+  void OnIsDeleting() override {
+    // Do nothing as a user of `TestMagicBoostStateObserver` is responsible for
+    // managing life cycle, i.e., stop observing before `MagicBoostState`
+    // instance gets destructed.
+  }
+
   bool hmr_enabled() const { return hmr_enabled_; }
   HMRConsentStatus hmr_consent_status() const { return hmr_consent_status_; }
 

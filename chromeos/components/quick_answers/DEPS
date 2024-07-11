@@ -14,3 +14,9 @@ include_rules = [
   "+ui/color",
   "+ui/gfx",
 ]
+
+specific_include_rules = {
+  ".+_unittest\.cc": [
+    "+components/user_manager",
+  ]
+}

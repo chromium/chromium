@@ -465,6 +465,10 @@ void MahiManagerImpl::OnHMREnabledUpdated(bool enabled) {
   cache_manager_->ClearCache();
 }
 
+void MahiManagerImpl::OnIsDeleting() {
+  magic_boost_state_observation_.Reset();
+}
+
 bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
   if (!mahi_provider_) {
     mahi_provider_ = CreateProvider();

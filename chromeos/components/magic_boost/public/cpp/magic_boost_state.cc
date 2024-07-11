@@ -26,6 +26,8 @@ MagicBoostState::MagicBoostState() {
 }
 
 MagicBoostState::~MagicBoostState() {
+  NotifyOnIsDeleting();
+
   CHECK_EQ(g_magic_boost_state, this);
   g_magic_boost_state = nullptr;
 }
@@ -57,6 +59,12 @@ void MagicBoostState::UpdateHMRConsentStatus(HMRConsentStatus consent_status) {
 void MagicBoostState::UpdateHMRConsentWindowDismissCount(
     int32_t dismiss_count) {
   hmr_consent_window_dismiss_count_ = dismiss_count;
+}
+
+void MagicBoostState::NotifyOnIsDeleting() {
+  for (auto& observer : observers_) {
+    observer.OnIsDeleting();
+  }
 }
 
 }  // namespace chromeos

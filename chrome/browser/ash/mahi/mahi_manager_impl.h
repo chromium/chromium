@@ -63,6 +63,7 @@ class MahiManagerImpl : public chromeos::MahiManager,
 
   // chromeos::MagicBoostState::Observer:
   void OnHMREnabledUpdated(bool enabled) override;
+  void OnIsDeleting() override;
 
   // Initialize required provider if it is not initialized yet, and discard
   // pending requests to avoid racing condition.
