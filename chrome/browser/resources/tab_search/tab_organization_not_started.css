@@ -13,6 +13,11 @@
   --avatar-size: 40px;
 }
 
+cr-button {
+  align-self: flex-end;
+  width: fit-content;
+}
+
 .account-email {
   font-size: 12px;
 }
@@ -41,13 +46,6 @@
   border-spacing: 0 4px;
   font-size: 12px;
   line-height: 16px;
-}
-
-.button-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  gap: 8px;
 }
 
 td:first-child {

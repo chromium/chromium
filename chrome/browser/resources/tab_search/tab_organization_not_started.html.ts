@@ -35,6 +35,12 @@ export function getHtml(this: TabOrganizationNotStartedElement) {
             <td>$i18n{notStartedBodyFREBullet3}</td>
           </tr>
         </table>
+        <a class="tab-organization-link"
+            role="link"
+            tabindex="0"
+            @click="${this.onLearnMoreClick_}">
+          $i18n{learnMore}
+        </a>
       ` : ''}
     </div>
   </div>
@@ -50,20 +56,11 @@ export function getHtml(this: TabOrganizationNotStartedElement) {
       </div>
     </div>
   ` : ''}
-  <div class="button-row">
-    ${this.showFre ? html`
-      <cr-button class="tonal-button"
-          aria-label="$i18n{learnMoreAriaLabel}"
-          @click="${this.onLearnMoreClick_}">
-        $i18n{learnMore}
-      </cr-button>
-    ` : ''}
-    <cr-button class="action-button"
-        aria-label="${this.getActionButtonAriaLabel_()}"
-        @click="${this.onButtonClick_}">
-      ${this.getActionButtonText_()}
-    </cr-button>
-  </div>
+  <cr-button class="action-button"
+      aria-label="${this.getActionButtonAriaLabel_()}"
+      @click="${this.onButtonClick_}">
+    ${this.getActionButtonText_()}
+  </cr-button>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

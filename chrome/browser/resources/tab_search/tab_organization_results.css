@@ -62,6 +62,7 @@ cr-feedback-buttons {
 
 .tab-organization-body,
 .tab-organization-link {
+  display: inline;
   font-size: 11px;
   line-height: 16px;
 }

@@ -11332,10 +11332,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Launch tab group tutorial
       </message>
       <message name="IDS_TAB_ORGANIZATION_DISCLAIMER" desc="The disclaimer text in the tab organization UI results state for getting more information">
-        This is an experimental AI feature and won't always get it right.
+        Your tab titles and URLs are sent to Google and may be seen by human reviewers to improve this feature.
       </message>
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE" desc="The actionable text in the tab organization UI results state for getting more information">
-        Learn more
+        Learn how to automatically organize your tabs
       </message>
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE_ARIA_LABEL" desc="The accessible label in the tab organization UI results state for getting more information" is_accessibility_with_no_ui="true">
         Learn more about this AI feature

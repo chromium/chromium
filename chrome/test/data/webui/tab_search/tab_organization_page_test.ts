@@ -146,9 +146,9 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!notStarted);
     assertTrue(isVisible(notStarted));
 
-    const actionButtons = notStarted.shadowRoot!.querySelectorAll('cr-button');
-    assertEquals(2, actionButtons.length);
-    actionButtons[1]!.click();
+    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
 
     assertEquals(1, testApiProxy.getCallCount('requestTabOrganization'));
   });
@@ -462,9 +462,9 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!notStarted);
     assertTrue(isVisible(notStarted));
 
-    const actionButtons = notStarted.shadowRoot!.querySelectorAll('cr-button');
-    assertEquals(2, actionButtons.length);
-    actionButtons[1]!.click();
+    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
 
     assertEquals(1, testApiProxy.getCallCount('triggerSync'));
   });
@@ -482,9 +482,9 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!notStarted);
     assertTrue(isVisible(notStarted));
 
-    const actionButtons = notStarted.shadowRoot!.querySelectorAll('cr-button');
-    assertEquals(2, actionButtons.length);
-    actionButtons[1]!.click();
+    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
 
     assertEquals(1, testApiProxy.getCallCount('triggerSignIn'));
   });
@@ -502,9 +502,9 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!notStarted);
     assertTrue(isVisible(notStarted));
 
-    const actionButtons = notStarted.shadowRoot!.querySelectorAll('cr-button');
-    assertEquals(2, actionButtons.length);
-    actionButtons[1]!.click();
+    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
 
     assertEquals(1, testApiProxy.getCallCount('openSyncSettings'));
   });
