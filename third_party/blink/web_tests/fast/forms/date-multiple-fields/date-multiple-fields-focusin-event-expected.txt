@@ -5,11 +5,11 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS document.activeElement.id is "text"
 PASS dispatchedFocusInEvent is 1
 PASS dispatchedDOMFocusInEvent is 1
-Move to date field, should generate foucsin event
+Move to date field, should generate focusin event
 PASS document.activeElement.id is "date"
 PASS dispatchedFocusInEvent is 2
 PASS dispatchedDOMFocusInEvent is 2
-Move to time field, should generate foucsin event
+Move to time field, should generate focusin event
 PASS document.activeElement.id is "time"
 PASS dispatchedFocusInEvent is 3
 PASS dispatchedDOMFocusInEvent is 3

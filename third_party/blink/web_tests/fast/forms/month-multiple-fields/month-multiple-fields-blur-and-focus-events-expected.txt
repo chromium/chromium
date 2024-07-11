@@ -8,6 +8,7 @@ PASS testInput.blur(); state() is "blur=1 focus=1"
 focus and Tab key to blur
 PASS keyDown("	"); state() is "blur=0 focus=1"
 PASS keyDown("	"); state() is "blur=0 focus=1"
+PASS keyDown("	"); state() is "blur=0 focus=1"
 PASS keyDown("	"); state() is "blur=1 focus=1"
 
 

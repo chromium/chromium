@@ -31,7 +31,7 @@ PASS input.value is currentYear + "-W02"
 PASS input.value is "0005-W09"
 PASS input.value is "0005-W07"
 PASS document.activeElement.id is "after"
-== Shfit+Tab key ==
+== Shift+Tab key ==
 PASS input.value is "0003-W09"
 PASS document.activeElement.id is "before"
 == Up key on maximum value ==
