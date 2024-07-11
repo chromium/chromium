@@ -12,23 +12,27 @@ found in the LICENSE file.
     android:layout_height="@dimen/google_bottom_bar_searchbox_container_height">
 
   <ImageButton
+      android:id="@+id/google_bottom_bar_searchbox_super_g_button"
       android:layout_width="@dimen/google_bottom_bar_button_size"
       android:layout_height="@dimen/google_bottom_bar_button_size"
       android:src="@drawable/ic_google_24dp"
       android:contentDescription="@string/google_bottom_bar_searchbox_super_g_button_description"/>
 
   <TextView
+      android:id="@+id/google_bottom_bar_searchbox_hint_text_view"
       android:layout_width="wrap_content"
       android:layout_height="@dimen/google_bottom_bar_button_size"
       android:text="@string/google_bottom_bar_searchbox_text"/>
 
   <ImageButton
+      android:id="@+id/google_bottom_bar_searchbox_mic_button"
       android:layout_width="@dimen/google_bottom_bar_button_size"
       android:layout_height="@dimen/google_bottom_bar_button_size"
       android:src="@drawable/ic_mic_white_24dp"
       android:contentDescription="@string/google_bottom_bar_searchbox_mic_button_description"/>
 
   <ImageButton
+      android:id="@+id/google_bottom_bar_searchbox_lens_button"
       android:layout_width="@dimen/google_bottom_bar_button_size"
       android:layout_height="@dimen/google_bottom_bar_button_size"
       android:src="@drawable/lens_icon"

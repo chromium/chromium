@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,14 +33,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,24 +53,39 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.lang.ref.WeakReference;
 import java.util.Set;
 
 /** Unit tests for {@link BottomBarConfig}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowLog.class})
+        shadows = {ShadowLog.class, GoogleBottomBarActionsHandlerTest.ShadowLensController.class})
 public class GoogleBottomBarActionsHandlerTest {
     private static final String TEST_URI = "https://www.test.com/";
 
     private final GURL mGURL = new GURL(TEST_URI);
 
+    @Implements(LensController.class)
+    public static class ShadowLensController {
+        public static boolean sIsAvailable = true;
+
+        public static LensController controller = mock(LensController.class);
+
+        public static LensController getInstance() {
+            doReturn(sIsAvailable).when(controller).isLensEnabled(any());
+            return controller;
+        }
+    }
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private Tab mTab;
     @Mock private Supplier<Tab> mTabSupplier;
 
@@ -72,6 +94,8 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Mock private PageInsightsCoordinator mPageInsightsCoordinator;
     @Mock private Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
+
+    @Captor private ArgumentCaptor<LensIntentParams> mLensIntentParamsArgumentCaptor;
 
     private Activity mActivity;
     private GoogleBottomBarActionsHandler mGoogleBottomBarActionsHandler;
@@ -90,6 +114,8 @@ public class GoogleBottomBarActionsHandlerTest {
 
         when(mTabSupplier.get()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(mGURL);
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
     }
 
@@ -368,5 +394,26 @@ public class GoogleBottomBarActionsHandlerTest {
         verify(pendingIntent)
                 .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
         assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
+    }
+
+    @Test
+    public void testOpenGoogleAppLens_lensNotEnabled_lensNotStarted() {
+        ShadowLensController.sIsAvailable = false;
+
+        mGoogleBottomBarActionsHandler.openLens();
+
+        verify(ShadowLensController.getInstance(), never()).startLens(any(), any());
+    }
+
+    @Test
+    public void testOpenGoogleAppLens_lensEnabled_lensStarted() {
+        ShadowLensController.sIsAvailable = true;
+
+        mGoogleBottomBarActionsHandler.openLens();
+
+        verify(ShadowLensController.getInstance())
+                .startLens(any(), mLensIntentParamsArgumentCaptor.capture());
+        LensIntentParams params = mLensIntentParamsArgumentCaptor.getValue();
+        assertEquals(LensEntryPoint.GOOGLE_BOTTOM_BAR, params.getLensEntryPoint());
     }
 }

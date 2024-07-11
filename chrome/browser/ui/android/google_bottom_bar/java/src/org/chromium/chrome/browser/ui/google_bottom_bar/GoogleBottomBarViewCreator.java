@@ -96,13 +96,23 @@ public class GoogleBottomBarViewCreator {
     private void maybeAddSearchbox() {
         ViewGroup searchboxContainer = mRootView.findViewById(R.id.bottom_bar_searchbox_container);
         if (searchboxContainer != null) {
-            searchboxContainer.addView(
-                    LayoutInflater.from(mContext)
-                            .inflate(
-                                    R.layout.google_bottom_bar_searchbox,
-                                    searchboxContainer,
-                                    /* attachToRoot= */ false));
+            searchboxContainer.addView(createSearchboxView(searchboxContainer));
         }
+    }
+
+    private View createSearchboxView(ViewGroup searchboxContainer) {
+        View searchboxView =
+                LayoutInflater.from(mContext)
+                        .inflate(
+                                R.layout.google_bottom_bar_searchbox,
+                                searchboxContainer,
+                                /* attachToRoot= */ false);
+
+        ImageButton lensButton =
+                searchboxView.findViewById(R.id.google_bottom_bar_searchbox_lens_button);
+        lensButton.setOnClickListener(v -> mActionsHandler.openLens());
+
+        return searchboxView;
     }
 
     private void maybeAddButtons() {

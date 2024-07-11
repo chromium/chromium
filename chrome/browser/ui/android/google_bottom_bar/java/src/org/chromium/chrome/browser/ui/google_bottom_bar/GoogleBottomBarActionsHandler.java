@@ -15,6 +15,10 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,11 +27,14 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** A handler class for actions triggered by buttons in a GoogleBottomBar. */
 class GoogleBottomBarActionsHandler {
     private static final String TAG = "GBBActionHandler";
+
     private final Activity mActivity;
     private final Supplier<Tab> mTabProvider;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
@@ -183,6 +190,38 @@ class GoogleBottomBarActionsHandler {
                     /* options= */ options.toBundle());
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, "CanceledException when sending pending intent.", e);
+        }
+    }
+
+    public void openLens() {
+        Tab tab = mTabProvider.get();
+        if (tab == null) {
+            Log.e(TAG, "Can't open Lens as tab is not available.");
+            return;
+        }
+        WindowAndroid window = tab.getWindowAndroid();
+
+        if (window == null) {
+            Log.e(TAG, "Can't open Lens as window is not available.");
+            return;
+        }
+
+        boolean isIncognito = tab.isIncognito();
+        LensController lensController = LensController.getInstance();
+        LensQueryParams lensQueryParams =
+                new LensQueryParams.Builder(
+                                LensEntryPoint.GOOGLE_BOTTOM_BAR,
+                                isIncognito,
+                                DeviceFormFactor.isWindowOnTablet(window))
+                        .build();
+
+        if (lensController.isLensEnabled(lensQueryParams)) {
+            LensIntentParams lensIntentParams =
+                    new LensIntentParams.Builder(LensEntryPoint.GOOGLE_BOTTOM_BAR, isIncognito)
+                            .build();
+            lensController.startLens(window, lensIntentParams);
+        } else {
+            Log.e(TAG, "Can't open Lens as Lens is not enabled.");
         }
     }
 }
