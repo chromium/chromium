@@ -213,10 +213,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
 
-            TabGroupUiToolbarView toolbarView =
-                    (TabGroupUiToolbarView)
+            TabGridDialogToolbarView toolbarView =
+                    (TabGridDialogToolbarView)
                             LayoutInflater.from(activity)
-                                    .inflate(R.layout.tab_group_ui_toolbar, recyclerView, false);
+                                    .inflate(R.layout.tab_grid_dialog_toolbar, recyclerView, false);
             toolbarView.setupDialogToolbarLayout();
 
             View shareBar = mDialogView.findViewById(R.id.dialog_data_sharing_group_bar);

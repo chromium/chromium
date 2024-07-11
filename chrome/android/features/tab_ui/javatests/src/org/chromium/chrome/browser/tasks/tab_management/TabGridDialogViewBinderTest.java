@@ -78,7 +78,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
 
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
-    private TabGroupUiToolbarView mToolbarView;
+    private TabGridDialogToolbarView mToolbarView;
     private RecyclerView mContentView;
     private TabGridDialogView mTabGridDialogView;
     private ChromeImageView mRightButton;
@@ -112,10 +112,10 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                     mLayoutManager = spy(new GridLayoutManager(getActivity(), 2));
                     mContentView.setLayoutManager(mLayoutManager);
                     mToolbarView =
-                            (TabGroupUiToolbarView)
+                            (TabGridDialogToolbarView)
                                     LayoutInflater.from(getActivity())
                                             .inflate(
-                                                    R.layout.tab_group_ui_toolbar,
+                                                    R.layout.tab_grid_dialog_toolbar,
                                                     mContentView,
                                                     false);
                     LayoutInflater.from(getActivity())

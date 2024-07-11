@@ -187,7 +187,7 @@ class TabListRecyclerView extends RecyclerView
                 // Add shadow for tab grid dialog.
                 RelativeLayout parent = (RelativeLayout) getParent();
                 View toolbar = parent.getChildAt(0);
-                if (!(toolbar instanceof TabGroupUiToolbarView)) return;
+                if (!(toolbar instanceof TabGridDialogToolbarView)) return;
 
                 RelativeLayout.LayoutParams params =
                         new RelativeLayout.LayoutParams(

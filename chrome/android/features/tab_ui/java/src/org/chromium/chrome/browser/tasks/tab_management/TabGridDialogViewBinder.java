@@ -62,13 +62,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 class TabGridDialogViewBinder {
     /** ViewHolder class to get access to all {@link View}s inside the TabGridDialog. */
     public static class ViewHolder {
-        public final TabGroupUiToolbarView toolbarView;
+        public final TabGridDialogToolbarView toolbarView;
         public final RecyclerView contentView;
         @Nullable public TabGridDialogView dialogView;
         @Nullable public View shareBar;
 
         ViewHolder(
-                TabGroupUiToolbarView toolbarView,
+                TabGridDialogToolbarView toolbarView,
                 RecyclerView contentView,
                 @Nullable TabGridDialogView dialogView,
                 @Nullable View shareBar) {
