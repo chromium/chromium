@@ -541,6 +541,14 @@ class BrowserAutofillManager : public AutofillManager {
       SuggestionsContext context,
       OnGenerateSuggestionsCallback callback);
 
+  // Receives the lists of plus address and single field form fill suggestions
+  // and combines them. It gives priority to the plus address suggestions,
+  // ensuring they appear first in the final combined list that's sent to
+  // `OnGenerateSuggestionsCallback`.
+  void OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
+      OnGenerateSuggestionsCallback callback,
+      std::vector<std::vector<Suggestion>> suggestion_lists);
+
   // Displays IPH for manual fallbacks if the form can be autofilled and the
   // user has profiles which can fill the current field.
   void MaybeShowIphForManualFallback(

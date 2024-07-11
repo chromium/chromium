@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -1445,39 +1446,63 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
                                   context.suppress_reason);
   }
 
-  if (should_offer_other_suggestions &&
+  const bool should_offer_single_field_form_fill =
+      should_offer_other_suggestions &&
       ShouldOfferSingleFieldFormFill(field, autofill_field, trigger_source,
-                                     context.suppress_reason)) {
+                                     context.suppress_reason);
+  const size_t barrier_calls =
+      static_cast<size_t>(should_offer_single_field_form_fill);
+  if (barrier_calls == 0) {
+    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+    return;
+  }
+  // TODO(crbug.com/324557560): Include plus addresses.
+  auto barrier_callback = base::BarrierCallback<std::vector<Suggestion>>(
+      barrier_calls,
+      base::BindOnce(
+          &BrowserAutofillManager::
+              OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  if (should_offer_single_field_form_fill) {
     bool handled_by_single_field_form_filler =
         single_field_form_fill_router_->OnGetSingleFieldSuggestions(
             form_structure, field, autofill_field, client(),
             base::BindRepeating(
-                [](base::WeakPtr<BrowserAutofillManager> self,
+                [](base::OnceCallback<void(std::vector<Suggestion>)> callback,
                    FieldGlobalId field_id,
                    const std::vector<Suggestion>& suggestions) {
-                  if (self) {
-                    self->external_delegate_->OnSuggestionsReturned(
-                        field_id, suggestions);
-                  }
+                  std::move(callback).Run(suggestions);
                 },
-                weak_ptr_factory_.GetWeakPtr()));
-    if (handled_by_single_field_form_filler) {
-      // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
-      // will handle sending the results back to the renderer.
-      // TODO(crbug.com/40100455): The callback will only be called once.
-      std::move(callback).Run(/*show_suggestions=*/false,
-                              std::move(suggestions));
+                barrier_callback));
+    if (!handled_by_single_field_form_filler) {
+      single_field_form_fill_router_->CancelPendingQueries();
+      std::move(barrier_callback).Run({});
       return;
     }
   }
+}
 
-  single_field_form_fill_router_->CancelPendingQueries();
+void BrowserAutofillManager::
+    OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
+        OnGenerateSuggestionsCallback callback,
+        std::vector<std::vector<Suggestion>> suggestion_lists) {
+  if (suggestion_lists.empty()) {
+    std::move(callback).Run(/*show_suggestions=*/true, {});
+    return;
+  }
 
-  // TODO(crbug.com/324557560): Remove call once plus address and single field
-  // form filler suggestions are merged.
-  // Make sure that the callback is resolved by calling it with an empty list of
-  // suggestions.
-  std::move(callback).Run(/*show_suggestions=*/true, {});
+  std::vector<Suggestion> suggestions;
+  for (std::vector<Suggestion>& suggestion_list : suggestion_lists) {
+    suggestions.insert(suggestions.cend(),
+                       std::make_move_iterator(suggestion_list.begin()),
+                       std::make_move_iterator(suggestion_list.end()));
+  }
+
+  // TODO(crbug.com/324557560): Handle plus address suggestions.
+  // Show the list of `suggestions`. These may include single field form field
+  // and/or plus address suggestions.
+  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
 }
 
 void BrowserAutofillManager::MaybeShowIphForManualFallback(
