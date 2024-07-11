@@ -4528,6 +4528,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
         summary="the number of pages freed during compaction"/>
     <variant name="SamePages"
         summary="the number of same element filled pages written to this disk"/>
+    <variant name="WritebackPagesPerDay"
+        summary="the number of pages written back per 24 hour period"/>
   </token>
 </histogram>
 
