@@ -420,7 +420,7 @@ class ListPicker extends Picker {
     this.selectElement_.appendChild(fragment);
     this.selectElement_.classList.add('wrap');
     this.delayedChildrenConfig_ = null;
-    this.setMenuListOptionsBoundsInAXTree_();
+    this.setMenuListOptionsBoundsInAXTree_(true);
   }
 
   findReusableItem_(parent, config, startIndex) {
@@ -515,10 +515,11 @@ class ListPicker extends Picker {
     this.applyItemStyle_(element, config.style);
   }
 
-  setMenuListOptionsBoundsInAXTree_() {
+  setMenuListOptionsBoundsInAXTree_(childrenUpdated = false) {
     var optionBounds = [];
     buildOptionBoundsArray(this.selectElement_, optionBounds);
-    window.pagePopupController.setMenuListOptionsBoundsInAXTree(optionBounds);
+    window.pagePopupController.setMenuListOptionsBoundsInAXTree(
+        optionBounds, childrenUpdated);
   }
 }
 

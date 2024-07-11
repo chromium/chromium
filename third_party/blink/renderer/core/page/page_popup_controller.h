@@ -77,8 +77,12 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
 
   void Trace(Visitor*) const override;
 
+  // Set children_updated to true if additional children have been added to the
+  // menu list. The bounds are only sent to the tree if children_updated is
+  // true.
   void setMenuListOptionsBoundsInAXTree(
-      HeapVector<Member<DOMRect>>& options_bounds);
+      HeapVector<Member<DOMRect>>& options_bounds,
+      bool children_updated);
 
  private:
   PagePopup& popup_;
