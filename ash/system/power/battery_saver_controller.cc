@@ -83,13 +83,17 @@ BatterySaverController::BatterySaverController(PrefService* local_state)
       previously_plugged_in_(PowerStatus::Get()->IsMainsChargerConnected()) {
   power_status_observation_.Observe(PowerStatus::Get());
 
-  pref_change_registrar_.Init(local_state);
-  pref_change_registrar_.Add(
-      prefs::kPowerBatterySaver,
-      base::BindRepeating(&BatterySaverController::OnSettingsPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
-  // Restore state from the saved preference value.
-  OnSettingsPrefChanged();
+  if (local_state_) {
+    pref_change_registrar_.Init(local_state);
+    pref_change_registrar_.Add(
+        prefs::kPowerBatterySaver,
+        base::BindRepeating(&BatterySaverController::OnSettingsPrefChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+    // Restore state from the saved preference value.
+    OnSettingsPrefChanged();
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 BatterySaverController::~BatterySaverController() = default;
@@ -109,8 +113,13 @@ void BatterySaverController::RegisterLocalStatePrefs(
 
 // static
 void BatterySaverController::ResetState(PrefService* local_state) {
-  local_state->ClearPref(prefs::kPowerBatterySaver);
-  local_state->ClearPref(prefs::kPowerBatterySaverPercent);
+  if (local_state) {
+    local_state->ClearPref(prefs::kPowerBatterySaver);
+    local_state->ClearPref(prefs::kPowerBatterySaverPercent);
+  } else {
+    CHECK_IS_TEST();
+  }
+
   power_manager::SetBatterySaverModeStateRequest request;
   request.set_enabled(false);
   chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(request);
@@ -123,6 +132,7 @@ void BatterySaverController::OnPowerStatusChanged() {
   }
 
   const auto* power_status = PowerStatus::Get();
+  CHECK(power_status);
   const bool active = power_status->IsBatterySaverActive();
   const bool on_AC_power = power_status->IsMainsChargerConnected();
   const int battery_percent = power_status->GetRoundedBatteryPercent();
@@ -133,10 +143,13 @@ void BatterySaverController::OnPowerStatusChanged() {
   // part of enabling Battery Saver, but before the Battery Saver signal, so we
   // always get a spurious PowerStatus with Battery Saver disabled right after
   // enabling Battery Saver.
-  const bool pref_active = local_state_->GetBoolean(prefs::kPowerBatterySaver);
-  if (pref_active != active) {
-    SetState(pref_active, UpdateReason::kPowerManager);
-    return;
+  if (local_state_) {
+    const bool pref_active =
+        local_state_->GetBoolean(prefs::kPowerBatterySaver);
+    if (pref_active != active) {
+      SetState(pref_active, UpdateReason::kPowerManager);
+      return;
+    }
   }
 
   // Detect charging while powered off or sleeping.
@@ -144,7 +157,7 @@ void BatterySaverController::OnPowerStatusChanged() {
   // disabled toast just after startup if we had Battery Saver on before
   // shutdown but are now charging. In that situation, we will restore battery
   // saver in the ctor, but then disable it in the first OnPowerStatusChanged.
-  if (active) {
+  if (local_state_ && active) {
     const int pref_battery_percent =
         local_state_->GetInteger(prefs::kPowerBatterySaverPercent);
     const bool pref_battery_percent_set = pref_battery_percent >= 0;
@@ -171,6 +184,8 @@ void BatterySaverController::OnPowerStatusChanged() {
 }
 
 void BatterySaverController::OnSettingsPrefChanged() {
+  CHECK(local_state_);
+
   if (always_on_) {
     SetState(/*active=*/true, UpdateReason::kAlwaysOn);
     return;
@@ -230,6 +245,8 @@ void BatterySaverController::ShowBatterySaverModeEnabledToast() {
 
 void BatterySaverController::SetState(bool active, UpdateReason reason) {
   auto* power_status = PowerStatus::Get();
+  CHECK(power_status);
+
   std::optional<base::TimeDelta> time_to_empty =
       power_status->GetBatteryTimeToEmpty();
   double battery_percent = power_status->GetBatteryPercent();
@@ -258,8 +275,8 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
   }
 
   if (!active && enable_record_) {
-    // NB: We show the toast after checking enable_record_ to make sure we were
-    // enabled before this Disable call.
+    // NB: We show the toast after checking enable_record_ to make sure we
+    // were enabled before this Disable call.
     if (reason != UpdateReason::kSettings &&
         reason != UpdateReason::kChargeIncrease) {
       ShowBatterySaverModeDisabledToast();
@@ -330,10 +347,11 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
     }
   }
 
-  if (GetPowerNotificationController()) {
+  const auto* power_notification_controller = GetPowerNotificationController();
+  if (power_notification_controller) {
     const bool crossed_threshold =
-        PowerStatus::Get()->GetRoundedBatteryPercent() <=
-        GetPowerNotificationController()->GetLowPowerPercentage();
+        power_status->GetRoundedBatteryPercent() <=
+        power_notification_controller->GetLowPowerPercentage();
 
     // For auto-enabled, only update the user_opt_status_ when we are at or
     // below the threshold.This way, auto-enable kicks in from threshold+1% ->
@@ -357,17 +375,21 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
   }
 
   // Update pref and Power Manager state.
-  if (active != local_state_->GetBoolean(prefs::kPowerBatterySaver)) {
+  if (local_state_ &&
+      active != local_state_->GetBoolean(prefs::kPowerBatterySaver)) {
     // Note: Prevents call from being re-entrant, and also allows us to
     // differentiate between the system changing this perf, vs. the user doing
     // it (e.g. from somewhere else like Settings).
     base::AutoReset<bool> in_set_state(&in_set_state_, true);
     local_state_->SetBoolean(prefs::kPowerBatterySaver, active);
   }
-  if (active != PowerStatus::Get()->IsBatterySaverActive()) {
+
+  if (active != power_status->IsBatterySaverActive()) {
+    auto* power_manager_client = chromeos::PowerManagerClient::Get();
+    CHECK(power_manager_client);
     power_manager::SetBatterySaverModeStateRequest request;
     request.set_enabled(active);
-    chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(request);
+    power_manager_client->SetBatterySaverModeState(request);
 
     // Battery Saver percent is only tracked when battery saver is on.
     // NB: On initialization PowerStatus updates often arrive with battery saver
@@ -375,7 +397,7 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
     // the pref. To preserve kPowerBatterySaverPercent, we only clear it if
     // battery saver transitions from active to inactive, not every time we see
     // a PowerStatus with it inactive.
-    if (!active) {
+    if (local_state_ && !active) {
       local_state_->ClearPref(prefs::kPowerBatterySaverPercent);
     }
   }
@@ -392,6 +414,10 @@ bool BatterySaverController::IsBatterySaverSupported() const {
 }
 
 bool BatterySaverController::IsDisabledByPolicy() const {
+  if (!local_state_) {
+    return false;
+  }
+
   // Pref is managed and set to false.
   return local_state_->IsManagedPreference(prefs::kPowerBatterySaver) &&
          !local_state_->GetBoolean(prefs::kPowerBatterySaver);

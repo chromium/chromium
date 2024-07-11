@@ -1213,19 +1213,14 @@ void Shell::Init(
 
   local_state_ = local_state;
 
-  if (local_state_ != nullptr) {
-    // Only construct BatterySaverController if prefs exists. It uses prefs to
-    // store the battery saver state, so testing its functionality without
-    // prefs doesn't make sense.
-    if (features::IsBatterySaverAvailable()) {
-      battery_saver_controller_ =
-          std::make_unique<BatterySaverController>(local_state_);
-    } else {
-      // It's possible that we have a new Chrome without battery saver mode
-      // available, but still have battery saver running because the previous
-      // chrome did. So unconditionally reset battery saver state.
-      BatterySaverController::ResetState(local_state_);
-    }
+  if (features::IsBatterySaverAvailable()) {
+    battery_saver_controller_ =
+        std::make_unique<BatterySaverController>(local_state_);
+  } else {
+    // It's possible that we have a new Chrome without battery saver mode
+    // available, but still have battery saver running because the previous
+    // chrome did. So unconditionally reset battery saver state.
+    BatterySaverController::ResetState(local_state_);
   }
 
   // This creates the MessageCenter object which is used by some other objects
