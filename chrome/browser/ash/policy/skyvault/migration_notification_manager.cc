@@ -10,6 +10,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
@@ -137,6 +138,10 @@ void MigrationNotificationManager::ShowMigrationErrorNotification(
 
 void MigrationNotificationManager::CloseAll() {
   CloseNotification(profile_);
+  CloseDialog();
+}
+
+void MigrationNotificationManager::CloseDialog() {
   LocalFilesMigrationDialog* dialog = LocalFilesMigrationDialog::GetDialog();
   if (dialog) {
     dialog->Close();

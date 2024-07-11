@@ -33,8 +33,11 @@ namespace policy::local_user_files {
 
 namespace {
 
-// Delay the migration for 24 hours.
-const base::TimeDelta kMigrationTimeout = base::Hours(24);
+// Delay the migration for a total of 24 hours.
+const base::TimeDelta kTotalMigrationTimeout = base::Hours(24);
+
+// Show another dialog 1 hour before the migration.
+const base::TimeDelta kRemainingMigrationTimeout = base::Hours(1);
 
 // The prefix of the directory the files should be uploaded to. Used with the
 // unique identifier of the device to form the directory's full name.
@@ -117,7 +120,7 @@ LocalFilesMigrationManager::LocalFilesMigrationManager(
     : context_(context),
       notification_manager_(std::move(notification_manager)),
       coordinator_(std::move(coordinator)),
-      start_delay_timer_(std::make_unique<base::WallClockTimer>()) {
+      scheduling_timer_(std::make_unique<base::WallClockTimer>()) {
   CHECK(base::FeatureList::IsEnabled(features::kSkyVaultV2));
 
   pref_change_registrar_.Init(g_browser_process->local_state());
@@ -157,25 +160,51 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
 
   // Local files are disabled and migration destination is set - initiate
   // migration.
-  ScheduleMigrationAndInformUser();
+  InformUser();
 }
 
-void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
+void LocalFilesMigrationManager::InformUser() {
   CHECK(!local_user_files_allowed_);
   CHECK(IsMigrationEnabled(cloud_provider_));
 
   notification_manager_->ShowMigrationInfoDialog(
-      cloud_provider_, kMigrationTimeout,
+      cloud_provider_, kTotalMigrationTimeout,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
-  start_delay_timer_->Start(
-      FROM_HERE, base::Time::Now() + kMigrationTimeout,
-      base::BindOnce(&LocalFilesMigrationManager::StartMigration,
+  // Schedule another dialog closer to the migration.
+  scheduling_timer_->Start(
+      FROM_HERE,
+      base::Time::Now() + (kTotalMigrationTimeout - kRemainingMigrationTimeout),
+      base::BindOnce(
+          &LocalFilesMigrationManager::ScheduleMigrationAndInformUser,
+          weak_factory_.GetWeakPtr()));
+}
+
+void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
+  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+    return;
+  }
+
+  notification_manager_->ShowMigrationInfoDialog(
+      cloud_provider_, kRemainingMigrationTimeout,
+      base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
+                     weak_factory_.GetWeakPtr()));
+  // Also schedule migration to automatically start after the timeout.
+  scheduling_timer_->Start(
+      FROM_HERE, base::Time::Now() + kRemainingMigrationTimeout,
+      base::BindOnce(&LocalFilesMigrationManager::OnTimeoutExpired,
                      weak_factory_.GetWeakPtr()));
 }
 
 void LocalFilesMigrationManager::SkipMigrationDelay() {
-  start_delay_timer_->Stop();
+  scheduling_timer_->Stop();
+  StartMigration();
+}
+
+void LocalFilesMigrationManager::OnTimeoutExpired() {
+  // TODO(aidazolic): This could cause issues if the dialog doesn't close fast
+  // enough, and the user clicks "Upload now" exactly then.
+  notification_manager_->CloseDialog();
   StartMigration();
 }
 
@@ -218,7 +247,7 @@ void LocalFilesMigrationManager::OnMigrationDone(bool success) {
 
 void LocalFilesMigrationManager::MaybeStopMigration() {
   // Stop the timer. No-op if not running.
-  start_delay_timer_->Stop();
+  scheduling_timer_->Stop();
 
   if (coordinator_->IsRunning()) {
     coordinator_->Stop();

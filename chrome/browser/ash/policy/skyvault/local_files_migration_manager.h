@@ -75,15 +75,23 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
 
-  // If conditions are met, schedules the file migration to the cloud in 24
-  // hours. The migration starts automatically after the delay elapses. If the
-  // user chooses to skip the delay (via the info dialog), the migration starts
-  // immediately.
+  // Informs the user about the upcoming migration. Schedules another dialog to
+  // appear closer to the start. From the dialog, the user can also choose to
+  // start the migration immediately.
+  void InformUser();
+
+  // After initial delay, informs the user again and schedules the migration to
+  // start automatically. From the dialog, the user can also choose to start the
+  // migration immediately.
   void ScheduleMigrationAndInformUser();
 
   // Bypasses the migration delay and initiates the upload process immediately.
   // Called when the user clicks the "Upload now" button in the info dialog.
   void SkipMigrationDelay();
+
+  // Called after the full migration timeout elapses. Closes the dialog if
+  // opened, and starts migration.
+  void OnTimeoutExpired();
 
   // Starts the migration process.
   void StartMigration();
@@ -119,8 +127,8 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Manages the upload of local files to the cloud.
   std::unique_ptr<MigrationCoordinator> coordinator_;
 
-  // Timer for delaying the start of migration.
-  std::unique_ptr<base::WallClockTimer> start_delay_timer_;
+  // Timer for delaying the start of migration and showing dialogs.
+  std::unique_ptr<base::WallClockTimer> scheduling_timer_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

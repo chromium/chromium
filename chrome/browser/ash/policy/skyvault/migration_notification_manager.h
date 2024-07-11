@@ -46,6 +46,9 @@ class MigrationNotificationManager {
   // Closes any open notification or dialog.
   void CloseAll();
 
+  // Closes the migration dialog. No-op if dialog isn't opened.
+  void CloseDialog();
+
  private:
   // Profile for which this instance was created.
   raw_ptr<Profile> profile_;
