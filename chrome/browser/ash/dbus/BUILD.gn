@@ -80,6 +80,7 @@ static_library("dbus") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/ash/arc/video",
+    "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/net/rollback_network_config",

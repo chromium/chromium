@@ -79,6 +79,7 @@ static_library("file_manager") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/exo",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",

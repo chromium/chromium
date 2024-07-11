@@ -1,0 +1,52 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("throttle") {
+  sources = [
+    "crostini_active_window_throttle_observer.cc",
+    "crostini_active_window_throttle_observer.h",
+    "crostini_throttle.cc",
+    "crostini_throttle.h",
+  ]
+
+  public_deps = [ "//components/keyed_service/core" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ui/base",
+    "//content/public/browser",
+    "//ui/aura",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "crostini_active_window_throttle_observer_unittest.cc",
+    "crostini_throttle_unittest.cc",
+  ]
+
+  deps = [
+    ":throttle",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/test:test_support",
+    "//chromeos/ui/base",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/aura:test_support",
+  ]
+}

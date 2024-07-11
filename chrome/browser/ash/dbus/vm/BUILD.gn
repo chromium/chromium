@@ -35,6 +35,7 @@ static_library("vm") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/exo",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",

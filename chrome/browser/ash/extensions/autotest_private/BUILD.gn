@@ -30,6 +30,7 @@ static_library("autotest_private") {
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/ash/guest_os",

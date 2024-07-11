@@ -143,6 +143,7 @@ static_library("file_manager") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/guest_os/public",
@@ -195,6 +196,7 @@ static_library("file_manager") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/guest_os/public",
@@ -288,6 +290,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/file_manager/virtual_tasks",
@@ -414,6 +417,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:test_support",
+    "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/extensions/file_manager",

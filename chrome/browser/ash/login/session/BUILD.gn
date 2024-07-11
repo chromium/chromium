@@ -46,6 +46,7 @@ static_library("session") {
     "//chrome/browser/ash/accessibility/live_caption",
     "//chrome/browser/ash/camera_mic",
     "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/quick_unlock",
