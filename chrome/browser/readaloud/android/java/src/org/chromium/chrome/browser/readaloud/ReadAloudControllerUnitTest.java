@@ -266,7 +266,6 @@ public class ReadAloudControllerUnitTest {
         mTab.setWebContentsOverrideForTesting(mWebContents);
 
         mController = createController();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         when(mMetadata.languageCode()).thenReturn("en");
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
@@ -297,16 +296,19 @@ public class ReadAloudControllerUnitTest {
     }
 
     private ReadAloudController createController() {
-        return new ReadAloudController(
-                mActivity,
-                mProfileSupplier,
-                mTabModelSelector.getModel(false),
-                mTabModelSelector.getModel(true),
-                mBottomSheetController,
-                mBottomControlsStacker,
-                mLayoutManagerSupplier,
-                mActivityWindowAndroid,
-                mActivityLifecycleDispatcher);
+        var controller =
+                new ReadAloudController(
+                        mActivity,
+                        mProfileSupplier,
+                        mTabModelSelector.getModel(false),
+                        mTabModelSelector.getModel(true),
+                        mBottomSheetController,
+                        mBottomControlsStacker,
+                        mLayoutManagerSupplier,
+                        mActivityWindowAndroid,
+                        mActivityLifecycleDispatcher);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        return controller;
     }
 
     @After
@@ -315,6 +317,7 @@ public class ReadAloudControllerUnitTest {
         ReadAloudFeatures.shutdown();
         mController.destroy();
         if (mController2 != null) mController2.destroy();
+        ReadAloudController.resetReadabilityCacheForTesting();
     }
 
     @Test
@@ -693,6 +696,34 @@ public class ReadAloudControllerUnitTest {
             failed = true;
         }
         assertTrue(failed);
+    }
+
+    @Test
+    public void isReadable_cacheSharedBetweenInstances() {
+        // Check readability
+        mController.maybeCheckReadability(sTestGURL);
+
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        assertFalse(mController.isReadable(mTab));
+
+        // The page is readable, result should be cached.
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        assertTrue(mController.isReadable(mTab));
+        assertFalse(mController.timepointsSupported(mTab));
+
+        // A second newly created controller should know that the page is readable.
+        mController2 = createController();
+        assertTrue(mController2.isReadable(mTab));
+        assertFalse(mController2.timepointsSupported(mTab));
+
+        // The second controller should not send requests to check the same URL's readability.
+        mController2.maybeCheckReadability(sTestGURL);
+        // Still only one call.
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        Mockito.anyString(),
+                        Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
     }
 
     @Test
