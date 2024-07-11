@@ -18,9 +18,9 @@ TEST(PdfiumSearchifyTest, ConvertToPdfOrigin) {
         /*height=*/30,
         /*angle=*/0,
         /*coordinate_system_height=*/792);
-    EXPECT_DOUBLE_EQ(100, result.x);
-    EXPECT_DOUBLE_EQ(712, result.y);
-    EXPECT_DOUBLE_EQ(0, result.theta);
+    EXPECT_FLOAT_EQ(100, result.x);
+    EXPECT_FLOAT_EQ(712, result.y);
+    EXPECT_FLOAT_EQ(0, result.theta);
   }
 
   {
@@ -30,9 +30,9 @@ TEST(PdfiumSearchifyTest, ConvertToPdfOrigin) {
         /*height=*/30,
         /*angle=*/45,
         /*coordinate_system_height=*/792);
-    EXPECT_DOUBLE_EQ(78.786796564403573, result.x);
-    EXPECT_DOUBLE_EQ(720.78679656440363, result.y);
-    EXPECT_DOUBLE_EQ(-std::numbers::pi / 4, result.theta);
+    EXPECT_FLOAT_EQ(78.786796f, result.x);
+    EXPECT_FLOAT_EQ(720.786796f, result.y);
+    EXPECT_FLOAT_EQ(-std::numbers::pi_v<float> / 4, result.theta);
   }
 
   {
@@ -42,9 +42,9 @@ TEST(PdfiumSearchifyTest, ConvertToPdfOrigin) {
         /*height=*/30,
         /*angle=*/90,
         /*coordinate_system_height=*/792);
-    EXPECT_DOUBLE_EQ(70, result.x);
-    EXPECT_DOUBLE_EQ(742, result.y);
-    EXPECT_DOUBLE_EQ(-std::numbers::pi / 2, result.theta);
+    EXPECT_FLOAT_EQ(70, result.x);
+    EXPECT_FLOAT_EQ(742, result.y);
+    EXPECT_FLOAT_EQ(-std::numbers::pi_v<float> / 2, result.theta);
   }
   {
     SearchifyBoundingBoxOrigin result = ConvertToPdfOriginForTesting(
@@ -53,9 +53,9 @@ TEST(PdfiumSearchifyTest, ConvertToPdfOrigin) {
         /*height=*/30,
         /*angle=*/180,
         /*coordinate_system_height=*/792);
-    EXPECT_DOUBLE_EQ(100, result.x);
-    EXPECT_DOUBLE_EQ(772, result.y);
-    EXPECT_DOUBLE_EQ(-std::numbers::pi, result.theta);
+    EXPECT_FLOAT_EQ(100, result.x);
+    EXPECT_FLOAT_EQ(772, result.y);
+    EXPECT_FLOAT_EQ(-std::numbers::pi_v<float>, result.theta);
   }
   {
     SearchifyBoundingBoxOrigin result = ConvertToPdfOriginForTesting(
@@ -64,9 +64,9 @@ TEST(PdfiumSearchifyTest, ConvertToPdfOrigin) {
         /*height=*/30,
         /*angle=*/-90,
         /*coordinate_system_height=*/792);
-    EXPECT_DOUBLE_EQ(130, result.x);
-    EXPECT_DOUBLE_EQ(742, result.y);
-    EXPECT_DOUBLE_EQ(std::numbers::pi / 2, result.theta);
+    EXPECT_FLOAT_EQ(130, result.x);
+    EXPECT_FLOAT_EQ(742, result.y);
+    EXPECT_FLOAT_EQ(std::numbers::pi_v<float> / 2, result.theta);
   }
 }
 

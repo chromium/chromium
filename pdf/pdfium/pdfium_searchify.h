@@ -19,9 +19,9 @@
 namespace chrome_pdf {
 
 struct SearchifyBoundingBoxOrigin {
-  double x;
-  double y;
-  double theta;
+  float x;
+  float y;
+  float theta;
 };
 
 std::vector<uint8_t> PDFiumSearchify(
@@ -34,8 +34,8 @@ SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(
     int x,
     int y,
     int height,
-    double angle,
-    double coordinate_system_height);
+    float angle,
+    float coordinate_system_height);
 
 class PdfiumProgressiveSearchifier : public PdfProgressiveSearchifier {
  public:

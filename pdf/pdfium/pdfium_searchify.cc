@@ -52,11 +52,11 @@ std::vector<uint32_t> Utf8ToCharcodes(const std::string& string) {
 SearchifyBoundingBoxOrigin ConvertToPdfOrigin(int x,
                                               int y,
                                               int height,
-                                              double angle,
-                                              double coordinate_system_height) {
-  const double theta = base::DegToRad(angle);
-  return {.x = x - (sin(theta) * height),
-          .y = coordinate_system_height - (y + cos(theta) * height),
+                                              float angle,
+                                              float coordinate_system_height) {
+  const float theta = base::DegToRad(angle);
+  return {.x = x - (sinf(theta) * height),
+          .y = coordinate_system_height - (y + cosf(theta) * height),
           .theta = -theta};
 }
 
@@ -65,10 +65,10 @@ SearchifyBoundingBoxOrigin ProjectToBaseline(
     const SearchifyBoundingBoxOrigin& origin,
     const SearchifyBoundingBoxOrigin& baseline_origin) {
   // The length between `origin` and `baseline_origin`.
-  double length = (origin.x - baseline_origin.x) * cos(baseline_origin.theta) +
-                  (origin.y - baseline_origin.y) * sin(baseline_origin.theta);
-  return {.x = baseline_origin.x + length * cos(baseline_origin.theta),
-          .y = baseline_origin.y + length * sin(baseline_origin.theta),
+  float length = (origin.x - baseline_origin.x) * cosf(baseline_origin.theta) +
+                 (origin.y - baseline_origin.y) * sinf(baseline_origin.theta);
+  return {.x = baseline_origin.x + length * cosf(baseline_origin.theta),
+          .y = baseline_origin.y + length * sinf(baseline_origin.theta),
           .theta = baseline_origin.theta};
 }
 
@@ -83,10 +83,10 @@ void AddTextOnImage(FPDF_DOCUMENT document,
     return;
   }
 
-  double image_rendered_width =
-      hypot(quadpoints.x1 - quadpoints.x2, quadpoints.y1 - quadpoints.y2);
-  double image_rendered_height =
-      hypot(quadpoints.x2 - quadpoints.x3, quadpoints.y2 - quadpoints.y3);
+  float image_rendered_width =
+      hypotf(quadpoints.x1 - quadpoints.x2, quadpoints.y1 - quadpoints.y2);
+  float image_rendered_height =
+      hypotf(quadpoints.x2 - quadpoints.x3, quadpoints.y2 - quadpoints.y3);
   unsigned int image_pixel_width;
   unsigned int image_pixel_height;
   if (!FPDFImageObj_GetImagePixelSize(image, &image_pixel_width,
@@ -107,8 +107,8 @@ void AddTextOnImage(FPDF_DOCUMENT document,
                            line->baseline_box_angle, image_rendered_height);
 
     for (const auto& word : line->words) {
-      double width = word->bounding_box.width();
-      double height = word->bounding_box.height();
+      float width = word->bounding_box.width();
+      float height = word->bounding_box.height();
 
       if (width == 0 || height == 0) {
         continue;
@@ -152,12 +152,12 @@ void AddTextOnImage(FPDF_DOCUMENT document,
         DLOG(ERROR) << "Failed to get the bounding box of original text object";
         continue;
       }
-      double original_text_object_width = right - left;
-      double original_text_object_height = top - bottom;
+      float original_text_object_width = right - left;
+      float original_text_object_height = top - bottom;
       CHECK_GT(original_text_object_width, 0);
       CHECK_GT(original_text_object_height, 0);
-      double width_scale = width / original_text_object_width;
-      double height_scale = height / original_text_object_height;
+      float width_scale = width / original_text_object_width;
+      float height_scale = height / original_text_object_height;
       FPDFPageObj_Transform(text.get(), width_scale, 0, 0, height_scale, 0, 0);
 
       // Move text object to the corresponding text position on the full image.
@@ -165,18 +165,18 @@ void AddTextOnImage(FPDF_DOCUMENT document,
           word->bounding_box.x(), word->bounding_box.y(), height,
           word->bounding_box_angle, image_rendered_height);
       origin = ProjectToBaseline(origin, baseline_origin);
-      double a = cos(origin.theta);
-      double b = sin(origin.theta);
-      double c = -sin(origin.theta);
-      double d = cos(origin.theta);
-      double e = origin.x;
-      double f = origin.y;
+      float a = cosf(origin.theta);
+      float b = sinf(origin.theta);
+      float c = -sinf(origin.theta);
+      float d = cosf(origin.theta);
+      float e = origin.x;
+      float f = origin.y;
       if (word->direction ==
           screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT) {
         a = -a;
         b = -b;
-        e += cos(origin.theta) * width;
-        f += sin(origin.theta) * width;
+        e += cosf(origin.theta) * width;
+        f += sinf(origin.theta) * width;
       }
       FPDFPageObj_Transform(text.get(), a, b, c, d, e, f);
 
@@ -278,8 +278,8 @@ SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(
     int x,
     int y,
     int height,
-    double angle,
-    double coordinate_system_height) {
+    float angle,
+    float coordinate_system_height) {
   return ConvertToPdfOrigin(x, y, height, angle, coordinate_system_height);
 }
 
