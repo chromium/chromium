@@ -406,6 +406,9 @@ bool AtspiInProcessFuzzer::InvokeAction(ScopedAtspiAccessible& node,
     g_clear_error(&error);
     return false;
   }
+  if (num_actions == 0) {
+    return false;
+  }
   gboolean ok = atspi_action_do_action(action, action_id % num_actions, &error);
   return CheckOk(ok, &error);
 }
@@ -432,6 +435,9 @@ bool AtspiInProcessFuzzer::SetSelection(
   GError* error = nullptr;
   int child_count = atspi_accessible_get_child_count(node, &error);
   if (!CheckOk(error != nullptr, &error)) {
+    return false;
+  }
+  if (child_count == 0) {
     return false;
   }
   std::set<uint32_t> children_to_select;
