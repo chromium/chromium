@@ -275,11 +275,6 @@ BASE_FEATURE(kJavaScriptPromiseWithResolvers,
              ("JavaScriptPromiseWithResolvers"),
              kFeatureDefaultStateControlledByV8);
 
-// Enables the Array.fromAsync proposal.
-BASE_FEATURE(kJavaScriptArrayFromAsync,
-             ("JavaScriptArrayFromAsync"),
-             kFeatureDefaultStateControlledByV8);
-
 // Enables the RegExp modifiers proposal.
 BASE_FEATURE(kJavaScriptRegExpModifiers,
              ("JavaScriptRegExpModifiers"),
