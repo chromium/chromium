@@ -80,6 +80,9 @@ class GoogleBottomBarActionsHandler {
             case ButtonId.CUSTOM -> {
                 return v -> onCustomButtonClick(buttonConfig);
             }
+            case ButtonId.HOME -> {
+                return v -> onHomeButtonClick(buttonConfig);
+            }
             case ButtonId.ADD_NOTES, ButtonId.REFRESH -> {
                 Log.e(TAG, "Unsupported action: %s", buttonConfig.getId());
                 return null;
@@ -177,6 +180,16 @@ class GoogleBottomBarActionsHandler {
             GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.CUSTOM_EMBEDDER);
         } else {
             Log.e(TAG, "Can't perform custom action as pending intent is null.");
+        }
+    }
+
+    private void onHomeButtonClick(ButtonConfig buttonConfig) {
+        PendingIntent pendingIntent = buttonConfig.getPendingIntent();
+        if (pendingIntent != null) {
+            sendPendingIntentWithUrl(pendingIntent);
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.HOME_EMBEDDER);
+        } else {
+            Log.e(TAG, "Can't perform home action as pending intent is null.");
         }
     }
 

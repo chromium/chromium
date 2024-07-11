@@ -456,6 +456,55 @@ public class GoogleBottomBarActionsHandlerTest {
         assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
     }
 
+    @Test
+    public void testHomeAction_buttonConfigHasNoPendingIntent_logsError() {
+        mHistogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(BUTTON_CLICKED_HISTOGRAM).build();
+        Context context = mActivity.getApplicationContext();
+        View buttonView = new View(context);
+        Drawable icon = mock(Drawable.class);
+        BottomBarConfig.ButtonConfig buttonConfig =
+                new BottomBarConfig.ButtonConfig(
+                        ButtonId.HOME,
+                        icon,
+                        /* description= */ "Description",
+                        /* pendingIntent= */ null);
+
+        View.OnClickListener clickListener =
+                mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
+        clickListener.onClick(buttonView);
+
+        ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
+        assertEquals(logItem.msg, "Can't perform home action as pending intent is null.");
+    }
+
+    @Test
+    public void testHomeAction_buttonConfigHasPendingIntent_startsPendingIntent()
+            throws PendingIntent.CanceledException {
+        mHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_EMBEDDER);
+        Context context = mActivity.getApplicationContext();
+        View buttonView = new View(context);
+        PendingIntent pendingIntent = mock(PendingIntent.class);
+        Drawable icon = mock(Drawable.class);
+        BottomBarConfig.ButtonConfig buttonConfig =
+                new BottomBarConfig.ButtonConfig(
+                        ButtonId.HOME,
+                        icon,
+                        /* description= */ "Description",
+                        /* pendingIntent= */ pendingIntent);
+
+        View.OnClickListener clickListener =
+                mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
+        clickListener.onClick(buttonView);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(pendingIntent)
+                .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
+        assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
+    }
+
     @Test(expected = IllegalStateException.class)
     public void testOpenGoogleAppHome_canNotBeResolved_throwsIllegalStateException() {
         mGoogleBottomBarActionsHandler.openGoogleAppHome();

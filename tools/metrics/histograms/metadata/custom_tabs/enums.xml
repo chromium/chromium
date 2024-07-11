@@ -188,6 +188,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Embedder Custom button"/>
   <int value="8" label="Embedder Search button"/>
   <int value="9" label="Chrome Search button"/>
+  <int value="10" label="Embedder Home button"/>
 </enum>
 
 <enum name="GoogleBottomBarCreatedEvent">
