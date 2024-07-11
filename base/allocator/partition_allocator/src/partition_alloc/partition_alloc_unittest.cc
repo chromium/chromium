@@ -486,8 +486,7 @@ class PartitionAllocTest
     // Duplicate the logic from PartitionRoot::Init().
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (allocator.root()->brp_enabled()) {
-      metadata_size =
-          AlignUpInSlotMetadataSizeForApple(kInSlotMetadataSizeAdjustment);
+      metadata_size = kInSlotMetadataSizeAdjustment;
     }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     return kExtraAllocSizeWithoutMetadata + metadata_size;

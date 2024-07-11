@@ -1177,13 +1177,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (brp_enabled()) {
-      size_t in_slot_metadata_size =
-          internal::AlignUpInSlotMetadataSizeForApple(
-              internal::kInSlotMetadataSizeAdjustment);
-      settings.in_slot_metadata_size = in_slot_metadata_size;
-      PA_CHECK(internal::kInSlotMetadataSizeAdjustment <=
-               in_slot_metadata_size);
-      settings.extras_size += in_slot_metadata_size;
+      settings.in_slot_metadata_size = internal::kInSlotMetadataSizeAdjustment;
+      settings.extras_size += internal::kInSlotMetadataSizeAdjustment;
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
       EnableMac11MallocSizeHackIfNeeded();
 #endif

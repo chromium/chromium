@@ -35,8 +35,8 @@ namespace partition_alloc::internal {
 // Placed outside `PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)`
 // intentionally to accommodate usage in contexts also outside
 // this gating.
-PA_ALWAYS_INLINE size_t
-AlignUpInSlotMetadataSizeForApple(size_t in_slot_metadata_size) {
+PA_ALWAYS_INLINE constexpr size_t AlignUpInSlotMetadataSizeForApple(
+    size_t in_slot_metadata_size) {
 #if PA_BUILDFLAG(IS_APPLE)
   return base::bits::AlignUp<size_t>(in_slot_metadata_size, 8);
 #else
@@ -570,7 +570,7 @@ PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
 
 static inline constexpr size_t kInSlotMetadataSizeAdjustment =
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    sizeof(InSlotMetadata);
+    AlignUpInSlotMetadataSizeForApple(sizeof(InSlotMetadata));
 #else
     0ul;
 #endif
