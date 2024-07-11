@@ -21,7 +21,7 @@ const int kLargeDetentTopMargin = 50;
 const int kLargeDetentTopThreshold = 150;
 
 // Duration for the animation of the sheet's height.
-const CGFloat kHeightAnimationDuration = 0.2;
+const CGFloat kHeightAnimationDuration = 0.3;
 
 // Radius of the 2 top corners on the sheet.
 const CGFloat kTopCornerRadius = 10;
@@ -140,7 +140,7 @@ const CGFloat kTopCornerRadius = 10;
   __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:kHeightAnimationDuration
                         delay:0
-                      options:UIViewAnimationOptionCurveEaseInOut
+                      options:UIViewAnimationOptionCurveEaseOut
                    animations:^{
                      [weakSelf
                          blockForAnimatingHeightConstraintToConstant:constant];
