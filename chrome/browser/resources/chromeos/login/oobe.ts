@@ -67,8 +67,8 @@ function initializeOobe(): void {
   traceExecution(TraceEvent.DOM_CONTENT_LOADED);
 
   // Initialize the on-screen debugger if present.
-  if (OobeDebugger.DebuggerUI) {
-    OobeDebugger.DebuggerUI.getInstance().register(document.body);
+  if (OobeDebugger.DebuggerUi) {
+    OobeDebugger.DebuggerUi.getInstance().register(document.body);
   }
   // Add the QuickStart debugger if present.
   if (QuickStartDebugger.addDebugger) {

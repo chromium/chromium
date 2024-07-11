@@ -36,7 +36,7 @@ const TRIGGERDOWN_FALLBACK_DELAY = 10000;
  * transitions, error messages display.
  */
 export class DisplayManager {
-  private screens: string[];
+  screens: string[];
   private currentStepId: null|string;
   private keyboardFlowOn: boolean;
   private virtualKeyboardShown: boolean;

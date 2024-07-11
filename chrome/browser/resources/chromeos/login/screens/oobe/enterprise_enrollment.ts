@@ -562,8 +562,8 @@ export class EnterpriseEnrollmentElement extends
   }
 
   private openedFromDebugOverlay(): boolean {
-    if (OobeDebugger.DebuggerUI &&
-        OobeDebugger.DebuggerUI.getInstance().currentScreenId ===
+    if (OobeDebugger.DebuggerUi &&
+        OobeDebugger.DebuggerUi.getInstance().currentScreenId ===
             'enterprise-enrollment') {
       console.warn(
           'Enrollment screen was opened using debug overlay: ' +
