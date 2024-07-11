@@ -63,7 +63,7 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     crypto::SymmetricKey* GetKey() const { return key_.get(); }
     XKeyTagKeyFormat GetKeyFormat() const { return format_; }
 
-    bool NeedsKeyFetch() const { return !!key_; }
+    bool NeedsKeyFetch() const { return !key_; }
 
     // Gets the InitializationVector, if it exists. If there is no IV, but the
     // `identity_` flag is set, then use the media sequence number as the IV.

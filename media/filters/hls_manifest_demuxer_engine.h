@@ -63,6 +63,8 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void Stop() override;
 
   // HlsRenditionHost implementation.
+  void ReadKey(const hls::MediaSegment::EncryptionData& data,
+               HlsDataSourceProvider::ReadCb) override;
   void ReadManifest(const GURL& uri, HlsDataSourceProvider::ReadCb cb) override;
   void ReadMediaSegment(const hls::MediaSegment& segment,
                         bool read_chunked,

@@ -133,6 +133,10 @@ class MockHlsRenditionHost : public HlsRenditionHost {
   MockHlsRenditionHost();
   ~MockHlsRenditionHost() override;
   MOCK_METHOD(void,
+              ReadKey,
+              (const hls::MediaSegment::EncryptionData&,
+               HlsDataSourceProvider::ReadCb));
+  MOCK_METHOD(void,
               ReadManifest,
               (const GURL&, HlsDataSourceProvider::ReadCb),
               (override));
@@ -217,11 +221,15 @@ class MockHlsNetworkAccess : public HlsNetworkAccess {
   ~MockHlsNetworkAccess() override;
   MockHlsNetworkAccess();
   MOCK_METHOD(void,
+              ReadKey,
+              (const hls::MediaSegment::EncryptionData&,
+               HlsDataSourceProvider::ReadCb));
+  MOCK_METHOD(void,
               ReadManifest,
               (const GURL& uri, HlsDataSourceProvider::ReadCb cb));
   MOCK_METHOD(void,
               ReadMediaSegment,
-              (const hls::MediaSegment& segment,
+              (const hls::MediaSegment&,
                bool read_chunked,
                bool include_init_segment,
                HlsDataSourceProvider::ReadCb cb));

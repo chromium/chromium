@@ -19,6 +19,8 @@ class MEDIA_EXPORT HlsNetworkAccessImpl final : public HlsNetworkAccess {
   ~HlsNetworkAccessImpl() override;
 
   // HlsNetworkAccess implementation
+  void ReadKey(const hls::MediaSegment::EncryptionData& data,
+               HlsDataSourceProvider::ReadCb cb) override;
   void ReadManifest(const GURL& uri, HlsDataSourceProvider::ReadCb cb) override;
   void ReadMediaSegment(const hls::MediaSegment& segment,
                         bool read_chunked,
@@ -31,6 +33,15 @@ class MEDIA_EXPORT HlsNetworkAccessImpl final : public HlsNetworkAccess {
  private:
   void ReadUntilExhausted(HlsDataSourceProvider::ReadCb cb,
                           HlsDataSourceProvider::ReadResult result);
+  void ReadSegmentQueueInternal(
+      HlsDataSourceProvider::SegmentQueue media_segment_url_queue,
+      HlsDataSourceProvider::ReadCb cb);
+  void ReadAllInternal(const GURL& uri, HlsDataSourceProvider::ReadCb cb);
+  void OnKeyFetch(
+      scoped_refptr<hls::MediaSegment::EncryptionData> enc_data,
+      base::OnceCallback<void(HlsDataSourceProvider::ReadCb)> next_op,
+      HlsDataSourceProvider::ReadCb cb,
+      HlsDataSourceProvider::ReadResult result);
 
   // Ensure that safe member fields are only accessed on the media sequence.
   SEQUENCE_CHECKER(media_sequence_checker_);
