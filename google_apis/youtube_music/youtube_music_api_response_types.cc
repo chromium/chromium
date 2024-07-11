@@ -429,4 +429,32 @@ std::string QueueContainer::ToString() const {
                             queue_.ToString().c_str());
 }
 
+ReportPlaybackResult::ReportPlaybackResult() = default;
+ReportPlaybackResult::~ReportPlaybackResult() = default;
+
+// static
+void ReportPlaybackResult::RegisterJSONConverter(
+    JSONValueConverter<ReportPlaybackResult>* converter) {
+  converter->RegisterStringField(
+      kApiResponsePlaybackReportingTokenKey,
+      &ReportPlaybackResult::playback_reporting_token_);
+}
+
+// static
+std::unique_ptr<ReportPlaybackResult> ReportPlaybackResult::CreateFrom(
+    const base::Value& value) {
+  auto report_playback_result = std::make_unique<ReportPlaybackResult>();
+  JSONValueConverter<ReportPlaybackResult> converter;
+  if (!converter.Convert(value, report_playback_result.get())) {
+    DVLOG(1) << "Unable to construct `ReportPlaybackResult` from parsed json.";
+    return nullptr;
+  }
+  return report_playback_result;
+}
+
+std::string ReportPlaybackResult::ToString() const {
+  return base::StringPrintf("ReportPlaybackResult(playback_reporting_token=%s)",
+                            playback_reporting_token_.c_str());
+}
+
 }  // namespace google_apis::youtube_music

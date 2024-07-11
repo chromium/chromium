@@ -385,6 +385,32 @@ class QueueContainer {
   Queue queue_;
 };
 
+// Report playback result object from the API response. For object details,
+// check below:
+//   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/reports/playback#response-body
+class ReportPlaybackResult {
+ public:
+  ReportPlaybackResult();
+  ReportPlaybackResult(const ReportPlaybackResult&) = delete;
+  ReportPlaybackResult& operator=(const ReportPlaybackResult&) = delete;
+  ~ReportPlaybackResult();
+
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<ReportPlaybackResult>* converter);
+
+  static std::unique_ptr<ReportPlaybackResult> CreateFrom(
+      const base::Value& value);
+
+  const std::string& playback_reporting_token() const {
+    return playback_reporting_token_;
+  }
+
+  std::string ToString() const;
+
+ private:
+  std::string playback_reporting_token_;
+};
+
 }  // namespace google_apis::youtube_music
 
 #endif  // GOOGLE_APIS_YOUTUBE_MUSIC_YOUTUBE_MUSIC_API_RESPONSE_TYPES_H_

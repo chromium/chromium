@@ -191,6 +191,49 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
   base::WeakPtrFactory<PlaybackQueueNextRequest> weak_ptr_factory_{this};
 };
 
+// Request to report the playback to the API server. For API usage, please check
+// below:
+//   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/reports/playback
+class ReportPlaybackRequest : public UrlFetchRequestBase {
+ public:
+  using Callback = base::OnceCallback<void(
+      base::expected<std::unique_ptr<ReportPlaybackResult>, ApiErrorCode>)>;
+
+  ReportPlaybackRequest(RequestSender* sender,
+                        std::unique_ptr<ReportPlaybackRequestPayload> payload,
+                        Callback callback);
+  ReportPlaybackRequest(const ReportPlaybackRequest&) = delete;
+  ReportPlaybackRequest& operator=(const ReportPlaybackRequest&) = delete;
+  ~ReportPlaybackRequest() override;
+
+ protected:
+  // UrlFetchRequestBase:
+  GURL GetURL() const override;
+  ApiErrorCode MapReasonToError(ApiErrorCode code,
+                                const std::string& reason) override;
+  bool IsSuccessfulErrorCode(ApiErrorCode error) override;
+  HttpRequestMethod GetRequestType() const override;
+  bool GetContentData(std::string* upload_content_type,
+                      std::string* upload_content) override;
+  void ProcessURLFetchResults(
+      const network::mojom::URLResponseHead* response_head,
+      const base::FilePath response_file,
+      std::string response_body) override;
+  void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
+
+ private:
+  static std::unique_ptr<ReportPlaybackResult> Parse(const std::string& json);
+
+  void OnDataParsed(
+      std::unique_ptr<ReportPlaybackResult> report_playback_result);
+
+  const std::unique_ptr<ReportPlaybackRequestPayload> payload_;
+
+  Callback callback_;
+
+  base::WeakPtrFactory<ReportPlaybackRequest> weak_ptr_factory_{this};
+};
+
 }  // namespace youtube_music
 }  // namespace google_apis
 

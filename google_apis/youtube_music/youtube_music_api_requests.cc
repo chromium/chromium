@@ -316,4 +316,84 @@ void PlaybackQueueNextRequest::OnDataParsed(
   OnProcessURLFetchResultsComplete();
 }
 
+ReportPlaybackRequest::ReportPlaybackRequest(
+    RequestSender* sender,
+    std::unique_ptr<ReportPlaybackRequestPayload> payload,
+    Callback callback)
+    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
+      payload_(std::move(payload)),
+      callback_(std::move(callback)) {
+  CHECK(payload_);
+  CHECK(!callback_.is_null());
+}
+
+ReportPlaybackRequest::~ReportPlaybackRequest() = default;
+
+GURL ReportPlaybackRequest::GetURL() const {
+  // TODO(b/341324009): Move to an util file or class.
+  return GURL("https://youtubemediaconnect.googleapis.com/v1/reports/playback");
+}
+
+ApiErrorCode ReportPlaybackRequest::MapReasonToError(
+    ApiErrorCode code,
+    const std::string& reason) {
+  return code;
+}
+
+bool ReportPlaybackRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
+  return error == HTTP_SUCCESS;
+}
+
+HttpRequestMethod ReportPlaybackRequest::GetRequestType() const {
+  return HttpRequestMethod::kPost;
+}
+
+bool ReportPlaybackRequest::GetContentData(std::string* upload_content_type,
+                                           std::string* upload_content) {
+  *upload_content_type = kContentTypeJson;
+  *upload_content = payload_->ToJson();
+  return true;
+}
+
+void ReportPlaybackRequest::ProcessURLFetchResults(
+    const network::mojom::URLResponseHead* response_head,
+    base::FilePath response_file,
+    std::string response_body) {
+  ApiErrorCode error = GetErrorCode();
+  switch (error) {
+    case HTTP_SUCCESS:
+      blocking_task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&ReportPlaybackRequest::Parse,
+                         std::move(response_body)),
+          base::BindOnce(&ReportPlaybackRequest::OnDataParsed,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    default:
+      RunCallbackOnPrematureFailure(error);
+      OnProcessURLFetchResultsComplete();
+      break;
+  }
+}
+
+void ReportPlaybackRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
+  std::move(callback_).Run(base::unexpected(error));
+}
+
+std::unique_ptr<ReportPlaybackResult> ReportPlaybackRequest::Parse(
+    const std::string& json) {
+  std::unique_ptr<base::Value> value = ParseJson(json);
+  return value ? ReportPlaybackResult::CreateFrom(*value) : nullptr;
+}
+
+void ReportPlaybackRequest::OnDataParsed(
+    std::unique_ptr<ReportPlaybackResult> report_playback_result) {
+  if (!report_playback_result) {
+    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+  } else {
+    std::move(callback_).Run(std::move(report_playback_result));
+  }
+  OnProcessURLFetchResultsComplete();
+}
+
 }  // namespace google_apis::youtube_music

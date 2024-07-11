@@ -8,6 +8,9 @@
 #include <optional>
 #include <string>
 
+#include "base/time/time.h"
+#include "base/values.h"
+
 namespace google_apis::youtube_music {
 
 // Payload used as a request body for the API request that prepares the playback
@@ -40,6 +43,68 @@ struct PlaybackQueuePrepareRequestPayload {
   std::optional<ExplicitFilter> explicit_filter;
 
   std::optional<ShuffleMode> shuffle_mode;
+};
+
+// Payload used as a request body for the API request that reports the playback.
+struct ReportPlaybackRequestPayload {
+  enum class PlaybackState {
+    kUnspecified,
+    kPlaying,
+    kPaused,
+    kCompleted,
+  };
+
+  enum class ConnectionType {
+    kUnspecified,
+    kActiveUncategorized,
+    kNone,
+    kWifi,
+    kCellular2g,
+    kCellular3g,
+    kCellular4g,
+    kCellularUnknown,
+    kDisco,
+    kWifiMetered,
+    kCellular5gSa,
+    kCellular5gNsa,
+    kWired,
+    kInvalid,
+  };
+
+  struct Params {
+    std::string playback_reporting_token;
+
+    base::Time client_current_time;
+
+    base::TimeDelta playback_start_offset;
+
+    base::TimeDelta media_time_current;
+
+    ConnectionType connection_type;
+
+    PlaybackState playback_state;
+  };
+
+  struct WatchTimeSegment {
+    base::TimeDelta media_time_start;
+
+    base::TimeDelta media_time_end;
+
+    base::Time client_start_time;
+  };
+
+  ReportPlaybackRequestPayload(
+      const Params& params,
+      const std::optional<WatchTimeSegment>& watch_time_segment);
+  ReportPlaybackRequestPayload(const ReportPlaybackRequestPayload&);
+  ReportPlaybackRequestPayload& operator=(const ReportPlaybackRequestPayload&);
+  ~ReportPlaybackRequestPayload();
+
+  std::string ToJson() const;
+
+  Params params;
+
+  std::optional<WatchTimeSegment> watch_time_segment;
 };
 
 }  // namespace google_apis::youtube_music
