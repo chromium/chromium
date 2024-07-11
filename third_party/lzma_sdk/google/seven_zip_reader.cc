@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span_writer.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -443,30 +444,32 @@ bool SevenZipReaderImpl::AreHeadersEncrypted(base::File archive_file,
 
   auto modified_header = base::HeapArray<Byte>::WithSize(header.size() + 2);
   {
-    base::BufferIterator<Byte> iterator(modified_header);
-    *iterator.MutableObject<Byte>() = k7zIdHeader;
-    *iterator.MutableObject<Byte>() = k7zIdMainStreamsInfo;
-    iterator.MutableSpan<Byte>(header.size() - 1).copy_from(header.subspan(1));
-    *iterator.MutableObject<Byte>() = k7zIdEnd;
+    base::SpanWriter<Byte> iterator(modified_header);
+    iterator.WriteU8LittleEndian(k7zIdHeader);
+    iterator.WriteU8LittleEndian(k7zIdMainStreamsInfo);
+    iterator.Write(header.subspan(1));
+    iterator.WriteU8LittleEndian(k7zIdEnd);
   }
 
   auto modified_signature_header =
       base::HeapArray<Byte>::WithSize(k7zStartHeaderSize);
   modified_signature_header.copy_from(signature_header);
   {
-    base::BufferIterator<Byte> iterator(modified_signature_header);
-    iterator.Seek(20);  // Fast-forward to
-                        // SignatureHeader.NextHeaderSize.
-    *iterator.MutableObject<uint64_t>() = modified_header.size();
-    *iterator.MutableObject<uint32_t>() =
-        CrcCalc(modified_header.data(), modified_header.size());
+    // The NextHeaderSize is an unaligned 64-bit number, so use
+    // SpanWriter instead of BufferIterator.
+    base::SpanWriter<Byte> iterator(modified_signature_header);
+    iterator.Skip(20u);  // Fast-forward to
+                         // SignatureHeader.NextHeaderSize.
+    iterator.WriteU64LittleEndian(modified_header.size());
+    iterator.WriteU32LittleEndian(
+        CrcCalc(modified_header.data(), modified_header.size()));
   }
   {
-    base::BufferIterator<Byte> iterator(modified_signature_header);
-    iterator.Seek(8);  // Fast-forward to SignatureHeaderCRC
+    base::SpanWriter<Byte> iterator(modified_signature_header);
+    iterator.Skip(8u);  // Fast-forward to SignatureHeaderCRC
     base::span<Byte> checksum_data = modified_signature_header.subspan(12);
-    *iterator.MutableObject<uint32_t>() =
-        CrcCalc(checksum_data.data(), checksum_data.size());
+    iterator.WriteU32LittleEndian(
+        CrcCalc(checksum_data.data(), checksum_data.size()));
   }
 
   // Write the modified archive to the temp file.
