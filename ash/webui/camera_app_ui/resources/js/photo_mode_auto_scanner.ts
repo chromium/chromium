@@ -247,26 +247,28 @@ function processOcrResult(performOcrResult: PerformOcrResult): DetectedResult|
     null {
   const {result, imageWidth, imageHeight} = performOcrResult;
   const lines = result.lines.filter((line) => line.confidence >= 0.9);
-  if (lines.length === 0) {
-    return null;
-  }
 
   // Calculates the minimum normalized distance to the center of the image from
   // all detected lines.
-  function getNormalizedDistanceToCenter(): number {
-    let minDistance = Infinity;
-    for (const line of lines) {
-      const {x, y} = getCenterOfLine(line);
-      const distance = Math.hypot(
-          x / imageWidth - 0.5,
-          y / imageHeight - 0.5,
-      );
-      if (distance < minDistance) {
-        minDistance = distance;
-      }
+  let minNormalizedDistanceToCenter = Infinity;
+  for (const line of lines) {
+    const {x, y} = getCenterOfLine(line);
+    const distance = Math.hypot(
+        x / imageWidth - 0.5,
+        y / imageHeight - 0.5,
+    );
+    if (distance < minNormalizedDistanceToCenter) {
+      minNormalizedDistanceToCenter = distance;
     }
-    return minDistance;
   }
+
+  // Filter out the OCR result if no lines are close enough to the center of the
+  // image.
+  const maxPossibleDistance = Math.hypot(0.5, 0.5);
+  if (minNormalizedDistanceToCenter > maxPossibleDistance / 2) {
+    return null;
+  }
+
   // Calculates the center point of the bounding box of the line. The origin of
   // the coordinate system is at the top-left corner. The bounding box is
   // rotated by `boundingBoxAngle` degrees in a clockwise direction.
@@ -290,7 +292,7 @@ function processOcrResult(performOcrResult: PerformOcrResult): DetectedResult|
     scannerChip.showOcrContent(filteredResult);
   }
   return {
-    getNormalizedDistanceToCenter,
+    getNormalizedDistanceToCenter: () => minNormalizedDistanceToCenter,
     show,
   };
 }
