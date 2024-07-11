@@ -42,6 +42,10 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
     card_saved_ = card_saved;
   }
 
+  void OnConfirmationClosedCallbackFn() {
+    ran_on_confirmation_closed_callback_ = true;
+  }
+
  protected:
   ~AutofillSaveCardInfoBarDelegateTest() override = default;
 
@@ -75,6 +79,7 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
   std::optional<AutofillClient::UserProvidedCardDetails>
       last_user_provided_card_details_;
   std::optional<bool> card_saved_;
+  bool ran_on_confirmation_closed_callback_ = false;
 };
 
 // Tests that the user decision is propagated when accepting local save.
@@ -213,6 +218,45 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
   delegate->CreditCardUploadCompleted(
       /*card_saved=*/false, /*on_confirmation_closed_callback=*/std::nullopt);
   EXPECT_FALSE(card_saved_.value());
+}
+
+// Tests that `OnConfirmationClosed()` runs
+// `on_confirmation_closed_callback_` when it holds a value.
+TEST_F(AutofillSaveCardInfoBarDelegateTest, OnConfirmationClosedCallbackSet) {
+  feature_list_.InitAndEnableFeature(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
+
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate =
+      CreateDelegate(static_cast<AutofillClient::UploadSaveCardPromptCallback>(
+          base::DoNothing()));
+
+  delegate->CreditCardUploadCompleted(
+      /*card_saved=*/true, /*on_confirmation_closed_callback=*/base::BindOnce(
+          &AutofillSaveCardInfoBarDelegateTest::OnConfirmationClosedCallbackFn,
+          base::Unretained(this)));
+
+  delegate->OnConfirmationClosed();
+  EXPECT_TRUE(ran_on_confirmation_closed_callback_);
+}
+
+// Tests that `OnConfirmationClosed()` doesn't crash when
+// `on_confirmation_closed_callback_` doesn't hold a value.
+TEST_F(AutofillSaveCardInfoBarDelegateTest,
+       OnConfirmationClosedCallbackNotSet) {
+  feature_list_.InitAndEnableFeature(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
+
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate =
+      CreateDelegate(static_cast<AutofillClient::UploadSaveCardPromptCallback>(
+          base::DoNothing()));
+
+  // `on_confirmation_closed_callback_` doesn't hold a value when
+  // card upload is unsuccessful.
+  delegate->CreditCardUploadCompleted(
+      /*card_saved=*/false, /*on_confirmation_closed_callback=*/std::nullopt);
+
+  delegate->OnConfirmationClosed();
+  EXPECT_FALSE(ran_on_confirmation_closed_callback_);
 }
 
 // Tests that the infobar expires when reloading the page.

@@ -8,6 +8,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
@@ -23,12 +24,20 @@
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
 using ::testing::A;
+
+namespace {
+// Time duration to wait before auto-closing modal in save card success
+// confirmation state.
+static constexpr base::TimeDelta kConfirmationStateDuration =
+    base::Seconds(1.5);
+}  // namespace
 
 @interface FakeSaveCardMediatorDelegate
     : NSObject <SaveCardInfobarModalOverlayMediatorDelegate>
@@ -81,9 +90,13 @@ using ::testing::A;
 // Test fixture for SaveCardInfobarModalOverlayMediator.
 class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
-  SaveCardInfobarModalOverlayMediatorTest(bool for_upload = true)
+  SaveCardInfobarModalOverlayMediatorTest(
+      bool for_upload = true,
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
       : mediator_delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
+    task_environment_ = std::make_unique<web::WebTaskEnvironment>(time_source);
     autofill::CreditCard credit_card(
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
         "https://www.example.com/");
@@ -107,7 +120,12 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(mediator_delegate_);
   }
 
+  web::WebTaskEnvironment* task_environment() {
+    return task_environment_.get();
+  }
+
  protected:
+  std::unique_ptr<web::WebTaskEnvironment> task_environment_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
   raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate_ = nil;
@@ -195,7 +213,11 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLocalSave,
 class SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest
     : public SaveCardInfobarModalOverlayMediatorTest {
  public:
-  SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest() {
+  SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest()
+      : SaveCardInfobarModalOverlayMediatorTest(
+            /*for_upload=*/true,
+            /*time_source=*/base::test::TaskEnvironment::TimeSource::
+                MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureState(
         autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation,
         true);
@@ -268,4 +290,41 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   [mediator_ creditCardUploadCompleted:/*card_saved=*/false];
 
   EXPECT_FALSE(consumer.showingSuccess);
+}
+
+// Tests that modal is auto-closed and
+// `AutofillSaveCardInfoBarDelegateIOS::OnConfirmationClosed()` is called
+// when timer for confirmation state times out.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       ConfirmationAutoClosed_OnTimeOut) {
+  // Shows modal in confirmation state and starts the timer to auto-close the
+  // modal.
+  [mediator_ creditCardUploadCompleted:/*card_saved=*/true];
+
+  // Verify the modal is dismissed and call is made to
+  // `OnConfirmationClosed` on timeout.
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  EXPECT_CALL(*delegate_, OnConfirmationClosed);
+  task_environment()->FastForwardBy(kConfirmationStateDuration);
+}
+
+// Tests that modal is not auto-closed and
+// `AutofillSaveCardInfoBarDelegateIOS::OnConfirmationClosed()` is not called
+// before the timer for confirmation state times out.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       ConfirmationNotAutoclosed_BeforeTimeout) {
+  // Shows modal in confirmation state and starts the timer to auto-close the
+  // modal.
+  [mediator_ creditCardUploadCompleted:/*card_saved=*/true];
+
+  // Verify the modal is not yet dismissed and call is not made to
+  // `OnConfirmationClosed` before timer times out.
+  OCMReject([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  EXPECT_CALL(*delegate_, OnConfirmationClosed).Times(0);
+
+  // Advance timer slightly less than the actual timeout duration i.e
+  // `kConfirmationStateDuration`.
+  base::TimeDelta delta = base::Seconds(0.5);
+  task_environment()->FastForwardBy(kConfirmationStateDuration - delta);
+  EXPECT_EQ(delta, task_environment()->NextMainThreadPendingTaskDelay());
 }

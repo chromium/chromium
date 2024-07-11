@@ -86,4 +86,12 @@ void AutofillSaveCardInfoBarDelegateIOS::CreditCardUploadCompleted(
   }
 }
 
+void AutofillSaveCardInfoBarDelegateIOS::OnConfirmationClosed() {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation) &&
+      on_confirmation_closed_callback_) {
+    (*std::exchange(on_confirmation_closed_callback_, std::nullopt)).Run();
+  }
+}
+
 }  // namespace autofill

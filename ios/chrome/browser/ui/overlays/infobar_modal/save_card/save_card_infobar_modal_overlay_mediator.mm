@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/timer.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
@@ -12,11 +15,19 @@
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 #import "ui/gfx/image/image.h"
+
+namespace {
+// Time duration to wait before auto-closing modal in save card success
+// confirmation state.
+static constexpr base::TimeDelta kConfirmationStateDuration =
+    base::Seconds(1.5);
+}  // namespace
 
 @interface SaveCardInfobarModalOverlayMediator ()
 // The save card modal config from the request.
@@ -24,7 +35,15 @@
     DefaultInfobarOverlayRequestConfig* config;
 @end
 
-@implementation SaveCardInfobarModalOverlayMediator
+@implementation SaveCardInfobarModalOverlayMediator {
+  // Timer that controls auto closure of modal in save card success confirmation
+  // state.
+  base::OneShotTimer _autoCloseConfirmationTimer;
+
+  // Set to `YES` by `creditCardUploadCompleted` when card is uploaded and modal
+  // shows success confirmation.
+  BOOL _creditCardUploadCompleted;
+}
 
 #pragma mark - Accessors
 
@@ -104,7 +123,15 @@
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
     if (card_saved) {
+      _creditCardUploadCompleted = YES;
       [self.consumer showProgressWithUploadCompleted:YES];
+
+      // Auto close modal after showing successful card save confirmation.
+      __weak __typeof(self) weakSelf = self;
+      _autoCloseConfirmationTimer.Start(FROM_HERE, kConfirmationStateDuration,
+                                        base::BindOnce(^{
+                                          [weakSelf dismissInfobarModal:nil];
+                                        }));
     } else {
       // On card save failure, this modal is dimissed and user is shown an error
       // dialog triggered from IOSChromePaymentsAutofillClient.
@@ -146,6 +173,22 @@
 - (void)dismissModalAndOpenURL:(const GURL&)linkURL {
   [self.save_card_delegate pendingURLToLoad:linkURL];
   [self dismissOverlay];
+}
+
+- (void)dismissInfobarModal:(id)infobarModal {
+  base::RecordAction(base::UserMetricsAction(kInfobarModalCancelButtonTapped));
+  [self dismissOverlay];
+
+  // When loading and confirmation feature is enabled and credit card upload is
+  // completed, modal would be showing a success confirmation. On modal getting
+  // closed in confirmation state, call
+  // `AutofillSaveCardInfoBarDelegateIOS::OnConfirmationClosed`.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation) &&
+      _creditCardUploadCompleted) {
+    _autoCloseConfirmationTimer.Stop();
+    self.saveCardDelegate->OnConfirmationClosed();
+  }
 }
 
 #pragma mark - Private

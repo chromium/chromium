@@ -56,12 +56,14 @@ class AutofillSaveCardInfoBarDelegateIOS
                         OnConfirmationClosedCallback>
           on_confirmation_closed_callback);
 
+  // Called after infobar, showing success confirmation is closed.
+  // Runs `on_confirmation_closed_callback` if it holds a value.
+  virtual void OnConfirmationClosed();
+
  private:
   base::OnceCallback<void(bool card_saved)>
       credit_card_upload_completion_callback_;
 
-  // TODO(crbug.com/339887700): Not used yet. Run this callback once modal gets
-  // closed after showing confirmation.
   // `on_confirmation_closed_callback_` holds a value when card is successfully
   // uploaded and is eligible for virtual card enrollment.
   std::optional<payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
