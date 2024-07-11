@@ -53,23 +53,6 @@ base::trace_event::MemoryAllocatorDumpGuid GetSubBackingGUIDForTracing(
                          mailbox.ToDebugString().c_str(), backing_index));
 }
 
-bool IsBufferPlaneAndFormatSupported(gfx::BufferPlane plane,
-                                     gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::YVU_420:
-      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::U ||
-             plane == gfx::BufferPlane::V;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::P010:
-      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV;
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV ||
-             plane == gfx::BufferPlane::A;
-    default:
-      return plane == gfx::BufferPlane::DEFAULT;
-  }
-}
-
 #if BUILDFLAG(IS_WIN)
 // Only allow shmem overlays for NV12 on Windows.
 // This moves the SCANOUT flag from the GPU backing to the shmem backing in the
@@ -385,24 +368,6 @@ bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
 }
 
 // static
-bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane) {
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format)) {
-    DVLOG(1) << "Invalid image size: " << size.ToString()
-             << " for format: " << gfx::BufferFormatToString(format);
-    return false;
-  }
-  if (!IsBufferPlaneAndFormatSupported(plane, format)) {
-    DVLOG(1) << "Unsupported buffer plane: " << gfx::BufferPlaneToString(plane)
-             << " for format: " << gfx::BufferFormatToString(format);
-    return false;
-  }
-  return true;
-}
-
-// static
 SharedImageUsageSet CompoundImageBacking::GetGpuSharedImageUsage(
     SharedImageUsageSet usage) {
   // Add allow copying from the shmem backing to the gpu backing.
@@ -447,43 +412,6 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
   return base::WrapUnique(new CompoundImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(shm_backing),
-      gpu_backing_factory->GetWeakPtr()));
-}
-
-// static
-std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
-    SharedImageBackingFactory* gpu_backing_factory,
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label) {
-  DCHECK(IsValidSharedMemoryBufferFormat(size, format, plane));
-
-  SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, format, plane)) {
-    DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
-    return nullptr;
-  }
-
-  const gfx::Size plane_size = GetPlaneSize(plane, size);
-  const auto plane_format =
-      viz::GetSinglePlaneSharedImageFormat(GetPlaneBufferFormat(plane, format));
-
-  auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, plane_format, plane_size, color_space, surface_origin,
-      alpha_type, GetShmSharedImageUsage(usage), debug_label,
-      std::move(shm_wrapper));
-  shm_backing->SetNotRefCounted();
-
-  return base::WrapUnique(new CompoundImageBacking(
-      mailbox, plane_format, plane_size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label), std::move(shm_backing),
       gpu_backing_factory->GetWeakPtr()));
 }
 

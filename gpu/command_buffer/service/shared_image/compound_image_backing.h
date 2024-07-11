@@ -50,9 +50,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
 
   static bool IsValidSharedMemoryBufferFormat(const gfx::Size& size,
                                               viz::SharedImageFormat format);
-  static bool IsValidSharedMemoryBufferFormat(const gfx::Size& size,
-                                              gfx::BufferFormat buffer_format,
-                                              gfx::BufferPlane plane);
 
   // Remove the SCANOUT flag if |kAllowShmOverlays|.
   static SharedImageUsageSet GetGpuSharedImageUsage(SharedImageUsageSet usage);
@@ -64,21 +61,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle handle,
       viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label);
-
-  // Creates a backing that contains a shared memory backing and GPU backing
-  // provided by `gpu_backing_factory`.
-  static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
-      SharedImageBackingFactory* gpu_backing_factory,
-      const Mailbox& mailbox,
-      gfx::GpuMemoryBufferHandle handle,
-      gfx::BufferFormat buffer_format,
-      gfx::BufferPlane plane,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,

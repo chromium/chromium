@@ -145,9 +145,8 @@ class CompoundImageBackingTest : public testing::Test {
 
     return CompoundImageBacking::CreateSharedMemory(
         &test_factory_, Mailbox::Generate(), std::move(handle),
-        viz::GetSinglePlaneSharedImageFormat(buffer_format), size,
-        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, usage,
-        "TestLabel");
+        viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, usage, "TestLabel");
   }
 
   std::unique_ptr<SharedImageBacking> CreateMultiplanarCompoundBacking() {

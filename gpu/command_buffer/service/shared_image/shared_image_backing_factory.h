@@ -76,17 +76,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       SharedImageUsageSet usage,
       std::string debug_label,
       gfx::GpuMemoryBufferHandle handle) = 0;
-  virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
-      const Mailbox& mailbox,
-      gfx::GpuMemoryBufferHandle handle,
-      gfx::BufferFormat format,
-      gfx::BufferPlane plane,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label);
 
   // This new api is introduced for MappableSI work where client code sends
   // |buffer_usage| info while creating shared image. This info is used in some
