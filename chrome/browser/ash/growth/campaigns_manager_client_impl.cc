@@ -82,6 +82,20 @@ void CampaignsManagerClientImpl::LoadCampaignsComponent(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void CampaignsManagerClientImpl::AddOnTrackerInitializedCallback(
+    growth::OnTrackerInitializedCallback callback) {
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
+  if (!tracker) {
+    LOG(ERROR) << "Feature Engagement tracer is not available";
+    std::move(callback).Run(false);
+  }
+
+  tracker->AddOnInitializedCallback(
+      base::BindOnce(&CampaignsManagerClientImpl::OnTrackerInitialized,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 bool CampaignsManagerClientImpl::IsDeviceInDemoMode() const {
   return ash::DemoSession::IsDeviceInDemoMode();
 }
@@ -162,6 +176,8 @@ void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name) {
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
     LOG(ERROR) << "Feature Engagement tracer is not available";
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return;
   }
 
@@ -174,6 +190,8 @@ void CampaignsManagerClientImpl::ClearConfig(
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
     LOG(ERROR) << "Feature Engagement tracer is not available";
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return;
   }
 
@@ -187,6 +205,8 @@ bool CampaignsManagerClientImpl::WouldTriggerHelpUI(
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
     LOG(ERROR) << "Feature Engagement tracer is not available";
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return false;
   }
 
@@ -260,12 +280,20 @@ void CampaignsManagerClientImpl::OnComponentDownloaded(
   std::move(loaded_callback).Run(path);
 }
 
+void CampaignsManagerClientImpl::OnTrackerInitialized(
+    growth::OnTrackerInitializedCallback callback,
+    bool init_success) {
+  std::move(callback).Run(init_success);
+}
+
 void CampaignsManagerClientImpl::UpdateConfig(
     const std::map<std::string, std::string>& params) {
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
     LOG(ERROR) << "Feature Engagement tracer is not available";
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return;
   }
 

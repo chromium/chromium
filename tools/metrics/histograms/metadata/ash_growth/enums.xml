@@ -70,6 +70,8 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="Invalid trigger targeting"/>
   <int value="33" label="Anchor widget not found for anchoring nudge"/>
   <int value="34" label="Position not supported for anchoring nudge"/>
+  <int value="35" label="Initializing tracker failed"/>
+  <int value="36" label="Tracker is not available in session"/>
 </enum>
 
 </enums>

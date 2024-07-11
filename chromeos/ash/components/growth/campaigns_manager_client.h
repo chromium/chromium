@@ -28,6 +28,9 @@ namespace growth {
 using CampaignComponentLoadedCallback = base::OnceCallback<void(
     const std::optional<const base::FilePath>& file_path)>;
 
+using OnTrackerInitializedCallback =
+    base::OnceCallback<void(bool init_success)>;
+
 using ActionMap = std::map<ActionType, std::unique_ptr<ActionPerformer>>;
 
 class CampaignsManagerClient {
@@ -41,6 +44,9 @@ class CampaignsManagerClient {
   // when loaded.
   virtual void LoadCampaignsComponent(
       CampaignComponentLoadedCallback callback) = 0;
+
+  virtual void AddOnTrackerInitializedCallback(
+      OnTrackerInitializedCallback callback) = 0;
 
   // True if the device is in demo mode.
   virtual bool IsDeviceInDemoMode() const = 0;

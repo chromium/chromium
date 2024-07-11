@@ -37,6 +37,8 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   // growth::CampaignsManagerClient:
   void LoadCampaignsComponent(
       growth::CampaignComponentLoadedCallback callback) override;
+  void AddOnTrackerInitializedCallback(
+      growth::OnTrackerInitializedCallback callback) override;
   bool IsDeviceInDemoMode() const override;
   bool IsCloudGamingDevice() const override;
   bool IsFeatureAwareDevice() const override;
@@ -74,6 +76,8 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
       growth::CampaignComponentLoadedCallback loaded_callback,
       component_updater::ComponentManagerAsh::Error error,
       const base::FilePath& path);
+  void OnTrackerInitialized(growth::OnTrackerInitializedCallback callback,
+                            bool init_success);
   void UpdateConfig(const std::map<std::string, std::string>& params);
   void RecordImpressionEvents(int campaign_id, std::optional<int> group_id);
   void RecordDismissalEvents(int campaign_id, std::optional<int> group_id);

@@ -262,6 +262,7 @@ class CampaignsManagerTest : public testing::Test {
     campaigns_manager_ =
         std::make_unique<CampaignsManager>(&mock_client_, local_state_.get());
     campaigns_manager_->SetPrefs(pref_.get());
+    campaigns_manager_->SetTrackerInitializedForTesting();
   }
 
  protected:
