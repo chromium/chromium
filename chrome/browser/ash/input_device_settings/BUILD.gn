@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("input_device_settings") {
+static_library("input_device_settings") {
   sources = [
     "peripherals_app_delegate_impl.cc",
     "peripherals_app_delegate_impl.h",

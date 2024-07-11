@@ -100,7 +100,7 @@ source_set("browser_tests") {
   ]
 }
 
-source_set("test_util") {
+static_library("test_util") {
   testonly = true
 
   sources = [
