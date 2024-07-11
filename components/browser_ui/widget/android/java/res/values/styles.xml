@@ -164,6 +164,7 @@ found in the LICENSE file.
         <item name="verticalInset">0dp</item>
     </style>
     <style name="TabResumptionAppChip" parent="HistoryAppChip">
+        <item name="primaryTextAppearance">@style/TextAppearance.TextSmall.Primary</item>
     </style>
     <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
         <item name="iconWidth">28dp</item>
