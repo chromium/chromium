@@ -61,8 +61,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     // Resets all preferences related to upgrade promo.
-    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
-    system_identity_manager->AddIdentity(fake_identity);
+    fake_identity_ = [FakeSystemIdentity fakeIdentity1];
+    system_identity_manager->AddIdentity(fake_identity_);
 
     coordinator_ = [[TwoScreensSigninCoordinator alloc]
         initWithBaseViewController:window_.rootViewController
@@ -107,15 +107,10 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
 
   // Signs in a fake identity.
   void SigninFakeIdentity() {
-    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
-    FakeSystemIdentityManager* system_identity_manager =
-        FakeSystemIdentityManager::FromSystemIdentityManager(
-            GetApplicationContext()->GetSystemIdentityManager());
-    system_identity_manager->AddIdentity(fake_identity);
     AuthenticationService* auth_service = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    auth_service->SignIn(fake_identity,
+    auth_service->SignIn(fake_identity_,
                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
@@ -134,6 +129,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   TwoScreensSigninCoordinator* coordinator_;
   base::UserActionTester user_actions_;
   UIWindow* window_;
+  FakeSystemIdentity* fake_identity_ = nil;
 };
 
 #pragma mark - Tests
