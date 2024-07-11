@@ -871,7 +871,6 @@ void WorkspaceWindowResizer::CompleteDrag() {
     // TODO(oshima): Add event source type to WMEvent and move
     // metrics recording inside WindowState::OnWMEvent.
     // Use the target auto-snap ratio.
-    // TODO(b/349177630): Rename `GetPhantomSnapRatio()`.
     WMEventType type;
     aura::Window* window = window_state()->window();
     switch (snap_type_) {
@@ -879,8 +878,8 @@ void WorkspaceWindowResizer::CompleteDrag() {
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeLeft"));
         const WindowSnapWMEvent snap_primary_event(
             WM_EVENT_SNAP_PRIMARY,
-            GetPhantomSnapRatio(window, window->GetRootWindow(),
-                                SnapViewType::kPrimary),
+            GetAutoSnapRatio(window, window->GetRootWindow(),
+                             SnapViewType::kPrimary),
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_primary_event);
         return;
@@ -889,8 +888,8 @@ void WorkspaceWindowResizer::CompleteDrag() {
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeRight"));
         const WindowSnapWMEvent snap_secondary_event(
             WM_EVENT_SNAP_SECONDARY,
-            GetPhantomSnapRatio(window, window->GetRootWindow(),
-                                SnapViewType::kSecondary),
+            GetAutoSnapRatio(window, window->GetRootWindow(),
+                             SnapViewType::kSecondary),
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_secondary_event);
         return;
@@ -1594,12 +1593,12 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
     case SnapType::kPrimary:
       phantom_bounds = GetSnappedWindowBounds(
           display.work_area(), display, window, SnapViewType::kPrimary,
-          GetPhantomSnapRatio(window, target_root, SnapViewType::kPrimary));
+          GetAutoSnapRatio(window, target_root, SnapViewType::kPrimary));
       break;
     case SnapType::kSecondary:
       phantom_bounds = GetSnappedWindowBounds(
           display.work_area(), display, window, SnapViewType::kSecondary,
-          GetPhantomSnapRatio(window, target_root, SnapViewType::kSecondary));
+          GetAutoSnapRatio(window, target_root, SnapViewType::kSecondary));
       break;
     case SnapType::kMaximize:
       phantom_bounds = display.work_area();

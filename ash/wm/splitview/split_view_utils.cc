@@ -989,9 +989,9 @@ bool IsSnapRatioGapWithinThreshold(aura::Window* to_be_snapped,
   return diff <= /*tolerance=*/0.01f;
 }
 
-float GetPhantomSnapRatio(aura::Window* to_be_snapped_window,
-                          aura::Window* target_root,
-                          SnapViewType snap_type) {
+float GetAutoSnapRatio(aura::Window* to_be_snapped_window,
+                       aura::Window* target_root,
+                       SnapViewType snap_type) {
   if (IsSnapGroupEnabledInClamshellMode()) {
     // `GetTopmostVisibleWindowOfSnapType()` will include windows in snap
     // groups.

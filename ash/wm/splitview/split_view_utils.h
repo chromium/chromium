@@ -323,11 +323,11 @@ bool IsSnapRatioGapWithinThreshold(aura::Window* to_be_snapped,
                                    aura::Window* opposite_snapped);
 
 // Given `to_be_snapped_window`, the `target_root` it is being dragged to, and
-// target `snap_type`, returns the snap ratio for `to_be_snapped_window` to be
-// used for phantom windows.
-float GetPhantomSnapRatio(aura::Window* to_be_snapped_window,
-                          aura::Window* target_root,
-                          SnapViewType snap_type);
+// target `snap_type`, returns the auto-snap ratio for `to_be_snapped_window`
+// that will be used if it can be added to a snap group.
+float GetAutoSnapRatio(aura::Window* to_be_snapped_window,
+                       aura::Window* target_root,
+                       SnapViewType snap_type);
 
 // Returns true if the given `window` can be considered as the candidate for
 // faster split screen set up. Returns false otherwise. `snap_action_source` is

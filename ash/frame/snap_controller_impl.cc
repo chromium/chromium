@@ -42,7 +42,7 @@ void SnapControllerImpl::ShowSnapPreview(aura::Window* window,
                                      : SnapViewType::kSecondary;
   gfx::Rect phantom_bounds_in_screen = GetSnappedWindowBoundsInParent(
       window, snap_type,
-      GetPhantomSnapRatio(window, window->GetRootWindow(), snap_type));
+      GetAutoSnapRatio(window, window->GetRootWindow(), snap_type));
   ::wm::ConvertRectToScreen(window->parent(), &phantom_bounds_in_screen);
 
   const bool need_haptic_feedback =
