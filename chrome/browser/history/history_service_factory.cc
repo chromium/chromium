@@ -78,6 +78,7 @@ HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
 // static
 void HistoryServiceFactory::ShutdownForProfile(Profile* profile) {
   HistoryServiceFactory* factory = GetInstance();
+  factory->BrowserContextShutdown(profile);
   factory->BrowserContextDestroyed(profile);
 }
 
