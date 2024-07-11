@@ -49,6 +49,7 @@ class OdfsSkyvaultUploader
 
   OdfsSkyvaultUploader(
       Profile* profile,
+      int64_t id,
       const storage::FileSystemURL& file_system_url,
       FileType file_type,
       base::RepeatingCallback<void(int64_t)> progress_callback);
@@ -63,19 +64,28 @@ class OdfsSkyvaultUploader
   void GetODFSMetadataAndStartIOTask();
 
   void CheckReauthenticationAndStartIOTask(
-      const storage::FileSystemURL& destination_folder_url,
       base::expected<ODFSMetadata, base::File::Error> metadata_or_error);
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const ::file_manager::io_task::ProgressStatus& status) override;
 
+  // Called when the mount response is received.
+  void OnMountResponse(base::File::Error result);
+
+  // Starts the IOTask to upload the file to OneDrive.
+  void StartIOTask();
+
   raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   raw_ptr<::file_manager::io_task::IOTaskController> io_task_controller_;
 
+  // The Id of the OdfsSkyvaultUploader instance. Used for notifications.
+  const int64_t id_;
+
   // The Id of the move IOTask.
-  ::file_manager::io_task::IOTaskId observed_task_id_ = -1;
+  std::optional<::file_manager::io_task::IOTaskId> observed_task_id_ =
+      std::nullopt;
 
   // The url of the file to be uploaded.
   storage::FileSystemURL file_system_url_;
