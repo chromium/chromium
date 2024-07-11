@@ -88,7 +88,7 @@ class ASH_EXPORT PickerViewDelegate {
   virtual PickerSessionMetrics& GetSessionMetrics() = 0;
 
   // Gets suggested emoji results.
-  virtual std::vector<std::string> GetSuggestedEmoji() = 0;
+  virtual std::vector<PickerSearchResult> GetSuggestedEmoji() = 0;
 };
 
 }  // namespace ash

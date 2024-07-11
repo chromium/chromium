@@ -42,6 +42,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -206,8 +207,12 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return options_.action_type;
   }
 
-  std::vector<std::string> GetSuggestedEmoji() override {
-    return options_.suggested_emojis;
+  std::vector<PickerSearchResult> GetSuggestedEmoji() override {
+    std::vector<PickerSearchResult> results;
+    for (const std::string& emoji : options_.suggested_emojis) {
+      results.push_back(PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
+    }
+    return results;
   }
 
   std::optional<PickerSearchResult> last_inserted_result() const {

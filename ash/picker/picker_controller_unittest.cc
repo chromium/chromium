@@ -671,7 +671,10 @@ TEST_F(PickerControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
 
   controller.ToggleWidget();
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("😀", "😃", "😄"));
+  EXPECT_THAT(controller.GetSuggestedEmoji(),
+              ElementsAre(PickerSearchResult::Emoji(u"😀"),
+                          PickerSearchResult::Emoji(u"😃"),
+                          PickerSearchResult::Emoji(u"😄")));
 }
 
 TEST_F(PickerControllerTest, SuggestedEmojiReturnsRecentEmoji) {
@@ -685,7 +688,9 @@ TEST_F(PickerControllerTest, SuggestedEmojiReturnsRecentEmoji) {
 
   controller.ToggleWidget();
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("abc", "xyz"));
+  EXPECT_THAT(controller.GetSuggestedEmoji(),
+              ElementsAre(PickerSearchResult::Emoji(u"abc"),
+                          PickerSearchResult::Emoji(u"xyz")));
 }
 
 TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
@@ -700,7 +705,10 @@ TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
   controller.ToggleWidget();
   controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"def"));
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("def", "abc", "xyz"));
+  EXPECT_THAT(controller.GetSuggestedEmoji(),
+              ElementsAre(PickerSearchResult::Emoji(u"def"),
+                          PickerSearchResult::Emoji(u"abc"),
+                          PickerSearchResult::Emoji(u"xyz")));
 }
 
 TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
@@ -715,7 +723,9 @@ TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
   controller.ToggleWidget();
   controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"xyz"));
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("xyz", "abc"));
+  EXPECT_THAT(controller.GetSuggestedEmoji(),
+              ElementsAre(PickerSearchResult::Emoji(u"xyz"),
+                          PickerSearchResult::Emoji(u"abc")));
 }
 
 TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
@@ -725,7 +735,43 @@ TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
   controller.ToggleWidget();
   controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"abc"));
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("abc"));
+  EXPECT_THAT(controller.GetSuggestedEmoji(),
+              ElementsAre(PickerSearchResult::Emoji(u"abc")));
+}
+
+TEST_F(PickerControllerTest,
+       SuggestedEmojiReturnsRecentEmojiEmoticonAndSymbol) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  base::Value::List emoji_history_value;
+  emoji_history_value.Append(
+      base::Value::Dict().Set("text", "emoji1").Set("timestamp", "10"));
+  emoji_history_value.Append(
+      base::Value::Dict().Set("text", "emoji2").Set("timestamp", "5"));
+  base::Value::List emoticon_history_value;
+  emoticon_history_value.Append(
+      base::Value::Dict().Set("text", "emoticon1").Set("timestamp", "12"));
+  emoticon_history_value.Append(
+      base::Value::Dict().Set("text", "emoticon2").Set("timestamp", "2"));
+  base::Value::List symbol_history_value;
+  symbol_history_value.Append(
+      base::Value::Dict().Set("text", "symbol1").Set("timestamp", "15"));
+  symbol_history_value.Append(
+      base::Value::Dict().Set("text", "symbol2").Set("timestamp", "8"));
+  ScopedDictPrefUpdate update(client.GetPrefs(), prefs::kEmojiPickerHistory);
+  update->Set("emoji", std::move(emoji_history_value));
+  update->Set("emoticon", std::move(emoticon_history_value));
+  update->Set("symbol", std::move(symbol_history_value));
+
+  controller.ToggleWidget();
+
+  EXPECT_THAT(controller.GetSuggestedEmoji(),
+              ElementsAre(PickerSearchResult::Symbol(u"symbol1"),
+                          PickerSearchResult::Emoticon(u"emoticon1"),
+                          PickerSearchResult::Emoji(u"emoji1"),
+                          PickerSearchResult::Symbol(u"symbol2"),
+                          PickerSearchResult::Emoji(u"emoji2"),
+                          PickerSearchResult::Emoticon(u"emoticon2")));
 }
 
 TEST_F(PickerControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {

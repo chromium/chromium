@@ -4,6 +4,7 @@
 
 #include "ash/picker/picker_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -87,6 +88,8 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
 constexpr base::TimeDelta kCapsLockStateViewDisplayTime = base::Seconds(3);
+
+constexpr std::string_view kDefaultSuggestedEmojis[] = {"😀", "😃", "😄"};
 
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   // Command line looks like:
@@ -606,17 +609,53 @@ PickerActionType PickerController::GetActionForResult(
       result.data());
 }
 
-std::vector<std::string> PickerController::GetSuggestedEmoji() {
+// TODO(b/352421997): Move the method to a separate class.
+std::vector<PickerSearchResult> PickerController::GetSuggestedEmoji() {
+  using HistoryItem = PickerEmojiHistoryModel::EmojiHistoryItem;
   CHECK(emoji_history_model_);
-  std::vector<PickerEmojiHistoryModel::EmojiHistoryItem> recent_emojis =
+  std::vector<HistoryItem> recent_emojis =
       emoji_history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kEmojis);
-  std::vector<std::string> results;
+  std::vector<HistoryItem> recent_emoticons =
+      emoji_history_model_->GetRecentEmojis(
+          ui::EmojiPickerCategory::kEmoticons);
+  std::vector<HistoryItem> recent_symbols =
+      emoji_history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kSymbols);
+
+  recent_emojis.reserve(recent_emojis.size() + recent_emoticons.size() +
+                        recent_symbols.size());
+  recent_emojis.insert(recent_emojis.end(), recent_emoticons.begin(),
+                       recent_emoticons.end());
+  recent_emojis.insert(recent_emojis.end(), recent_symbols.begin(),
+                       recent_symbols.end());
+  std::sort(recent_emojis.begin(), recent_emojis.end(),
+            [](const HistoryItem& a, const HistoryItem& b) {
+              return a.timestamp > b.timestamp;
+            });
+
+  std::vector<PickerSearchResult> results;
   for (const auto& item : recent_emojis) {
-    results.push_back(item.text);
+    switch (item.category) {
+      case ui::EmojiPickerCategory::kEmojis:
+        results.push_back(
+            PickerSearchResult::Emoji(base::UTF8ToUTF16(item.text)));
+        break;
+      case ui::EmojiPickerCategory::kEmoticons:
+        results.push_back(
+            PickerSearchResult::Emoticon(base::UTF8ToUTF16(item.text)));
+        break;
+      case ui::EmojiPickerCategory::kSymbols:
+        results.push_back(
+            PickerSearchResult::Symbol(base::UTF8ToUTF16(item.text)));
+        break;
+      case ui::EmojiPickerCategory::kGifs:
+        NOTREACHED_NORETURN();
+    }
   }
   if (results.empty()) {
     // Fall back to a default set of suggested emojis.
-    return {"😀", "😃", "😄"};
+    for (std::string_view emoji : kDefaultSuggestedEmojis) {
+      results.push_back(PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
+    }
   }
   return results;
 }

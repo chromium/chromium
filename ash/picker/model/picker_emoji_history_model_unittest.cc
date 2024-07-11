@@ -51,9 +51,12 @@ TEST_F(PickerEmojiHistoryModelTest, ReturnsRecentEmojisFromPrefs) {
 
   EXPECT_THAT(
       model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
-      ElementsAre(
-          HistoryItem{.text = "abc", .timestamp = TimeFromMicroSeconds(10)},
-          HistoryItem{.text = "xyz", .timestamp = TimeFromMicroSeconds(5)}));
+      ElementsAre(HistoryItem{.text = "abc",
+                              .category = ui::EmojiPickerCategory::kEmojis,
+                              .timestamp = TimeFromMicroSeconds(10)},
+                  HistoryItem{.text = "xyz",
+                              .category = ui::EmojiPickerCategory::kEmojis,
+                              .timestamp = TimeFromMicroSeconds(5)}));
 }
 
 TEST_F(PickerEmojiHistoryModelTest, AddsNewRecentEmoji) {
@@ -72,10 +75,15 @@ TEST_F(PickerEmojiHistoryModelTest, AddsNewRecentEmoji) {
 
   EXPECT_THAT(
       model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
-      ElementsAre(
-          HistoryItem{.text = "def", .timestamp = TimeFromMicroSeconds(20)},
-          HistoryItem{.text = "abc", .timestamp = TimeFromMicroSeconds(10)},
-          HistoryItem{.text = "xyz", .timestamp = TimeFromMicroSeconds(5)}));
+      ElementsAre(HistoryItem{.text = "def",
+                              .category = ui::EmojiPickerCategory::kEmojis,
+                              .timestamp = TimeFromMicroSeconds(20)},
+                  HistoryItem{.text = "abc",
+                              .category = ui::EmojiPickerCategory::kEmojis,
+                              .timestamp = TimeFromMicroSeconds(10)},
+                  HistoryItem{.text = "xyz",
+                              .category = ui::EmojiPickerCategory::kEmojis,
+                              .timestamp = TimeFromMicroSeconds(5)}));
 }
 
 TEST_F(PickerEmojiHistoryModelTest, AddsExistingRecentEmoji) {
@@ -94,9 +102,12 @@ TEST_F(PickerEmojiHistoryModelTest, AddsExistingRecentEmoji) {
 
   EXPECT_THAT(
       model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
-      ElementsAre(
-          HistoryItem{.text = "xyz", .timestamp = TimeFromMicroSeconds(20)},
-          HistoryItem{.text = "abc", .timestamp = TimeFromMicroSeconds(10)}));
+      ElementsAre(HistoryItem{.text = "xyz",
+                              .category = ui::EmojiPickerCategory::kEmojis,
+                              .timestamp = TimeFromMicroSeconds(20)},
+                  HistoryItem{.text = "abc",
+                              .category = ui::EmojiPickerCategory::kEmojis,
+                              .timestamp = TimeFromMicroSeconds(10)}));
 }
 
 TEST_F(PickerEmojiHistoryModelTest, AddsRecentEmojiEmptyHistory) {
@@ -106,9 +117,11 @@ TEST_F(PickerEmojiHistoryModelTest, AddsRecentEmojiEmptyHistory) {
 
   model.UpdateRecentEmoji(ui::EmojiPickerCategory::kEmojis, "abc");
 
-  EXPECT_THAT(model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
-              ElementsAre(HistoryItem{.text = "abc",
-                                      .timestamp = TimeFromMicroSeconds(5)}));
+  EXPECT_THAT(
+      model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
+      ElementsAre(HistoryItem{.text = "abc",
+                              .category = ui::EmojiPickerCategory::kEmojis,
+                              .timestamp = TimeFromMicroSeconds(5)}));
 }
 
 }  // namespace

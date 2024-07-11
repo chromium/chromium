@@ -23,6 +23,7 @@ class ASH_EXPORT PickerEmojiHistoryModel {
  public:
   struct EmojiHistoryItem {
     std::string text;
+    ui::EmojiPickerCategory category;
     base::Time timestamp;
 
     bool operator==(const EmojiHistoryItem&) const;

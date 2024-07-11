@@ -58,7 +58,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
       const PickerSearchResult& result) override {
     return PickerActionType::kInsert;
   }
-  std::vector<std::string> GetSuggestedEmoji() override { return {}; }
+  std::vector<PickerSearchResult> GetSuggestedEmoji() override { return {}; }
 
  private:
   PickerSessionMetrics session_metrics_;

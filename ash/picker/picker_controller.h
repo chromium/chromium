@@ -105,7 +105,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerSessionMetrics& GetSessionMetrics() override;
   PickerActionType GetActionForResult(
       const PickerSearchResult& result) override;
-  std::vector<std::string> GetSuggestedEmoji() override;
+  std::vector<PickerSearchResult> GetSuggestedEmoji() override;
 
   // views:WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

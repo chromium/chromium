@@ -68,6 +68,7 @@ PickerEmojiHistoryModel::GetRecentEmojis(
         base::ValueToTime(value_dict->Find(kEmojiHistoryTimestampFieldName));
     if (text != nullptr) {
       results.push_back({.text = *text,
+                         .category = category,
                          .timestamp = timestamp == std::nullopt
                                           ? base::Time::UnixEpoch()
                                           : *timestamp});
