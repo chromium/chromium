@@ -606,16 +606,16 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   return ContextProperties(
-      {InputOperandLayout::kNchw,
-       /*input_supported_data_types=*/kFloatsAndInt32,
-       /*constant_supported_data_types=*/kFloatsAndInt32,
-       /*concat_inputs_supported_data_types=*/kFloatsAndInt32,
-       /*gather_input_supported_data_types=*/kGatherInputSupportedDataTypes,
-       /*gather_indices_supported_data_types=*/
-       kGatherIndicesSupportedDataTypes,
-       /*where_condition_supported_data_types=*/{},
-       /*where_true_value_supported_data_types=*/{},
-       /*where_false_value_supported_data_types=*/{}});
+      {/*conv2d_input_layout=*/InputOperandLayout::kNchw,
+       /*data_type_limits=*/{/*input=*/kFloatsAndInt32,
+                             /*constant=*/kFloatsAndInt32,
+                             /*concat_inputs=*/kFloatsAndInt32,
+                             /*gather_input=*/kGatherInputSupportedDataTypes,
+                             /*gather_indices=*/
+                             kGatherIndicesSupportedDataTypes,
+                             /*where_condition=*/{},
+                             /*where_true_value=*/{},
+                             /*where_false_value=*/{}}});
 }
 
 GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
@@ -1249,7 +1249,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConcat(
     CoreML::Specification::MILSpec::Block& block) {
   CHECK(base::ranges::all_of(
       operation.input_operand_ids, [&](uint64_t input_operand_id) {
-        return context_properties_.concat_inputs_supported_data_types.Has(
+        return context_properties_.data_type_limits.concat_inputs.Has(
             MILDataTypeToOperandType(
                 GetOperandInfo(input_operand_id).mil_data_type));
       }));
@@ -1602,9 +1602,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGather(
   const OperandInfo& indices_operand_info =
       GetOperandInfo(operation.indices_operand_id);
 
-  CHECK(context_properties_.gather_input_supported_data_types.Has(
+  CHECK(context_properties_.data_type_limits.gather_input.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-  CHECK(context_properties_.gather_indices_supported_data_types.Has(
+  CHECK(context_properties_.data_type_limits.gather_indices.Has(
       MILDataTypeToOperandType(indices_operand_info.mil_data_type)));
 
   static constexpr char kParamIndices[] = "indices";

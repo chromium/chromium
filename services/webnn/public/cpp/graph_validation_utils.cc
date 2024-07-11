@@ -1110,19 +1110,18 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
         "tensor.");
   }
 
-  if (!context_properties.gather_input_supported_data_types.Has(
+  if (!context_properties.data_type_limits.gather_input.Has(
           input.data_type())) {
     return base::unexpected(NotSupportedInputArgumentTypeError(
-        input.data_type(),
-        context_properties.gather_input_supported_data_types));
+        input.data_type(), context_properties.data_type_limits.gather_input));
   }
 
   static constexpr char kIndicesParam[] = "indices";
-  if (!context_properties.gather_indices_supported_data_types.Has(
+  if (!context_properties.data_type_limits.gather_indices.Has(
           indices.data_type())) {
     return base::unexpected(NotSupportedArgumentTypeError(
         kIndicesParam, indices.data_type(),
-        context_properties.gather_indices_supported_data_types));
+        context_properties.data_type_limits.gather_indices));
   }
 
   // TODO(crbug.com/325598628): Remove this checked math once input ranks are
@@ -1788,10 +1787,10 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
   const auto output_type = inputs[0].data_type();
 
   static constexpr char kInputsParam[] = "inputs";
-  if (!context_properties.concat_inputs_supported_data_types.Has(output_type)) {
+  if (!context_properties.data_type_limits.concat_inputs.Has(output_type)) {
     return base::unexpected(NotSupportedArgumentTypeError(
         kInputsParam, output_type,
-        context_properties.concat_inputs_supported_data_types));
+        context_properties.data_type_limits.concat_inputs));
   }
 
   // The loop skips the first input to avoid repeated checks.
@@ -2007,27 +2006,27 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
     const OperandDescriptor& true_value,
     const OperandDescriptor& false_value) {
   static constexpr char kConditionParam[] = "condition";
-  if (!context_properties.where_condition_supported_data_types.Has(
+  if (!context_properties.data_type_limits.where_condition.Has(
           condition.data_type())) {
     return base::unexpected(NotSupportedArgumentTypeError(
         kConditionParam, condition.data_type(),
-        context_properties.where_condition_supported_data_types));
+        context_properties.data_type_limits.where_condition));
   }
 
   static constexpr char kTrueValueParam[] = "trueValue";
-  if (!context_properties.where_true_value_supported_data_types.Has(
+  if (!context_properties.data_type_limits.where_true_value.Has(
           true_value.data_type())) {
     return base::unexpected(NotSupportedArgumentTypeError(
         kTrueValueParam, true_value.data_type(),
-        context_properties.where_true_value_supported_data_types));
+        context_properties.data_type_limits.where_true_value));
   }
 
   static constexpr char kFalseValueParam[] = "falseValue";
-  if (!context_properties.where_false_value_supported_data_types.Has(
+  if (!context_properties.data_type_limits.where_false_value.Has(
           false_value.data_type())) {
     return base::unexpected(NotSupportedArgumentTypeError(
         kFalseValueParam, false_value.data_type(),
-        context_properties.where_false_value_supported_data_types));
+        context_properties.data_type_limits.where_false_value));
   }
 
   if (true_value.data_type() != false_value.data_type()) {

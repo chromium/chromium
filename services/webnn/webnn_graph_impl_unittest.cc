@@ -46,15 +46,15 @@ namespace {
 ContextProperties GetContextPropertiesForTesting() {
   // A default set of WebNNContext properties for testing purposes.
   return WebNNContextImpl::IntersectWithBaseProperties(ContextProperties{
-      InputOperandLayout::kNchw,
-      /*input_supported_data_types=*/SupportedDataTypes::All(),
-      /*constant_supported_data_types=*/SupportedDataTypes::All(),
-      /*concat_inputs_supported_data_types=*/SupportedDataTypes::All(),
-      /*gather_input_supported_data_types=*/SupportedDataTypes::All(),
-      /*gather_indices_supported_data_types=*/SupportedDataTypes::All(),
-      /*where_condition_supported_data_types=*/SupportedDataTypes::All(),
-      /*where_true_value_supported_data_types=*/SupportedDataTypes::All(),
-      /*where_false_value_supported_data_types=*/SupportedDataTypes::All()});
+      /*conv2d_input_layout=*/InputOperandLayout::kNchw,
+      /*data_type_limits=*/{/*input=*/SupportedDataTypes::All(),
+                            /*constant=*/SupportedDataTypes::All(),
+                            /*concat_inputs=*/SupportedDataTypes::All(),
+                            /*gather_input=*/SupportedDataTypes::All(),
+                            /*gather_indices=*/SupportedDataTypes::All(),
+                            /*where_condition=*/SupportedDataTypes::All(),
+                            /*where_true_value=*/SupportedDataTypes::All(),
+                            /*where_false_value=*/SupportedDataTypes::All()}});
 }
 
 // A fake WebNNGraph Mojo interface implementation that binds a pipe for

@@ -7,7 +7,6 @@
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/webnn/public/cpp/context_properties.h"
-#include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-shared.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
 
@@ -25,37 +24,9 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
         return webnn::mojom::InputOperandLayout::kChannelsLast;
     };
   }
-  static webnn::SupportedDataTypes input_supported_data_types(
+  static webnn::DataTypeLimits data_type_limits(
       const webnn::ContextProperties& context_properties) {
-    return context_properties.input_supported_data_types;
-  }
-  static webnn::SupportedDataTypes constant_supported_data_types(
-      const webnn::ContextProperties& context_properties) {
-    return context_properties.constant_supported_data_types;
-  }
-  static webnn::SupportedDataTypes concat_inputs_supported_data_types(
-      const webnn::ContextProperties& context_properties) {
-    return context_properties.concat_inputs_supported_data_types;
-  }
-  static webnn::SupportedDataTypes gather_input_supported_data_types(
-      const webnn::ContextProperties& context_properties) {
-    return context_properties.gather_input_supported_data_types;
-  }
-  static webnn::SupportedDataTypes gather_indices_supported_data_types(
-      const webnn::ContextProperties& context_properties) {
-    return context_properties.gather_indices_supported_data_types;
-  }
-  static webnn::SupportedDataTypes where_condition_supported_data_types(
-      const webnn::ContextProperties& context_properties) {
-    return context_properties.where_condition_supported_data_types;
-  }
-  static webnn::SupportedDataTypes where_true_value_supported_data_types(
-      const webnn::ContextProperties& context_properties) {
-    return context_properties.where_true_value_supported_data_types;
-  }
-  static webnn::SupportedDataTypes where_false_value_supported_data_types(
-      const webnn::ContextProperties& context_properties) {
-    return context_properties.where_false_value_supported_data_types;
+    return context_properties.data_type_limits;
   }
 
   static bool Read(webnn::mojom::ContextPropertiesDataView data,
@@ -68,21 +39,7 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
         out->conv2d_input_layout = webnn::InputOperandLayout::kNhwc;
         break;
     }
-    return data.ReadInputSupportedDataTypes(&out->input_supported_data_types) &&
-           data.ReadConstantSupportedDataTypes(
-               &out->constant_supported_data_types) &&
-           data.ReadConcatInputsSupportedDataTypes(
-               &out->concat_inputs_supported_data_types) &&
-           data.ReadGatherInputSupportedDataTypes(
-               &out->gather_input_supported_data_types) &&
-           data.ReadGatherIndicesSupportedDataTypes(
-               &out->gather_indices_supported_data_types) &&
-           data.ReadWhereConditionSupportedDataTypes(
-               &out->where_condition_supported_data_types) &&
-           data.ReadWhereTrueValueSupportedDataTypes(
-               &out->where_true_value_supported_data_types) &&
-           data.ReadWhereFalseValueSupportedDataTypes(
-               &out->where_false_value_supported_data_types);
+    return data.ReadDataTypeLimits(&out->data_type_limits);
   }
 };
 

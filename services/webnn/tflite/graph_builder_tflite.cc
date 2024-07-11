@@ -258,15 +258,15 @@ GraphBuilderTflite::CreateAndBuild(const mojom::GraphInfo& graph_info) {
 ContextProperties GraphBuilderTflite::GetContextProperties() {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   return ContextProperties(
-      {InputOperandLayout::kNhwc,
-       /*input_supported_data_types=*/SupportedDataTypes::All(),
-       /*constant_supported_data_types=*/SupportedDataTypes::All(),
-       /*cocnat_inputs_supported_data_types=*/SupportedDataTypes::All(),
-       /*gather_input_supported_data_types=*/SupportedDataTypes::All(),
-       /*gather_indices_supported_data_types=*/SupportedDataTypes::All(),
-       /*where_condition_supported_data_types=*/{OperandDataType::kUint8},
-       /*where_input_supported_data_types=*/SupportedDataTypes::All(),
-       /*where_other_supported_data_types=*/SupportedDataTypes::All()});
+      {/*conv2d_input_layout=*/InputOperandLayout::kNhwc,
+       /*data_type_limits=*/{/*input=*/SupportedDataTypes::All(),
+                             /*constant=*/SupportedDataTypes::All(),
+                             /*cocnat_inputs=*/SupportedDataTypes::All(),
+                             /*gather_input=*/SupportedDataTypes::All(),
+                             /*gather_indices=*/SupportedDataTypes::All(),
+                             /*where_condition=*/{OperandDataType::kUint8},
+                             /*where_true_value=*/SupportedDataTypes::All(),
+                             /*where_false_value=*/SupportedDataTypes::All()}});
 }
 
 GraphBuilderTflite::GraphBuilderTflite(const mojom::GraphInfo& graph_info)

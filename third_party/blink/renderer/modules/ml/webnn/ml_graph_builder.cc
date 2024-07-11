@@ -878,11 +878,11 @@ MLOperand* MLGraphBuilder::input(String name,
     return nullptr;
   }
 
-  if (!ml_context_->GetProperties().input_supported_data_types.Has(
+  if (!ml_context_->GetProperties().data_type_limits.input.Has(
           input_operand.value()->DataType())) {
     exception_state.ThrowTypeError(String(webnn::NotSupportedInputTypeError(
         input_operand.value()->Name().Utf8(), input_operand.value()->DataType(),
-        ml_context_->GetProperties().input_supported_data_types)));
+        ml_context_->GetProperties().data_type_limits.input)));
     return nullptr;
   }
 
@@ -914,11 +914,11 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
     return nullptr;
   }
 
-  if (!ml_context_->GetProperties().constant_supported_data_types.Has(
+  if (!ml_context_->GetProperties().data_type_limits.constant.Has(
           descriptor.data_type())) {
     exception_state.ThrowTypeError(String(webnn::NotSupportedConstantTypeError(
         descriptor.data_type(),
-        ml_context_->GetProperties().constant_supported_data_types)));
+        ml_context_->GetProperties().data_type_limits.constant)));
     return nullptr;
   }
 
@@ -2200,11 +2200,11 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
                                  ScriptPromise<MLGraph>());
 
   for (const auto& named_output : named_outputs) {
-    if (!ml_context_->GetProperties().OutputSupportedDataTypes().Has(
+    if (!ml_context_->GetProperties().data_type_limits.output().Has(
             named_output.second->DataType())) {
       exception_state.ThrowTypeError(String(webnn::NotSupportedOutputTypeError(
           named_output.first.Utf8(), named_output.second->DataType(),
-          ml_context_->GetProperties().OutputSupportedDataTypes())));
+          ml_context_->GetProperties().data_type_limits.output())));
       return EmptyPromise();
     }
   }

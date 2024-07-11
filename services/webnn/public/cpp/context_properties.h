@@ -5,7 +5,7 @@
 #ifndef SERVICES_WEBNN_PUBLIC_CPP_CONTEXT_PROPERTIES_H_
 #define SERVICES_WEBNN_PUBLIC_CPP_CONTEXT_PROPERTIES_H_
 
-#include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/data_type_limits.h"
 
 namespace webnn {
 
@@ -15,39 +15,14 @@ namespace webnn {
 enum class InputOperandLayout { kNchw, kNhwc };
 
 struct ContextProperties {
-  // Output supported data types are the same as inputs.
-  SupportedDataTypes OutputSupportedDataTypes() const {
-    return input_supported_data_types;
-  }
   InputOperandLayout conv2d_input_layout;
-  SupportedDataTypes input_supported_data_types;
-  SupportedDataTypes constant_supported_data_types;
-  SupportedDataTypes concat_inputs_supported_data_types;
-  SupportedDataTypes gather_input_supported_data_types;
-  SupportedDataTypes gather_indices_supported_data_types;
-  SupportedDataTypes where_condition_supported_data_types;
-  SupportedDataTypes where_true_value_supported_data_types;
-  SupportedDataTypes where_false_value_supported_data_types;
+  DataTypeLimits data_type_limits;
 };
 
 inline bool operator==(const ContextProperties& lhs,
                        const ContextProperties& rhs) {
   return lhs.conv2d_input_layout == rhs.conv2d_input_layout &&
-         lhs.input_supported_data_types == rhs.input_supported_data_types &&
-         lhs.constant_supported_data_types ==
-             rhs.constant_supported_data_types &&
-         lhs.concat_inputs_supported_data_types ==
-             rhs.concat_inputs_supported_data_types &&
-         lhs.gather_input_supported_data_types ==
-             rhs.gather_input_supported_data_types &&
-         lhs.gather_indices_supported_data_types ==
-             rhs.gather_indices_supported_data_types &&
-         lhs.where_condition_supported_data_types ==
-             rhs.where_condition_supported_data_types &&
-         lhs.where_true_value_supported_data_types ==
-             rhs.where_true_value_supported_data_types &&
-         lhs.where_false_value_supported_data_types ==
-             rhs.where_false_value_supported_data_types;
+         lhs.data_type_limits == rhs.data_type_limits;
 }
 
 }  // namespace webnn

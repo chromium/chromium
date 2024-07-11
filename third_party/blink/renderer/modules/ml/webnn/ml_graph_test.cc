@@ -573,12 +573,20 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         blink_remote.InitWithNewPipeAndPassReceiver());
 
     webnn::ContextProperties context_properties{
-        webnn::InputOperandLayout::kNchw,
-        /*input_supported_data_types=*/webnn::SupportedDataTypes::All(),
-        /*constant_supported_data_types=*/webnn::SupportedDataTypes::All(),
-        /*gather_input_supported_data_types=*/webnn::SupportedDataTypes::All(),
-        /*gather_indices_supported_data_types=*/
-        webnn::SupportedDataTypes::All()};
+        /*conv2d_input_layout=*/webnn::InputOperandLayout::kNchw,
+        /*data_type_limits=*/{/*input=*/webnn::SupportedDataTypes::All(),
+                              /*constant=*/webnn::SupportedDataTypes::All(),
+                              /*concat_inputs=*/
+                              webnn::SupportedDataTypes::All(),
+                              /*gather_input=*/webnn::SupportedDataTypes::All(),
+                              /*gather_indices=*/
+                              webnn::SupportedDataTypes::All(),
+                              /*where_condition=*/
+                              webnn::SupportedDataTypes::All(),
+                              /*where_true_value=*/
+                              webnn::SupportedDataTypes::All(),
+                              /*where_false_value=*/
+                              webnn::SupportedDataTypes::All()}};
     auto success = blink_mojom::CreateContextSuccess::New(
         std::move(blink_remote), std::move(client_receiver),
         std::move(context_properties), base::UnguessableToken::Create());

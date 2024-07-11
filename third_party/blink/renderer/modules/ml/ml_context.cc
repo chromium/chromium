@@ -178,32 +178,32 @@ void MLContext::CreateWebNNBuffer(
 
 const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   MLOpSupportLimits* op_support_limits = MLOpSupportLimits::Create();
-  op_support_limits->setInput(SupportedDataTypesToSupportLimits(
-      properties_.input_supported_data_types));
-  op_support_limits->setConstant(SupportedDataTypesToSupportLimits(
-      properties_.constant_supported_data_types));
-  op_support_limits->setOutput(SupportedDataTypesToSupportLimits(
-      properties_.OutputSupportedDataTypes()));
+  op_support_limits->setInput(
+      SupportedDataTypesToSupportLimits(properties_.data_type_limits.input));
+  op_support_limits->setConstant(
+      SupportedDataTypesToSupportLimits(properties_.data_type_limits.constant));
+  op_support_limits->setOutput(
+      SupportedDataTypesToSupportLimits(properties_.data_type_limits.output()));
 
   MLConcatSupportLimits* concat = MLConcatSupportLimits::Create();
   concat->setInputs(SupportedDataTypesToSupportLimits(
-      properties_.concat_inputs_supported_data_types));
+      properties_.data_type_limits.concat_inputs));
   op_support_limits->setConcat(concat);
 
   MLGatherSupportLimits* gather = MLGatherSupportLimits::Create();
   gather->setInput(SupportedDataTypesToSupportLimits(
-      properties_.gather_input_supported_data_types));
+      properties_.data_type_limits.gather_input));
   gather->setIndices(SupportedDataTypesToSupportLimits(
-      properties_.gather_indices_supported_data_types));
+      properties_.data_type_limits.gather_indices));
   op_support_limits->setGather(gather);
 
   MLWhereSupportLimits* where = MLWhereSupportLimits::Create();
   where->setCondition(SupportedDataTypesToSupportLimits(
-      properties_.where_condition_supported_data_types));
+      properties_.data_type_limits.where_condition));
   where->setTrueValue(SupportedDataTypesToSupportLimits(
-      properties_.where_true_value_supported_data_types));
+      properties_.data_type_limits.where_true_value));
   where->setFalseValue(SupportedDataTypesToSupportLimits(
-      properties_.where_false_value_supported_data_types));
+      properties_.data_type_limits.where_false_value));
   op_support_limits->setWhere(where);
 
   return op_support_limits;

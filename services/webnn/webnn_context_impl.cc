@@ -141,9 +141,9 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   // Only intersects for ones that have limits defined in the specification.
   // For ones that has no limit, no need to intersect with
   // `SupportedDataTypes::All()`.
-  backend_context_properties.gather_indices_supported_data_types.RetainAll(
+  backend_context_properties.data_type_limits.gather_indices.RetainAll(
       DataTypeConstraint::kGatherOperatorIndexDataTypes);
-  backend_context_properties.where_condition_supported_data_types.RetainAll(
+  backend_context_properties.data_type_limits.where_condition.RetainAll(
       {OperandDataType::kUint8});
   return backend_context_properties;
 }
