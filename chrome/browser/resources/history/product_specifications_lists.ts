@@ -60,7 +60,6 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   selectedItems: Set<string> = new Set();
   private pendingDelete_: boolean = false;
   private lastSelectedIndex_: number|undefined = undefined;
-
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
   private allItems_: ProductSpecificationsSet[] = [];
   private focusGrid_: FocusGrid|null = null;

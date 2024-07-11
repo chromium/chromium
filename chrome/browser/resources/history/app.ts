@@ -447,10 +447,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
   override _scrollHandler() {
     if (this.scrollTarget) {
       // When the tabs are visible, show the toolbar shadow for the synced
-      // devices page only.
+      // devices page or product specifications page.
       this.toolbarShadow_ = this.scrollTarget.scrollTop !== 0 &&
           (!this.showHistoryClusters_ ||
-           this.syncedTabsSelected_(this.selectedPage_!));
+           this.syncedTabsSelected_(this.selectedPage_!) ||
+           this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS);
     }
   }
 
