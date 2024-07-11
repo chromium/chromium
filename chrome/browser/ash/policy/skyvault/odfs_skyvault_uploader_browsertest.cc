@@ -6,18 +6,22 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace ash::cloud_upload {
 
@@ -50,6 +54,13 @@ class OdfsSkyvaultUploaderTest : public InProcessBrowserTest {
 
   OdfsSkyvaultUploaderTest(const OdfsSkyvaultUploaderTest&) = delete;
   OdfsSkyvaultUploaderTest& operator=(const OdfsSkyvaultUploaderTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    display_service_tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(profile());
+  }
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
@@ -129,6 +140,12 @@ class OdfsSkyvaultUploaderTest : public InProcessBrowserTest {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath my_files_dir_;
+
+  std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
+
+  // Used to observe skyvault notifications during tests.
+  base::RepeatingCallback<void(const message_center::Notification&)>
+      on_notification_displayed_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
@@ -151,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
   CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
 }
 
-IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailedUpload) {
+IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailToUploadDueToMemoryError) {
   SetUpMyFiles();
   SetUpODFS();
   // Ensure Upload fails due to memory error and that reauthentication to
@@ -173,6 +190,93 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailedUpload) {
 
   // Check that the source file has not been moved to OneDrive.
   CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+}
+
+// Test that when the reauthentication to ODFS is required, the sign-in required
+// notification is shown. When the sign-in is complete, the upload is continued.
+IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
+                       UploadAfterReauthenticationRequired) {
+  SetUpMyFiles();
+  SetUpODFS();
+  provided_file_system_->SetReauthenticationRequired(true);
+  const std::string test_file_name = "text.docx";
+  base::FilePath source_file_path = CopyTestFile(test_file_name, my_files_dir_);
+
+  // Start the upload workflow and simulate a successful mount() request
+  // (indicating interactive auth has succeeded).
+  file_manager::test::GetFakeProviderOneDrive(profile())->SetRequestMountImpl(
+      base::BindLambdaForTesting(
+          [&](ash::file_system_provider::RequestMountCallback callback) {
+            // The second check of reauth required after the mount succeeds
+            // should be OK so we attempt upload.
+            provided_file_system_->SetReauthenticationRequired(false);
+            std::move(callback).Run(base::File::Error::FILE_OK);
+          }));
+
+  // Start the upload workflow and wait till the sign-in notification is shown.
+  base::RunLoop added_run_loop;
+  display_service_tester_->SetNotificationAddedClosure(
+      added_run_loop.QuitClosure());
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
+  OdfsSkyvaultUploader::Upload(
+      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      progress_callback.Get(), upload_callback.GetCallback());
+  added_run_loop.Run();
+
+  // Click on the sign-in button to initiate the auth flow.
+  auto notification_id = base::StrCat(
+      {policy::skyvault_ui_utils::kDownloadSignInNotificationPrefix, "1"});
+  ASSERT_TRUE(
+      display_service_tester_->GetNotification(notification_id).has_value());
+
+  display_service_tester_->SimulateClick(
+      NotificationHandler::Type::TRANSIENT, notification_id,
+      policy::skyvault_ui_utils::NotificationButtonIndex::kSignInButton,
+      /*reply=*/std::nullopt);
+
+  EXPECT_EQ(upload_callback.Get<bool>(), true);
+  ASSERT_FALSE(
+      display_service_tester_->GetNotification(notification_id).has_value());
+
+  // Check that the source file has been moved to OneDrive.
+  CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+}
+
+// Test that when the OneDrive file system isn't mounted, the sign-in required
+// notification is shown. When the sign-in notification is cancelled, the upload
+// fails.
+IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
+                       FailToUploadDueToReauthenticationRequired) {
+  SetUpMyFiles();
+  const std::string test_file_name = "text.docx";
+  base::FilePath source_file_path = CopyTestFile(test_file_name, my_files_dir_);
+
+  // Start the upload workflow and wait till the sign-in notification is shown.
+  base::RunLoop added_run_loop;
+  display_service_tester_->SetNotificationAddedClosure(
+      added_run_loop.QuitClosure());
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
+  OdfsSkyvaultUploader::Upload(
+      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      progress_callback.Get(), upload_callback.GetCallback());
+  added_run_loop.Run();
+
+  // Click on the cancel so the upload will fail.
+  auto notification_id = base::StrCat(
+      {policy::skyvault_ui_utils::kDownloadSignInNotificationPrefix, "1"});
+  ASSERT_TRUE(
+      display_service_tester_->GetNotification(notification_id).has_value());
+
+  display_service_tester_->SimulateClick(
+      NotificationHandler::Type::TRANSIENT, notification_id,
+      policy::skyvault_ui_utils::NotificationButtonIndex::kCancelButton,
+      /*reply=*/std::nullopt);
+
+  EXPECT_EQ(upload_callback.Get<bool>(), false);
+  ASSERT_FALSE(
+      display_service_tester_->GetNotification(notification_id).has_value());
 }
 
 }  // namespace ash::cloud_upload
