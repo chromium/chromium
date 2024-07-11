@@ -23,3 +23,10 @@ include_rules = [
 
   "+chrome/browser/profiles",
 ]
+
+specific_include_rules = {
+  "magic_boost_browsertest.cc": [
+      "+chrome/browser/ui/chromeos/magic_boost",
+      "+chrome/test/base",
+  ],
+}

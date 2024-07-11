@@ -71,3 +71,30 @@ source_set("unit_tests") {
     "//ui/lottie",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "magic_boost_browsertest.cc" ]
+
+  deps = [
+    ":magic_boost",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/chromeos/magic_boost:magic_boost",
+    "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
+    "//chrome/test:test_support",
+    "//chromeos/constants",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}

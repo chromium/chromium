@@ -260,6 +260,11 @@ void MagicBoostOptInCard::RequestFocus() {
   secondary_button_->RequestFocus();
 }
 
+// static
+const char* MagicBoostOptInCard::GetWidgetNameForTest() {
+  return kWidgetName;
+}
+
 void MagicBoostOptInCard::OnPrimaryButtonPressed() {
   magic_boost::RecordOptInCardActionMetrics(
       controller_->GetOptInFeatures(),

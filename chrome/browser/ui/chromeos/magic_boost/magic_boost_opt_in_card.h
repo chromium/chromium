@@ -46,6 +46,9 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   // views::View:
   void RequestFocus() override;
 
+  // Returns the host widget's name.
+  static const char* GetWidgetNameForTest();
+
  private:
   // Button callbacks.
   void OnPrimaryButtonPressed();
