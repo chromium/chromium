@@ -25,30 +25,6 @@ constexpr int kBusinessIconSize = 16;
 
 DesktopDataControlsDialog::TestObserver* observer_for_testing_ = nullptr;
 
-// TODO(b/351342878): Move the current dialog tracking logic to
-// `DataControlsDialogFactory` once it exists.
-// Helper that keeps track of dialogs currently showing for given
-// WebContents-type pair.  These are used to determine if a call to
-// `DesktopDataControlsDialog::Show` is redundant or not. Keyed with `void*`
-// instead of `content::WebContents*` to avoid accidental bugs from
-// dereferencing that pointer.
-std::map<std::pair<void*, DataControlsDialog::Type>, DataControlsDialog*>&
-CurrentDialogsStorage() {
-  static std::map<std::pair<void*, DataControlsDialog::Type>,
-                  DataControlsDialog*>
-      dialogs;
-  return dialogs;
-}
-
-// Returns null if no dialog is currently shown on `web_contents` for `type`.
-DataControlsDialog* GetCurrentDialog(content::WebContents* web_contents,
-                                     DataControlsDialog::Type type) {
-  if (CurrentDialogsStorage().count({web_contents, type})) {
-    return CurrentDialogsStorage().at({web_contents, type});
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 DesktopDataControlsDialog::TestObserver::TestObserver() {
@@ -71,31 +47,15 @@ void DesktopDataControlsDialog::SetObserverForTesting(TestObserver* observer) {
   observer_for_testing_ = observer;
 }
 
-// static
-void DesktopDataControlsDialog::Show(
-    content::WebContents* web_contents,
-    Type type,
-    base::OnceCallback<void(bool bypassed)> callback) {
-  DCHECK(web_contents);
-
-  // Don't show a new dialog if there is already an existing dialog of the same
-  // type showing in `web_contents` already. If `callback` is non-null, we add
-  // it to the currently showing dialog.
-  if (auto* dialog = GetCurrentDialog(web_contents, type)) {
-    if (callback) {
-      dialog->AddCallback(std::move(callback));
-    }
-    return;
-  }
-
-  constrained_window::ShowWebModalDialogViews(
-      new DesktopDataControlsDialog(type, web_contents, std::move(callback)),
-      web_contents);
+void DesktopDataControlsDialog::Show(base::OnceClosure on_destructed) {
+  on_destructed_ = std::move(on_destructed);
+  constrained_window::ShowWebModalDialogViews(this, web_contents());
 }
 
 DesktopDataControlsDialog::~DesktopDataControlsDialog() {
-  CurrentDialogsStorage().erase({web_contents(), type_});
-
+  if (on_destructed_) {
+    std::move(on_destructed_).Run();
+  }
   if (observer_for_testing_) {
     observer_for_testing_->OnDestructed(this);
   }
@@ -189,8 +149,6 @@ DesktopDataControlsDialog::DesktopDataControlsDialog(
   SetOwnedByWidget(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-
-  CurrentDialogsStorage()[{web_contents(), type_}] = this;
 
   // TODO(b/351342878): Move shared logic for dialog button styling to
   // `DataControlsDialog`.

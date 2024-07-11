@@ -11,6 +11,8 @@
 
 namespace data_controls {
 
+class DataControlsDialogFactory;
+
 // Platform-agnostic dialog used to warn the user their action is interrupted by
 // a Data Controls rule. The dialog looks like this (exact strings vary
 // depending on what action is blocked):
@@ -51,6 +53,13 @@ class DataControlsDialog {
   void ClearCallbacks();
 
  protected:
+  // Shows the dialog asynchronously. `on_destructed` is expected to be called
+  // at the start of the destructor to let the caller of `Show()` know they
+  // should cleanup any reference to this dialog.
+  virtual void Show(base::OnceClosure on_destructed) = 0;
+
+  friend DataControlsDialogFactory;
+
   DataControlsDialog(Type type,
                      base::OnceCallback<void(bool bypassed)> callback);
 

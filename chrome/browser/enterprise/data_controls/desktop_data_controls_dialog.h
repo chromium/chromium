@@ -24,6 +24,8 @@ class BoxLayoutView;
 
 namespace data_controls {
 
+class DesktopDataControlsDialogFactory;
+
 // Desktop implementation of `DataControlsDialog`, done using views.
 class DesktopDataControlsDialog : public DataControlsDialog,
                                   public views::DialogDelegate,
@@ -52,11 +54,7 @@ class DesktopDataControlsDialog : public DataControlsDialog,
   };
   static void SetObserverForTesting(TestObserver* observer);
 
-  // TODO(b/351342878): Move this to a factory.
-  static void Show(content::WebContents* web_contents,
-                   Type type,
-                   base::OnceCallback<void(bool bypassed)> callback =
-                       base::OnceCallback<void(bool bypassed)>());
+  void Show(base::OnceClosure on_destructed) override;
 
   ~DesktopDataControlsDialog() override;
 
@@ -76,6 +74,8 @@ class DesktopDataControlsDialog : public DataControlsDialog,
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
+  friend DesktopDataControlsDialogFactory;
+
   DesktopDataControlsDialog(Type type,
                             content::WebContents* web_contents,
                             base::OnceCallback<void(bool bypassed)> callback);
@@ -85,6 +85,8 @@ class DesktopDataControlsDialog : public DataControlsDialog,
   std::unique_ptr<views::Label> CreateMessage() const;
 
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
+
+  base::OnceClosure on_destructed_;
 };
 
 }  // namespace data_controls

@@ -14,6 +14,8 @@ source_set("data_controls") {
     "chrome_rules_service.h",
     "desktop_data_controls_dialog.cc",
     "desktop_data_controls_dialog.h",
+    "desktop_data_controls_dialog_factory.cc",
+    "desktop_data_controls_dialog_factory.h",
     "dlp_reporting_manager.cc",
     "dlp_reporting_manager.h",
     "reporting_service.cc",

@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "components/enterprise/common/files_scan_data.h"
@@ -331,21 +332,26 @@ void PasteIfAllowedByDataControls(
 
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     MaybeReportDataControlsPaste(source, destination, metadata, verdict);
-    // TODO(b/351342878): Replace this with a factory method call.
-    data_controls::DesktopDataControlsDialog::Show(
-        destination.web_contents(),
-        data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+    // TODO(b/351342878): Replace this with a factory method call on an object
+    // passed to the function.
+    data_controls::DesktopDataControlsDialogFactory::GetInstance()
+        ->ShowDialogIfNeeded(
+            destination.web_contents(),
+            data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
     std::move(callback).Run(std::nullopt);
     return;
   } else if (verdict.level() == data_controls::Rule::Level::kWarn) {
     MaybeReportDataControlsPaste(source, destination, metadata, verdict);
-    // TODO(b/351342878): Replace this with a factory method call.
-    data_controls::DesktopDataControlsDialog::Show(
-        destination.web_contents(),
-        data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
-        base::BindOnce(&OnDataControlsPasteWarning, source, destination,
-                       metadata, std::move(verdict),
-                       std::move(clipboard_paste_data), std::move(callback)));
+    // TODO(b/351342878): Replace this with a factory method call on an object
+    // passed to the function.
+    data_controls::DesktopDataControlsDialogFactory::GetInstance()
+        ->ShowDialogIfNeeded(
+            destination.web_contents(),
+            data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
+            base::BindOnce(&OnDataControlsPasteWarning, source, destination,
+                           metadata, std::move(verdict),
+                           std::move(clipboard_paste_data),
+                           std::move(callback)));
     return;
   } else if (verdict.level() == data_controls::Rule::Level::kReport) {
     MaybeReportDataControlsPaste(source, destination, metadata, verdict);
@@ -449,10 +455,12 @@ void IsCopyRestrictedByDialog(
 
   if (source_only_verdict.level() == data_controls::Rule::Level::kBlock) {
     MaybeReportDataControlsCopy(source, metadata, source_only_verdict);
-    // TODO(b/351342878): Replace this with a factory method call.
-    data_controls::DesktopDataControlsDialog::Show(
-        source.web_contents(),
-        data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+    // TODO(b/351342878): Replace this with a factory method call on an object
+    // passed to the function.
+    data_controls::DesktopDataControlsDialogFactory::GetInstance()
+        ->ShowDialogIfNeeded(
+            source.web_contents(),
+            data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
     return;
   }
 
@@ -469,12 +477,14 @@ void IsCopyRestrictedByDialog(
     auto verdict = data_controls::Verdict::MergeCopyWarningVerdicts(
         std::move(source_only_verdict), std::move(os_clipboard_verdict));
     MaybeReportDataControlsCopy(source, metadata, verdict);
-    // TODO(b/351342878): Replace this with a factory method call.
-    data_controls::DesktopDataControlsDialog::Show(
-        source.web_contents(),
-        data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
-        base::BindOnce(&OnDataControlsCopyWarning, source, metadata, data,
-                       std::move(verdict), std::move(callback)));
+    // TODO(b/351342878): Replace this with a factory method call on an object
+    // passed to the function.
+    data_controls::DesktopDataControlsDialogFactory::GetInstance()
+        ->ShowDialogIfNeeded(
+            source.web_contents(),
+            data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
+            base::BindOnce(&OnDataControlsCopyWarning, source, metadata, data,
+                           std::move(verdict), std::move(callback)));
     return;
   }
 

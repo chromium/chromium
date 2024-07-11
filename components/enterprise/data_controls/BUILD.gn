@@ -28,6 +28,8 @@ source_set("data_controls") {
     "conditions/or_condition.h",
     "data_controls_dialog.cc",
     "data_controls_dialog.h",
+    "data_controls_dialog_factory.cc",
+    "data_controls_dialog_factory.h",
     "data_controls_policy_handler.cc",
     "data_controls_policy_handler.h",
     "dlp_histogram_helper.cc",
