@@ -527,7 +527,7 @@ void CanvasResourceSharedImage::EndWriteAccess() {
 GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
   GrGLTextureInfo texture_info = {};
   texture_info.fID = GetTextureIdForWriteAccess();
-  texture_info.fTarget = TextureTarget();
+  texture_info.fTarget = client_shared_image()->GetTextureTarget();
   texture_info.fFormat =
       context_provider_wrapper_->ContextProvider()->GetGrGLTextureFormat(
           GetSharedImageFormat());
@@ -995,8 +995,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       back_buffer_shared_image_->mailbox(), GetSyncToken(), shared_texture_id,
-      image_info, TextureTarget(), true /*is_origin_top_left*/,
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      image_info, back_buffer_shared_image_->GetTextureTarget(),
+      true /*is_origin_top_left*/, context_provider_wrapper_,
+      owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
       /*is_overlay_candidate=*/true);
 }
@@ -1079,11 +1080,12 @@ void CanvasResourceSwapChain::PresentSwapChain() {
   // copied into the back buffer to support a retained mode like canvas expects.
   // The wait sync token ensure that the present executes before we do the copy.
   // Don't generate sync token after the copy so that it's not on critical path.
-  raster_interface->CopySharedImage(front_buffer_shared_image_->mailbox(),
-                                    back_buffer_shared_image_->mailbox(),
-                                    TextureTarget(), 0, 0, 0, 0, size_.width(),
-                                    size_.height(), false /* unpack_flip_y */,
-                                    false /* unpack_premultiply_alpha */);
+  raster_interface->CopySharedImage(
+      front_buffer_shared_image_->mailbox(),
+      back_buffer_shared_image_->mailbox(),
+      back_buffer_shared_image_->GetTextureTarget(), 0, 0, 0, 0, size_.width(),
+      size_.height(), false /* unpack_flip_y */,
+      false /* unpack_premultiply_alpha */);
   // Restore shared image access after copy when using legacy GL raster.
   if (!use_oop_rasterization_) {
     raster_interface->BeginSharedImageAccessDirectCHROMIUM(
