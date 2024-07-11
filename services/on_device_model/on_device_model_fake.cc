@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/on_device_model/public/cpp/on_device_model.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/on_device_model/on_device_model_service.h"
+#include "services/on_device_model/public/cpp/on_device_model.h"
 
 namespace on_device_model {
 namespace {
@@ -122,21 +122,34 @@ class OnDeviceModelImpl : public OnDeviceModel {
   uint32_t next_adaptation_id_ = 0;
 };
 
+class OnDeviceModelFakeImpl final : public OnDeviceModelShim {
+ public:
+  OnDeviceModelFakeImpl();
+  ~OnDeviceModelFakeImpl() override;
+
+  base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
+  CreateModel(mojom::LoadModelParamsPtr params,
+              base::OnceClosure on_complete) const override {
+    auto model = base::ok<std::unique_ptr<OnDeviceModel>>(
+        std::make_unique<OnDeviceModelImpl>());
+    std::move(on_complete).Run();
+    return model;
+  }
+
+  mojom::PerformanceClass GetEstimatedPerformanceClass() const override {
+    return mojom::PerformanceClass::kFailedToLoadLibrary;
+  }
+};
+
+OnDeviceModelFakeImpl::OnDeviceModelFakeImpl() = default;
+OnDeviceModelFakeImpl::~OnDeviceModelFakeImpl() = default;
+
 }  // namespace
 
-// static
-base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
-OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params,
-                                  base::OnceClosure on_complete) {
-  auto model = base::ok<std::unique_ptr<OnDeviceModel>>(
-      std::make_unique<OnDeviceModelImpl>());
-  std::move(on_complete).Run();
-  return model;
-}
-
-// static
-mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
-  return mojom::PerformanceClass::kFailedToLoadLibrary;
+COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
+const OnDeviceModelShim* GetOnDeviceModelFakeImpl() {
+  static const base::NoDestructor<OnDeviceModelFakeImpl> impl;
+  return impl.get();
 }
 
 }  // namespace on_device_model

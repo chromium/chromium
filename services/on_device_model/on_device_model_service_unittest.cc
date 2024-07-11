@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/on_device_model/on_device_model_fake.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,7 +44,8 @@ class ContextClientWaiter : public mojom::ContextClient {
 class OnDeviceModelServiceTest : public testing::Test {
  public:
   OnDeviceModelServiceTest()
-      : service_impl_(service_.BindNewPipeAndPassReceiver()) {}
+      : service_impl_(service_.BindNewPipeAndPassReceiver(),
+                      GetOnDeviceModelFakeImpl()) {}
 
   mojo::Remote<mojom::OnDeviceModelService>& service() { return service_; }
 

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -40,10 +41,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
       sandbox::policy::SandboxLinux::Options& options);
 #endif
 
-  static mojom::PerformanceClass GetEstimatedPerformanceClass();
-
   explicit OnDeviceModelService(
       mojo::PendingReceiver<mojom::OnDeviceModelService> receiver);
+  OnDeviceModelService(
+      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
+      const OnDeviceModelShim* impl);
   ~OnDeviceModelService() override;
 
   OnDeviceModelService(const OnDeviceModelService&) = delete;
@@ -69,12 +71,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   size_t NumModelsForTesting() const { return models_.size(); }
 
  private:
-  static base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
-  CreateModel(mojom::LoadModelParamsPtr params, base::OnceClosure on_complete);
-
   void DeleteModel(base::WeakPtr<mojom::OnDeviceModel> model);
 
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
+  raw_ptr<const OnDeviceModelShim> impl_;
   std::set<std::unique_ptr<mojom::OnDeviceModel>, base::UniquePtrComparator>
       models_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

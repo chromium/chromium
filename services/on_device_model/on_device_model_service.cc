@@ -14,6 +14,12 @@
 #include "services/on_device_model/platform_model_loader.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
 
+#if defined(ENABLE_ML_INTERNAL)
+#include "services/on_device_model/ml/on_device_model_internal.h"  //nogncheck
+#else
+#include "services/on_device_model/on_device_model_fake.h"  //nogncheck
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/on_device_model/platform_model_loader_chromeos.h"
 #endif
@@ -368,11 +374,24 @@ void SessionWrapper::ReplayPreviousContext() {
   }
 }
 
+const OnDeviceModelShim* DefaultImpl() {
+#if defined(ENABLE_ML_INTERNAL)
+  return ml::GetOnDeviceModelInternalImpl();
+#else
+  return GetOnDeviceModelFakeImpl();
+#endif
+}
+
 }  // namespace
 
 OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver)
-    : receiver_(this, std::move(receiver)) {
+    : OnDeviceModelService(std::move(receiver), DefaultImpl()) {}
+
+OnDeviceModelService::OnDeviceModelService(
+    mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
+    const OnDeviceModelShim* impl)
+    : receiver_(this, std::move(receiver)), impl_(impl) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   platform_model_loader_ = std::make_unique<ChromeosPlatformModelLoader>(*this);
 #endif
@@ -386,14 +405,14 @@ void OnDeviceModelService::LoadModel(
     LoadModelCallback callback) {
   auto start = base::TimeTicks::Now();
   bool support_multiple_sessions = params->support_multiple_sessions;
-  auto model_impl = CreateModel(std::move(params),
-                                base::BindOnce(
-                                    [](base::TimeTicks start) {
-                                      base::UmaHistogramMediumTimes(
-                                          "OnDeviceModel.LoadModelDuration",
-                                          base::TimeTicks::Now() - start);
-                                    },
-                                    start));
+  auto model_impl = impl_->CreateModel(
+      std::move(params), base::BindOnce(
+                             [](base::TimeTicks start) {
+                               base::UmaHistogramMediumTimes(
+                                   "OnDeviceModel.LoadModelDuration",
+                                   base::TimeTicks::Now() - start);
+                             },
+                             start));
   if (!model_impl.has_value()) {
     std::move(callback).Run(model_impl.error());
     return;
@@ -440,7 +459,7 @@ void OnDeviceModelService::GetPlatformModelState(
 void OnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
   base::ElapsedTimer timer;
-  std::move(callback).Run(GetEstimatedPerformanceClass());
+  std::move(callback).Run(impl_->GetEstimatedPerformanceClass());
   base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration", timer.Elapsed());
 }
 

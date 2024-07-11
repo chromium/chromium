@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 namespace on_device_model {
 
@@ -47,6 +48,15 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
   virtual base::expected<uint32_t, mojom::LoadModelResult> LoadAdaptation(
       mojom::LoadAdaptationParamsPtr params,
       base::OnceClosure on_complete) = 0;
+};
+
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModelShim {
+ public:
+  virtual ~OnDeviceModelShim() = default;
+  virtual base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
+  CreateModel(mojom::LoadModelParamsPtr params,
+              base::OnceClosure on_complete) const = 0;
+  virtual mojom::PerformanceClass GetEstimatedPerformanceClass() const = 0;
 };
 
 }  // namespace on_device_model
