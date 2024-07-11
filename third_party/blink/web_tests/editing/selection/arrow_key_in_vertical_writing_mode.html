@@ -109,4 +109,110 @@ test(() => {
      text3
      </pre>`);
 }, 'ArrowDown in vertical-lr');
+
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:sideways-rl">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowLeft'),
+    `<pre contenteditable style="writing-mode:sideways-rl">     text1
+     text2
+     te|xt3
+     </pre>`);
+}, 'ArrowLeft in sideways-rl');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:sideways-rl">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowRight'),
+    `<pre contenteditable style="writing-mode:sideways-rl">     te|xt1
+     text2
+     text3
+     </pre>`);
+}, 'ArrowRight in sideways-rl');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:sideways-rl">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowUp'),
+    `<pre contenteditable style="writing-mode:sideways-rl">     text1
+     t|ext2
+     text3
+     </pre>`);
+}, 'ArrowUp in sideways-rl');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:sideways-rl">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowDown'),
+    `<pre contenteditable style="writing-mode:sideways-rl">     text1
+     tex|t2
+     text3
+     </pre>`);
+}, 'ArrowDown in sideways-rl');
+
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:sideways-lr">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowLeft'),
+    `<pre contenteditable style="writing-mode:sideways-lr">     te|xt1
+     text2
+     text3
+     </pre>`);
+}, 'ArrowLeft in sideways-lr');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:sideways-lr">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowRight'),
+    `<pre contenteditable style="writing-mode:sideways-lr">     text1
+     text2
+     te|xt3
+     </pre>`);
+}, 'ArrowRight in sideways-lr');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:sideways-lr">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowUp'),
+    `<pre contenteditable style="writing-mode:sideways-lr">     text1
+     tex|t2
+     text3
+     </pre>`);
+}, 'ArrowUp in sideways-lr');
+test(() => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  assert_selection(
+    `<pre contenteditable style="writing-mode:sideways-lr">     text1
+     te|xt2
+     text3
+     </textarea>`,
+    selection => eventSender.keyDown('ArrowDown'),
+    `<pre contenteditable style="writing-mode:sideways-lr">     text1
+     t|ext2
+     text3
+     </pre>`);
+}, 'ArrowDown in sideways-lr');
 </script>
