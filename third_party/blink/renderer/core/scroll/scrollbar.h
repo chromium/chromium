@@ -131,6 +131,11 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   virtual bool IsFluentScrollbar() const;
   virtual bool IsFluentOverlayScrollbarMinimalMode() const;
 
+  // Returns `true` if the scrollbar bounds are larger than the canvas'. In
+  // this scenario, the scrollbar scaling will be done by using nine-patch
+  // scaling in the compositor thread.
+  bool UsesNinePatchTrackAndCanSkipRepaint() const;
+
   bool ShouldParticipateInHitTesting();
 
   bool IsWindowActive() const;

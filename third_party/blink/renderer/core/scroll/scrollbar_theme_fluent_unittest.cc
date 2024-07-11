@@ -261,6 +261,46 @@ TEST_P(ScrollbarThemeFluentTest, NinePatchAperture) {
   EXPECT_EQ(expected_rect, NinePatchTrackAndButtonsAperture(*scrollbar));
 }
 
+// Verifies that resizing the scrollbar doesn't generate unnecessary paint
+// invalidations when the scrollbar uses nine-patch track resources.
+TEST_P(ScrollbarThemeFluentTest, TestPaintInvalidationsWhenNinePatchScaled) {
+  Scrollbar* scrollbar = Scrollbar::CreateForTesting(
+      mock_scrollable_area(), kVerticalScrollbar, &(theme_->GetInstance()));
+  auto reset_flags = [&]() {
+    scrollbar->ClearTrackNeedsRepaint();
+    scrollbar->ClearThumbNeedsRepaint();
+  };
+
+  scrollbar->SetUsesNinePatchTrackAndButtonsResource(true);
+  // Start the test with a scrollbar larger than the canvas size and clean
+  // flags.
+  scrollbar->SetFrameRect(
+      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 5));
+  reset_flags();
+
+  // Test that resizing the scrollbar while larger than the canvas
+  // doesn't trigger a repaint.
+  scrollbar->SetFrameRect(
+      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 4));
+  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(scrollbar->ThumbNeedsRepaint());
+  scrollbar->SetProportion(scrollbar->Width() * 4, scrollbar->Width() * 4);
+  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
+  reset_flags();
+
+  // Test that making the track smaller than the canvas size triggers a repaint.
+  scrollbar->SetFrameRect(
+      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() / 2));
+  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
+  reset_flags();
+
+  scrollbar->SetProportion(scrollbar->Width() / 2, scrollbar->Width() / 2);
+  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
+}
+
 // Test that Scrollbar objects are correctly sized with Overlay Fluent theme
 // parts.
 TEST_P(OverlayScrollbarThemeFluentTest, OverlaySetsCorrectTrackAndInsetSize) {

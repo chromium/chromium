@@ -113,7 +113,9 @@ void Scrollbar::SetFrameRect(const gfx::Rect& frame_rect) {
     return;
 
   frame_rect_ = frame_rect;
-  SetNeedsPaintInvalidation(kAllParts);
+  if (!UsesNinePatchTrackAndCanSkipRepaint()) {
+    SetNeedsPaintInvalidation(kAllParts);
+  }
   if (scrollable_area_)
     scrollable_area_->ScrollbarFrameRectChanged();
 }
@@ -181,6 +183,11 @@ void Scrollbar::SetProportion(int visible_size, int total_size) {
 
   visible_size_ = visible_size;
   total_size_ = total_size;
+
+  if (UsesNinePatchTrackAndCanSkipRepaint()) {
+    SetNeedsPaintInvalidation(kThumbPart);
+    return;
+  }
 
   SetNeedsPaintInvalidation(kAllParts);
 }
@@ -750,6 +757,16 @@ bool Scrollbar::IsFluentScrollbar() const {
 bool Scrollbar::IsFluentOverlayScrollbarMinimalMode() const {
   return theme_.UsesFluentOverlayScrollbars() && hovered_part_ == kNoPart &&
          pressed_part_ != kThumbPart;
+}
+
+bool Scrollbar::UsesNinePatchTrackAndCanSkipRepaint() const {
+  if (!uses_nine_patch_track_and_buttons_) {
+    return false;
+  }
+  gfx::Size track_canvas_size =
+      GetTheme().NinePatchTrackAndButtonsCanvasSize(*this);
+  return track_canvas_size.height() < Height() ||
+         track_canvas_size.width() < Width();
 }
 
 bool Scrollbar::ShouldParticipateInHitTesting() {
