@@ -93,10 +93,6 @@ BASE_FEATURE(kOptimizedRealtimeThreadingMac,
 #endif
 );
 
-BASE_FEATURE(kUserInteractiveCompositingMac,
-             "UserInteractiveCompositingMac",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 bool IsOptimizedRealtimeThreadingMacEnabled() {
@@ -116,8 +112,6 @@ const FeatureParam<double> kOptimizedRealtimeThreadingMacBusy{
 // (kOptimizedRealtimeThreadingMacBusy, 1].
 const FeatureParam<double> kOptimizedRealtimeThreadingMacBusyLimit{
     &kOptimizedRealtimeThreadingMac, "busy_limit", 1.0};
-std::atomic<bool> g_user_interactive_compositing(
-    kUserInteractiveCompositingMac.default_state == FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -149,8 +143,6 @@ void PlatformThreadApple::InitializeFeatures() {
   g_time_constraints.store(TimeConstraints::ReadFromFeatureParams());
   g_use_optimized_realtime_threading.store(
       IsOptimizedRealtimeThreadingMacEnabled());
-  g_user_interactive_compositing.store(
-      FeatureList::IsEnabled(kUserInteractiveCompositingMac));
 }
 
 // static
@@ -295,18 +287,6 @@ namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  // Changing the priority of the main thread causes performance
-  // regressions. https://crbug.com/601270
-  // TODO(crbug.com/40209052): Remove this check. kCompositing is the
-  // default on Mac, so this check is counter intuitive.
-  if ([[NSThread currentThread] isMainThread] &&
-      thread_type >= ThreadType::kCompositing &&
-      !g_user_interactive_compositing.load(std::memory_order_relaxed)) {
-    DCHECK(thread_type == ThreadType::kDefault ||
-           thread_type == ThreadType::kCompositing);
-    return;
-  }
-
   switch (thread_type) {
     case ThreadType::kBackground:
       pthread_set_qos_class_self_np(QOS_CLASS_BACKGROUND, 0);
@@ -321,12 +301,6 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
       break;
     case ThreadType::kCompositing:
-      if (g_user_interactive_compositing.load(std::memory_order_relaxed)) {
-        pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
-      } else {
-        pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
-      }
-      break;
     case ThreadType::kDisplayCritical: {
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
       break;
