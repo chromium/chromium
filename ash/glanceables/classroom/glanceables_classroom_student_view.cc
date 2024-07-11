@@ -102,9 +102,15 @@ constexpr char kCollapseAnimationSmoothnessHistogramName[] =
 
 constexpr size_t kMaxAssignments = 100;
 
+// The interior margin should be 12, but space needs to be left for the focus in
+// the child views.
+constexpr int kTotalInteriorMargin = 12;
+constexpr int kSpaceForFocusRing = 4;
+constexpr int kInteriorGlanceableBubbleMargin =
+    kTotalInteriorMargin - kSpaceForFocusRing;
+
 constexpr auto kEmptyListLabelMargins = gfx::Insets::TLBR(24, 0, 32, 0);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
-constexpr auto kViewInteriorMargins = gfx::Insets::TLBR(12, 12, 12, 12);
 constexpr auto kFooterMargins = gfx::Insets::TLBR(12, 2, 0, 0);
 
 // This should be the same value as the one in ash/style/combobox.cc
@@ -152,7 +158,7 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
 
 GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
     : shown_time_(base::Time::Now()) {
-  SetInteriorMargin(kViewInteriorMargins);
+  SetInteriorMargin(gfx::Insets(kInteriorGlanceableBubbleMargin));
   SetOrientation(views::LayoutOrientation::kVertical);
 
   auto* header_container =
@@ -165,6 +171,8 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       header_container->AddChildView(std::make_unique<views::FlexLayoutView>());
   header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  header_view_->SetInteriorMargin(gfx::Insets::TLBR(
+      kSpaceForFocusRing, kSpaceForFocusRing, 0, kSpaceForFocusRing));
   header_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -204,7 +212,8 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
                                            kComboboxBorderInsets);
   combobox_replacement_label_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred));
   combobox_replacement_label_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -228,15 +237,14 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       base::BindRepeating(&GlanceablesClassroomStudentView::ToggleExpandState,
                           base::Unretained(this)));
 
+  progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
+
   content_scroll_view_ = AddChildView(
       std::make_unique<GlanceablesContentsScrollView>(Context::kClassroom));
   auto* body_container = content_scroll_view_->SetContents(
       std::make_unique<views::FlexLayoutView>());
   body_container->SetOrientation(views::LayoutOrientation::kVertical);
-
-  progress_bar_ = body_container->AddChildView(
-      std::make_unique<GlanceablesProgressBarView>());
-  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   list_container_view_ =
       body_container->AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -244,6 +252,8 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       GlanceablesViewId::kTimeManagementBubbleListContainer));
   list_container_view_->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
+  list_container_view_->SetInsideBorderInsets(
+      gfx::Insets::VH(0, kSpaceForFocusRing));
   list_container_view_->SetBetweenChildSpacing(4);
   list_container_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kList);
 
@@ -308,7 +318,9 @@ bool GlanceablesClassroomStudentView::IsExpanded() const {
 }
 
 int GlanceablesClassroomStudentView::GetCollapsedStatePreferredHeight() const {
-  return GetInteriorMargin().height() + header_view_->height();
+  return kTotalInteriorMargin * 2 +
+         combobox_replacement_label_->GetLineHeight() +
+         kComboboxBorderInsets.height();
 }
 
 void GlanceablesClassroomStudentView::CancelUpdates() {
@@ -338,6 +350,7 @@ void GlanceablesClassroomStudentView::SetExpandState(
   is_expanded_ = is_expanded;
   expand_button_->SetExpanded(is_expanded);
 
+  progress_bar_->SetVisible(is_expanded_);
   content_scroll_view_->SetVisible(is_expanded_);
   combo_box_view_->SetVisible(is_expanded_);
   combobox_replacement_label_->SetVisible(!is_expanded_);
@@ -349,6 +362,13 @@ void GlanceablesClassroomStudentView::SetExpandState(
       content_scroll_view_->UnlockScroll();
     }
   }
+
+  SetInteriorMargin(is_expanded
+                        ? gfx::Insets(kInteriorGlanceableBubbleMargin)
+                        : gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                            kInteriorGlanceableBubbleMargin,
+                                            kTotalInteriorMargin,
+                                            kInteriorGlanceableBubbleMargin));
 
   for (auto& observer : observers_) {
     observer.OnExpandStateChanged(Context::kClassroom, is_expanded_,

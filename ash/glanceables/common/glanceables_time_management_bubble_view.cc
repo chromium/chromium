@@ -151,6 +151,12 @@ void GlanceablesTimeManagementBubbleView::ShowErrorMessage(
   error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 
+gfx::Size GlanceablesTimeManagementBubbleView::GetMinimumSize() const {
+  gfx::Size minimum_size = views::FlexLayoutView::GetMinimumSize();
+  minimum_size.set_height(GetCollapsedStatePreferredHeight());
+  return minimum_size;
+}
+
 gfx::Size GlanceablesTimeManagementBubbleView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   // The animation was implemented to ignore `available_size`. See b/351880846

@@ -169,6 +169,9 @@ class ASH_EXPORT GlanceablesTasksView
   // states by calling with `is_loading` = false.
   void SetIsLoading(bool is_loading);
 
+  // Updates the interior margin according to the current view state.
+  void UpdateInteriorMargin();
+
   // Triggers tasks bubble resize animation to new preferred size, if an
   // animation is required.
   void AnimateResize(ResizeAnimation::Type resize_type);

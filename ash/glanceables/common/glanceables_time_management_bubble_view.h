@@ -49,6 +49,7 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
   void Layout(PassKey) override;
+  gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 

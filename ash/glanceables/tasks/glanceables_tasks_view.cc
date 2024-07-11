@@ -66,12 +66,16 @@
 namespace ash {
 namespace {
 
-constexpr auto kProgressBarPreferredSize = gfx::Size(0, 8);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
-// The interior margin should be 12, but keep one pixel in the child views to
-// set as the border so that it can accommodate the focus ring.
-constexpr int kInteriorGlanceableBubbleMargin = 11;
 constexpr int kScrollViewBottomMargin = 12;
+
+// The interior margin should be 12, but space needs to be left for the focus in
+// the child views.
+constexpr int kTotalInteriorMargin = 12;
+constexpr int kSpaceForFocusRing = 4;
+constexpr int kInteriorGlanceableBubbleMargin =
+    kTotalInteriorMargin - kSpaceForFocusRing;
+
 constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
 constexpr gfx::Insets kFooterBorderInsets = gfx::Insets::TLBR(4, 6, 8, 2);
@@ -136,7 +140,8 @@ class AddNewTaskButton : public views::LabelButton {
         ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
                                        cros_tokens::kCrosSysPrimary));
     SetImageLabelSpacing(12);
-    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(8, 0)));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+    SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 8, 0));
     SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
@@ -158,9 +163,7 @@ GlanceablesTasksView::GlanceablesTasksView(
     : shown_time_(base::Time::Now()) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
-  SetInteriorMargin(gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
-                                      kInteriorGlanceableBubbleMargin, 0,
-                                      kInteriorGlanceableBubbleMargin));
+  UpdateInteriorMargin();
   SetOrientation(views::LayoutOrientation::kVertical);
 
   auto* tasks_header_container =
@@ -169,10 +172,11 @@ GlanceablesTasksView::GlanceablesTasksView(
   tasks_header_container->SetCrossAxisAlignment(
       views::LayoutAlignment::kCenter);
   tasks_header_container->SetOrientation(views::LayoutOrientation::kHorizontal);
+  tasks_header_container->SetInteriorMargin(gfx::Insets::TLBR(
+      kSpaceForFocusRing, kSpaceForFocusRing, 0, kSpaceForFocusRing));
 
   tasks_header_view_ = tasks_header_container->AddChildView(
       std::make_unique<views::FlexLayoutView>());
-  tasks_header_view_->SetInteriorMargin(gfx::Insets::TLBR(1, 1, 0, 1));
   tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   tasks_header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   tasks_header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -198,7 +202,6 @@ GlanceablesTasksView::GlanceablesTasksView(
       &GlanceablesTasksView::ToggleExpandState, base::Unretained(this)));
 
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
-  progress_bar_->SetPreferredSize(kProgressBarPreferredSize);
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   content_scroll_view_ = AddChildView(
@@ -209,7 +212,8 @@ GlanceablesTasksView::GlanceablesTasksView(
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/
-      gfx::Insets::TLBR(1, 1, kScrollViewBottomMargin, 1),
+      gfx::Insets::TLBR(kSpaceForFocusRing, kSpaceForFocusRing,
+                        kScrollViewBottomMargin, kSpaceForFocusRing),
       kListViewBetweenChildSpacing));
 
   add_new_task_button_ =
@@ -256,7 +260,8 @@ GlanceablesTasksView::GlanceablesTasksView(
                                            kComboboxBorderInsets);
   combobox_replacement_label_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred));
   combobox_replacement_label_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -355,8 +360,9 @@ bool GlanceablesTasksView::IsExpanded() const {
 }
 
 int GlanceablesTasksView::GetCollapsedStatePreferredHeight() const {
-  return kInteriorGlanceableBubbleMargin + kScrollViewBottomMargin +
-         tasks_header_view_->height();
+  return kTotalInteriorMargin * 2 +
+         combobox_replacement_label_->GetLineHeight() +
+         kComboboxBorderInsets.height();
 }
 
 void GlanceablesTasksView::AnimationEnded(const gfx::Animation* animation) {
@@ -392,6 +398,8 @@ void GlanceablesTasksView::UpdateTaskLists(
 void GlanceablesTasksView::CreateElevatedBackground() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
+  UpdateInteriorMargin();
+
   expand_button_->SetVisible(true);
   expand_button_->SetExpanded(is_expanded_);
   content_scroll_view_->SetOnOverscrollCallback(base::BindRepeating(
@@ -421,17 +429,7 @@ void GlanceablesTasksView::SetExpandState(bool is_expanded,
     }
   }
 
-  // Move the `kScrollViewBottomMargin` to the interior margin when the tasks is
-  // collapsed to keep the bottom margin that was used in the scroll view.
-  auto target_interior_margin =
-      is_expanded_ ? gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
-                                       kInteriorGlanceableBubbleMargin, 0,
-                                       kInteriorGlanceableBubbleMargin)
-                   : gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
-                                       kInteriorGlanceableBubbleMargin,
-                                       kInteriorGlanceableBubbleMargin,
-                                       kScrollViewBottomMargin);
-  SetInteriorMargin(target_interior_margin);
+  UpdateInteriorMargin();
 
   for (auto& observer : observers_) {
     observer.OnExpandStateChanged(Context::kTasks, is_expanded_,
@@ -877,6 +875,18 @@ void GlanceablesTasksView::AnimateTaskViewVisibility(views::View* task,
 
 void GlanceablesTasksView::OnTaskViewAnimationCompleted() {
   animating_task_view_layer_.reset();
+}
+
+void GlanceablesTasksView::UpdateInteriorMargin() {
+  const bool no_bottom_margin = !GetBackground() || is_expanded_;
+  SetInteriorMargin(no_bottom_margin
+                        ? gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                            kInteriorGlanceableBubbleMargin, 0,
+                                            kInteriorGlanceableBubbleMargin)
+                        : gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                            kInteriorGlanceableBubbleMargin,
+                                            kTotalInteriorMargin,
+                                            kInteriorGlanceableBubbleMargin));
 }
 
 void GlanceablesTasksView::AnimateResize(ResizeAnimation::Type resize_type) {
