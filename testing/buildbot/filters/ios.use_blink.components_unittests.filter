@@ -308,3 +308,11 @@
 -AutofillAcrossIframesTest.SubmitMultiFrameForm
 -AutofillAcrossIframesTest.TextChangeOnMultiFrameForm
 -AutofillAcrossIframesTest.UpdateOnFrameDeletion
+
+# TODO(crbug.com/352359917): These tests have been failing since
+# https://crrev.com/c/5682403.
+-AutofillAcrossIframesTest.UpdateOnFormDeletion
+-AutofillAcrossIframesTest.UpdateOnFormDeletion_Synthetic
+-AutofillAcrossIframesTest.UpdateOnFormDeletion_Synthetic_Partial
+-AutofillAcrossIframesTest.WithChildFrames_SyntheticForm
+-AutofillAcrossIframesTest.WithChildFrames_SyntheticForm_WithoutInputElements
