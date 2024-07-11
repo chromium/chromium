@@ -66,7 +66,7 @@ const TestCase kNonSuggestionTestCases[] = {
     },
     TestCase{
         .source = PickerSearchSource::kAction,
-        .section_type = PickerSectionType::kCategories,
+        .section_type = PickerSectionType::kNone,
     },
     TestCase{
         .source = PickerSearchSource::kLocalFile,
@@ -494,7 +494,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                    &PickerSearchResult::TextData::primary_text,
                                    u"math")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kCategories),
+                         PickerSectionType::kNone),
                 Property("results", &PickerSearchResultsSection::results,
                          ElementsAre(Property(
                              "data", &PickerSearchResult::data,
@@ -768,7 +768,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(search_results_callback,
               Call(ElementsAre(AllOf(
                   Property("type", &PickerSearchResultsSection::type,
-                           PickerSectionType::kCategories),
+                           PickerSectionType::kNone),
                   Property("results", &PickerSearchResultsSection::results,
                            ElementsAre(Property(
                                "data", &PickerSearchResult::data,

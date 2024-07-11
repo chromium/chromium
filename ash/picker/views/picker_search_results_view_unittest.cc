@@ -157,7 +157,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
                                &submenu_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kCategories,
+      PickerSectionType::kNone,
       {{PickerSearchResult::Category(PickerCategory::kExpressions)}},
       /*has_more_results=*/false));
 
@@ -276,7 +276,7 @@ TEST_F(PickerSearchResultsViewTest, GetsItemAbove) {
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
                                &submenu_controller);
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kCategories,
+      PickerSectionType::kNone,
       {{PickerSearchResult::Category(PickerCategory::kLinks),
         PickerSearchResult::Category(PickerCategory::kClipboard)}},
       /*has_more_results=*/false));
@@ -296,7 +296,7 @@ TEST_F(PickerSearchResultsViewTest, GetsItemBelow) {
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
                                &submenu_controller);
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kCategories,
+      PickerSectionType::kNone,
       {{PickerSearchResult::Category(PickerCategory::kLinks),
         PickerSearchResult::Category(PickerCategory::kClipboard)}},
       /*has_more_results=*/false));

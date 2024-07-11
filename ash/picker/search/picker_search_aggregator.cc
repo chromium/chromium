@@ -34,7 +34,7 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
     case PickerSearchSource::kClipboard:
       return PickerSectionType::kSuggestions;
     case PickerSearchSource::kAction:
-      return PickerSectionType::kCategories;
+      return PickerSectionType::kNone;
     case PickerSearchSource::kLocalFile:
       return PickerSectionType::kLocalFiles;
     case PickerSearchSource::kDrive:
@@ -156,7 +156,7 @@ void PickerSearchAggregator::PublishBurnInResults() {
   // TODO: b/351224614 - Replace this with a new PickerSectionType::kBestMatch.
   for (PickerSectionType type : {
            PickerSectionType::kSuggestions,
-           PickerSectionType::kCategories,
+           PickerSectionType::kNone,
            PickerSectionType::kEditorWrite,
            PickerSectionType::kEditorRewrite,
        }) {

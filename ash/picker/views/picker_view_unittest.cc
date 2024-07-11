@@ -438,7 +438,7 @@ TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
             search_called.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kCategories,
+                    PickerSectionType::kNone,
                     {{PickerSearchResult::Category(PickerCategory::kLinks)}},
                     /*has_more_results=*/false),
             });
@@ -1140,7 +1140,7 @@ TEST_F(PickerViewTest, StopsSearchWhenCategorySelectedInSearchResults) {
   FakePickerViewDelegate::SearchResultsCallback callback = search_future.Take();
   callback.Run({
       PickerSearchResultsSection(
-          PickerSectionType::kCategories,
+          PickerSectionType::kNone,
           {{PickerSearchResult::Category(PickerCategory::kLinks)}},
           /*has_more_results=*/false),
   });
@@ -1540,7 +1540,7 @@ TEST_F(PickerViewTest, DownArrowKeyNavigatesSearchResults) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kCategories,
+                    PickerSectionType::kNone,
                     {{PickerSearchResult::BrowsingHistory(
                           GURL("http://foo.com"), u"Foo", ui::ImageModel()),
                       PickerSearchResult::BrowsingHistory(
@@ -1874,7 +1874,7 @@ TEST_F(PickerViewTest, ClearsSearchWhenClickingOnCategoryResult) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kCategories,
+                    PickerSectionType::kNone,
                     {{PickerSearchResult::Category(PickerCategory::kLinks)}},
                     /*has_more_results=*/false),
             });
@@ -2289,7 +2289,7 @@ TEST_F(PickerViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kCategories,
+                    PickerSectionType::kNone,
                     {{PickerSearchResult::Category(PickerCategory::kLinks)}},
                     /*has_more_results=*/false),
             });

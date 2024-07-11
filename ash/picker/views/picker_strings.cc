@@ -115,7 +115,6 @@ std::u16string GetSectionTitleForPickerSectionType(
     PickerSectionType section_type) {
   switch (section_type) {
     case PickerSectionType::kNone:
-    case PickerSectionType::kCategories:
     case PickerSectionType::kSuggestions:
     case PickerSectionType::kEditorWrite:
     case PickerSectionType::kEditorRewrite:

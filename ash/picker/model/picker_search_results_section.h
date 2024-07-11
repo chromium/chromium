@@ -15,7 +15,6 @@ namespace ash {
 
 enum class ASH_EXPORT PickerSectionType {
   kNone,
-  kCategories,
   kSuggestions,
   kLinks,
   kLocalFiles,
