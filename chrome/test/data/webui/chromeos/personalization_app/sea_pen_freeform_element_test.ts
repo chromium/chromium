@@ -64,14 +64,10 @@ suite('SeaPenFreeformElementTest', function() {
             SeaPenRecentWallpapersElement.is),
         'sea-pen-recent-wallpapers shown on freeform page');
 
-    // sea-pen-images is present but hidden initially as the default tab is
-    // Sample Prompts.
-    const seaPenImagesElement =
-        freeformElement.shadowRoot!.querySelector<HTMLElement>(
-            SeaPenImagesElement.is);
-    assertTrue(!!seaPenImagesElement, 'sea-pen-images is available');
-    assertTrue(
-        seaPenImagesElement.hidden, 'sea-pen-images is hidden initially');
+    assertFalse(
+        !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenImagesElement.is),
+        'sea-pen-images is not shown');
   });
 
   test('shows 6 sample prompts in freeform freeform page', async () => {
@@ -125,12 +121,10 @@ suite('SeaPenFreeformElementTest', function() {
             SeaPenRecentWallpapersElement.is),
         'sea-pen-recent-wallpapers is not shown');
 
-    // sea-pen-images is present and visible.
-    const seaPenImagesElement =
-        freeformElement.shadowRoot!.querySelector<HTMLElement>(
-            SeaPenImagesElement.is);
-    assertTrue(!!seaPenImagesElement, 'sea-pen-images is available');
-    assertFalse(seaPenImagesElement.hidden, 'sea-pen-images is visible');
+    assertTrue(
+        !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenImagesElement.is),
+        'sea-pen-images is shown');
   });
 
   test('switches tab in freeform page', async () => {
@@ -163,10 +157,9 @@ suite('SeaPenFreeformElementTest', function() {
             SeaPenRecentWallpapersElement.is),
         'sea-pen-recent-wallpapers is shown in Sample Prompts tab');
 
-    const seaPenImagesElement =
-        freeformElement.shadowRoot!.querySelector<HTMLElement>(
-            SeaPenImagesElement.is);
-    assertTrue(!!seaPenImagesElement, 'sea-pen-images is available');
-    assertTrue(seaPenImagesElement.hidden, 'sea-pen-images is hidden now');
+    assertFalse(
+        !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenImagesElement.is),
+        'sea-pen-images is not shown');
   });
 });

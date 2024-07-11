@@ -184,6 +184,12 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private onTemplateIdChanged_() {
     this.cameraFeed_?.remove();
     this.cameraFeed_ = null;
+    if (this.templateId === QUERY) {
+      return;
+    }
+    // Clear thumbnails if changing templates.
+    // For Freeform, we need to preserve the thumbnails state when switching
+    // between freeform tabs.
     clearSeaPenThumbnails(this.getStore());
   }
 
