@@ -16,8 +16,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -50,6 +53,23 @@ public class EdgeToEdgeControllerFactory {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         return new EdgeToEdgeControllerImpl(
                 activity, windowAndroid, tabObservableSupplier, null, browserControlsStateProvider);
+    }
+
+    /**
+     * Build the coordinator that manages the edge-to-edge bottom chin.
+     *
+     * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
+     * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
+     *     status and window bottom insets.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
+     *     browser controls heights.
+     */
+    public static Destroyable createBottomChin(
+            LayoutManager layoutManager,
+            EdgeToEdgeController edgeToEdgeController,
+            BottomControlsStacker bottomControlsStacker) {
+        return new EdgeToEdgeBottomChinCoordinator(
+                layoutManager, edgeToEdgeController, bottomControlsStacker);
     }
 
     /**

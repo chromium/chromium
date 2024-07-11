@@ -3,34 +3,103 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
+
 import android.graphics.Color;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-class EdgeToEdgeBottomChinMediator {
+class EdgeToEdgeBottomChinMediator
+        implements LayoutStateProvider.LayoutStateObserver, EdgeToEdgeSupplier.ChangeObserver {
     /** The model for the bottom controls component that holds all of its view state. */
     private final PropertyModel mModel;
 
-    private final BottomControlsStacker mBottomControlsStacker;
+    private @LayoutType int mCurrentLayoutType;
+    private int mEdgeToEdgeBottomInset;
+
+    private final @NonNull LayoutManager mLayoutManager;
+    private final @NonNull EdgeToEdgeController mEdgeToEdgeController;
+    private final @NonNull BottomControlsStacker mBottomControlsStacker;
 
     /**
      * Build a new mediator for the bottom chin component.
      *
      * @param model The {@link EdgeToEdgeBottomChinProperties} that holds all the view state for the
      *     bottom chin component.
+     * @param layoutManager The {@link LayoutManager} for observing active layout type.
+     * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
+     *     status and window bottom insets.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
      */
-    EdgeToEdgeBottomChinMediator(PropertyModel model, BottomControlsStacker bottomControlsStacker) {
+    EdgeToEdgeBottomChinMediator(
+            PropertyModel model,
+            @NonNull LayoutManager layoutManager,
+            @NonNull EdgeToEdgeController edgeToEdgeController,
+            @NonNull BottomControlsStacker bottomControlsStacker) {
         mModel = model;
+        mLayoutManager = layoutManager;
+        mEdgeToEdgeController = edgeToEdgeController;
         mBottomControlsStacker = bottomControlsStacker;
 
-        mModel.set(EdgeToEdgeBottomChinProperties.Y_OFFSET, 0);
-        mModel.set(EdgeToEdgeBottomChinProperties.HEIGHT, 100);
-        mModel.set(EdgeToEdgeBottomChinProperties.IS_VISIBLE, true);
-        mModel.set(EdgeToEdgeBottomChinProperties.COLOR, Color.RED);
+        mModel.set(Y_OFFSET, 0);
+        mModel.set(COLOR, Color.RED);
+
+        mLayoutManager.addObserver(this);
+        mEdgeToEdgeController.registerObserver(this);
     }
 
-    void destroy() {}
+    void destroy() {
+        // Check that each is not null, since during activity shutdown these might get destroyed /
+        // cleaned up before this is called.
+        if (mLayoutManager != null) {
+            mLayoutManager.removeObserver(this);
+        }
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterObserver(this);
+        }
+    }
+
+    private void updateVisibility() {
+        boolean supportedLayoutType =
+                mCurrentLayoutType == LayoutType.BROWSING
+                        || mCurrentLayoutType == LayoutType.TOOLBAR_SWIPE
+                        || mCurrentLayoutType == LayoutType.START_SURFACE;
+
+        // Check that the bottom inset is greater than zero, otherwise there is no space to show the
+        // bottom chin. A zero inset indicates a lack of "dismissable" bottom bar (e.g. fullscreen
+        // mode, 3-button nav).
+        boolean nonZeroEdgeToEdgeBottomInset = mEdgeToEdgeBottomInset > 0;
+
+        // TODO(crbug.com/350754745) Check if other bottom browser controls are showing
+        // TODO add check for E2E website opt-in
+
+        mModel.set(IS_VISIBLE, supportedLayoutType && nonZeroEdgeToEdgeBottomInset);
+    }
+
+    // LayoutStateProvider.LayoutStateObserver
+
+    @Override
+    public void onStartedShowing(int layoutType) {
+        mCurrentLayoutType = layoutType;
+        updateVisibility();
+    }
+
+    // EdgeToEdgeSupplier.ChangeObserver
+
+    @Override
+    public void onToEdgeChange(int bottomInset) {
+        mEdgeToEdgeBottomInset = bottomInset;
+        mModel.set(HEIGHT, bottomInset);
+        updateVisibility();
+    }
 }

@@ -28,6 +28,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -316,6 +317,7 @@ public class RootUiCoordinator
     protected StatusBarColorController mStatusBarColorController;
     protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    protected Destroyable mEdgeToEdgeBottomChin;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
     private final AppMenuDelegate mAppMenuDelegate;
@@ -762,6 +764,10 @@ public class RootUiCoordinator
             mEdgeToEdgeController = null;
         }
         mEdgeToEdgeControllerSupplier.set(null);
+
+        if (mEdgeToEdgeBottomChin != null) {
+            mEdgeToEdgeBottomChin.destroy();
+        }
 
         if (mBoardingPassController != null) {
             mBoardingPassController.destroy();
@@ -1920,6 +1926,12 @@ public class RootUiCoordinator
                     EdgeToEdgeControllerFactory.create(
                             activity, mWindowAndroid, activityTabProvider, browserControlsManager);
             supplier.set(mEdgeToEdgeController);
+
+            if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
+                mEdgeToEdgeBottomChin =
+                        EdgeToEdgeControllerFactory.createBottomChin(
+                                mLayoutManager, mEdgeToEdgeController, mBottomControlsStacker);
+            }
         }
     }
 
