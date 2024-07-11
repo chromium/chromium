@@ -19,6 +19,7 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -179,7 +180,8 @@ void NotificationPlatformBridgeMac::GetDisplayedForOrigin(
       web_app::WebAppRegistrar& registrar =
           web_app_provider->registrar_unsafe();
       for (const webapps::AppId& app_id : registrar.GetAppIds()) {
-        if (!registrar.IsLocallyInstalled(app_id)) {
+        if (!registrar.IsInstallState(
+                app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
           continue;
         }
         if (!url::IsSameOriginWith(registrar.GetAppScope(app_id), origin)) {
