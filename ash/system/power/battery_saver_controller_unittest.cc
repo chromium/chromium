@@ -452,7 +452,8 @@ TEST_F(BatterySaverControllerTest, Allowed) {
   local_state()->RemoveManagedPref(prefs::kPowerBatterySaver);
 
   // If the experiment is off, Battery Saver is not allowed.
-  scoped_feature_list_.reset();
+  scoped_feature_list_->Reset();
+  scoped_feature_list_->InitAndDisableFeature(features::kBatterySaver);
   EXPECT_FALSE(IsBatterySaverAllowed());
 }
 
