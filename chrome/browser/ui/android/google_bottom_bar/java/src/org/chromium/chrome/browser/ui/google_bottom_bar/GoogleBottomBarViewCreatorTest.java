@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.CUSTOM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SAVE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SEARCH;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
@@ -59,7 +60,7 @@ import java.util.Map;
 public class GoogleBottomBarViewCreatorTest {
 
     private static final Map<Integer, Integer> BUTTON_ID_TO_CUSTOM_BUTTON_ID_MAP =
-            Map.of(SAVE, 100, SHARE, 101, PIH_BASIC, 103, CUSTOM, 105);
+            Map.of(SAVE, 100, SHARE, 101, PIH_BASIC, 103, CUSTOM, 105, SEARCH, 106);
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -284,6 +285,59 @@ public class GoogleBottomBarViewCreatorTest {
                                 GoogleBottomBarButtonEvent.SHARE_CHROME)
                         .build();
         List<Integer> buttonIdList = List.of(0, PIH_BASIC, SHARE, CUSTOM);
+        mGoogleBottomBarViewCreator =
+                getGoogleBottomBarViewCreator(
+                        mConfigCreator.create(
+                                GoogleBottomBarIntentParams.newBuilder()
+                                        .addAllEncodedButton(buttonIdList)
+                                        .build(),
+                                List.of(getMockCustomButtonParams(PIH_BASIC))));
+        mGoogleBottomBarViewCreator.createGoogleBottomBarView();
+
+        mGoogleBottomBarViewCreator.logButtons();
+
+        histogramWatcher.assertExpected();
+        histogramWatcher.close();
+    }
+
+    @Test
+    public void testLogButtons_searchButtonHasAssociatedCustomButtonParams_logsSearchButton() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                BUTTON_SHOWN_HISTOGRAM,
+                                GoogleBottomBarButtonEvent.PIH_EMBEDDER,
+                                GoogleBottomBarButtonEvent.SHARE_CHROME,
+                                GoogleBottomBarButtonEvent.SEARCH_EMBEDDER)
+                        .build();
+        List<Integer> buttonIdList = List.of(0, PIH_BASIC, SHARE, SEARCH);
+        mGoogleBottomBarViewCreator =
+                getGoogleBottomBarViewCreator(
+                        mConfigCreator.create(
+                                GoogleBottomBarIntentParams.newBuilder()
+                                        .addAllEncodedButton(buttonIdList)
+                                        .build(),
+                                List.of(
+                                        getMockCustomButtonParams(PIH_BASIC),
+                                        getMockCustomButtonParams(SEARCH))));
+        mGoogleBottomBarViewCreator.createGoogleBottomBarView();
+
+        mGoogleBottomBarViewCreator.logButtons();
+
+        histogramWatcher.assertExpected();
+        histogramWatcher.close();
+    }
+
+    @Test
+    public void testLogButtons_searchButtonWithoutCustomButtonParams_doesNotLogSearchButton() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                BUTTON_SHOWN_HISTOGRAM,
+                                GoogleBottomBarButtonEvent.PIH_EMBEDDER,
+                                GoogleBottomBarButtonEvent.SHARE_CHROME)
+                        .build();
+        List<Integer> buttonIdList = List.of(0, PIH_BASIC, SHARE, SEARCH);
         mGoogleBottomBarViewCreator =
                 getGoogleBottomBarViewCreator(
                         mConfigCreator.create(

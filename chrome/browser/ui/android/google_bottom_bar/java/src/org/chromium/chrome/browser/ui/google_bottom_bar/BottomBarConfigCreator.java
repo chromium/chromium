@@ -49,7 +49,9 @@ public class BottomBarConfigCreator {
                     104,
                     ButtonId.ADD_NOTES,
                     105,
-                    ButtonId.CUSTOM);
+                    ButtonId.CUSTOM,
+                    106,
+                    ButtonId.SEARCH);
     private static final List<Integer> DEFAULT_BUTTON_ID_LIST =
             List.of(ButtonId.SAVE, ButtonId.PIH_BASIC, ButtonId.SHARE);
     private static final List<Integer> DEFAULT_RIGHT_BUTTON_ID_LIST = List.of(ButtonId.SHARE);
@@ -455,19 +457,19 @@ public class BottomBarConfigCreator {
 
     private static Drawable getIconDrawable(
             Context context, @ButtonId int buttonId, CustomButtonParams params) {
-        // Always use pageInsights icon provided by Chrome
-        return isPageInsightsButton(buttonId)
-                ? UiUtils.getTintedDrawable(
-                        context,
-                        R.drawable.bottom_bar_page_insights_icon,
-                        R.color.default_icon_color_baseline)
-                : getTintedIcon(
-                        context, params.getIcon(context), R.color.default_icon_color_baseline);
-    }
-
-    private static boolean isPageInsightsButton(@ButtonId int buttonId) {
-        return buttonId == ButtonId.PIH_BASIC
-                || buttonId == ButtonId.PIH_COLORED
-                || buttonId == ButtonId.PIH_EXPANDED;
+        return switch (buttonId) {
+            case ButtonId.PIH_BASIC, ButtonId.PIH_COLORED, ButtonId.PIH_EXPANDED ->
+            // Always use pageInsights icon provided by Chrome
+            UiUtils.getTintedDrawable(
+                    context,
+                    R.drawable.bottom_bar_page_insights_icon,
+                    R.color.default_icon_color_baseline);
+            case ButtonId.SEARCH ->
+            // Always use search icon provided by Chrome
+            UiUtils.getTintedDrawable(
+                    context, R.drawable.ic_search, R.color.default_icon_color_baseline);
+            default -> getTintedIcon(
+                    context, params.getIcon(context), R.color.default_icon_color_baseline);
+        };
     }
 }

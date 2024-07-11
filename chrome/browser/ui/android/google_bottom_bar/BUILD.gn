@@ -56,6 +56,7 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+    "//content/public/android:content_java_resources",
   ]
 }
 
