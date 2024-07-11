@@ -44,18 +44,6 @@ export function getHtml(this: TabOrganizationNotStartedElement) {
       ` : ''}
     </div>
   </div>
-  ${this.shouldShowAccountInfo_() ? html`
-    <div class="account-row">
-      <!-- Decorative image, intentionally empty alt text -->
-      <img class="account-image" alt="" .src="${this.getAccountImageSrc_()}">
-      <div class="account-text">
-        <div class="tab-organization-header">${this.account_!.name}</div>
-        <div class="tab-organization-body account-email">
-          ${this.account_!.email}
-        </div>
-      </div>
-    </div>
-  ` : ''}
   <cr-button class="action-button"
       aria-label="${this.getActionButtonAriaLabel_()}"
       @click="${this.onButtonClick_}">

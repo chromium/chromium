@@ -252,17 +252,11 @@ interface PageHandler {
   // Initiate the feedback flow.
   TriggerFeedback(int32 session_id);
 
-  // Initiate the sync flow.
-  TriggerSync();
-
   // Initiate the sign in flow.
   TriggerSignIn();
 
   // Open the help page associated with tab organization.
   OpenHelpPage();
-
-  // Open the user's sync settings in a new tab.
-  OpenSyncSettings();
 
   // Store the user feedback supplied by the user.
   SetUserFeedback(int32 session_id,

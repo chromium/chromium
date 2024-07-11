@@ -11,7 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
@@ -21,8 +21,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
@@ -127,29 +126,18 @@ void TabOrganizationService::OnUserInvokedFeature(const Browser* browser) {
 bool TabOrganizationService::CanStartRequest() const {
   CHECK(TabOrganizationUtils::GetInstance()->IsEnabled(profile_));
 
-  const syncer::SyncService* const sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  if (!sync_service) {
-    return false;
-  }
-
-  // Sync must be enabled.
-  if (!sync_service->IsSyncFeatureEnabled()) {
-    return false;
-  }
-
-  // Sync must not be paused.
-  if (!sync_service->IsSyncFeatureActive()) {
-    return false;
-  }
-
-  // History Sync must be enabled.
-  if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory)) {
-    return false;
-  }
-
+// The signin flow is not used on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+  const signin::IdentityManager* const identity_manager(
+      IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
+  const auto primary_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const auto extended_account_info =
+      identity_manager->FindExtendedAccountInfo(primary_account_info);
+  return !extended_account_info.IsEmpty();
+#else
   return true;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void TabOrganizationService::StartRequestIfNotFRE(

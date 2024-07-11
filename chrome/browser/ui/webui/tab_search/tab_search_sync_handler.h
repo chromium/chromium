@@ -9,8 +9,6 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
@@ -19,8 +17,7 @@ class Profile;
 // service and identity manager and observing and propagating relevant
 // events to the WebUI.
 class TabSearchSyncHandler : public content::WebUIMessageHandler,
-                             public signin::IdentityManager::Observer,
-                             public syncer::SyncServiceObserver {
+                             public signin::IdentityManager::Observer {
  public:
   explicit TabSearchSyncHandler(Profile* profile);
 
@@ -35,31 +32,18 @@ class TabSearchSyncHandler : public content::WebUIMessageHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // Retrieves sync related information from the SyncService.
-  base::Value::Dict GetSyncInfo() const;
-  // Handles the request for sync information.
-  void HandleGetSyncInfo(const base::Value::List& args);
-
-  // Retrieves information about the primary account.
-  base::Value::Dict GetAccountInfo() const;
-  // Handles the request for the primary account information.
-  void HandleGetAccountInfo(const base::Value::List& args);
-
-  // syncer::SyncServiceObserver implementation.
-  void OnStateChanged(syncer::SyncService* sync_service) override;
-  void OnSyncShutdown(syncer::SyncService* sync_service) override;
+  // Returns whether or not the user is currently signed in.
+  bool GetSignInState() const;
+  // Handles the request for the sign in state.
+  void HandleGetSignInState(const base::Value::List& args);
 
   // IdentityManager::Observer implementation.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
-  syncer::SyncService* GetSyncService() const;
-
   // Weak pointer.
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observation_{this};
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};

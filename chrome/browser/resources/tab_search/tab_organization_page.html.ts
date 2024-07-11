@@ -13,9 +13,7 @@ export function getHtml(this: TabOrganizationPageElement) {
   <div id="body">
     <tab-organization-not-started id="notStarted"
         ?shown="${this.isState_(TabOrganizationState.kNotStarted)}"
-        @sync-click="${this.onSyncClick_}"
         @sign-in-click="${this.onSignInClick_}"
-        @settings-click="${this.onSettingsClick_}"
         @organize-tabs-click="${this.onOrganizeTabsClick_}"
         @learn-more-click="${this.onLearnMoreClick_}"
         ?show-fre="${this.showFRE_}">

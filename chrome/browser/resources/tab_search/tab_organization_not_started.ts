@@ -12,16 +12,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './tab_organization_not_started.css.js';
 import {getHtml} from './tab_organization_not_started.html.js';
-import type {AccountInfo, SyncInfo, TabSearchSyncBrowserProxy} from './tab_search_sync_browser_proxy.js';
+import type {TabSearchSyncBrowserProxy} from './tab_search_sync_browser_proxy.js';
 import {TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
-
-enum SyncState {
-  SIGNED_OUT,
-  UNSYNCED,
-  UNSYNCED_HISTORY,
-  SYNC_PAUSED,
-  SYNCED,
-}
 
 const TabOrganizationNotStartedElementBase =
     WebUiListenerMixinLit(CrLitElement);
@@ -42,15 +34,13 @@ export class TabOrganizationNotStartedElement extends
   static override get properties() {
     return {
       showFre: {type: Boolean},
-      account_: {type: Object},
-      sync_: {type: Object},
+      signedIn_: {type: Boolean},
     };
   }
 
   showFre: boolean = false;
 
-  protected account_?: AccountInfo;
-  private sync_?: SyncInfo;
+  private signedIn_: boolean = false;
   private syncBrowserProxy_: TabSearchSyncBrowserProxy =
       TabSearchSyncBrowserProxyImpl.getInstance();
 
@@ -65,33 +55,12 @@ export class TabOrganizationNotStartedElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.syncBrowserProxy_.getAccountInfo().then(this.setAccount_.bind(this));
-    this.addWebUiListener('account-info-changed', this.setAccount_.bind(this));
-
-    this.syncBrowserProxy_.getSyncInfo().then(this.setSync_.bind(this));
-    this.addWebUiListener('sync-info-changed', this.setSync_.bind(this));
+    this.syncBrowserProxy_.getSignInState().then(this.setSignedIn_.bind(this));
+    this.addWebUiListener('has-accoun-changed', this.setSignedIn_.bind(this));
   }
 
-  private setAccount_(account: AccountInfo) {
-    this.account_ = account;
-  }
-
-  private setSync_(sync: SyncInfo) {
-    this.sync_ = sync;
-  }
-
-  private getSyncState_(): SyncState {
-    if (!this.account_) {
-      return SyncState.SIGNED_OUT;
-    } else if (!this.sync_?.syncing) {
-      return SyncState.UNSYNCED;
-    } else if (this.sync_.paused) {
-      return SyncState.SYNC_PAUSED;
-    } else if (!this.sync_.syncingHistory) {
-      return SyncState.UNSYNCED_HISTORY;
-    } else {
-      return SyncState.SYNCED;
-    }
+  private setSignedIn_(signedIn: boolean) {
+    this.signedIn_ = signedIn;
   }
 
   protected getTitle_(): string {
@@ -100,86 +69,45 @@ export class TabOrganizationNotStartedElement extends
   }
 
   protected getBody_(): string {
-    switch (this.getSyncState_()) {
-      case SyncState.SIGNED_OUT:
-        return loadTimeData.getString('notStartedBodySignedOut');
-      case SyncState.UNSYNCED:
-        return loadTimeData.getString('notStartedBodyUnsynced');
-      case SyncState.SYNC_PAUSED:
-        return loadTimeData.getString('notStartedBodySyncPaused');
-      case SyncState.UNSYNCED_HISTORY:
-        return loadTimeData.getString('notStartedBodyUnsyncedHistory');
-      case SyncState.SYNCED: {
-        return loadTimeData.getString(
-            this.showFre ? 'notStartedBodyFREHeader' : 'notStartedBody');
-      }
+    if (!this.signedIn_) {
+      return loadTimeData.getString('notStartedBodySignedOut');
+    } else if (this.showFre) {
+      return loadTimeData.getString('notStartedBodyFREHeader');
+    } else {
+      return loadTimeData.getString('notStartedBody');
     }
   }
 
-  protected shouldShowAccountInfo_(): boolean {
-    return !!this.account_ &&
-        (!this.sync_ || !this.sync_.syncing || this.sync_.paused ||
-         !this.sync_.syncingHistory);
-  }
-
-  protected getAccountImageSrc_(): string {
-    // image can be undefined if the account has not set an avatar photo.
-    return this.account_!.avatarImage ||
-        'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
-  }
-
   protected getActionButtonAriaLabel_(): string {
-    switch (this.getSyncState_()) {
-      case SyncState.SIGNED_OUT:
-      case SyncState.UNSYNCED:
-        return loadTimeData.getString('notStartedButtonUnsyncedAriaLabel');
-      case SyncState.SYNC_PAUSED:
-        return loadTimeData.getString('notStartedButtonSyncPausedAriaLabel');
-      case SyncState.UNSYNCED_HISTORY:
-        return loadTimeData.getString(
-            'notStartedButtonUnsyncedHistoryAriaLabel');
-      case SyncState.SYNCED:
-        return loadTimeData.getString(
-            this.showFre ? 'notStartedButtonFREAriaLabel' :
-                           'notStartedButtonAriaLabel');
+    if (!this.signedIn_) {
+      return loadTimeData.getString('notStartedButtonSignedOutAriaLabel');
+    } else if (this.showFre) {
+      return loadTimeData.getString('notStartedButtonFREAriaLabel');
+    } else {
+      return loadTimeData.getString('notStartedButtonAriaLabel');
     }
   }
 
   protected getActionButtonText_(): string {
-    switch (this.getSyncState_()) {
-      case SyncState.SIGNED_OUT:
-      case SyncState.UNSYNCED:
-        return loadTimeData.getString('notStartedButtonUnsynced');
-      case SyncState.SYNC_PAUSED:
-        return loadTimeData.getString('notStartedButtonSyncPaused');
-      case SyncState.UNSYNCED_HISTORY:
-        return loadTimeData.getString('notStartedButtonUnsyncedHistory');
-      case SyncState.SYNCED:
-        return loadTimeData.getString(
-            this.showFre ? 'notStartedButtonFRE' : 'notStartedButton');
+    if (!this.signedIn_) {
+      return loadTimeData.getString('notStartedButtonSignedOut');
+    } else if (this.showFre) {
+      return loadTimeData.getString('notStartedButtonFRE');
+    } else {
+      return loadTimeData.getString('notStartedButton');
     }
   }
 
   protected onButtonClick_() {
-    switch (this.getSyncState_()) {
-      case SyncState.SIGNED_OUT:
-      case SyncState.UNSYNCED:
-        this.fire('sync-click');
-        break;
-      case SyncState.SYNC_PAUSED:
-        this.fire('sign-in-click');
-        break;
-      case SyncState.UNSYNCED_HISTORY:
-        this.fire('settings-click');
-        break;
-      case SyncState.SYNCED:
-        // Start a tab organization
-        this.fire('organize-tabs-click');
-        chrome.metricsPrivate.recordBoolean(
-            'Tab.Organization.AllEntrypoints.Clicked', true);
-        chrome.metricsPrivate.recordBoolean(
-            'Tab.Organization.TabSearch.Clicked', true);
-        break;
+    if (!this.signedIn_) {
+      this.fire('sign-in-click');
+    } else {
+      // Start a tab organization
+      this.fire('organize-tabs-click');
+      chrome.metricsPrivate.recordBoolean(
+          'Tab.Organization.AllEntrypoints.Clicked', true);
+      chrome.metricsPrivate.recordBoolean(
+          'Tab.Organization.TabSearch.Clicked', true);
     }
   }
 

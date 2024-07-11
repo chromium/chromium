@@ -207,16 +207,8 @@ export class TabOrganizationPageElement extends CrLitElement {
     return this.state_ === state;
   }
 
-  protected onSyncClick_() {
-    this.apiProxy_.triggerSync();
-  }
-
   protected onSignInClick_() {
     this.apiProxy_.triggerSignIn();
-  }
-
-  protected onSettingsClick_() {
-    this.apiProxy_.openSyncSettings();
   }
 
   protected onOrganizeTabsClick_() {

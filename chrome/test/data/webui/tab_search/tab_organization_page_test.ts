@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import type {CrInputElement, SyncInfo, Tab, TabOrganizationPageElement, TabOrganizationResultsElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {CrInputElement, Tab, TabOrganizationPageElement, TabOrganizationResultsElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSyncBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -19,11 +18,7 @@ suite('TabOrganizationPageTest', () => {
   let testApiProxy: TestTabSearchApiProxy;
   let testSyncProxy: TestTabSearchSyncBrowserProxy;
 
-  function tabOrganizationPageSetup(syncInfo: SyncInfo = {
-    syncing: true,
-    syncingHistory: true,
-    paused: false,
-  }) {
+  function tabOrganizationPageSetup() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testApiProxy = new TestTabSearchApiProxy();
@@ -32,7 +27,6 @@ suite('TabOrganizationPageTest', () => {
     TabSearchApiProxyImpl.setInstance(testApiProxy);
 
     testSyncProxy = new TestTabSearchSyncBrowserProxy();
-    testSyncProxy.syncInfo = syncInfo;
     TabSearchSyncBrowserProxyImpl.setInstance(testSyncProxy);
 
     tabOrganizationPage = document.createElement('tab-organization-page');
@@ -425,113 +419,6 @@ suite('TabOrganizationPageTest', () => {
     await microtasksFinished();
 
     assertEquals(1, testApiProxy.getCallCount('rejectSession'));
-  });
-
-  test('Sync required for organization', async () => {
-    const syncInfo: SyncInfo = {
-      syncing: false,
-      syncingHistory: false,
-      paused: false,
-    };
-    await tabOrganizationPageSetup(syncInfo);
-
-    const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
-        'tab-organization-not-started');
-    assertTrue(!!notStarted);
-    assertTrue(isVisible(notStarted));
-
-    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!actionButton);
-    actionButton.click();
-
-    // The action button should not request tab organization if the user is in
-    // an invalid sync state.
-    assertEquals(0, testApiProxy.getCallCount('requestTabOrganization'));
-  });
-
-  test('Triggers sync when not syncing', async () => {
-    const syncInfo: SyncInfo = {
-      syncing: false,
-      syncingHistory: true,
-      paused: false,
-    };
-    await tabOrganizationPageSetup(syncInfo);
-
-    const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
-        'tab-organization-not-started');
-    assertTrue(!!notStarted);
-    assertTrue(isVisible(notStarted));
-
-    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!actionButton);
-    actionButton.click();
-
-    assertEquals(1, testApiProxy.getCallCount('triggerSync'));
-  });
-
-  test('Triggers sign in when paused', async () => {
-    const syncInfo: SyncInfo = {
-      syncing: true,
-      syncingHistory: true,
-      paused: true,
-    };
-    await tabOrganizationPageSetup(syncInfo);
-
-    const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
-        'tab-organization-not-started');
-    assertTrue(!!notStarted);
-    assertTrue(isVisible(notStarted));
-
-    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!actionButton);
-    actionButton.click();
-
-    assertEquals(1, testApiProxy.getCallCount('triggerSignIn'));
-  });
-
-  test('Opens settings when not syncing history', async () => {
-    const syncInfo: SyncInfo = {
-      syncing: true,
-      syncingHistory: false,
-      paused: false,
-    };
-    await tabOrganizationPageSetup(syncInfo);
-
-    const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
-        'tab-organization-not-started');
-    assertTrue(!!notStarted);
-    assertTrue(isVisible(notStarted));
-
-    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!actionButton);
-    actionButton.click();
-
-    assertEquals(1, testApiProxy.getCallCount('openSyncSettings'));
-  });
-
-  test('Updates with sync changes', async () => {
-    await tabOrganizationPageSetup();
-
-    const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
-        'tab-organization-not-started');
-    assertTrue(!!notStarted);
-    assertTrue(isVisible(notStarted));
-
-    const accountRowSynced =
-        notStarted.shadowRoot!.querySelector('.account-row');
-    assertFalse(!!accountRowSynced);
-
-    testSyncProxy.syncInfo = {
-      syncing: false,
-      syncingHistory: false,
-      paused: false,
-    };
-    webUIListenerCallback('sync-info-changed', testSyncProxy.syncInfo);
-    await testSyncProxy.whenCalled('getSyncInfo');
-
-    const accountRowUnsynced =
-        notStarted.shadowRoot!.querySelector('.account-row');
-    assertTrue(!!accountRowUnsynced);
   });
 
   test('Tip action activates on Enter', async () => {

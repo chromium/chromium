@@ -92,10 +92,8 @@ class TabSearchPageHandler
   void SetTabIndex(int32_t index) override;
   void StartTabGroupTutorial() override;
   void TriggerFeedback(int32_t session_id) override;
-  void TriggerSync() override;
   void TriggerSignIn() override;
   void OpenHelpPage() override;
-  void OpenSyncSettings() override;
   void SetUserFeedback(int32_t session_id,
                        int32_t organization_id,
                        tab_search::mojom::UserFeedback feedback) override;
