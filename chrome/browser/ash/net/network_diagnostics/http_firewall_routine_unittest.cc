@@ -165,6 +165,19 @@ TEST_F(HttpFirewallRoutineTest, TestDnsResolutionFailuresAboveThreshold) {
       {mojom::HttpFirewallProblem::kDnsResolutionFailuresAboveThreshold});
 }
 
+// Edge case for tls_probe_failure_rate calculation.
+TEST_F(HttpFirewallRoutineTest, TestNoDnsResolutionSuccess) {
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
+  // kTotalHosts = 9
+  for (int i = 0; i < kTotalHosts; i++) {
+    fake_probe_results.push_back(TlsProberReturnValue{
+        net::ERR_NAME_NOT_RESOLVED, TlsProber::ProbeExitEnum::kDnsFailure});
+  }
+  SetUpAndRunRoutine(
+      std::move(fake_probe_results), mojom::RoutineVerdict::kProblem,
+      {mojom::HttpFirewallProblem::kDnsResolutionFailuresAboveThreshold});
+}
+
 TEST_F(HttpFirewallRoutineTest, TestFirewallDetection) {
   base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9

@@ -97,29 +97,37 @@ void HttpFirewallRoutine::Run() {
 }
 
 void HttpFirewallRoutine::AnalyzeResultsAndExecuteCallback() {
+  // There should at least `kTotalAdditionalHostsToQuery` (=3) URLs to query.
+  DCHECK(num_urls_to_query_);
   double dns_resolution_failure_rate =
       static_cast<double>(dns_resolution_failures_) /
       static_cast<double>(num_urls_to_query_);
-  double tls_probe_failure_rate =
-      static_cast<double>(tls_probe_failures_) /
-      static_cast<double>(num_no_dns_failure_tls_probes_attempted_);
 
   if (dns_resolution_failure_rate > kDnsResolutionFailureRateThreshold) {
     set_verdict(mojom::RoutineVerdict::kProblem);
     problems_.push_back(
         mojom::HttpFirewallProblem::kDnsResolutionFailuresAboveThreshold);
-  } else if (tls_probe_failure_rate <= kTlsProbeFailureRateThreshold) {
-    set_verdict(mojom::RoutineVerdict::kNoProblem);
-  } else if (tls_probe_failures_ == num_no_dns_failure_tls_probes_attempted_) {
-    set_verdict(mojom::RoutineVerdict::kProblem);
-    problems_.push_back(mojom::HttpFirewallProblem::kFirewallDetected);
   } else {
-    // It cannot be conclusively determined whether a firewall exists; however,
-    // since reaching this case means tls_probe_failure_rate >
-    // kTlsProbeFailureRateThreshold, a firewall could potentially
-    // exist.
-    set_verdict(mojom::RoutineVerdict::kProblem);
-    problems_.push_back(mojom::HttpFirewallProblem::kPotentialFirewall);
+    // When `dns_resolution_failure_rate` is below the threshold, there must be
+    // probes that is not "DNS failure".
+    DCHECK(num_no_dns_failure_tls_probes_attempted_);
+    double tls_probe_failure_rate =
+        static_cast<double>(tls_probe_failures_) /
+        static_cast<double>(num_no_dns_failure_tls_probes_attempted_);
+    if (tls_probe_failure_rate <= kTlsProbeFailureRateThreshold) {
+      set_verdict(mojom::RoutineVerdict::kNoProblem);
+    } else if (tls_probe_failures_ ==
+               num_no_dns_failure_tls_probes_attempted_) {
+      set_verdict(mojom::RoutineVerdict::kProblem);
+      problems_.push_back(mojom::HttpFirewallProblem::kFirewallDetected);
+    } else {
+      // It cannot be conclusively determined whether a firewall exists;
+      // however, since reaching this case means tls_probe_failure_rate >
+      // kTlsProbeFailureRateThreshold, a firewall could potentially
+      // exist.
+      set_verdict(mojom::RoutineVerdict::kProblem);
+      problems_.push_back(mojom::HttpFirewallProblem::kPotentialFirewall);
+    }
   }
   set_problems(mojom::RoutineProblems::NewHttpFirewallProblems(problems_));
   ExecuteCallback();
