@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "tools/mac/power/power_sampler/monitor.h"
 #include "tools/mac/power/power_sampler/sampler.h"

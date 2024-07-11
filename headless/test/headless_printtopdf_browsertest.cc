@@ -13,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/headless/command_handler/headless_command_switches.h"

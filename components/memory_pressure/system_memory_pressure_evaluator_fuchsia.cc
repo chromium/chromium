@@ -8,7 +8,6 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 

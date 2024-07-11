@@ -21,7 +21,6 @@
 #include <limits>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/registry.h"
 #include "build/build_config.h"

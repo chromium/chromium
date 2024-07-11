@@ -8,7 +8,6 @@
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call_internal.h"
 #include "base/types/strong_alias.h"
 

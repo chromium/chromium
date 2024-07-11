@@ -239,7 +239,6 @@ int main(int argc, const char* argv[]) {
       RewriteImplicitToExplicitStringConstructionRule(),
       ReplaceAsStringWithExplicitStringConversionRule(),
   });
-  addInclude(as_string_rule, "base/strings/string_piece.h");
 
   AtomicChanges changes;
   Transformer transformer(as_string_rule, GetConsumer(changes));

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/cast/message_port/message_port.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 

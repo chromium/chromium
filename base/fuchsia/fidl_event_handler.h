@@ -14,7 +14,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/strings/string_piece.h"
 
 namespace fidl {
 template <typename Protocol>

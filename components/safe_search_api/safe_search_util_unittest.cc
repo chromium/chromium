@@ -4,7 +4,6 @@
 
 #include "components/safe_search_api/safe_search_util.h"
 
-#include "base/strings/string_piece.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"

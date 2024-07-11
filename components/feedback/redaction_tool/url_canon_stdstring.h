@@ -18,7 +18,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 #include "components/feedback/redaction_tool/url_canon.h"
 
 namespace redaction_internal {

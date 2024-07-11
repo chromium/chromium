@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "net/http/http_util.h"
 
 namespace gcm {

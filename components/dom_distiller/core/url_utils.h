@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string_piece.h"
-
 class GURL;
 
 namespace dom_distiller {

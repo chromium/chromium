@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "base/metrics/record_histogram_checker.h"
-#include "base/strings/string_piece.h"
 
 namespace metrics {
 

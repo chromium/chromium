@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -37,7 +37,7 @@ bool AppendStringKeyValue(std::string_view input,
   std::string_view remains =
       input.substr(end_key_pos, input.size() - end_key_pos);
   size_t begin_value_pos = remains.find_first_not_of(delimiter);
-  if (begin_value_pos == StringPiece::npos) {
+  if (begin_value_pos == std::string_view::npos) {
     DVLOG(1) << "cannot parse value from input: " << input;
     return false;   // No value.
   }

@@ -14,7 +14,6 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
-#include "base/strings/string_piece.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
 #include "components/subresource_filter/core/common/unindexed_ruleset.h"
 #include "components/url_pattern_index/url_pattern_index.h"

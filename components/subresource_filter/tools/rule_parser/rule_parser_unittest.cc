@@ -8,7 +8,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 #include "components/subresource_filter/tools/rule_parser/rule_options.h"
 #include "components/url_pattern_index/proto/rules.pb.h"

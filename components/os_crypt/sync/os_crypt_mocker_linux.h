@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "components/os_crypt/sync/key_storage_linux.h"
 
 // Holds and serves a password from memory.

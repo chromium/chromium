@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"

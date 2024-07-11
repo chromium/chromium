@@ -13,7 +13,6 @@
 
 #include <algorithm>
 
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

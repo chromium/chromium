@@ -19,7 +19,6 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/numerics/clamped_math.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"

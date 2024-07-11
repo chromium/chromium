@@ -19,7 +19,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/task_annotator.h"

@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/render_frame_host.h"

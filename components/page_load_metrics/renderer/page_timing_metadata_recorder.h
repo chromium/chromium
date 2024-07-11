@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/profiler/sample_metadata.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

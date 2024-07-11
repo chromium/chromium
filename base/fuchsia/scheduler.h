@@ -5,7 +5,6 @@
 #ifndef BASE_FUCHSIA_SCHEDULER_H_
 #define BASE_FUCHSIA_SCHEDULER_H_
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
 namespace base {

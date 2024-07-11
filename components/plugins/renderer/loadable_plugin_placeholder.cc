@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/string_escape.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
