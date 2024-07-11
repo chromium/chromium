@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -16,7 +15,6 @@
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -329,18 +327,9 @@ void URLLoaderFactoryGetter::HandleNetworkFactoryRequestOnUIThread(
   // still held by consumers.
   if (!partition_)
     return;
-  network::mojom::URLLoaderFactoryParamsPtr params =
-      network::mojom::URLLoaderFactoryParams::New();
-  // The browser process is considered trusted.
-  params->is_trusted = true;
-  params->process_id = network::mojom::kBrowserProcessId;
-  params->automatically_assign_isolation_info = true;
-  params->is_orb_enabled = false;
-  params->disable_web_security =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableWebSecurity);
   partition_->GetNetworkContext()->CreateURLLoaderFactory(
-      std::move(network_factory_receiver), std::move(params));
+      std::move(network_factory_receiver),
+      partition_->CreateURLLoaderFactoryParams());
 }
 
 }  // namespace content

@@ -2518,8 +2518,13 @@ TEST_F(StoragePartitionImplTest, PrivateNetworkAccessPermission) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
+
+  mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
+      partition->CreateAuthCertObserverForServiceWorker(
+          network::mojom::kBrowserProcessId));
+
   base::test::TestFuture<bool> grant_permission;
-  partition->OnPrivateNetworkAccessPermissionRequired(
+  observer->OnPrivateNetworkAccessPermissionRequired(
       GURL(), net::IPAddress(192, 163, 1, 1), "test-id", "test-name",
       base::BindOnce(grant_permission.GetCallback()));
   EXPECT_FALSE(grant_permission.Get());
