@@ -123,15 +123,15 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
                                    PickerSearchResult::Text(u"Result B")}},
                                  /*has_more_results=*/false));
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kFiles,
+      PickerSectionType::kLocalFiles,
       {{PickerSearchResult::LocalFile(u"Result C", base::FilePath())}},
       /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(2));
-  EXPECT_THAT(
-      view.section_views_for_testing(),
-      ElementsAre(Pointee(MatchesTitlelessSection(2)),
-                  Pointee(MatchesResultSection(PickerSectionType::kFiles, 1))));
+  EXPECT_THAT(view.section_views_for_testing(),
+              ElementsAre(Pointee(MatchesTitlelessSection(2)),
+                          Pointee(MatchesResultSection(
+                              PickerSectionType::kLocalFiles, 1))));
 }
 
 TEST_F(PickerSearchResultsViewTest, ClearSearchResultsClearsView) {
@@ -174,7 +174,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
                                &submenu_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kFiles,
+      PickerSectionType::kLocalFiles,
       {{PickerSearchResult::LocalFile(u"local", base::FilePath())}},
       /*has_more_results=*/false));
 
@@ -182,7 +182,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
   EXPECT_THAT(
       view.section_views_for_testing(),
       ElementsAre(Pointee(MatchesResultSectionWithOneItem(
-          PickerSectionType::kFiles,
+          PickerSectionType::kLocalFiles,
           AsView<PickerListItemView>(Property(
               &PickerListItemView::GetPrimaryTextForTesting, u"local"))))));
 }
@@ -195,7 +195,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
                                &submenu_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kFiles,
+      PickerSectionType::kLocalFiles,
       {{PickerSearchResult::DriveFile(u"drive", GURL(), base::FilePath())}},
       /*has_more_results=*/false));
 
@@ -203,7 +203,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
   EXPECT_THAT(
       view.section_views_for_testing(),
       ElementsAre(Pointee(MatchesResultSectionWithOneItem(
-          PickerSectionType::kFiles,
+          PickerSectionType::kLocalFiles,
           AsView<PickerListItemView>(Property(
               &PickerListItemView::GetPrimaryTextForTesting, u"drive"))))));
 }
@@ -216,7 +216,7 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
                                &submenu_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kFiles,
+      PickerSectionType::kLocalFiles,
       {{PickerSearchResult::LocalFile(u"Result", base::FilePath())}},
       /*has_more_results=*/false));
   view.AppendSearchResults(
@@ -225,10 +225,10 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
                                  /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(2));
-  EXPECT_THAT(
-      view.section_views_for_testing(),
-      ElementsAre(Pointee(MatchesResultSection(PickerSectionType::kFiles, 1)),
-                  Pointee(MatchesTitlelessSection(1))));
+  EXPECT_THAT(view.section_views_for_testing(),
+              ElementsAre(Pointee(MatchesResultSection(
+                              PickerSectionType::kLocalFiles, 1)),
+                          Pointee(MatchesTitlelessSection(1))));
 }
 
 TEST_F(PickerSearchResultsViewTest, GetsTopItem) {
@@ -319,7 +319,7 @@ TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
           &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
 
   view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kFiles, {}, /*has_more_results=*/true));
+      PickerSectionType::kLocalFiles, {}, /*has_more_results=*/true));
 
   ASSERT_THAT(
       view->section_views_for_testing(),
@@ -340,7 +340,7 @@ TEST_F(PickerSearchResultsViewTest,
           &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
 
   view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kFiles, {}, /*has_more_results=*/false));
+      PickerSectionType::kLocalFiles, {}, /*has_more_results=*/false));
 
   ASSERT_THAT(
       view->section_views_for_testing(),
@@ -361,9 +361,9 @@ TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
           &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
   widget->Show();
   view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kFiles, {}, /*has_more_results=*/true));
+      PickerSectionType::kLocalFiles, {}, /*has_more_results=*/true));
 
-  EXPECT_CALL(mock_delegate, SelectMoreResults(PickerSectionType::kFiles));
+  EXPECT_CALL(mock_delegate, SelectMoreResults(PickerSectionType::kLocalFiles));
 
   views::View* trailing_link =
       view->section_views_for_testing()[0]->title_trailing_link_for_testing();
@@ -416,7 +416,7 @@ TEST_F(PickerSearchResultsViewTest,
                                &submenu_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kFiles, {}, /*has_more_results=*/true));
+      PickerSectionType::kLocalFiles, {}, /*has_more_results=*/true));
   EXPECT_FALSE(view.SearchStopped({}, u""));
 
   EXPECT_TRUE(view.section_list_view_for_testing()->GetVisible());

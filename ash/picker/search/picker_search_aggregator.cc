@@ -36,7 +36,7 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
     case PickerSearchSource::kAction:
       return PickerSectionType::kCategories;
     case PickerSearchSource::kLocalFile:
-      return PickerSectionType::kFiles;
+      return PickerSectionType::kLocalFiles;
     case PickerSearchSource::kDrive:
       return PickerSectionType::kDriveFiles;
     case PickerSearchSource::kEditorWrite:
@@ -170,7 +170,7 @@ void PickerSearchAggregator::PublishBurnInResults() {
 
   for (PickerSectionType type : {
            PickerSectionType::kLinks,
-           PickerSectionType::kFiles,
+           PickerSectionType::kLocalFiles,
            PickerSectionType::kDriveFiles,
        }) {
     if (auto it = results_.find(type);
@@ -184,7 +184,7 @@ void PickerSearchAggregator::PublishBurnInResults() {
 
   for (PickerSectionType type : {
            PickerSectionType::kLinks,
-           PickerSectionType::kFiles,
+           PickerSectionType::kLocalFiles,
            PickerSectionType::kDriveFiles,
        }) {
     if (published_types.contains(type)) {

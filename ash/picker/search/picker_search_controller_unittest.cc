@@ -398,7 +398,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
       search_results_callback,
       Call(Contains(AllOf(
           Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kFiles),
+                   PickerSectionType::kLocalFiles),
           Property("results", &PickerSearchResultsSection::results,
                    ElementsAre(Property(
                        "data", &PickerSearchResult::data,
@@ -685,7 +685,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
                                  &PickerSearchResult::TextData::primary_text,
                                  u"omnibox")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kFiles),
+                         PickerSectionType::kLocalFiles),
                 Property("results", &PickerSearchResultsSection::results,
                          Contains(Property(
                              "data", &PickerSearchResult::data,

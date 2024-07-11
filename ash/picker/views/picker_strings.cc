@@ -122,7 +122,7 @@ std::u16string GetSectionTitleForPickerSectionType(
       return u"";
     case PickerSectionType::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
-    case PickerSectionType::kFiles:
+    case PickerSectionType::kLocalFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
     case PickerSectionType::kDriveFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL);

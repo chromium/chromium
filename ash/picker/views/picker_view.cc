@@ -149,7 +149,7 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
       NOTREACHED_NORETURN();
     case PickerSectionType::kLinks:
       return PickerCategory::kLinks;
-    case PickerSectionType::kFiles:
+    case PickerSectionType::kLocalFiles:
       return PickerCategory::kLocalFiles;
     case PickerSectionType::kDriveFiles:
       return PickerCategory::kDriveFiles;

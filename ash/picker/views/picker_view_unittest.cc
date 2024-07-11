@@ -760,7 +760,7 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             if (!search1_called.IsReady()) {
               callback.Run({
-                  PickerSearchResultsSection(PickerSectionType::kFiles, {},
+                  PickerSearchResultsSection(PickerSectionType::kLocalFiles, {},
                                              /*has_more_results=*/false),
               });
               search1_called.SetValue();

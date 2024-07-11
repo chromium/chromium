@@ -70,7 +70,7 @@ const TestCase kNonSuggestionTestCases[] = {
     },
     TestCase{
         .source = PickerSearchSource::kLocalFile,
-        .section_type = PickerSectionType::kFiles,
+        .section_type = PickerSectionType::kLocalFiles,
     },
     TestCase{
         .source = PickerSearchSource::kDrive,
@@ -530,7 +530,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  &PickerSearchResult::TextData::primary_text,
                                  u"omnibox")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kFiles),
+                         PickerSectionType::kLocalFiles),
                 Property(
                     "results", &PickerSearchResultsSection::results,
                     ElementsAre(Property(
@@ -617,7 +617,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  &PickerSearchResult::TextData::primary_text,
                                  u"write")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kFiles),
+                         PickerSectionType::kLocalFiles),
                 Property(
                     "results", &PickerSearchResultsSection::results,
                     ElementsAre(Property(
@@ -689,7 +689,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  &PickerSearchResult::TextData::primary_text,
                                  u"write")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kFiles),
+                         PickerSectionType::kLocalFiles),
                 Property(
                     "results", &PickerSearchResultsSection::results,
                     ElementsAre(Property(
@@ -780,7 +780,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(search_results_callback,
               Call(ElementsAre(AllOf(
                   Property("type", &PickerSearchResultsSection::type,
-                           PickerSectionType::kFiles),
+                           PickerSectionType::kLocalFiles),
                   Property("results", &PickerSearchResultsSection::results,
                            ElementsAre(Property(
                                "data", &PickerSearchResult::data,
