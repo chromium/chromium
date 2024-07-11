@@ -13548,6 +13548,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -14147,6 +14148,7 @@
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter",
+          "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -16296,6 +16298,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
+          "--gtest_filter=-All/HTMLPreloadScannerLCPPLazyLoadImageTest.TokenStreamMatcherWithLoadingLazy/*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

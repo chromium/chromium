@@ -170,6 +170,7 @@
         'swarming': {
           'shards': 2,
         },
+        'experiment_percentage': 100, # https://crbug.com/345579530
       },
       'android-code-coverage-native': {
         'swarming': {
@@ -1459,6 +1460,7 @@
       'android-14-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter',
+          '--emulator-debug-tags=all',
         ],
       },
       'android-15-x64-fyi-rel': {
@@ -5571,6 +5573,11 @@
         'swarming': {
           'shards': 2,
         },
+      },
+      'android-14-x64-rel': {
+        'args': [
+          '--gtest_filter=-All/HTMLPreloadScannerLCPPLazyLoadImageTest.TokenStreamMatcherWithLoadingLazy/*', # https://crbug.com/352586409
+        ],
       },
       'linux-ubsan-fyi-rel': {
         'swarming': {
