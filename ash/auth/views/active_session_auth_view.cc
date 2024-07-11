@@ -275,6 +275,10 @@ void ActiveSessionAuthView::OnContentsChanged() {
   auth_header_->RestoreTitle();
 }
 
+void ActiveSessionAuthView::ResetInputfields() {
+  auth_container_->ResetInputfields();
+}
+
 void ActiveSessionAuthView::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

@@ -61,6 +61,9 @@ class ASH_EXPORT PinContainerView : public views::View {
   std::string GetObjectName() const override;
   void RequestFocus() override;
 
+  // Clear the textfield and set the display text button to hide state.
+  void ResetState();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

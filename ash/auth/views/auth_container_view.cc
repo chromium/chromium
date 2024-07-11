@@ -335,11 +335,19 @@ void AuthContainerView::ToggleCurrentAuthType() {
   } else {
     current_input_type_ = AuthInputType::kPassword;
   }
+  // Clear the input fields.
+  ResetInputfields();
+
   UpdateSwitchButtonState();
   UpdateAuthInput();
   for (auto& observer : observers_) {
     observer.OnContentsChanged();
   }
+}
+
+void AuthContainerView::ResetInputfields() {
+  password_view_->ResetState();
+  pin_container_->ResetState();
 }
 
 void AuthContainerView::AddObserver(Observer* observer) {

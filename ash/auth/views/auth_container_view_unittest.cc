@@ -225,6 +225,26 @@ TEST_F(AuthContainerUnitTest, PasswordOnlyTest) {
   EXPECT_EQ(test_api_->GetSwitchButton()->GetVisible(), false);
 }
 
+// Verify the ResetInputfields functionality.
+TEST_F(AuthContainerUnitTest, ResetInputfieldsTest) {
+  test_api_password_->GetTextfield()->SetText(u"password");
+  test_api_pin_input_->GetTextfield()->SetText(u"pin");
+  test_api_->GetView()->ResetInputfields();
+
+  EXPECT_EQ(test_api_password_->GetTextfield()->GetText(), std::u16string());
+  EXPECT_EQ(test_api_pin_input_->GetTextfield()->GetText(), std::u16string());
+}
+
+// Verify the ResetInputfields functionality.
+TEST_F(AuthContainerUnitTest, ResetInputfieldsWithSwitchTest) {
+  test_api_password_->GetTextfield()->SetText(u"password");
+  test_api_pin_input_->GetTextfield()->SetText(u"pin");
+  LeftClickOn(test_api_->GetSwitchButton());
+
+  EXPECT_EQ(test_api_password_->GetTextfield()->GetText(), std::u16string());
+  EXPECT_EQ(test_api_pin_input_->GetTextfield()->GetText(), std::u16string());
+}
+
 }  // namespace
 
 }  // namespace ash

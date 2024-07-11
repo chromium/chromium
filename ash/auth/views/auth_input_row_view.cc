@@ -141,7 +141,7 @@ raw_ptr<views::ImageView> AuthInputRowView::TestApi::GetCapsLockIcon() const {
   return view_->capslock_icon_;
 }
 
-raw_ptr<views::View> AuthInputRowView::TestApi::GetView() const {
+raw_ptr<AuthInputRowView> AuthInputRowView::TestApi::GetView() const {
   return view_;
 }
 
@@ -431,6 +431,12 @@ void AuthInputRowView::InsertDigit(int digit) {
 void AuthInputRowView::Backspace() {
   CHECK_EQ(auth_type_, AuthType::kPin);
   textfield_->Backspace();
+}
+
+void AuthInputRowView::ResetState() {
+  // This automatically calls the OnContentsChanged function, and that will set
+  // the buttons properly to the reset state.
+  textfield_->Reset();
 }
 
 void AuthInputRowView::AddObserver(Observer* observer) {

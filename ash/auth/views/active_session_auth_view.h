@@ -98,6 +98,8 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
   // Actions:
   void Close();
   void SetErrorTitle(const std::u16string& error_str);
+  // Reset the input fields text and visibility.
+  void ResetInputfields();
 
  private:
   // Internal methods for managing views.

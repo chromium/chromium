@@ -63,7 +63,7 @@ class ASH_EXPORT AuthInputRowView : public views::View,
     raw_ptr<views::ToggleImageButton> GetDisplayTextButton() const;
     raw_ptr<IconButton> GetSubmitButton() const;
     raw_ptr<views::ImageView> GetCapsLockIcon() const;
-    raw_ptr<views::View> GetView() const;
+    raw_ptr<AuthInputRowView> GetView() const;
 
    private:
     const raw_ptr<AuthInputRowView> view_;
@@ -115,6 +115,9 @@ class ASH_EXPORT AuthInputRowView : public views::View,
   void Submit();
 
   void SetAccessibleNameOnTextfield(const std::u16string& new_name);
+
+  // Clear the textfield and set the display text button to hide state.
+  void ResetState();
 
   base::WeakPtr<AuthInputRowView> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

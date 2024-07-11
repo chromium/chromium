@@ -107,6 +107,10 @@ void PinContainerView::RequestFocus() {
   auth_input_->RequestFocus();
 }
 
+void PinContainerView::ResetState() {
+  auth_input_->ResetState();
+}
+
 void PinContainerView::AddObserver(Observer* observer) {
   auth_input_->AddObserver(observer);
 }

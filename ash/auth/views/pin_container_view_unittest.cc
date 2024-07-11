@@ -115,5 +115,13 @@ TEST_F(PinContainerUnitTest, EnterOnPinkeyboardTest) {
   }
 }
 
+// Verify the ResetState functionality.
+TEST_F(PinContainerUnitTest, ResetStateTest) {
+  const std::u16string kPin(u"0894329");
+  test_api_auth_input_->GetTextfield()->SetText(kPin);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(std::u16string()));
+  test_api_->GetView()->ResetState();
+}
+
 }  // namespace
 }  // namespace ash

@@ -200,6 +200,16 @@ TEST_F(ActiveSessionAuthViewUnitTest, RestoreTitleTest2) {
   EXPECT_EQ(test_api_header_->GetCurrentTitle(), u"title");
 }
 
+// Verify the ResetInputfields functionality.
+TEST_F(ActiveSessionAuthViewUnitTest, ResetInputfieldsTest) {
+  test_api_password_->GetTextfield()->SetText(u"password");
+  test_api_pin_input_->GetTextfield()->SetText(u"pin");
+  test_api_->GetView()->ResetInputfields();
+
+  EXPECT_EQ(test_api_password_->GetTextfield()->GetText(), std::u16string());
+  EXPECT_EQ(test_api_pin_input_->GetTextfield()->GetText(), std::u16string());
+}
+
 }  // namespace
 
 }  // namespace ash

@@ -101,6 +101,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
   void PasswordSubmit(const std::u16string& password) const;
   void Escape() const;
   void ContentsChanged() const;
+  // Reset the input fields text and visibility.
+  void ResetInputfields();
 
  private:
   // Internal methods for managing views.

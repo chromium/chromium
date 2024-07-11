@@ -207,9 +207,11 @@ gfx::Size AuthTextfield::CalculatePreferredSize(
 }
 
 void AuthTextfield::Reset() {
-  SetText(std::u16string());
-  for (auto& observer : observers_) {
-    observer.OnContentsChanged(GetText());
+  if (!GetText().empty()) {
+    SetText(std::u16string());
+    for (auto& observer : observers_) {
+      observer.OnContentsChanged(GetText());
+    }
   }
   HideText();
   ClearEditHistory();

@@ -174,6 +174,19 @@ TEST_F(InputRowWithPasswordUnitTest, RemoveTextTest) {
   CHECK_EQ(test_api_->GetDisplayTextButton()->GetEnabled(), false);
 }
 
+// Testing ResetState functionality.
+TEST_F(InputRowWithPasswordUnitTest, ResetStateTest) {
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(std::u16string())).Times(1);
+  auth_input_->ResetState();
+
+  // The textfield should be empty.
+  EXPECT_EQ(test_api_->GetTextfield()->GetText(), std::u16string());
+  // Submit button should be disabled with empty text.
+  CHECK_EQ(test_api_->GetSubmitButton()->GetEnabled(), false);
+  // Display text button should be disabled with empty text.
+  CHECK_EQ(test_api_->GetDisplayTextButton()->GetEnabled(), false);
+}
+
 class InputRowWithPinUnitTest : public AshTestBase {
  public:
   InputRowWithPinUnitTest() = default;
