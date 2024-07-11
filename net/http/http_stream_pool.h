@@ -62,8 +62,17 @@ class NET_EXPORT_PRIVATE HttpStreamPool
            total_connecting_stream_count_;
   }
 
+  bool ReachedMaxStreamLimit() const {
+    return TotalActiveStreamCount() >= max_stream_sockets_per_pool();
+  }
+
   // NetworkChangeNotifier::IPAddressObserver methods:
   void OnIPAddressChanged() override;
+
+  // Checks if there are any pending requests in groups and processes them. If
+  // `this` reached the maximum number of streams, it will try to close idle
+  // streams before processing pending requests.
+  void ProcessPendingRequestsInGroups();
 
   Group& GetOrCreateGroupForTesting(const HttpStreamKey& stream_key);
 
@@ -91,6 +100,15 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
  private:
   Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
+
+  // Searches for a group that has the highest priority pending request and
+  // hasn't reached reach the `max_stream_socket_per_group()` limit. Returns
+  // nullptr if no such group is found.
+  Group* FindHighestStalledGroup();
+
+  // Closes one idle stream from an arbitrary group. Returns true if it closed a
+  // stream.
+  bool CloseOneIdleStreamSocket();
 
   const raw_ptr<HttpNetworkSession> http_network_session_;
 

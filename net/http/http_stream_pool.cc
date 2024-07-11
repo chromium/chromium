@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/notreached.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
@@ -66,6 +67,24 @@ void HttpStreamPool::OnIPAddressChanged() {
   }
 }
 
+void HttpStreamPool::ProcessPendingRequestsInGroups() {
+  // Loop until there is nothing more to do.
+  while (true) {
+    Group* group = FindHighestStalledGroup();
+    if (!group) {
+      return;
+    }
+
+    if (ReachedMaxStreamLimit()) {
+      if (!CloseOneIdleStreamSocket()) {
+        return;
+      }
+    }
+
+    group->ProcessPendingRequests();
+  }
+}
+
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroupForTesting(
     const HttpStreamKey& stream_key) {
   return GetOrCreateGroup(stream_key);
@@ -79,6 +98,38 @@ HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroup(
                              std::make_unique<Group>(this, stream_key));
   }
   return *it->second;
+}
+
+HttpStreamPool::Group* HttpStreamPool::FindHighestStalledGroup() {
+  Group* highest_stalled_group = nullptr;
+  std::optional<RequestPriority> highest_priority;
+
+  for (const auto& group : groups_) {
+    std::optional<RequestPriority> priority =
+        group.second->GetPriorityIfStalledByPoolLimit();
+    if (!priority) {
+      continue;
+    }
+    if (!highest_priority || *priority > *highest_priority) {
+      highest_priority = priority;
+      highest_stalled_group = group.second.get();
+    }
+  }
+
+  return highest_stalled_group;
+}
+
+bool HttpStreamPool::CloseOneIdleStreamSocket() {
+  if (total_idle_stream_count_ == 0) {
+    return false;
+  }
+
+  for (auto& group : groups_) {
+    if (group.second->CloseOneIdleStreamSocket()) {
+      return true;
+    }
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace net

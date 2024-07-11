@@ -77,11 +77,23 @@ class HttpStreamPool::Group {
   // `socket` must not be negotiated to use HTTP/2.
   void AddIdleStreamSocket(std::unique_ptr<StreamSocket> socket);
 
+  // Tries to process pending requests.
+  void ProcessPendingRequests();
+
+  // Closes one idle stream socket. Returns true if it closed a stream.
+  bool CloseOneIdleStreamSocket();
+
   // Returns the number of idle streams.
   size_t IdleStreamSocketCount() const { return idle_stream_sockets_.size(); }
 
   // Returns the number of active streams.
   size_t ActiveStreamSocketCount() const;
+
+  bool ReachedMaxStreamLimit() const;
+
+  // Returns the highest pending request priority if the group is stalled due to
+  // the per-pool limit, not the per-group limit.
+  std::optional<RequestPriority> GetPriorityIfStalledByPoolLimit() const;
 
   // Increments the generation of this group. Closes idle streams. Streams
   // handed out before this increment won't be reused.

@@ -25,6 +25,7 @@
 #include "net/http/http_stream_factory_test_util.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_test_util.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/test/gtest_util.h"
@@ -242,6 +243,12 @@ class EndpointHelper {
 class StreamRequester : public HttpStreamRequest::Delegate {
  public:
   StreamRequester() : destination_(url::SchemeHostPort("http", "a.test", 80)) {}
+
+  explicit StreamRequester(const HttpStreamKey& key)
+      : destination_(key.destination()),
+        privacy_mode_(key.privacy_mode()),
+        secure_dns_policy_(key.secure_dns_policy()),
+        disable_cert_network_fetches_(key.disable_cert_network_fetches()) {}
 
   StreamRequester(const StreamRequester&) = delete;
   StreamRequester& operator=(const StreamRequester&) = delete;
@@ -626,6 +633,162 @@ TEST_F(HttpStreamPoolJobTest, ReachedGroupLimit) {
   ASSERT_TRUE(stalled_request->completed());
   std::unique_ptr<HttpStream> stream = stalled_requester.ReleaseStream();
   ASSERT_TRUE(stream);
+}
+
+TEST_F(HttpStreamPoolJobTest, ReachedPoolLimit) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 3;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  const HttpStreamKey key_a(url::SchemeHostPort("http", "a.test", 80),
+                            PRIVACY_MODE_DISABLED, SocketTag(),
+                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                            /*disable_cert_network_fetches=*/false);
+
+  const HttpStreamKey key_b(url::SchemeHostPort("http", "b.test", 80),
+                            PRIVACY_MODE_DISABLED, SocketTag(),
+                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                            /*disable_cert_network_fetches=*/false);
+
+  // Create HttpStreams up to the group limit in group A.
+  Group& group_a = pool().GetOrCreateGroupForTesting(key_a);
+  std::vector<std::unique_ptr<HttpStream>> streams_a;
+  for (size_t i = 0; i < kMaxPerGroup; ++i) {
+    streams_a.emplace_back(
+        group_a.CreateTextBasedStream(std::make_unique<FakeStreamSocket>()));
+  }
+
+  ASSERT_FALSE(pool().ReachedMaxStreamLimit());
+  ASSERT_TRUE(group_a.ReachedMaxStreamLimit());
+  ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
+  ASSERT_EQ(group_a.ActiveStreamSocketCount(), kMaxPerGroup);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  // Create a HttpStream in group B. It should not be blocked because both
+  // per-group and per-pool limits are not reached yet.
+  StreamRequester requester1(key_b);
+  HttpStreamRequest* request1 = requester1.RequestStream(pool());
+  auto data1 = std::make_unique<SequencedSocketData>();
+  data1->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data1.get());
+
+  endpoint_request->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+
+  ASSERT_TRUE(request1->completed());
+
+  // The pool and group A reached limits, group B doesn't.
+  Group& group_b = pool().GetOrCreateGroupForTesting(key_b);
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+  ASSERT_TRUE(group_a.ReachedMaxStreamLimit());
+  ASSERT_FALSE(group_b.ReachedMaxStreamLimit());
+
+  // Create another HttpStream in group B. It should be blocked because the pool
+  // reached limit, event when group B doesn't reach its limit.
+  StreamRequester requester2(key_b);
+  HttpStreamRequest* request2 = requester2.RequestStream(pool());
+  auto data2 = std::make_unique<SequencedSocketData>();
+  data2->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data2.get());
+
+  RunUntilIdle();
+  Job* job_b = group_b.GetJobForTesting();
+  ASSERT_FALSE(request2->completed());
+  ASSERT_EQ(job_b->InFlightAttemptCount(), 0u);
+  ASSERT_EQ(job_b->PendingRequestCount(), 1u);
+
+  // Release one HttpStream from group A. It should unblock the in-flight
+  // request in group B.
+  std::unique_ptr<HttpStream> released_stream = std::move(streams_a.back());
+  streams_a.pop_back();
+  released_stream.reset();
+  RunUntilIdle();
+
+  ASSERT_TRUE(request2->completed());
+  ASSERT_EQ(job_b->PendingRequestCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolJobTest, ReachedPoolLimitHighPriorityGroupFirst) {
+  constexpr size_t kMaxPerGroup = 1;
+  constexpr size_t kMaxPerPool = 2;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  // Create 4 requests with different destinations and priorities.
+  constexpr struct Item {
+    std::string_view host;
+    std::string_view ip_address;
+    RequestPriority priority;
+  } items[] = {
+      {"a.test", "192.0.2.1", RequestPriority::IDLE},
+      {"b.test", "192.0.2.2", RequestPriority::IDLE},
+      {"c.test", "192.0.2.3", RequestPriority::LOWEST},
+      {"d.test", "192.0.2.4", RequestPriority::HIGHEST},
+  };
+
+  std::vector<FakeServiceEndpointRequest*> endpoint_requests;
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  std::vector<std::unique_ptr<SequencedSocketData>> socket_datas;
+  for (const auto& [host, ip_address, priority] : items) {
+    FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+    endpoint_request->add_endpoint(
+        EndpointHelper().add_v4(ip_address).endpoint());
+    endpoint_requests.emplace_back(endpoint_request);
+
+    auto requester = std::make_unique<StreamRequester>();
+    requester->set_destination(url::SchemeHostPort("http", host, 80))
+        .set_priority(priority);
+    requesters.emplace_back(std::move(requester));
+
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    socket_datas.emplace_back(std::move(data));
+  }
+
+  // Complete the first two requests to reach the pool's limit.
+  for (size_t i = 0; i < kMaxPerPool; ++i) {
+    HttpStreamRequest* request = requesters[i]->RequestStream(pool());
+    endpoint_requests[i]->CallOnServiceEndpointRequestFinished(OK);
+    RunUntilIdle();
+    ASSERT_TRUE(request->completed());
+  }
+
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+
+  // Start the remaining requests. These requests should be blocked.
+  HttpStreamRequest* request_c = requesters[2]->RequestStream(pool());
+  endpoint_requests[2]->CallOnServiceEndpointRequestFinished(OK);
+
+  HttpStreamRequest* request_d = requesters[3]->RequestStream(pool());
+  endpoint_requests[3]->CallOnServiceEndpointRequestFinished(OK);
+
+  RunUntilIdle();
+
+  ASSERT_FALSE(request_c->completed());
+  ASSERT_FALSE(request_d->completed());
+
+  // Release the HttpStream from group A. It should unblock group D, which has
+  // higher priority than group C.
+  std::unique_ptr<HttpStream> stream_a = requesters[0]->ReleaseStream();
+  stream_a.reset();
+
+  RunUntilIdle();
+
+  ASSERT_FALSE(request_c->completed());
+  ASSERT_TRUE(request_d->completed());
+
+  // Release the HttpStream from group B. It should unblock group C.
+  std::unique_ptr<HttpStream> stream_b = requesters[1]->ReleaseStream();
+  stream_b.reset();
+
+  RunUntilIdle();
+
+  ASSERT_TRUE(request_c->completed());
 }
 
 }  // namespace net

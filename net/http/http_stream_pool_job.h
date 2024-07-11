@@ -55,8 +55,8 @@ class HttpStreamPool::Job
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;
 
-  // Called when a stream socket is released to `group_`.
-  void OnStreamSocketReleased();
+  // Tries to process pending requests.
+  void ProcessPendingRequests();
 
   // Returns the number of in-flight attempts.
   size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
@@ -65,6 +65,9 @@ class HttpStreamPool::Job
   // subtracting the number of in-flight attempts from the number of total
   // requests.
   size_t PendingRequestCount() const;
+
+  // Returns the highest priority in `requests_`.
+  RequestPriority GetPriority() const;
 
  private:
   // A peer of an HttpStreamRequest. Holds the HttpStreamRequest's delegate
@@ -113,9 +116,6 @@ class HttpStreamPool::Job
 
   // Returns the current load state.
   LoadState GetLoadState() const;
-
-  // Returns the highest priority in `requests_`.
-  RequestPriority GetPriority() const;
 
   // Returns true if we can't make any connection attempts due to per-pool or
   // per-group limits.

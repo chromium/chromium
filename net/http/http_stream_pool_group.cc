@@ -132,11 +132,12 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
   bool can_reuse = generation == generation_ && socket->IsConnectedAndIdle();
   if (can_reuse) {
     AddIdleStreamSocket(std::move(socket));
+    ProcessPendingRequests();
+  } else {
+    socket.reset();
   }
 
-  if (in_flight_job_) {
-    in_flight_job_->OnStreamSocketReleased();
-  }
+  pool_->ProcessPendingRequestsInGroups();
 }
 
 void HttpStreamPool::Group::AddIdleStreamSocket(
@@ -150,9 +151,43 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
 }
 
+void HttpStreamPool::Group::ProcessPendingRequests() {
+  if (!in_flight_job_) {
+    return;
+  }
+  in_flight_job_->ProcessPendingRequests();
+}
+
+bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
+  if (idle_stream_sockets_.empty()) {
+    return false;
+  }
+
+  idle_stream_sockets_.pop_front();
+  pool_->DecrementTotalIdleStreamCount();
+  return true;
+}
+
 size_t HttpStreamPool::Group::ActiveStreamSocketCount() const {
   return handed_out_stream_count_ + idle_stream_sockets_.size() +
          (in_flight_job_ ? in_flight_job_->InFlightAttemptCount() : 0);
+}
+
+bool HttpStreamPool::Group::ReachedMaxStreamLimit() const {
+  return ActiveStreamSocketCount() >= pool_->max_stream_sockets_per_group();
+}
+
+std::optional<RequestPriority>
+HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
+  if (ReachedMaxStreamLimit()) {
+    return std::nullopt;
+  }
+
+  if (!in_flight_job_ || in_flight_job_->PendingRequestCount() == 0) {
+    return std::nullopt;
+  }
+
+  return in_flight_job_->GetPriority();
 }
 
 void HttpStreamPool::Group::IncrementGeneration() {

@@ -132,7 +132,7 @@ void HttpStreamPool::Job::OnServiceEndpointRequestFinished(int rv) {
   MaybeAttemptConnection();
 }
 
-void HttpStreamPool::Job::OnStreamSocketReleased() {
+void HttpStreamPool::Job::ProcessPendingRequests() {
   if (PendingRequestCount() == 0) {
     return;
   }
@@ -186,11 +186,11 @@ RequestPriority HttpStreamPool::Job::GetPriority() const {
 }
 
 bool HttpStreamPool::Job::ReachedMaxStreamLimit() const {
-  // TODO(crbug.com/346835898): Check per-pool limit and support respinning
-  // stalled groups/jobs in the pool.
+  if (pool()->ReachedMaxStreamLimit()) {
+    return true;
+  }
 
-  if (group_->ActiveStreamSocketCount() >=
-      pool()->max_stream_sockets_per_group()) {
+  if (group_->ReachedMaxStreamLimit()) {
     return true;
   }
 
