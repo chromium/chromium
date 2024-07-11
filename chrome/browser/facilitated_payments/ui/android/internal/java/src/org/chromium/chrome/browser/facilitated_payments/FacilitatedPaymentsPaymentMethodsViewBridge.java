@@ -97,6 +97,17 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
         mComponent.showProgressScreen();
     }
 
+    /**
+     * Requests to show an error screen in a bottom sheet.
+     *
+     * <p>If a Facilitated Payments bottom sheet is being shown, then the error screen replaces the
+     * screen being shown. If not, opens a new bottom sheet and shows the error screen.
+     */
+    @CalledByNative
+    public void showErrorScreen() {
+        mComponent.showErrorScreen();
+    }
+
     /** Requests to close the bottom sheet. */
     @CalledByNative
     public void dismiss() {

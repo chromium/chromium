@@ -56,6 +56,11 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
+    public void showErrorScreen() {
+        mMediator.showErrorScreen();
+    }
+
+    @Override
     public void dismiss() {
         mMediator.dismiss();
     }

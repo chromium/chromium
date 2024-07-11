@@ -56,6 +56,10 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // payment account.
   virtual void ShowProgressScreen();
 
+  // Shows an error message if Chrome isn't able to complete transaction after
+  // the user has selected a payment account.
+  virtual void ShowErrorScreen();
+
   // Closes the bottom sheet.
   virtual void DismissPrompt();
 };

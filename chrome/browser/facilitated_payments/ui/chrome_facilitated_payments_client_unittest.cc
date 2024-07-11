@@ -58,6 +58,7 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
        base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
       (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
+  MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
 };
 
@@ -131,6 +132,13 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, ShowProgressScreen) {
   EXPECT_CALL(controller(), ShowProgressScreen);
 
   base_client().ShowProgressScreen();
+}
+
+// Test the client forwards call for showing the error screen to the controller.
+TEST_F(ChromeFacilitatedPaymentsClientTest, ShowErrorScreen) {
+  EXPECT_CALL(controller(), ShowErrorScreen);
+
+  base_client().ShowErrorScreen();
 }
 
 // Test that the controller is able to process requests to show different

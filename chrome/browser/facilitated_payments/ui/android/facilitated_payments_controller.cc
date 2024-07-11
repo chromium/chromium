@@ -46,6 +46,10 @@ void FacilitatedPaymentsController::ShowProgressScreen() {
   view_->ShowProgressScreen();
 }
 
+void FacilitatedPaymentsController::ShowErrorScreen() {
+  view_->ShowErrorScreen();
+}
+
 void FacilitatedPaymentsController::Dismiss() {
   view_->Dismiss();
 }

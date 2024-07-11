@@ -87,6 +87,10 @@ void ChromeFacilitatedPaymentsClient::ShowProgressScreen() {
   facilitated_payments_controller_->ShowProgressScreen();
 }
 
+void ChromeFacilitatedPaymentsClient::ShowErrorScreen() {
+  facilitated_payments_controller_->ShowErrorScreen();
+}
+
 void ChromeFacilitatedPaymentsClient::DismissPrompt() {
   facilitated_payments_controller_->Dismiss();
 }

@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
@@ -97,15 +98,23 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     }
 
     void showProgressScreen() {
-        // The {@link VISIBILITY_STATE} of {@link SHOWN} has 2 functions. If the bottom sheet is not
-        // open, i.e. {@code VISIBILITY_STATE = HIDDEN}, setting {@code VISIBILITY_STATE = SHOWN}
-        // opens and shows a new screen. If the bottom sheet is already open and showing a screen,
-        // i.e. {@code VISIBILITY_STATE = SHOWN}, setting it again to {@code VISIBILITY_STATE =
-        // SHOWN} swaps the existing screen to show a new screen. Since a property can't be assigned
-        // to the value it already has, a placeholder state {@link SWAPPING_SCREEN} is introduced to
-        // facilitate setting {@code VISIBILITY_STATE = SHOWN} again.
+        // The {@link VISIBLE_STATE} of {@link SHOWN} has 2 functions:
+        // 1. If the bottom sheet is not open, i.e. {@code VISIBLE_STATE = HIDDEN}, setting {@code
+        // VISIBLE_STATE = SHOWN} opens and shows a new screen.
+        // 2. If the bottom sheet is already open and showing a screen, i.e. {@code VISIBLE_STATE =
+        // SHOWN}, setting it again to {@code VISIBLE_STATE = SHOWN} swaps the existing screen to
+        // show a new screen.
+        // Since a property can't be assigned to the value it already has, a placeholder state
+        // {@link SWAPPING_SCREEN} is introduced to facilitate setting {@code VISIBLE_STATE = SHOWN}
+        // again.
         mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
         mModel.set(SCREEN, PROGRESS_SCREEN);
+        mModel.set(VISIBLE_STATE, SHOWN);
+    }
+
+    void showErrorScreen() {
+        mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
+        mModel.set(SCREEN, ERROR_SCREEN);
         mModel.set(VISIBLE_STATE, SHOWN);
     }
 

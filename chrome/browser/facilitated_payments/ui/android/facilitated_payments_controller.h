@@ -37,6 +37,9 @@ class FacilitatedPaymentsController {
   // tests.
   virtual void ShowProgressScreen();
 
+  // Asks the `view_` to show the error screen. Virtual for overriding in tests.
+  virtual void ShowErrorScreen();
+
   // Asks the `view_` to close the bottom sheet. Virtual for overriding in
   // tests.
   virtual void Dismiss();

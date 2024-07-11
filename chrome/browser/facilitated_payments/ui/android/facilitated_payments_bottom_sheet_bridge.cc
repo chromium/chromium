@@ -51,6 +51,16 @@ void FacilitatedPaymentsBottomSheetBridge::ShowProgressScreen() {
       env, GetJavaBridge());
 }
 
+void FacilitatedPaymentsBottomSheetBridge::ShowErrorScreen() {
+  if (!GetJavaBridge()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_showErrorScreen(
+      env, GetJavaBridge());
+}
+
 void FacilitatedPaymentsBottomSheetBridge::Dismiss() {
   // If the Java bridge doesn't exist, the bottom sheet isn't open.
   if (!java_bridge_) {

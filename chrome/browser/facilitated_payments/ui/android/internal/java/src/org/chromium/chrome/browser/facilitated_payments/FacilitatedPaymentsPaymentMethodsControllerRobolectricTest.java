@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
@@ -281,6 +282,23 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    public void testCreatesModelForErrorScreen() {
+        mCoordinator.showErrorScreen();
+
+        // Verify that the bottom sheet model is updated to show the error screen.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(ERROR_SCREEN));
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        // Error screen doesn't have any view properties.
+        assertEquals(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .getAllProperties()
+                        .size(),
+                0);
+    }
+
+    @Test
     public void testFopSelectorToProgressScreenSwapUpdatesModel() {
         // Show the FOP selector.
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
@@ -299,6 +317,33 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(PROGRESS_SCREEN));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
         // Progress screen doesn't have any view properties.
+        assertEquals(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .getAllProperties()
+                        .size(),
+                0);
+    }
+
+    @Test
+    public void testProgressScreenToErrorScreenSwapUpdatesModel() {
+        // Show the progress screen.
+        mCoordinator.showProgressScreen();
+
+        // Confirm the progress screen is shown.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(PROGRESS_SCREEN));
+
+        // The bottom sheet is now open.
+        Mockito.when(mBottomSheetController.isSheetOpen()).thenReturn(true);
+        // Show the error screen. The progress screen is still being shown.
+        mCoordinator.showErrorScreen();
+
+        // Verify that the bottom sheet model is updated to show the error screen.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(ERROR_SCREEN));
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        // Error screen doesn't have any view properties.
         assertEquals(
                 mFacilitatedPaymentsPaymentMethodsModel
                         .get(SCREEN_VIEW_MODEL)

@@ -320,6 +320,38 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 is(true));
     }
 
+    @Test
+    @MediumTest
+    public void testProgressScreenToErrorScreenSwapUpdatesView() {
+        // Show the progress screen.
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, PROGRESS_SCREEN);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Confirm the progress screen is shown.
+        assertThat(mView.getContentView().isShown(), is(true));
+        assertThat(
+                containsViewOfClass((ViewGroup) mView.getContentView(), ProgressBar.class),
+                is(true));
+
+        // Show the error screen.
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
+                    mModel.set(SCREEN, ERROR_SCREEN);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        // Verify that the error screen is shown.
+        assertThat(mView.getContentView().isShown(), is(true));
+        assertThat(
+                containsViewWithId((ViewGroup) mView.getContentView(), R.id.error_screen),
+                is(true));
+    }
+
     private PropertyModel createBankAccountModel(BankAccount bankAccount) {
         return mMediator.createBankAccountModel(mActivityTestRule.getActivity(), bankAccount);
     }

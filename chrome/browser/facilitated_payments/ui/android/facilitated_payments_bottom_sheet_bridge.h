@@ -45,6 +45,9 @@ class FacilitatedPaymentsBottomSheetBridge {
   // Triggers showing the progress screen. Virtual for overriding in tests.
   virtual void ShowProgressScreen();
 
+  // Triggers showing the error screen. Virtual for overriding in tests.
+  virtual void ShowErrorScreen();
+
   // Closes the bottom sheet. Virtual for overriding in tests.
   virtual void Dismiss();
 
