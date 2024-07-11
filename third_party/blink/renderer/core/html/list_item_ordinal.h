@@ -61,7 +61,7 @@ class CORE_EXPORT ListItemOrdinal {
   void SetType(ValueType type) const { type_ = type; }
   bool HasExplicitValue() const { return type_ == kExplicit; }
 
-  static bool IsList(const Node&);
+  static bool IsListOwner(const Node&);
   // https://drafts.csswg.org/css-contain-2/#containment-style
   static bool HasStyleContainment(const Node&);
 

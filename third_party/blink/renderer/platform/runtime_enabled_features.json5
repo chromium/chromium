@@ -2117,6 +2117,10 @@
       status: "experimental",
     },
     {
+      name: "HTMLMenuElementIsListOwner",
+      status: "stable",
+    },
+    {
       // A flag, just for local testing to make the
       // HTML parser yield more often and take longer to resume.
       // This helps when debugging flaky tests caused by parser
