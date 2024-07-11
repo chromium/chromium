@@ -228,8 +228,8 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   std::string request_body_;
   std::unique_ptr<UploadDataStream> upload_data_stream_;
   HttpRequestInfo request_;
-  std::unique_ptr<QuicSimpleServer> server_;
   quic::QuicMemoryCacheBackend memory_cache_backend_;
+  std::unique_ptr<QuicSimpleServer> server_;
   IPEndPoint server_address_;
   std::string server_hostname_;
   quic::QuicConfig server_config_;
