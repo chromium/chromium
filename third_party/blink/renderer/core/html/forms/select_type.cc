@@ -1132,16 +1132,11 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
 
     bool handled = false;
     HTMLOptionElement* end_option = nullptr;
-    const AtomicString* key_next = &keywords::kArrowDown;
-    const AtomicString* key_previous = &keywords::kArrowUp;
-    const ComputedStyle* style = select_->GetComputedStyle();
-    if (style->GetWritingMode() == WritingMode::kVerticalLr) {
-      key_next = &keywords::kArrowRight;
-      key_previous = &keywords::kArrowLeft;
-    } else if (style->GetWritingMode() == WritingMode::kVerticalRl) {
-      key_next = &keywords::kArrowLeft;
-      key_previous = &keywords::kArrowRight;
-    }
+    const PhysicalToLogical<const AtomicString*> key_mapper(
+        select_->GetComputedStyle()->GetWritingDirection(), &keywords::kArrowUp,
+        &keywords::kArrowRight, &keywords::kArrowDown, &keywords::kArrowLeft);
+    const AtomicString* key_next = key_mapper.BlockEnd();
+    const AtomicString* key_previous = key_mapper.BlockStart();
     if (!active_selection_end_) {
       // Initialize the end index
       if (key == *key_next || key == keywords::kPageDown) {

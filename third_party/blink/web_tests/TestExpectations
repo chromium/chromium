@@ -2613,8 +2613,6 @@ crbug.com/351876774 [ Win11-arm64 ] virtual/coop-restrict-properties/external/wp
 crbug.com/351904556 [ Win11-arm64 ] virtual/fedcm-authz/external/wpt/fedcm/fedcm-authz/fedcm-disclosure-text-shown.https.html [ Timeout ]
 [ Win11-arm64 ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/disable-untrusted-network.https.html [ Timeout ]
 crbug.com/351703751 [ Win11-arm64 ] external/wpt/WebCryptoAPI/derive_bits_keys/cfrg_curves_bits.https.any.html [ Failure Timeout ]
-crbug.com/350770678 [ Mac11-arm64 ] external/wpt/css/css-writing-modes/forms/select-multiple-options-visual-order.html [ Timeout ]
-crbug.com/350770678 [ Mac14 ] external/wpt/css/css-writing-modes/forms/select-multiple-options-visual-order.html [ Timeout ]
 crbug.com/350779641 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-auto-child-none_touch.html [ Crash Failure ]
 crbug.com/350823140 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomainport.sub.https.html [ Timeout ]
 crbug.com/350792702 external/wpt/trusted-types/trusted-types-reporting.html [ Skip Timeout ]
@@ -7344,9 +7342,6 @@ crbug.com/324111880 fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 # SidewaysWritingModes
 crbug.com/40501131 css-parser/vertical-range-slider-appearance.html [ Failure ]
 crbug.com/40501131 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-vertical-writing-mode-001.html [ Failure ]
-crbug.com/40501131 external/wpt/css/css-writing-modes/forms/select-multiple-keyboard-selection.optional.html [ Failure ]
-crbug.com/40501131 external/wpt/css/css-writing-modes/forms/select-multiple-scrolling.optional.html [ Failure ]
-crbug.com/40501131 external/wpt/css/css-writing-modes/forms/select-size-scrolling-and-sizing.optional.html [ Failure ]
 
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Timeout ]
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Timeout ]
