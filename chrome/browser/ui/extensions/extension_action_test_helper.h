@@ -60,10 +60,10 @@ class ExtensionActionTestHelper {
   virtual gfx::NativeView GetPopupNativeView() = 0;
 
   // Spins a RunLoop until the NativeWindow hosting |GetPopupNativeView()| is
-  // reported as active by the OS. Returns true if successful. This method is
-  // strange: it's not overridden by subclasses, and instead the implementation
-  // is selected at compile-time depending on the windowing system in use.
-  bool WaitForPopup();
+  // reported as active by the OS. This method is strange: it's not overridden
+  // by subclasses, and instead the implementation is selected at compile-time
+  // depending on the windowing system in use.
+  void WaitForPopup();
 
   // Returns whether a browser action popup is being shown currently.
   virtual bool HasPopup() = 0;

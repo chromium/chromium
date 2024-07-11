@@ -1732,7 +1732,7 @@ class PermissionRequestFromExtension : public extensions::ExtensionApiTest {
   void EnsurePopupActive() {
     auto test_util = ExtensionActionTestHelper::Create(browser());
     EXPECT_TRUE(test_util->HasPopup());
-    EXPECT_TRUE(test_util->WaitForPopup());
+    ASSERT_NO_FATAL_FAILURE(test_util->WaitForPopup());
     EXPECT_TRUE(test_util->HasPopup());
   }
 
