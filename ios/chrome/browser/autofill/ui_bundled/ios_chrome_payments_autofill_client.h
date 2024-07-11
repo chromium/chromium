@@ -20,7 +20,6 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #import "components/infobars/core/infobar_manager.h"
 
-class ChromeBrowserState;
 class GURL;
 
 namespace web {
@@ -49,13 +48,11 @@ namespace payments {
 // it is needed.
 class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
  public:
-  // TODO(crbug.com/40937065):Remove the browser_state param/member variable,
-  // reuse WebState's GetBrowserState method.
   explicit IOSChromePaymentsAutofillClient(
       autofill::ChromeAutofillClientIOS* client,
-      ChromeBrowserState* browser_state,
       web::WebState* web_state,
-      infobars::InfoBarManager* infobar_manager);
+      infobars::InfoBarManager* infobar_manager,
+      PrefService* pref_service);
   IOSChromePaymentsAutofillClient(const IOSChromePaymentsAutofillClient&) =
       delete;
   IOSChromePaymentsAutofillClient& operator=(
@@ -143,7 +140,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
   // TODO(crbug.com/40937065): Make these member variables as const raw_refs.
-  const raw_ptr<ChromeBrowserState> browser_state_;
+  const raw_ptr<PrefService> pref_service_;
   const raw_ptr<web::WebState> web_state_;
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
 

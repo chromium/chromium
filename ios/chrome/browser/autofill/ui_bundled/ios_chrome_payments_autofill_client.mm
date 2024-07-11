@@ -37,7 +37,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/web_state.h"
@@ -59,19 +58,19 @@ std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
 
 IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
     autofill::ChromeAutofillClientIOS* client,
-    ChromeBrowserState* browser_state,
     web::WebState* web_state,
-    infobars::InfoBarManager* infobar_manager)
+    infobars::InfoBarManager* infobar_manager,
+    PrefService* pref_service)
     : client_(CHECK_DEREF(client)),
       infobar_manager_(CHECK_DEREF(infobar_manager)),
       payments_network_interface_(
           std::make_unique<payments::PaymentsNetworkInterface>(
               base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                  browser_state->GetURLLoaderFactory()),
+                  web_state->GetBrowserState()->GetURLLoaderFactory()),
               client->GetIdentityManager(),
               &client->GetPersonalDataManager()->payments_data_manager(),
-              browser_state->IsOffTheRecord())),
-      browser_state_(browser_state),
+              web_state->GetBrowserState()->IsOffTheRecord())),
+      pref_service_(pref_service),
       web_state_(web_state) {}
 
 IOSChromePaymentsAutofillClient::~IOSChromePaymentsAutofillClient() = default;
@@ -209,7 +208,7 @@ void IOSChromePaymentsAutofillClient::ShowUnmaskPrompt(
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
   unmask_controller_ = std::make_unique<CardUnmaskPromptControllerImpl>(
-      browser_state_->GetPrefs(), card, card_unmask_prompt_options, delegate);
+      pref_service_, card, card_unmask_prompt_options, delegate);
   [client_->commands_handler() continueCardUnmaskWithCvcAuth];
 }
 
