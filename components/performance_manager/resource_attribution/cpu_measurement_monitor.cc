@@ -31,6 +31,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/types/variant_util.h"
+#include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -42,6 +43,7 @@
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
+#include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
 #include "components/performance_manager/resource_attribution/graph_change.h"
 #include "components/performance_manager/resource_attribution/node_data_describers.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
@@ -94,6 +96,13 @@ OriginInBrowsingInstanceContextForNode(
   return OriginInBrowsingInstanceContext(origin.value(), browsing_instance);
 }
 
+void DestroyCPUMeasurementData(const ProcessNode* process_node) {
+  auto* node_impl = ProcessNodeImpl::FromNode(process_node);
+  if (CPUMeasurementData::Exists(node_impl)) {
+    CPUMeasurementData::Destroy(node_impl);
+  }
+}
+
 }  // namespace
 
 CPUMeasurementMonitor::CPUMeasurementMonitor()
@@ -109,8 +118,9 @@ CPUMeasurementMonitor::~CPUMeasurementMonitor() {
 void CPUMeasurementMonitor::SetDelegateFactoryForTesting(
     CPUMeasurementDelegate::Factory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ensure that all CPU measurements use the same delegate.
-  CHECK(cpu_measurement_map_.empty());
+  // Ensure that this is called before StartMonitoring() so all CPU measurements
+  // use the same delegate.
+  CHECK(!graph_);
   CHECK(factory);
   delegate_factory_ = factory;
 }
@@ -118,7 +128,6 @@ void CPUMeasurementMonitor::SetDelegateFactoryForTesting(
 void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!graph_);
-  CHECK(cpu_measurement_map_.empty());
   CHECK(measurement_results_.empty());
   CHECK(dead_context_results_.empty());
   CHECK(origin_in_browsing_instance_weak_results_.empty());
@@ -140,7 +149,9 @@ void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
 void CPUMeasurementMonitor::StopMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(graph_);
-  cpu_measurement_map_.clear();
+  for (const ProcessNode* process_node : graph_->GetAllProcessNodes()) {
+    DestroyCPUMeasurementData(process_node);
+  }
   measurement_results_.clear();
   dead_context_results_.clear();
   origin_in_browsing_instance_weak_results_.clear();
@@ -409,7 +420,6 @@ void CPUMeasurementMonitor::OnProcessLifetimeChange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!graph_) {
     // Not monitoring CPU usage yet.
-    CHECK(cpu_measurement_map_.empty());
     return;
   }
   if (delegate_factory_->ShouldMeasureProcess(process_node)) {
@@ -427,7 +437,6 @@ void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
   // through ChildProcessTerminationInfo::cpu_usage.
   UpdateCPUMeasurements(process_node);
   SaveFinalMeasurements({process_node->GetResourceContext()});
-  cpu_measurement_map_.erase(process_node);
 }
 
 void CPUMeasurementMonitor::OnPriorityChanged(
@@ -525,9 +534,10 @@ void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   // creating a new CPUMeasurement that starts measuring the new process from 0.
   // ApplyMeasurementDeltas will add the new measurements and the old
   // measurements in the same ProcessContext.
-  cpu_measurement_map_.insert_or_assign(
-      process_node, CPUMeasurement(delegate_factory_->CreateDelegateForProcess(
-                        process_node)));
+  DestroyCPUMeasurementData(process_node);
+  CPUMeasurementData::Create(
+      ProcessNodeImpl::FromNode(process_node),
+      delegate_factory_->CreateDelegateForProcess(process_node));
 }
 
 void CPUMeasurementMonitor::UpdateAllCPUMeasurements() {
@@ -538,9 +548,9 @@ void CPUMeasurementMonitor::UpdateAllCPUMeasurements() {
   // Update CPU metrics, attributing the cumulative CPU of each process to its
   // frames and workers.
   std::map<ResourceContext, CPUTimeResult> measurement_deltas;
-  for (auto& [node, cpu_measurement] : cpu_measurement_map_) {
-    cpu_measurement.MeasureAndDistributeCPUUsage(node, NoGraphChange(),
-                                                 measurement_deltas);
+  for (const ProcessNode* process_node : graph_->GetAllProcessNodes()) {
+    MeasureAndDistributeCPUUsage(process_node, NoGraphChange(),
+                                 measurement_deltas);
   }
   ApplyMeasurementDeltas(measurement_deltas);
 }
@@ -563,14 +573,7 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
   // Update CPU metrics, attributing the cumulative CPU of the process to its
   // frames and workers.
   std::map<ResourceContext, CPUTimeResult> measurement_deltas;
-  const auto it = cpu_measurement_map_.find(process_node);
-  if (it == cpu_measurement_map_.end()) {
-    // In tests, FrameNode's can be added to mock processes that don't have a
-    // PID so aren't being monitored.
-    return;
-  }
-  it->second.MeasureAndDistributeCPUUsage(it->first, graph_change,
-                                          measurement_deltas);
+  MeasureAndDistributeCPUUsage(process_node, graph_change, measurement_deltas);
   ApplyMeasurementDeltas(measurement_deltas, graph_change);
 }
 
@@ -819,29 +822,19 @@ base::Value::Dict CPUMeasurementMonitor::DescribeContextData(
   return dict;
 }
 
-CPUMeasurementMonitor::CPUMeasurement::CPUMeasurement(
-    std::unique_ptr<CPUMeasurementDelegate> delegate)
-    : delegate_(std::move(delegate)),
-      // Record the CPU usage immediately on starting to measure a process, so
-      // that the first call to MeasureAndDistributeCPUUsage() will cover the
-      // time between the measurement starting and the snapshot.
-      most_recent_measurement_(
-          base::OptionalFromExpected(delegate_->GetCumulativeCPUUsage())),
-      last_measurement_time_(base::TimeTicks::Now()) {}
-
-CPUMeasurementMonitor::CPUMeasurement::~CPUMeasurement() = default;
-
-CPUMeasurementMonitor::CPUMeasurement::CPUMeasurement(
-    CPUMeasurementMonitor::CPUMeasurement&& other) = default;
-
-CPUMeasurementMonitor::CPUMeasurement&
-CPUMeasurementMonitor::CPUMeasurement::operator=(
-    CPUMeasurementMonitor::CPUMeasurement&& other) = default;
-
-void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
+// static
+void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
     const ProcessNode* process_node,
     GraphChange graph_change,
     std::map<ResourceContext, CPUTimeResult>& measurement_deltas) {
+  auto* node_impl = ProcessNodeImpl::FromNode(process_node);
+  if (!CPUMeasurementData::Exists(node_impl)) {
+    // In tests, FrameNodes can be added to mock processes that don't have a PID
+    // so aren't being monitored.
+    return;
+  }
+  auto& data = CPUMeasurementData::Get(node_impl);
+
   // TODO(crbug.com/325330345): Handle final CPU usage of a process.
   //
   // There isn't a good way to get the process CPU usage after it exits here:
@@ -875,17 +868,18 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   // using that snapshot to distribute the measurements.
   //
   // Assume that the previous measurement was taken at time A
-  // (`last_measurement_time_`), and the current measurement is being taken at
-  // time B (TimeTicks::Now()). Since a measurement is taken in the
-  // CPUMeasurement constructor, there will always be a previous measurement.
+  // (`data.last_measurement_time()`), and the current measurement is being
+  // taken at time B (TimeTicks::Now()). Since a measurement is taken in the
+  // CPUMeasurementData constructor, there will always be a previous
+  // measurement.
   //
   // Let CPU(T) be the cpu measurement at time T.
   //
   // Note that the process is only measured after it's passed to the graph,
   // which is shortly after it's created, so at "process creation time" C,
   // CPU(C) may have a small value instead of 0. On the first call to
-  // MeasureAndDistributeCPUUsage(), `most_recent_measurement_` will be CPU(C),
-  // from the measurement in the constructor.
+  // MeasureAndDistributeCPUUsage(), `data.most_recent_measurement()` will be
+  // CPU(C), from the measurement in the constructor.
   //
   // There are 4 cases:
   //
@@ -899,7 +893,7 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   // cumulative_cpu += CPU(B) - CPU(A)
   //
   // CPU(B) = GetCumulativeCPUUsage()
-  // CPU(A) = `most_recent_measurement_` (set in the constructor)
+  // CPU(A) = `data.most_recent_measurement()` (set in the constructor)
   //
   // 2. The process existed for the entire duration A..B.
   //
@@ -910,7 +904,7 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   // cumulative_cpu += CPU(B) - CPU(A)
   //
   // CPU(B) = GetCumulativeCPUUsage()
-  // CPU(A) = `most_recent_measurement_`
+  // CPU(A) = `data.most_recent_measurement()`
   //
   // 3. The process existed at time A, but exited at time D, between A and B.
   //
@@ -921,7 +915,7 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   // cumulative_cpu += CPU(D) - CPU(A)
   //
   // CPU(D) = ChildProcessTerminationInfo::cpu_usage (currently unavailable)
-  // CPU(A) = `most_recent_measurement_`
+  // CPU(A) = `data.most_recent_measurement()`
   //
   // 4. Process created at time A and exited at time D, between A and B.
   //
@@ -932,12 +926,13 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   // cumulative_cpu += CPU(D) - CPU(A)
   //
   // CPU(D) = ChildProcessTerminationInfo::cpu_usage (currently unavailable)
-  // CPU(A) = `most_recent_measurement_` (set in the constructor)
+  // CPU(A) = `data.most_recent_measurement()` (set in the constructor)
   //
   // In case 1 and case 2, `cumulative_cpu` increases by
-  // `GetCumulativeCPUUsage() - most_recent_measurement_`. Case 3 and 4 can be
-  // ignored because GetCumulativeCPUUsage() will return an error code.
-  const base::TimeTicks measurement_interval_start = last_measurement_time_;
+  // `GetCumulativeCPUUsage() - data.most_recent_measurement()`. Case 3 and 4
+  // can be ignored because GetCumulativeCPUUsage() will return an error code.
+  const base::TimeTicks measurement_interval_start =
+      data.last_measurement_time();
   const base::TimeTicks measurement_interval_end = base::TimeTicks::Now();
   CHECK(!measurement_interval_start.is_null());
   CHECK(!measurement_interval_end.is_null());
@@ -957,29 +952,29 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     return;
   }
 
-  std::optional<base::TimeDelta> current_cpu_usage =
-      base::OptionalFromExpected(delegate_->GetCumulativeCPUUsage());
+  std::optional<base::TimeDelta> current_cpu_usage = base::OptionalFromExpected(
+      data.measurement_delegate().GetCumulativeCPUUsage());
   if (!current_cpu_usage.has_value()) {
     // GetCumulativeCPUUsage() failed. Don't update the measurement state.
     return;
   }
-  if (!most_recent_measurement_.has_value()) {
+  if (!data.most_recent_measurement().has_value()) {
     // This is the first successful reading. Just record it.
-    most_recent_measurement_ = current_cpu_usage;
-    last_measurement_time_ = measurement_interval_end;
+    data.SetMostRecentMeasurement(current_cpu_usage.value(),
+                                  measurement_interval_end);
     return;
   }
 
   // When measured in quick succession, GetCumulativeCPUUsage() can go
   // backwards.
-  if (current_cpu_usage.value() < most_recent_measurement_.value()) {
-    current_cpu_usage = most_recent_measurement_;
+  if (current_cpu_usage.value() < data.most_recent_measurement().value()) {
+    current_cpu_usage = data.most_recent_measurement();
   }
 
   const base::TimeDelta cumulative_cpu_delta =
-      current_cpu_usage.value() - most_recent_measurement_.value();
-  most_recent_measurement_ = current_cpu_usage;
-  last_measurement_time_ = measurement_interval_end;
+      current_cpu_usage.value() - data.most_recent_measurement().value();
+  data.SetMostRecentMeasurement(current_cpu_usage.value(),
+                                measurement_interval_end);
 
   // Determine the process priority during the measurement interval. If the
   // process' priority just changed, used the previous priority. Otherwise, use

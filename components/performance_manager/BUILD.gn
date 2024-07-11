@@ -213,6 +213,8 @@ static_library("performance_manager") {
     "resource_attribution/attribution_impl_helpers.h",
     "resource_attribution/context_collection.cc",
     "resource_attribution/context_collection.h",
+    "resource_attribution/cpu_measurement_data.cc",
+    "resource_attribution/cpu_measurement_data.h",
     "resource_attribution/cpu_measurement_delegate.cc",
     "resource_attribution/cpu_measurement_monitor.cc",
     "resource_attribution/cpu_measurement_monitor.h",

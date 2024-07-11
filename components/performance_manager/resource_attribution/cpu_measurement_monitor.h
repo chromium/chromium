@@ -6,7 +6,6 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
 
 #include <map>
-#include <memory>
 #include <optional>
 #include <vector>
 
@@ -15,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
@@ -139,47 +137,6 @@ class CPUMeasurementMonitor
  private:
   friend class CPUMeasurementMonitorTest;
 
-  // Holds a CPUMeasurementDelegate object to measure CPU usage and metadata
-  // about the measurements. One CPUMeasurement will be created for each
-  // ProcessNode being measured.
-  class CPUMeasurement {
-   public:
-    explicit CPUMeasurement(std::unique_ptr<CPUMeasurementDelegate> delegate);
-    ~CPUMeasurement();
-
-    // Move-only type.
-    CPUMeasurement(const CPUMeasurement& other) = delete;
-    CPUMeasurement& operator=(const CPUMeasurement& other) = delete;
-    CPUMeasurement(CPUMeasurement&& other);
-    CPUMeasurement& operator=(CPUMeasurement&& other);
-
-    // Returns the most recent measurement that was taken during
-    // MeasureAndDistributeCPUUsage().
-    std::optional<base::TimeDelta> most_recent_measurement() const {
-      return most_recent_measurement_;
-    }
-
-    // Measures the CPU usage of `process_node`, calculates the change in CPU
-    // usage over the period (`last_measurement_time_` ... now], and allocates
-    // the results to frames and workers in the process using
-    // SplitResourceAmongFramesAndWorkers(). The new CPU usage in this
-    // measurement is added to `measurement_deltas`.
-    void MeasureAndDistributeCPUUsage(
-        const ProcessNode* process_node,
-        GraphChange graph_change,
-        std::map<ResourceContext, CPUTimeResult>& measurement_deltas);
-
-   private:
-    std::unique_ptr<CPUMeasurementDelegate> delegate_;
-
-    // The most recent CPU measurement that was taken.
-    std::optional<base::TimeDelta> most_recent_measurement_;
-
-    // Last time CPU measurements were taken (for calculating the total length
-    // of a measurement interval).
-    base::TimeTicks last_measurement_time_;
-  };
-
   // Ref-counted class which holds a `ResourceContext` and `CPUTimeResult`.
   //
   // If the context is an `OriginInBrowsingInstanceContext`, the
@@ -212,18 +169,19 @@ class CPUMeasurementMonitor
 
   using ScopedCPUTimeResultPtr = scoped_refptr<ScopedCPUTimeResult>;
 
-  // Creates a CPUMeasurement tracker for `process_node` and adds it to
-  // `cpu_measurement_map_`.
+  // Creates a CPUMeasurementData to track the CPU usage of `process_node`.
   void MonitorCPUUsage(const ProcessNode* process_node);
 
-  // Updates the CPU measurement for all ProcessNodes in `cpu_measurement_map_`.
-  // Adds the estimated CPU usage of each frame and worker since the last time
-  // the process was measured to `measurement_results_`.
+  // Updates the CPU measurement for all ProcessNodes being monitored using
+  // MeasureAndDistributeCPUUsage(). Adds the estimated CPU usage of each frame
+  // and worker since the last time the process was measured to
+  // `measurement_results_`.
   void UpdateAllCPUMeasurements();
 
-  // Updates the CPU measurement for `process_node`. Adds the estimated CPU
-  // usage of each frame and worker since the last time the process was measured
-  // to `measurement_results_`. `graph_change` is the event that triggered the
+  // Updates the CPU measurement for `process_node` using
+  // MeasureAndDistributeCPUUsage(). Adds the estimated CPU usage of each frame
+  // and worker since the last time the process was measured to
+  // `measurement_results_`. `graph_change` is the event that triggered the
   // measurement or NoGraphChange if it wasn't triggered due to a graph topology
   // change.
   void UpdateCPUMeasurements(const ProcessNode* process_node,
@@ -273,11 +231,17 @@ class CPUMeasurementMonitor
   // NodeDataDescriber, or an empty dict if there is none.
   base::Value::Dict DescribeContextData(const ResourceContext& context) const;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Measures the CPU usage of `process_node`, calculates the change in CPU
+  // usage over the period (`last_measurement_time_` ... now], and allocates
+  // the results to frames and workers in the process using
+  // SplitResourceAmongFramesAndWorkers(). The new CPU usage in this
+  // measurement is added to `measurement_deltas`.
+  static void MeasureAndDistributeCPUUsage(
+      const ProcessNode* process_node,
+      GraphChange graph_change,
+      std::map<ResourceContext, CPUTimeResult>& measurement_deltas);
 
-  // Map of process nodes to ProcessMetrics used to measure CPU usage.
-  std::map<const ProcessNode*, CPUMeasurement> cpu_measurement_map_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // A map from live resource contexts to the estimated CPU usage of each,
   // updated whenever UpdateCPUMeasurements() is called.
