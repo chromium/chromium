@@ -128,6 +128,8 @@ bundle_data_xcassets("chromium_icons") {
   catalog = "ChromiumIcons.xcassets"
   sources = [
     "ChromiumIcons.xcassets/AppIcon.appiconset/Contents.json",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024-Dark.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024-Tinted.png",
     "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024.png",
   ]
 }

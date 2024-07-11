@@ -79,6 +79,11 @@ def FilterCompilerOutput(compiler_output, relative_paths):
   current_section = None
   data_in_section = False
   for line in compiler_output.splitlines():
+    # TODO:(crbug.com/348008793): Ignore Dark and Tintable App Icon unassigned
+    # children warning when building with Xcode 15
+    if 'The app icon set "AppIcon" has 2 unassigned children' in line:
+      continue
+
     match = SECTION_HEADER.search(line)
     if match is not None:
       data_in_section = False
