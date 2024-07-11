@@ -44,6 +44,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Browser went into fullscreen"/>
   <int value="12" label="Tab dragged into new window"/>
   <int value="13" label="Tab closed"/>
+  <int value="14" label="Error: Renderer exited"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
