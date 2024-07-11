@@ -41,6 +41,7 @@ in_app_images = [
   "camera_shutter_photo_stop.svg",
   "camera_shutter_video_pause.svg",
   "camera_shutter_video_snapshot.svg",
+  "check_mark.svg",
   "circle_warning_icon.svg",
   "crop_document_clockwise_rotate.svg",
   "crop_document_counterclockwise_rotate.svg",

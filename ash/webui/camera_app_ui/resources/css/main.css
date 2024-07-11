@@ -111,7 +111,7 @@ input[type=checkbox] {
   width: 40px;
 }
 
-.menu-item > input.icon {
+.menu-item input.icon {
   outline-offset: -4px;
 }
 input[type=radio].icon {
@@ -1411,6 +1411,29 @@ body:not(.photo) #settings-preview-ocr {
   display: none;
 }
 
-#settings-preview-ocr > input {
+#settings-preview-ocr-option {
+  align-items: center;
+  display: flex;
+  justify-content: center;
   margin-inline: auto 12px;
+  position: relative;
+}
+
+#settings-preview-ocr-option svg-wrapper {
+  color: transparent;
+  height: 0;
+  position: absolute;
+  transition: all var(--fast1-duration) ease-in;
+  width: 0;
+}
+
+/* Hide default check mark since it's using custom icon. */
+#settings-preview-ocr-option input::before {
+  background: transparent;
+}
+
+#settings-preview-ocr-option:has(input:checked) svg-wrapper {
+  color: var(--cros-sys-primary);
+  height: 14px;
+  width: 14px;
 }
