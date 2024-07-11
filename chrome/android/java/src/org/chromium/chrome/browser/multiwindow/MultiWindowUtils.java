@@ -471,10 +471,17 @@ public class MultiWindowUtils implements ActivityStateListener {
             int taskId = activity.getTaskId();
             if (taskId != currentTaskId && isActivityVisible(activity)) {
                 // Found a visible task. Return its base ChromeTabbedActivity instance.
+                StringBuilder activityNameBuilder = new StringBuilder();
                 for (Activity a : runningActivities) {
-                    if (a instanceof ChromeTabbedActivity && a.getTaskId() == taskId) return a;
+                    if (a.getTaskId() == taskId) {
+                        activityNameBuilder.append(a.getClass().getName()).append(",");
+                        if (a instanceof ChromeTabbedActivity) return a;
+                    }
                 }
-                assert false : "Should have found the ChromeTabbedActivity of the visible task";
+                assert false
+                        : "Should have found the ChromeTabbedActivity of the visible task."
+                                + " Activities in this task: "
+                                + activityNameBuilder;
                 break;
             }
         }
