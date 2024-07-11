@@ -128,7 +128,8 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   UILabel* hostnameAndSyncTimeLabel = [self configuredHostNameAndSyncTimeLabel];
   [labelStackView addArrangedSubview:hostnameAndSyncTimeLabel];
 
-  if (_item.itemType == TabResumptionItemType::kLastSyncedTab) {
+  if (_item.itemType == TabResumptionItemType::kLastSyncedTab &&
+      !IsTabResumption1_5Enabled()) {
     self.accessibilityLabel = [NSString
         stringWithFormat:@"%@,%@,%@", sessionLabel.text, tabTitleLabel.text,
                          hostnameAndSyncTimeLabel.text];
