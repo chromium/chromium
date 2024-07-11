@@ -384,10 +384,6 @@ TEST(SmallMap, NonHashMap) {
   EXPECT_EQ(iter->second, 5);
   ++iter;
   EXPECT_TRUE(iter == m.end());
-  --iter;
-  ASSERT_TRUE(iter != m.end());
-  EXPECT_EQ(iter->first, 0);
-  EXPECT_EQ(iter->second, 5);
 
   m[8] = 23;
   m[1234] = 90;
@@ -424,10 +420,6 @@ TEST(SmallMap, NonHashMap) {
   EXPECT_EQ(iter->second, 90);
   ++iter;
   EXPECT_TRUE(iter == m.end());
-  --iter;
-  ASSERT_TRUE(iter != m.end());
-  EXPECT_EQ(iter->first, 1234);
-  EXPECT_EQ(iter->second, 90);
 }
 
 TEST(SmallMap, DefaultEqualKeyWorks) {
