@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -33,6 +34,7 @@
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
+#include "net/cert/cert_database.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
@@ -74,6 +76,16 @@ class PlatformKeysTest : public PlatformKeysTestBase {
   PlatformKeysTest& operator=(const PlatformKeysTest&) = delete;
 
   void SetUpOnMainThread() override {
+    if (ash::features::IsCopyClientKeysCertsToChapsEnabled() &&
+        (user_client_cert_slot_ == UserClientCertSlot::kPublicSlot)) {
+      // There's an active effort to deprecate the public slot. Some components
+      // (e.g. Kcer) don't take it into account, which breaks tests, but they
+      // also don't have to consider it because with the
+      // CopyClientKeysCertsToChaps feature enabled all the necessary data is
+      // automatically copied from the public slot into the private slot.
+      GTEST_SKIP();
+    }
+
     base::AddTagToTestResult("feature_id",
                              "screenplay-63f95a00-bff8-4d81-9cf9-ccf5fdacbef0");
     if (!IsPreTest()) {
@@ -240,6 +252,9 @@ class PlatformKeysTest : public PlatformKeysTestBase {
     client_cert3_ = net::ImportClientCertAndKeyFromFile(
         extension_path(), "client_3.pem", "client_3.pk8", slot.get());
     ASSERT_TRUE(client_cert3_.get());
+
+    // The main important observer for these tests is Kcer.
+    net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
   }
 
   void SetupTestCACerts() {

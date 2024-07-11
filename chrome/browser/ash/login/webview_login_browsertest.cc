@@ -117,6 +117,7 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
+#include "net/cert/cert_database.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -1504,6 +1505,8 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
       const std::vector<std::string>& client_cert_names) {
     ImportSystemSlotClientCerts(client_cert_names,
                                 system_nss_key_slot_mixin_.slot());
+    // The main important observer for these tests is Kcer.
+    net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
   }
 
  protected:
