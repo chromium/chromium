@@ -2561,6 +2561,37 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 #endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
+       DontDeleteUndecryptableLoginsIfDisabledByPolicy) {
+  // Init with feature states allowing for password deletion.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{features::kSkipUndecryptablePasswords, false},
+       {features::kClearUndecryptablePasswords, true}});
+
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> forms;
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  auto form3 =
+      AddDummyLogin("foo3", GURL("https://foo3.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init(nullptr));
+
+  db.SetIsDeletingUndecryptableLoginsDisabledByPolicy(true);
+
+  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 7, 1);
+}
+
+TEST_F(LoginDatabaseUndecryptableLoginsTest,
        PasswordRecoveryDisabledGetLogins) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);

@@ -42,6 +42,9 @@ inline constexpr char kCredentialProviderEnabledOnStartup[] =
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_IOS)
+// Boolean pref controlled by the DeletingUndecryptablePasswordsEnabled policy.
+// If set to false it blocks deleting undecryptable passwords, otherwise the
+// deletion can happen.
 inline constexpr char kDeletingUndecryptablePasswordsEnabled[] =
     "password_manager.deleteting_undecryptable_passwords_enabled";
 #endif

@@ -151,6 +151,11 @@ class PasswordStoreBuiltInBackendBaseTest : public testing::Test {
         password_manager::prefs::kPasswordRemovalReasonForAccount, 0);
     pref_service_.registry()->RegisterIntegerPref(
         password_manager::prefs::kPasswordRemovalReasonForProfile, 0);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_IOS)
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kDeletingUndecryptablePasswordsEnabled, true);
+#endif
   }
 
   void TearDown() override {

@@ -421,6 +421,9 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Should not delete, user data directory is specified using the
              enterprise policy"/>
+  <int value="7"
+      label="Should not delete, deleting undecryptable logins was disabled by
+             policy"/>
 </enum>
 
 <enum name="LoginsChangedTrigger">
