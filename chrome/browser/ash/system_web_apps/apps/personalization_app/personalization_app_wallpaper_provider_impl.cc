@@ -70,6 +70,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_util.h"
 #include "url/gurl.h"
+#include "url/mojom/url.mojom-forward.h"
 
 namespace ash::personalization_app {
 
@@ -79,8 +80,7 @@ using ash::WallpaperController;
 using ash::personalization_app::GetAccountId;
 using ash::personalization_app::GetUser;
 
-constexpr int kLocalImageThumbnailSizeDip = 256;
-constexpr int kCurrentWallpaperThumbnailSizeDip = 1024;
+constexpr int kLocalImageThumbnailSizeDip = 384;
 
 // Return the online wallpaper key. Use |info.unit_id| if available so we might
 // be able to fallback to the cached attribution.
@@ -91,12 +91,15 @@ const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
 
 GURL GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
   std::vector<unsigned char> output;
-  if (!gfx::JPEGCodec::Encode(bitmap, /*quality=*/90, &output)) {
+  if (!gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &output)) {
     LOG(ERROR) << "Unable to encode bitmap";
     return GURL();
   }
-  return GetJpegDataUrl(
-      {reinterpret_cast<char*>(output.data()), output.size()});
+  GURL data_url =
+      GetJpegDataUrl({reinterpret_cast<char*>(output.data()), output.size()});
+  // @see `url.mojom` warning about dropping urls that are too long.
+  DCHECK_LT(data_url.spec().size(), url::mojom::kMaxURLChars);
+  return data_url;
 }
 
 }  // namespace
@@ -924,10 +927,9 @@ void PersonalizationAppWallpaperProviderImpl::OnGetDefaultImage(
     std::move(callback).Run(GURL());
     return;
   }
-  std::move(callback).Run(GURL(
-      webui::GetBitmapDataUrl(*WallpaperResizer::GetResizedImage(
-                                   image, kCurrentWallpaperThumbnailSizeDip)
-                                   .bitmap())));
+  gfx::ImageSkia resized =
+      WallpaperResizer::GetResizedImage(image, kLocalImageThumbnailSizeDip);
+  std::move(callback).Run(GetBitmapJpegDataUrl(*resized.bitmap()));
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnGetLocalImages(

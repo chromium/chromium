@@ -271,6 +271,9 @@ export async function getDefaultImageThumbnail(
     store: PersonalizationStore): Promise<void> {
   store.dispatch(action.beginLoadDefaultImageThubmnailAction());
   const {data} = await provider.getDefaultImageThumbnail();
+  if (data.url.length === 0) {
+    console.error('Failed to load default image thumbnail');
+  }
   store.dispatch(action.setDefaultImageThumbnailAction(data));
 }
 
