@@ -4,19 +4,45 @@
     display: none;
   }
 
-  #warning-container {
+  iron-icon {
+    --iron-icon-width: var(--cr-icon-size);
+    --iron-icon-height: var(--cr-icon-size);
+  }
+
+  #warningContainer {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr;
     column-gap: 8px;
     border-radius: 8px;
     padding: 8px 12px;
     background-color: var(--sys-color-error-container);
+    color: var(--sys-color-on-error-container);
   }
 
-  #warning-icon {
-    --iron-icon-width: var(--cr-icon-size);
-    --iron-icon-height: var(--cr-icon-size);
-    color: var(--error-color);
+  #detailsContainer {
+    display: grid;
+    row-gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .counter-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 16px;
+  }
+
+  .counter-summary {
+    font-size: 105%;
+    font-weight: 500;
+    color: var(--cr-primary-text-color);
+  }
+
+  .counter-details {
+    color: var(--cr-primary-text-color);
+  }
+
+  #warningIcon {
+    color: var(--sys-color-on-error-container);
   }
 </style>
 
@@ -34,8 +60,26 @@
     $i18n{fullResetConfirmationTitle}
   </div>
   <div slot="body">
-    <div id="warning-container">
-      <iron-icon id="warning-icon" icon="passwords-icon:outlined-warning">
+    <div id="detailsContainer">
+      <div class="counter-row">
+        <iron-icon icon="passwords-icon:password">
+        </iron-icon>
+        <div>
+          <div class="counter-summary">[[passwordsCount_]]</div>
+          <div class="counter-details">[[passwordsCountDetails_]]</div>
+        </div>
+      </div>
+      <div class="counter-row">
+        <iron-icon icon="passwords-icon:passkey-filled">
+        </iron-icon>
+        <div>
+          <div class="counter-summary">[[passkeysCount_]]</div>
+          <div class="counter-details">[[passkeysCountDetails_]]</div>
+        </div>
+      </div>
+    </div>
+    <div id="warningContainer">
+      <iron-icon id="warningIcon" icon="passwords-icon:outlined-warning">
       </iron-icon>
       <div>$i18n{fullResetConfirmationDescription}</div>
     </div>

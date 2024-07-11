@@ -30,42 +30,58 @@ suite('FullDataResetTest', function() {
     assertFalse(dataReset.$.dialog.open);
   });
 
-  test('confirmation dialog is closed by clicking the cancel button', async function() {
-    const dataReset = document.createElement('full-data-reset');
-    document.body.appendChild(dataReset);
-    flush();
+  test(
+      'getSavedPasswordList is called on deleteAllButton click',
+      async function() {
+        const dataReset = document.createElement('full-data-reset');
+        document.body.appendChild(dataReset);
+        flush();
 
-    // Open the dialog.
-    dataReset.$.deleteAllButton.click();
-    flush();
-    assertTrue(dataReset.$.dialog.open);
+        // Open the dialog.
+        dataReset.$.deleteAllButton.click();
+        await passwordManager.whenCalled('getSavedPasswordList');
+      });
 
-    // Should close the dialog.
-    assertTrue(isVisible(dataReset.$.cancelButton));
-    dataReset.$.cancelButton.click();
-    flush();
+  test(
+      'confirmation dialog is closed by clicking the cancel button',
+      async function() {
+        const dataReset = document.createElement('full-data-reset');
+        document.body.appendChild(dataReset);
+        flush();
 
-    assertFalse(dataReset.$.dialog.open);
-  });
+        // Open the dialog.
+        dataReset.$.deleteAllButton.click();
+        flush();
+        assertTrue(dataReset.$.dialog.open);
 
-  test('confirmation dialog is closed by clicking the action button', async function() {
-    const dataReset = document.createElement('full-data-reset');
-    document.body.appendChild(dataReset);
-    flush();
+        // Should close the dialog.
+        assertTrue(isVisible(dataReset.$.cancelButton));
+        dataReset.$.cancelButton.click();
+        flush();
 
-    // Open the dialog.
-    dataReset.$.deleteAllButton.click();
-    flush();
-    assertTrue(dataReset.$.dialog.open);
+        assertFalse(dataReset.$.dialog.open);
+      });
 
-    // Should close the dialog and trigger passwordsPrivate call.
-    assertTrue(isVisible(dataReset.$.confirmButton));
-    dataReset.$.confirmButton.click();
+  test(
+      'confirmation dialog is closed by clicking the action button',
+      async function() {
+        const dataReset = document.createElement('full-data-reset');
+        document.body.appendChild(dataReset);
+        flush();
 
-    await passwordManager.whenCalled('deleteAllPasswordManagerData');
-    flush();
+        // Open the dialog.
+        dataReset.$.deleteAllButton.click();
+        flush();
+        assertTrue(dataReset.$.dialog.open);
 
-    assertTrue(dataReset.$.successToast.open);
-    assertFalse(dataReset.$.dialog.open);
-  });
+        // Should close the dialog and trigger passwordsPrivate call.
+        assertTrue(isVisible(dataReset.$.confirmButton));
+        dataReset.$.confirmButton.click();
+
+        await passwordManager.whenCalled('deleteAllPasswordManagerData');
+        flush();
+
+        assertTrue(dataReset.$.successToast.open);
+        assertFalse(dataReset.$.dialog.open);
+      });
 });

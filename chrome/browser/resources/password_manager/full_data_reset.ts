@@ -13,6 +13,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './full_data_reset.html.js';
@@ -39,7 +40,100 @@ export class FullDataResetElement extends FullDataResetElementBase {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      passwordsCount_: {
+        type: String,
+        value: '',
+      },
+
+      passkeysCount_: {
+        type: String,
+        value: '',
+      },
+
+      passwordsCountDetails_: {
+        type: String,
+        value: '',
+      },
+
+      passkeysCountDetails_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+
+  private passwordsCount_: string = '';
+  private passkeysCount_: string = '';
+  private passwordsCountDetails_: string = '';
+  private passkeysCountDetails_: string = '';
+
+  private async updateCounters_(credentials:
+                                    chrome.passwordsPrivate.PasswordUiEntry[]) {
+    let numPasswords = 0;
+    let numPasskeys = 0;
+    const passwordSites = new Set<string>();
+    const passkeySites = new Set<string>();
+
+    for (const credential of credentials) {
+      if (credential.isPasskey) {
+        numPasskeys++;
+        credential.affiliatedDomains.forEach(
+            domain => passkeySites.add(domain.name));
+      } else {
+        numPasswords++;
+        credential.affiliatedDomains.forEach(
+            domain => passwordSites.add(domain.name));
+      }
+    }
+
+    const [
+        passwordCountString,
+        passkeysCountString,
+        passwordDetails,
+        passkeysDetails,
+      ] = await Promise.all([
+      this.getFormattedCountString('fullResetPasswordsCounter', numPasswords),
+      this.getFormattedCountString('fullResetPasskeysCounter', numPasskeys),
+      this.getFormattedSiteDetails(passwordSites),
+      this.getFormattedSiteDetails(passkeySites),
+    ]);
+
+    this.passwordsCount_ = passwordCountString;
+    this.passkeysCount_ = passkeysCountString;
+    this.passwordsCountDetails_ = passwordDetails;
+    this.passkeysCountDetails_ = passkeysDetails;
+  }
+
+  private async getFormattedCountString(key: string, count: number):
+      Promise<string> {
+    return PluralStringProxyImpl.getInstance().getPluralString(key, count);
+  }
+
+  private async getFormattedSiteDetails(sites: Set<string>): Promise<string> {
+    const sitesArray = [...sites];
+
+    switch (sites.size) {
+      case 0:
+        return '';
+      case 1:
+        return this.i18n('fullResetDomainsDisplayOne', sitesArray[0]);
+      case 2:
+        return this.i18n(
+            'fullResetDomainsDisplayTwo', sitesArray[0], sitesArray[1]);
+      default:
+        const moreCount = sites.size - 2;
+        const container = await this.getFormattedCountString(
+            'fullResetDomainsDisplayTwoAndXMore', moreCount);
+        return container.replace('$1', sitesArray[0])
+            .replace('$2', sitesArray[1]);
+    }
+  }
+
   private onDeleteAllClick_(): void {
+    PasswordManagerImpl.getInstance().getSavedPasswordList().then(
+        credentials => this.updateCounters_(credentials));
     this.$.dialog.showModal();
   }
 

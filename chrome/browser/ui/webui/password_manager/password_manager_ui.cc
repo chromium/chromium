@@ -225,6 +225,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"fullResetConfirm", IDS_PASSWORD_MANAGER_UI_FULL_RESET_CONFIRM},
       {"fullResetSuccessToast",
        IDS_PASSWORD_MANAGER_UI_FULL_RESET_SUCCESS_TOAST},
+      {"fullResetDomainsDisplayOne",
+       IDS_PASSWORD_MANAGER_UI_FULL_RESET_DOMAINS_DISPLAY_ONE},
+      {"fullResetDomainsDisplayTwo",
+       IDS_PASSWORD_MANAGER_UI_FULL_RESET_DOMAINS_DISPLAY_TWO},
       {"gotIt", IDS_SETTINGS_GOT_IT},
       {"help", IDS_PASSWORD_MANAGER_UI_HELP},
       {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
@@ -618,6 +622,13 @@ void AddPluralStrings(content::WebUI* web_ui) {
   plural_string_handler->AddLocalizedString(
       "deviceOnlyPasswordsIconTooltip",
       IDS_PASSWORD_MANAGER_UI_DEVICE_ONLY_PASSWORDS_ICON_TOOLTIP);
+  plural_string_handler->AddLocalizedString(
+      "fullResetDomainsDisplayTwoAndXMore",
+      IDS_PASSWORD_MANAGER_UI_FULL_RESET_DOMAINS_DISPLAY_TWO_AND_X_MORE);
+  plural_string_handler->AddLocalizedString(
+      "fullResetPasswordsCounter", IDS_PASSWORD_MANAGER_PASSWORDS_COUNTER);
+  plural_string_handler->AddLocalizedString(
+      "fullResetPasskeysCounter", IDS_PASSWORD_MANAGER_PASSKEYS_COUNTER);
   plural_string_handler->AddLocalizedString(
       "importPasswordsFailuresSummary",
       IDS_PASSWORD_MANAGER_UI_IMPORT_FAILURES_SUMMARY);
