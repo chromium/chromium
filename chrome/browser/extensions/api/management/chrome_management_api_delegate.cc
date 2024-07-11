@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -265,7 +266,8 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     extensions::api::management::ExtensionInfo info;
     info.id = app_id;
     info.name = registrar.GetAppShortName(app_id);
-    info.enabled = registrar.IsLocallyInstalled(app_id);
+    info.enabled = registrar.IsInstallState(
+        app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION});
     info.install_type =
         extensions::api::management::ExtensionInstallType::kOther;
     info.is_app = true;
@@ -542,7 +544,10 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
 
   // Launch the app if web_app_url happens to match start_url. If not, the app
   // could still be installed with different start_url.
-  if (provider->registrar_unsafe().IsLocallyInstalled(web_app_url)) {
+  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(web_app_url);
+  if (provider->registrar_unsafe().IsInstallState(
+          app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
     LaunchWebApp(
         web_app::GenerateAppId(/*manifest_id=*/std::nullopt, web_app_url),
         profile);

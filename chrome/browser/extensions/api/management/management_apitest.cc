@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -254,20 +255,22 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     webapps::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
     auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
-    EXPECT_FALSE(provider->registrar_unsafe().IsLocallyInstalled(start_url));
+    EXPECT_TRUE(provider->registrar_unsafe().IsNotInRegistrar(web_app_id));
     EXPECT_EQ(0, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
     RunTest(manifest, web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
-    EXPECT_TRUE(provider->registrar_unsafe().IsLocallyInstalled(start_url));
+    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(web_app_id),
+              web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
     EXPECT_EQ(1, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
     // Call API again. It should launch the app.
     RunTest(manifest, web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
-    EXPECT_TRUE(provider->registrar_unsafe().IsLocallyInstalled(start_url));
+    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(web_app_id),
+              web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
     EXPECT_EQ(2, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
