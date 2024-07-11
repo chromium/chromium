@@ -6,7 +6,7 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
-#include "base/trace_event/memory_usage_estimator.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 
 namespace autofill {
@@ -22,12 +22,7 @@ AccessorySheetField::AccessorySheetField(std::u16string display_text,
       a11y_description_(std::move(a11y_description)),
       id_(std::move(id)),
       is_obfuscated_(is_obfuscated),
-      selectable_(selectable),
-      estimated_memory_use_by_strings_(
-          base::trace_event::EstimateMemoryUsage(display_text_) +
-          base::trace_event::EstimateMemoryUsage(text_to_fill_) +
-          base::trace_event::EstimateMemoryUsage(a11y_description_) +
-          base::trace_event::EstimateMemoryUsage(id_)) {}
+      selectable_(selectable) {}
 
 AccessorySheetField::AccessorySheetField(const AccessorySheetField& field) =
     default;
@@ -48,10 +43,6 @@ bool AccessorySheetField::operator==(const AccessorySheetField& field) const {
          a11y_description_ == field.a11y_description_ && id_ == field.id_ &&
          is_obfuscated_ == field.is_obfuscated_ &&
          selectable_ == field.selectable_;
-}
-
-size_t AccessorySheetField::EstimateMemoryUsage() const {
-  return sizeof(AccessorySheetField) + estimated_memory_use_by_strings_;
 }
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
@@ -80,10 +71,7 @@ UserInfo::UserInfo(std::string origin,
                    GURL icon_url)
     : origin_(std::move(origin)),
       is_exact_match_(is_exact_match),
-      icon_url_(std::move(icon_url)),
-      estimated_dynamic_memory_use_(
-          base::trace_event::EstimateMemoryUsage(origin_) +
-          base::trace_event::EstimateMemoryUsage(icon_url_)) {}
+      icon_url_(std::move(icon_url)) {}
 
 UserInfo::UserInfo(const UserInfo& user_info) = default;
 
@@ -101,10 +89,6 @@ bool UserInfo::operator==(const UserInfo& user_info) const {
          icon_url_ == user_info.icon_url_;
 }
 
-size_t UserInfo::EstimateMemoryUsage() const {
-  return sizeof(UserInfo) + estimated_dynamic_memory_use_;
-}
-
 std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
   os << "origin: \"" << user_info.origin() << "\", "
      << "is_exact_match: " << std::boolalpha << user_info.is_exact_match()
@@ -120,10 +104,7 @@ std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
 PasskeySection::PasskeySection(std::string display_name,
                                std::vector<uint8_t> passkey_id)
     : display_name_(std::move(display_name)),
-      passkey_id_(std::move(passkey_id)),
-      estimated_dynamic_memory_use_(
-          base::trace_event::EstimateMemoryUsage(display_name_) +
-          base::trace_event::EstimateMemoryUsage(passkey_id_)) {}
+      passkey_id_(std::move(passkey_id)) {}
 
 PasskeySection::PasskeySection(const PasskeySection& passkey_section) = default;
 
@@ -142,10 +123,6 @@ bool PasskeySection::operator==(const PasskeySection& passkey_section) const {
          base::ranges::equal(passkey_id_, passkey_section.passkey_id_);
 }
 
-size_t PasskeySection::EstimateMemoryUsage() const {
-  return sizeof(PasskeySection) + estimated_dynamic_memory_use_;
-}
-
 std::ostream& operator<<(std::ostream& os,
                          const PasskeySection& passkey_section) {
   os << "display_name: \"" << passkey_section.display_name() << "\", "
@@ -162,10 +139,7 @@ PromoCodeInfo::PromoCodeInfo(std::u16string promo_code,
                                       /*id=*/std::string(),
                                       /*is_password=*/false,
                                       /*selectable=*/true)),
-      details_text_(details_text),
-      estimated_dynamic_memory_use_(
-          base::trace_event::EstimateMemoryUsage(promo_code_) +
-          base::trace_event::EstimateMemoryUsage(details_text_)) {}
+      details_text_(details_text) {}
 
 PromoCodeInfo::PromoCodeInfo(const PromoCodeInfo& promo_code_info) = default;
 
@@ -184,10 +158,6 @@ bool PromoCodeInfo::operator==(const PromoCodeInfo& promo_code_info) const {
          details_text_ == promo_code_info.details_text_;
 }
 
-size_t PromoCodeInfo::EstimateMemoryUsage() const {
-  return sizeof(PromoCodeInfo) + estimated_dynamic_memory_use_;
-}
-
 std::ostream& operator<<(std::ostream& os,
                          const PromoCodeInfo& promo_code_info) {
   os << "promo_code: \"" << promo_code_info.promo_code() << "\", "
@@ -199,15 +169,11 @@ IbanInfo::IbanInfo(std::u16string value,
                    std::u16string text_to_fill,
                    std::string id)
     : value_(AccessorySheetField(/*display_text=*/value,
-                                 /*text_to_fill=*/text_to_fill,
+                                 /*text_to_fill=*/std::move(text_to_fill),
                                  /*a11y_description=*/value,
                                  /*id=*/id,
                                  /*is_obfuscated=*/false,
-                                 /*selectable=*/true)),
-      estimated_dynamic_memory_use_(
-          base::trace_event::EstimateMemoryUsage(value) +
-          base::trace_event::EstimateMemoryUsage(text_to_fill) +
-          base::trace_event::EstimateMemoryUsage(id)) {}
+                                 /*selectable=*/true)) {}
 
 IbanInfo::IbanInfo(const IbanInfo& iban_info) = default;
 
@@ -223,10 +189,6 @@ bool IbanInfo::operator==(const IbanInfo& iban_info) const {
   return value_ == iban_info.value_;
 }
 
-size_t IbanInfo::EstimateMemoryUsage() const {
-  return sizeof(IbanInfo) + estimated_dynamic_memory_use_;
-}
-
 std::ostream& operator<<(std::ostream& os, const IbanInfo& iban_info) {
   os << "iban_info: \"" << iban_info.value() << "\"";
   return os;
@@ -234,10 +196,7 @@ std::ostream& operator<<(std::ostream& os, const IbanInfo& iban_info) {
 
 FooterCommand::FooterCommand(std::u16string display_text,
                              AccessoryAction action)
-    : display_text_(std::move(display_text)),
-      accessory_action_(action),
-      estimated_memory_use_by_strings_(
-          base::trace_event::EstimateMemoryUsage(display_text_)) {}
+    : display_text_(std::move(display_text)), accessory_action_(action) {}
 
 FooterCommand::FooterCommand(const FooterCommand& footer_command) = default;
 
@@ -256,10 +215,6 @@ bool FooterCommand::operator==(const FooterCommand& fc) const {
          accessory_action_ == fc.accessory_action_;
 }
 
-size_t FooterCommand::EstimateMemoryUsage() const {
-  return sizeof(FooterCommand) + estimated_memory_use_by_strings_;
-}
-
 std::ostream& operator<<(std::ostream& os, const FooterCommand& fc) {
   return os << "(display text: \"" << fc.display_text() << "\", "
             << "action: " << static_cast<int>(fc.accessory_action()) << ")";
@@ -270,9 +225,7 @@ OptionToggle::OptionToggle(std::u16string display_text,
                            AccessoryAction action)
     : display_text_(display_text),
       enabled_(enabled),
-      accessory_action_(action),
-      estimated_memory_use_by_strings_(
-          base::trace_event::EstimateMemoryUsage(display_text_)) {}
+      accessory_action_(action) {}
 
 OptionToggle::OptionToggle(const OptionToggle& option_toggle) = default;
 
@@ -289,10 +242,6 @@ bool OptionToggle::operator==(const OptionToggle& option_toggle) const {
   return display_text_ == option_toggle.display_text_ &&
          enabled_ == option_toggle.enabled_ &&
          accessory_action_ == option_toggle.accessory_action_;
-}
-
-size_t OptionToggle::EstimateMemoryUsage() const {
-  return sizeof(OptionToggle) + estimated_memory_use_by_strings_;
 }
 
 std::ostream& operator<<(std::ostream& os, const OptionToggle& ot) {
@@ -348,19 +297,6 @@ bool AccessorySheetData::operator==(const AccessorySheetData& data) const {
          user_info_list_ == data.user_info_list_ &&
          promo_code_info_list_ == data.promo_code_info_list_ &&
          footer_commands_ == data.footer_commands_;
-}
-
-size_t AccessorySheetData::EstimateMemoryUsage() const {
-  return sizeof(AccessorySheetData) +
-         base::trace_event::EstimateMemoryUsage(title_) +
-         base::trace_event::EstimateMemoryUsage(warning_) +
-         (option_toggle_
-              ? base::trace_event::EstimateMemoryUsage(option_toggle_.value())
-              : 0) +
-         base::trace_event::EstimateIterableMemoryUsage(user_info_list_) +
-         base::trace_event::EstimateIterableMemoryUsage(promo_code_info_list_) +
-         base::trace_event::EstimateIterableMemoryUsage(footer_commands_) +
-         base::trace_event::EstimateIterableMemoryUsage(iban_info_list_);
 }
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {

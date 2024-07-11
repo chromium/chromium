@@ -48,14 +48,7 @@ class AccessorySheetField {
   bool selectable() const { return selectable_; }
 
   bool operator==(const AccessorySheetField& field) const;
-
-  // Estimates dynamic memory usage.
-  // See base/trace_event/memory_usage_estimator.h for more info.
-  size_t EstimateMemoryUsage() const;
-
  private:
-  // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
-  // to the memory estimation member!
   std::u16string display_text_;
   // The string that would be used to fill in the form, for cases when it is
   // different from |display_text_|. For example: For unmasked credit cards,
@@ -66,7 +59,6 @@ class AccessorySheetField {
   std::string id_;  // Optional, if needed to complete filling.
   bool is_obfuscated_;
   bool selectable_;
-  size_t estimated_memory_use_by_strings_ = 0;
 };
 
 // Represents user data to be shown on the manual fallback UI (e.g. a Profile,
@@ -91,7 +83,6 @@ class UserInfo {
   UserInfo& operator=(UserInfo&& user_info);
 
   void add_field(AccessorySheetField field) {
-    estimated_dynamic_memory_use_ += field.EstimateMemoryUsage();
     fields_.push_back(std::move(field));
   }
 
@@ -102,19 +93,12 @@ class UserInfo {
 
   bool operator==(const UserInfo& user_info) const;
 
-  // Estimates dynamic memory usage.
-  // See base/trace_event/memory_usage_estimator.h for more info.
-  size_t EstimateMemoryUsage() const;
-
  private:
-  // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
-  // to the memory estimation member!
   std::string origin_;
   // True means it's neither PSL match nor affiliated match, false otherwise.
   IsExactMatch is_exact_match_{true};
   std::vector<AccessorySheetField> fields_;
   GURL icon_url_;
-  size_t estimated_dynamic_memory_use_ = 0;
 };
 
 std::ostream& operator<<(std::ostream& out, const AccessorySheetField& field);
@@ -138,14 +122,9 @@ class PasskeySection {
 
   bool operator==(const PasskeySection& passkey_section) const;
 
-  // Estimates dynamic memory usage.
-  // See base/trace_event/memory_usage_estimator.h for more info.
-  size_t EstimateMemoryUsage() const;
-
  private:
   std::string display_name_;
   std::vector<uint8_t> passkey_id_;
-  size_t estimated_dynamic_memory_use_ = 0;
 };
 
 std::ostream& operator<<(std::ostream& out,
@@ -170,14 +149,9 @@ class PromoCodeInfo {
 
   bool operator==(const PromoCodeInfo& promo_code_info) const;
 
-  // Estimates dynamic memory usage.
-  // See base/trace_event/memory_usage_estimator.h for more info.
-  size_t EstimateMemoryUsage() const;
-
  private:
   AccessorySheetField promo_code_;
   std::u16string details_text_;
-  size_t estimated_dynamic_memory_use_ = 0;
 };
 
 std::ostream& operator<<(std::ostream& out,
@@ -200,13 +174,8 @@ class IbanInfo {
 
   bool operator==(const IbanInfo& iban_info) const;
 
-  // Estimates dynamic memory usage.
-  // See base/trace_event/memory_usage_estimator.h for more info.
-  size_t EstimateMemoryUsage() const;
-
  private:
   AccessorySheetField value_;
-  size_t estimated_dynamic_memory_use_ = 0;
 };
 
 std::ostream& operator<<(std::ostream& out, const IbanInfo& iban);
@@ -229,16 +198,9 @@ class FooterCommand {
 
   bool operator==(const FooterCommand& fc) const;
 
-  // Estimates dynamic memory usage.
-  // See base/trace_event/memory_usage_estimator.h for more info.
-  size_t EstimateMemoryUsage() const;
-
  private:
-  // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
-  // to the memory estimation member!
   std::u16string display_text_;
   AccessoryAction accessory_action_;
-  size_t estimated_memory_use_by_strings_ = 0;
 };
 
 std::ostream& operator<<(std::ostream& out, const FooterCommand& fc);
@@ -268,17 +230,10 @@ class OptionToggle {
 
   bool operator==(const OptionToggle& option_toggle) const;
 
-  // Estimates dynamic memory usage.
-  // See base/trace_event/memory_usage_estimator.h for more info.
-  size_t EstimateMemoryUsage() const;
-
  private:
-  // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
-  // to the memory estimation member!
   std::u16string display_text_;
   bool enabled_;
   AccessoryAction accessory_action_;
-  size_t estimated_memory_use_by_strings_ = 0;
 };
 
 // Represents the contents of a bottom sheet tab below the keyboard accessory,
@@ -355,10 +310,6 @@ class AccessorySheetData {
   }
 
   bool operator==(const AccessorySheetData& data) const;
-
-  // Estimates dynamic memory usage.
-  // See base/trace_event/memory_usage_estimator.h for more info.
-  size_t EstimateMemoryUsage() const;
 
  private:
   AccessoryTabType sheet_type_;
