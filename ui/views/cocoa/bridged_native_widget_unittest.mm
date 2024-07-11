@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #import "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -430,13 +431,16 @@ class MockNativeWidgetMac : public NativeWidgetMac {
 
 // Helper test base to construct a NativeWidgetNSWindowBridge with a valid
 // parent.
-class BridgedNativeWidgetTestBase : public ui::CocoaTest {
+class BridgedNativeWidgetTestBase : public ui::CocoaTest,
+                                    public WidgetObserver {
  public:
   struct SkipInitialization {};
 
   BridgedNativeWidgetTestBase()
       : widget_(new Widget),
-        native_widget_mac_(new MockNativeWidgetMac(widget_.get())) {}
+        native_widget_mac_(new MockNativeWidgetMac(widget_.get())) {
+    observation_.Observe(widget_.get());
+  }
 
   explicit BridgedNativeWidgetTestBase(SkipInitialization tag)
       : native_widget_mac_(nullptr) {}
@@ -446,10 +450,11 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
       delete;
 
   remote_cocoa::NativeWidgetNSWindowBridge* bridge() {
-    return native_widget_mac_->GetInProcessNSWindowBridge();
+    return native_widget_mac_ ? native_widget_mac_->GetInProcessNSWindowBridge()
+                              : nullptr;
   }
   NativeWidgetMacNSWindowHost* GetNSWindowHost() {
-    return native_widget_mac_->GetNSWindowHost();
+    return native_widget_mac_ ? native_widget_mac_->GetNSWindowHost() : nullptr;
   }
 
   // Generate an autoreleased KeyDown NSEvent* in |widget_| for pressing the
@@ -471,11 +476,9 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
   void SetUp() override {
     ui::CocoaTest::SetUp();
 
-    Widget::InitParams init_params(
-        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+    Widget::InitParams init_params(ownership_);
     init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
-    init_params.ownership = ownership_;
     init_params.opacity = opacity_;
     init_params.bounds = bounds_;
     init_params.shadow_type = shadow_type_;
@@ -489,7 +492,10 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
     // be sure to destroy the widget (which will destroy its NSWindow)
     // beforehand.
     native_widget_mac_ = nullptr;
-    widget_.reset();
+    if (widget_) {
+      observation_.Reset();
+      widget_->CloseNow();
+    }
     ui::CocoaTest::TearDown();
   }
 
@@ -504,17 +510,26 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
         bridge_window()) hasShadowForTesting];
   }
 
+  // Overridden from WidgetObserver:
+  void OnWidgetDestroyed(Widget* widget) override {
+    native_widget_mac_ = nullptr;
+    if (observation_.IsObservingSource(widget)) {
+      observation_.Reset();
+    }
+  }
+
  protected:
   std::unique_ptr<Widget> widget_;
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
   raw_ptr<MockNativeWidgetMac> native_widget_mac_;  // Owned by `widget_`.
 
   // Use a frameless window, otherwise Widget will try to center the window
   // before the tests covering the Init() flow are ready to do that.
   Widget::InitParams::Type type_ = Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   // To control the lifetime without an actual window that must be closed,
-  // tests in this file need to use WIDGET_OWNS_NATIVE_WIDGET.
+  // tests in this file use CLIENT_OWNS_WIDGET.
   Widget::InitParams::Ownership ownership_ =
-      Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      Widget::InitParams::CLIENT_OWNS_WIDGET;
   // Opacity defaults to "infer" which is usually updated by ViewsDelegate.
   Widget::InitParams::WindowOpacity opacity_ =
       Widget::InitParams::WindowOpacity::kOpaque;
@@ -977,16 +992,19 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
   // Prepares a new |window_| and |widget_| for a call to PerformInit().
   void CreateNewWidgetToInit() {
     native_widget_mac_ = nullptr;
+    if (widget_) {
+      observation_.Reset();
+      widget_->CloseNow();
+    }
     widget_ = std::make_unique<Widget>();
+    observation_.Observe(widget_.get());
     native_widget_mac_ = new MockNativeWidgetMac(widget_.get());
   }
 
   void PerformInit() {
-    Widget::InitParams init_params(
-        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+    Widget::InitParams init_params(ownership_);
     init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
-    init_params.ownership = ownership_;
     init_params.opacity = opacity_;
     init_params.bounds = bounds_;
     init_params.shadow_type = shadow_type_;
