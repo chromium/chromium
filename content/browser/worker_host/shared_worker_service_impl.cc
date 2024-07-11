@@ -222,10 +222,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,
-      message_port, std::move(blob_url_loader_factory),
-      storage_key_override.has_value()
-          ? net::StorageAccessApiStatus::kAccessViaAPI
-          : net::StorageAccessApiStatus::kNone);
+      message_port, std::move(blob_url_loader_factory), storage_key_override);
   if (!host) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
@@ -314,7 +311,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     const std::string& storage_domain,
     const blink::MessagePortChannel& message_port,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    net::StorageAccessApiStatus storage_access_api_status) {
+    const std::optional<blink::StorageKey>& storage_key_override) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!blob_url_loader_factory || instance.url().SchemeIsBlob());
 
@@ -386,6 +383,11 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // Cloning before std::move() so that the object can be used in two functions.
   auto cloned_outside_fetch_client_settings_object =
       outside_fetch_client_settings_object.Clone();
+
+  net::StorageAccessApiStatus storage_access_api_status =
+      storage_key_override.has_value()
+          ? net::StorageAccessApiStatus::kAccessViaAPI
+          : net::StorageAccessApiStatus::kNone;
 
   // TODO(mmenke): The site-for-cookies and NetworkAnonymizationKey arguments
   // leak data across NetworkIsolationKeys and allow same-site cookies to be

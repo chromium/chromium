@@ -123,7 +123,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       const std::string& storage_domain,
       const blink::MessagePortChannel& message_port,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      net::StorageAccessApiStatus storage_access_api_status);
+      const std::optional<blink::StorageKey>& storage_key_override);
 
   void StartWorker(base::WeakPtr<SharedWorkerHost> host,
                    const blink::MessagePortChannel& message_port,
