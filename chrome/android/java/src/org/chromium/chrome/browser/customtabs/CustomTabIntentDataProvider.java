@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
+import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -92,6 +93,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * A model class that parses the incoming intent for Custom Tabs specific customization data.
@@ -801,16 +803,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     /**
-     * Gets custom buttons from the intent and updates {@link #mCustomButtonParams},
-     * {@link #mBottombarButtons} and {@link #mToolbarButtons}.
+     * Gets custom buttons from the intent and updates {@link #mCustomButtonParams}, {@link
+     * #mBottombarButtons} and {@link #mToolbarButtons}.
      */
     private void retrieveCustomButtons(Intent intent, Context context) {
         assert mCustomButtonParams == null;
         mCustomButtonParams = CustomButtonParamsImpl.fromIntent(context, intent);
-        boolean isGoogleBottomBarEnabled = isGoogleBottomBarEnabled(this);
+        Set<Integer> googleBottomBarSupportedCustomButtonParamIds =
+                getGoogleBottomBarSupportedCustomButtonParamIds();
         for (CustomButtonParams params : mCustomButtonParams) {
-            if (isGoogleBottomBarEnabled
-                    && GoogleBottomBarCoordinator.isSupported(params.getId())) {
+            if (googleBottomBarSupportedCustomButtonParamIds.contains(params.getId())) {
                 mGoogleBottomBarButtons.add(params);
                 params.updateShowOnToolbar(false);
             } else if (!params.showOnToolbar()) {
@@ -822,22 +824,57 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             }
         }
 
-        if (isGoogleBottomBarEnabled) {
-            List<Bundle> googleBottomBarButtonBundles =
-                    CustomTabsConnection.getInstance().getGoogleBottomBarButtons(this);
-            List<CustomButtonParams> googleBottomBarButtons =
-                    CustomButtonParamsImpl.fromBundleList(
-                            context, googleBottomBarButtonBundles, /* tinted= */ false);
-            for (CustomButtonParams params : googleBottomBarButtons) {
-                if (GoogleBottomBarCoordinator.isSupported(params.getId())) {
-                    params.updateShowOnToolbar(false);
-                    mCustomButtonParams.add(params);
-                    mGoogleBottomBarButtons.add(params);
-                } else {
-                    Log.w(TAG, "Unused GoogleBottomBarButton id: %s", params.getId());
-                }
+        for (CustomButtonParams params :
+                getAdditionalSupportedGoogleBottomBarCustomButtonParams(context)) {
+            params.updateShowOnToolbar(false);
+            mCustomButtonParams.add(params);
+            mGoogleBottomBarButtons.add(params);
+        }
+    }
+
+    /**
+     * Determines which buttons should be displayed in the Google Bottom Bar.
+     *
+     * @return A set of integers representing the customButtonParamIds of the buttons that should be
+     *     displayed in the Google Bottom Bar. If the Google Bottom Bar is not enabled, an empty set
+     *     is returned.
+     */
+    private Set<Integer> getGoogleBottomBarSupportedCustomButtonParamIds() {
+        if (!isGoogleBottomBarEnabled(this)) {
+            return Set.of();
+        }
+        GoogleBottomBarIntentParams intentParams =
+                CustomTabsConnection.getInstance().getGoogleBottomBarIntentParams(this);
+        return GoogleBottomBarCoordinator.getSupportedCustomButtonParamIds(intentParams);
+    }
+
+    /**
+     * Retrieves a list of additional CustomButtonParams that are only supported for the Google
+     * Bottom Bar and should never be shown on the CCT toolbar.
+     *
+     * @param context Current context.
+     * @return A list of {@link CustomButtonParams}. If the Google Bottom Bar is not enabled, or no
+     *     supported buttons are found, an empty list is returned.
+     */
+    private List<CustomButtonParams> getAdditionalSupportedGoogleBottomBarCustomButtonParams(
+            Context context) {
+        List<CustomButtonParams> supportedGoogleBottomBarCustomButtonParams = new ArrayList<>();
+        if (!isGoogleBottomBarEnabled(this)) {
+            return supportedGoogleBottomBarCustomButtonParams;
+        }
+        List<Bundle> googleBottomBarButtonBundles =
+                CustomTabsConnection.getInstance().getGoogleBottomBarButtons(this);
+        List<CustomButtonParams> googleBottomBarButtons =
+                CustomButtonParamsImpl.fromBundleList(
+                        context, googleBottomBarButtonBundles, /* tinted= */ false);
+        for (CustomButtonParams params : googleBottomBarButtons) {
+            if (GoogleBottomBarCoordinator.isSupported(params.getId())) {
+                supportedGoogleBottomBarCustomButtonParams.add(params);
+            } else {
+                Log.w(TAG, "Unused GoogleBottomBarButton id: %s", params.getId());
             }
         }
+        return supportedGoogleBottomBarCustomButtonParams;
     }
 
     private static boolean isGoogleBottomBarEnabled(BrowserServicesIntentDataProvider provider) {

@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.G
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.NO_VARIANT;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED;
 
@@ -63,6 +64,7 @@ import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link BottomBarConfig}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -663,6 +665,127 @@ public class BottomBarConfigCreatorTest {
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(
                                 IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, /* defaultValue= */ false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getSupportedCustomButtonParamIds_variantLayoutsDisabled_returnsSetWithAllSupportedCustomParams() {
+        GoogleBottomBarIntentParams intentParams =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, SAVE, SHARE, CUSTOM))
+                        .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
+                        .build();
+
+        Set<Integer> supportedGoogleBottomBarButtons =
+                BottomBarConfigCreator.getSupportedCustomButtonParamIds(intentParams);
+
+        assertEquals(
+                CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet(), supportedGoogleBottomBarButtons);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getSupportedCustomButtonParamIds_variantLayoutsEnabled_noVariantLayout_returnsSetWithAllSupportedCustomParams() {
+        GoogleBottomBarIntentParams intentParams =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, SAVE, SHARE, CUSTOM))
+                        .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
+                        .build();
+
+        Set<Integer> supportedGoogleBottomBarButtons =
+                BottomBarConfigCreator.getSupportedCustomButtonParamIds(intentParams);
+
+        assertEquals(
+                CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet(), supportedGoogleBottomBarButtons);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getSupportedCustomButtonParamIds_variantLayoutsEnabled_doubleDecker_returnsSetWithAllSupportedCustomParams() {
+        GoogleBottomBarIntentParams intentParams =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, SAVE, SHARE, CUSTOM))
+                        .setVariantLayoutType(VariantLayoutType.DOUBLE_DECKER)
+                        .build();
+
+        Set<Integer> supportedGoogleBottomBarButtons =
+                BottomBarConfigCreator.getSupportedCustomButtonParamIds(intentParams);
+
+        assertEquals(
+                CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet(), supportedGoogleBottomBarButtons);
+    }
+
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getSupportedCustomButtonParamIds_variantLayoutsEnabled_singleDecker_returnsEmptySet() {
+        GoogleBottomBarIntentParams intentParams =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, SAVE, SHARE, CUSTOM))
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .build();
+
+        Set<Integer> supportedGoogleBottomBarButtons =
+                BottomBarConfigCreator.getSupportedCustomButtonParamIds(intentParams);
+
+        assertEquals(Set.of(), supportedGoogleBottomBarButtons);
+    }
+
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getSupportedCustomButtonParamIds_variantLayoutsEnabledButNotSupported_singleDecker_returnsSetWithAllSupportedCustomParams() {
+        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
+        GoogleBottomBarIntentParams intentParams =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, SAVE, SHARE, CUSTOM))
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .build();
+
+        Set<Integer> supportedGoogleBottomBarButtons =
+                BottomBarConfigCreator.getSupportedCustomButtonParamIds(intentParams);
+
+        assertEquals(
+                CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet(), supportedGoogleBottomBarButtons);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getSupportedCustomButtonParamIds_variantLayoutsEnabled_singleDeckerWithButtonsOnRight_returnsSetWithEncodedButtons() {
+        GoogleBottomBarIntentParams intentParams =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, SAVE, CUSTOM))
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
+                        .build();
+
+        Set<Integer> supportedGoogleBottomBarButtons =
+                BottomBarConfigCreator.getSupportedCustomButtonParamIds(intentParams);
+
+        assertEquals(Set.of(100, 105), supportedGoogleBottomBarButtons);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            getSupportedCustomButtonParamIds_variantLayoutsEnabledButNotSupported_singleDeckerWithButtonsOnRight_returnsSetWithAllSupportedCustomParams() {
+        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
+        GoogleBottomBarIntentParams intentParams =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, SAVE, CUSTOM))
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
+                        .build();
+
+        Set<Integer> supportedGoogleBottomBarButtons =
+                BottomBarConfigCreator.getSupportedCustomButtonParamIds(intentParams);
+
+        assertEquals(
+                CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet(), supportedGoogleBottomBarButtons);
     }
 
     private static Bitmap drawableToBitmap(Drawable drawable) {
