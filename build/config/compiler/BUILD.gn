@@ -1921,10 +1921,6 @@ config("default_warnings") {
         # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
         "-Wno-cast-function-type",
 
-        # Ignore warnings about MSVC optimization pragmas.
-        # TODO(thakis): Only for no_chromium_code? http://crbug.com/912662
-        "-Wno-ignored-pragma-optimize",
-
         # TODO(crbug.com/40231599) Evaluate and possibly enable.
         "-Wno-deprecated-builtins",
 
