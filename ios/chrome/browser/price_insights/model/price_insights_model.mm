@@ -90,7 +90,8 @@ void PriceInsightsModel::OnProductInfoUrlReceived(
       url, base::BindOnce(&PriceInsightsModel::OnPriceInsightsInfoUrlReceived,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  bool can_track_price = CanTrackPrice(info);
+  bool can_track_price =
+      shopping_service_->IsShoppingListEligible() && CanTrackPrice(info);
   price_insights_executions_[url]->config->can_price_track = can_track_price;
   if (can_track_price && info.value().product_cluster_id.has_value()) {
     uint64_t cluster_id = info.value().product_cluster_id.value();

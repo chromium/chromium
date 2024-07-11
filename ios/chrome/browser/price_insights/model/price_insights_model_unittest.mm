@@ -70,6 +70,7 @@ class PriceInsightsModelTest : public PlatformTest {
     shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
     shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(std::nullopt);
     shopping_service_->SetIsSubscribedCallbackValue(false);
+    shopping_service_->SetIsShoppingListEligible(true);
     fetch_configuration_callback_count = 0;
   }
 
@@ -379,6 +380,36 @@ TEST_F(PriceInsightsModelTest, TestFetchProductInfoWithPriceTrackAvailable) {
           returned_configuration_.get());
 
   EXPECT_EQ(true, config->can_price_track);
+}
+
+// Test that price track is not available when the eligibility is not met.
+TEST_F(PriceInsightsModelTest, TestFetchProductInfoWithPriceTrackUnavailable) {
+  base::RunLoop run_loop;
+
+  std::optional<commerce::ProductInfo> info;
+  info.emplace();
+  info->title = kTestTitle;
+  info->product_cluster_id = 12345L;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+  shopping_service_->SetIsSubscribedCallbackValue(false);
+  shopping_service_->SetIsShoppingListEligible(false);
+
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(0);
+
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_.get(),
+      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  EXPECT_EQ(false, config->can_price_track);
 }
 
 // Test that GetProductInfo, GetProductInfoForUrl, and IsSubscribed all return
