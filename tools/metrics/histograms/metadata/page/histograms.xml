@@ -22,8 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="BackgroundSuffix">
+  <variant name="" summary="never backgrounded during the navigation"/>
+  <variant name=".WasBackgrounded"
+      summary="backgrounded at least once during the navigation"/>
+</variants>
+
 <variants name="Gap">
   <variant name="1000ms"/>
+</variants>
+
+<variants name="HiddenSuffix">
+  <variant name="" summary="never hidden during the navigation"/>
+  <variant name=".WasHidden"
+      summary="hidden at least once during the navigation"/>
 </variants>
 
 <variants name="LoadedIdleVisibility">
@@ -62,6 +74,12 @@ chromium-metrics-reviews@google.com.
   <variant name="LoaderStart"/>
   <variant name="NonRedirectedRequestStart"/>
   <variant name="NonRedirectResponseStart"/>
+</variants>
+
+<variants name="NonSRPSuffix">
+  <variant name="" summary="the navigation never targeted non-SRP URL"/>
+  <variant name=".WasNonSRP"
+      summary="the navigation previously targeted non-SRP URL"/>
 </variants>
 
 <variants name="PagePreloadingTriggerType">
@@ -927,37 +945,53 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.Leakage.NavigationStartTo{NavigationMilestone}"
+    name="PageLoad.Clients.GoogleSearch.Leakage.NavigationStartTo{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    The time relative to navigation start that a navigation reaches a specific
-    navigation milestone on a main frame navigation for Google Search page
-    loads. Only recorded for Search navigations that didn't get abandoned at
-    least until the relevant milestone. The metric for all relevent milestones
-    for the navigation is emitted when the navigation finishes committing or it
-    gets abandoned for the first time.
+    The time relative to navigation start that a navigation reaches the the
+    milestone {NavigationMilestone} on a main frame navigation for Google Search
+    page loads, with potentially some suffixes detaling the navigation
+    {BackgroundSuffix}, {HiddenSuffix}, and/or {NonSRPSuffix}. Only recorded for
+    Search navigations that didn't get terminally abandoned at least until the
+    relevant milestone. Note that abandonment from backgrounding or hiding are
+    non-terminal, so milestones after those types of abandonments will still be
+    logged. The metric is emitted when the navigation finishes committing or it
+    gets abandoned (which can happen multiple times during the navigation if
+    non-terminal, so only the milestones that haven't been logged will be
+    logged).
   </summary>
   <token key="NavigationMilestone" variants="NavigationMilestone"/>
+  <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
+  <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.Leakage.{NavigationMilestone}ToAbandon.{NavigationAbandonReason}"
+    name="PageLoad.Clients.GoogleSearch.Leakage.{NavigationMilestone}ToAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    The time relative to the specified navigation milestone that a navigation
-    gets abandoned due to the specified reason, on a main frame navigation for
-    Google Search page loads. Only recorded for Search navigations that gets
-    abandoned for the first time after the relevant milestone, and will only
-    record for the latest milestone (if there are multiple milestones reached
-    before the abandonment). The metric is emitted when the navigation gets
-    abandoned for the first time.
+    The time relative to the milestone {NavigationMilestone} that a navigation
+    gets abandoned due to {NavigationAbandonReason}, on a main frame navigation
+    for Google Search page loads. Abandonment from backgrounding or hiding are
+    non-terminal, while other abandonment for other reasons are terminal. This
+    means this metric might be recorded multiple times if the navigation is only
+    abandoned non-terminally before, but only once for each abandonment reason.
+    Metrics logged after non-terminal abandonment will be marked with the
+    suffixes {BackgroundSuffix} and/or {HiddenSuffix}, and if the navigation
+    involves a non-SRP URL but then redirected to SRP URL, the logged metric
+    will be marked with {NonSRPSuffix}. The milestone recorded will be the
+    latest milestone (if there are multiple milestones reached before the
+    abandonment). The metric is emitted when the navigation gets abandoned.
   </summary>
   <token key="NavigationMilestone" variants="NavigationMilestone"/>
   <token key="NavigationAbandonReason" variants="NavigationAbandonReason"/>
+  <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
+  <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
 </histogram>
 
 <histogram

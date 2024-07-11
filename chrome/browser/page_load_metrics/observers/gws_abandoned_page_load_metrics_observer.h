@@ -24,6 +24,10 @@ extern const char kAbandonReasonHidden[];
 extern const char kAbandonReasonErrorPage[];
 extern const char kAbandonReasonAppBackgrounded[];
 
+extern const char kSuffixWasBackgrounded[];
+extern const char kSuffixWasHidden[];
+extern const char kSuffixWasNonSRP[];
+
 extern const char kHistogramGWSLeakageNavigationStart[];
 extern const char kHistogramGWSLeakageNavigationStartToLoaderStart[];
 extern const char
@@ -97,12 +101,54 @@ class GWSAbandonedPageLoadMetricsObserver
 
  private:
   void LogNavigationMilestoneMetrics();
-  void LogMetricsOnAbandon(std::string abandon_reason,
+  void LogMetricsOnAbandon(const std::string& abandon_reason,
                            base::TimeTicks navigation_abandon_time);
+  void LogPageLoadHistogram(const std::string& name,
+                            base::TimeTicks event_time,
+                            base::TimeTicks relative_start_time);
+  bool WasBackgrounded() const {
+    return !first_backgrounded_timestamp_.is_null();
+  }
+  bool WasHidden() const { return !first_hidden_timestamp_.is_null(); }
 
+  void LogPreviousBackgroundingIfNeeded();
+  void LogPreviousHidingIfNeeded();
+
+  // Set to true if we see the navigation involves non-SRP URL, which will be
+  // specially marked in the logged metrics.
+  bool did_request_non_srp_ = false;
+  // Set to true if we see the navigation involves SRP URL, which means we need
+  // to log metrics for this navigation.
+  bool involved_srp_url_ = false;
+
+  // Timestamp of the first time `FlushMetricsOnAppEnterBackground()` or
+  // `OnHidden()` are called, respectively. This is tracked in case the
+  // abandonments are not logged immediately, e.g. when we're not sure if the
+  // navigation we're tracking will involve SRP (i.e. `involved_srp_url` is
+  // false).
+  base::TimeTicks first_backgrounded_timestamp_;
+  base::TimeTicks first_hidden_timestamp_;
+  // Whether we've previously logged backgrounding/hiding time. This is useful
+  // because we will keep observing when backgrounding/hiding happens, unlike
+  // other abandonment triggers. This ensures we will only log those events
+  // once.
+  bool did_log_backgrounding_ = false;
+  bool did_log_hiding_ = false;
+  // Whether the navigation has been abandoned before.
   bool did_abandon_navigation_ = false;
 
+  // Whether the NavigationStart histogram, which should only be logged once per
+  // navigation, has been logged before.
+  bool did_log_navigation_start_ = false;
+
+  // The most up-to-date NavigationHandleTiming for the navigation we're
+  // tracking, updated from `OnNavigationHandleTimingUpdated()`.
   content::NavigationHandleTiming latest_navigation_handle_timing_;
+  // The `latest_navigation_handle_timing_` value of the last time we called
+  // `LogNavigationMilestoneMetrics()`. This is needed because that function can
+  // be called multiple times, but we only want to log the milestones that we
+  // haven't logged on a previous call before.
+  content::NavigationHandleTiming last_logged_navigation_handle_timing_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_

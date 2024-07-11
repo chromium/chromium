@@ -87,16 +87,61 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
   }
 
   GURL url_srp() {
-    return embedded_test_server()->GetURL(kSRPDomain, kSRPPath);
+    GURL url(embedded_test_server()->GetURL(kSRPDomain, kSRPPath));
+    CHECK(page_load_metrics::IsGoogleSearchResultUrl(url));
+    return url;
   }
   GURL url_srp_redirect() {
-    return embedded_test_server()->GetURL(kSRPDomain, kSRPRedirectPath);
+    GURL url(embedded_test_server()->GetURL(kSRPDomain, kSRPRedirectPath));
+    CHECK(page_load_metrics::IsGoogleSearchResultUrl(url));
+    return url;
   }
   GURL url_non_srp() {
-    return embedded_test_server()->GetURL("a.test", "/title1.html");
+    GURL url(embedded_test_server()->GetURL("a.test", "/title1.html"));
+    CHECK(!page_load_metrics::IsGoogleSearchResultUrl(url));
+    return url;
   }
   GURL url_non_srp_2() {
-    return embedded_test_server()->GetURL("b.test", "/title2.html");
+    GURL url(embedded_test_server()->GetURL("b.test", "/title2.html"));
+    CHECK(!page_load_metrics::IsGoogleSearchResultUrl(url));
+    return url;
+  }
+
+  GURL url_non_srp_redirect_to_srp() {
+    GURL url(embedded_test_server()->GetURL("a.test", "/redirect-to-srp"));
+    CHECK(!page_load_metrics::IsGoogleSearchResultUrl(url));
+    return url;
+  }
+
+  GURL url_srp_redirect_to_non_srp() {
+    GURL url(embedded_test_server()->GetURL(kSRPDomain, "/webhp?q="));
+    CHECK(page_load_metrics::IsGoogleSearchResultUrl(url));
+    return url;
+  }
+
+  GURL GetTargetURLForMilestone(NavigationMilestone milestone) {
+    if (milestone == NavigationMilestone::FIRST_REDIRECT_RESPONSE) {
+      return url_srp_redirect();
+    }
+    return url_srp();
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> NonSRPToSRPRedirectHandler(
+      const net::test_server::HttpRequest& request) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HttpStatusCode::HTTP_MOVED_PERMANENTLY);
+    http_response->AddCustomHeader("Location", url_srp().spec());
+    return http_response;
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> SRPToNonSRPRedirectHandler(
+      const net::test_server::HttpRequest& request) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HttpStatusCode::HTTP_MOVED_PERMANENTLY);
+    http_response->AddCustomHeader("Location", url_non_srp().spec());
+    return http_response;
   }
 
   void SetUpOnMainThread() override {
@@ -107,35 +152,59 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     embedded_test_server()->RegisterDefaultHandler(
         base::BindRepeating(&net::test_server::HandlePrefixedRequest, "/custom",
                             base::BindRepeating(SRPRedirectHandler)));
+    embedded_test_server()->RegisterDefaultHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/redirect-to-srp",
+        base::BindRepeating(&GWSAbandonedPageLoadMetricsObserverBrowserTest::
+                                NonSRPToSRPRedirectHandler,
+                            base::Unretained(this))));
+    embedded_test_server()->RegisterDefaultHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/webhp",
+        base::BindRepeating(&GWSAbandonedPageLoadMetricsObserverBrowserTest::
+                                SRPToNonSRPRedirectHandler,
+                            base::Unretained(this))));
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     Start();
   }
 
-  void ExpectTotalCountForAllNavigationMilestones(bool include_redirect,
-                                                  int count) {
+  void ExpectTotalCountForAllNavigationMilestones(
+      bool include_redirect,
+      int count,
+      std::string histogram_suffix = "") {
     histogram_tester().ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStart, count);
+        internal::kHistogramGWSLeakageNavigationStart + histogram_suffix,
+        count);
     histogram_tester().ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToLoaderStart, count);
+        internal::kHistogramGWSLeakageNavigationStartToLoaderStart +
+            histogram_suffix,
+        count);
     histogram_tester().ExpectTotalCount(
         internal::
-            kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart,
+                kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart +
+            histogram_suffix,
         include_redirect ? count : 0);
     histogram_tester().ExpectTotalCount(
         internal::
-            kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart,
+                kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart +
+            histogram_suffix,
         include_redirect ? count : 0);
     histogram_tester().ExpectTotalCount(
         internal::
-            kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart,
+                kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart +
+            histogram_suffix,
         count);
     histogram_tester().ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart,
+        internal::
+                kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart +
+            histogram_suffix,
         count);
     histogram_tester().ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToCommitSent, count);
+        internal::kHistogramGWSLeakageNavigationStartToCommitSent +
+            histogram_suffix,
+        count);
     histogram_tester().ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToDidCommit, count);
+        internal::kHistogramGWSLeakageNavigationStartToDidCommit +
+            histogram_suffix,
+        count);
   }
 
   void ExpectEmptyNavigationAbandonment() {
@@ -167,11 +236,15 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
   void TestNavigationAbandonment(
       std::string abandon_reason,
       NavigationMilestone abandon_milestone,
+      GURL target_url,
       bool expect_milestone_successful,
       bool expect_committed,
       content::WebContents* web_contents,
       base::OnceCallback<void(content::NavigationHandle*)>
-          after_nav_start_callback) {
+          after_nav_start_callback,
+      std::string abandon_after_hiding_reason = std::string(),
+      base::OnceCallback<void()> abandon_after_hiding_callback =
+          base::OnceCallback<void()>()) {
     SCOPED_TRACE(testing::Message()
                  << " Testing abandonment with reason " << abandon_reason
                  << " on milestone " << ((int)abandon_milestone));
@@ -184,10 +257,6 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     EXPECT_TRUE(content::NavigateToURL(web_contents, url_non_srp()));
 
     // Navigate to SRP, but pause it just after we reach the desired milestone.
-    GURL target_url =
-        (abandon_milestone == NavigationMilestone::FIRST_REDIRECT_RESPONSE)
-            ? url_srp_redirect()
-            : url_srp();
     content::TestNavigationManager navigation(web_contents, target_url);
     web_contents->GetController().LoadURL(target_url, content::Referrer(),
                                           ui::PAGE_TRANSITION_LINK,
@@ -207,6 +276,12 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
 
     std::move(after_nav_start_callback).Run(navigation.GetNavigationHandle());
 
+    if (!abandon_after_hiding_reason.empty()) {
+      EXPECT_EQ(abandon_reason, internal::kAbandonReasonHidden);
+      EXPECT_TRUE(navigation.WaitForResponse());
+      std::move(abandon_after_hiding_callback).Run();
+    }
+
     // Wait until the SRP navigation finishes.
     EXPECT_TRUE(navigation.WaitForNavigationFinished());
     EXPECT_EQ(expect_committed, navigation.was_committed());
@@ -218,35 +293,60 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     EXPECT_TRUE(content::NavigateToURL(
         browser()->tab_strip_model()->GetActiveWebContents(), url_non_srp_2()));
 
+    bool redirected_from_non_srp =
+        (target_url == url_non_srp_redirect_to_srp());
+    bool has_redirect =
+        (target_url == url_srp_redirect() || redirected_from_non_srp);
+    // Navigations that involve redirects from non-SRP URLs will have all the
+    // milestones and abandonment logged with the "WasNonSRP" suffix, indicating
+    // that a non-SRP redirect was involved.
+    std::string histogram_suffix =
+        redirected_from_non_srp ? std::string(internal::kSuffixWasNonSRP) : "";
+
     // There should be new entries for the navigation milestone metrics up until
-    // the response, but no entries for milestones after that.
+    // the abandonment, but no entries for milestones after that.
     histogram_tester.ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToLoaderStart,
+        internal::kHistogramGWSLeakageNavigationStart + histogram_suffix, 1);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramGWSLeakageNavigationStartToLoaderStart +
+            histogram_suffix,
         abandon_milestone == NavigationMilestone::NAVIGATION_START ? 0 : 1);
     histogram_tester.ExpectTotalCount(
         internal::
-            kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart,
-        abandon_milestone == NavigationMilestone::FIRST_REDIRECT_RESPONSE ? 1
-                                                                          : 0);
+                kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart +
+            histogram_suffix,
+        (has_redirect &&
+         abandon_milestone >= NavigationMilestone::FIRST_REDIRECT_RESPONSE)
+            ? 1
+            : 0);
     histogram_tester.ExpectTotalCount(
         internal::
-            kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart,
-        abandon_milestone == NavigationMilestone::FIRST_REDIRECT_RESPONSE ? 1
-                                                                          : 0);
+                kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart +
+            histogram_suffix,
+        (has_redirect &&
+         abandon_milestone >= NavigationMilestone::FIRST_REDIRECT_RESPONSE)
+            ? 1
+            : 0);
     histogram_tester.ExpectTotalCount(
         internal::
-            kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart,
+                kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart +
+            histogram_suffix,
         abandon_milestone >= NavigationMilestone::NON_REDIRECT_RESPONSE ? 1
                                                                         : 0);
     histogram_tester.ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart,
+        internal::
+                kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart +
+            histogram_suffix,
         abandon_milestone >= NavigationMilestone::NON_REDIRECT_RESPONSE ? 1
                                                                         : 0);
     histogram_tester.ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToCommitSent,
+        internal::kHistogramGWSLeakageNavigationStartToCommitSent +
+            histogram_suffix,
         abandon_milestone >= NavigationMilestone::COMMIT_SENT ? 1 : 0);
     histogram_tester.ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToDidCommit, 0);
+        internal::kHistogramGWSLeakageNavigationStartToDidCommit +
+            histogram_suffix,
+        0);
 
     // There should be a new entry for exactly one of the abandonment metric,
     // indicating that the SRP navigation is abandoned just after
@@ -259,7 +359,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
           testing::ElementsAre(testing::Pair(
               std::string(
                   internal::kHistogramGWSLeakageNavigationStartToAbandon) +
-                  abandon_reason,
+                  abandon_reason + histogram_suffix,
               1)));
     } else {
       EXPECT_TRUE(
@@ -275,7 +375,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
               internal::kHistogramGWSLeakageLoaderStartToAbandon),
           testing::ElementsAre(testing::Pair(
               std::string(internal::kHistogramGWSLeakageLoaderStartToAbandon) +
-                  abandon_reason,
+                  abandon_reason + histogram_suffix,
               1)));
     } else {
       EXPECT_TRUE(histogram_tester
@@ -293,7 +393,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
               std::string(
                   internal::
                       kHistogramGWSLeakageFirstRedirectResponseStartToAbandon) +
-                  abandon_reason,
+                  abandon_reason + histogram_suffix,
               1)));
     } else {
       EXPECT_TRUE(
@@ -312,7 +412,22 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
               std::string(
                   internal::
                       kHistogramGWSLeakageNonRedirectResponseStartToAbandon) +
-                  abandon_reason,
+                  abandon_reason + histogram_suffix,
+              1)));
+    } else if (!abandon_after_hiding_reason.empty() &&
+               abandon_after_hiding_reason != internal::kAbandonReasonHidden) {
+      // If a navigation was initially abandoned by hiding, but then got
+      // abandoned again, it will also log the second abandonment, but with
+      // a suffix indicating that it was previously hidden.
+      EXPECT_THAT(
+          histogram_tester.GetTotalCountsForPrefix(
+              internal::kHistogramGWSLeakageNonRedirectResponseStartToAbandon),
+          testing::ElementsAre(testing::Pair(
+              std::string(
+                  internal::
+                      kHistogramGWSLeakageNonRedirectResponseStartToAbandon) +
+                  abandon_after_hiding_reason + internal::kSuffixWasHidden +
+                  histogram_suffix,
               1)));
     } else {
       EXPECT_TRUE(
@@ -329,6 +444,58 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                     .GetTotalCountsForPrefix(
                         internal::kHistogramGWSLeakageCommitSentToAbandon)
                     .empty());
+
+    // For navigations that are abandoned due to hiding, we will continue
+    // recording the milestones after the hiding abandonment, but will add
+    // the "WasHidden" suffix.
+    if (abandon_reason == internal::kAbandonReasonHidden) {
+      histogram_suffix = internal::kSuffixWasHidden + histogram_suffix;
+      // Only expect entries for milestones after the hiding takes place.
+      bool already_hidden =
+          (abandon_milestone == NavigationMilestone::NAVIGATION_START);
+      histogram_tester.ExpectTotalCount(
+          internal::kHistogramGWSLeakageNavigationStart + histogram_suffix, 0);
+      histogram_tester.ExpectTotalCount(
+          internal::kHistogramGWSLeakageNavigationStartToLoaderStart +
+              histogram_suffix,
+          already_hidden ? 1 : 0);
+
+      already_hidden |=
+          (abandon_milestone < NavigationMilestone::FIRST_REDIRECT_RESPONSE);
+      histogram_tester.ExpectTotalCount(
+          internal::
+                  kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart +
+              histogram_suffix,
+          (has_redirect && already_hidden) ? 1 : 0);
+      histogram_tester.ExpectTotalCount(
+          internal::
+                  kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart +
+              histogram_suffix,
+          (has_redirect && already_hidden) ? 1 : 0);
+
+      already_hidden |=
+          (abandon_milestone <= NavigationMilestone::FIRST_REDIRECT_RESPONSE);
+      histogram_tester.ExpectTotalCount(
+          internal::
+                  kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart +
+              histogram_suffix,
+          already_hidden ? 1 : 0);
+      histogram_tester.ExpectTotalCount(
+          internal::
+                  kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart +
+              histogram_suffix,
+          already_hidden ? 1 : 0);
+      // The navigation might be abandoned for a second time after hiding. In
+      // that case, the milestones after the second abandonment won't be logged,
+      // except if it was another hiding.
+      histogram_tester.ExpectTotalCount(
+          internal::kHistogramGWSLeakageNavigationStartToCommitSent +
+              histogram_suffix,
+          (abandon_after_hiding_reason.empty() ||
+           abandon_after_hiding_reason == internal::kAbandonReasonHidden)
+              ? 1
+              : 0);
+    }
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {
@@ -370,6 +537,41 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
   // There should be no entry for the navigation milestones metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 0);
+
+  // There should be no entry for the navigation abandonment metrics.
+  ExpectEmptyNavigationAbandonment();
+}
+
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       NonSRPRedirectToSRP) {
+  // Navigate to a non-SRP page that redirects to SRP.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(),
+                                     url_non_srp_redirect_to_srp(), url_srp()));
+
+  // Navigate to a non-SRP page.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/true, /*count=*/1,
+      std::string(internal::kSuffixWasNonSRP));
+
+  // There should be no entry for the navigation abandonment metrics.
+  ExpectEmptyNavigationAbandonment();
+}
+
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       SRPRedirectToNonSRP) {
+  // Navigate to a non-SRP page that redirects to SRP.
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), url_srp_redirect_to_non_srp(), url_non_srp()));
+
+  // Navigate to a non-SRP page.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/true, 0);
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/true, /*count=*/0,
+      std::string(internal::kSuffixWasNonSRP));
 
   // There should be no entry for the navigation abandonment metrics.
   ExpectEmptyNavigationAbandonment();
@@ -479,6 +681,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   for (NavigationMilestone milestone : all_testable_milestones()) {
     TestNavigationAbandonment(
         internal::kAbandonReasonNewNavigation, milestone,
+        GetTargetURLForMilestone(milestone),
         /*expect_milestone_successful=*/true,
         /*expect_committed=*/false, web_contents(),
         base::BindOnce(
@@ -499,10 +702,11 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 // (which can be triggered by e.g. the stop button), at various points during
 // the navigation.
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
-                       SearchCancelledByWebContentsStopn) {
+                       SearchCancelledByWebContentsStop) {
   for (NavigationMilestone milestone : all_testable_milestones()) {
     TestNavigationAbandonment(
         internal::kAbandonReasonExplicitCancellation, milestone,
+        GetTargetURLForMilestone(milestone),
         /*expect_milestone_successful=*/true,
         /*expect_committed=*/false, web_contents(),
         base::BindOnce(
@@ -527,6 +731,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
     TestNavigationAbandonment(
         internal::kAbandonReasonHidden, milestone,
+        GetTargetURLForMilestone(milestone),
         /*expect_milestone_successful=*/true,
         /*expect_committed=*/true, web_contents(),
         base::BindOnce(
@@ -537,6 +742,125 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
             },
             web_contents()));
   }
+}
+
+// Similar to SearchTabHidden, but the navigation starts out with a non-SRP
+// URL, that later redirects to SRP.
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       NonSRPRedirectToSRP_Hidden) {
+  for (NavigationMilestone milestone : all_throttleable_milestones()) {
+    // Make sure the WebContents is currently shown, before hiding it later.
+    web_contents()->WasShown();
+
+    TestNavigationAbandonment(
+        internal::kAbandonReasonHidden, milestone,
+        url_non_srp_redirect_to_srp(),
+        /*expect_milestone_successful=*/true,
+        /*expect_committed=*/true, web_contents(),
+        base::BindOnce(
+            [](content::WebContents* web_contents,
+               content::NavigationHandle* navigation_handle) {
+              // Hide the tab during navigation to SRP.
+              web_contents->WasHidden();
+            },
+            web_contents()));
+  }
+}
+
+// Similar to SearchTabHidden, but after the navigation is abandoned for the
+// first time due to hiding, it gets abandoned again for the second time by
+// explicit cancellation.
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       SearchTabHiddenThenStopped) {
+  // Make sure the WebContents is currently shown, before hiding it later.
+  web_contents()->WasShown();
+
+  TestNavigationAbandonment(
+      internal::kAbandonReasonHidden,
+      // Test hiding at NAVIGATION_START, then stop the navigation on
+      // NON_REDIRECT_RESPONSE.
+      NavigationMilestone::NAVIGATION_START, url_srp(),
+      /*expect_milestone_successful=*/true,
+      /*expect_committed=*/false, web_contents(),
+      base::BindOnce(
+          [](content::WebContents* web_contents,
+             content::NavigationHandle* navigation_handle) {
+            // Hide the tab during navigation to SRP.
+            web_contents->WasHidden();
+          },
+          web_contents()),
+      internal::kAbandonReasonExplicitCancellation,
+      base::BindOnce(
+          [](content::WebContents* web_contents) {
+            // Stop the navigation to SRP.
+            web_contents->Stop();
+          },
+          web_contents()));
+}
+
+// Similar to above, but the navigation starts out with a non-SRP URL, that
+// later redirects to SRP.
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       SearchTabHiddenThenStopped_NonSRPRedirectToSRP) {
+  for (NavigationMilestone milestone :
+       {NavigationMilestone::NAVIGATION_START,
+        NavigationMilestone::FIRST_REDIRECT_RESPONSE}) {
+    // Make sure the WebContents is currently shown, before hiding it later.
+    web_contents()->WasShown();
+
+    TestNavigationAbandonment(
+        // Test hiding at `milestone`, then stop the navigation on
+        // NON_REDIRECT_RESPONSE.
+        internal::kAbandonReasonHidden, milestone,
+        url_non_srp_redirect_to_srp(),
+        /*expect_milestone_successful=*/true,
+        /*expect_committed=*/false, web_contents(),
+        base::BindOnce(
+            [](content::WebContents* web_contents,
+               content::NavigationHandle* navigation_handle) {
+              // Hide the tab during navigation to SRP.
+              web_contents->WasHidden();
+            },
+            web_contents()),
+        internal::kAbandonReasonExplicitCancellation,
+        base::BindOnce(
+            [](content::WebContents* web_contents) {
+              // Stop the navigation to SRP.
+              web_contents->Stop();
+            },
+            web_contents()));
+  }
+}
+
+// Test that if a navigation was abandoned by hiding multiple times, only the
+// first hiding will be logged.
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       SearchTabHiddenMultipleTimes) {
+  // Make sure the WebContents is currently shown, before hiding it later.
+  web_contents()->WasShown();
+
+  TestNavigationAbandonment(
+      internal::kAbandonReasonHidden,
+      // Test hiding at NAVIGATION_START, then stop the navigation on
+      // NON_REDIRECT_RESPONSE.
+      NavigationMilestone::NAVIGATION_START, url_srp(),
+      /*expect_milestone_successful=*/true,
+      /*expect_committed=*/true, web_contents(),
+      base::BindOnce(
+          [](content::WebContents* web_contents,
+             content::NavigationHandle* navigation_handle) {
+            // Hide the tab during navigation to SRP.
+            web_contents->WasHidden();
+          },
+          web_contents()),
+      internal::kAbandonReasonHidden,
+      base::BindOnce(
+          [](content::WebContents* web_contents) {
+            // Stop the navigation to SRP.
+            web_contents->WasShown();
+            web_contents->WasHidden();
+          },
+          web_contents()));
 }
 
 // Test SRP navigations that are cancelled by closing the WebContents at various
@@ -559,6 +883,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
     TestNavigationAbandonment(
         internal::kAbandonReasonFrameRemoved, milestone,
+        GetTargetURLForMilestone(milestone),
         /*expect_milestone_successful=*/true,
         /*expect_committed=*/false, popup_contents,
         base::BindOnce(
@@ -611,6 +936,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                 }));
         TestNavigationAbandonment(
             internal::kAbandonReasonInternalCancellation, milestone,
+            GetTargetURLForMilestone(milestone),
             /*expect_milestone_successful=*/false,
             /*expect_committed=*/false, web_contents(),
             base::BindOnce(base::BindOnce(
@@ -658,6 +984,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
             }));
     TestNavigationAbandonment(
         internal::kAbandonReasonErrorPage, milestone,
+        GetTargetURLForMilestone(milestone),
         /*expect_milestone_successful=*/false,
         /*expect_committed=*/true, web_contents(),
         base::BindOnce(
@@ -675,7 +1002,8 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        SearchCancelledByRenderProcessGone) {
   TestNavigationAbandonment(
       internal::kAbandonReasonRenderProcessGone,
-      NavigationMilestone::NON_REDIRECT_RESPONSE,
+      NavigationMilestone::NON_REDIRECT_RESPONSE, url_srp(),
+
       /*expect_milestone_successful=*/true,
       /*expect_committed=*/false, web_contents(),
       base::BindOnce(
