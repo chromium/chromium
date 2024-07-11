@@ -235,18 +235,6 @@ class BookmarkModel : public BookmarkUndoProvider,
   [[nodiscard]] std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
   GetNodesByURL(const GURL& url) const;
 
-  // Same as above but it only returns the count.
-  // TODO(crbug.com/346918509): Remove this function once the migration of iOS
-  // to a single BookmarkModel instance is complete, as callers can invoke
-  // `GetNodesByURL()` instead.
-  size_t GetNodeCountByURL(const GURL& url) const;
-
-  // Same as `GetNodesByURL()` but it only returns the titles.
-  // TODO(crbug.com/346918509): Remove this function once the migration of iOS
-  // to a single BookmarkModel instance is complete, as callers can invoke
-  // `GetNodesByURL()` instead.
-  std::vector<std::u16string_view> GetNodeTitlesByURL(const GURL& url) const;
-
   // Enum determining a subset of bookmark nodes within a BookmarkModel for the
   // purpose of issuing UUID-based lookups. It is needed because, in some
   // advanced scenarios, the same UUID may be used by two BookmarkNode-s, in

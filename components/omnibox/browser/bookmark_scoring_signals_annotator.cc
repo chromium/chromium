@@ -12,6 +12,7 @@
 #include "base/i18n/unicodestring.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/titled_url_index.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -63,15 +64,12 @@ void BookmarkScoringSignalsAnnotator::AnnotateResult(
       continue;
     }
 
-    std::vector<std::u16string_view> node_titles =
-        bookmark_model_->GetNodeTitlesByURL(match.destination_url);
-    if (node_titles.empty()) {
-      return;
-    }
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+        nodes = bookmark_model_->GetNodesByURL(match.destination_url);
 
-    for (std::u16string_view node_title : node_titles) {
-      const std::u16string lower_title =
-          base::i18n::ToLower(TitledUrlIndex::Normalize(node_title));
+    for (const bookmarks::BookmarkNode* node : nodes) {
+      const std::u16string lower_title = base::i18n::ToLower(
+          TitledUrlIndex::Normalize(node->GetTitledUrlNodeTitle()));
       query_parser::QueryWordVector title_words;
       query_parser::QueryParser::ExtractQueryWords(lower_title, &title_words);
 
@@ -106,6 +104,6 @@ void BookmarkScoringSignalsAnnotator::AnnotateResult(
                    bookmarks::GetTotalTitleMatchLength(title_matches));
       match.scoring_signals->set_total_bookmark_title_match_length(max_len);
     }
-    match.scoring_signals->set_num_bookmarks_of_url(node_titles.size());
+    match.scoring_signals->set_num_bookmarks_of_url(nodes.size());
   }
 }

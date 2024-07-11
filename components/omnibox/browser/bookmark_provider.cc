@@ -240,7 +240,7 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
   // Boost the score if the bookmark's URL is referenced by other bookmarks.
   const int kURLCountBoost[4] = {0, 75, 125, 150};
 
-  const size_t url_node_count = bookmark_model_->GetNodeCountByURL(url);
+  const size_t url_node_count = bookmark_model_->GetNodesByURL(url).size();
   DCHECK_GE(std::min(std::size(kURLCountBoost), url_node_count), 1U);
   relevance +=
       kURLCountBoost[std::min(std::size(kURLCountBoost), url_node_count) - 1];
