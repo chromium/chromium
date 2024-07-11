@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -81,6 +82,13 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         // TODO(treib): Should we call recordOpenedMostVisitedItem here?
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
             recordOpenedTile(item);
+        }
+
+        if (ChromeFeatureList.sMostVisitedTilesSelectExistingTab.isEnabled()) {
+            if (mNavigationDelegate.maybeSelectTabWithUrl(url)) {
+                return;
+            }
+            // Failed to select existing tab with the same URL, so just navigate.
         }
 
         mNavigationDelegate.navigateToSuggestionUrl(windowDisposition, url, false);

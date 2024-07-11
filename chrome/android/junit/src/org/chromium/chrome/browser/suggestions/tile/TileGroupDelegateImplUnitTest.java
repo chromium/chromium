@@ -1,0 +1,139 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.suggestions.tile;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.filters.SmallTest;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
+import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
+import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+
+/** Unit tests for {@link TileGroupDelegateImpl}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class TileGroupDelegateImplUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private SuggestionsDependencyFactory mSuggestionsDependencyFactory;
+    @Mock private Profile mProfile;
+    @Mock private MostVisitedSites mMostVisitedSites;
+    @Mock private SuggestionsNavigationDelegate mNavigationDelegate;
+    @Mock private SnackbarManager mSnackbarManager;
+
+    private Context mContext;
+    private TileGroupDelegateImpl mTileGroupDelegateImpl;
+
+    @Before
+    public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        when(mSuggestionsDependencyFactory.createMostVisitedSites(any(Profile.class)))
+                .thenReturn(mMostVisitedSites);
+        SuggestionsDependencyFactory.setInstanceForTesting(mSuggestionsDependencyFactory);
+
+        mTileGroupDelegateImpl =
+                new TileGroupDelegateImpl(
+                        mContext,
+                        mProfile,
+                        mNavigationDelegate,
+                        mSnackbarManager,
+                        BrowserUiUtils.HostSurface.NEW_TAB_PAGE);
+    }
+
+    @After
+    public void tearDown() {
+        mTileGroupDelegateImpl.destroy();
+        SuggestionsDependencyFactory.setInstanceForTesting(null);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
+    public void testOpenMostVisitedItem_DisableSelectExisting() {
+        GURL url = JUnitTestGURLs.URL_1;
+        mTileGroupDelegateImpl.openMostVisitedItem(
+                WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
+        verify(mNavigationDelegate, never()).maybeSelectTabWithUrl(anyString());
+        verify(mNavigationDelegate)
+                .navigateToSuggestionUrl(
+                        eq(WindowOpenDisposition.CURRENT_TAB), eq(url.getSpec()), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
+    public void testOpenMostVisitedItem_EnableSelectExistingTriggered() {
+        GURL url = JUnitTestGURLs.URL_1;
+        // Attempt to select tab with `url` but fail.
+        doReturn(false).when(mNavigationDelegate).maybeSelectTabWithUrl(anyString());
+        mTileGroupDelegateImpl.openMostVisitedItem(
+                WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
+        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url.getSpec()));
+        verify(mNavigationDelegate)
+                .navigateToSuggestionUrl(
+                        eq(WindowOpenDisposition.CURRENT_TAB), eq(url.getSpec()), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
+    public void testOpenMostVisitedItem_EnableSelectExistingFallback() {
+        GURL url = JUnitTestGURLs.URL_1;
+        // Attempt to select tab with `url` and succeed.
+        doReturn(true).when(mNavigationDelegate).maybeSelectTabWithUrl(anyString());
+        mTileGroupDelegateImpl.openMostVisitedItem(
+                WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
+        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url.getSpec()));
+        verify(mNavigationDelegate, never())
+                .navigateToSuggestionUrl(anyInt(), anyString(), anyBoolean());
+    }
+
+    private Tile makeTile(String title, GURL url, int index) {
+        SiteSuggestion siteSuggestion =
+                new SiteSuggestion(
+                        title,
+                        url,
+                        TileTitleSource.TITLE_TAG,
+                        TileSource.TOP_SITES,
+                        TileSectionType.UNKNOWN);
+        return new Tile(siteSuggestion, index);
+    }
+}

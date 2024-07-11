@@ -9,7 +9,10 @@ import android.app.Activity;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -41,5 +44,22 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
         } else {
             openUrl(windowOpenDisposition, loadUrlParams);
         }
+    }
+
+    /**
+     * Searches for a tab whose URL matches the specified URL. If found, selects the first (by
+     * tabId) matching tab, closes `mTab` (assumed to be the NTP), and returns true. Otherwise does
+     * nothing and returns false.
+     *
+     * @param url The URL to search for.
+     */
+    public boolean maybeSelectTabWithUrl(String url) {
+        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
+        int index = TabModelUtils.getTabIndexByUrl(tabModel, url);
+        if (index == TabModel.INVALID_TAB_INDEX) return false;
+
+        tabModel.setIndex(index, TabSelectionType.FROM_USER);
+        tabModel.closeTab(mTab);
+        return true;
     }
 }

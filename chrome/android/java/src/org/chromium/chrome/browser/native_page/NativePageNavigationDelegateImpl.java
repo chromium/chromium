@@ -31,10 +31,10 @@ import java.util.List;
 /** {@link NativePageNavigationDelegate} implementation. */
 public class NativePageNavigationDelegateImpl implements NativePageNavigationDelegate {
     private final Profile mProfile;
-    private final TabModelSelector mTabModelSelector;
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
-    private final Tab mTab;
 
+    protected final TabModelSelector mTabModelSelector;
+    protected final Tab mTab;
     protected final Activity mActivity;
     protected final NativePageHost mHost;
 
