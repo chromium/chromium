@@ -2464,13 +2464,9 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
   DCHECK(!last_frame_time.is_null());
   CHECK(LocalRootImpl());
 
-  // The last_frame_time is created in the compositor thread, it's the time when
-  // the compositor is ready for a new frame and starts preparing it. For the
-  // purpose of animation frame timing, this is the desired time to start
-  // rendering, equivalent to the time when a work task is posted.
   if (animation_frame_timing_monitor_) {
     animation_frame_timing_monitor_->BeginMainFrame(
-        last_frame_time, *LocalRootImpl()->GetFrame()->DomWindow());
+        *LocalRootImpl()->GetFrame()->DomWindow());
   }
 
   // Dirty bit on MouseEventManager is not cleared in OOPIFs after scroll

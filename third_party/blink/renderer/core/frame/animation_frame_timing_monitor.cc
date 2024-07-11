@@ -66,7 +66,6 @@ void AnimationFrameTimingMonitor::WillHandleInput(LocalFrame* frame) {
 }
 
 void AnimationFrameTimingMonitor::BeginMainFrame(
-    base::TimeTicks frame_time,
     LocalDOMWindow& local_root_window) {
   base::TimeTicks now = base::TimeTicks::Now();
   if (!current_frame_timing_info_) {
