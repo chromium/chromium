@@ -49,10 +49,6 @@ void BrowsingTopicsDocumentHost::CreateMojoService(
     return;
   }
 
-  // We do not check for portals here and we check at the API entry points
-  // because whether or not a frame is in a portal is dynamic state that could
-  // change.
-
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
   new BrowsingTopicsDocumentHost(*render_frame_host, std::move(receiver));

@@ -4532,8 +4532,6 @@ void RenderFrameImpl::WillSendRequestInternal(
   auto* url_request_extra_data = static_cast<blink::WebURLRequestExtraData*>(
       request.GetURLRequestExtraData().get());
   url_request_extra_data->set_custom_user_agent(custom_user_agent);
-  // TODO(bokan): This will need to be reevaluated for portals.
-  // https://crbug.com/1254770.
   url_request_extra_data->set_is_outermost_main_frame(IsMainFrame() &&
                                                       !IsInFencedFrameTree());
   url_request_extra_data->set_transition_type(transition_type);

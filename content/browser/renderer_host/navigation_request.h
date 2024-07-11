@@ -2295,7 +2295,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Set to false if we want to update the session history but not update the
   // browser history. E.g., on unreachable urls or navigations in non-primary
-  // frame trees or portals.
+  // frame trees.
   bool should_update_history_ = false;
 
   // The previous main frame URL that the user was on. This may be empty if

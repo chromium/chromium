@@ -560,8 +560,7 @@ struct ClientHintsExtendedData {
       main_frame_origin = resource_origin;
     } else if (frame_tree_node->IsInFencedFrameTree()) {
       // TODO(crbug.com/40263100) Add WPT tests and specify the behavior
-      // of client hints delegation for subframes inside
-      // FencedFrames/Portals/etc...
+      // of client hints delegation for subframes inside FencedFrames.
       // Test cases should cover this 3 layers nested frames case, from top to
       // bottom:
       // 1. Fenced frame.

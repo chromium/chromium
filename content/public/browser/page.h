@@ -80,9 +80,8 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
 
   // Returns true iff this Page is primary for the associated `WebContents`
   // (i.e. web_contents->GetPrimaryPage() == this_page). Non-primary pages
-  // include pages in bfcache, portal, prerendering, fenced frames, pending
-  // commit and pending deletion pages. See WebContents::GetPrimaryPage for more
-  // details.
+  // include pages in bfcache, prerendering, fenced frames, pending commit and
+  // pending deletion pages. See WebContents::GetPrimaryPage for more details.
   virtual bool IsPrimary() const = 0;
 
   // Returns the main RenderFrameHost associated with this Page.

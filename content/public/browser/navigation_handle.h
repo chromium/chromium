@@ -208,7 +208,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Returns the document owning the frame this NavigationHandle is located
   // in, which will either be a parent (for <iframe>s) or outer document (for
-  // <fencedframe> and <portal>). See documentation for
+  // <fencedframe>). See documentation for
   // `RenderFrameHost::GetParentOrOuterDocument()` for more details.
   virtual RenderFrameHost* GetParentFrameOrOuterDocument() = 0;
 
@@ -381,7 +381,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // the session history will be updated. E.g., on unreachable urls or other
   // navigations that the users may not think of as navigations (such as
   // happens with 'history.replaceState()'), or navigations in non-primary frame
-  // trees or portals that should not appear in history.
+  // trees that should not appear in history.
   virtual bool ShouldUpdateHistory() = 0;
 
   // The previous main frame URL that the user was on. This may be empty if

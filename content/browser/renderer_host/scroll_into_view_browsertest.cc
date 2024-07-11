@@ -441,7 +441,7 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
 
   // Calls `func` with each FrameTreeNode in the page, starting from the root
   // and descending into the inner most frame, traversing frame tree boundaries
-  // such as fenced frames/portals.
+  // such as fenced frames.
   template <typename Function>
   void ForEachFrameFromRootToInnerMost(const Function& func) {
     FrameTreeNode* node = web_contents()->GetPrimaryFrameTree().root();

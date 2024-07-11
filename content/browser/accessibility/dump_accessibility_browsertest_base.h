@@ -242,7 +242,7 @@ class DumpAccessibilityTestBase
       const std::vector<std::string>& skip_urls);
 
   // Wait until all initial content is completely loaded, included within
-  // subframes, objects and portals with given AXMode.
+  // subframes and objects with given AXMode.
   void WaitForAllFramesLoaded(ui::AXMode mode);
 
   void OnEventRecorded(const std::string& event) const {

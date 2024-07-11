@@ -268,8 +268,8 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   // COOP only applies to top level browsing contexts. Embedded content
   // considered "top-level", that cannot always provide a separate process
-  // (Fenced frames, portals, etc.) should not be able to specify their own COOP
-  // header value. Therefore we use IsOutermostMainFrame.
+  // (Fenced frames) should not be able to specify their own COOP header value.
+  // Therefore we use IsOutermostMainFrame.
   if (!frame_tree_node_->IsOutermostMainFrame()) {
     return;
   }

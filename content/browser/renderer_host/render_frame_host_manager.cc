@@ -324,12 +324,7 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
     RenderFrameHostImpl* rfh) {
   DCHECK(!new_instance->RequiresDedicatedProcess());
   DCHECK(!new_instance->HasProcess());
-  RenderFrameHostImpl* root = rfh->GetMainFrame();
-  // Note: We explicitly don't use |RenderFrameHost::GetOutermostMainFrame()|
-  // here so as to not escape the portal boundary.
-  while (root->IsFencedFrameRoot()) {
-    root = root->GetParentOrOuterDocument()->GetMainFrame();
-  }
+  RenderFrameHostImpl* root = rfh->GetOutermostMainFrame();
   root->ForEachRenderFrameHostWithAction(
       [site_instance = std::move(new_instance),
        root](RenderFrameHostImpl* rfhi) {

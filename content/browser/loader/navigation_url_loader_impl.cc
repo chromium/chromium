@@ -942,8 +942,8 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
 
   // Allow Early Hints preload only for outermost main frames. Calculating
-  // appropriate parameters to create URLLoaderFactory for subframes, fenced
-  // frames or portal are complicated and not supported yet.
+  // appropriate parameters to create URLLoaderFactory for subframes and fenced
+  // frames are complicated and not supported yet.
   if (frame_tree_node->GetParentOrOuterDocument())
     return;
 

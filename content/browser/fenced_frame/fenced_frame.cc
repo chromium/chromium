@@ -240,8 +240,8 @@ FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
   // already created the main frame for the window, but wants the browser to
   // refrain from showing the main frame until the renderer signals the browser
   // via the mojom.LocalMainFrameHost.ShowCreatedWindow(). This flow does not
-  // apply for fenced frames, portals, and prerendered nested FrameTrees, hence
-  // the decision to mark it as false.
+  // apply for fenced frames and prerendered nested FrameTrees, hence the
+  // decision to mark it as false.
   frame_tree_->Init(site_instance.get(),
                     /*renderer_initiated_creation=*/false,
                     /*main_frame_name=*/"",

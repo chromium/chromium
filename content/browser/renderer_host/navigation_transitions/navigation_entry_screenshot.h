@@ -38,8 +38,8 @@ class NavigationEntryScreenshotCache;
 //
 // If the user clears the navigation history, the screenshot is deleted when
 // its owning `NavigationEntry` is destroyed. The screenshot is never recreated
-// or cloned even when its `NavigationEntry` is cloned (tab clone / Portals) or
-// restored (i.e., by restoring the last closed tab), because
+// or cloned even when its `NavigationEntry` is cloned (tab clone) or restored
+// (i.e., by restoring the last closed tab), because
 // `base::SupportsUserData::Data::Clone()` is not implemented by
 // `NavigationEntryScreenshot`.
 class CONTENT_EXPORT NavigationEntryScreenshot

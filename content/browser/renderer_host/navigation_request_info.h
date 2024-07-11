@@ -97,10 +97,10 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   const bool is_outermost_main_frame;
 
   // Whether this navigation is for a main frame; one that is the root of its
-  // own frame tree. This can include embedded frame trees such as Portals and
-  // FencedFrames. Both `is_primary_main_frame` and `is_outermost_main_frame`
-  // imply `is_main_frame`, however, `is_main_frame` does not imply either
-  // primary or outermost.
+  // own frame tree. This can include embedded frame trees such as FencedFrames.
+  // Both `is_primary_main_frame` and `is_outermost_main_frame` imply
+  // `is_main_frame`, however, `is_main_frame` does not imply either primary or
+  // outermost.
   const bool is_main_frame;
 
   // Whether all ancestor frames of the frame that is navigating have a secure

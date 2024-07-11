@@ -382,8 +382,8 @@ void CrossProcessFrameConnector::UpdateViewportIntersection(
     if (visual_properties.has_value()) {
       // Subtlety: RenderWidgetHostViewChildFrame::UpdateViewportIntersection()
       // will quietly fail to propagate the new intersection state for main
-      // frames, including portals and fenced frames. For those cases, we need
-      // to ensure that the updated VisualProperties are still propagated.
+      // frames, including fenced frames. For those cases, we need to ensure
+      // that the updated VisualProperties are still propagated.
       std::optional<blink::VisualProperties> last_properties;
       if (host && !main_frame)
         last_properties = host->LastComputedVisualProperties();

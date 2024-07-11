@@ -1186,9 +1186,7 @@ void WebTestControlHost::DiscardMainWindow() {
   // has been destroyed. Then we dare not call Shell::Close() on the
   // |main_window_|.
   // 2. Some other fatal error has occurred. We can't tell this apart from the
-  // Shell destroying, since that is also something a test can do, and
-  // destroying the WebContents can also happen in order ways (like activating a
-  // portal).
+  // Shell destroying, since that is also something a test can do.
   //
   // Since we can't tell at this point if |main_window_| is okay to use, we
   // don't touch it, and we stop observing its WebContents.

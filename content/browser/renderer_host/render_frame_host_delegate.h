@@ -525,7 +525,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Returns FrameTreeNodes that are logically owned by another frame even
   // though this relationship is not yet reflected in their frame trees. This
-  // can happen, for example, with unattached guests and orphaned portals.
+  // can happen, for example, with unattached guests.
   virtual std::vector<FrameTreeNode*> GetUnattachedOwnedNodes(
       RenderFrameHostImpl* owner);
 

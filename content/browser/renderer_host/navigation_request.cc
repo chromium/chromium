@@ -6941,7 +6941,7 @@ void NavigationRequest::SetupCSPEmbeddedEnforcement() {
 
 NavigationRequest::CSPEmbeddedEnforcementResult
 NavigationRequest::CheckCSPEmbeddedEnforcement() {
-  // We enforce CSPEE only for subframes, not for portals.
+  // We enforce CSPEE only for subframes.
   if (IsInMainFrame())
     return CSPEmbeddedEnforcementResult::ALLOW_RESPONSE;
 
@@ -9048,10 +9048,6 @@ network::CrossOriginEmbedderPolicy
 NavigationRequest::ComputeCrossOriginEmbedderPolicy() {
   const auto& url = common_params_->url;
   // Fenced Frames should respect the outer frame's COEP.
-  // Note: we only check the outer document for fenced frames, because it's
-  // unclear if other embedded cases like Portals should inherit COEP from
-  // the embedder as well.
-  // TODO(crbug.com/40810075) add other embedded cases if needed.
   RenderFrameHostImpl* const parent =
       GetNavigatingFrameType() == FrameType::kFencedFrameRoot
           ? GetParentFrameOrOuterDocument()
@@ -9081,11 +9077,10 @@ NavigationRequest::ComputeCrossOriginEmbedderPolicy() {
   //        URL.
   //
   // TODO(arthursonzogni): It would be good to clarify what
-  // |topLevelCreationURL| means when loading FencedFrame/Portals/GuestView, and
-  // how it should affect COEP.
+  // |topLevelCreationURL| means when loading FencedFrame//GuestView, and how it
+  // should affect COEP.
   // Tracking bug:
   // - FencedFrame: https://crbug.com/1277430
-  // - Portals: https://crbug.com/1278207
   // - GuestView: XXX or slightly related https://crbug.com/1260747
   const GURL& top_level_creation_url = GetParentFrameOrOuterDocument()
                                            ? GetParentFrameOrOuterDocument()
@@ -9114,10 +9109,6 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
       policy_container_builder_->FinalPolicies().cross_origin_embedder_policy;
 
   // Fenced Frames should respect the outer frame's COEP.
-  // Note: we only check the outer document for fenced frames, because it's
-  // unclear if other embedded cases like Portals should inherit COEP from
-  // the embedder as well.
-  // TODO(crbug.com/40810075) add other embedded cases if needed.
   RenderFrameHostImpl* const parent =
       GetNavigatingFrameType() == FrameType::kFencedFrameRoot
           ? GetParentFrameOrOuterDocument()
@@ -9169,9 +9160,6 @@ NavigationRequest::EnforceCOEP() {
   // https://github.com/shivanigithub/fenced-frame/issues/11
 
   // Fenced frames should be treated as an embedded frame, thus COEP must apply.
-  // Note: we only check the outer document for fenced frames, because it's
-  // unclear if other embedded cases like Portals should behave the same.
-  // TODO(crbug.com/40810075): add other embedded cases if needed.
   RenderFrameHostImpl* const parent_frame =
       GetNavigatingFrameType() == FrameType::kFencedFrameRoot
           ? GetParentFrameOrOuterDocument()
@@ -9212,9 +9200,7 @@ bool NavigationRequest::CoopCoepSanityCheck() {
   const PolicyContainerPolicies& policies =
       policy_container_builder_->FinalPolicies();
   // Use GetParentFrameOrOuterDocument() to respect the outer frame's COEP for
-  // now. But other embedded cases like Portals should figure out how to inherit
-  // COEP because it's unclear yet.
-  // TODO(crbug.com/40810075) add other embedded cases if needed.
+  // now.
   network::mojom::CrossOriginOpenerPolicyValue coop_value =
       GetParentFrameOrOuterDocument()
           ? GetRenderFrameHost()
@@ -9328,14 +9314,10 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
     //
     // [1] https://fetch.spec.whatwg.org/#concept-request-client
     //
-    // The `kPrimaryMainFrame` case also covers portals
-    // (https://crbug.com/1254770) and guest views (https://crbug.com/1261928)
-    // since those do not use MPArch.
+    // The `kPrimaryMainFrame` case also covers guest views
+    // (https://crbug.com/1261928) since they do not use MPArch.
     //
-    // TODO(crbug.com/40258825): Determine how to treat portals.
     // TODO(crbug.com/40258826): Determine how to treat guest views.
-    //
-    // NOTE: ShadowDOM-based fenced frames are treated as `kSubframe`.
     case FrameType::kPrimaryMainFrame:
     case FrameType::kSubframe: {
       if (!policy_container_builder_->InitiatorPolicies()) {
@@ -10153,7 +10135,7 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
   // and inheriting this cross-origin isolated state.
   //
   // Embedded content that cannot always provide a separate process (Fenced
-  // frames, portals, etc.) should use the crossOriginIsolated state of their
+  // frames) should use the crossOriginIsolated state of their
   // parent. Therefore we use IsOutermostMainFrame.
   //
   // TODO(crbug.com/40180791): This may change as we work out the model for
