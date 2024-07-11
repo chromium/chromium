@@ -518,6 +518,7 @@
 #include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/webid/digital_identity_provider_desktop.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
@@ -4425,8 +4426,11 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
         const webapps::AppId& app_id = browser->app_controller()->app_id();
         const web_app::WebAppRegistrar& registrar =
             web_app_provider->registrar_unsafe();
-        if (registrar.IsLocallyInstalled(app_id))
+        if (registrar.IsInstallState(
+                app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION,
+                         web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION})) {
           web_prefs->web_app_scope = registrar.GetAppScope(app_id);
+        }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         auto* system_app = browser->app_controller()->system_app();
@@ -8560,7 +8564,9 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
                                          .Set("manifest_id", manifest_id.spec())
                                          .Set("frame_url", frame_url.spec()));
 
-            if (!lock.registrar().IsLocallyInstalled(app_id)) {
+            if (!lock.registrar().IsInstallState(
+                    app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                             web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
               debug_value.Set("did_find_application", false);
               return std::nullopt;
             }
