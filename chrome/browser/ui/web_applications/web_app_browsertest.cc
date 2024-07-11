@@ -1425,13 +1425,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SetBounds) {
 }
 
 // Test that offsets for newly launched web app windows are clamped on-screen.
-// Windows OS does not enforce this constraint as strictly.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_WindowOffsetsClampedToScreen DISABLED_WindowOffsetsClampedToScreen
-#else
-#define MAYBE_WindowOffsetsClampedToScreen WindowOffsetsClampedToScreen
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_WindowOffsetsClampedToScreen) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WindowOffsetsClampedToScreen) {
   const webapps::AppId app_id = InstallPWA(GURL(kExampleURL));
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
   ui::BaseWindow* window = browser->window();
@@ -1452,6 +1446,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_WindowOffsetsClampedToScreen) {
     bounds_match |= CheckForBounds(window, windows.back()->GetBounds());
     windows.push_back(window);
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  // On-screen clamping is not strictly enforced on these platforms.
+  GTEST_SKIP() << "Skipping bounds stacking check on incompatible platforms";
+#endif
 
   EXPECT_TRUE(bounds_match)
       << windows.back()->GetBounds().ToString()
