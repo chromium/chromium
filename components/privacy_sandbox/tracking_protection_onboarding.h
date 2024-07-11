@@ -191,21 +191,6 @@ class TrackingProtectionOnboarding : public KeyedService {
   // Called by UI code to determine if we should run the 3PCD UI logic.
   bool ShouldRunUILogic(SurfaceType surface);
 
-  // To be called by UI code when the user has taken action on the onboarding
-  // notice.
-  void OnboardingNoticeActionTaken(NoticeAction action);
-
-  // To be Called by UI code when the user has been shown the onboarding notice.
-  void OnboardingNoticeShown();
-
-  // To be Called by UI code when the user has been "shown" the silent
-  // onboarding notice.
-  void SilentOnboardingNoticeShown();
-
-  // Called by UI code to determine if we should show the onboarding notice to
-  // the user.
-  bool ShouldShowOnboardingNotice();
-
   // Returns the time delta from Onboarded to Acknowledged.
   std::optional<base::TimeDelta> OnboardedToAcknowledged();
 

@@ -41,6 +41,8 @@
 namespace tpcd::experiment {
 
 using ::variations::HashName;
+using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
+using SurfaceType = privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
 
 struct SyntheticTrialTestCase {
   utils::ExperimentState prev_state;
@@ -294,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentManagerImplDisable3PCsSyntheticTrialTest,
   auto* onboarding_service =
       TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
   // Simulate onboarding a profile.
-  onboarding_service->OnboardingNoticeShown();
+  onboarding_service->NoticeShown(SurfaceType::kDesktop,
+                                  NoticeType::kModeBOnboarding);
 
   // Verify that the user has been registered with the correct synthetic
   // trial group.
@@ -333,7 +336,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentManagerImplSilentOnboardingSyntheticTrialTest,
   auto* onboarding_service =
       TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
   // Simulate onboarding a profile.
-  onboarding_service->SilentOnboardingNoticeShown();
+  onboarding_service->NoticeShown(SurfaceType::kDesktop,
+                                  NoticeType::kModeBSilentOnboarding);
 
   // Verify that the user has been registered with the correct synthetic
   // trial group.

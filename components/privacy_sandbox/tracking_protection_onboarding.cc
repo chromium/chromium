@@ -280,6 +280,94 @@ void RecordSilentOnboardingDidNoticeShownOnboard(bool result) {
       result);
 }
 
+void ModeBNoticeActionTaken(TrackingProtectionOnboarding::NoticeAction action,
+                            PrefService* pref_service) {
+  RecordActionMetrics(action);
+
+  if (pref_service->GetBoolean(prefs::kTrackingProtectionOnboardingAcked)) {
+    base::UmaHistogramBoolean(
+        "PrivacySandbox.TrackingProtection.Onboarding."
+        "DidNoticeActionAckowledge",
+        false);
+    return;
+  }
+
+  pref_service->SetTime(prefs::kTrackingProtectionOnboardingAckedSince,
+                        base::Time::Now());
+  pref_service->SetInteger(prefs::kTrackingProtectionOnboardingAckAction,
+                           static_cast<int>(ToInternalAckAction(action)));
+  pref_service->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
+
+  auto onboarding_to_acked_duration =
+      base::Time::Now() -
+      pref_service->GetTime(prefs::kTrackingProtectionOnboardedSince);
+  auto last_shown_to_acked_duration =
+      base::Time::Now() -
+      pref_service->GetTime(prefs::kTrackingProtectionNoticeLastShown);
+  CreateTimingHistogramOnboardingStartup(
+      "PrivacySandbox.TrackingProtection.Onboarding.OnboardedToAckedDuration",
+      onboarding_to_acked_duration);
+  CreateTimingHistogramOnboardingStartup(
+      "PrivacySandbox.TrackingProtection.Onboarding.LastShownToAckedDuration",
+      last_shown_to_acked_duration);
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.TrackingProtection.Onboarding."
+      "DidNoticeActionAckowledge",
+      true);
+}
+
+void ModeBNoticeShown(PrefService* pref_service) {
+  base::RecordAction(
+      base::UserMetricsAction("TrackingProtection.Notice.Shown"));
+  base::Time now = base::Time::Now();
+  pref_service->SetTime(prefs::kTrackingProtectionNoticeLastShown, now);
+  auto status = GetInternalOnboardingStatus(pref_service);
+  if (status != TrackingProtectionOnboardingStatus::kEligible &&
+      status != TrackingProtectionOnboardingStatus::kRequested) {
+    base::UmaHistogramBoolean(
+        "PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard",
+        false);
+    return;
+  }
+  pref_service->SetTime(prefs::kTrackingProtectionOnboardedSince, now);
+  pref_service->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(
+          TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
+  auto eligible_to_onboarded_duration =
+      now - pref_service->GetTime(prefs::kTrackingProtectionEligibleSince);
+  CreateTimingHistogramOnboardingStartup(
+      "PrivacySandbox.TrackingProtection.Onboarding."
+      "EligibleToOnboardedDuration",
+      eligible_to_onboarded_duration);
+
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard",
+      true);
+}
+
+void ModeBSilentNoticeShown(PrefService* pref_service) {
+  auto status = GetInternalSilentOnboardingStatus(pref_service);
+  if (status != TrackingProtectionOnboardingStatus::kEligible) {
+    RecordSilentOnboardingDidNoticeShownOnboard(false);
+    return;
+  }
+  pref_service->SetTime(prefs::kTrackingProtectionSilentOnboardedSince,
+                        base::Time::Now());
+  auto eligible_to_onboarded_duration =
+      pref_service->GetTime(prefs::kTrackingProtectionSilentOnboardedSince) -
+      pref_service->GetTime(prefs::kTrackingProtectionSilentEligibleSince);
+  CreateTimingHistogramOnboardingStartup(
+      "PrivacySandbox.TrackingProtection.SilentOnboarding."
+      "EligibleToOnboardedDuration",
+      eligible_to_onboarded_duration);
+  pref_service->SetInteger(
+      prefs::kTrackingProtectionSilentOnboardingStatus,
+      static_cast<int>(
+          TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
+  RecordSilentOnboardingDidNoticeShownOnboard(true);
+}
+
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
@@ -437,68 +525,16 @@ void TrackingProtectionOnboarding::MaybeResetModeBOnboardingPrefs() {
   pref_service_->ClearPref(prefs::kTrackingProtectionSilentOnboardedSince);
 }
 
-void TrackingProtectionOnboarding::OnboardingNoticeShown() {
-  base::RecordAction(
-      base::UserMetricsAction("TrackingProtection.Notice.Shown"));
-  base::Time now = base::Time::Now();
-  pref_service_->SetTime(prefs::kTrackingProtectionNoticeLastShown, now);
-  auto status = GetInternalOnboardingStatus(pref_service_);
-  if (status != TrackingProtectionOnboardingStatus::kEligible &&
-      status != TrackingProtectionOnboardingStatus::kRequested) {
-    base::UmaHistogramBoolean(
-        "PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard",
-        false);
-    return;
-  }
-  pref_service_->SetTime(prefs::kTrackingProtectionOnboardedSince, now);
-  pref_service_->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(
-          TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
-  auto eligible_to_onboarded_duration =
-      now - pref_service_->GetTime(prefs::kTrackingProtectionEligibleSince);
-  CreateTimingHistogramOnboardingStartup(
-      "PrivacySandbox.TrackingProtection.Onboarding."
-      "EligibleToOnboardedDuration",
-      eligible_to_onboarded_duration);
-
-  base::UmaHistogramBoolean(
-      "PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard",
-      true);
-}
-
-void TrackingProtectionOnboarding::SilentOnboardingNoticeShown() {
-  auto status = GetInternalSilentOnboardingStatus(pref_service_);
-  if (status != TrackingProtectionOnboardingStatus::kEligible) {
-    RecordSilentOnboardingDidNoticeShownOnboard(false);
-    return;
-  }
-  pref_service_->SetTime(prefs::kTrackingProtectionSilentOnboardedSince,
-                         base::Time::Now());
-  auto eligible_to_onboarded_duration =
-      pref_service_->GetTime(prefs::kTrackingProtectionSilentOnboardedSince) -
-      pref_service_->GetTime(prefs::kTrackingProtectionSilentEligibleSince);
-  CreateTimingHistogramOnboardingStartup(
-      "PrivacySandbox.TrackingProtection.SilentOnboarding."
-      "EligibleToOnboardedDuration",
-      eligible_to_onboarded_duration);
-  pref_service_->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(
-          TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
-  RecordSilentOnboardingDidNoticeShownOnboard(true);
-}
-
 void TrackingProtectionOnboarding::NoticeShown(SurfaceType surface,
                                                NoticeType notice_type) {
   switch (notice_type) {
     case NoticeType::kNone:
       return;
     case NoticeType::kModeBOnboarding:
-      OnboardingNoticeShown();
+      ModeBNoticeShown(pref_service_);
       return;
     case NoticeType::kModeBSilentOnboarding:
-      SilentOnboardingNoticeShown();
+      ModeBSilentNoticeShown(pref_service_);
       return;
     case NoticeType::kFull3PCDOnboarding:
     case NoticeType::kFull3PCDSilentOnboarding:
@@ -507,42 +543,6 @@ void TrackingProtectionOnboarding::NoticeShown(SurfaceType surface,
       // TODO(341975190) Add support for full 3PCD.
       NOTREACHED_NORETURN();
   }
-}
-
-void TrackingProtectionOnboarding::OnboardingNoticeActionTaken(
-    NoticeAction action) {
-  RecordActionMetrics(action);
-
-  if (pref_service_->GetBoolean(prefs::kTrackingProtectionOnboardingAcked)) {
-    base::UmaHistogramBoolean(
-        "PrivacySandbox.TrackingProtection.Onboarding."
-        "DidNoticeActionAckowledge",
-        false);
-    return;
-  }
-
-  pref_service_->SetTime(prefs::kTrackingProtectionOnboardingAckedSince,
-                         base::Time::Now());
-  pref_service_->SetInteger(prefs::kTrackingProtectionOnboardingAckAction,
-                            static_cast<int>(ToInternalAckAction(action)));
-  pref_service_->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
-
-  auto onboarding_to_acked_duration =
-      base::Time::Now() -
-      pref_service_->GetTime(prefs::kTrackingProtectionOnboardedSince);
-  auto last_shown_to_acked_duration =
-      base::Time::Now() -
-      pref_service_->GetTime(prefs::kTrackingProtectionNoticeLastShown);
-  CreateTimingHistogramOnboardingStartup(
-      "PrivacySandbox.TrackingProtection.Onboarding.OnboardedToAckedDuration",
-      onboarding_to_acked_duration);
-  CreateTimingHistogramOnboardingStartup(
-      "PrivacySandbox.TrackingProtection.Onboarding.LastShownToAckedDuration",
-      last_shown_to_acked_duration);
-  base::UmaHistogramBoolean(
-      "PrivacySandbox.TrackingProtection.Onboarding."
-      "DidNoticeActionAckowledge",
-      true);
 }
 
 void TrackingProtectionOnboarding::NoticeActionTaken(SurfaceType surface,
@@ -552,7 +552,7 @@ void TrackingProtectionOnboarding::NoticeActionTaken(SurfaceType surface,
     case NoticeType::kNone:
       return;
     case NoticeType::kModeBOnboarding:
-      OnboardingNoticeActionTaken(action);
+      ModeBNoticeActionTaken(action, pref_service_);
       return;
     case NoticeType::kModeBSilentOnboarding:
       return;
@@ -563,12 +563,6 @@ void TrackingProtectionOnboarding::NoticeActionTaken(SurfaceType surface,
       // TODO(341975190) Add support for full 3PCD.
       NOTREACHED_NORETURN();
   }
-}
-
-// DEPRECATED. This will be removed in crbug.com/350465760
-bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {
-  return GetRequiredNotice(SurfaceType::kDesktop) ==
-         NoticeType::kModeBOnboarding;
 }
 
 bool TrackingProtectionOnboarding::ShouldRunUILogic(SurfaceType surface) {

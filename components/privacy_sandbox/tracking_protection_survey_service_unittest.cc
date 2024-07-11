@@ -19,6 +19,9 @@
 namespace privacy_sandbox {
 namespace {
 
+using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
+using SurfaceType = privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
+
 class TrackingProtectionSurveyServiceTest : public testing::Test {
  public:
   TrackingProtectionSurveyServiceTest() {
@@ -63,10 +66,12 @@ class TrackingProtectionSurveyServiceTest : public testing::Test {
   void ShowOnboardingNotice(bool is_silent) {
     if (is_silent) {
       onboarding_service()->MaybeMarkModeBSilentEligible();
-      onboarding_service()->SilentOnboardingNoticeShown();
+      onboarding_service()->NoticeShown(SurfaceType::kDesktop,
+                                        NoticeType::kModeBSilentOnboarding);
     } else {
       onboarding_service()->MaybeMarkModeBEligible();
-      onboarding_service()->OnboardingNoticeShown();
+      onboarding_service()->NoticeShown(SurfaceType::kDesktop,
+                                        NoticeType::kModeBOnboarding);
     }
   }
 

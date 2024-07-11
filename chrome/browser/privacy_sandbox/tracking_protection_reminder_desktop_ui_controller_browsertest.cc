@@ -30,6 +30,9 @@ BrowserFeaturePromoController* GetFeaturePromoController(Browser* browser) {
 
 }  // namespace
 
+using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
+using SurfaceType = privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
+
 class TrackingProtectionReminderDesktopUiControllerTest
     : public InteractiveFeaturePromoTest {
  protected:
@@ -62,10 +65,12 @@ class TrackingProtectionReminderDesktopUiControllerTest
   void ShowOnboardingNotice(bool is_silent) {
     if (is_silent) {
       onboarding_service()->MaybeMarkModeBSilentEligible();
-      onboarding_service()->SilentOnboardingNoticeShown();
+      onboarding_service()->NoticeShown(SurfaceType::kDesktop,
+                                        NoticeType::kModeBSilentOnboarding);
     } else {
       onboarding_service()->MaybeMarkModeBEligible();
-      onboarding_service()->OnboardingNoticeShown();
+      onboarding_service()->NoticeShown(SurfaceType::kDesktop,
+                                        NoticeType::kModeBOnboarding);
     }
   }
   void CallOnboardingObserver(bool is_silent) {
