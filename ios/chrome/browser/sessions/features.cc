@@ -12,7 +12,7 @@ BASE_FEATURE(kSessionRestorationSessionIDCheck,
 
 BASE_FEATURE(kEnableSessionSerializationOptimizations,
              "EnableSessionSerializationOptimizations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UseSessionSerializationOptimizations() {
   return base::FeatureList::IsEnabled(kEnableSessionSerializationOptimizations);
