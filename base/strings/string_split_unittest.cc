@@ -10,6 +10,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -232,11 +233,6 @@ TEST(StringUtilTest, SplitString_Basics) {
   r = SplitString(std::string(), ",:;", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   EXPECT_TRUE(r.empty());
 
-  // Empty separator list
-  r = SplitString("hello, world", "", KEEP_WHITESPACE, SPLIT_WANT_ALL);
-  ASSERT_EQ(1u, r.size());
-  EXPECT_EQ("hello, world", r[0]);
-
   // Should split on any of the separators.
   r = SplitString("::,,;;", ",:;", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_EQ(7u, r.size());
@@ -451,6 +447,13 @@ TEST(StringSplitTest, SplitStringAlongWhitespace) {
     if (i.expected_result_count > 1)
       ASSERT_EQ(i.output2, results[1]);
   }
+}
+
+TEST(StringSplitDeathTest, EmptyDelimiter) {
+  EXPECT_CHECK_DEATH({
+    std::vector<std::string> r;
+    r = SplitString("hello, world", "", KEEP_WHITESPACE, SPLIT_WANT_ALL);
+  });
 }
 
 }  // namespace base
