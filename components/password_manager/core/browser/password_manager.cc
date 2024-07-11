@@ -399,6 +399,12 @@ void PasswordManager::RegisterProfilePrefs(
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kClearingUndecryptablePasswords, false);
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_IOS)
+  registry->RegisterBooleanPref(prefs::kDeletingUndecryptablePasswordsEnabled,
+                                true);
+#endif
 }
 
 // static

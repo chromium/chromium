@@ -40,6 +40,12 @@ inline constexpr char kCredentialProviderEnabledOnStartup[] =
     "credential_provider_enabled_on_startup";
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_IOS)
+inline constexpr char kDeletingUndecryptablePasswordsEnabled[] =
+    "password_manager.deleteting_undecryptable_passwords_enabled";
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 
 // Boolean pref indicating if the one-time notice for account storage was shown.

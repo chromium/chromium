@@ -2148,6 +2148,7 @@ chromium-metrics-reviews@google.com.
   <int value="1282" label="DnsOverHttpsExcludedDomains"/>
   <int value="1283" label="DnsOverHttpsIncludedDomains"/>
   <int value="1284" label="SystemShortcutBehavior"/>
+  <int value="1285" label="DeletingUndecryptablePasswordsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

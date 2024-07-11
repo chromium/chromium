@@ -542,6 +542,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultDirectSocketsSetting,
     prefs::kManagedDefaultDirectSocketsSetting,
     base::Value::Type::INTEGER },
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  { key::kDeletingUndecryptablePasswordsEnabled,
+    password_manager::prefs::kDeletingUndecryptablePasswordsEnabled,
+    base::Value::Type::BOOLEAN },
+#endif
   { key::kDirectSocketsAllowedForUrls,
     prefs::kManagedDirectSocketsAllowedForUrls,
     base::Value::Type::LIST },
