@@ -1328,6 +1328,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "cct-google-bottom-bar-variant-layouts",
+    "owners": ["tivi@google.com", "edmundw@google.com","jinsukkim@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cct-incognito-available-to-third-party",
     "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
     "expiry_milestone": 140

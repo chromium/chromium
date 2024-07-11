@@ -203,6 +203,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTPageInsightsHubPeek,
     &kCCTPageInsightsHubBetterScroll,
     &kCCTGoogleBottomBar,
+    &kCCTGoogleBottomBarVariantLayouts,
     &kCCTPrewarmTab,
     &kCCTReportParallelRequestStatus,
     &kCCTResizableForThirdParties,
@@ -573,6 +574,10 @@ BASE_FEATURE(kCCTPageInsightsHubBetterScroll,
 
 BASE_FEATURE(kCCTGoogleBottomBar,
              "CCTGoogleBottomBar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTGoogleBottomBarVariantLayouts,
+             "CCTGoogleBottomBarVariantLayouts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPrewarmTab,
