@@ -34,6 +34,10 @@ UIColor* TabGroup::GetColor() const {
   return ColorForTabGroupColorId(visual_data_.color());
 }
 
+UIColor* TabGroup::GetForegroundColor() const {
+  return ForegroundColorForTabGroupColorId(visual_data_.color());
+}
+
 // static
 std::vector<tab_groups::TabGroupColorId> TabGroup::AllPossibleTabGroupColors() {
   return {
@@ -49,6 +53,7 @@ std::vector<tab_groups::TabGroupColorId> TabGroup::AllPossibleTabGroupColors() {
   };
 }
 
+// static
 UIColor* TabGroup::ColorForTabGroupColorId(
     tab_groups::TabGroupColorId tab_group_color_id) {
   switch (tab_group_color_id) {
@@ -75,6 +80,30 @@ UIColor* TabGroup::ColorForTabGroupColorId(
   }
 }
 
+// static
+UIColor* TabGroup::ForegroundColorForTabGroupColorId(
+    tab_groups::TabGroupColorId tab_group_color_id) {
+  switch (tab_group_color_id) {
+    case tab_groups::TabGroupColorId::kBlue:  // Fallthrough
+    case tab_groups::TabGroupColorId::kRed:   // Fallthrough
+    case tab_groups::TabGroupColorId::kPink:  // Fallthrough
+    case tab_groups::TabGroupColorId::kCyan:  // Fallthrough
+    case tab_groups::TabGroupColorId::kPurple:
+      // For those colors, they are using white in light mode and black in dark
+      // mode.
+      return [UIColor colorNamed:kSolidWhiteColor];
+    case tab_groups::TabGroupColorId::kGrey:    // Fallthrough
+    case tab_groups::TabGroupColorId::kGreen:   // Fallthrough
+    case tab_groups::TabGroupColorId::kYellow:  // Fallthrough
+    case tab_groups::TabGroupColorId::kOrange:
+      // Those colors are always using black.
+      return UIColor.blackColor;
+    case tab_groups::TabGroupColorId::kNumEntries:
+      NOTREACHED_NORETURN() << "kNumEntries is not a supported color enum.";
+  }
+}
+
+// static
 tab_groups::TabGroupColorId TabGroup::DefaultColorForNewTabGroup(
     WebStateList* web_state_list) {
   CHECK(web_state_list);

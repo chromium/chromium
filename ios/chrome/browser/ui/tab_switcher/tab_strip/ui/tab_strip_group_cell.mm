@@ -97,6 +97,11 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   _titleContainer.backgroundColor = color;
 }
 
+- (void)setTitleTextColor:(UIColor*)titleTextColor {
+  _titleTextColor = titleTextColor;
+  _titleLabel.textColor = titleTextColor;
+}
+
 - (void)setGroupStrokeColor:(UIColor*)color {
   [super setGroupStrokeColor:color];
   if ([_groupStrokeView.backgroundColor isEqual:color]) {

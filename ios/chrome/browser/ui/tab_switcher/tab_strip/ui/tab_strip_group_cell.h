@@ -24,6 +24,9 @@
 // Background color of the title container.
 @property(nonatomic, strong) UIColor* titleContainerBackgroundColor;
 
+// Color of the title.
+@property(nonatomic, strong) UIColor* titleTextColor;
+
 // Whether the cell is that of a collapsed group. Default value is NO.
 @property(nonatomic, assign) BOOL collapsed;
 

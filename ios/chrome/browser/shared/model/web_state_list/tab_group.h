@@ -57,6 +57,9 @@ class TabGroup {
   // Returns the color of the group.
   UIColor* GetColor() const;
 
+  // Returns the color for the elements displayed on top of the group color.
+  UIColor* GetForegroundColor() const;
+
   // The underlying visual data specific to the group.
   const tab_groups::TabGroupVisualData& visual_data() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -88,6 +91,11 @@ class TabGroup {
 
   // Returns a UIColor based on a `tab_group_color_id`.
   static UIColor* ColorForTabGroupColorId(
+      tab_groups::TabGroupColorId tab_group_color_id);
+
+  // Returns a UIColor for the text to be displayed on top a
+  // `tab_group_color_id` color.
+  static UIColor* ForegroundColorForTabGroupColorId(
       tab_groups::TabGroupColorId tab_group_color_id);
 
   // Returns the default color for a new TabGroup in `web_state_list`. This is
