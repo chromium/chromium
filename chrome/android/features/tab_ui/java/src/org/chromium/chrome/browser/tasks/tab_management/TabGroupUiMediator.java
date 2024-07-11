@@ -173,8 +173,9 @@ public class TabGroupUiMediator implements BackPressHandler {
         mPrimaryBackgroundColor = primaryBackgroundColor;
         mIncognitoBackgroundColor = incognitoBackgroundColor;
 
-        if (layoutStateProviderSupplier.get() != null
-                && (layoutStateProviderSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER))) {
+        var layoutStateProvider = layoutStateProviderSupplier.get();
+        if (layoutStateProvider != null
+                && layoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
             mIsShowingOverViewMode = true;
         }
 
@@ -351,12 +352,12 @@ public class TabGroupUiMediator implements BackPressHandler {
         filterProvider.addTabModelFilterObserver(mTabModelObserver);
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        layoutStateProviderSupplier.onAvailable(
-                mCallbackController.makeCancelable(
-                        (layoutStateProvider) -> {
-                            mLayoutStateProvider = layoutStateProvider;
-                            mLayoutStateProvider.addObserver(mLayoutStateObserver);
-                        }));
+        if (layoutStateProvider != null) {
+            setLayoutStateProvider(layoutStateProvider);
+        } else {
+            layoutStateProviderSupplier.onAvailable(
+                    mCallbackController.makeCancelable(this::setLayoutStateProvider));
+        }
 
         mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(mIncognitoStateObserver);
 
@@ -376,6 +377,11 @@ public class TabGroupUiMediator implements BackPressHandler {
                                 .addObserver(mBackPressStateSupplier::set);
                     });
         }
+    }
+
+    private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        mLayoutStateProvider = layoutStateProvider;
+        layoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     private void setBottomControlsBackgroundColor(boolean isIncognito) {

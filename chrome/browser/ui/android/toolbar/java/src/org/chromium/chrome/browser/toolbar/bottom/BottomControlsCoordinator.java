@@ -10,11 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -50,7 +51,14 @@ public class BottomControlsCoordinator implements BackPressHandler {
     private final BottomControlsMediator mMediator;
 
     /** The Delegate for the split toolbar's bottom toolbar component UI operation. */
-    private @Nullable BottomControlsContentDelegate mContentDelegate;
+    private final OneshotSupplier<BottomControlsContentDelegate> mContentDelegateSupplier;
+
+    private final ObservableSupplierImpl<BottomControlsContentDelegate> mContentDelegateWrapper =
+            new ObservableSupplierImpl<>();
+    private final TransitiveObservableSupplier<BottomControlsContentDelegate, Boolean>
+            mHandleBackPressChangedSupplier =
+                    new TransitiveObservableSupplier<>(
+                            mContentDelegateWrapper, cd -> cd.getHandleBackPressChangedSupplier());
 
     private final ScrollingBottomViewResourceFrameLayout mRootFrameLayout;
     private final ScrollingBottomViewSceneLayer mSceneLayer;
@@ -66,7 +74,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
      * @param fullscreenManager A {@link FullscreenManager} to listen for fullscreen changes.
      * @param edgeToEdgeControllerSupplier A supplier to control drawing to the edge of the screen.
      * @param root The parent {@link ViewGroup} for the bottom controls.
-     * @param contentDelegate Delegate for bottom controls UI operations.
+     * @param contentDelegateSupplier Supplier of delegate for bottom controls UI operations.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param overlayPanelVisibilitySupplier Notifies overlay panel visibility event.
      * @param constraintsSupplier Used to access current constraints of the browser controls.
@@ -83,7 +91,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ScrollingBottomViewResourceFrameLayout root,
-            BottomControlsContentDelegate contentDelegate,
+            OneshotSupplier<BottomControlsContentDelegate> contentDelegateSupplier,
             TabObscuringHandler tabObscuringHandler,
             ObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
             ObservableSupplier<Integer> constraintsSupplier,
@@ -121,7 +129,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                 .getDynamicResourceLoader()
                 .registerResource(root.getId(), root.getResourceAdapter());
 
-        mContentDelegate = contentDelegate;
+        mContentDelegateSupplier = contentDelegateSupplier;
         Toast.setGlobalExtraYOffset(
                 root.getResources().getDimensionPixelSize(bottomControlsHeightId));
 
@@ -132,22 +140,24 @@ public class BottomControlsCoordinator implements BackPressHandler {
         mSceneLayer.setIsVisible(mMediator.isCompositedViewVisible());
         layoutManager.addSceneOverlay(mSceneLayer);
 
-        if (mContentDelegate != null) {
-            mContentDelegate.initializeWithNative(
-                    activity,
-                    new BottomControlsVisibilityController() {
-                        @Override
-                        public void setBottomControlsVisible(boolean isVisible) {
-                            mMediator.setBottomControlsVisible(isVisible);
-                        }
+        mContentDelegateSupplier.onAvailable(
+                (contentDelegate) -> {
+                    contentDelegate.initializeWithNative(
+                            activity,
+                            new BottomControlsVisibilityController() {
+                                @Override
+                                public void setBottomControlsVisible(boolean isVisible) {
+                                    mMediator.setBottomControlsVisible(isVisible);
+                                }
 
-                        @Override
-                        public void setBottomControlsColor(int color) {
-                            mMediator.setBottomControlsColor(color);
-                        }
-                    },
-                    root::onModelTokenChange);
-        }
+                                @Override
+                                public void setBottomControlsColor(int color) {
+                                    mMediator.setBottomControlsColor(color);
+                                }
+                            },
+                            root::onModelTokenChange);
+                    mContentDelegateWrapper.set(contentDelegate);
+                });
     }
 
     /**
@@ -166,27 +176,30 @@ public class BottomControlsCoordinator implements BackPressHandler {
 
     /**
      * Handles system back press action if needed.
+     *
      * @return Whether or not the back press event is consumed here.
      */
     public boolean onBackPressed() {
-        return mContentDelegate != null && mContentDelegate.onBackPressed();
+        return mContentDelegateSupplier.hasValue()
+                ? mContentDelegateSupplier.get().onBackPressed()
+                : false;
     }
 
     @Override
     public @BackPressResult int handleBackPress() {
-        if (mContentDelegate != null) return mContentDelegate.handleBackPress();
-        return BackPressResult.FAILURE;
+        return mContentDelegateSupplier.hasValue()
+                ? mContentDelegateSupplier.get().handleBackPress()
+                : BackPressResult.FAILURE;
     }
 
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        if (mContentDelegate == null) return new ObservableSupplierImpl<>();
-        return mContentDelegate.getHandleBackPressChangedSupplier();
+        return mHandleBackPressChangedSupplier;
     }
 
     /** Clean up any state when the bottom controls component is destroyed. */
     public void destroy() {
-        if (mContentDelegate != null) mContentDelegate.destroy();
+        if (mContentDelegateSupplier.hasValue()) mContentDelegateSupplier.get().destroy();
         mMediator.destroy();
     }
 

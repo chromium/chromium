@@ -68,6 +68,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.w
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStatesAndMetadataFile;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -171,6 +172,7 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableFeatures({TAB_GROUP_PARITY_ANDROID})
+@EnableFeatures({ANDROID_TAB_GROUP_STABLE_IDS})
 @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2, message = "crbug.com/1435573")
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
@@ -197,7 +199,7 @@ public class TabGridDialogTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(9)
+                    .setRevision(10)
                     .build();
 
     // Must force tab re-creation to ensure tab group names make sense.
@@ -559,7 +561,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ANDROID_TAB_GROUP_STABLE_IDS)
     public void testTabGroupDialogRemainsOpenOnSyncUpdate() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 3);
@@ -2108,7 +2109,12 @@ public class TabGridDialogTest {
 
     private void showDialogFromStrip(ChromeTabbedActivity cta) {
         assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        onView(
+        waitForVisibleView(
+                allOf(
+                        withId(R.id.tab_list_recycler_view),
+                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isCompletelyDisplayed()));
+        onViewWaiting(
                         allOf(
                                 withId(R.id.toolbar_left_button),
                                 isDescendantOfA(withId(R.id.bottom_controls))))
@@ -2399,7 +2405,7 @@ public class TabGridDialogTest {
 
     private void verifyDialogBackButtonContentDescription(ChromeTabbedActivity cta, String s) {
         assertTrue(isDialogFullyVisible(cta));
-        onView(
+        onViewWaiting(
                         allOf(
                                 withId(R.id.toolbar_left_button),
                                 isDescendantOfA(withId(R.id.dialog_container_view))))
