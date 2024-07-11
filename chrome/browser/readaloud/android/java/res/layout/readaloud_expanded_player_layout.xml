@@ -181,15 +181,6 @@ found in the LICENSE file.
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/readaloud_playback_speed"
-                        android:layout_width="@dimen/readaloud_menu_buttons_width"
-                        android:layout_height="@dimen/readaloud_menu_buttons_width"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentBottom="true"
-                        android:textAppearance="@style/TextAppearance.TextAccentMediumThick"
-                        tools:ignore="ContentDescription" />
-                    <!-- Note: contentDescription for playback speed button above is set in ExpandedPlayerSheetContent.java. -->
                     <LinearLayout
                         android:id="@+id/readaloud_playback_controls"
                         android:layout_width="wrap_content"
@@ -220,6 +211,15 @@ found in the LICENSE file.
                               android:background="@drawable/rounded_ripple"
                               android:contentDescription="@string/readaloud_forward"/>
                     </LinearLayout>
+                    <TextView
+                        android:id="@+id/readaloud_playback_speed"
+                        android:layout_width="@dimen/readaloud_menu_buttons_width"
+                        android:layout_height="@dimen/readaloud_menu_buttons_width"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentBottom="true"
+                        android:textAppearance="@style/TextAppearance.TextAccentMediumThick"
+                        tools:ignore="ContentDescription" />
+                    <!-- Note: contentDescription for playback speed button above is set in ExpandedPlayerSheetContent.java. -->
                     <ImageView
                         android:id="@+id/readaloud_more_button"
                         android:layout_width="@dimen/readaloud_menu_buttons_width"
