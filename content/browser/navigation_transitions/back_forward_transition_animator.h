@@ -84,6 +84,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
 
+  // Notifies when the transition needs to be aborted.
+  void AbortAnimation();
+
   [[nodiscard]] bool IsTerminalState();
 
  protected:
@@ -181,14 +184,15 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // new page.
     kDisplayingCrossFadeAnimation,
 
-    // The terminal state of the animation manager. We reach this state when
-    // all the animations are finished in the UI. The manager remains in this
-    // state until it is destroyed.
+    // One of the two terminal states of the animation manager. We reach this
+    // state when all the animations are finished in the UI. The manager remains
+    // in this state until it is destroyed.
     kAnimationFinished,
 
-    // Indicates that we have to abort the animated transition. This can
-    // happen, for example, when a secondary navigation commits mid-animation,
-    // or when Chrome is backgrounded during a transition.
+    // Another terminal state indicating that we have to abort the animated
+    // transition. This can happen, for example, when a secondary navigation
+    // commits mid-animation, or when Chrome is backgrounded during a
+    // transition.
     kAnimationAborted,
   };
   State state() const { return state_; }

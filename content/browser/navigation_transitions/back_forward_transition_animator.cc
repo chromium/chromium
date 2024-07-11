@@ -144,6 +144,8 @@ BackForwardTransitionAnimator::Factory::Create(
 }
 
 BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
+  CHECK(IsTerminalState()) << ToString(state_);
+
   ResetTransformForLayer(animation_manager_->web_contents_view_android()
                              ->parent_for_web_page_widgets());
 
@@ -396,7 +398,7 @@ void BackForwardTransitionAnimator::OnRenderWidgetHostDestroyed(
   // where Viz never activates a frame from the committed renderer.
   CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
   CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-  state_ = State::kAnimationAborted;
+  AbortAnimation();
 }
 
 // This is only called after we subscribe to the new `RenderWidgetHost` when the
@@ -699,8 +701,17 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
   }
 
   if (skip_all_animations) {
-    state_ = State::kAnimationAborted;
+    AbortAnimation();
   }
+}
+
+void BackForwardTransitionAnimator::AbortAnimation() {
+  AdvanceAndProcessState(State::kAnimationAborted);
+}
+
+bool BackForwardTransitionAnimator::IsTerminalState() {
+  return state_ == State::kAnimationFinished ||
+         state_ == State::kAnimationAborted;
 }
 
 void BackForwardTransitionAnimator::OnFloatAnimated(
@@ -1219,7 +1230,7 @@ void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
   if (!navigation_request->GetNavigationEntry()) {
     // Error case: The navigation entry is deleted when the navigation is ready
     // to commit. Abort the transition.
-    state_ = State::kAnimationAborted;
+    AbortAnimation();
     return;
   }
 
@@ -1258,11 +1269,6 @@ void BackForwardTransitionAnimator::UnregisterNewFrameActivationObserver() {
       animation_manager_);
   new_render_widget_host_->RemoveObserver(animation_manager_);
   new_render_widget_host_ = nullptr;
-}
-
-bool BackForwardTransitionAnimator::IsTerminalState() {
-  return state_ == State::kAnimationFinished ||
-         state_ == State::kAnimationAborted;
 }
 
 }  // namespace content

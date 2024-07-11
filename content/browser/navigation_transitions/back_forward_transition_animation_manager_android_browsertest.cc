@@ -463,12 +463,6 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     ExpectState(State::kDisplayingCrossFadeAnimation);
   }
 
-  void SetFinishedStateToDisplayingInvokeAnimation() {
-    finished_state_ = State::kDisplayingInvokeAnimation;
-  }
-
-  void SetFinishedStateToInProgress() { finished_state_ = State::kStarted; }
-
   void SetFinishedStateToAnimationAborted() {
     finished_state_ = State::kAnimationAborted;
   }
@@ -1243,14 +1237,27 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 // that tab.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        OnVisibilityChange) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
   expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
-  GetAnimatorForTesting()->SetFinishedStateToInProgress();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+
+  // Pause at the beginning of the invoke animation but wait for the navigation
+  // to finish, so we can guarantee to have subscribed to the new
+  // RenderWidgetHost.
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingInvokeAnimation();
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
+  auto* animation_manager = GetAnimationManager(web_contents());
+  animation_manager->OnGestureInvoked();
+  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
 
   ui::WindowAndroid* window = web_contents()->GetTopLevelNativeWindow();
   // The first two args don't matter in tests.
@@ -1266,14 +1273,27 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 // detached.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        OnDetachCompositor) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
   expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
-  GetAnimatorForTesting()->SetFinishedStateToInProgress();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+
+  // Pause at the beginning of the invoke animation but wait for the navigation
+  // to finish, so we can guarantee to have subscribed to the new
+  // RenderWidgetHost.
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingInvokeAnimation();
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
+  auto* animation_manager = GetAnimationManager(web_contents());
+  animation_manager->OnGestureInvoked();
+  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
 
   ui::WindowAndroid* window = web_contents()->GetTopLevelNativeWindow();
   window->DetachCompositor();
@@ -2297,18 +2317,22 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   expected.push_back(GestureType::k30ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
-  GetAnimatorForTesting()->SetFinishedStateToDisplayingInvokeAnimation();
-
-  TestNavigationManager back_to_red(web_contents(), RedURL());
-  web_contents()
-      ->GetBackForwardTransitionAnimationManager()
-      ->OnGestureInvoked();
-  ASSERT_TRUE(back_to_red.WaitForResponse());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
+  // Pause at the beginning of the invoke animation but wait for the navigation
+  // to finish, so we can guarantee to have subscribed to the new
+  // RenderWidgetHost.
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingInvokeAnimation();
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
+  auto* animation_manager = GetAnimationManager(web_contents());
+  animation_manager->OnGestureInvoked();
+  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
 
   web_contents()->GetWebContentsAndroid()->SetTopLevelNativeWindow(
       /*env=*/nullptr,
       /*jwindow_android=*/base::android::JavaParamRef<jobject>(nullptr));
-  ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
+  destroyed.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
