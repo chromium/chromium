@@ -156,6 +156,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
+  MOCK_METHOD(void, DismissPrompt, (), (override));
 };
 
 class MockFacilitatedPaymentsNetworkInterface
@@ -1402,6 +1403,30 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
+}
+
+// Test that when a positive puchase action result is received, the UI prompt is
+// dismissed.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       OnPurchaseActionPositiveResult_UiPromptDismissed) {
+  // `DismissPrompt` is called once when the purchase action result is received,
+  // and again when the test fixture destroys the `manager_`.
+  EXPECT_CALL(*client_, DismissPrompt()).Times(2);
+
+  manager_->OnPurchaseActionResult(
+      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk);
+}
+
+// Test that when a negative puchase action result is received, the UI prompt is
+// dismissed.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       OnPurchaseActionNegativeResult_UiPromptDismissed) {
+  // `DismissPrompt` is called once when the purchase action result is received,
+  // and again when the test fixture destroys the `manager_`.
+  EXPECT_CALL(*client_, DismissPrompt()).Times(2);
+
+  manager_->OnPurchaseActionResult(
+      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultCanceled);
 }
 
 // The `IsAvailable` async call is made after a valid Pix code has been

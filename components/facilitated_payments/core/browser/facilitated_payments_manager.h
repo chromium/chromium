@@ -198,6 +198,10 @@ class FacilitatedPaymentsManager {
       FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           OnPurchaseActionPositiveResult_UiPromptDismissed);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           OnPurchaseActionNegativeResult_UiPromptDismissed);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            InvokePurchaseActionCompleted_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            OnInitiatePaymentResponseReceived_HistogramLogged);

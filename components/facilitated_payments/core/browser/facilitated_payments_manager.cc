@@ -37,7 +37,9 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
   RegisterPixAllowlist();
 }
 
-FacilitatedPaymentsManager::~FacilitatedPaymentsManager() = default;
+FacilitatedPaymentsManager::~FacilitatedPaymentsManager() {
+  client_->DismissPrompt();
+}
 
 void FacilitatedPaymentsManager::Reset() {
   // In tests, when the payment flow is abandoned, do not reset so the final
@@ -348,6 +350,9 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
 
 void FacilitatedPaymentsManager::OnPurchaseActionResult(
     FacilitatedPaymentsApiClient::PurchaseActionResult result) {
+  // When server responds to the purchase action, Google Play Services takes
+  // over, and the progress screen gets dismissed. Calling `DismissPrompt`
+  // clears the associated Java objects.
   client_->DismissPrompt();
   Reset();
   LogInitiatePurchaseActionResult(
