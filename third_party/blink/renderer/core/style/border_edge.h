@@ -53,6 +53,8 @@ class BorderEdge {
   int width_;
 };
 
+using BorderEdgeArray = std::array<BorderEdge, 4>;
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_BORDER_EDGE_H_

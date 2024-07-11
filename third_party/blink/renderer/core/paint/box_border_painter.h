@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_BORDER_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_BORDER_PAINTER_H_
 
@@ -154,7 +149,7 @@ class BoxBorderPainter {
   // computed attributes
   FloatRoundedRect outer_;
   FloatRoundedRect inner_;
-  BorderEdge edges_[4];
+  BorderEdgeArray edges_;
 
   unsigned visible_edge_count_;
   unsigned first_visible_edge_;

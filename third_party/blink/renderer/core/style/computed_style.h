@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/outline_type.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style_base.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
@@ -87,7 +88,6 @@ namespace blink {
 using std::max;
 
 class AppliedTextDecoration;
-class BorderEdge;
 class ContentData;
 class CounterDirectives;
 class CSSAnimationData;
@@ -2144,7 +2144,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool BorderObscuresBackground() const;
   void GetBorderEdgeInfo(
-      BorderEdge edges[],
+      BorderEdgeArray& edges,
       PhysicalBoxSides sides_to_include = PhysicalBoxSides()) const;
 
   bool HasBoxDecorations() const {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -203,7 +198,7 @@ SnappedAndUnsnappedOutsets BoxBackgroundPaintContext::ObscuredBorderOutsets(
                                                             positioning_area)
           .Rect();
 
-  BorderEdge edges[4];
+  BorderEdgeArray edges;
   style.GetBorderEdgeInfo(edges);
   const PhysicalBoxStrut box_outsets = BorderOutsets();
   SnappedAndUnsnappedOutsets adjust;

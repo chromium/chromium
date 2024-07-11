@@ -21,11 +21,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 #include <algorithm>
@@ -68,7 +63,6 @@
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
-#include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
@@ -2606,7 +2600,7 @@ bool ComputedStyle::BorderObscuresBackground() const {
     return false;
   }
 
-  BorderEdge edges[4];
+  BorderEdgeArray edges;
   GetBorderEdgeInfo(edges);
 
   for (unsigned int i = static_cast<unsigned>(BoxSide::kTop);
@@ -2640,7 +2634,7 @@ PhysicalBoxStrut ComputedStyle::BoxDecorationOutsets() const {
   return outsets;
 }
 
-void ComputedStyle::GetBorderEdgeInfo(BorderEdge edges[],
+void ComputedStyle::GetBorderEdgeInfo(BorderEdgeArray& edges,
                                       PhysicalBoxSides sides_to_include) const {
   edges[static_cast<unsigned>(BoxSide::kTop)] = BorderEdge(
       BorderTopWidth(), VisitedDependentColor(GetCSSPropertyBorderTopColor()),
