@@ -17,7 +17,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "net/third_party/quiche/src/quiche/http2/hpack/hpack_constants.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/recording_headers_handler.h"
 
 namespace spdy {
 
