@@ -15,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 class AppFilterViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey key) {
         if (AppFilterProperties.ICON == key) {
-            var icon = (ImageView) view.findViewById(R.id.start_icon);
+            ImageView icon = view.findViewById(R.id.start_icon);
             icon.setImageDrawable(model.get(AppFilterProperties.ICON));
             icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
         } else if (AppFilterProperties.LABEL == key) {
@@ -23,7 +23,7 @@ class AppFilterViewBinder {
                     .setText(model.get(AppFilterProperties.LABEL));
             view.findViewById(R.id.description).setVisibility(View.GONE);
         } else if (AppFilterProperties.SELECTED == key) {
-            var checkMark = (ImageView) view.findViewById(R.id.end_button);
+            ImageView checkMark = view.findViewById(R.id.end_button);
             checkMark.setImageResource(R.drawable.ic_check_googblue_24dp);
             boolean selected = model.get(AppFilterProperties.SELECTED);
             checkMark.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);

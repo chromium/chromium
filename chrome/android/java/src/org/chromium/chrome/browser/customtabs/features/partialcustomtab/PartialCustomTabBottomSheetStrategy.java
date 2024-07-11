@@ -348,7 +348,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                         mActivity, this::isFullHeight, () -> mStatus, this);
         toolbar.setHandleStrategy(mHandleStrategy);
         toolbar.setMinimizeButtonEnabled(false);
-        var dragBar = (CustomTabDragBar) mActivity.findViewById(R.id.drag_bar);
+        CustomTabDragBar dragBar = mActivity.findViewById(R.id.drag_bar);
         dragBar.setHandleStrategy(mHandleStrategy);
         View dragHandle = mActivity.findViewById(R.id.drag_handle);
         dragHandle.setOnClickListener(v -> onDragBarTapped());

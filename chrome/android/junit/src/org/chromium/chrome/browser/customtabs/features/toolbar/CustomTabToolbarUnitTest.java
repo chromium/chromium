@@ -393,7 +393,7 @@ public class CustomTabToolbarUnitTest {
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         setup();
         LinearLayout closeMinimizeLayout = mToolbar.findViewById(R.id.close_minimize_layout);
-        var minimizeButton = (ImageButton) mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        ImageButton minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
         View titleUrlContainer = Mockito.mock(View.class);
         when(titleUrlContainer.getLayoutParams())
                 .thenReturn(
@@ -428,8 +428,8 @@ public class CustomTabToolbarUnitTest {
     @DisableFeatures({ChromeFeatureList.CCT_MINIMIZED})
     public void testMinimizeButtonDisabled() {
         LinearLayout closeMinimizeLayout = mToolbar.findViewById(R.id.close_minimize_layout);
-        var minimizeButton = (ImageButton) mToolbar.findViewById(R.id.custom_tabs_minimize_button);
-        var closeButton = (ImageButton) mToolbar.findViewById(R.id.close_button);
+        ImageButton minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        ImageButton closeButton = mToolbar.findViewById(R.id.close_button);
 
         // Button on left side
         assertNull("Minimize button should never be initialized", minimizeButton);
