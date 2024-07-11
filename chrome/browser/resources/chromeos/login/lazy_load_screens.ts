@@ -94,8 +94,6 @@ function addScreensAsync(): void {
   }
 }
 
-// TODO(b/324873528) Replace type definition with official interface definition
-// of blink
 declare global {
   interface Window {
     scheduler: any;
