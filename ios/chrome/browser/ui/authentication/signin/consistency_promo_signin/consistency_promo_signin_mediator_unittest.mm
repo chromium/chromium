@@ -279,20 +279,19 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   ConsistencyPromoSigninMediator* mediator =
       BuildConsistencyPromoSigninMediator(
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
-  FakeSystemIdentity* new_identity = [FakeSystemIdentity fakeIdentity1];
-  GetSystemIdentityManager()->AddIdentity(new_identity);
-  [mediator systemIdentityAdded:new_identity];
+  [mediator systemIdentityAdded:kDefaultIdentity];
 
   ExpectAuthFlowStartAndSetSuccess(
-      new_identity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, true);
+      kDefaultIdentity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      true);
 
   [mediator signinWithAuthenticationFlow:authentication_flow_];
 
   OCMExpect([mediator_delegate_mock_
       consistencyPromoSigninMediatorSignInDone:mediator
-                                  withIdentity:new_identity]);
+                                  withIdentity:kDefaultIdentity]);
 
-  SimulateCookieFetchSuccess(mediator, new_identity);
+  SimulateCookieFetchSuccess(mediator, kDefaultIdentity);
 
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
