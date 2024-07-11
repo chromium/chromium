@@ -45,6 +45,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
@@ -1571,10 +1572,21 @@ class EnclaveManager::StateMachine {
                     device::enclave::kSigningAlgorithms,
                     base::BindOnce(
                         [](base::WeakPtr<StateMachine> state_machine,
-                           std::unique_ptr<crypto::UserVerifyingSigningKey>
-                               uv_key) {
+                           base::expected<
+                               std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                               crypto::UserVerifyingKeyCreationError>
+                               maybe_uv_key) {
                           if (!state_machine) {
                             return;
+                          }
+                          std::unique_ptr<crypto::UserVerifyingSigningKey>
+                              uv_key;
+                          if (maybe_uv_key.has_value()) {
+                            uv_key = std::move(maybe_uv_key.value());
+                          } else {
+                            FIDO_LOG(ERROR)
+                                << "UV key creation failed with error "
+                                << static_cast<int>(maybe_uv_key.error());
                           }
                           state_machine->GenerateHardwareKey(std::move(uv_key));
                         },
@@ -1587,10 +1599,20 @@ class EnclaveManager::StateMachine {
                   state_machine->user_->wrapped_uv_private_key(),
                   base::BindOnce(
                       [](base::WeakPtr<StateMachine> state_machine,
-                         std::unique_ptr<crypto::UserVerifyingSigningKey>
-                             uv_key) {
+                         base::expected<
+                             std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                             crypto::UserVerifyingKeyCreationError>
+                             maybe_uv_key) {
                         if (!state_machine) {
                           return;
+                        }
+                        std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key;
+                        if (maybe_uv_key.has_value()) {
+                          uv_key = std::move(maybe_uv_key.value());
+                        } else {
+                          FIDO_LOG(ERROR)
+                              << "UV key retrieval failed with error "
+                              << static_cast<int>(maybe_uv_key.error());
                         }
                         state_machine->GenerateHardwareKey(std::move(uv_key));
                       },
@@ -2966,6 +2988,7 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
         scoped_refptr<crypto::RefCountedUserVerifyingSigningKey>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!user_ || user_->wrapped_uv_private_key().empty()) {
+    FIDO_LOG(ERROR) << "Attempted a UV signature but no key is available";
     std::move(callback).Run(nullptr);
     return;
   }
@@ -2983,6 +3006,8 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
   auto user_verifying_key_provider = crypto::GetUserVerifyingKeyProvider(
       MakeUserVerifyingKeyConfig(std::move(options)));
   if (!user_verifying_key_provider) {
+    FIDO_LOG(ERROR)
+        << "Attempted a UV signature but UV key provider is unavailable";
     // This indicates the platform key provider was available, but now is not.
     ClearRegistration();
     std::move(callback).Run(nullptr);
@@ -2995,20 +3020,25 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
          base::OnceCallback<void(
              scoped_refptr<crypto::RefCountedUserVerifyingSigningKey>)>
              callback,
-         std::unique_ptr<crypto::UserVerifyingSigningKey> key) {
+         base::expected<std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                        crypto::UserVerifyingKeyCreationError> maybe_key) {
         if (!enclave_manager ||
             enclave_manager->primary_account_info_->account_id != account_id) {
+          FIDO_LOG(ERROR) << "Primary user no longer available for UV key "
+                             "signature generation";
           std::move(callback).Run(nullptr);
           return;
         }
-        if (!key) {
+        if (!maybe_key.has_value()) {
+          FIDO_LOG(ERROR) << "UV key retrieval failed with error "
+                          << static_cast<int>(maybe_key.error());
           enclave_manager->ClearRegistration();
           std::move(callback).Run(nullptr);
           return;
         }
         enclave_manager->user_verifying_key_ =
             base::MakeRefCounted<crypto::RefCountedUserVerifyingSigningKey>(
-                std::move(key));
+                std::move(maybe_key.value()));
         std::move(callback).Run(enclave_manager->user_verifying_key_);
       },
       weak_ptr_factory_.GetWeakPtr(), primary_account_info_->account_id,
@@ -3057,14 +3087,20 @@ enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback(
                          base::OnceCallback<void(
                              std::optional<enclave::ClientSignature>)>
                              result_callback,
-                         std::optional<std::vector<uint8_t>> signature) {
-                        if (!signature) {
+                         base::expected<std::vector<uint8_t>,
+                                        crypto::UserVerifyingKeySigningError>
+                             maybe_signature) {
+                        if (!maybe_signature.has_value()) {
+                          FIDO_LOG(ERROR)
+                              << "UV key signature failed with error "
+                              << static_cast<int>(maybe_signature.error());
                           std::move(result_callback).Run(std::nullopt);
                           return;
                         }
                         enclave::ClientSignature client_signature;
                         client_signature.device_id = ToVector(device_id);
-                        client_signature.signature = std::move(*signature);
+                        client_signature.signature =
+                            std::move(maybe_signature.value());
                         client_signature.key_type =
                             enclave::ClientKeyType::kUserVerified;
                         std::move(result_callback)
@@ -3112,21 +3148,36 @@ EnclaveManager::UserVerifyingKeyCreationCallback() {
                    base::OnceCallback<void(base::span<const uint8_t>)>
                        public_key_callback,
                    CoreAccountId account_id,
-                   std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key) {
+                   base::expected<
+                       std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                       crypto::UserVerifyingKeyCreationError> maybe_uv_key) {
                   if (!enclave_manager ||
                       enclave_manager->primary_account_info_->account_id !=
                           account_id) {
+                    FIDO_LOG(ERROR) << "Primary user no longer available for "
+                                       "deferred UV key creation";
                     std::move(public_key_callback).Run(std::vector<uint8_t>());
                     return;
                   }
-                  if (!uv_key) {
-                    enclave_manager->ClearRegistration();
+                  if (!maybe_uv_key.has_value()) {
+                    FIDO_LOG(ERROR)
+                        << "Failed deferred UV key creation with error "
+                        << static_cast<int>(maybe_uv_key.error());
+                    // If the user cancelled the verification, they should get a
+                    // chance to try again on a future request. Otherwise the
+                    // device is unregistered so they can attempt recovery
+                    // later.
+                    if (maybe_uv_key.error() !=
+                        crypto::UserVerifyingKeyCreationError::
+                            kUserCancellation) {
+                      enclave_manager->ClearRegistration();
+                    }
                     std::move(public_key_callback).Run(std::vector<uint8_t>());
                     return;
                   }
                   enclave_manager->user_verifying_key_ = base::MakeRefCounted<
                       crypto::RefCountedUserVerifyingSigningKey>(
-                      std::move(uv_key));
+                      std::move(maybe_uv_key.value()));
                   const std::vector<uint8_t> uv_public_key =
                       enclave_manager->user_verifying_key_->key()
                           .GetPublicKey();

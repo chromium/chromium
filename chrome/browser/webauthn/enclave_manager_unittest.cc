@@ -32,6 +32,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/fake_magic_arch.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
@@ -1271,16 +1272,14 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
                                  ->second.wrapped_uv_private_key();
   auto uv_key_provider = crypto::GetUserVerifyingKeyProvider(
       crypto::UserVerifyingKeyProvider::Config());
-  quit_closure = task_env_.QuitClosure();
-  uv_key_provider->GetUserVerifyingSigningKey(
-      uv_key_label,
-      base::BindLambdaForTesting(
-          [&quit_closure](
-              std::unique_ptr<crypto::UserVerifyingSigningKey> key) {
-            EXPECT_NE(key, nullptr);
-            quit_closure.Run();
-          }));
-  task_env_.RunUntilQuit();
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                     crypto::UserVerifyingKeyCreationError>>
+      key_future_present;
+  uv_key_provider->GetUserVerifyingSigningKey(uv_key_label,
+                                              key_future_present.GetCallback());
+  EXPECT_TRUE(key_future_present.Wait());
+  EXPECT_TRUE(key_future_present.Get().has_value());
 
   crypto::ScopedNullUnexportableKeyProvider null_hw_provider;
   auto signing_callback = manager_.HardwareKeySigningCallback();
@@ -1297,16 +1296,14 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
   EXPECT_FALSE(manager_.is_registered());
 
   // Verify that the UV key was deleted when the HW key was lost.
-  quit_closure = task_env_.QuitClosure();
-  uv_key_provider->GetUserVerifyingSigningKey(
-      uv_key_label,
-      base::BindLambdaForTesting(
-          [&quit_closure](
-              std::unique_ptr<crypto::UserVerifyingSigningKey> key) {
-            EXPECT_EQ(key, nullptr);
-            quit_closure.Run();
-          }));
-  task_env_.RunUntilQuit();
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                     crypto::UserVerifyingKeyCreationError>>
+      key_future_deleted;
+  uv_key_provider->GetUserVerifyingSigningKey(uv_key_label,
+                                              key_future_deleted.GetCallback());
+  EXPECT_TRUE(key_future_deleted.Wait());
+  EXPECT_FALSE(key_future_deleted.Get().has_value());
 }
 
 // UV keys are only supported on Windows and macOS at this time.
@@ -1472,7 +1469,9 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
   manager_.Load(loaded_future.GetCallback());
   EXPECT_TRUE(loaded_future.Wait());
 
-  base::test::TestFuture<std::unique_ptr<crypto::UserVerifyingSigningKey>>
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                     crypto::UserVerifyingKeyCreationError>>
       key_future;
   std::unique_ptr<crypto::UserVerifyingKeyProvider> key_provider =
       crypto::GetUserVerifyingKeyProvider(/*config=*/{});
@@ -1483,11 +1482,13 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
   manager_.local_state_for_testing()
       .mutable_users()
       ->begin()
-      ->second.set_uv_public_key(ToString(key_future.Get()->GetPublicKey()));
+      ->second.set_uv_public_key(
+          ToString(key_future.Get().value()->GetPublicKey()));
   manager_.local_state_for_testing()
       .mutable_users()
       ->begin()
-      ->second.set_wrapped_uv_private_key(key_future.Get()->GetKeyLabel());
+      ->second.set_wrapped_uv_private_key(
+          key_future.Get().value()->GetKeyLabel());
 
   BoolFuture register_future;
   manager_.RegisterIfNeeded(register_future.GetCallback());

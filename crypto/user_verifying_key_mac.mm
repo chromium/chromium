@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "crypto/user_verifying_key.h"
+
+#import <LocalAuthentication/LocalAuthentication.h>
+
 #include <atomic>
 #include <functional>
 #include <memory>
 #include <utility>
-
-#import <LocalAuthentication/LocalAuthentication.h>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -18,11 +20,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/types/expected.h"
 #include "crypto/apple_keychain_v2.h"
 #include "crypto/scoped_lacontext.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_mac.h"
-#include "crypto/user_verifying_key.h"
 
 namespace crypto {
 
@@ -46,10 +48,14 @@ class RefCountedUnexportableSigningKey
 };
 
 // Wraps signing |data| with |key|.
-std::optional<std::vector<uint8_t>> DoSign(
+base::expected<std::vector<uint8_t>, UserVerifyingKeySigningError> DoSign(
     std::vector<uint8_t> data,
     scoped_refptr<RefCountedUnexportableSigningKey> key) {
-  return key->key()->SignSlowly(data);
+  auto opt_signature = key->key()->SignSlowly(data);
+  if (!opt_signature.has_value()) {
+    return base::unexpected(UserVerifyingKeySigningError::kUnknownError);
+  }
+  return base::ok(*opt_signature);
 }
 
 std::string ToString(const std::vector<uint8_t>& vec) {
@@ -68,8 +74,7 @@ class UserVerifyingSigningKeyMac : public UserVerifyingSigningKey {
   ~UserVerifyingSigningKeyMac() override = default;
 
   void Sign(base::span<const uint8_t> data,
-            base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
-                callback) override {
+            UserVerifyingKeySignatureCallback callback) override {
     // Signing will result in the system TouchID prompt being shown if the
     // caller does not pass an authenticated LAContext, so we run the signing
     // code in a separate thread.
@@ -100,40 +105,42 @@ class UserVerifyingSigningKeyMac : public UserVerifyingSigningKey {
   const scoped_refptr<RefCountedUnexportableSigningKey> key_;
 };
 
-std::unique_ptr<UserVerifyingSigningKey> DoGenerateKey(
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
-    UnexportableKeyProvider::Config config,
-    LAContext* lacontext) {
+base::expected<std::unique_ptr<UserVerifyingSigningKey>,
+               UserVerifyingKeyCreationError>
+DoGenerateKey(base::span<const SignatureVerifier::SignatureAlgorithm>
+                  acceptable_algorithms,
+              UnexportableKeyProvider::Config config,
+              LAContext* lacontext) {
   std::unique_ptr<UnexportableKeyProviderMac> key_provider =
       GetUnexportableKeyProviderMac(std::move(config));
   if (!key_provider) {
-    return nullptr;
+    return base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError);
   }
 
   std::unique_ptr<UnexportableSigningKey> key =
       key_provider->GenerateSigningKeySlowly(acceptable_algorithms, lacontext);
   if (!key) {
-    return nullptr;
+    return base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError);
   }
-  return std::make_unique<UserVerifyingSigningKeyMac>(std::move(key));
+  return base::ok(std::make_unique<UserVerifyingSigningKeyMac>(std::move(key)));
 }
 
-std::unique_ptr<UserVerifyingSigningKey> DoGetKey(
-    std::vector<uint8_t> wrapped_key,
-    UnexportableKeyProvider::Config config,
-    LAContext* lacontext) {
+base::expected<std::unique_ptr<UserVerifyingSigningKey>,
+               UserVerifyingKeyCreationError>
+DoGetKey(std::vector<uint8_t> wrapped_key,
+         UnexportableKeyProvider::Config config,
+         LAContext* lacontext) {
   std::unique_ptr<UnexportableKeyProviderMac> key_provider =
       GetUnexportableKeyProviderMac(std::move(config));
   if (!key_provider) {
-    return nullptr;
+    return base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError);
   }
   std::unique_ptr<UnexportableSigningKey> key =
       key_provider->FromWrappedSigningKeySlowly(wrapped_key, lacontext);
   if (!key) {
-    return nullptr;
+    return base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError);
   }
-  return std::make_unique<UserVerifyingSigningKeyMac>(std::move(key));
+  return base::ok(std::make_unique<UserVerifyingSigningKeyMac>(std::move(key)));
 }
 
 bool DoDeleteKey(std::vector<uint8_t> wrapped_key,
@@ -156,8 +163,7 @@ class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
   void GenerateUserVerifyingSigningKey(
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
-      base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
-          callback) override {
+      UserVerifyingKeyCreationCallback callback) override {
     // Creating a key may result in disk access, so do it in a separate thread
     // to avoid blocking the UI.
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner =
@@ -174,8 +180,7 @@ class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
 
   void GetUserVerifyingSigningKey(
       UserVerifyingKeyLabel key_label,
-      base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
-          callback) override {
+      UserVerifyingKeyCreationCallback callback) override {
     // Retrieving a key may result in disk access, so do it in a separate thread
     // to avoid blocking the UI.
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner =

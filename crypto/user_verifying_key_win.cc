@@ -44,7 +44,13 @@ using ABI::Windows::Security::Credentials::KeyCredentialCreationOption;
 using ABI::Windows::Security::Credentials::KeyCredentialOperationResult;
 using ABI::Windows::Security::Credentials::KeyCredentialRetrievalResult;
 using ABI::Windows::Security::Credentials::KeyCredentialStatus;
+using ABI::Windows::Security::Credentials::
+    KeyCredentialStatus_CredentialAlreadyExists;
+using ABI::Windows::Security::Credentials::KeyCredentialStatus_NotFound;
 using ABI::Windows::Security::Credentials::KeyCredentialStatus_Success;
+using ABI::Windows::Security::Credentials::KeyCredentialStatus_UserCanceled;
+using ABI::Windows::Security::Credentials::
+    KeyCredentialStatus_UserPrefersPassword;
 using ABI::Windows::Security::Cryptography::Core::
     CryptographicPublicKeyBlobType_X509SubjectPublicKeyInfo;
 using ABI::Windows::Storage::Streams::IBuffer;
@@ -221,7 +227,7 @@ SplitOnceCallbackIntoThree(base::OnceCallback<void(Args...)> callback) {
 }
 
 void OnSigningSuccess(
-    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+    UserVerifyingSigningKey::UserVerifyingKeySignatureCallback callback,
     scoped_refptr<HelloDialogForegrounder> foregrounder,
     ComPtr<IKeyCredentialOperationResult> sign_result) {
   foregrounder->Stop();
@@ -232,7 +238,16 @@ void OnSigningSuccess(
     LOG(ERROR) << FormatError(
         "Failed to obtain Status from IKeyCredentialOperationResult", hr);
     RecordSignAsyncResult(KeyCredentialSignResult::kInvalidStatusReturned);
-    std::move(callback).Run(std::nullopt);
+    UserVerifyingKeySigningError sign_error;
+    switch (status) {
+      case KeyCredentialStatus_UserCanceled:
+      case KeyCredentialStatus_UserPrefersPassword:
+        sign_error = UserVerifyingKeySigningError::kUserCancellation;
+        break;
+      default:
+        sign_error = UserVerifyingKeySigningError::kUnknownError;
+    }
+    std::move(callback).Run(base::unexpected(sign_error));
     return;
   }
 
@@ -242,7 +257,8 @@ void OnSigningSuccess(
     LOG(ERROR) << FormatError(
         "Failed to obtain Result from IKeyCredentialOperationResult", hr);
     RecordSignAsyncResult(KeyCredentialSignResult::kInvalidResultReturned);
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeySigningError::kPlatformApiError));
     return;
   }
 
@@ -255,36 +271,39 @@ void OnSigningSuccess(
                               hr);
     RecordSignAsyncResult(
         KeyCredentialSignResult::kInvalidSignatureBufferReturned);
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeySigningError::kPlatformApiError));
     return;
   }
 
   RecordSignAsyncResult(KeyCredentialSignResult::kSucceeded);
-  std::move(callback).Run(
-      std::vector<uint8_t>(signature_data, signature_data + signature_length));
+  std::move(callback).Run(base::ok(
+      std::vector<uint8_t>(signature_data, signature_data + signature_length)));
 }
 
 void OnSigningError(
-    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+    UserVerifyingSigningKey::UserVerifyingKeySignatureCallback callback,
     scoped_refptr<HelloDialogForegrounder> foregrounder,
     HRESULT hr) {
   foregrounder->Stop();
   LOG(ERROR) << FormatError("Failed to sign with user-verifying signature", hr);
   RecordSignAsyncResult(KeyCredentialSignResult::kAPIReturnedError);
-  std::move(callback).Run(std::nullopt);
+  std::move(callback).Run(
+      base::unexpected(UserVerifyingKeySigningError::kPlatformApiError));
 }
 
 void SignInternal(
     std::vector<uint8_t> data,
     ComPtr<IKeyCredential> credential,
-    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback) {
+    UserVerifyingSigningKey::UserVerifyingKeySignatureCallback callback) {
   Microsoft::WRL::ComPtr<IBuffer> signing_buf;
   HRESULT hr =
       base::win::CreateIBufferFromData(data.data(), data.size(), &signing_buf);
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError("SignInternal: IBuffer creation failed", hr);
     RecordSignAsyncResult(KeyCredentialSignResult::kIBufferCreationFailed);
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeySigningError::kPlatformApiError));
     return;
   }
 
@@ -294,7 +313,8 @@ void SignInternal(
     LOG(ERROR) << FormatError("SignInternal: Call to RequestSignAsync failed",
                               hr);
     RecordSignAsyncResult(KeyCredentialSignResult::kRequestSignAsyncFailed);
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeySigningError::kPlatformApiError));
     return;
   }
 
@@ -310,7 +330,8 @@ void SignInternal(
     LOG(ERROR) << FormatError("SignInternal: Call to PostAsyncHandlers failed",
                               hr);
     RecordSignAsyncResult(KeyCredentialSignResult::kPostAsyncHandlersFailed);
-    std::move(std::get<2>(callback_splits)).Run(std::nullopt);
+    std::move(std::get<2>(callback_splits))
+        .Run(base::unexpected(UserVerifyingKeySigningError::kPlatformApiError));
     return;
   }
 
@@ -325,8 +346,7 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
   ~UserVerifyingSigningKeyWin() override = default;
 
   void Sign(base::span<const uint8_t> data,
-            base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
-                callback) override {
+            UserVerifyingKeySignatureCallback callback) override {
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
@@ -364,7 +384,7 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
 };
 
 void OnKeyCreationCompletionSuccess(
-    base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)> callback,
+    UserVerifyingKeyProvider::UserVerifyingKeyCreationCallback callback,
     std::string key_name,
     scoped_refptr<HelloDialogForegrounder> foregrounder,
     ComPtr<IKeyCredentialRetrievalResult> key_result) {
@@ -378,13 +398,29 @@ void OnKeyCreationCompletionSuccess(
     LOG(ERROR) << FormatError(
         "Failed to obtain Status from IKeyCredentialRetrievalResult", hr);
     RecordCreateAsyncResult(KeyCredentialCreateResult::kInvalidStatusReturned);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError));
     return;
   } else if (status != KeyCredentialStatus_Success) {
     LOG(ERROR) << "IKeyCredentialRetrievalResult failed with status "
                << static_cast<uint32_t>(status);
     RecordCreateAsyncResult(KeyCredentialCreateResult::kInvalidResultReturned);
-    std::move(callback).Run(nullptr);
+    UserVerifyingKeyCreationError uv_key_error;
+    switch (status) {
+      case KeyCredentialStatus_CredentialAlreadyExists:
+        uv_key_error = UserVerifyingKeyCreationError::kDuplicateCredential;
+        break;
+      case KeyCredentialStatus_NotFound:
+        uv_key_error = UserVerifyingKeyCreationError::kNotFound;
+        break;
+      case KeyCredentialStatus_UserCanceled:
+      case KeyCredentialStatus_UserPrefersPassword:
+        uv_key_error = UserVerifyingKeyCreationError::kUserCancellation;
+        break;
+      default:
+        uv_key_error = UserVerifyingKeyCreationError::kUnknownError;
+    }
+    std::move(callback).Run(base::unexpected(uv_key_error));
     return;
   }
 
@@ -395,18 +431,19 @@ void OnKeyCreationCompletionSuccess(
         "Failed to obtain KeyCredential from KeyCredentialRetrievalResult", hr);
     RecordCreateAsyncResult(
         KeyCredentialCreateResult::kInvalidCredentialReturned);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError));
     return;
   }
 
   RecordCreateAsyncResult(KeyCredentialCreateResult::kSucceeded);
   auto key = std::make_unique<UserVerifyingSigningKeyWin>(
       std::move(key_name), std::move(credential));
-  std::move(callback).Run(std::move(key));
+  std::move(callback).Run(base::ok(std::move(key)));
 }
 
 void OnKeyCreationCompletionError(
-    base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)> callback,
+    UserVerifyingKeyProvider::UserVerifyingKeyCreationCallback callback,
     scoped_refptr<HelloDialogForegrounder> foregrounder,
     HRESULT hr) {
   if (foregrounder) {
@@ -415,13 +452,13 @@ void OnKeyCreationCompletionError(
   LOG(ERROR) << FormatError("Failed to obtain user-verifying key from system",
                             hr);
   RecordCreateAsyncResult(KeyCredentialCreateResult::kAPIReturnedError);
-  std::move(callback).Run(nullptr);
+  std::move(callback).Run(
+      base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError));
 }
 
 void GenerateUserVerifyingSigningKeyInternal(
     std::string key_label,
-    base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
-        callback) {
+    UserVerifyingKeyProvider::UserVerifyingKeyCreationCallback callback) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
   auto key_name = base::win::ScopedHString::Create(key_label);
 
@@ -435,7 +472,8 @@ void GenerateUserVerifyingSigningKeyInternal(
         "factory for KeyCredentialManager",
         hr);
     RecordCreateAsyncResult(KeyCredentialCreateResult::kNoActivationFactory);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError));
     return;
   }
   ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>> create_result;
@@ -450,7 +488,8 @@ void GenerateUserVerifyingSigningKeyInternal(
         hr);
     RecordCreateAsyncResult(
         KeyCredentialCreateResult::kRequestCreateAsyncFailed);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError));
     return;
   }
 
@@ -470,7 +509,9 @@ void GenerateUserVerifyingSigningKeyInternal(
         hr);
     RecordCreateAsyncResult(
         KeyCredentialCreateResult::kPostAsyncHandlersFailed);
-    std::move(std::get<2>(callback_splits)).Run(nullptr);
+    std::move(std::get<2>(callback_splits))
+        .Run(
+            base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError));
     return;
   }
 
@@ -479,8 +520,7 @@ void GenerateUserVerifyingSigningKeyInternal(
 
 void GetUserVerifyingSigningKeyInternal(
     std::string key_label,
-    base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
-        callback) {
+    UserVerifyingKeyProvider::UserVerifyingKeyCreationCallback callback) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
   auto key_name = base::win::ScopedHString::Create(key_label);
 
@@ -493,7 +533,8 @@ void GetUserVerifyingSigningKeyInternal(
         "GetUserVerifyingSigningKeyInternal: Failed to obtain activation "
         "factory for KeyCredentialManager",
         hr);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError));
     return;
   }
 
@@ -502,7 +543,8 @@ void GetUserVerifyingSigningKeyInternal(
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError(
         "GetUserVerifyingSigningKeyInternal: Call to OpenAsync failed", hr);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError));
     return;
   }
 
@@ -520,7 +562,9 @@ void GetUserVerifyingSigningKeyInternal(
     LOG(ERROR) << FormatError(
         "GetUserVerifyingSigningKeyInternal: Call to PostAsyncHandlers failed",
         hr);
-    std::move(std::get<2>(callback_splits)).Run(nullptr);
+    std::move(std::get<2>(callback_splits))
+        .Run(
+            base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError));
     return;
   }
 }
@@ -576,13 +620,13 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
   void GenerateUserVerifyingSigningKey(
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
-      base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
-          callback) override {
+      UserVerifyingKeyCreationCallback callback) override {
     // Ignore the non-empty return value of `SelectAlgorithm` unless in the
     // future Windows supports more algorithms.
     if (!SelectAlgorithm(acceptable_algorithms)) {
       LOG(ERROR) << "Key generation does not include a supported algorithm.";
-      std::move(callback).Run(nullptr);
+      std::move(callback).Run(base::unexpected(
+          UserVerifyingKeyCreationError::kNoMatchingAlgorithm));
       return;
     }
 
@@ -603,8 +647,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
 
   void GetUserVerifyingSigningKey(
       UserVerifyingKeyLabel key_label,
-      base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
-          callback) override {
+      UserVerifyingKeyCreationCallback callback) override {
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING});

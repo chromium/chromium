@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_lacontext.h"
@@ -23,6 +24,25 @@
 namespace crypto {
 
 typedef std::string UserVerifyingKeyLabel;
+
+// Error values supplied to the callbacks for creating and retrieving
+// user-verifying keys, upon failure.
+enum class UserVerifyingKeyCreationError {
+  kPlatformApiError = 0,
+  kDuplicateCredential = 1,
+  kNotFound = 2,
+  kUserCancellation = 3,
+  kNoMatchingAlgorithm = 4,
+  kUnknownError = 5,
+};
+
+// Error values supplied to the callback for signing with a user-verifying key,
+// upon failure.
+enum class UserVerifyingKeySigningError {
+  kPlatformApiError = 0,
+  kUserCancellation = 1,
+  kUnknownError = 2,
+};
 
 // UserVerifyingSigningKey is a hardware-backed key that triggers a user
 // verification by the platform before a signature will be provided.
@@ -36,13 +56,13 @@ typedef std::string UserVerifyingKeyLabel;
 class CRYPTO_EXPORT UserVerifyingSigningKey {
  public:
   virtual ~UserVerifyingSigningKey();
+  using UserVerifyingKeySignatureCallback = base::OnceCallback<void(
+      base::expected<std::vector<uint8_t>, UserVerifyingKeySigningError>)>;
 
   // Sign invokes |callback| to provide a signature of |data|, or |nullopt| if
   // an error occurs during signing.
-  virtual void Sign(
-      base::span<const uint8_t> data,
-      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
-          callback) = 0;
+  virtual void Sign(base::span<const uint8_t> data,
+                    UserVerifyingKeySignatureCallback callback) = 0;
 
   // Provides the SPKI public key.
   virtual std::vector<uint8_t> GetPublicKey() const = 0;
@@ -98,6 +118,10 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
 #endif  // BUILDFLAG(IS_MAC)
   };
 
+  using UserVerifyingKeyCreationCallback = base::OnceCallback<void(
+      base::expected<std::unique_ptr<UserVerifyingSigningKey>,
+                     UserVerifyingKeyCreationError>)>;
+
   virtual ~UserVerifyingKeyProvider();
 
   // Similar to |GenerateSigningKeySlowly| but the resulting signing key can
@@ -108,8 +132,7 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
   virtual void GenerateUserVerifyingSigningKey(
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
-      base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
-          callback) = 0;
+      UserVerifyingKeyCreationCallback callback) = 0;
 
   // Similar to |FromWrappedSigningKey| but uses a wrapped key that was
   // generated from |GenerateUserVerifyingSigningKey|. This can be called from
@@ -118,8 +141,7 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
   // Invokes |callback| with the resulting key, or nullptr on error.
   virtual void GetUserVerifyingSigningKey(
       UserVerifyingKeyLabel key_label,
-      base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
-          callback) = 0;
+      UserVerifyingKeyCreationCallback callback) = 0;
 
   // Deletes a user verifying signing key. Work is be done asynchronously on a
   // low-priority thread when the underlying platform is slow.
