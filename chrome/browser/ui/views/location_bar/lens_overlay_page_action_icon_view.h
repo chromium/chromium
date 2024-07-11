@@ -31,14 +31,24 @@ class LensOverlayPageActionIconView : public PageActionIconView {
 
  protected:
   // PageActionIconView:
+  bool ShouldShowLabel() const override;
   void UpdateImpl() override;
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  void Layout(PassKey) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
+  // Preferred sizes for this view with and without the label set.
+  gfx::Size preferred_size_with_label_;
+  gfx::Size preferred_size_without_label_;
+
+  // Controls the `ShouldShowLabel` behavior.
+  bool should_show_label_ = true;
+
   raw_ptr<Browser> browser_;
   base::OnceClosure update_callback_for_testing_;
 };
