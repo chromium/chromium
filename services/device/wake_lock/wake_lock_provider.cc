@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/wake_lock/wake_lock.h"
 #include "services/device/wake_lock/wake_lock_context.h"
+#include "services/device/wake_lock/wake_lock_features.h"
 
 namespace device {
 
@@ -52,7 +53,22 @@ WakeLockProvider::WakeLockProvider(
       std::make_unique<WakeLockDataPerType>();
 }
 
-WakeLockProvider::~WakeLockProvider() = default;
+WakeLockProvider::~WakeLockProvider() {
+  if (base::FeatureList::IsEnabled(features::kRemoveWakeLockInDestructor)) {
+    for (auto& wake_lock_data : wake_lock_store_) {
+      // Guard against a race condition in chromeos-linux-rel browsertests where
+      // WakeLockProvider is destroyed before OnConnectionError has been called
+      // as expected when a WakeLock disconnected.
+      // TODO(crbug.com/352093447): Resolve the issue in these tests that
+      // necessitates this code being here and remove this code.
+#if BUILDFLAG(IS_CHROMEOS)
+      GetWakeLockDataPerType(wake_lock_data.first).wake_locks.clear();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      // All wake locks should have been removed by now.
+      CHECK(!wake_lock_data.second->count);
+    }
+  }
+}
 
 void WakeLockProvider::AddBinding(
     mojo::PendingReceiver<mojom::WakeLockProvider> receiver) {
@@ -118,8 +134,9 @@ void WakeLockProvider::OnWakeLockDeactivated(mojom::WakeLockType type) {
   // Notify observers of the last cancelation i.e. deactivation of wake lock
   // type |type|.
   if (new_count == 0) {
-    for (auto& observer : GetWakeLockDataPerType(type).observers)
+    for (auto& observer : GetWakeLockDataPerType(type).observers) {
       observer->OnWakeLockDeactivated(type);
+    }
   }
 }
 
