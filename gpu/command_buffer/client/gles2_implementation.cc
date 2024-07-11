@@ -4843,7 +4843,7 @@ GLboolean GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
          sizeof(gpu::Mailbox));
 
   helper_->ReadbackARGBImagePixelsINTERNAL(
-      plane_index, src_x, src_y, dst_width, dst_height, dst_row_bytes,
+      src_x, src_y, plane_index, dst_width, dst_height, dst_row_bytes,
       dst_sk_color_type, dst_sk_alpha_type, shm_id, shm_offset,
       color_space_offset, pixels_offset, mailbox_offset);
 
