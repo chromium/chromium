@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -14,8 +15,8 @@ namespace privacy_sandbox {
 namespace {
 
 PrivacySandboxCountries& GetPrivacySandboxCountries() {
-  static PrivacySandboxCountriesImpl instance;
-  return instance;
+  static base::NoDestructor<PrivacySandboxCountriesImpl> instance;
+  return *instance;
 }
 
 enum class ConfirmationType { Notice, Consent, RestrictedNotice };
