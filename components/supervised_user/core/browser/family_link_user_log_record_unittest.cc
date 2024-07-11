@@ -31,6 +31,8 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
   FamilyLinkUserLogRecordTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
     supervised_user::RegisterProfilePrefs(registry);
+    registry->RegisterBooleanPref(
+        prefs::kSupervisedUserExtensionsMayRequestPermissions, false);
     HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &pref_service_,
@@ -71,6 +73,10 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
     GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
 
     supervised_user::EnableParentalControls(pref_service_);
+    // Set the Family Link `Permissions` switch to default value, as done by
+    // the SupervisedUserPrefStore.
+    pref_service_.SetBoolean(
+        prefs::kSupervisedUserExtensionsMayRequestPermissions, true);
 
     SupervisedUserURLFilter filter(
         pref_service_,
